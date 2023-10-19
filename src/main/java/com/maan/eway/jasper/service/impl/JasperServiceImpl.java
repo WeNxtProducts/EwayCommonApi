@@ -158,7 +158,24 @@ public class JasperServiceImpl implements JasperService {
 					}					
 				} else if (product.getMotorYn().equalsIgnoreCase("M") && !"46".equalsIgnoreCase(homeData.getProductId().toString())) {
 					if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo())) {
-						res = getJasperPdfFile("/report/jasper/MotorEndorsementSchedule.jrxml", getPdfOutFilePath, input);
+						Map<String,Object> MotorEndorsementScheduleRes = jasperCustomeImple.getMotorEndorsementSchedule(homeData.getPolicyNo());
+						String jsonString = gson.toJson(MotorEndorsementScheduleRes);
+						try {
+							FileWriter fileWriter = new FileWriter(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.json", false);
+							fileWriter.write(jsonString);
+							fileWriter.close();
+							File file = new File(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.json");
+							JsonDataSource ds = new JsonDataSource(file);
+							InputStream inputStream = this.getClass().getResourceAsStream("/report/jasper/MotorEndorsementSchedule.jrxml");
+							JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+							JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, input,ds);
+							JasperExportManager.exportReportToPdfFile(jasperPrint, policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.pdf");
+							GetFileFromPath path = new GetFileFromPath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.pdf");
+							res.setPdfoutfile(path.call().getImgUrl());
+							res.setPdfoutfilepath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.pdf");
+						}catch(Exception e){
+							e.printStackTrace();
+						}
 					}else {
 						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo());
 						String JsonString = gson.toJson(motPrivateRes);
@@ -619,6 +636,7 @@ public class JasperServiceImpl implements JasperService {
 	@Override
 	public CommonRes getPremiumReportDetails(PremiumReportReq req) {
 		CommonRes response = new CommonRes();
+		System.out.println("Enter Into getPremiumReportDetails");
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 			String date1 = new SimpleDateFormat("yyyy-MM-dd").format(sdf.parse(req.getStartDate()));

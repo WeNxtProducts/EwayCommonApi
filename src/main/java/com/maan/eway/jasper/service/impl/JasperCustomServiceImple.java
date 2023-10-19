@@ -7,7 +7,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -645,6 +649,63 @@ public class JasperCustomServiceImple {
 			response.setTravelCoverDetails(travelDataSetTwo);
 		}
 		return response;
+	}
+
+	public Map<String, Object> getMotorEndorsementSchedule(String policyNo) {
+		Map<String, Object> result = new HashMap<String,Object>();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+		Root<PersonalInfo> piRoot = cq.from(PersonalInfo.class);
+		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
+		Root<LoginUserInfo> luiRoot = cq.from(LoginUserInfo.class);
+		
+		cq.multiselect(cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+			hpmRoot.get("policyNo").alias("EndorsementNo"),hpmRoot.get("originalPolicyNo").alias("originalPolicyNo"),hpmRoot.get("effectiveDate").alias("effectiveDate"),
+			hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("inceptionDate").alias("inceptionDate"),hpmRoot.get("currency").alias("currency"),
+			hpmRoot.get("endtPremium").alias("endtPremium"),hpmRoot.get("endtTypeDesc").alias("endtTypeDesc"),hpmRoot.get("endorsementRemarks").alias("endorsementRemarks"),
+			hpmRoot.get("companyName").alias("companyName"),hpmRoot.get("branchName").alias("branchName"),cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
+			.otherwise(luiRoot.get("userName")).alias("userName"),hpmRoot.get("quoteNo").alias("quoteNo"))
+		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),
+				cb.equal(hpmRoot.get("productId"), "5"),cb.equal(hpmRoot.get("status"), "P"),cb.equal(hpmRoot.get("policyNo"), policyNo))
+		.orderBy(cb.asc(hpmRoot.get("entryDate")));
+		
+		List<Tuple> list = em.createQuery(cq).getResultList();
+		if(!CollectionUtils.isEmpty(list)) {
+			Tuple map = list.get(0);
+			CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq1 = cb1.createQuery(Tuple.class);
+			Root<MotorDataDetails> mddRoot = cq1.from(MotorDataDetails.class);
+			
+			cq1.multiselect(mddRoot.get("insuranceClassDesc").alias("insuranceClassDesc"),mddRoot.get("registrationNumber").alias("registrationNumber"),
+					mddRoot.get("chassisNumber").alias("chassisNumber"))
+			.where(cb.equal(mddRoot.get("quoteNo"), map.get("quoteNo")));
+			
+			List<Tuple> vehicleInfo = em.createQuery(cq1).getResultList();
+			List<Map<String,Object>> vehicleList = vehicleInfo.stream().map(k ->{
+				LinkedHashMap<String, Object> vMap = new LinkedHashMap<String,Object>();
+				vMap.put("InsuranceClassDesc", k.get("insuranceClassDesc")==null?"":k.get("insuranceClassDesc").toString());
+				vMap.put("RegistrationNumber", k.get("registrationNumber")==null?"":k.get("registrationNumber").toString());
+				vMap.put("ChassisNumber", k.get("chassisNumber")==null?"":k.get("chassisNumber").toString());
+				return vMap;
+			}).collect(Collectors.toList());
+			
+			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
+			result.put("EndorsementNo", map.get("EndorsementNo")==null?"":map.get("EndorsementNo").toString());
+			result.put("originalPolicyNo", map.get("originalPolicyNo")==null?"":map.get("originalPolicyNo").toString());
+			result.put("effectiveDate", map.get("effectiveDate")==null?"":map.get("effectiveDate").toString());
+			result.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
+			result.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
+			result.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+			result.put("endtPremium", map.get("endtPremium")==null?"":map.get("endtPremium").toString());
+			result.put("endtTypeDesc", map.get("endtTypeDesc")==null?"":map.get("endtTypeDesc").toString());
+			result.put("endorsementRemarks", map.get("endorsementRemarks")==null?"":map.get("endorsementRemarks").toString());
+			result.put("companyName", map.get("companyName")==null?"":map.get("companyName").toString());
+			result.put("branchName", map.get("branchName")==null?"":map.get("branchName").toString());
+			result.put("userName", map.get("userName")==null?"":map.get("userName").toString());
+			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
+			result.put("vehicleList", vehicleList);
+		}
+		return result;
 	}
 
 }
