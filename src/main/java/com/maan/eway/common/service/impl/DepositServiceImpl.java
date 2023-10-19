@@ -24,15 +24,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.DepositDetail;
 import com.maan.eway.bean.DepositcbcMaster;
-import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.PaymentDeposit;
 import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.common.req.GetDepositPaymentReq;
 import com.maan.eway.common.req.SaveDepositeMasterReq;
 import com.maan.eway.common.req.SavePaymentDepositReq;
 import com.maan.eway.common.req.SavePremiumDepositReq;
@@ -46,7 +45,6 @@ import com.maan.eway.common.service.DepositService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.DepositDetailRepository;
 import com.maan.eway.repository.DepositcbcMasterRepository;
-import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PaymentDepositRepository;
 
 @Service
@@ -66,9 +64,6 @@ public class DepositServiceImpl implements DepositService {
 	
 	@Autowired
 	private PaymentDepositRepository paymentDepositRepo;
-	
-	@Autowired
-	private HomePositionMasterRepository homeRepo;
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
@@ -586,9 +581,12 @@ public class DepositServiceImpl implements DepositService {
 	public CommonRes savePaymentDeposit(SavePaymentDepositReq req) {
 		CommonRes res = new CommonRes();
 		List<Error> error = savePaymentDepositVali(req);
+		Long depNo = null;
 		try {
 			if(CollectionUtils.isEmpty(error)) {
 				String brokerId = getbrokerIdByLoginId(req.getLoginId());
+				if(StringUtils.isBlank(req.getDepositNo()))
+					depNo = DepositMax();
 				/*String cbcNo = "";
 				if(StringUtils.isBlank(req.getCbcNo())) {
 					cbcNo = "CBC"+getCbcNumber();
@@ -607,12 +605,10 @@ public class DepositServiceImpl implements DepositService {
 				}else {
 					cbcNo = req.getCbcNo();
 				}*/
-				
 					PaymentDeposit paymentdep = PaymentDeposit.builder()
 						.cbcNo(req.getCbcNo())
 						.quoteNo(StringUtils.isBlank(req.getQuoteNo())?"":req.getQuoteNo())
-						//.depositNo(StringUtils.isBlank(req.getDepositNo())?DepositMax():Long.valueOf(req.getDepositNo()))
-						.depositNo(Long.valueOf(req.getDepositNo()))
+						.depositNo(StringUtils.isBlank(req.getDepositNo())?depNo:Long.valueOf(req.getDepositNo()))
 						.paymentType(req.getPaymentType())
 						.paymentTypeDesc(getPaymentTypeDesc(req.getPaymentType(),req.getCompanyId()))
 						.createdBy(req.getLoginId())
@@ -651,18 +647,18 @@ public class DepositServiceImpl implements DepositService {
 				DepositDetail depDetail = DepositDetail.builder()
 					.quoteNo(StringUtils.isBlank(req.getQuoteNo())?"":req.getQuoteNo())
 					.productId(req.getProductId())
-					.productName(getProductNameById(req.getProductId()))
+					// .productName(getProductNameById(req.getProductId()))
 					.premiumAmount(Double.valueOf(req.getPremiumAmount()))
 					.entryDate(new Date())
 					.status(req.getStatus())
 					.cbcNo(req.getCbcNo())
-					.depositNo(k.getDepositNo()==null?DepositMax():k.getDepositNo())
-					.balanceAmount(Double.parseDouble(req.getBalanceAmount()))
+					.depositNo(k.getDepositNo()==null?depNo:k.getDepositNo())
+					.balanceAmount(StringUtils.isBlank(req.getBalanceAmount())?null:Double.parseDouble(req.getBalanceAmount()))
 					.receiptNo(StringUtils.isBlank(req.getReceiptNo())?"":req.getReceiptNo())
 					.brokerId(Long.valueOf(brokerId))
 					.brokerName(getBrokerNameById(brokerId))
 					.premium(Double.parseDouble(req.getPremium()))
-					.policyInsuranceFee(Double.parseDouble(req.getPolicyInsuranceFee()))
+					.policyInsuranceFee(StringUtils.isBlank(req.getPolicyInsuranceFee())?null:Double.parseDouble(req.getPolicyInsuranceFee()))
 					.vatAmount(Double.valueOf(req.getVatAmount()))
 					.depositType("C".equalsIgnoreCase(req.getDepositType())?"Deposit":"Refund")
 					.build();
@@ -917,41 +913,69 @@ public class DepositServiceImpl implements DepositService {
 		}
 
 	@Override
-	public CommonRes GetDepositPayment(String cbcNo) {
+	public CommonRes GetDepositPayment(GetDepositPaymentReq req) {
 		CommonRes res = new CommonRes();
 		List<GetDepositPaymentRes> response = new ArrayList<>();
-		List<PaymentDeposit> list = paymentDepositRepo.findByCbcNo(cbcNo);
-		if(!CollectionUtils.isEmpty(list)) {
-			list.forEach(k -> {
-				GetDepositPaymentRes m = GetDepositPaymentRes.builder()
-					.cbcNo(k.getCbcNo())
-					.quoteNo(k.getQuoteNo())
-					.paymentType(k.getPaymentType())
-					.paymentTypeDesc(k.getPaymentTypeDesc())
-					.premium(k.getPremium()==null?"":k.getPremium().toString())
-					.entryDate(k.getEntryDate()==null?"":sdf.format(k.getEntryDate()))
-					.createdBy(k.getCreatedBy())
-					.chequeNo(k.getChequeNo())
-					.chequeDate(k.getChequeDate()==null?"":sdf.format(k.getChequeDate()))
-					.accountNumber(k.getAccountNo())
-					.ibanNumber(k.getIbanNumber())
-					.micrNo(k.getMicrno())
-					.payeeName(k.getPayeeName())
-					.depositNo(k.getDepositNo()==null?"":k.getDepositNo().toString())
-					.referenceNo(k.getReferenceNo())
-					.build();
-				response.add(m);
-			});
-			res.setCommonResponse(response);
-			res.setMessage("SUCCESS");
-			res.setIsError(false);
-		}else {
-			res.setCommonResponse("No Data Found");
-			res.setMessage("FAILED");
+		if(StringUtils.isNotBlank(req.getCbcNo())) {
+			List<PaymentDeposit> list = paymentDepositRepo.findByCbcNo(req.getCbcNo());
+			if(!CollectionUtils.isEmpty(list)) {
+				list.forEach(k -> {
+					GetDepositPaymentRes m = GetDepositPaymentRes.builder()
+						.cbcNo(k.getCbcNo())
+						.quoteNo(k.getQuoteNo())
+						.paymentType(k.getPaymentType())
+						.paymentTypeDesc(k.getPaymentTypeDesc())
+						.premium(k.getPremium()==null?"":k.getPremium().toString())
+						.entryDate(k.getEntryDate()==null?"":sdf.format(k.getEntryDate()))
+						.createdBy(k.getCreatedBy())
+						.chequeNo(k.getChequeNo())
+						.chequeDate(k.getChequeDate()==null?"":sdf.format(k.getChequeDate()))
+						.accountNumber(k.getAccountNo())
+						.ibanNumber(k.getIbanNumber())
+						.micrNo(k.getMicrno())
+						.payeeName(k.getPayeeName())
+						.depositNo(k.getDepositNo()==null?"":k.getDepositNo().toString())
+						.referenceNo(k.getReferenceNo())
+						.build();
+					response.add(m);
+				});
+				res.setCommonResponse(response);
+				res.setMessage("SUCCESS");
+				res.setIsError(false);
+			}else {
+				res.setCommonResponse("No Data Found");
+				res.setMessage("FAILED");
+			}
 		}
+		else {
+			PaymentDeposit PaymentByDep = paymentDepositRepo.findById(StringUtils.isBlank(req.getDepositNo())?0L:Long.valueOf(req.getDepositNo())).get();
+			if(PaymentByDep.getDepositNo()!=null) {
+					GetDepositPaymentRes m = GetDepositPaymentRes.builder()
+						.cbcNo(PaymentByDep.getCbcNo())
+						.quoteNo(PaymentByDep.getQuoteNo())
+						.paymentType(PaymentByDep.getPaymentType())
+						.paymentTypeDesc(PaymentByDep.getPaymentTypeDesc())
+						.premium(PaymentByDep.getPremium()==null?"":PaymentByDep.getPremium().toString())
+						.entryDate(PaymentByDep.getEntryDate()==null?"":sdf.format(PaymentByDep.getEntryDate()))
+						.createdBy(PaymentByDep.getCreatedBy())
+						.chequeNo(PaymentByDep.getChequeNo())
+						.chequeDate(PaymentByDep.getChequeDate()==null?"":sdf.format(PaymentByDep.getChequeDate()))
+						.accountNumber(PaymentByDep.getAccountNo())
+						.ibanNumber(PaymentByDep.getIbanNumber())
+						.micrNo(PaymentByDep.getMicrno())
+						.payeeName(PaymentByDep.getPayeeName())
+						.depositNo(PaymentByDep.getDepositNo()==null?"":PaymentByDep.getDepositNo().toString())
+						.referenceNo(PaymentByDep.getReferenceNo())
+						.build();
+					response.add(m);
+				};
+				res.setCommonResponse(response);
+				res.setMessage("SUCCESS");
+				res.setIsError(false);
+			}
 		return res;
-	}
-
+		}
+	
 	@Override
 	public CommonRes savedepositDetail(SavedepositDetailReq req) {
 		CommonRes res = new CommonRes();

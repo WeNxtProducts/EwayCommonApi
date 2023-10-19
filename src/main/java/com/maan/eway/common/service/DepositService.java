@@ -1,5 +1,6 @@
 package com.maan.eway.common.service;
 
+import com.maan.eway.common.req.GetDepositPaymentReq;
 import com.maan.eway.common.req.SaveDepositeMasterReq;
 import com.maan.eway.common.req.SavePaymentDepositReq;
 import com.maan.eway.common.req.SavePremiumDepositReq;
@@ -22,7 +23,7 @@ public interface DepositService {
 
 	CommonRes GetDepositDetailById(String cbcNo);
 
-	CommonRes GetDepositPayment(String cbcNo);
+	CommonRes GetDepositPayment(GetDepositPaymentReq req);
 
 	CommonRes savedepositDetail(SavedepositDetailReq req);
 

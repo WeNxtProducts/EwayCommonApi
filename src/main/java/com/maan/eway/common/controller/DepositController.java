@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.GetDepositPaymentReq;
 import com.maan.eway.common.req.SaveDepositeMasterReq;
 import com.maan.eway.common.req.SavePaymentDepositReq;
 import com.maan.eway.common.req.SavePremiumDepositReq;
@@ -67,9 +68,9 @@ public class DepositController {
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@GetMapping("get/Payment/{cbcNo}")
-	public CommonRes GetDepositPayment(@PathVariable ("cbcNo") String cbcNo) {
-		return service.GetDepositPayment(cbcNo);
+	@PostMapping("get/Payment")
+	public CommonRes GetDepositPayment(@RequestBody GetDepositPaymentReq req) {
+		return service.GetDepositPayment(req);
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")

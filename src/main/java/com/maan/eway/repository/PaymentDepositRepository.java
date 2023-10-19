@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.maan.eway.bean.PaymentDeposit;
 
-public interface PaymentDepositRepository extends JpaRepository<PaymentDeposit, String>{
+public interface PaymentDepositRepository extends JpaRepository<PaymentDeposit, Long>{
 
 	List<PaymentDeposit> findByCbcNo(String cbcNo);
 
