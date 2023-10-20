@@ -3,6 +3,7 @@ package com.maan.eway.endorsment.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class CopyPolicyCoverData {
 			datas= policyCoverRepo.findByQuoteNoAndStatusAndCoverageTypeIn(quoteNo,"Y",coverageTypes);
 			Map<String, List<PolicyCoverData>> groupedRecords = groupRecordsByMultipleColumns(datas);
 			List<PolicyCoverData> newData=new ArrayList<PolicyCoverData>();
-			groupedRecords.forEach((col, data) -> {
+			/*groupedRecords.forEach((col, data) -> {
 	            
 	            List<PolicyCoverData> collect = data.stream().filter(i -> i.getCoverageType().equals("E")).collect(Collectors.toList());
 	            if(collect.isEmpty()) {
@@ -61,7 +62,17 @@ public class CopyPolicyCoverData {
 	            
 	            }
 	            newData.addAll(collect);	            
-	        });
+	        });*/
+			
+			for (Entry<String, List<PolicyCoverData>> policyCoverData : groupedRecords.entrySet()) {
+				List<PolicyCoverData> data = policyCoverData.getValue();
+				 List<PolicyCoverData> collect = data.stream().filter(i -> i.getCoverageType().equals("E")).collect(Collectors.toList());
+				 if(collect.isEmpty()) {
+		            	collect=data.stream().filter(i -> (i.getCoverageType().equals("B") || i.getCoverageType().equals("O") || i.getCoverageType().equals("A"))).collect(Collectors.toList());
+		            
+		            }
+				  newData.addAll(collect);	
+			}
 
 			
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
