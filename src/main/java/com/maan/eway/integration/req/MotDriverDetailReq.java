@@ -102,5 +102,8 @@ public class MotDriverDetailReq implements Serializable {
 
 	@JsonProperty("LicenseIssuedOn")
 	private Date licenseIssuedOn;
+	
+	@JsonProperty("RiskId")
+	private Integer    riskId ;
 
 }

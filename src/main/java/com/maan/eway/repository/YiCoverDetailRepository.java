@@ -21,6 +21,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.YiCoverDetail;
+import com.maan.eway.bean.YiCoverDetailId;
 /**
  * <h2>BankMasterRepository</h2>
  *
@@ -31,7 +32,7 @@ import com.maan.eway.bean.YiCoverDetail;
  
  
  
-public interface YiCoverDetailRepository  extends JpaRepository<YiCoverDetail,String > , JpaSpecificationExecutor<YiCoverDetail> {
+public interface YiCoverDetailRepository  extends JpaRepository<YiCoverDetail,YiCoverDetailId > , JpaSpecificationExecutor<YiCoverDetail> {
 
 	List<YiCoverDetail> findByQuotationPolicyNo(String policyNo);
 
