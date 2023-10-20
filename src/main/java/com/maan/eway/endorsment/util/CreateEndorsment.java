@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataEndt;
 import com.maan.eway.res.calc.Endorsement;
 import com.maan.eway.res.calc.Tax;
@@ -19,12 +20,13 @@ public class CreateEndorsment {
 	private BigDecimal endtCount;
 	private List<Tax> taxey;
 	List<PolicyCoverDataEndt> coverData;
-	public CreateEndorsment(EndtTypeMaster endtmaster,BigDecimal endtCount, List<Tax> taxey, List<PolicyCoverDataEndt> coverData) {
+	private PolicyCoverData currentData;
+	public CreateEndorsment(EndtTypeMaster endtmaster,BigDecimal endtCount, List<Tax> taxey, List<PolicyCoverDataEndt> coverData, PolicyCoverData currentData) {
 		 this.endtmaster=endtmaster;
 		 this.endtCount=endtCount;
 		 this.taxey=taxey;
 		 this.coverData=coverData;
-		 
+		 this.currentData=currentData;
 	}
 
 	public Endorsement create() {
@@ -34,7 +36,7 @@ public class CreateEndorsment {
 		PolicyCoverDataEndt d = coverData.get(0);
 		
 		BigDecimal totalSumInsured=coverData.stream().map(x -> x.getSumInsured()).reduce(BigDecimal.ZERO,BigDecimal::add);
-		
+		totalSumInsured=currentData.getSumInsured().subtract(totalSumInsured, MathContext.DECIMAL32);
   		Endorsement currentEndt = Endorsement.builder()
 				.endorsementDesc(d.getCoverDesc() + " " + endtmaster.getEndtTypeDesc())
 				.endorsementId(endtTypeId)

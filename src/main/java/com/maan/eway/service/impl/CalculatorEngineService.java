@@ -448,6 +448,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			}
 			
 			try {
+
 				String endtTypeId = vehicles.get(0).get("endtTypeId") == null ? ""
 						: vehicles.get(0).get("endtTypeId").toString();
 				if (StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
@@ -591,11 +592,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 					List<Endorsement> endorsements = new ArrayList<Endorsement>();
 					List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> i.getCoverId()== d.getCoverId()).collect(Collectors.toList()) ;
 					
-					CreateEndorsment createEndt=new CreateEndorsment(endtmaster,endtCount,tzxeyEndt,coverData);
+					CreateEndorsment createEndt=new CreateEndorsment(endtmaster,endtCount,tzxeyEndt,coverData,d);
 					Endorsement currentEndt =createEndt.create();
 					endorsements.add(currentEndt);
-					
-
+ 
 					CoverFromPolicy coverUtil = new CoverFromPolicy("");
 					List<Cover> covers = oldPolicyCovers.stream().filter(r -> d.getCoverId() == r.getCoverId())
 							.map(coverUtil).filter(dx -> dx != null).collect(Collectors.toList());
