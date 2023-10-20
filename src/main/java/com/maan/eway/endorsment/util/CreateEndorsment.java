@@ -36,7 +36,7 @@ public class CreateEndorsment {
 		PolicyCoverDataEndt d = coverData.get(0);
 		
 		BigDecimal totalSumInsured=coverData.stream().map(x -> x.getSumInsured()).reduce(BigDecimal.ZERO,BigDecimal::add);
-		totalSumInsured=currentData.getSumInsured().subtract(totalSumInsured, MathContext.DECIMAL32);
+		//totalSumInsured=currentData.getSumInsured().subtract(totalSumInsured, MathContext.DECIMAL32);
   		Endorsement currentEndt = Endorsement.builder()
 				.endorsementDesc(d.getCoverDesc() + " " + endtmaster.getEndtTypeDesc())
 				.endorsementId(endtTypeId)
