@@ -14,7 +14,7 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
+
 
 import lombok.*;
 import javax.persistence.*;
@@ -43,19 +43,24 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
+@IdClass(YiCoverDetailId.class)
 @Table(name="Yi_Cover_Detail")
 
 
 public class YiCoverDetail implements Serializable {
  
 private static final long serialVersionUID = 1L;
- 
-    //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="QUOTATION_POLICY_NO", length=100)
-    private String     quotationPolicyNo ;
 
-    
+// --- ENTITY PRIMARY KEY
+@Id
+@Column(name = "QUOTATION_POLICY_NO", length = 100)
+private String quotationPolicyNo;
+@Id
+@Column(name = "CVR_ID", nullable = false)
+private Double cvrId;
+@Id
+@Column(name = "RISK_ID", nullable = false)
+private Integer riskId;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="SERVICE_ID", length=100)
@@ -70,8 +75,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="L1S1_ID")
     private Double l1s1Id;
 
-    @Column(name="CVR_ID")
-    private Double cvrId;
+   
 
     @Column(name="COVER_CODE", length=100)
     private String     coverCode ;
@@ -134,6 +138,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="COVER_DESC", length=225)
     private String coverDesc;
+    
+   
+    
     
     
 

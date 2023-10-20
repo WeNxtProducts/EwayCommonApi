@@ -95,5 +95,8 @@ public class YiCoverDetailReq {
 
 	@JsonProperty("CoverDesc")
 	private String coverDesc;
+	
+	@JsonProperty("RiskId")
+    private Integer riskId;
 
 }

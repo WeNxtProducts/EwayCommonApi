@@ -355,8 +355,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="PROMOCODE", length=50)
     private String     promocode ;
 
-
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String     customerCode ;
+    
+    @Column(name="INTEGRATION_STATUS", length=100)
+    private String     integrationStatus ;
     //--- ENTITY LINKS ( RELATIONSHIP )
+  
 
 
 }
