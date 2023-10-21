@@ -64,6 +64,9 @@ public class SearchCustomerDetailsRes {
 	
 	@JsonProperty("IdType")
 	private String idType;
+	
+	@JsonProperty("IdTypeDesc")
+    private String     idTypeDesc ;
 
 	@JsonProperty("IdNumber")
 	private String idNumber;
@@ -107,6 +110,7 @@ public class SearchCustomerDetailsRes {
 
 	@JsonProperty("TaxExemptedId")
     private String     taxExemptedId ;
+
 	
 
 }
