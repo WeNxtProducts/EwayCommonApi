@@ -92,5 +92,22 @@ public class SearchCustomerDetailsRes {
 	
 	@JsonProperty("RegionCode")
     private String     regionCode ;
+	
+	@JsonProperty("PolicyHolderType")
+    private String     policyHolderType ;
+	
+	@JsonProperty("PolicyHolderTypeDesc")
+    private String     policyHolderTypeDesc ;
+	
+	@JsonProperty("PreferredNotification")
+    private String     preferredNotification ;
+	
+	@JsonProperty("IsTaxExempted")
+    private String     isTaxExempted ;
+
+	@JsonProperty("TaxExemptedId")
+    private String     taxExemptedId ;
+	
+
 }
 
