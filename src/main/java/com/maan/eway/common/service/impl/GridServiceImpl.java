@@ -118,6 +118,7 @@ import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.common.service.CommonGridService;
 import com.maan.eway.common.service.GridService;
+import com.maan.eway.common.service.LifeGridService;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.error.Error;
@@ -175,6 +176,10 @@ public class GridServiceImpl implements GridService {
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
 
+	@Autowired
+	private LifeGridService lifeService;
+	
+	
 	@Autowired
 	private UWReferralDetailsRepository uwReferalDetailsRepo;
 	@PersistenceContext
@@ -237,7 +242,14 @@ public class GridServiceImpl implements GridService {
 
 				extingQuoteList = cres.getQuoteRes();
 				// Common
-			} else {
+			}else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				
+				cres = lifeService.getLifeExistingQuoteDetails(req, before30, today, limit, offset);
+
+				extingQuoteList = cres.getQuoteRes();
+				// Common
+			}
+			else {
 				cres = commonService.getCommonExistingQuoteDetails(req, before30, today, limit, offset);
 				extingQuoteList = cres.getQuoteRes();
 			}
@@ -439,7 +451,12 @@ public class GridServiceImpl implements GridService {
 				cres = buiService.getBuildingLapsedQuoteDetails(req, before30, limit, offset);
 				lapsedQuoteList = cres.getQuoteRes();
 
-			} else {
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				cres = lifeService.getLifeLapsedQuoteDetails(req, before30, limit, offset);
+				lapsedQuoteList = cres.getQuoteRes();
+
+			}
+			else {
 				cres = commonService.getCommonLapsedQuoteDetails(req, before30, limit, offset);
 				lapsedQuoteList = cres.getQuoteRes();
 			}
@@ -512,7 +529,13 @@ public class GridServiceImpl implements GridService {
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
 				cres = buiService.getBuildingRejectedQuoteDetails(req, before30, today, limit, offset);
 				rejectedQuoteList = cres.getQuoteRes();
-			} else {
+			} 
+			if (product.getMotorYn().equalsIgnoreCase("L")) {
+				cres = lifeService.getLifeRejectedQuoteDetails(req, before30, today, limit, offset);
+				rejectedQuoteList = cres.getQuoteRes();
+
+			} 
+			else {
 				cres = commonService.getCommonRejectedQuoteDetails(req, before30, today, limit, offset);
 				rejectedQuoteList = cres.getQuoteRes();
 			}
@@ -4266,7 +4289,11 @@ public class GridServiceImpl implements GridService {
 				resList = traService.getTravelExistingDropdown(req, today, before30);
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
 				resList = buiService.getBuildingExistingDropdown(req, today, before30);
-			} else {
+			} 
+			else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				resList = lifeService.getLifeExistingDropdown(req, today, before30);
+			} 
+			else {
 				resList = commonService.getCommonExistingDropdown(req, today, before30);
 
 			}
@@ -4679,7 +4706,13 @@ public class GridServiceImpl implements GridService {
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) { // Asset
 
 				resList = buiService.getBrokerUserListLapsedAsset(req, today, before30);
-			} else { // Common
+			
+			}  else if (product.getMotorYn().equalsIgnoreCase("L")) { // Anti
+
+				resList = lifeService.getBrokerUserListLapsedLife(req, today, before30);
+			} 
+			
+			else { // Common
 
 				resList = commonService.getBrokerUserListLapsedCommon(req, today, before30);
 			}
@@ -4724,7 +4757,13 @@ public class GridServiceImpl implements GridService {
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) { // Asset
 
 				resList = buiService.getBrokerUserListBuildingRejected(req, today, before30);
-			} else { // Common
+			
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) { 	// Life
+
+				resList = lifeService.getBrokerUserListLifeRejected(req, today, before30);
+
+			}
+			else { // Common
 
 				resList = commonService.getBrokerUserListCommonRejected(req, today, before30);
 			}

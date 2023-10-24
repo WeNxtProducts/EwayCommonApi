@@ -30,4 +30,6 @@ import com.maan.eway.bean.EserviceLifeDetailsId;
  
 public interface EserviceLifeDetailsRepository  extends JpaRepository<EserviceLifeDetails,EserviceLifeDetailsId > , JpaSpecificationExecutor<EserviceLifeDetails> {
 
+	EserviceLifeDetails findByRequestReferenceNoAndRiskId(String refNo, Integer vehId);
+
 }

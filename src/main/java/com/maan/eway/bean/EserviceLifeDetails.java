@@ -13,17 +13,26 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-import java.util.Date;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -254,10 +263,77 @@ private static final long serialVersionUID = 1L;
     @Column(name="VD_REFNO")
     private Long       vdRefno ;
 
+    
+    
+    //Assured member list
+    @Column(name="ASSURED_NAME", length=100)
+    private String     assuredName ;
+    
+    @Column(name="MOBILE_NO", length=20)
+    private String      mobileNo  ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="DOB")
+    private Date  dob ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="AGE")
+    private Integer age ;
+    
+    @Column(name="GENDER", length=6)
+    private String      gender  ;
+    
+    
+    @Column(name="GENDER_DESC")
+    private String      genderDesc  ;
+    
+    @Column(name="ADDRESS", length=100)
+    private String      address  ;
+    
+    @Column(name="PO_BOX", length=20)
+    private String      poBox   ;
+    
+    @Column(name="CITY", length=100)
+    private String      city  ;
+    
+    @Column(name="NATIONALITY", length=50)
+    private String      nationality  ;
+    
+    @Column(name="MARITAL_STATUS", length=5)
+    private String      maritalStatus  ;
+    
+    @Column(name="RELATION", length=30)
+    private String      relation  ;
+    
+    
+    @Column(name="RELATION_DESC", length=30)
+    private String      relationDesc  ;
+    
+    @Column(name="MAIN_MEMBER_YN", length=5)
+    private String      mainMemberYn  ;
 
+    @Column(name="POLICY_TERM")
+    private Integer policyTerm ; 
 
+    @Column(name="PREMIUM_PAYING_TERM")
+    private Integer premiumPayingTerm ;
+    
+    
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String     customerCode;
+    
+    @Column(name="CUSTOMER_NAME")
+    private String     customerName ;
+    
+    @Column(name="BRANCH_CODE", nullable=false, length=20)
+    private String     branchCode ;
+    
+    
+    @Column(name="BRANCH_NAME")
+    private String     branchName ;
+    
+    
+    @Column(name="INSURANCE_TYPE")
+    private String     insuranceType ;
 }
 
 
