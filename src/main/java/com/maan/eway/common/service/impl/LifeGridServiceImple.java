@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceLifeDetails;
-import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.common.req.ExistingBrokerUserListReq;
@@ -175,21 +174,6 @@ public class LifeGridServiceImple implements LifeGridService {
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			Root<EserviceLifeDetails> m = query.from(EserviceLifeDetails.class);
 			
-			//overallPremiumLc
-			Subquery<Long> overallPremiumLc = query.subquery(Long.class);
-			Root<EserviceLifeDetails> ocpm1 = overallPremiumLc.from(EserviceLifeDetails.class);
-			overallPremiumLc.select(cb.sum(ocpm1.get("overallPremiumLc")));
-			Predicate a1 = cb.equal(ocpm1.get("requestReferenceNo"), m.get("requestReferenceNo"));
-			overallPremiumLc.where(a1);
-			
-			//overallPremiumFc
-			Subquery<Long> overallPremiumFc = query.subquery(Long.class);
-			Root<EserviceLifeDetails> oc = overallPremiumFc.from(EserviceLifeDetails.class);
-			overallPremiumFc.select(cb.sum(oc.get("overallPremiumFc")));
-			Predicate a2 = cb.equal(oc.get("requestReferenceNo"), m.get("requestReferenceNo"));
-			overallPremiumFc.where(a2);
-		
-	
 			query.multiselect(cb.count(m));			
 	
 			// Order By
@@ -612,18 +596,24 @@ public class LifeGridServiceImple implements LifeGridService {
 			query.multiselect(
 					
 					// Customer Info
-					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+					c.get("customerReferenceNo").alias("customerReferenceNo"),
+					c.get("idNumber").alias("idNumber"),
 					c.get("clientName").alias("clientName"),
 					// Vehicle Info
-					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+					m.get("companyId").alias("companyId"), 
+					m.get("productId").alias("productId"),
 					 m.get("productDesc").alias("productName"),
-					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
+					 
+					m.get("branchCode").alias("branchCode"),
+					m.get("requestReferenceNo").alias("requestReferenceNo"),
 					m.get("quoteNo").alias("quoteNo"),
+					
 					m.get("customerCode").alias("customerId"),
-					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+					m.get("policyStartDate").alias("policyStartDate"),
+					m.get("policyEndDate").alias("policyEndDate"),
 
-					overallPremiumLc.alias("overallPremiumLc"), 
-					overallPremiumFc.alias("overallPremiumFc"),
+					overallPremiumLc.as(BigDecimal.class).alias("overallPremiumLc"), 
+					overallPremiumFc.as(BigDecimal.class).alias("overallPremiumFc"),
 					m.get("currency").alias("currency")
 					);
 	
@@ -805,8 +795,8 @@ public class LifeGridServiceImple implements LifeGridService {
 					m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
 
-					overallPremiumLc.alias("overallPremiumLc"), 
-					overallPremiumFc.alias("overallPremiumFc"),
+					overallPremiumLc.as(BigDecimal.class).alias("overallPremiumLc"), 
+					overallPremiumFc.as(BigDecimal.class).alias("overallPremiumFc"),
 					m.get("currency").alias("currency"));
 
 
