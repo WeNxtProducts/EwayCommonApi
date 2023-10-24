@@ -48,7 +48,9 @@ import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceLifeDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceNomineeDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
@@ -120,6 +122,7 @@ import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceLifeDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
@@ -292,6 +295,9 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	private UWReferralDetailsRepository uwReferralRepo ;
+	
+	@Autowired
+	private EserviceLifeDetailsRepository lifeRepo;
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -3129,12 +3135,14 @@ public class QuoteServiceImpl implements QuoteService {
 		QuoteUpdateRes updateRes = new QuoteUpdateRes();
 		try {
 			List<EserviceMotorDetails>    motorDatas = eserMotRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
+			List<EserviceLifeDetails>    lifeDatas = lifeRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			List<EserviceTravelGroupDetails>    travelDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo());
 			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			List<EserviceCommonDetails> findDatas = eserCommonRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			
 			String companyId = motorDatas.size() > 0 ? motorDatas.get(0).getCompanyId() :	 travelDatas.size() > 0 ? travelDatas.get(0).getCompanyId()  
-					 :  buildDatas.size() > 0 ? buildDatas.get(0).getCompanyId() :  findDatas.size() > 0 ? findDatas.get(0).getCompanyId() : "" ;
+					 :  buildDatas.size() > 0 ? buildDatas.get(0).getCompanyId() :  findDatas.size() > 0 ? findDatas.get(0).getCompanyId() :
+						 lifeDatas.size() > 0 ? lifeDatas.get(0).getCompanyId() :  "" ;
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , req.getProductId().toString());
 		
 			if(product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
@@ -3157,7 +3165,16 @@ public class QuoteServiceImpl implements QuoteService {
 				buildingNotiReferralStatus(req);
 				//Tracking Details
 				trackingDetailsupdateQuoteStatus(req,product.getMotorYn());
-			} else {
+				
+			} else if(product.getMotorYn().equalsIgnoreCase("L") ) { //Life
+				updateRes = updateLifePorductStatus(req) ;
+				// Notification Trigger
+				//lifeNotiReferralStatus(req);
+				//Tracking Details
+				trackingDetailsupdateQuoteStatus(req,product.getMotorYn());
+				
+			}
+			else {
 				updateRes = updateCommonPorductStatus(req);
 				// Notification Trigger
 				commonNotiReferralStatus(req);
@@ -3173,7 +3190,82 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 		return updateRes ;
 	}
-	//Tracking Details
+	
+	private QuoteUpdateRes updateLifePorductStatus(UpdateQuoteStatusReq req) {
+
+		 QuoteUpdateRes res = new QuoteUpdateRes() ;
+	       try {
+	    	    // Eservice Motor Update
+   		   {
+   		    CriteriaBuilder cb = em.getCriteriaBuilder();
+				// create update
+				CriteriaUpdate<EserviceLifeDetails> update = cb.createCriteriaUpdate(EserviceLifeDetails.class);
+				// set the root class
+				Root<EserviceLifeDetails> m = update.from(EserviceLifeDetails.class);
+				// set update and where clause
+				update.set("rejectReason", req.getRejectReason());
+				update.set("status", req.getStatus());
+				update.set("updatedDate",  new Date());
+				update.set("updatedBy",req.getLoginId() );
+				
+				Predicate n1 = cb.equal(m.get("requestReferenceNo"), req.getRequestReferenceNo());
+				update.where(n1);
+				// perform update
+				em.createQuery(update).executeUpdate();
+				
+   		   }
+   		   // Nominee Details Update
+   		   {
+	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<EserviceNomineeDetails> update = cb.createCriteriaUpdate(EserviceNomineeDetails.class);
+					// set the root class
+					Root<EserviceNomineeDetails> m = update.from(EserviceNomineeDetails.class);
+					// set update and where clause
+					update.set("rejectReason", req.getRejectReason());
+					update.set("status", req.getStatus());
+					update.set("updatedDate",  new Date());
+					update.set("updatedBy",req.getLoginId() );
+					
+					Predicate n1 = cb.equal(m.get("requestReferenceNo"), req.getRequestReferenceNo());
+					update.where(n1);
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+   		   }
+   		   
+   		  // Home Position Master Update
+   		   {
+   			    CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<HomePositionMaster> update = cb.createCriteriaUpdate(HomePositionMaster.class);
+					// set the root class
+					Root<HomePositionMaster> m = update.from(HomePositionMaster.class);
+					// set update and where clause
+					update.set("status", req.getStatus());
+					
+					Predicate n1 = cb.equal(m.get("requestReferenceNo"), req.getRequestReferenceNo());
+					update.where(n1);
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+   		   }
+   		 
+   		   // Resposne 
+   		   res.setResponse("Status Updated Successfully");
+   		   res.setRequestReferenceNo(req.getRequestReferenceNo());
+   		   
+   		   
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       return res ;
+	 
+	}
+
+		//Tracking Details
 		private QuoteUpdateRes trackingDetailsupdateQuoteStatus(UpdateQuoteStatusReq req , String motorYn) {
 			QuoteUpdateRes res=new QuoteUpdateRes();
 		try {

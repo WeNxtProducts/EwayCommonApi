@@ -12,11 +12,12 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
+import java.util.List;
 
-import com.maan.eway.bean.EserviceLifeDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.EserviceLifeDetails;
 import com.maan.eway.bean.EserviceLifeDetailsId;
 /**
  * <h2>EserviceLifeDetailsRepository</h2>
@@ -31,5 +32,8 @@ import com.maan.eway.bean.EserviceLifeDetailsId;
 public interface EserviceLifeDetailsRepository  extends JpaRepository<EserviceLifeDetails,EserviceLifeDetailsId > , JpaSpecificationExecutor<EserviceLifeDetails> {
 
 	EserviceLifeDetails findByRequestReferenceNoAndRiskId(String refNo, Integer vehId);
+
+
+	List<EserviceLifeDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 
 }
