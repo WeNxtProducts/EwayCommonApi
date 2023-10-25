@@ -137,7 +137,7 @@ public class JasperServiceImpl implements JasperService {
 					TravelReportRes travelRes = jasperCustomeImple.getTravelReport(homeData.getPolicyNo());
 					String jsonString = gson.toJson(travelRes);
 					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					res = getCommonJasperPdfFileByJson("/report/jasper/MotorEndorsementSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- TravelReport.json");
+					res = getCommonJasperPdfFileByJson("/report/jasper/EwayTravelReport.jrxml", jasperSaveLocation, jsonString, input2, "- TravelReport.json");
 				} else if (product.getMotorYn().equalsIgnoreCase("M") && !"46".equalsIgnoreCase(homeData.getProductId().toString())) {
 					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo())) {
