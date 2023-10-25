@@ -32,6 +32,8 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -91,6 +93,7 @@ public class JasperServiceImpl implements JasperService {
 	@Autowired
 	private Gson gson;
 
+	Logger log = LogManager.getLogger(JasperServiceImpl.class);
 
 	@Override
 	public JasperDocumentRes policyform(JasperDocumentReq req) {
@@ -119,17 +122,10 @@ public class JasperServiceImpl implements JasperService {
 			}
 			
 			if (null != input && input.size() > 0) {
-				
 				File theDir = new File(filePath);
 				if (!theDir.exists()) {
 					theDir.mkdirs();
 				}
-
-//				if (product.getMotorYn().equalsIgnoreCase("A")) {
-//					res = getJasperPdfFile("/report/jasper/PersonalPlus.jrxml", getPdfOutFilePath, input);
-//				}
-//
-//				else 
 				if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
@@ -140,102 +136,40 @@ public class JasperServiceImpl implements JasperService {
 							System.out.println("Jasper compileToReport path" +path);		
 					TravelReportRes travelRes = jasperCustomeImple.getTravelReport(homeData.getPolicyNo());
 					String jsonString = gson.toJson(travelRes);
-					try {
-						FileWriter filewriter = new FileWriter(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.json",false);
-						filewriter.write(jsonString);
-						filewriter.close();
-						File file = new File(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.json");
-						JsonDataSource ds = new JsonDataSource(file);
-						InputStream inputStream = this.getClass().getResourceAsStream("/report/jasper/EwayTravelReport.jrxml");
-						JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
-						JasperPrint jasperprint = JasperFillManager.fillReport(jasperReport, input2,ds);
-						JasperExportManager.exportReportToPdfFile(jasperprint,policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.pdf");
-						GetFileFromPath travelPath = new GetFileFromPath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.pdf");
-						res.setPdfoutfile(travelPath.call().getImgUrl());
-						res.setPdfoutfilepath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.pdf");
-					}catch(Exception e) {
-						e.printStackTrace();
-					}					
+					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+					res = getCommonJasperPdfFileByJson("/report/jasper/MotorEndorsementSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- TravelReport.json");
 				} else if (product.getMotorYn().equalsIgnoreCase("M") && !"46".equalsIgnoreCase(homeData.getProductId().toString())) {
+					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo())) {
 						Map<String,Object> MotorEndorsementScheduleRes = jasperCustomeImple.getMotorEndorsementSchedule(homeData.getPolicyNo());
 						String jsonString = gson.toJson(MotorEndorsementScheduleRes);
-						try {
-							FileWriter fileWriter = new FileWriter(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.json", false);
-							fileWriter.write(jsonString);
-							fileWriter.close();
-							File file = new File(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.json");
-							JsonDataSource ds = new JsonDataSource(file);
-							InputStream inputStream = this.getClass().getResourceAsStream("/report/jasper/MotorEndorsementSchedule.jrxml");
-							JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
-							JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, input,ds);
-							JasperExportManager.exportReportToPdfFile(jasperPrint, policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.pdf");
-							GetFileFromPath path = new GetFileFromPath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.pdf");
-							res.setPdfoutfile(path.call().getImgUrl());
-							res.setPdfoutfilepath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorEndorsementSchedule.pdf");
-						}catch(Exception e){
-							e.printStackTrace();
-						}
+						res = getCommonJasperPdfFileByJson("/report/jasper/MotorEndorsementSchedule.jrxml", jasperSaveLocation, jsonString, input, "- MotorEndorsementSchedule.json");
 					}else {
 						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo());
 						String JsonString = gson.toJson(motPrivateRes);
-						try {
-							FileWriter filewriter = new FileWriter(policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.json",false);
-							filewriter.write(JsonString);
-							filewriter.close();
-							File file = new File(policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.json");
-							JsonDataSource ds = new JsonDataSource(file);
-							InputStream inputStream = this.getClass().getResourceAsStream("/report/jasper/MotorPrivate.jrxml");
-							JasperReport jr = JasperCompileManager.compileReport(inputStream);
-							JasperPrint jp = JasperFillManager.fillReport(jr, input,ds);
-							JasperExportManager.exportReportToPdfFile(jp, policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.pdf");
-							GetFileFromPath path = new GetFileFromPath(policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.pdf");
-							res.setPdfoutfile(path.call().getImgUrl());
-							res.setPdfoutfilepath(policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.pdf");
-						}catch(Exception e) {
-							e.printStackTrace();
-						}
+						res = getCommonJasperPdfFileByJson("/report/jasper/MotorPrivate.jrxml", jasperSaveLocation, JsonString, input, "- MotorPrivate.json");
 					}
 				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
 					String imagePath = config.getImagePath().substring(1,config.getImagePath().length()-0);
 					Map<String,Object> input2 = new HashMap<>();
 					input2.put("pvImagePath", imagePath);
-					input2.put("pvPolicyNo", homeData.getPolicyNo());
-					input2.put("pvFooterImage", imagePath);
-					input2.put("pvheaderImage", imagePath);
-					String obj = config.getJasperFilePath() + "report/jasper/CyberInsurance.jrxml";
-					String path = JasperCompileManager.compileReportToFile(obj);
-					System.out.println("Jasper compileToReport path" +path);
-					res = getJasperPdfFile("/report/jasper/CyberInsurance.jrxml", getPdfOutFilePath, input2);
+					Map<String,Object> cyberInsurance = jasperCustomeImple.getCyberInsurance(homeData.getPolicyNo());
+					String jsonString = gson.toJson(cyberInsurance);
+					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+					res = getCommonJasperPdfFileByJson("/report/jasper/CyberInsurance.jrxml", jasperSaveLocation, jsonString, input2, "- CyberInsurance.json");
 				}else if(product.getMotorYn().equalsIgnoreCase("M") && "46".equalsIgnoreCase(homeData.getProductId().toString())){
 					Map<String,Object> map = new HashMap<String,Object>();
 					map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					MotorCoverNoteRes MotorCoverNote = jasperCustomeImple.getMotorCoverNote(homeData.getPolicyNo());
 					String jsonString = gson.toJson(MotorCoverNote);
-					try {
-						FileWriter fileWriter = new FileWriter(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorCoveNote.json", false);
-						fileWriter.write(jsonString);
-						fileWriter.close();
-						File file = new File(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorCoveNote.json");
-						JsonDataSource JsonCon=new JsonDataSource(file);
-						InputStream inputStream = this.getClass().getResourceAsStream("/report/jasper/EwayMotorCoverNote.jrxml");
-						JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
-						JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, JsonCon);
-						JasperExportManager.exportReportToPdfFile(jasperPrint, policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorCoveNote.pdf");
-						GetFileFromPath JasFile = new GetFileFromPath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorCoveNote.pdf");
-						res.setPdfoutfile(JasFile.call().getImgUrl());
-						res.setPdfoutfilepath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorCoveNote.pdf");
-					}catch(Exception e) {
-						e.printStackTrace();
-					}
+					res = getCommonJasperPdfFileByJson("/report/jasper/EwayMotorCoverNote.jrxml",jasperSaveLocation,jsonString,map,"- MotorCoveNote.json");
 				}else {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvQuoteNo", req.getQuoteNo());
 					input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
 					String obj[] =new String[2];
-//					obj[0]= config.getJasperFilePath() + "report/jasper/CoverageDetails.jrxml";
-//					obj[1]= config.getJasperFilePath() +"report/jasper/SectionDetails.jrxml";              // for windows system
 					obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
 					obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";		 // for linux system
                 for(String s :obj) {
@@ -312,7 +246,6 @@ public class JasperServiceImpl implements JasperService {
 				try {
 					inputStream.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}
@@ -497,22 +430,8 @@ public class JasperServiceImpl implements JasperService {
 				map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 				TaxInvoiceRes taxRes = jasperCustomeImple.getTaxInvoiceRes(homeData.getPolicyNo());
 				String JsonString = gson.toJson(taxRes);
-				try {
-					FileWriter fileWriter = new FileWriter(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TaxInvoice.json", false);
-					fileWriter.write(JsonString);
-					fileWriter.close();
-					File file = new File(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TaxInvoice.json");
-					JsonDataSource ds = new JsonDataSource(file);
-					InputStream inputStream = this.getClass().getResourceAsStream("/report/jasper/EwayTaxInvoice.jrxml");
-					JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
-					JasperPrint jasperprint = JasperFillManager.fillReport(jasperReport, map,ds);
-					JasperExportManager.exportReportToPdfFile(jasperprint,policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TaxInvoice.pdf");
-					GetFileFromPath path = new GetFileFromPath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TaxInvoice.pdf");
-					res.setPdfoutfile(path.call().getImgUrl());
-					res.setPdfoutfilepath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TaxInvoice.pdf");
-				}catch(Exception e) {
-					e.printStackTrace();
-				}
+				String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+				res = getCommonJasperPdfFileByJson("/report/jasper/EwayTaxInvoice.jrxml", jasperSaveLocation, JsonString, map, "- TaxInvoice.json");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -530,22 +449,8 @@ public class JasperServiceImpl implements JasperService {
 				input.put("pvImagePath", config.getImagePath().substring(1, config.getImagePath().length()-0));
 				CreditNoteRes creditRes = jasperCustomeImple.getCreditNoteRes(homeData.getPolicyNo());
 				String JsonString = gson.toJson(creditRes);
-				try {
-					FileWriter filewriter = new FileWriter(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.json",false);
-					filewriter.write(JsonString);
-					filewriter.close();
-					File file = new File(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.json");
-					JsonDataSource ds = new JsonDataSource(file);
-					InputStream inputstream = this.getClass().getResourceAsStream("/report/jasper/EwayCreditNote.jrxml");
-					JasperReport jasperReport = JasperCompileManager.compileReport(inputstream);
-					JasperPrint jp = JasperFillManager.fillReport(jasperReport, input, ds);
-					JasperExportManager.exportReportToPdfFile(jp,policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.pdf");
-					GetFileFromPath path = new GetFileFromPath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.pdf");
-					res.setPdfoutfile(path.call().getImgUrl());
-					res.setPdfoutfilepath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.pdf");
-				}catch(Exception e) {
-					e.printStackTrace();
-				}
+				String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+				res = getCommonJasperPdfFileByJson("/report/jasper/EwayCreditNote.jrxml", jasperSaveLocation, JsonString, input, "- CreditNote.json");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -612,7 +517,6 @@ public class JasperServiceImpl implements JasperService {
 				try {
 					connection.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			
@@ -708,6 +612,39 @@ public class JasperServiceImpl implements JasperService {
 			 e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private JasperDocumentRes getCommonJasperPdfFileByJson(String jrxmlPath,String jasperSaveLocation, String jsonString, Map<String, Object> map,String fileNameEnd) {
+		log.info("Enter into getCommonJasperPdfFileByJson");
+		JasperDocumentRes res = new JasperDocumentRes();
+		InputStream inputStream=null;
+		log.info(fileNameEnd.substring(2, fileNameEnd.length()-5)+" JsonResponse ==> "+jsonString);
+		try {
+			FileWriter fileWriter = new FileWriter(jasperSaveLocation+fileNameEnd, false);
+			fileWriter.write(jsonString);
+			fileWriter.close();
+			File file = new File(jasperSaveLocation+fileNameEnd);
+			JsonDataSource dataSource = new JsonDataSource(file);
+			inputStream = this.getClass().getResourceAsStream(jrxmlPath);
+			JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map,dataSource);
+			JasperExportManager.exportReportToPdfFile(jasperPrint, jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
+			GetFileFromPath filePath = new GetFileFromPath(jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
+			res.setPdfoutfile(filePath.call().getImgUrl());
+			res.setPdfoutfilepath(jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
+		}catch(Exception e) {
+			log.info("Error in getCommonJasperPdfFileByJson ==> "+e.getMessage());
+			e.printStackTrace();
+		}finally {
+			if(inputStream!=null)
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+		log.info("Exit into getCommonJasperPdfFileByJson");
+		return res;
 	}
 	
 }

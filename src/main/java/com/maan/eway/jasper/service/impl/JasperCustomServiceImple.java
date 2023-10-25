@@ -18,6 +18,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
@@ -27,8 +28,13 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
@@ -42,6 +48,7 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductGroupMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionDataDetails;
+import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.jasper.res.CreditDataSetOne;
 import com.maan.eway.jasper.res.CreditDataSetTwo;
@@ -55,6 +62,7 @@ import com.maan.eway.jasper.res.TaxInvoiceRes;
 import com.maan.eway.jasper.res.TravelDataSetOneRes;
 import com.maan.eway.jasper.res.TravelDataSetTwoRes;
 import com.maan.eway.jasper.res.TravelReportRes;
+import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 
@@ -71,6 +79,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private MotorDriverDetailsRepository motordriverRepo;
+	
+	@Autowired
+	private ContentAndRiskRepository conAndRiskRepo;
 		
 	private String RenewalDate(String Input) {
 		DateTimeFormatter inputformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -79,7 +90,9 @@ public class JasperCustomServiceImple {
 	}
 
 	public MotorCoverNoteRes getMotorCoverNote(String policyNo) {
+	  log.info("Enter into getMotorCoverNote.\nArgument ==> PolicyNo :"+policyNo);
 		MotorCoverNoteRes response = new  MotorCoverNoteRes();
+  try {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<MotorDataDetails> mddRoot = cq.from(MotorDataDetails.class);
@@ -186,11 +199,18 @@ public class JasperCustomServiceImple {
 			response.setVatPremium(map.get("vatPremium")==null?"":map.get("vatPremium").toString());
 			response.setOverallPremium(map.get("overallPremium")==null?"":map.get("overallPremium").toString());
 		}
+  }catch(Exception e) {
+	  log.info("Error in getMotorCoverNote ==> "+e.getMessage());
+	  e.printStackTrace();
+  }
+  	log.info("Exit into getMotorCoverNote");
 		return response;
 	}
 
 	public TaxInvoiceRes getTaxInvoiceRes(String policyNo) {
+		log.info("Enter into getTaxInvoiceRes.\nArgument ==> PolicyNo :"+policyNo);
 		TaxInvoiceRes response = new TaxInvoiceRes();
+	try {
 		List<TaxDataSetOneRes> dataset1Res = new ArrayList<TaxDataSetOneRes>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
@@ -239,7 +259,7 @@ public class JasperCustomServiceImple {
 				cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),
 				cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),
 						cb.concat(",", countryName)))))))).alias("address"),
-				piRoot.get("vrTinNo").alias("vrTinNo"),cb.selectCase().when(cb.equal(piRoot.get("idType"), "6"), piRoot.get("idNumber")).alias("customerTin"),
+				piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("idTypeDesc").alias("identificationName"),piRoot.get("idNumber").alias("identificationNo"),hpmRoot.get("customerCode").alias("intermediaryRefNo"),
 				hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
 				hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("currency").alias("currency"),hpmRoot.get("debitNoteNo").alias("debitNoteNo"),
 				vrnNumber.alias("vrnNumber"),tinNumber.alias("tinNumber"),cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
@@ -275,7 +295,8 @@ public class JasperCustomServiceImple {
 			response.setCustomerName(map.get("customerName")==null?"":map.get("customerName").toString());
 			response.setAddress(map.get("address")==null?"":map.get("address").toString());
 			response.setVrTinNo(map.get("vrTinNo")==null?"":map.get("vrTinNo").toString());
-			response.setCustomerTin(map.get("customerTin")==null?"":map.get("customerTin").toString());
+			response.setIdentificationName(map.get("identificationName")==null?"":map.get("identificationName").toString());
+			response.setIdentificationNo(map.get("identificationNo")==null?"":map.get("identificationNo").toString());
 			response.setPolicyNo(map.get("policyNo")==null?"":map.get("policyNo").toString());
 			response.setInceptionDate(map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
 			response.setQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
@@ -290,13 +311,22 @@ public class JasperCustomServiceImple {
 			response.setVatPercent(map.get("vatPercent")==null?"":map.get("vatPercent").toString());
 			response.setOverAllPremium(map.get("overAllPremium")==null?"":map.get("overAllPremium").toString());
 			response.setTotSumInsured(map.get("totSumInsured")==null?"":map.get("totSumInsured").toString());
+			response.setIntermediaryRefNo(map.get("intermediaryRefNo")==null?"":map.get("intermediaryRefNo").toString());
 			response.setDataset1List(dataset1Res);
 		}
+	}catch(Exception e) {
+		log.info("Error in getTaxInvoiceRes ==> "+e.getMessage());
+		e.printStackTrace();
+	}
+	log.info("Exit into getTaxInvoiceRes");
 			return response;
+			
 	}
 	
 	public CreditNoteRes getCreditNoteRes(String policyNo) {
+		log.info("Enter into getCreditNoteRes.\nArgument ==> PolicyNo :"+policyNo);
 		CreditNoteRes response = new CreditNoteRes();
+	try {
 		List<CreditDataSetOne> DataSetOneRes = new ArrayList<CreditDataSetOne>();
 		List<CreditDataSetTwo> DataSetTwoRes = new ArrayList<CreditDataSetTwo>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -405,11 +435,18 @@ public class JasperCustomServiceImple {
 			response.setSectionDescList(DataSetOneRes);
 			response.setRiskCodeList(DataSetTwoRes);
 		}
+	}catch(Exception e) {
+		log.info("Error in getCreditNoteRes ==>" + e.getMessage());
+		e.printStackTrace();
+	}
+	log.info("Exit into getCreditNoteRes");
 		return response;
 	}
 
 	public MotorPrivateRes getMotorPrivate(String policyNo) {
+		log.info("Enter into getMotorPrivate.\nArgument ==> PolicyNo :"+policyNo);
 		MotorPrivateRes response = new MotorPrivateRes();
+	try {
 		List<MotorPrivateVehicleDetails> vehicleDetailsRes = new ArrayList<>();
 		List<MotorPrivateDriverDetails> driverDetailsRes = new ArrayList<>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -509,11 +546,18 @@ public class JasperCustomServiceImple {
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 		}
+	}catch(Exception e) {
+		log.info("Error in getMotorPrivate ==>"+e.getMessage());
+		e.printStackTrace();
+	}
+	log.info("Exit into getMotorPrivate");
 		return response;
 	}
 
 	public TravelReportRes getTravelReport(String policyNo) {
+		log.info("Enter into getTravelReport.\nArgument ==> PolicyNo :"+policyNo);
 		TravelReportRes response = new TravelReportRes();
+	try {
 		List<TravelDataSetOneRes> travelDataSetOne = new ArrayList<TravelDataSetOneRes>();
 		List<TravelDataSetTwoRes> travelDataSetTwo = new ArrayList<TravelDataSetTwoRes>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -562,7 +606,7 @@ public class JasperCustomServiceImple {
 		
 		cq.multiselect(hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("policyNo").alias("policyNo"),cb.upper(cb.concat(piRoot.get("titleDesc"),
 				cb.concat(".", piRoot.get("clientName")))).alias("customerName"),cb.concat(piRoot.get("address1"), cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),
-						cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.coalesce(piRoot.get("stateName"), 
+						cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), 
 								cb.concat(",", cb.concat(piRoot.get("cityName"), cb.concat(",", countryName))))))).alias("address"),
 				piRoot.get("telephoneNo1").alias("telephoneNo1"),lmRoot.get("agencyCode").alias("agencyCode"),hpmRoot.get("inceptionDate").alias("inceptionDate"),hpmRoot.get("expiryDate").alias("expiryDate"),
 				hpmRoot.get("currency").alias("currency"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), overAllPremiumLc).otherwise(overAllPremiumFc).alias("overAllPremium"),
@@ -648,11 +692,18 @@ public class JasperCustomServiceImple {
 			response.setPassangerDetails(travelDataSetOne);
 			response.setTravelCoverDetails(travelDataSetTwo);
 		}
+	}catch(Exception e) {
+		log.info("Error in getTravelReport ==>"+e.getMessage());
+		e.printStackTrace();
+	}
+		log.info("Exit into getTravelReport");
 		return response;
 	}
 
 	public Map<String, Object> getMotorEndorsementSchedule(String policyNo) {
+		log.info("Enter into getMotorEndorsementSchedule.\nArgument ==> PolicyNo :"+policyNo);
 		Map<String, Object> result = new HashMap<String,Object>();
+	try {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<PersonalInfo> piRoot = cq.from(PersonalInfo.class);
@@ -705,6 +756,209 @@ public class JasperCustomServiceImple {
 			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			result.put("vehicleList", vehicleList);
 		}
+	}catch(Exception e) {
+		log.info("Error in getMotorEndorsementSchedule ==>"+e.getMessage());
+		e.printStackTrace();
+	}
+		log.info("Exit into getMotorEndorsementSchedule");
+		return result;
+	}
+
+	public Map<String, Object> getCyberInsurance(String policyNo) {
+		log.info("Enter into getCyberInsurance.\nArgument ==> PolicyNo :"+policyNo);
+		Map<String, Object> result = new HashMap<String,Object>();
+	try {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
+		Root<BranchMaster> bmRoot = cq.from(BranchMaster.class);
+		Root<PersonalInfo> piRoot = cq.from(PersonalInfo.class);
+		Root<EserviceBuildingDetails> ebdRoot = cq.from(EserviceBuildingDetails.class);
+		
+		Subquery<Integer> countryNameAmd = cq.subquery(Integer.class);
+		Root<CountryMaster> SubcountryAmd = countryNameAmd.from(CountryMaster.class);
+		countryNameAmd.select(cb.max(SubcountryAmd.get("amendId"))).where(cb.equal(SubcountryAmd.get("countryId"), piRoot.get("nationality")),
+				cb.equal(SubcountryAmd.get("companyId"), hpmRoot.get("companyId")),cb.equal(SubcountryAmd.get("status"), "Y"));
+		
+		Subquery<String> countryName = cq.subquery(String.class);
+		Root<CountryMaster> cmRoot = countryName.from(CountryMaster.class);
+		countryName.select(cmRoot.get("countryName")).where(cb.equal(cmRoot.get("countryId"), piRoot.get("nationality")),
+				cb.equal(cmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cmRoot.get("status"), "Y"),cb.equal(cmRoot.get("amendId"), countryNameAmd));
+		
+		Subquery<String> currencyId = cq.subquery(String.class);
+		Root<InsuranceCompanyMaster> icmRoot = currencyId.from(InsuranceCompanyMaster.class);
+		currencyId.select(icmRoot.get("currencyId")).where(cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")));
+		
+		Subquery<Integer> bmAmd = cq.subquery(Integer.class);
+		Root<BranchMaster> SubbmAnd = bmAmd.from(BranchMaster.class);
+		bmAmd.select(cb.max(SubbmAnd.get("amendId"))).where(cb.equal(SubbmAnd.get("branchCode"), hpmRoot.get("branchCode")),cb.equal(SubbmAnd.get("status"), "Y"));
+		
+		cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),bmRoot.get("branchName").alias("branchName"),
+				hpmRoot.get("entryDate").alias("entryDate"),cb.concat(piRoot.get("titleDesc"), cb.concat(",", piRoot.get("clientName"))).alias("customerName"),
+				cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), cb.concat(cb.selectCase()
+					.when(cb.equal(piRoot.get("pinCode"), ""), "").when(cb.isNull(piRoot.get("pinCode")), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"),
+							cb.concat(",", cb.concat(piRoot.get("cityName"), cb.concat(",", countryName)))))))).alias("address"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
+				hpmRoot.get("expiryDate").alias("expiryDate"),ebdRoot.get("occupationTypeDesc").alias("occupationTypeDesc"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("overallPremiumLc"))
+				.otherwise(hpmRoot.get("overallPremiumFc")).alias("premium"))
+		.where(cb.equal(hpmRoot.get("branchCode"), bmRoot.get("branchCode")),cb.equal(hpmRoot.get("companyId"), bmRoot.get("companyId")),
+				cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("requestReferenceNo"), ebdRoot.get("requestReferenceNo")),
+				cb.equal(bmRoot.get("status"), "Y"),cb.between(cb.literal(new Date()), bmRoot.get("effectiveDateStart"), bmRoot.get("effectiveDateEnd")),
+				cb.equal(bmRoot.get("amendId"), bmAmd),cb.not(cb.in(ebdRoot.get("sectionId")).value("0")),cb.equal(hpmRoot.get("policyNo"), policyNo));
+		
+		List<Tuple> list = em.createQuery(cq).getResultList();
+		if(!CollectionUtils.isEmpty(list)) {
+			Tuple map = list.get(0);
+			// SectionList
+			CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq1 = cb1.createQuery(Tuple.class);
+			Root<HomePositionMaster> hpmRoot1 = cq1.from(HomePositionMaster.class);
+			Root<PolicyCoverData> pcdRoot = cq1.from(PolicyCoverData.class);
+			
+			Subquery<BigDecimal> excessAmount = cq1.subquery(BigDecimal.class);
+			Root<PolicyCoverData> SubexcessAmd = excessAmount.from(PolicyCoverData.class);
+			excessAmount.select(SubexcessAmd.get("excessAmount")).where(cb.equal(SubexcessAmd.get("quoteNo"), hpmRoot1.get("quoteNo")),
+					cb.equal(SubexcessAmd.get("discLoadId"), "0"),cb.equal(SubexcessAmd.get("taxId"), "0"),cb.equal(SubexcessAmd.get("coverId"), "5"));
+			
+			cq1.multiselect(pcdRoot.get("coverId").alias("coverId"),pcdRoot.get("coverName").alias("coverName"),pcdRoot.get("coverageLimit").alias("coverageLimit"),
+					excessAmount.alias("excessAmount")).where(cb.equal(pcdRoot.get("quoteNo"), hpmRoot1.get("quoteNo")),cb.equal(hpmRoot1.get("policyNo"), map.get("policyNo")),
+							cb.equal(pcdRoot.get("discLoadId"), "0"),cb.equal(pcdRoot.get("taxId"), "0"));
+
+			List<Tuple> list1 = em.createQuery(cq1).getResultList();
+			List<Map<String,Object>> sectionList = list1.stream().map(k ->{
+				LinkedHashMap<String, Object> Smap = new LinkedHashMap<String,Object>();
+				Smap.put("coverId", k.get("coverId")==null?"":k.get("coverId").toString());
+				Smap.put("coverName", k.get("coverName")==null?"":k.get("coverName").toString());
+				Smap.put("coverageLimit", k.get("coverageLimit")==null?"":k.get("coverageLimit").toString());
+				Smap.put("excessAmount", k.get("excessAmount")==null?"":k.get("excessAmount").toString());
+				return Smap;
+			}).collect(Collectors.toList());
+			
+			// DeviceList
+			List<ContentAndRisk> list2 = conAndRiskRepo.findByQuoteNo(map.get("quoteNo").toString());
+			List<Map<String,Object>> deviceList = list2.stream().map(d -> {
+				LinkedHashMap<String, Object> Dmap = new LinkedHashMap<String,Object>();
+				Dmap.put("itemDesc", d.getItemDesc()==null?"":d.getItemDesc().toString());
+				Dmap.put("makeAndModel", d.getMakeAndModel()==null?"":d.getMakeAndModel().toString());
+				Dmap.put("manufactureYear", d.getManufactureYear()==null?"":d.getManufactureYear().toString());
+				Dmap.put("serialNoDesc", d.getSerialNoDesc()==null?"":d.getSerialNoDesc().toString());
+				return Dmap;
+			}).collect(Collectors.toList());
+			
+			// CONDITIONS
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			List<Tuple> conditionRes = new ArrayList<>();
+			
+			for(int i=1;i<=2;i++) {
+				CriteriaQuery<Tuple> cq2 = cb2.createQuery(Tuple.class);
+				Root<HomePositionMaster> hpmRoot2 = cq2.from(HomePositionMaster.class);
+				Root<SectionDataDetails> sddRoot2 = cq2.from(SectionDataDetails.class);
+				List<Predicate> predicates = new ArrayList<Predicate>();
+				predicates.add(cb.equal(sddRoot2.get("quoteNo"), hpmRoot2.get("quoteNo")));
+				predicates.add(cb.equal(hpmRoot2.get("policyNo"), map.get("policyNo")));
+				if(i == 1) {
+					Subquery<Tuple> CquoteIn = cq2.subquery(Tuple.class);
+					Root<TermsAndCondition> StacRoot = CquoteIn.from(TermsAndCondition.class);
+					CquoteIn.select(StacRoot.get("quoteNo")).where(cb.equal(StacRoot.get("quoteNo"), map.get("quoteNo")));
+					
+					Root<ClausesMaster> cmRoot2 = cq2.from(ClausesMaster.class);
+					cq2.multiselect(cmRoot2.get("clausesDescription").alias("conditionTerms"));
+					predicates.add(cb.equal(cmRoot2.get("companyId"), hpmRoot2.get("companyId")));
+					predicates.add(cb.equal(cmRoot2.get("productId"), hpmRoot2.get("productId")));
+					predicates.add(cb.or(cb.equal(cmRoot2.get("sectionId"), sddRoot2.get("sectionId")), cb.equal(cmRoot2.get("sectionId"), "99999")));
+					predicates.add(cb.or(cb.equal(cmRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(cmRoot2.get("branchCode"), "99999")));
+					predicates.add(cb.between(cb.literal(new Date()), cmRoot2.get("effectiveDateStart"), cmRoot2.get("effectiveDateEnd")));
+					predicates.add(cb.equal(cmRoot2.get("status"), "Y"));
+					predicates.add(cb.not(cb.in(hpmRoot2.get("quoteNo")).value(CquoteIn)));
+				}else {
+					Root<TermsAndCondition> tacRoot2 = cq2.from(TermsAndCondition.class);
+					cq2.multiselect(tacRoot2.get("subIdDesc").alias("conditionTerms"));
+					predicates.add(cb.equal(tacRoot2.get("companyId"), hpmRoot2.get("companyId")));
+					predicates.add(cb.equal(tacRoot2.get("productId"), hpmRoot2.get("productId")));
+					predicates.add(cb.equal(tacRoot2.get("sectionId"), sddRoot2.get("sectionId")));
+					predicates.add(cb.in(hpmRoot2.get("quoteNo")).value(tacRoot2.get("quoteNo")));
+					predicates.add(cb.equal(tacRoot2.get("status"), "Y"));
+					predicates.add(cb.or(cb.equal(tacRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(tacRoot2.get("branchCode"), "99999")));
+				}
+					Predicate [] predicatArray = new Predicate[predicates.size()];
+					predicates.toArray(predicatArray);
+					conditionRes.addAll(em.createQuery(cq2.where(predicatArray)).getResultList());
+			}
+			
+			List<Map<String,Object>> conditionList = conditionRes.stream().distinct().map(c ->{
+				LinkedHashMap<String,Object> Cmap = new LinkedHashMap<String,Object>();
+				Cmap.put("conditionTerms", c.get("conditionTerms")==null?"":c.get("conditionTerms").toString());
+				return Cmap;
+			}).collect(Collectors.toList());
+
+			// EXCLUSION
+			CriteriaBuilder cb3 = em.getCriteriaBuilder();
+			List<Tuple> exclusionRes = new ArrayList<>();
+			
+			for(int i=1;i<=2;i++) {
+				CriteriaQuery<Tuple> cq3 = cb3.createQuery(Tuple.class);
+				Root<HomePositionMaster> hpmRoot3 = cq3.from(HomePositionMaster.class);
+				Root<SectionDataDetails> sddRoot3 = cq3.from(SectionDataDetails.class);
+				List<Predicate> predicates = new ArrayList<Predicate>();
+				predicates.add(cb.equal(sddRoot3.get("quoteNo"), hpmRoot3.get("quoteNo")));
+				predicates.add(cb.equal(hpmRoot3.get("policyNo"), map.get("policyNo")));
+				if(i == 1) {
+					Subquery<Tuple> EquoteIn = cq3.subquery(Tuple.class);
+					Root<TermsAndCondition> SEtacRoot = EquoteIn.from(TermsAndCondition.class);
+					EquoteIn.select(SEtacRoot.get("quoteNo")).where(cb.equal(SEtacRoot.get("quoteNo"), map.get("quoteNo")));
+					
+					Root<ExclusionMaster> emRoot3 = cq3.from(ExclusionMaster.class);
+					cq3.multiselect(emRoot3.get("exclusionDescription").alias("exclusionTerms"));
+					predicates.add(cb.equal(emRoot3.get("companyId"), hpmRoot3.get("companyId")));
+					predicates.add(cb.equal(emRoot3.get("productId"), hpmRoot3.get("productId")));
+					predicates.add(cb.or(cb.equal(emRoot3.get("sectionId"), sddRoot3.get("sectionId")), cb.equal(emRoot3.get("sectionId"), "99999")));
+					predicates.add(cb.or(cb.equal(emRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(emRoot3.get("branchCode"), "99999")));
+					predicates.add(cb.between(cb.literal(new Date()), emRoot3.get("effectiveDateStart"), emRoot3.get("effectiveDateEnd")));
+					predicates.add(cb.equal(emRoot3.get("status"), "Y"));
+					predicates.add(cb.not(cb.in(hpmRoot3.get("quoteNo")).value(EquoteIn)));
+					Predicate [] predicatArray = new Predicate[predicates.size()];
+					predicates.toArray(predicatArray);
+					exclusionRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
+				}else {
+					Root<TermsAndCondition> tacRoot3 = cq3.from(TermsAndCondition.class);
+					cq3.multiselect(tacRoot3.get("subIdDesc").alias("exclusionTerms"));
+					predicates.add(cb.equal(tacRoot3.get("companyId"), hpmRoot3.get("companyId")));
+					predicates.add(cb.equal(tacRoot3.get("productId"), hpmRoot3.get("productId")));
+					predicates.add(cb.equal(tacRoot3.get("sectionId"), sddRoot3.get("sectionId")));
+					predicates.add(cb.in(hpmRoot3.get("quoteNo")).value(tacRoot3.get("quoteNo")));
+					predicates.add(cb.equal(tacRoot3.get("status"), "Y"));
+					predicates.add(cb.or(cb.equal(tacRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(tacRoot3.get("branchCode"), "99999")));
+					Predicate [] predicatArray = new Predicate[predicates.size()];
+					predicates.toArray(predicatArray);
+					exclusionRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
+				}
+			}
+			
+			List<Map<String,Object>> exclusionList = exclusionRes.stream().distinct().map(c ->{
+				LinkedHashMap<String,Object> Emap = new LinkedHashMap<String,Object>();
+				Emap.put("exclusioTerms", c.get("exclusionTerms")==null?"":c.get("exclusionTerms").toString());
+				return Emap;
+			}).collect(Collectors.toList());
+			
+			result.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
+			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
+			result.put("branchName", map.get("branchName")==null?"":map.get("branchName").toString());
+			result.put("entryDate", map.get("entryDate")==null?"":map.get("entryDate").toString());
+			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
+			result.put("address", map.get("address")==null?"":map.get("address").toString());
+			result.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
+			result.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
+			result.put("occupationTypeDesc", map.get("occupationTypeDesc")==null?"":map.get("occupationTypeDesc").toString());
+			result.put("premium", map.get("premium")==null?"":map.get("premium").toString());
+			result.put("sectionList", sectionList);
+			result.put("deviceList", deviceList);
+			result.put("conditionList", conditionList);
+			result.put("exclusionList", exclusionList);
+		}
+	}catch(Exception e) {
+		log.info("Error in getCyberInsurance ==> "+e.getMessage());
+		e.printStackTrace();
+	}
+		log.info("Exit into getCyberInsurance");
 		return result;
 	}
 

@@ -27,8 +27,11 @@ public class TaxInvoiceRes {
 	@JsonProperty("VrTinNo")
 	private String vrTinNo;
 	
-	@JsonProperty("CustomerTin")
-	private String customerTin;
+	@JsonProperty("IdentificationNo")
+	private String identificationNo;
+	
+	@JsonProperty("IdentificationName")
+	private String identificationName;
 	
 	@JsonProperty("PolicyNo")
 	private String policyNo;
@@ -71,6 +74,9 @@ public class TaxInvoiceRes {
 	
 	@JsonProperty("VatPercent")
 	private String vatPercent;
+	
+	@JsonProperty("IntermediaryRefNo")
+	private String intermediaryRefNo;
 	
 	@JsonProperty("Dataset1List")
 	private List<TaxDataSetOneRes> dataset1List;

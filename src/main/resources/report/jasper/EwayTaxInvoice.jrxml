@@ -81,9 +81,13 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vrTinNo"/>
 		<fieldDescription><![CDATA[vrTinNo]]></fieldDescription>
 	</field>
-	<field name="customerTin" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression" value="customerTin"/>
-		<fieldDescription><![CDATA[customerTin]]></fieldDescription>
+	<field name="identificationNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="identificationNo"/>
+		<fieldDescription><![CDATA[identificationNo]]></fieldDescription>
+	</field>
+	<field name="identificationName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="identificationName"/>
+		<fieldDescription><![CDATA[identificationName]]></fieldDescription>
 	</field>
 	<field name="policyNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
@@ -140,6 +144,10 @@
 	<field name="vatPercent" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="vatPercent"/>
 		<fieldDescription><![CDATA[vatPercent]]></fieldDescription>
+	</field>
+	<field name="intermediaryRefNo" class="java.lang.Long">
+		<property name="net.sf.jasperreports.json.field.expression" value="intermediaryRefNo"/>
+		<fieldDescription><![CDATA[intermediaryRefNo]]></fieldDescription>
 	</field>
 	<field name="dataset1List" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="dataset1List"/>
@@ -296,8 +304,8 @@
 			</textField>
 		</band>
 		<band height="57">
-			<textField>
-				<reportElement x="15" y="19" width="65" height="15" uuid="438787dd-6243-4525-beef-d13e07224684">
+			<textField textAdjust="StretchHeight">
+				<reportElement x="15" y="19" width="95" height="15" uuid="438787dd-6243-4525-beef-d13e07224684">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -305,7 +313,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Customer TIN :"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{identificationName}+" :"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="15" y="42" width="65" height="15" uuid="aee2f0f3-2573-4282-9a10-07c5e247e7f3">
@@ -319,7 +327,7 @@
 				<textFieldExpression><![CDATA["Intermediary :"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="80" y="19" width="100" height="15" uuid="3dd380c2-de32-4c54-8a23-970a5b1ead16">
+				<reportElement stretchType="RelativeToTallestObject" x="110" y="19" width="70" height="15" uuid="3dd380c2-de32-4c54-8a23-970a5b1ead16">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -327,7 +335,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{customerTin}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{identificationNo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="80" y="42" width="200" height="15" uuid="bf0ce5b4-8949-47aa-9a0a-04eef4702d45"/>
@@ -438,7 +446,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{intermediaryRefNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="400" y="42" width="10" height="15" uuid="c1121dd4-e95e-4e0b-91e2-45ce043062bf">

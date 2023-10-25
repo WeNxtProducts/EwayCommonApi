@@ -244,8 +244,14 @@
 	    <artifactId>javase</artifactId>
 	    <version>2.2</version>
 	</dependency>
+	<!--<dependency>
+		<groupId>com.3rdparty</groupId>
+		<artifactId>recorder</artifactId>
+		<scope>system</scope>
+		<version>1.0</version>
+		 <systemPath>${basedir}\src\main\resources\lib\Arial_IReport_Pdf_Arabic.jar</systemPath>   
+	</dependency>-->
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
