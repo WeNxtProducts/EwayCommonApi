@@ -595,7 +595,23 @@ public class GridServiceImpl implements GridService {
 					custRes.add(res);
 				}
 
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				GetMotorReferalDetailsRes response = lifeService.getLifeReferalDetails(req, limit, offset, "RP");
+				List<MotorGridCriteriaRes> referralPendingList2 = response.getMotorGridCriteriaResRes();
+
+				resp.setTotalCount(String.valueOf(response.getTotalCount()));
+
+				for (MotorGridCriteriaRes data : referralPendingList2) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
+					custRes.add(res);
+				}
+
+			} 
+			
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				GetTravelReferalDetailsRes response = traService.getTravelReferalDetails(req, limit, offset, "RP");
 				referralPendingList = response.getReferalGridCriteriaRes();
@@ -700,7 +716,22 @@ public class GridServiceImpl implements GridService {
 
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
 
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else 	if (product.getMotorYn().equalsIgnoreCase("L")) {
+
+				GetMotorReferalDetailsRes resp = lifeService.getLifeReferalDetails(req, limit, offset, "RA");
+				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
+
+				for (MotorGridCriteriaRes data : List2) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+				
+					custRes.add(res);
+				}
+
+				response.setTotalCount(String.valueOf(resp.getTotalCount()));
+
+			}
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				GetTravelReferalDetailsRes resp = traService.getTravelReferalDetails(req, limit, offset, "RA");
 				referralApprovedList = resp.getReferalGridCriteriaRes();
@@ -804,7 +835,20 @@ public class GridServiceImpl implements GridService {
 
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
 
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else 	if (product.getMotorYn().equalsIgnoreCase("L")) {
+				GetMotorReferalDetailsRes resp = lifeService.getLifeReferalDetails(req, limit, offset, "RR");
+				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
+
+				for (MotorGridCriteriaRes data : List2) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+					custRes.add(res);
+				}
+
+				response.setTotalCount(String.valueOf(resp.getTotalCount()));
+
+			} 
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				GetTravelReferalDetailsRes resp = traService.getTravelReferalDetails(req, limit, offset, "RR");
 
@@ -879,6 +923,20 @@ public class GridServiceImpl implements GridService {
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
 					// res.setCount(data.getIdsCount() == null ? "" :
 					// data.getIdsCount().toString());
+					custRes.add(res);
+				}
+				response.setTotalCount(String.valueOf(resp.getTotalCount()));
+
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+
+				GetMotorReferalDetailsRes resp = lifeService.getLifeAdminReferalDetails(req, limit, offset, "RP");
+
+				List<MotorGridCriteriaRes> adminReferralPendingList2 = resp.getMotorGridCriteriaResRes();
+
+				for (MotorGridCriteriaRes data : adminReferralPendingList2) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+				
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
@@ -967,7 +1025,20 @@ public class GridServiceImpl implements GridService {
 
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
 
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				GetMotorReferalDetailsRes resp = lifeService.getLifeAdminReferalDetails(req, limit, offset, "RA");
+				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
+
+				for (MotorGridCriteriaRes data : List2) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+					custRes.add(res);
+				}
+
+				response.setTotalCount(String.valueOf(resp.getTotalCount()));
+
+			}
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req, limit, offset, "RA");
 				adminReferralApprovedList = resp.getReferalGridCriteriaRes();
@@ -1049,7 +1120,21 @@ public class GridServiceImpl implements GridService {
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
 
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				GetMotorReferalDetailsRes resp = lifeService.getLifeAdminReferalDetails(req, limit, offset, "RR");
+
+				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
+
+				for (MotorGridCriteriaRes data : List2) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+				
+					custRes.add(res);
+				}
+				response.setTotalCount(String.valueOf(resp.getTotalCount()));
+
+			} 
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req, limit, offset, "RR");
 				adminReferralRejectedList = resp.getReferalGridCriteriaRes();
@@ -1923,7 +2008,21 @@ public class GridServiceImpl implements GridService {
 
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
 
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				GetMotorReferalDetailsRes resp = lifeService.getLifeReferalDetails(req, limit, offset, "RE");
+				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
+
+				for (MotorGridCriteriaRes data : List2) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+				
+					custRes.add(res);
+				}
+
+				response.setTotalCount(String.valueOf(resp.getTotalCount()));
+
+			} 
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 
 				GetTravelReferalDetailsRes resp = traService.getTravelReferalDetails(req, limit, offset, "RE");
@@ -2008,7 +2107,21 @@ public class GridServiceImpl implements GridService {
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
 
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				GetMotorReferalDetailsRes resp = lifeService.getLifeAdminReferalDetails(req, limit, offset, "RE");
+
+				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
+
+				for (MotorGridCriteriaRes data : List2) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+				
+					custRes.add(res);
+				}
+				response.setTotalCount(String.valueOf(resp.getTotalCount()));
+
+			} 
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 
 				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req, limit, offset, "RE");
@@ -2222,7 +2335,15 @@ public class GridServiceImpl implements GridService {
 				list = res.getPending();
 				resp.setCount(res.getCount());				
 				
-			} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) { //Life
+				
+				res = lifeService.getLifeProtfolioPending(req, branches, today, limit, offset, "P");
+				list = res.getPending();
+				resp.setCount(res.getCount());				
+				
+			}
+			
+			else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				
 				res = 	traService.getTravelProtfolioPending(req, branches, today, limit, offset, "P");
 				list = res.getPending();
@@ -4495,6 +4616,10 @@ public class GridServiceImpl implements GridService {
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getMotorProtfolioDropdownPending(req, today);
 			} 
+			else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				resList = lifeService.getLifeProtfolioDropdownPending(req, today);
+			} 
+			
 			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = traService.getTravelProtfolioDropdownPending(req, today);
@@ -4792,7 +4917,10 @@ public class GridServiceImpl implements GridService {
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getMotorRPDropdown(req, today);
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				resList = lifeService.getLifeRPDropdown(req, today);
+			}
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = traService.getTravelReferalDropdown(req, today,"RP");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
@@ -4827,7 +4955,10 @@ public class GridServiceImpl implements GridService {
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getMotorRADropdown(req, today);
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				resList = lifeService.getLifeRADropdown(req, today);
+			}
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = traService.getTravelReferalDropdown(req, today,"RA");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
@@ -4860,7 +4991,10 @@ public class GridServiceImpl implements GridService {
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getMotorRRDropdown(req, today);
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) { 
+				resList = lifeService.getLifeRRDropdown(req, today);
+			} 
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = traService.getTravelReferalDropdown(req, today,"RR");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
@@ -4893,7 +5027,10 @@ public class GridServiceImpl implements GridService {
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getMotorREDropdown(req, today);
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				resList = lifeService.getLifeREDropdown(req, today);
+			} 
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = traService.getTravelReferalDropdown(req, today,"RE");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
@@ -4929,7 +5066,11 @@ public class GridServiceImpl implements GridService {
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getAdminMotorRPropdown(req, today);
-			}else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) { 
+				resList = lifeService.getAdminLifeRPropdown(req, today);
+			}
+			
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = traService.getAdminTravelRPDropdown(req, today);
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
@@ -4966,7 +5107,10 @@ public class GridServiceImpl implements GridService {
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getMotorAdminReferalDropdown(req, today,"RA");
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				resList = lifeService.getLifeAdminReferalDropdown(req, today,"RA");
+			} 
+			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = traService.getTravelAdminReferalDropdown(req, today,"RA");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
@@ -5002,6 +5146,8 @@ public class GridServiceImpl implements GridService {
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getMotorAdminReferalDropdown(req, today,"RR");
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				resList = lifeService.getLifeAdminReferalDropdown(req, today,"RR");
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = traService.getTravelAdminReferalDropdown(req, today,"RR");
@@ -5037,7 +5183,9 @@ public class GridServiceImpl implements GridService {
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getMotorAdminReferalDropdown(req, today,"RE");
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				resList = lifeService.getLifeAdminReferalDropdown(req, today,"RE");
+			}else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = traService.getTravelAdminReferalDropdown(req, today,"RE");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {

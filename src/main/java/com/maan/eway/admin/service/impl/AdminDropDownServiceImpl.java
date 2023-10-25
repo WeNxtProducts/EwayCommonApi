@@ -61,7 +61,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 				// List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("GENDER", "Y");
 				String itemType = "GENDER" ;
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType,req.getInsuranceId()  );
 				
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
@@ -91,7 +91,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CONST_MATERIAL", "Y");
 				String itemType = "CONSTRUCT_TYPE";
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());
 				
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
@@ -114,7 +114,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("OUTBUILDING_CONST", "Y");
 				String itemType = "OUTBUILDING_CONST";
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());
 				
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
@@ -138,7 +138,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("ABOUT_BUILDING", "Y");
 				String itemType = "ABOUT_BUILDING";
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());
 				
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
@@ -161,7 +161,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("STATE_EXTENT", "Y");
 				String itemType = "STATE_EXTENT";
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());
 				
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
@@ -184,7 +184,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 				//List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CONTENT_NAME", "Y");
 				String itemType = "CONTENT_NAME";
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
@@ -206,7 +206,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PROPERTY_NAME", "Y");
 				String itemType = "PROPERTY_NAME";
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
@@ -229,7 +229,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOBILE_CODE", "Y");
 				String itemType = "MOBILE_CODE";
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());
 				
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
@@ -252,7 +252,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("BUSINESS_TYPE", "Y");
 				String itemType = "BUSINESS_TYPE";
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType, "99999");
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
@@ -276,7 +276,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				LovDropDownReq req2 = new LovDropDownReq();
 				req2.setBranchCode(req.getBranchCode());
 				req2.setInsuranceId(req.getInsuranceId());
-				List<ListItemValue> list  = getListItem(req2 , itemType);
+				List<ListItemValue> list  = getListItem(req2 , itemType, "99999");
 			
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
@@ -295,7 +295,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 		}
 
 		
-		public synchronized List<ListItemValue> getListItem(LovDropDownReq req , String itemType) {
+		public synchronized List<ListItemValue> getListItem(LovDropDownReq req , String itemType, String companyId) {
 			List<ListItemValue> list = new ArrayList<ListItemValue>();
 			try {
 				Date today = new Date();
@@ -342,51 +342,51 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				Predicate n12 = cb.or(n1,n11);
 				Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 				Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-				Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
-				Predicate n5 = cb.equal(c.get("companyId"), "99999");
+				Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			//	Predicate n5 = cb.equal(c.get("companyId"), "99999");
 				Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 				Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-				Predicate n8 = cb.or(n4,n5);
+			//	Predicate n8 = cb.or(n4,n5);
 				Predicate n9 = cb.or(n6,n7);
 				Predicate n10 = cb.equal(c.get("itemType"),itemType);
 				
 				
 				//Not company based 99999 setup
-				if(itemType.equalsIgnoreCase("TAX_FOR_DESC") ||itemType.equalsIgnoreCase("TERMS_TYPE")
-						||itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") ||
-						itemType.equalsIgnoreCase("CALCULATION_TYPE") || itemType.equalsIgnoreCase("COVERAGE_TYPE") || 
-						itemType.equalsIgnoreCase("PRODUCT_CATEGORY") || 
-						itemType.equalsIgnoreCase("USER_TYPE") || itemType.equalsIgnoreCase("Broker") || 
-						itemType.equalsIgnoreCase("USER") || itemType.equalsIgnoreCase("ISSUER") || 
-						itemType.equalsIgnoreCase("PRODUCT_ICONS") || 
-						itemType.equalsIgnoreCase("DOCUMENT_APPLICABLE") || itemType.equalsIgnoreCase("INDUSTRY_CATEGORY") || 
-						itemType.equalsIgnoreCase("RANGE") || itemType.equalsIgnoreCase("IS_TAX_EXEMPTED") || 
-						itemType.equalsIgnoreCase("DISCRETE") || itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") || 
-						itemType.equalsIgnoreCase("POLICY_HOLDER_ID_TYPE") || 
-						itemType.equalsIgnoreCase("PRODUCT_SHORT_CODE") || 
-						itemType.equalsIgnoreCase("PAYMENT_TYPES") || itemType.equalsIgnoreCase("NOTIFICATION_TYPE") || 
-						itemType.equalsIgnoreCase("TERMS_AND_CONDITION") || itemType.equalsIgnoreCase("TITLE") || 
-						itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || itemType.equalsIgnoreCase("BUSINESS_TYPE") || 
-						itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("SOURCE_TYPE") || 
-						itemType.equalsIgnoreCase("PROMOCODE_TYPE") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_MOTOR") ||
-						
-						itemType.equalsIgnoreCase("COPY_QUOTE_BY_TRAVEL") ||
-						itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || 
-						itemType.equalsIgnoreCase("TERMS_TYPE") || itemType.equalsIgnoreCase("PROMOCODE_TYPE") || 
-						itemType.equalsIgnoreCase("TRACKING_STATUS") || itemType.equalsIgnoreCase("ADMIN_SEARCH_MOTOR") || 
-						itemType.equalsIgnoreCase("ADMIN_SEARCH_BUILDING") || itemType.equalsIgnoreCase("ADMIN_SEARCH_TRAVEL") || 
-						itemType.equalsIgnoreCase("ADMIN_SEARCH_COMMON") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_MOTOR") || 
-						itemType.equalsIgnoreCase("COPY_QUOTE_BY_TRAVEL") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || 
-						itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("DOC_ID_TYPE") || 
-						itemType.equalsIgnoreCase("TAX_FOR") || itemType.equalsIgnoreCase("PAYMENT") || 
-						itemType.equalsIgnoreCase("PORTFOLIO_TYPES") || itemType.equalsIgnoreCase("TAX_FOR_DESC") || 
-						itemType.equalsIgnoreCase("MONTHS") ) {
+//				if(itemType.equalsIgnoreCase("TAX_FOR_DESC") ||itemType.equalsIgnoreCase("TERMS_TYPE")
+//						||itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") ||
+//						itemType.equalsIgnoreCase("CALCULATION_TYPE") || itemType.equalsIgnoreCase("COVERAGE_TYPE") || 
+//						itemType.equalsIgnoreCase("PRODUCT_CATEGORY") || 
+//						itemType.equalsIgnoreCase("USER_TYPE") || itemType.equalsIgnoreCase("Broker") || 
+//						itemType.equalsIgnoreCase("USER") || itemType.equalsIgnoreCase("ISSUER") || 
+//						itemType.equalsIgnoreCase("PRODUCT_ICONS") || 
+//						itemType.equalsIgnoreCase("DOCUMENT_APPLICABLE") || itemType.equalsIgnoreCase("INDUSTRY_CATEGORY") || 
+//						itemType.equalsIgnoreCase("RANGE") || itemType.equalsIgnoreCase("IS_TAX_EXEMPTED") || 
+//						itemType.equalsIgnoreCase("DISCRETE") || itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") || 
+//						itemType.equalsIgnoreCase("POLICY_HOLDER_ID_TYPE") || 
+//						itemType.equalsIgnoreCase("PRODUCT_SHORT_CODE") || 
+//						itemType.equalsIgnoreCase("PAYMENT_TYPES") || itemType.equalsIgnoreCase("NOTIFICATION_TYPE") || 
+//						itemType.equalsIgnoreCase("TERMS_AND_CONDITION") || itemType.equalsIgnoreCase("TITLE") || 
+//						itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || itemType.equalsIgnoreCase("BUSINESS_TYPE") || 
+//						itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("SOURCE_TYPE") || 
+//						itemType.equalsIgnoreCase("PROMOCODE_TYPE") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_MOTOR") ||
+//						
+//						itemType.equalsIgnoreCase("COPY_QUOTE_BY_TRAVEL") ||
+//						itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || 
+//						itemType.equalsIgnoreCase("TERMS_TYPE") || itemType.equalsIgnoreCase("PROMOCODE_TYPE") || 
+//						itemType.equalsIgnoreCase("TRACKING_STATUS") || itemType.equalsIgnoreCase("ADMIN_SEARCH_MOTOR") || 
+//						itemType.equalsIgnoreCase("ADMIN_SEARCH_BUILDING") || itemType.equalsIgnoreCase("ADMIN_SEARCH_TRAVEL") || 
+//						itemType.equalsIgnoreCase("ADMIN_SEARCH_COMMON") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_MOTOR") || 
+//						itemType.equalsIgnoreCase("COPY_QUOTE_BY_TRAVEL") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || 
+//						itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("DOC_ID_TYPE") || 
+//						itemType.equalsIgnoreCase("TAX_FOR") || itemType.equalsIgnoreCase("PAYMENT") || 
+//						itemType.equalsIgnoreCase("PORTFOLIO_TYPES") || itemType.equalsIgnoreCase("TAX_FOR_DESC") || 
+//						itemType.equalsIgnoreCase("MONTHS") ) {
 					
-					query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
-				}else {
-					
+//					query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
+//				}else {
+//					
 					query.where(n12,n2,n3,n4,n9,n10).orderBy(orderList);
-				}
+				//}
 				
 				// Get Result
 				TypedQuery<ListItemValue> result = em.createQuery(query);
@@ -408,7 +408,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("BUSINESS_TYPE", "Y");
 				String itemType = "COMMISSION_TYPE";
-				List<ListItemValue> list  = getListItem(req , itemType);
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
