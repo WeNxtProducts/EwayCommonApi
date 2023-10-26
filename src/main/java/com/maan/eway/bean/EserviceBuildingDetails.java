@@ -658,10 +658,10 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="MONEY_ANNUAL_ESTIMATE_LC")
 	      private BigDecimal     moneyAnnualEstimateLc;
 	      
-	      @Column(name="FIRE_PLANT_SI  ")
+	      @Column(name="FIRE_PLANT_SI")
 	      private BigDecimal firePlantSi  ;
 	      
-	      @Column(name="FIRE_PLANT_SI_LC  ")
+	      @Column(name="FIRE_PLANT_SI_LC")
 	      private BigDecimal firePlantSiLc  ;
 	      
 	      
@@ -673,6 +673,40 @@ public class EserviceBuildingDetails implements Serializable {
    
 	      @Column(name="CUSTOMER_NAME")
 	      private String     customerName ;    
-  
+	      
+	      @Column(name="WATER_TANK_SI")
+	      private BigDecimal waterTankSi;
+	      
+	      @Column(name="WATER_TANK_SI_LC")
+	      private BigDecimal waterTankSiLc;
+	      
+	      @Column(name="ARCHITECTS_SI")
+	      private BigDecimal architectsSi  ;
+	      
+	      @Column(name="ARCHITECTS_SI_LC")
+	      private BigDecimal architectsSiLc  ;
+	      
+	      @Column(name="LOSS_OF_RENT_SI")
+	      private BigDecimal lossOfRentSi  ;
+	      
+	      @Column(name="LOSS_OF_RENT_SI_LC")
+	      private BigDecimal lossOfRentSiLc  ;
+	      
+	      @Column(name="JEWELLERY_SI")
+	      private BigDecimal jewellerySi  ;
+	      
+	      @Column(name="JEWELLERY_SI_LC")
+	      private BigDecimal jewellerySiLc  ;
+	      
+	      @Column(name="PAITINGS_SI")
+	      private BigDecimal paitingsSi  ;
+	      
+	      @Column(name="PAITINGS_SI_LC")
+	      private BigDecimal paitingsSiLc  ;
 
+	      @Column(name="CARPETS_SI")
+	      private BigDecimal carpetsSi  ;
+	      
+	      @Column(name="CARPETS_SI_LC")
+	      private BigDecimal carpetsSiLc  ;
 }
