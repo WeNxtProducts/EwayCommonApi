@@ -96,10 +96,10 @@ public class TiraIntegerationServiceImpl {
 					JSONObject tiraIntegPushRes = TiraIntegPush(tiraFramedReq , token,url);
 
 
-					log.info("Tira Respone"+tiraIntegPushRes.toString());
+					log.info("Tira Response --->"+tiraIntegPushRes);
 				}else {
 					res.setResponse("Failed");
-					log.info("Tira Frame "+tiraFramedReq);	
+					log.info("Tira Framed Req --->"+tiraFramedReq);	
 				}
 			}
 			
