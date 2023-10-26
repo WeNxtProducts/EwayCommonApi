@@ -162,7 +162,7 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 					cb.max(c.get("rejectReason")).alias("rejectReason"),
 					cb.max(c.get("adminRemarks")).alias("adminRemarks"),
 					cb.max(c.get("referalRemarks")).alias("referalRemarks"),
-					cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"),
+					//cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"),
 					cb.max(c.get("riskId")).alias("riskId"),
 					cb.max(c.get("travelCoverId")).alias("travelCoverId"),
 					cb.max(c.get("travelCoverDesc")).alias("travelCoverDesc"),
