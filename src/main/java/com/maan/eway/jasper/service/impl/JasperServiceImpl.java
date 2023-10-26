@@ -550,13 +550,14 @@ public class JasperServiceImpl implements JasperService {
 //            Date date1 = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
 //            Date date2 = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
             String branchCode =StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
-			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId());
+			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
 			if(list.size()>0) {
 				List<Map<String,Object>> dataRes =list.parallelStream().map( p->{
 					LinkedHashMap<String,Object> map =new LinkedHashMap<String,Object>();
 					map.put("LoginId",p.get("LOGIN_ID")==null?"":p.get("LOGIN_ID"));
 					map.put("QuoteNo", p.get("QUOTE_NO")==null?"":p.get("QUOTE_NO"));
 					map.put("PolicyNo", p.get("POLICY_NO")==null?"":p.get("POLICY_NO"));
+					map.put("OriginalPolicyNo", p.get("ORIGINAL_POLICY_NO")==null?"":p.get("ORIGINAL_POLICY_NO"));
 					map.put("CustomerName", p.get("CUSTOMER_NAME")==null?"":p.get("CUSTOMER_NAME"));
 					map.put("StartDate", p.get("START_DATE")==null?"":sdf.format(p.get("START_DATE")));
 					map.put("EndDate", p.get("END_DATE")==null?"":sdf.format(p.get("END_DATE")));
