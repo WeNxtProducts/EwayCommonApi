@@ -23,6 +23,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -959,6 +960,100 @@ public class JasperCustomServiceImple {
 		e.printStackTrace();
 	}
 		log.info("Exit into getCyberInsurance");
+		return result;
+	}
+	
+	public Map<String,Object> getMotorBrokerQuotation(String QuoteNo){
+		log.info("Enter into getMotorBrokerQuotation.\nArgument ==> "+QuoteNo);
+		Map<String,Object> result = new HashMap<String,Object>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+			Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
+			Root<PersonalInfo> piRoot = cq.from(PersonalInfo.class);
+			Root<InsuranceCompanyMaster> icmRoot = cq.from(InsuranceCompanyMaster.class);
+			Root<LoginUserInfo> luiRoot = cq.from(LoginUserInfo.class);
+			
+			Subquery<Integer> countryNameAmd = cq.subquery(Integer.class);
+			Root<CountryMaster> SubCnAd = countryNameAmd.from(CountryMaster.class);
+			countryNameAmd.select(cb.max(SubCnAd.get("amendId"))).where(cb.equal(SubCnAd.get("countryId"), piRoot.get("nationality")),
+					cb.equal(SubCnAd.get("companyId"), hpmRoot.get("companyId")),cb.equal(SubCnAd.get("status"), "Y"));
+			
+			Subquery<String> countryName = cq.subquery(String.class);
+			Root<CountryMaster> SubCm = countryName.from(CountryMaster.class);
+			countryName.select(SubCm.get("countryName")).where(cb.equal(SubCm.get("countryId"), piRoot.get("nationality")),
+						cb.equal(SubCm.get("companyId"), hpmRoot.get("companyId")),cb.equal(SubCm.get("status"), "Y"),cb.equal(SubCm.get("amendId"), countryNameAmd));
+			
+			Subquery<Integer> icmAmd = cq.subquery(Integer.class);
+			Root<InsuranceCompanyMaster> icmAmdRoot = icmAmd.from(InsuranceCompanyMaster.class);
+			icmAmd.select(cb.max(icmAmdRoot.get("amendId"))).where(cb.equal(icmAmdRoot.get("companyId"), icmRoot.get("companyId")));
+			
+			cq.multiselect(cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Agent","Premia Direct")), hpmRoot.get("customerName"))
+					.otherwise(luiRoot.get("userName")).alias("userName"),hpmRoot.get("agencyCode").alias("agencyCode"),hpmRoot.get("requestReferenceNo").alias("requestReferenceNo"),
+					hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("originalPolicyNo").alias("originalPolicyNo"),hpmRoot.get("companyId").alias("companyId"),
+					hpmRoot.get("companyName").alias("companyName"),hpmRoot.get("currency").alias("currency"),hpmRoot.get("vatPercent").alias("vatPercent"),
+					cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("premiumLc")).otherwise(hpmRoot.get("premiumFc")).alias("premium"),
+					cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),
+					cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")).alias("overAllPremium"),
+					hpmRoot.get("commissionPercentage").alias("commissionPercentage"),hpmRoot.get("commission").alias("commission"),hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
+					hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("paymentType").alias("paymentType"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "")
+					.otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),cb.concat(",", countryName)))))))).alias("address"),
+					piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("email1").alias("email1"),piRoot.get("mobileNo1").alias("mobileNo1"))
+			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
+					cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("productId"), "5"),cb.equal(hpmRoot.get("quoteNo"), QuoteNo))
+			.orderBy(cb.desc(hpmRoot.get("entryDate")));
+			
+			List<Tuple> list = em.createQuery(cq).getResultList();
+			if(!CollectionUtils.isEmpty(list)) {
+				Tuple map = list.get(0);
+				List<MotorDataDetails> list1 = motorRepo.findByQuoteNoOrderByVehicleIdAsc(map.get("quoteNo").toString());
+				List<Map<String,Object>> vehicleList = list1.stream().map(k -> {
+					LinkedHashMap<String,Object> m = new LinkedHashMap<String,Object>();
+					m.put("policyTypeDesc", k.getPolicyTypeDesc()==null?"":StringUtils.capitalize(k.getPolicyTypeDesc()));
+					m.put("registrationNumber", k.getRegistrationNumber()==null?"":k.getRegistrationNumber());
+					m.put("vehicleMakeDesc", k.getVehicleMakeDesc()==null?"":StringUtils.capitalize(k.getVehicleMakeDesc()));
+					m.put("vehicleTypeDesc", k.getVehicleTypeDesc()==null?"":StringUtils.capitalize(k.getVehicleTypeDesc()));
+					m.put("chassisNumber", k.getChassisNumber()==null?"":k.getChassisNumber());
+					m.put("colorDesc", k.getColorDesc()==null?"":StringUtils.capitalize(k.getColorDesc()));
+					m.put("manufactureYear", k.getManufactureYear());
+					m.put("engineNumber", k.getEngineNumber()==null?"":k.getEngineNumber());
+					m.put("vehcileModelDesc", k.getVehcileModelDesc()==null?"":StringUtils.capitalize(k.getVehcileModelDesc()));
+					m.put("sumInsured", k.getSumInsured());
+					return m;
+				}).collect(Collectors.toList());
+				
+				result.put("userName", map.get("userName")==null?"":map.get("userName").toString());
+				result.put("agencyCode", map.get("agencyCode")==null?"":map.get("agencyCode").toString());
+				result.put("requestReferenceNo", map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString());
+				result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
+				result.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
+				result.put("originalPolicyNo", map.get("originalPolicyNo")==null?"":map.get("originalPolicyNo").toString());
+				result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
+				result.put("companyName", map.get("companyName")==null?"":map.get("companyName").toString());
+				result.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+				result.put("vatPercent", map.get("vatPercent")==null?"":map.get("vatPercent").toString());
+				result.put("premium", map.get("premium")==null?"":map.get("premium").toString());
+				result.put("vatPremium", map.get("vatPremium")==null?"":map.get("vatPremium").toString());
+				result.put("overAllPremium", map.get("overAllPremium")==null?"":map.get("overAllPremium").toString());
+				result.put("commissionPercentage", map.get("commissionPercentage")==null?"":map.get("commissionPercentage").toString());
+				result.put("commission", map.get("commission")==null?"":map.get("commission").toString());
+				result.put("branchName", map.get("branchName")==null?"":map.get("branchName").toString());
+				result.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
+				result.put("address", map.get("address")==null?"":map.get("address").toString());
+				result.put("email1", map.get("email1")==null?"":map.get("email1").toString());
+				result.put("mobileNo1", map.get("mobileNo1")==null?"":map.get("mobileNo1").toString());
+				result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
+				result.put("vrTinNo", map.get("vrTinNo")==null?"":map.get("vrTinNo").toString());
+				result.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
+				result.put("vehicleList", vehicleList);
+			}
+				
+		}catch(Exception e) {
+			log.info("Error in getMotorBrokerQuotation ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		log.info("Exit into getMotorBrokerQuotation");
 		return result;
 	}
 

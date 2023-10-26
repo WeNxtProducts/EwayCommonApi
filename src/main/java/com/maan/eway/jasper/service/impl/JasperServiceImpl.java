@@ -116,7 +116,7 @@ public class JasperServiceImpl implements JasperService {
 
 			} else {
 				input.put("QuoteNo", req.getQuoteNo());
-				input.put("imagePath", config.getImagePath());
+				input.put("pvImagePath", config.getImagePath().substring(1, config.getImagePath().length()-0));
 				filePath = config.getDraftPath() + "pdf";
 				getPdfOutFilePath = filePath + "/" + req.getQuoteNo() + ".pdf";
 			}
@@ -126,18 +126,23 @@ public class JasperServiceImpl implements JasperService {
 				if (!theDir.exists()) {
 					theDir.mkdirs();
 				}
-				if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
-					Map<String, Object> input2 = new HashMap<String, Object>();
-					input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
-					String obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
-							String jrxml_path=obj.replace(".jasper", ".jrxml");
-							String path = JasperCompileManager.compileReportToFile(jrxml_path);
-							System.out.println("Jasper compileToReport path" +path);		
-					TravelReportRes travelRes = jasperCustomeImple.getTravelReport(homeData.getPolicyNo());
-					String jsonString = gson.toJson(travelRes);
-					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					res = getCommonJasperPdfFileByJson("/report/jasper/EwayTravelReport.jrxml", jasperSaveLocation, jsonString, input2, "- TravelReport.json");
+				if(StringUtils.isBlank(homeData.getPolicyNo()) && homeData.getProductId()==5) {
+					Map<String,Object> brokerQuotation = jasperCustomeImple.getMotorBrokerQuotation(homeData.getQuoteNo());
+					String jsonString = gson.toJson(brokerQuotation);
+					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getQuoteNo();
+					res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, input, "- BrokerQuotation.json");
+				}else if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
+						Map<String, Object> input2 = new HashMap<String, Object>();
+						input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+						input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
+						String obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
+								String jrxml_path=obj.replace(".jasper", ".jrxml");
+								String path = JasperCompileManager.compileReportToFile(jrxml_path);
+								System.out.println("Jasper compileToReport path" +path);		
+						TravelReportRes travelRes = jasperCustomeImple.getTravelReport(homeData.getPolicyNo());
+						String jsonString = gson.toJson(travelRes);
+						String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+						res = getCommonJasperPdfFileByJson("/report/jasper/EwayTravelReport.jrxml", jasperSaveLocation, jsonString, input2, "- TravelReport.json");
 				} else if (product.getMotorYn().equalsIgnoreCase("M") && !"46".equalsIgnoreCase(homeData.getProductId().toString())) {
 					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo())) {
