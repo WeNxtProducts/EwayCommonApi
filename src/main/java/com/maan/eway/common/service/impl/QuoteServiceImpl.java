@@ -2792,7 +2792,15 @@ public class QuoteServiceImpl implements QuoteService {
 					res.setJewellerySi(build.getJewellerySi() == null?"0" :build.getJewellerySi().toPlainString());
 					res.setPaitingsSi(build.getPaitingsSi() == null?"0" :build.getPaitingsSi().toPlainString());
 					res.setCarpetsSi(build.getCarpetsSi() == null?"0" :build.getCarpetsSi().toPlainString());
-				
+				    if(build.getContentSuminsured() == null || build.getContentSuminsured().compareTo(BigDecimal.ZERO) ==0 ) {
+				    	BigDecimal Si1 = build.getEquipmentSi() == null? BigDecimal.ZERO :build.getEquipmentSi();
+				    	BigDecimal Si2 = build.getJewellerySi() == null? BigDecimal.ZERO :build.getJewellerySi();
+				    	BigDecimal Si3 = build.getPaitingsSi() == null? BigDecimal.ZERO :build.getPaitingsSi();
+				    	BigDecimal Si4 = build.getCarpetsSi() == null? BigDecimal.ZERO :build.getCarpetsSi();
+				    	
+				    	BigDecimal totalContentSi = Si1.add(Si2).add(Si3).add(Si4);
+				    	res.setContentSuminsured(totalContentSi.toPlainString());
+				    }
 					
 				} 
 				
