@@ -1376,6 +1376,13 @@ this.repository = repo;
 					 
 				}
 				 menusret.sort(Comparator.comparing(Menu :: getOrderby));
+				 
+				 // Tira Vehicle Search Menu
+				 if( StringUtils.isBlank(req.getInsuranceId()) || StringUtils.isBlank(req.getProductId()) || ! "100002".equalsIgnoreCase(req.getInsuranceId()) 
+						 ||  ! ( "5".equalsIgnoreCase(req.getProductId()) ||  "46".equalsIgnoreCase(req.getProductId()) )   ) {
+					 menusret.removeIf( o -> o.getId().equalsIgnoreCase("379"));  
+				 } 
+				 
 			return menusret;
 		}catch(Exception e) {
 			e.printStackTrace();

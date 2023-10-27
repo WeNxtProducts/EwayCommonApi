@@ -15,4 +15,11 @@ public class MenuListReq {
 	
 	@JsonProperty("LoginId")
 	private String loginId ;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId ;
+	
+	@JsonProperty("ProductId")
+	private String productId ;
+	
 }
