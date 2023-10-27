@@ -730,6 +730,12 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="CARPETS_SI_LC")
       private BigDecimal carpetsSiLc  ;
+      
+      @Column(name="TYPE_OF_PROPERTY")
+      private String typeOfProperty  ;
+      
+      @Column(name="TYPE_OF_PROPERTY_DESC")
+      private String typeOfPropertyDesc  ;
 }
 
 

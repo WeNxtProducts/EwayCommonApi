@@ -1170,6 +1170,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 				refinedBuilding.setPlateGlassSiLC(refinedBuilding.getPlateGlassSi()==null ? null : refinedBuilding.getPlateGlassSi().multiply(exchangeRate) );
 				refinedBuilding.setContentSumInsuredLC(refinedBuilding.getContentSuminsured()==null ? null : refinedBuilding.getContentSuminsured().multiply(exchangeRate) );
 				refinedBuilding.setElecEquipSumInsuredLC(refinedBuilding.getElecEquipSuminsured()==null ? null : refinedBuilding.getElecEquipSuminsured().multiply(exchangeRate) );
+	
+				// New Input
+				refinedBuilding.setEquipmentSiLC(refinedBuilding.getEquipmentSi()==null ? null : refinedBuilding.getEquipmentSi().multiply(exchangeRate) );
+				refinedBuilding.setJewellerySiLc(refinedBuilding.getJewellerySi()==null ? null : refinedBuilding.getJewellerySi().multiply(exchangeRate) );
+				refinedBuilding.setPaitingsSiLc(refinedBuilding.getPaitingsSi()==null ? null : refinedBuilding.getPaitingsSi().multiply(exchangeRate) );
+				refinedBuilding.setCarpetsSiLc(refinedBuilding.getCarpetsSi()==null ? null : refinedBuilding.getCarpetsSi().multiply(exchangeRate) );
+				refinedBuilding.setWaterTankSiLc(refinedBuilding.getWaterTankSi()==null ? null : refinedBuilding.getWaterTankSi().multiply(exchangeRate) );
+				refinedBuilding.setLossOfRentSiLc(refinedBuilding.getLossOfRentSi()==null ? null : refinedBuilding.getLossOfRentSi().multiply(exchangeRate) );
+				refinedBuilding.setArchitectsSiLc(refinedBuilding.getArchitectsSi()==null ? null : refinedBuilding.getArchitectsSi().multiply(exchangeRate) );
+				
 				
 				// Burglary First Loss Percent
 				refinedBuilding.setApplianceLossPercent(refinedBuilding.getApplianceSi()!=null ? refinedBuilding.getApplianceLossPercent() : null ) ;

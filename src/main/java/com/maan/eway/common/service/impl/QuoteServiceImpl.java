@@ -2777,6 +2777,10 @@ public class QuoteServiceImpl implements QuoteService {
 				if(filterBuilding.size() > 0 ) {
 					BuildingRiskDetails build = filterBuilding.get(0);
 					res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
+					res.setWaterTankSi(build.getWaterTankSi() == null?"0" :build.getWaterTankSi().toPlainString());
+					res.setLossOfRentSi(build.getLossOfRentSi()== null?"0" :build.getLossOfRentSi().toPlainString());
+					res.setArchitectsSi(build.getArchitectsSi() == null?"0" :build.getArchitectsSi().toPlainString());
+					
 				} 
 				
 				// Content
@@ -2784,6 +2788,11 @@ public class QuoteServiceImpl implements QuoteService {
 				if(filterContent.size() > 0 ) {
 					BuildingRiskDetails build = filterContent.get(0);
 					res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
+					res.setEquipmentSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
+					res.setJewellerySi(build.getJewellerySi() == null?"0" :build.getJewellerySi().toPlainString());
+					res.setPaitingsSi(build.getPaitingsSi() == null?"0" :build.getPaitingsSi().toPlainString());
+					res.setCarpetsSi(build.getCarpetsSi() == null?"0" :build.getCarpetsSi().toPlainString());
+				
 					
 				} 
 				

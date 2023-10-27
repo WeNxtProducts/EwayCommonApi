@@ -31,6 +31,29 @@ public class BuildingSumInsuredDetails {
 	@JsonProperty("LiabilitySi")
     private String     liabilitySi;
 	
+	@JsonProperty("WaterTankSi")
+    private String    waterTankSi;
+
+	@JsonProperty("ArchitectsSi")
+    private String    architectsSi;
+
+	@JsonProperty("LossOfRentSi")
+    private String    lossOfRentSi;
+
+
+	@JsonProperty("TypeOfProperty")
+    private String    typeOfProperty;
+	
+	@JsonProperty("JewellerySi")
+    private String    jewellerySi;
+
+	@JsonProperty("PaitingsSi")
+    private String    paitingsSi;
+
+	@JsonProperty("CarpetsSi")
+    private String    carpetsSi;
+	
+	
 //	@JsonProperty("OccupationDetails")
 //    private List<OccupationReqClass>     occupationDetails ;
 	
