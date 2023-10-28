@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -2441,7 +2442,10 @@ List<Error> errorList = new ArrayList<Error>();
 					engine.setProductId(data.getProductId().toString());
 					engine.setInsuranceId(data.getCompanyId());
 					engine.setSectionId("");					
-					String oneProduct = ratingutil.collectProductType(engine);
+					List<Tuple> product = ratingutil.collectProductType(engine);
+					String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
+					
+
 					if (oneProduct.equals("M")) {
 						res.setTableName("MsVehicleDetails");
 					}
@@ -2476,7 +2480,10 @@ List<Error> errorList = new ArrayList<Error>();
 					engine.setProductId(data.getProductId().toString());
 					engine.setInsuranceId(data.getCompanyId());
 					engine.setSectionId("");					
-					String oneProduct = ratingutil.collectProductType(engine);
+					List<Tuple> product = ratingutil.collectProductType(engine);
+					String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
+					
+
 					if (oneProduct.equals("M")) {
 						res.setTableName("MsVehicleDetails");
 					}
@@ -2603,7 +2610,10 @@ List<Error> errorList = new ArrayList<Error>();
 					engine.setSectionId("");
 					String oneProduct ="" ;
 					try { 
-					oneProduct =  ratingutil.collectProductType(engine);
+						List<Tuple> product = ratingutil.collectProductType(engine);
+						 oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
+						
+
 					}  catch (Exception e) {
 						e.printStackTrace();
 						log.info("Exception is --->" + e.getMessage());
@@ -2648,7 +2658,9 @@ List<Error> errorList = new ArrayList<Error>();
 					engine.setSectionId("");
 					String oneProduct ="" ;
 					try { 
-					oneProduct =  ratingutil.collectProductType(engine);
+						List<Tuple> product = ratingutil.collectProductType(engine);
+						oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();						
+
 					}  catch (Exception e) {
 						e.printStackTrace();
 						log.info("Exception is --->" + e.getMessage());

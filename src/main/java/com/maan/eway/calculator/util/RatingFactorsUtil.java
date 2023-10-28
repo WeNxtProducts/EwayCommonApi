@@ -313,7 +313,7 @@ public class RatingFactorsUtil {
 	} 
 	
 	@Cacheable(cacheNames = {"ProductType"},keyGenerator  = "productTypeKeyGen",value = "ProductType" )
-	public synchronized String collectProductType(CalcEngine engine) {
+	public synchronized List<Tuple> collectProductType(CalcEngine engine) {
 		try{
 			
 			if(engine.getSectionId()=="") {
@@ -321,17 +321,13 @@ public class RatingFactorsUtil {
 				String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";				
 				SpecCriteria	criteria = crservice.createCriteria(ProductSectionMaster.class, prodSearch, "companyId");			  
 				List<Tuple> product = crservice.getResult(criteria, 0, 1);
-				String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
-				return oneProduct;
-					
-			}
-			else {
-			String todayInString = DD_MM_YYYY.format(new Date());
-			String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;sectionId:"+engine.getSectionId()+";";				
-			SpecCriteria	criteria = crservice.createCriteria(ProductSectionMaster.class, prodSearch, "companyId");			  
-			List<Tuple> product = crservice.getResult(criteria, 0, 1);
-			String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
-			return oneProduct;
+				return product;					
+			}else {
+				String todayInString = DD_MM_YYYY.format(new Date());
+				String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;sectionId:"+engine.getSectionId()+";";				
+				SpecCriteria	criteria = crservice.createCriteria(ProductSectionMaster.class, prodSearch, "companyId");			  
+				List<Tuple> product = crservice.getResult(criteria, 0, 1);
+				return product;
 			}
 		}catch (Exception e) {
 			// TODO: handle exception

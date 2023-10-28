@@ -61,6 +61,7 @@ import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.calculator.util.AdminCoverCalculator;
 import com.maan.eway.calculator.util.CoverCalculator;
 import com.maan.eway.calculator.util.CoverFromFactor;
+import com.maan.eway.calculator.util.CreateMinimumPremium;
 import com.maan.eway.calculator.util.DiscountFromFactor;
 import com.maan.eway.calculator.util.EndtCoverCalculator;
 import com.maan.eway.calculator.util.EndtFromFactor;
@@ -70,14 +71,12 @@ import com.maan.eway.calculator.util.SplitDiscountUtils;
 import com.maan.eway.calculator.util.SplitLoadingUtils;
 import com.maan.eway.calculator.util.SplitSubCoverUtil;
 import com.maan.eway.calculator.util.SubCoverCreationUtil;
-import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
-import com.maan.eway.endorsment.util.CopyPolicyCoverData;
 import com.maan.eway.endorsment.util.CoverFromPolicy;
 import com.maan.eway.endorsment.util.CreateEndorsment;
 import com.maan.eway.endorsment.util.DiscountFromPolicy;
@@ -110,6 +109,7 @@ import com.maan.eway.service.impl.referal.ReferalServiceImpl;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.JoinCriteria;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
+import com.sun.xml.bind.marshaller.MinimumEscapeHandler;
 
 @Service
 public class CalculatorEngineService implements CalculatorEngine {
@@ -135,6 +135,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 	protected List<Tuple> customers = null;
 	protected List<Cover> calculatedcover = null;
 	protected List<Tuple> prorata = null;
+	protected BigDecimal minimumPremium=BigDecimal.ZERO;
 
 	@Autowired
 	private FactorRateRequestDetailsService fservice;
@@ -446,7 +447,23 @@ public class CalculatorEngineService implements CalculatorEngine {
 				Comparator<Cover> comp = Comparator.comparing(Cover::getCoverageType);
 				retc.sort(comp);
 			}
-			
+			//if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
+			BigDecimal totalPremium=retc.stream().filter(x -> (!"N".equals(x.getIsselected()) )).map(x -> x.getPremiumAfterDiscountLC()).reduce(BigDecimal.ZERO,BigDecimal::add);
+			if(totalPremium.compareTo(minimumPremium)<0) {
+				List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+						.collect(Collectors.toList());
+				BigDecimal difference=minimumPremium.subtract(totalPremium,MathContext.DECIMAL32);
+				CreateMinimumPremium min=new CreateMinimumPremium(difference, engine, endtCount, taxey);
+				Cover mini = min.create();
+				List<Cover> minies=new ArrayList<Cover>(1);
+				minies.add(mini);
+				CoverCalculator calc = new CoverCalculator();
+				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);
+				minies.stream().forEach(calc);
+				retc.add(mini);
+				
+			}
+				
 			try {
 
 				String endtTypeId = vehicles.get(0).get("endtTypeId") == null ? ""
@@ -899,7 +916,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 			 * msvech.findByVdRefno(Long.parseLong(engine.getVdRefNo()));
 			 * System.out.println("findByVdRefno"+findByVdRefno.getChassisNumber());
 			 */
-			String oneProduct = ratingutil.collectProductType(engine);
+			 
+			List<Tuple> product = ratingutil.collectProductType(engine);
+			String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
+			
 
 			/*
 			 * vehicles=null; while(vehicles==null) {
@@ -979,6 +999,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 					String decimalLength = decimalDigits.equals("0") ? "" : String.format(stringFormat, 0L);
 					String pattern = StringUtils.isBlank(decimalLength) ? "#####0" : "#####0." + decimalLength;
 					decimalFormat = new DecimalFormat(pattern);
+										
+					minimumPremium =product.get(0).get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(product.get(0).get("minPremium").toString());
+					
 				}
 
 			}
