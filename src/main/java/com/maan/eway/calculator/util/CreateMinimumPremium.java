@@ -48,7 +48,7 @@ public class CreateMinimumPremium {
 				.dependentCoveryn("N")
 				.dependentCoverId("")
 				.coverageType("O")
-				.isselected("Y")
+				.isselected("D")
 				.isReferral("N")
 				.referalDescription("")
 				.coverBasedOn("sumInsured")
