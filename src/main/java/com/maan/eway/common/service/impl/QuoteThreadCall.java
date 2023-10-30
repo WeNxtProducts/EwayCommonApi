@@ -1134,10 +1134,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			    			&&  o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId()) ).collect(Collectors.toList());
 			    	
 		    		Object assetKey =  assetKeyValue.get(cov.getCoverBasedOn());
-		    		if(assetKey!=null && filterCovers.size() > 0 ) {
+		    		if(assetKey!=null && filterCovers.size() > 0 && ! cov.getCoverName().contains("Minimum Premium")) {
 		    			assetKeyValue.put(cov.getCoverBasedOn(),  cov.getSumInsured()==null ?  null : cov.getSumInsured().toPlainString());	
 				    
-		    		}	else if (assetKey!=null && "N".equalsIgnoreCase(cov.getDependentCoverYn())   ) {
+		    		}	else if (assetKey!=null && "N".equalsIgnoreCase(cov.getDependentCoverYn())  && ! cov.getCoverName().contains("Minimum Premium") ) {
 		    			assetKeyValue.put(cov.getCoverBasedOn(),  null );
 			    	}
 			    	
