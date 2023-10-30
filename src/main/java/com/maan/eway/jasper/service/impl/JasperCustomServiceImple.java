@@ -38,6 +38,7 @@ import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -1036,19 +1037,22 @@ public class JasperCustomServiceImple {
 					return lmap;
 				}).collect(Collectors.toList());
 				
-				CriteriaBuilder cb1 = em.getCriteriaBuilder();
-				CriteriaQuery<Tuple> cq1 = cb1.createQuery(Tuple.class);
+				CriteriaQuery<Tuple> cq1 = cb.createQuery(Tuple.class);
 				Root<PolicyCoverData> pcdRoot = cq1.from(PolicyCoverData.class);
 				Root<SectionDataDetails> sddRoot = cq1.from(SectionDataDetails.class);
+				Root<EserviceCommonDetails> ecdRoot = cq1.from(EserviceCommonDetails.class);
 				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
 						 pcdRoot.get("sumInsured").alias("sumInsured"),pcdRoot.get("rate").alias("rate"),pcdRoot.get("premiumIncludedTaxLc").alias("premiumIncludedTaxLc"),
-						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"))
+						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"),ecdRoot.get("occupationDesc").alias("occupationDesc"))
 				 .where(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")),cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), sddRoot.get("sectionId")),
-						 cb.equal(pcdRoot.get("taxId"),"0"),cb.equal(pcdRoot.get("discLoadId"), "0"),cb.equal(pcdRoot.get("subCoverId"), "0"))
+						 cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), ecdRoot.get("sectionId")),cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),
+						 cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")),cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")),cb.equal(pcdRoot.get("taxId"),"0"),
+						 cb.equal(pcdRoot.get("discLoadId"), "0"),cb.equal(pcdRoot.get("subCoverId"), "0"))
 				 .orderBy(cb.asc(sddRoot.get("sectionId")));			
 			List<Tuple> Slist = em.createQuery(cq1).getResultList();
 			Map<Object, List<Map<String,Object>>> sectionRes = Slist.stream().collect(Collectors.groupingBy(g -> g.get("sectionDesc"),Collectors.mapping(v ->{
 				LinkedHashMap<String,Object> Smap = new LinkedHashMap<String,Object>();
+				Smap.put("occupationDesc", v.get("occupationDesc"));
 				Smap.put("coverDesc", v.get("coverDesc"));
 				Smap.put("sumInsured", v.get("sumInsured"));
 				Smap.put("rate", v.get("rate"));
