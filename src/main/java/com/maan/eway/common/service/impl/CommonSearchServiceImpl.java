@@ -159,8 +159,8 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 					cb.max(c.get("entryDate")).alias("entryDate"),
 					cb.max(c.get("overallPremiumLc")).alias("overallPremiumLc"),
 					cb.max(c.get("currency")).alias("currency"),
-					cb.max(c.get("exchangeRate")).alias("exchangeRate")
-		
+					cb.max(c.get("exchangeRate")).alias("exchangeRate"),
+					cb.max(c.get("productDesc")).alias("productDesc")	
 					);
 
 

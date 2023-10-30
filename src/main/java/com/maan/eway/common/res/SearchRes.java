@@ -80,6 +80,9 @@ public class SearchRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate;
+	
+	@JsonProperty("ProductName")
+	private String productName;
 	    
 /*	    
 	

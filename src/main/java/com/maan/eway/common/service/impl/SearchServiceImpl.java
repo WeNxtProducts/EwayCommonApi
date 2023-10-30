@@ -28,6 +28,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.asn1.dvcs.Data;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -333,9 +334,10 @@ public class SearchServiceImpl implements SearchService {
 				res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
 				res.setStatus(data.get("status") == null ? null :data.get("status").toString());
 				res.setWindScreenCoverRequired(data.get("windScreenCoverRequired") == null ? null :data.get("windScreenCoverRequired").toString());
-				// res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString()
-				// );
-				}	else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId)) {
+				res.setProductName(data.get("productName")==null?null:data.get("productName").toString());		
+				// res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString());
+				}	
+				else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId)) {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 					res.setMobileNo1(data.get("mobileNumber").toString());
 					res.setBranchName(branchName);
@@ -358,6 +360,8 @@ public class SearchServiceImpl implements SearchService {
 					res.setQuoteNo(data.get("quoteNo") == null ? null :data.get("quoteNo").toString());
 					res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
 					res.setStatus(data.get("status") == null ? null :data.get("status").toString());
+					res.setProductName(data.get("productName")==null?null:data.get("productName").toString());		
+
 					
 				}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
@@ -382,6 +386,9 @@ public class SearchServiceImpl implements SearchService {
 					res.setQuoteNo(data.get("quoteNo") == null ? null :data.get("quoteNo").toString());
 					res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
 					res.setStatus(data.get("status") == null ? null :data.get("status").toString());
+					res.setProductName(data.get("productDesc")==null?null:data.get("productDesc").toString());		
+
+
 				}else {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 					res.setMobileNo1(data.get("mobileNumber").toString());
@@ -405,6 +412,8 @@ public class SearchServiceImpl implements SearchService {
 					res.setQuoteNo(data.get("quoteNo") == null ? null :data.get("quoteNo").toString());
 					res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
 					res.setStatus(data.get("status") == null ? null :data.get("status").toString());
+					res.setProductName(data.get("productDesc")==null?null:data.get("productDesc").toString());
+
 				}
 				
 				reslist.add(res);
