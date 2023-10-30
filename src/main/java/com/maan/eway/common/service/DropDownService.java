@@ -223,6 +223,6 @@ public interface DropDownService {
 	List<DropDownRes> lifePolicyTerms(LovDropDownReq req);
 
 	List<DropDownRes> buildingPropertyTypes(LovDropDownReq req);
-
+	List<DropDownRes> getReportBuissnessTypes(LovDropDownReq req);
 
 }

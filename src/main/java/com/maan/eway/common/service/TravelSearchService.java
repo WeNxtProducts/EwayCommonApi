@@ -17,8 +17,8 @@ public interface TravelSearchService {
 	
 List<Tuple> searchTravel(SearchReq req, List<String> branches);
 	
-	List<Tuple> searchTravelDetails(String searchKey, String searchValue, String companyId, String loginId,
-			String userType, List<String> branches,String productId) ;
+//	List<Tuple> searchTravelDetails(String searchKey, String searchValue, String companyId, String loginId,
+//			String userType, List<String> branches,String productId) ;
 
 	List<ListItemValue> searchDropdownTravel(CopyQuoteDropDownReq req);
 

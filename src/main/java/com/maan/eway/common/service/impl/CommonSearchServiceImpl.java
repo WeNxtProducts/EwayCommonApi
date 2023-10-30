@@ -104,18 +104,18 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 			String productId=req.getProductId();
 
 			if ("RequestReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("CustomerReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("CustomerName".equalsIgnoreCase(searchKey)) {
-				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("QuoteNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} 
 			else if ("MobileNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			}else if ("PolicyNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			}
 			} catch (Exception e) {
 			e.printStackTrace();
@@ -125,8 +125,8 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 		return searchQuote;
 	}
 
-	@Override
-	public List<Tuple> commonDetails(String searchKey, String searchValue, String companyId, String loginId,
+
+	public List<Tuple> commonDetails(SearchReq req,String searchKey, String searchValue, String companyId, String loginId,
 			String userType, List<String> branches,String productId) {
 		// TODO Auto-generated method stub
 		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
@@ -197,7 +197,7 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 
 
 			if ("issuer".equalsIgnoreCase(userType)) {
-				n3 = cb.equal(c.get("applicationId"), loginId);
+				n3 = cb.equal(c.get("applicationId"), req.getApplicationId());
 				Expression<String> e0 = c.get("branchCode");
 				n4 = e0.in(branches);
 			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
@@ -510,6 +510,9 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 		}
 		return reslist;
 	}
+
+
+
 }
 
 

@@ -18,7 +18,7 @@ public interface BuildingSearchService {
 
 	List<Tuple> searchBuilding(SearchReq req, List<String> branches);
 	
-	List<Tuple> searchBuildingDetails(String searchKey, String searchValue, String companyId, String loginId,
+	List<Tuple> searchBuildingDetails(SearchReq req,String searchKey, String searchValue, String companyId, String loginId,
 			String userType, List<String> branches,String productId) ;
 
 	List<ListItemValue> searchDropdownBuilding(CopyQuoteDropDownReq req);

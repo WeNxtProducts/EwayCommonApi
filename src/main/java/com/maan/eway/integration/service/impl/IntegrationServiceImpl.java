@@ -202,47 +202,60 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 				System.out.println("*********PolicyNo " + policyNo);
 
 				if (configMas.getPremiaId() == 1) {
+					System.out.println("*********1.YiPolicyDetail: ");
 					Object list = frameReqService.pushYiPolicyDetail(policyNo);
-					System.out.println("*********1.YiPolicyDetail: " + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 2) {
-
+					System.out.println("*********2.YiSectionDetail:");
 					Object list = frameReqService.pushYiSectionDetail(policyNo);
-					System.out.println("*********2.YiSectionDetail:" + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 3) {
+					System.out.println("*********3.PgitPolRiskAddlInfo:");
 					Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
-					System.out.println("*********3.PgitPolRiskAddlInfo:" + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 4) {
-
+					System.out.println("*********4.MotDriverDetail: ");
 					Object list = frameReqService.pushMotDriverDetail(policyNo);
-					System.out.println("*********4.MotDriverDetail: " + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 5) {
-
+					System.out.println("*********5.YiCoverDetail: ");
 					Object list = frameReqService.pushYiCoverDetail(policyNo);
-					System.out.println("*********5.YiCoverDetail: " + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 6) {
-
+					System.out.println("*********6.MotCommDiscountDetai:");
 					Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
-					System.out.println("*********6.MotCommDiscountDetai:" + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 7) {
-
+					System.out.println("*********7.YiChargeDetail: ");
 					Object list = frameReqService.pushYiChargeDetail(policyNo);
-					System.out.println("*********7.YiChargeDetail: " + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 8) {
-
+					System.out.println("*********8.YiVatDetail:");
 					Object list = frameReqService.pushYiVatDetail(policyNo);
-					System.out.println("*********8.YiVatDetail:" + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 9) {
-
+					System.out.println("*********9.YiPremCal:");
 					Object list = frameReqService.pushYiPremCal(policyNo);
-					System.out.println("*********9.YiPremCal:" + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 10) {
-
+					System.out.println("*********10.YiPolicyApproval:");
 					Object list = frameReqService.pushYiPolicyApproval(policyNo);
-					System.out.println("*********10.YiPolicyApproval:" + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				} else if (configMas.getPremiaId() == 11) {
-
+					System.out.println("*********11.CreditLimitDetail:");
 					Object list = frameReqService.pushCreditLimitDetail(reqRefNo);
-					System.out.println("*********11.CreditLimitDetail:" + json.toJson(list));
+					System.out.println("List " + json.toJson(list));
+					System.out.println("_____________________________________________ ");
 				}
 			}
 

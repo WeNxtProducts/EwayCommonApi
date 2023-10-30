@@ -105,18 +105,18 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 			String productId=req.getProductId();
 
 			if ("RequestReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchTravelDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchTravelDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("CustomerReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchTravelDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchTravelDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("CustomerName".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchTravelDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchTravelDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("QuoteNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchTravelDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchTravelDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} 			
 			else if ("MobileNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchTravelDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchTravelDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			}else if ("PolicyNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchTravelDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchTravelDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			}
 							
 		} catch (Exception e) {
@@ -128,8 +128,8 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 
 	}
 
-	@Override
-	public List<Tuple> searchTravelDetails(String searchKey, String searchValue, String companyId, String loginId,
+
+	public List<Tuple> searchTravelDetails(SearchReq req,String searchKey, String searchValue, String companyId, String loginId,
 			String userType, List<String> branches,String productId) {
 		// TODO Auto-generated method stub
 		List<Tuple> customerDetailsList = new ArrayList<Tuple>();

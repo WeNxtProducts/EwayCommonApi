@@ -20,8 +20,8 @@ public interface CommonSearchService {
 	
 	List<Tuple> searchCommon(SearchReq req, List<String> branches);
 	
-	List<Tuple> commonDetails(String searchKey, String searchValue, String companyId, String loginId,
-			String userType, List<String> branches,String productId) ;
+//	List<Tuple> commonDetails(String searchKey, String searchValue, String companyId, String loginId,
+//			String userType, List<String> branches,String productId) ;
 
 	List<ListItemValue> searchDropdownCommon(CopyQuoteDropDownReq req);
 

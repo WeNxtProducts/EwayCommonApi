@@ -111,17 +111,17 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			String userType = req.getUserType();
 			String productId=req.getProductId();
 			if ("RequestReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchBuildingDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("CustomerReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchBuildingDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("CustomerName".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchBuildingDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("QuoteNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchBuildingDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("MobileNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchBuildingDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("PolicyNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = searchBuildingDetails(req,searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -132,7 +132,7 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 	}
 
 	@Override
-	public List<Tuple> searchBuildingDetails(String searchKey, String searchValue, String companyId, String loginId,
+	public List<Tuple> searchBuildingDetails(SearchReq req,String searchKey, String searchValue, String companyId, String loginId,
 			String userType, List<String> branches,String productId) {
 		// TODO Auto-generated method stub
 		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
@@ -381,7 +381,7 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			
 
 			if ("issuer".equalsIgnoreCase(userType)) {
-				n3 = cb.equal(c.get("applicationId"), loginId);
+				n3 = cb.equal(c.get("applicationId"), req.getApplicationId());
 				Expression<String> e0 = c.get("branchCode");
 				n4 = e0.in(branches);
 			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {

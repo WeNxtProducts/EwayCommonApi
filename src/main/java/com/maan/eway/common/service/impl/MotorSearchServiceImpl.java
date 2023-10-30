@@ -194,27 +194,27 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			String userType = req.getUserType();
 
 			if ("RequestReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("MobileNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("CustomerName".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("QuoteNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("ChassisNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("PolicyNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("MotorCategory".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("VehicleType".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("CustomerCode".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("VehicleModel".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("VehicleMake".equalsIgnoreCase(searchKey)) {
-				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = adminsearch(req,searchKey, searchValue, companyId, loginId, userType, branches);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -224,7 +224,7 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 		return searchQuote;
 	}
 
-	public List<Tuple> adminsearch(String searchKey, String searchValue, String companyId, String loginId,
+	public List<Tuple> adminsearch(SearchReq req,String searchKey, String searchValue, String companyId, String loginId,
 			String userType, List<String> branches) {
 		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -303,7 +303,7 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);
 
 			if ("issuer".equalsIgnoreCase(userType)) {
-				n3 = cb.equal(c.get("applicationId"), loginId);
+				n3 = cb.equal(c.get("applicationId"), req.getApplicationId());
 				Expression<String> e0 = c.get("branchCode");
 				n4 = e0.in(branches);
 			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
