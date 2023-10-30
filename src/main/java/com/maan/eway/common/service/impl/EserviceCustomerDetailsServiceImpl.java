@@ -5,13 +5,17 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -49,6 +54,7 @@ import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
+import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
@@ -1298,11 +1304,57 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		try {
 			// Limit , Offset
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			Pageable paging = PageRequest.of(limit, offset, Sort.by("updatedDate").descending());
 
 			LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
-			Page<EserviceCustomerDetails> datas = null;
+			List<EserviceCustomerDetails> custList = new ArrayList<EserviceCustomerDetails>(); 
+			// Get Datas
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EserviceCustomerDetails> query = cb.createQuery(EserviceCustomerDetails.class);
+
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			Root<PersonalInfo> p = query.from(PersonalInfo.class);
+			
+			// Select
+			query.select(c  ).distinct(true);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(c.get("updatedDate")));
+
+			// Where
+			Predicate n1 = cb.equal(p.get("customerId"), h.get("customerId"));
+			Predicate n2 = cb.equal(h.get("companyId"), req.getComapanyId());
+			Predicate n3 = cb.equal(c.get("customerReferenceNo"), p.get("customerReferenceNo"));
+		//	Predicate n3 = cb.equal(h.get("productId"), req.getProductId());
+			Predicate n4 = null ;
+			Predicate n5 = null ;
+			
+			if (loginData.getUserType().equalsIgnoreCase("Broker") || loginData.getUserType().equalsIgnoreCase("User")) {
+				
+				n4 = cb.equal(  h.get("brokerBranchCode"), req.getBrokerBranchCode());
+				n5 = cb.equal(  h.get("loginId"), req.getCreatedBy());
+			} else {
+				
+				n4 = cb.equal(  h.get("branchCode"),  req.getBranchCode());
+				n5 = cb.equal(  h.get("applicationId"), req.getCreatedBy());
+			}
+
+			query.where(n1, n2,n3, n4, n5).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			custList = result.getResultList();
+			
+			
+			
+			List<EserviceCustomerDetails> totalCustList = new ArrayList<EserviceCustomerDetails>();
+			Page<EserviceCustomerDetails> datas = null ;
 			if (loginData.getUserType().equalsIgnoreCase("Broker")
 					|| loginData.getUserType().equalsIgnoreCase("User")) {
 //				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedBy(paging,
@@ -1313,11 +1365,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			} else {
 //				datas = repository.findByCompanyIdAndBranchCodeAndCreatedBy(paging, req.getComapanyId(),
 //						req.getBranchCode(), req.getCreatedBy());
-				datas = repository.findByCompanyIdAndBranchCodeAndCreatedBy(paging,
+				datas  = repository.findByCompanyIdAndBranchCodeAndCreatedBy(paging,
 						req.getComapanyId(), req.getBranchCode(),req.getCreatedBy());
 			}
+			
+			totalCustList.addAll(datas.getContent());
+			totalCustList.addAll(custList);
+			
+			totalCustList = totalCustList.stream().filter(distinctByKey(o -> Arrays.asList(o.getCustomerReferenceNo()))).collect(Collectors.toList());
 
-			for (EserviceCustomerDetails data : datas) {
+			for (EserviceCustomerDetails data : totalCustList) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res = dozerMapper.map(data, CustomerDetailsGetRes.class);
 				res.setMobileCodeDesc1(data.getMobileCodeDesc1()==null?"":data.getMobileCodeDesc1());
@@ -1342,6 +1399,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return resList;
 	}
 
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+	
 	@Override
 	public List<CustomerDetailsGetRes> getbyvrtinno(EserviceCustomerSearchVrtinReq req) {
 		List<CustomerDetailsGetRes> reslist = new ArrayList<CustomerDetailsGetRes>();
@@ -1423,11 +1485,57 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
+			
 			// Limit , Offset
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			Pageable paging = PageRequest.of(limit, offset, Sort.by("updatedDate").descending());
+
 			LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
+			List<EserviceCustomerDetails> custList = new ArrayList<EserviceCustomerDetails>(); 
+			// Get Datas
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EserviceCustomerDetails> query = cb.createQuery(EserviceCustomerDetails.class);
+
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			Root<PersonalInfo> p = query.from(PersonalInfo.class);
+			
+			// Select
+			query.select(c  ).distinct(true);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(c.get("updatedDate")));
+
+			// Where
+			Predicate n1 = cb.equal(p.get("customerId"), h.get("customerId"));
+			Predicate n2 = cb.equal(h.get("companyId"), req.getComapanyId());
+			Predicate n3 = cb.equal(c.get("customerReferenceNo"), p.get("customerReferenceNo"));
+			Predicate n6 = cb.equal(c.get("status"), "Y");
+		//	Predicate n3 = cb.equal(h.get("productId"), req.getProductId());
+			Predicate n4 = null ;
+			Predicate n5 = null ;
+			
+			if (loginData.getUserType().equalsIgnoreCase("Broker") || loginData.getUserType().equalsIgnoreCase("User")) {
+				
+				n4 = cb.equal(  h.get("brokerBranchCode"), req.getBrokerBranchCode());
+				n5 = cb.equal(  h.get("loginId"), req.getCreatedBy());
+			} else {
+				
+				n4 = cb.equal(  h.get("branchCode"),  req.getBranchCode());
+				n5 = cb.equal(  h.get("applicationId"), req.getCreatedBy());
+			}
+
+			query.where(n1, n2,n3, n4, n5,n6).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			custList = result.getResultList();
+			
 			Page<EserviceCustomerDetails> datas = null;
 			if (loginData.getUserType().equalsIgnoreCase("Broker")
 					|| loginData.getUserType().equalsIgnoreCase("User")) {
@@ -1440,7 +1548,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						req.getCreatedBy(), "Y");
 			}
 
-			for (EserviceCustomerDetails data : datas) {
+			List<EserviceCustomerDetails> totalCustList = new ArrayList<EserviceCustomerDetails>();
+			totalCustList.addAll(datas.getContent());
+			totalCustList.addAll(custList);
+			
+			totalCustList = totalCustList.stream().filter(distinctByKey(o -> Arrays.asList(o.getCustomerReferenceNo()))).collect(Collectors.toList());
+
+			for (EserviceCustomerDetails data : totalCustList) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res = dozerMapper.map(data, CustomerDetailsGetRes.class);
 				res.setMobileCodeDesc1(data.getMobileCodeDesc1()==null?"":data.getMobileCodeDesc1());
