@@ -23,7 +23,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
-import org.apache.tomcat.util.buf.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -316,7 +316,7 @@ public class RatingFactorsUtil {
 	public synchronized List<Tuple> collectProductType(CalcEngine engine) {
 		try{
 			
-			if(engine.getSectionId()=="") {
+			if(StringUtils.isBlank(engine.getSectionId())) {
 				String todayInString = DD_MM_YYYY.format(new Date());
 				String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";				
 				SpecCriteria	criteria = crservice.createCriteria(ProductSectionMaster.class, prodSearch, "companyId");			  
