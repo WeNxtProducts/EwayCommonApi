@@ -683,6 +683,10 @@ private BigDecimal       endtPremiumLc ;
 @Column(name="POLICY_COVERTED_DATE")
 private Date       policyCovertedDate ;
 
+@Column(name="COMMISSION_MODIFY_YN")
+private String commissionModifyYn;
+
+
 }
 
 

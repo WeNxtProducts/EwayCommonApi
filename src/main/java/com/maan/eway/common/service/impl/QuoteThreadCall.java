@@ -2592,7 +2592,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setAmendId(0);
 			home.setApplicationNo(0L);
 			
-
+			// Commsion Setup
+			home.setCommissionModifyYn(StringUtils.isBlank(request.getCommissionModifyYn()) ? "N" : request.getCommissionModifyYn()) ;
+			home.setCommissionPercentage(StringUtils.isNotBlank(request.getCommissionPercent()) ? new BigDecimal(request.getCommissionPercent())  : home.getCommissionPercentage()) ;
+			
 			String loginId = "" ;
 			if(! "1".equalsIgnoreCase(home.getApplicationId()  )) {
 				loginId = home.getApplicationId();

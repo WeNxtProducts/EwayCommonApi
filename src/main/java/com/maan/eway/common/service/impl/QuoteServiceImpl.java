@@ -1473,7 +1473,13 @@ public class QuoteServiceImpl implements QuoteService {
 				errors.add(new Error("03","Admin Remarks","Please Enter Admin Remarks"));
 			}
 			
-			
+			if(StringUtils.isNotBlank(req.getCommissionModifyYn()) && "Y".equalsIgnoreCase(req.getCommissionModifyYn()) ) {
+				if(StringUtils.isBlank(req.getCommissionPercent() )) {
+					errors.add(new Error("03","Admin Remarks","Please Enter Commission Percent"));
+				} else if(! req.getCommissionPercent().matches("[0-9.]+") ) {
+					errors.add(new Error("03","Admin Remarks","Please Enter Valid Commission Percent"));
+				}
+			}
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -2296,7 +2302,9 @@ public class QuoteServiceImpl implements QuoteService {
 				req2.setVehicleIdsList(vehicleIdsList);
 				req2.setManualReferralYn("N");
 				req2.setReferralRemarks("");
-				 
+				req2.setCommissionModifyYn(req.getCommissionModifyYn());
+				req2.setCommissionPercent(req.getCommissionPercent());
+				
 				CommonRes	res = otSer.call_OT_Insert(req2);
 				NewQuoteRes response = (NewQuoteRes) res.getCommonResponse();
 				updateRes.setResponse("Referal Approved");
@@ -2389,6 +2397,10 @@ public class QuoteServiceImpl implements QuoteService {
 				req2.setVehicleIdsList(vehicleIdsList);
 				req2.setManualReferralYn("N");
 				req2.setReferralRemarks("");
+				req2.setCommissionModifyYn(req.getCommissionModifyYn());
+				req2.setCommissionPercent(req.getCommissionPercent());
+				
+				
 				CommonRes	res = otSer.call_OT_Insert(req2);
 				NewQuoteRes response = (NewQuoteRes) res.getCommonResponse();
 				updateRes.setResponse("Referal Approved");
@@ -2481,6 +2493,9 @@ public class QuoteServiceImpl implements QuoteService {
 				req2.setVehicleIdsList(vehicleIdsList);
 				req2.setManualReferralYn("N");
 				req2.setReferralRemarks("");
+				req2.setCommissionModifyYn(req.getCommissionModifyYn());
+				req2.setCommissionPercent(req.getCommissionPercent());
+				
 				CommonRes	res = otSer.call_OT_Insert(req2);
 				NewQuoteRes response = (NewQuoteRes) res.getCommonResponse();
 				updateRes.setResponse("Referal Approved");
@@ -2602,6 +2617,9 @@ public class QuoteServiceImpl implements QuoteService {
 				req2.setVehicleIdsList(vehicleIdsList);
 				req2.setManualReferralYn("N");
 				req2.setReferralRemarks("");
+				req2.setCommissionModifyYn(req.getCommissionModifyYn());
+				req2.setCommissionPercent(req.getCommissionPercent());
+				
 				CommonRes	res = otSer.call_OT_Insert(req2);
 				NewQuoteRes response = (NewQuoteRes) res.getCommonResponse();
 				updateRes.setResponse("Referal Approved");

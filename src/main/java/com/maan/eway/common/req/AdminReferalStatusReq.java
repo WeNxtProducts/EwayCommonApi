@@ -27,4 +27,10 @@ public class AdminReferalStatusReq {
 	
 	@JsonProperty("CompanyId")
 	private String companyId;
+	
+	@JsonProperty("CommissionModifyYn")
+	private String commissionModifyYn;
+	
+	@JsonProperty("CommissionPercent")
+	private String commissionPercent;
 }

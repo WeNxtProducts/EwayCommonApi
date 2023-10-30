@@ -42,6 +42,7 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.FactorRateRequestDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
@@ -84,6 +85,7 @@ import com.maan.eway.endorsment.util.LoadingFromPolicy;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PolicyCoverDataEndtRepository;
@@ -175,6 +177,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 	
 	@Autowired
 	private CommonDataDetailsRepository commonRepo;
+	
+	@Autowired
+	private HomePositionMasterRepository homeRepo ;
 	
 	private Boolean isPolicyPeriod=Boolean.FALSE;
 	
@@ -1253,6 +1258,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
 			}
 			
+			HomePositionMaster homeData = homeRepo.findByQuoteNo(v1.getQuoteDetails().getQuoteNo());
+			
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				List<MotorDataDetails> motors = motorRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteno());
  				//List<EserviceMotorDetailsRes> motors = (List<EserviceMotorDetailsRes>) v1.getRiskDetails();
@@ -1264,9 +1271,13 @@ public class CalculatorEngineService implements CalculatorEngine {
 							v.getProductId().toString(), loginId, v.getBrokerCode(), v.getPolicyType());
 					 
 						if(policylist.size()>0 && policylist!=null) {
-						
-								commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
-							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
+								if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
+									commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
+								} else {
+									commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
+											: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+								}
+								
 						}
 						else {
 							commissionPercent=5.0;
@@ -1414,8 +1425,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 							v.getProductId().toString(), loginId, v1.getQuoteDetails().getBrokerCode(), "99999");
 						if(policylist.size()>0 && policylist!=null) {
 						
-							commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
-							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
+							if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
+								commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
+							} else {
+								commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
+										: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+							}
 						}
 						else {
 							commissionPercent=5.0;
@@ -1567,8 +1582,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 					 // Double commissionPercent = v.getCommissionPercentage().doubleValue();
 						if(policylist.size()>0 && policylist!=null) {
 						
-					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
-							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
+							if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
+								commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
+							} else {
+								commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
+										: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+							}
 						}
 						else {
 							commissionPercent=5.0;
@@ -1881,8 +1900,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 					 Double commissionPercent =v.getCommissionPercentage().doubleValue();
 						if(policylist.size()>0 && policylist!=null) {
 						
-					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
-							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
+							if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
+								commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
+							} else {
+								commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
+										: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+							}
 						}
 						else {
 							commissionPercent=5.0;

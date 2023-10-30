@@ -1598,6 +1598,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             request.setEndtFields(endtFields);
             request.setMotorYn(req.getMotorYn());
             request.setOriginalPolicyNo(originalPolicyNo);
+            request.setCommissionModifyYn(req.getCommissionModifyYn());
+            request.setCommissionPercent(req.getCommissionPercent());
             
             commonRes.setCommonResponse(request);
 			commonRes.setIsError(false);

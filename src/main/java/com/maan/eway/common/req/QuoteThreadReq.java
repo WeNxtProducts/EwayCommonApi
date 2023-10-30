@@ -84,5 +84,11 @@ public class QuoteThreadReq {
 	
 	private String originalPolicyNo;
 
+
+	@JsonProperty("CommissionModifyYn")
+	private String commissionModifyYn;
+	
+	@JsonProperty("CommissionPercent")
+	private String commissionPercent;
 	
 }

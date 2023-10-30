@@ -41,5 +41,12 @@ public class NewQuoteReq {
 	
 	@JsonProperty("MotorYn")
 	private String motorYn;
+	
+	
+	@JsonProperty("CommissionModifyYn")
+	private String commissionModifyYn;
+	
+	@JsonProperty("CommissionPercent")
+	private String commissionPercent;
 
 }
