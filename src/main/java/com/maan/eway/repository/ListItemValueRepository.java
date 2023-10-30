@@ -32,25 +32,31 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  
 public interface ListItemValueRepository  extends JpaRepository<ListItemValue,ListItemValueId > , JpaSpecificationExecutor<ListItemValue> {
 
-	List<ListItemValue> findByItemTypeAndStatusOrderByItemCodeAsc(String string, String string2);
+//	List<ListItemValue> findByItemTypeAndStatusOrderByItemCodeAsc(String string, String string2);
 
 	ListItemValue findByItemTypeAndItemCodeAndStatus(String string, String productIconId, String string2);
 
-	List<ListItemValue> findByStatusOrderByItemIdAsc(String string);
+//	List<ListItemValue> findByStatusOrderByItemIdAsc(String string);
 
-	List<ListItemValue> findByItemTypeAndStatus(String string, String string2);
+//	List<ListItemValue> findByItemTypeAndStatus(String string, String string2);
 
-	List<ListItemValue> findByItemTypeAndStatusOrderByItemIdAsc(String string, String string2);
+//	List<ListItemValue> findByItemTypeAndStatusOrderByItemIdAsc(String string, String string2);
 
-	List<ListItemValue> findByItemTypeAndStatusOrderByItemCodeDesc(String string, String string2);
+//	List<ListItemValue> findByItemTypeAndStatusOrderByItemCodeDesc(String string, String string2);
 
 	ListItemValue findByItemTypeAndItemCode(String string, String gender);
 
-	List<ListItemValue> findByItemTypeAndStatusOrderByParam2Asc(String userType, String string);
+//	List<ListItemValue> findByItemTypeAndStatusOrderByParam2Asc(String userType, String string);
 
-	List<ListItemValue> findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc(String string, String string2,
-			String insuranceId);
+//	List<ListItemValue> findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc(String string, String string2,
+//			String insuranceId);
 
 	ListItemValue findByItemTypeAndItemCodeAndCompanyId(String string, String categoryId, String companyId);
+
+	List<ListItemValue> findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc(String string, String string2,
+			String companyId);
+
+
+
 
 }

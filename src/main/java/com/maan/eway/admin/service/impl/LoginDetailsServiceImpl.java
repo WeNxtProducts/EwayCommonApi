@@ -489,7 +489,7 @@ this.repository = repo;
 			}
 			loginRepo.saveAndFlush(saveLogin);
 				
-			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("MOBILE_CODE" , "Y");
+			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc("MOBILE_CODE" , "Y",loginReq.getCompanyId() );
 			// Login User Details Insert
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ;
 			LoginUserInfo userInfo = new LoginUserInfo(); 
@@ -690,7 +690,7 @@ this.repository = repo;
 			updateUser.setUpdatedDate(new Date());
 			updateUser.setUpdatedBy(loginReq.getCreatedBy());
 			updateUser.setStatus(updateLogin.getStatus());
-			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("MOBILE_CODE" , "Y");
+			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc("MOBILE_CODE" , "Y", loginReq.getCompanyId());
 			updateUser.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			updateUser.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			updateUser.setTaxExemptedYn(StringUtils.isBlank(personalReq.getTaxExemptedYn())?"N":personalReq.getTaxExemptedYn() );

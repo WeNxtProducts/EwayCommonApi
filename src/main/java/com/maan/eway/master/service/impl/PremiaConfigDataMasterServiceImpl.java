@@ -248,7 +248,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			}
 			
 			if(StringUtils.isNotBlank(req.getDataTypeId())) {
-			ListItemValue datatype = listrepo.findByItemTypeAndItemCode("DATA_TYPE", req.getDataTypeId());
+			ListItemValue datatype = listrepo.findByItemTypeAndItemCodeAndCompanyId("DATA_TYPE", req.getDataTypeId(),req.getCompanyId() );
 			}
 			dozerMapper.map(req, saveData);
 
@@ -273,7 +273,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			saveData.setColumnId(Integer.valueOf(columnId));
 			saveData.setDataTypeId(req.getDataTypeId()==null?null:req.getDataTypeId());
 			if(StringUtils.isNotBlank(req.getDataTypeId())) {
-				ListItemValue datatype = listrepo.findByItemTypeAndItemCode("DATA_TYPE", req.getDataTypeId());
+				ListItemValue datatype = listrepo.findByItemTypeAndItemCodeAndCompanyId("DATA_TYPE", req.getDataTypeId(),req.getCompanyId() );
 				saveData.setDataTypeDesc(datatype.getItemValue()==null?null:datatype.getItemValue());
 				
 			}
