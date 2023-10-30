@@ -22,6 +22,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -72,6 +73,7 @@ import com.maan.eway.jasper.res.TravelDataSetTwoRes;
 import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
@@ -98,6 +100,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private ProductEmployeesDetailsRepository productEmpDetRepo;
+	
+	@Autowired
+	private EserviceCommonDetailsRepository eserviceCommonDetRepo;
 		
 	private String RenewalDate(String Input) {
 		DateTimeFormatter inputformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -1040,15 +1045,32 @@ public class JasperCustomServiceImple {
 				CriteriaQuery<Tuple> cq1 = cb.createQuery(Tuple.class);
 				Root<PolicyCoverData> pcdRoot = cq1.from(PolicyCoverData.class);
 				Root<SectionDataDetails> sddRoot = cq1.from(SectionDataDetails.class);
-				Root<EserviceCommonDetails> ecdRoot = cq1.from(EserviceCommonDetails.class);
+				List<EserviceCommonDetails> eserviceCommonList = eserviceCommonDetRepo.findByQuoteNo(map.get("quoteNo").toString());
+				Selection<Object> eserviceQuote = null;
+				
+				List<Predicate> predicate = new ArrayList<Predicate>();
+				predicate.add(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")));
+				predicate.add(cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")));
+				predicate.add(cb.equal(pcdRoot.get("sectionId"), sddRoot.get("sectionId")));
+				predicate.add(cb.equal(pcdRoot.get("taxId"),"0"));
+				predicate.add(cb.equal(pcdRoot.get("discLoadId"), "0"));
+				predicate.add(cb.equal(pcdRoot.get("subCoverId"), "0"));
+				if(!eserviceCommonList.isEmpty()) {
+					Root<EserviceCommonDetails> ecdRoot = cq1.from(EserviceCommonDetails.class);
+					eserviceQuote = ecdRoot.get("occupationDesc").alias("occupationDesc");
+					predicate.add(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")));
+					predicate.add(cb.equal(pcdRoot.get("sectionId"), ecdRoot.get("sectionId")));
+					predicate.add(cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")));
+					predicate.add(cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")));
+					predicate.add(cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
+				}
+				Predicate [] predicateArray = new Predicate[predicate.size()];
+				predicate.toArray(predicateArray);
 				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
 						 pcdRoot.get("sumInsured").alias("sumInsured"),pcdRoot.get("rate").alias("rate"),pcdRoot.get("premiumIncludedTaxLc").alias("premiumIncludedTaxLc"),
-						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"),ecdRoot.get("occupationDesc").alias("occupationDesc"))
-				 .where(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")),cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), sddRoot.get("sectionId")),
-						 cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), ecdRoot.get("sectionId")),cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),
-						 cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")),cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")),cb.equal(pcdRoot.get("taxId"),"0"),
-						 cb.equal(pcdRoot.get("discLoadId"), "0"),cb.equal(pcdRoot.get("subCoverId"), "0"))
-				 .orderBy(cb.asc(sddRoot.get("sectionId")));			
+						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"),!eserviceCommonList.isEmpty()?eserviceQuote:cb.literal("").alias("occupationDesc"))
+				.where(predicateArray).orderBy(cb.asc(sddRoot.get("sectionId")));
+						
 			List<Tuple> Slist = em.createQuery(cq1).getResultList();
 			Map<Object, List<Map<String,Object>>> sectionRes = Slist.stream().collect(Collectors.groupingBy(g -> g.get("sectionDesc"),Collectors.mapping(v ->{
 				LinkedHashMap<String,Object> Smap = new LinkedHashMap<String,Object>();
@@ -1106,8 +1128,7 @@ public class JasperCustomServiceImple {
 				//WARRANTY
 				List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 				
-				List<Map<String,Object>> termsAndconditions = new ArrayList<Map<String,Object>>();
-				termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).collect(Collectors.toList());
+				List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).collect(Collectors.toList());
 				termsAndconditions = termsAndconditions.stream().distinct().collect(Collectors.toList());
 				coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
 				coverMap.put("contentList", contentList);

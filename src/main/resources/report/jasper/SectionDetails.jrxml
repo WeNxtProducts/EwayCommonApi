@@ -101,7 +101,7 @@
 		</band>
 		<band height="21">
 			<componentElement>
-				<reportElement x="0" y="1" width="595" height="20" uuid="320b42d3-eff7-4605-951a-085be1e82f3e">
+				<reportElement x="0" y="1" width="555" height="20" uuid="320b42d3-eff7-4605-951a-085be1e82f3e">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -113,14 +113,14 @@
 					<datasetRun subDataset="SectionInfo" uuid="ef33bdc3-51be-41c5-b8d2-bd8819203437">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("sectionValue")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="130" uuid="82e2f704-8186-4cd0-82e5-2c4453374861">
+					<jr:column width="110" uuid="82e2f704-8186-4cd0-82e5-2c4453374861">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
 							<box>
 								<pen lineWidth="0.5"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="130" height="20" isRemoveLineWhenBlank="true" uuid="bbfa363f-cdfa-4be6-938c-aa4fec1c03a3">
+								<reportElement x="0" y="0" width="110" height="20" isRemoveLineWhenBlank="true" uuid="bbfa363f-cdfa-4be6-938c-aa4fec1c03a3">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
 								<box leftPadding="2">
@@ -141,7 +141,7 @@
 								<pen lineWidth="0.5"/>
 							</box>
 							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="130" height="20" uuid="95008358-052f-4c06-9c25-78be8ed756b7"/>
+								<reportElement x="0" y="0" width="110" height="20" uuid="95008358-052f-4c06-9c25-78be8ed756b7"/>
 								<box leftPadding="2">
 									<pen lineWidth="0.0"/>
 								</box>
@@ -152,11 +152,11 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="180" uuid="700e7fff-cdcf-42f6-a856-861b99c8e644">
+					<jr:column width="160" uuid="700e7fff-cdcf-42f6-a856-861b99c8e644">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
 						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="180" height="20" uuid="2360be41-d648-452b-b960-199e1d9e99a9">
+								<reportElement x="0" y="0" width="160" height="20" uuid="2360be41-d648-452b-b960-199e1d9e99a9">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
 								<box leftPadding="2">
@@ -174,7 +174,7 @@
 						<jr:detailCell style="Table_TD" height="20">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>
-								<reportElement x="0" y="0" width="180" height="20" uuid="84a2dd52-928e-40bc-9d8c-0eefd2501fce"/>
+								<reportElement x="0" y="0" width="160" height="20" uuid="84a2dd52-928e-40bc-9d8c-0eefd2501fce"/>
 								<box leftPadding="2"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>

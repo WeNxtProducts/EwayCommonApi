@@ -75,6 +75,7 @@ import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
+import com.maan.eway.common.req.RegSearchReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
@@ -88,6 +89,7 @@ import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetExistingBrokerRes;
 import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
+import com.maan.eway.common.res.GetRegNumberQuoteRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
 import com.maan.eway.common.res.GetTravelRejectedQuoteDetailsRes;
@@ -108,6 +110,7 @@ import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
+import com.maan.eway.common.res.RegirsterSearchCriteeriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.RevertGridListRes;
 import com.maan.eway.common.res.RevertGridRes;
@@ -130,6 +133,7 @@ import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
@@ -178,6 +182,9 @@ public class GridServiceImpl implements GridService {
 
 	@Autowired
 	private LifeGridService lifeService;
+	
+	@Autowired
+	private LoginMasterRepository loginRepo;
 	
 	
 	@Autowired
@@ -5171,7 +5178,7 @@ public class GridServiceImpl implements GridService {
 
 		try {
 			Date today = new Date();
-			Calendar cal = new GregorianCalendar();
+			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 0);
 			cal.set(Calendar.MINUTE, 0);
@@ -5201,6 +5208,137 @@ public class GridServiceImpl implements GridService {
 			return null;
 		}
 		return resList;
+	}
+
+	@Override
+	public List<GetRegNumberQuoteRes> getRegNumberQuotes(RegSearchReq req) {
+		List<GetRegNumberQuoteRes> reslist = new ArrayList<GetRegNumberQuoteRes>();
+		
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date before30 = cal.getTime();
+
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			
+			// Get Datas
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RegirsterSearchCriteeriaRes> query = cb.createQuery(RegirsterSearchCriteeriaRes.class);
+
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+			
+			//overallPremiumLc
+			Subquery<Long> overallPremiumLc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocpm1 = overallPremiumLc.from(EserviceMotorDetails.class);
+			overallPremiumLc.select(cb.sum(ocpm1.get("overallPremiumLc")));
+			Predicate a1 = cb.equal(ocpm1.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumLc.where(a1);
+			
+			//overallPremiumFc
+			Subquery<Long> overallPremiumFc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> oc = overallPremiumFc.from(EserviceMotorDetails.class);
+			overallPremiumFc.select(cb.sum(oc.get("overallPremiumFc")));
+			Predicate a2 = cb.equal(oc.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumFc.where(a2);
+		
+
+			// Select
+			query.multiselect(
+					
+					// Customer Info
+					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+					c.get("clientName").alias("clientName"),
+					// Vehicle Info
+					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+					 m.get("productName").alias("productName"),
+					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
+					m.get("quoteNo").alias("quoteNo"),
+					m.get("customerId").alias("customerId"),
+					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+
+					overallPremiumLc.alias("overallPremiumLc"), 
+					overallPremiumFc.alias("overallPremiumFc"),
+					m.get("currency").alias("currency"),
+					 m.get("chassisNumber").alias("chassisNumber"),
+					m.get("registrationNumber").alias("registerNumber")
+					
+				
+
+					);
+			
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(m.get("updatedDate")));
+
+			// Where
+			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(m.get("status"), "Y");
+			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), today);
+			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), before30);
+			Predicate n9 = cb.isNull(m.get("endorsementType"));
+			Predicate n12 = cb.equal(m.get("registrationNumber"), req.getRegisterNumber() );
+			Predicate n7 = null;
+			Predicate n8 = null;
+		
+			LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
+			
+			if (loginData.getUserType().equalsIgnoreCase("Broker") || loginData.getUserType().equalsIgnoreCase("User")) {
+				
+				n7 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
+				n8 = cb.equal(m.get("loginId"), req.getCreatedBy());
+				
+			} else {
+			
+				n7 = cb.equal(m.get("branchCode"), req.getBranchCode());
+				n8 = cb.equal(m.get("applicationId"), req.getCreatedBy());
+				
+			}
+			// Risk Max Filter
+//			Subquery<Long> riskId = query.subquery(Long.class);
+//			Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
+//			riskId.select(cb.max(ocp.get("riskId")));
+//			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
+//			riskId.where(a3);
+//			
+//			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
+		
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n12).orderBy(orderList);	
+		
+			// Get Result
+			TypedQuery<RegirsterSearchCriteeriaRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			List<RegirsterSearchCriteeriaRes> existingQuotes = new ArrayList<RegirsterSearchCriteeriaRes>();
+			
+			
+			existingQuotes = result.getResultList();
+		
+			DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
+			for ( RegirsterSearchCriteeriaRes data : existingQuotes   ) {
+				GetRegNumberQuoteRes res = new GetRegNumberQuoteRes();
+				dozerMapper.map(data, res);
+				reslist.add(res);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return reslist ;
 	}
 
 }
