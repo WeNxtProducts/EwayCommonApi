@@ -13,6 +13,7 @@ import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
+import com.maan.eway.common.req.RegSearchReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
@@ -20,6 +21,7 @@ import com.maan.eway.common.res.AdminPendingGridRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetRegNumberQuoteRes;
 import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.GetallPortfolioPendingRes;
@@ -133,5 +135,7 @@ public interface GridService {
 	List<GetExistingBrokerListRes> getAdminReferralRejectDropdown(ExistingBrokerUserListReq req);
 
 	List<GetExistingBrokerListRes> getAdminReferralReQuoteDropdown(ExistingBrokerUserListReq req);
+
+	List<GetRegNumberQuoteRes> getRegNumberQuotes(RegSearchReq req);
 
 }

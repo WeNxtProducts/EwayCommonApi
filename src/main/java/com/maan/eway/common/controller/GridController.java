@@ -24,6 +24,7 @@ import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
+import com.maan.eway.common.req.RegSearchReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
@@ -32,6 +33,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetRegNumberQuoteRes;
 import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.GetallPortfolioPendingRes;
@@ -845,6 +847,24 @@ public class GridController {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		List<GetExistingBrokerListRes> res = entityService.getAdminReferralReQuoteDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/regnumberquotes")
+	public ResponseEntity<CommonRes> getRegNumberQuotes(@RequestBody RegSearchReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetRegNumberQuoteRes> res = entityService.getRegNumberQuotes(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
