@@ -69,5 +69,8 @@ public interface ContentAndRiskRepository  extends JpaRepository<ContentAndRisk,
 			String originalPolicyNo);
 
 
+	List<ContentAndRisk> findByQuoteNoAndSectionId(String QuoteNo, String sectionId);
+
+
 
 }

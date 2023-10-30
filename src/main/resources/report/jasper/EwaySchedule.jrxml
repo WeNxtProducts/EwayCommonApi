@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwaySchedule" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="34db4777-6d02-4a2b-85ad-a339988880c1">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="96"/>
@@ -64,185 +64,127 @@
 	</style>
 	<subDataset name="LocationDetails" uuid="d156ef96-0b0e-41a5-8e37-d6bdf7bec6c6">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
-		<parameter name="pvQuoteNo" class="java.lang.String"/>
-		<queryString language="SQL">
-			<![CDATA[SELECT LOCATION_NAME,BUILDING_ADDRESS,BUILDING_SUMINSURED FROM Building_Details WHERE Quote_no =$P{pvQuoteNo}]]>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
+		<queryString language="JSON">
+			<![CDATA[locationDetails]]>
 		</queryString>
-		<field name="LOCATION_NAME" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="LOCATION_NAME"/>
-			<property name="com.jaspersoft.studio.field.label" value="LOCATION_NAME"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="building_details"/>
+		<field name="locationName" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="locationName"/>
+			<fieldDescription><![CDATA[locationName]]></fieldDescription>
 		</field>
-		<field name="BUILDING_ADDRESS" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="BUILDING_ADDRESS"/>
-			<property name="com.jaspersoft.studio.field.label" value="BUILDING_ADDRESS"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="building_details"/>
+		<field name="buildingAddress" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="buildingAddress"/>
+			<fieldDescription><![CDATA[buildingAddress]]></fieldDescription>
 		</field>
-		<field name="BUILDING_SUMINSURED" class="java.lang.Long">
-			<property name="com.jaspersoft.studio.field.name" value="BUILDING_SUMINSURED"/>
-			<property name="com.jaspersoft.studio.field.label" value="BUILDING_SUMINSURED"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="building_details"/>
+		<field name="buildingSumInsured" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="buildingSumInsured"/>
+			<fieldDescription><![CDATA[buildingSumInsured]]></fieldDescription>
 		</field>
 	</subDataset>
 	<parameter name="pvImagepath" class="java.lang.String"/>
-	<parameter name="pvQuoteNo" class="java.lang.String"/>
 	<parameter name="pvSubReportPath" class="java.lang.String"/>
-	<queryString language="SQL">
-		<![CDATA[SELECT 
-HPM.POLICY_NO,HPM.QUOTE_NO,
-CONCAT_WS(".",PIF.TITLE_DESC,PIF.CLIENT_NAME) AS INSURED_NAME,
-CONCAT_WS(" ",PIF.Address_1,PIF.Address_2) AS ADDRESS,UPPER(DATE_FORMAT(HPM.inception_date,"%d-%b-%y")) AS INCEPTION_DATE,
-UPPER(DATE_FORMAT(HPM.expiry_date,"%d-%b-%y")) AS EXPIRY_DATE,HPM.BRANCH_NAME,HPM.BROKER_BRANCH_NAME,HPM.PRODUCT_NAME,PIF.STATE_NAME,PIF.CITY_NAME,
-CONCAT_WS("-",PIF.MOBILE_CODE_DESC_1,PIF.MOBILE_NO_1) AS MOBILE_NO ,PIF.CUSTOMER_ID ,LUI.USER_NAME AS BROKER_NAME,LUI.CORE_APP_BROKER_CODE AS BROKER_CODE,HPM.CURRENCY ,
-HPM.VAT_PERCENT,
-CASE WHEN (LCM.CURRENCY_ID=HPM.CURRENCY) THEN HPM.PREMIUM_LC ELSE HPM.PREMIUM_FC END AS PREMIUM,
-CASE WHEN (hpm.currency = LCM.CURRENCY_ID) THEN HPM.VAT_PREMIUM_LC ELSE HPM.VAT_PREMIUM_FC END AS VAT,
-CASE WHEN (hpm.currency = LCM.CURRENCY_ID) THEN HPM.OVERALL_PREMIUM_LC ELSE HPM.OVERALL_PREMIUM_FC END AS TOTAL,
-LCM.SIGNATURE,
-DATE_FORMAT(CURDATE(),'%D-%b-%Y') AS PRINTED_DATE,
-LUI.USER_NAME AS PREPARED_BY,
-LUI.USER_NAME AS PRINTED_BY,
-UPPER(DATE_FORMAT(CURDATE(),'%d-%b-%y')) AS FOOTER_DATE,
-LBM.BRANCH_NAME AS PLACE FROM
-HOME_POSITION_MASTER HPM,PERSONAL_INFO PIF,LOGIN_USER_INFO LUI,EWAY_INSURANCE_COMPANY_MASTER LCM,
-EWAY_LOGIN_BRANCH_MASTER LBM
-WHERE
-HPM.CUSTOMER_ID = PIF.CUSTOMER_ID AND
-HPM.AGENCY_CODE=LUI.AGENCY_CODE AND
-HPM.COMPANY_ID=LCM.COMPANY_ID AND
-HPM.LOGIN_ID=LBM.LOGIN_ID AND
-HPM.COMPANY_ID=LBM.COMPANY_ID AND
-HPM.BRANCH_CODE=LBM.BRANCH_CODE AND
-LBM.STATUS='Y' AND
-LCM.STATUS='Y' AND
-CURDATE() BETWEEN LCM.EFFECTIVE_DATE_START AND LCM.EFFECTIVE_DATE_END AND
-LCM.AMEND_ID= (SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER LCM WHERE 
-HPM.COMPANY_ID=LCM.COMPANY_ID AND
-LCM.STATUS='Y' AND
-CURDATE() BETWEEN LCM.EFFECTIVE_DATE_START AND LCM.EFFECTIVE_DATE_END
-) AND
-HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
+	<queryString language="JSON">
+		<![CDATA[]]>
 	</queryString>
-	<field name="POLICY_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="quoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="quoteNo"/>
+		<fieldDescription><![CDATA[quoteNo]]></fieldDescription>
 	</field>
-	<field name="QUOTE_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="signature" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="signature"/>
+		<fieldDescription><![CDATA[signature]]></fieldDescription>
 	</field>
-	<field name="INSURED_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INSURED_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="INSURED_NAME"/>
+	<field name="policyNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
+		<fieldDescription><![CDATA[policyNo]]></fieldDescription>
 	</field>
-	<field name="ADDRESS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADDRESS"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADDRESS"/>
+	<field name="vatPercent" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="vatPercent"/>
+		<fieldDescription><![CDATA[vatPercent]]></fieldDescription>
 	</field>
-	<field name="INCEPTION_DATE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INCEPTION_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="INCEPTION_DATE"/>
+	<field name="productName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="productName"/>
+		<fieldDescription><![CDATA[productName]]></fieldDescription>
 	</field>
-	<field name="EXPIRY_DATE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="EXPIRY_DATE"/>
+	<field name="expiryDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="expiryDate"/>
+		<fieldDescription><![CDATA[expiryDate]]></fieldDescription>
 	</field>
-	<field name="BRANCH_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BRANCH_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="BRANCH_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="premium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
+		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="BROKER_BRANCH_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BROKER_BRANCH_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="BROKER_BRANCH_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="cityName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="cityName"/>
+		<fieldDescription><![CDATA[cityName]]></fieldDescription>
 	</field>
-	<field name="PRODUCT_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="stateName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="stateName"/>
+		<fieldDescription><![CDATA[stateName]]></fieldDescription>
 	</field>
-	<field name="STATE_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="STATE_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="STATE_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="inceptionDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="inceptionDate"/>
+		<fieldDescription><![CDATA[inceptionDate]]></fieldDescription>
 	</field>
-	<field name="CITY_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CITY_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="CITY_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="brokerBranchName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="brokerBranchName"/>
+		<fieldDescription><![CDATA[brokerBranchName]]></fieldDescription>
 	</field>
-	<field name="MOBILE_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="MOBILE_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="MOBILE_NO"/>
+	<field name="customerId" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerId"/>
+		<fieldDescription><![CDATA[customerId]]></fieldDescription>
 	</field>
-	<field name="CUSTOMER_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_ID"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="sectionDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="sectionDetails"/>
+		<fieldDescription><![CDATA[sectionDetails]]></fieldDescription>
 	</field>
-	<field name="BROKER_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="BROKER_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	<field name="currency" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="currency"/>
+		<fieldDescription><![CDATA[currency]]></fieldDescription>
 	</field>
-	<field name="BROKER_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CORE_APP_BROKER_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="BROKER_CODE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	<field name="place" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="place"/>
+		<fieldDescription><![CDATA[place]]></fieldDescription>
 	</field>
-	<field name="CURRENCY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="address" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="address"/>
+		<fieldDescription><![CDATA[address]]></fieldDescription>
 	</field>
-	<field name="VAT_PERCENT" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="VAT_PERCENT"/>
-		<property name="com.jaspersoft.studio.field.label" value="VAT_PERCENT"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="vatPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="vatPremium"/>
+		<fieldDescription><![CDATA[vatPremium]]></fieldDescription>
 	</field>
-	<field name="PREMIUM" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="PREMIUM"/>
+	<field name="coverageDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="coverageDetails"/>
+		<fieldDescription><![CDATA[coverageDetails]]></fieldDescription>
 	</field>
-	<field name="VAT" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="VAT"/>
-		<property name="com.jaspersoft.studio.field.label" value="VAT"/>
+	<field name="branchName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="branchName"/>
+		<fieldDescription><![CDATA[branchName]]></fieldDescription>
 	</field>
-	<field name="TOTAL" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="TOTAL"/>
-		<property name="com.jaspersoft.studio.field.label" value="TOTAL"/>
+	<field name="totalPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="totalPremium"/>
+		<fieldDescription><![CDATA[totalPremium]]></fieldDescription>
 	</field>
-	<field name="SIGNATURE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SIGNATURE"/>
-		<property name="com.jaspersoft.studio.field.label" value="SIGNATURE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="eway_insurance_company_master"/>
+	<field name="mobileNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="mobileNo"/>
+		<fieldDescription><![CDATA[mobileNo]]></fieldDescription>
 	</field>
-	<field name="PRINTED_DATE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PRINTED_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="PRINTED_DATE"/>
+	<field name="customerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerName"/>
+		<fieldDescription><![CDATA[customerName]]></fieldDescription>
 	</field>
-	<field name="PREPARED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PREPARED_BY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	<field name="locationDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="locationDetails"/>
+		<fieldDescription><![CDATA[locationDetails]]></fieldDescription>
 	</field>
-	<field name="PRINTED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PRINTED_BY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	<field name="brokerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="brokerName"/>
+		<fieldDescription><![CDATA[brokerName]]></fieldDescription>
 	</field>
-	<field name="FOOTER_DATE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="FOOTER_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="FOOTER_DATE"/>
-	</field>
-	<field name="PLACE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BRANCH_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PLACE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="eway_login_branch_master"/>
+	<field name="coreAppBrokerCode" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="coreAppBrokerCode"/>
+		<fieldDescription><![CDATA[coreAppBrokerCode]]></fieldDescription>
 	</field>
 	<background>
 		<band height="802">
@@ -278,7 +220,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="14" isBold="true" isUnderline="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PRODUCT_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -298,7 +240,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{POLICY_NO}==null?"Quote No":"Policy No:"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null?"Quote No":"Policy No:"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="90" y="0" width="187" height="15" uuid="7261fe12-96e0-4709-bf95-713ec1a0495d">
@@ -315,7 +257,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{POLICY_NO}==null?$F{QUOTE_NO}:$F{POLICY_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="367" y="0" width="188" height="15" uuid="80226e8e-7a34-479f-a59c-c7f50a5ae0c1">
@@ -331,7 +273,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{BRANCH_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{branchName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="277" y="0" width="90" height="15" uuid="1d34f726-8889-4b66-bc61-e084984832cf">
@@ -371,7 +313,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 		</band>
 		<band height="15">
 			<textField>
-				<reportElement x="0" y="0" width="90" height="15" uuid="3ab0d9ff-caea-42c6-9cf1-01b15a1d49d0">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="15" uuid="3ab0d9ff-caea-42c6-9cf1-01b15a1d49d0">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -386,7 +328,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textFieldExpression><![CDATA["Insured Name :"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="90" y="0" width="187" height="15" uuid="03066ff1-69ee-47a3-bd93-d3d3811cfeda">
+				<reportElement stretchType="RelativeToTallestObject" x="90" y="0" width="187" height="15" uuid="03066ff1-69ee-47a3-bd93-d3d3811cfeda">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -398,10 +340,10 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INSURED_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="277" y="0" width="90" height="15" uuid="2b99bda3-2838-40f1-945f-b8ae76f39c55">
+				<reportElement stretchType="RelativeToTallestObject" x="277" y="0" width="90" height="15" uuid="2b99bda3-2838-40f1-945f-b8ae76f39c55">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -416,7 +358,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Address :"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="367" y="0" width="188" height="15" uuid="4c7ed17e-ce6d-4dec-901f-920ad064affb">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -429,7 +371,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -461,7 +403,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{STATE_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{stateName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="277" y="0" width="90" height="15" uuid="855f8055-091e-4f36-91f5-6d9f6c48244b">
@@ -491,7 +433,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CITY_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{cityName}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -523,7 +465,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{MOBILE_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{mobileNo}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="20">
@@ -546,7 +488,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 		</band>
 		<band height="15">
 			<textField>
-				<reportElement x="0" y="0" width="90" height="15" uuid="e32cefaa-f1ec-47c1-8f77-97ccd610660a">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="15" uuid="e32cefaa-f1ec-47c1-8f77-97ccd610660a">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -560,7 +502,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Broker Name :"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="90" y="0" width="187" height="15" uuid="b99a18a3-6913-4344-b897-f6cc6f7d57b3">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -573,10 +515,10 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{BROKER_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="277" y="0" width="90" height="15" uuid="8dba887b-a287-4e75-b2ce-7869b919f43d">
+				<reportElement stretchType="RelativeToTallestObject" x="277" y="0" width="90" height="15" uuid="8dba887b-a287-4e75-b2ce-7869b919f43d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -591,7 +533,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textFieldExpression><![CDATA["Broker Code :"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="367" y="0" width="188" height="15" uuid="0a5639ec-59d9-4f43-b878-82e834ec3dd9">
+				<reportElement stretchType="RelativeToTallestObject" x="367" y="0" width="188" height="15" uuid="0a5639ec-59d9-4f43-b878-82e834ec3dd9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -603,7 +545,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{BROKER_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{coreAppBrokerCode}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="16">
@@ -621,7 +563,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{BROKER_BRANCH_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{brokerBranchName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="90" height="15" uuid="84b3cdf2-0810-4c51-89ca-35a6651801ae">
@@ -674,7 +616,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Period From :"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="90" y="0" width="187" height="15" uuid="7e33fab0-bfa1-4be7-8bd0-0e2ae6fc7aec">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -687,7 +629,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INCEPTION_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="277" y="0" width="90" height="15" uuid="756b95b9-fd0f-4d12-8ac6-506051773c93">
@@ -704,7 +646,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Period To :"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="367" y="0" width="188" height="15" uuid="89df3003-7d57-46aa-b905-201dbbd5db94">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -717,7 +659,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{EXPIRY_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{expiryDate}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -750,7 +692,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="277" y="0" width="90" height="15" uuid="5b05747f-9784-4b1b-8687-5c378c71f60b">
@@ -780,7 +722,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PREMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -798,9 +740,9 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat :("+($F{VAT_PERCENT})+")"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Vat : ("+($F{vatPercent})+" % )"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.0" isBlankWhenNull="true">
 				<reportElement x="90" y="0" width="187" height="15" uuid="7956a972-8582-49be-819b-ab77a811438b">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -813,7 +755,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{VAT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vatPremium}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="277" y="0" width="90" height="15" uuid="1675ec93-a5fb-49c9-9059-46a78e90f392">
@@ -843,7 +785,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{totalPremium}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="20">
@@ -864,20 +806,17 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textFieldExpression><![CDATA["Premium Section :"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="34">
+		<band height="33">
 			<subreport>
 				<reportElement x="0" y="1" width="555" height="32" uuid="3ab740cd-5977-44ff-9a46-8ea48db3c5e8"/>
 				<subreportParameter name="SubReportPath">
 					<subreportParameterExpression><![CDATA[$P{pvSubReportPath}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="pvQuoteNo">
-					<subreportParameterExpression><![CDATA[$P{pvQuoteNo}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("sectionDetails")]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{pvSubReportPath}+"SectionDetails.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
-		<band height="42">
+		<band height="40">
 			<textField>
 				<reportElement x="0" y="0" width="555" height="20" uuid="5a85b80a-35a3-4976-9c59-e1a7efc0a64d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -901,11 +840,35 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="LocationDetails" uuid="3e08cfea-08ba-4cca-a33e-62e837635a56">
-						<datasetParameter name="pvQuoteNo">
-							<datasetParameterExpression><![CDATA[$P{pvQuoteNo}]]></datasetParameterExpression>
+					<datasetRun subDataset="LocationDetails" uuid="d2ba9e45-4d8b-48f6-bab1-3bc51472e929">
+						<datasetParameter name="JSON_INPUT_STREAM">
+							<datasetParameterExpression><![CDATA[$P{JSON_INPUT_STREAM}]]></datasetParameterExpression>
 						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						<datasetParameter name="net.sf.jasperreports.json.source">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.source}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.sources">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.sources}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.date.pattern">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.date.pattern}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.number.pattern">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.number.pattern}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="JSON_LOCALE">
+							<datasetParameterExpression><![CDATA[$P{JSON_LOCALE}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.locale.code">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.locale.code}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="JSON_TIME_ZONE">
+							<datasetParameterExpression><![CDATA[$P{JSON_TIME_ZONE}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.timezone.id">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.timezone.id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("locationDetails")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="30" uuid="3261a293-a881-48d2-b345-12009b1ec119">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -951,7 +914,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{LOCATION_NAME}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -974,7 +937,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{BUILDING_ADDRESS}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{buildingAddress}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -997,32 +960,26 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{BUILDING_SUMINSURED}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{buildingSumInsured}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="157">
+		<band height="42">
 			<subreport>
 				<reportElement x="0" y="20" width="555" height="22" uuid="88196d21-a2fc-411a-82ef-4b66e1af232a"/>
-				<subreportParameter name="pvQuoteNo">
-					<subreportParameterExpression><![CDATA[$P{pvQuoteNo}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="pvSubReportPath">
 					<subreportParameterExpression><![CDATA[$P{pvSubReportPath}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="pvPolicyNo">
-					<subreportParameterExpression><![CDATA[$F{POLICY_NO}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverageDetails")]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{pvSubReportPath}+"/CoverageDetails.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="70">
+		<band height="82">
 			<textField>
 				<reportElement x="0" y="0" width="555" height="24" uuid="0c0acffb-bd99-4c03-b8f3-df96f6d381f7">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1039,7 +996,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textFieldExpression><![CDATA["In witness where of the undersigned being duly authorised by the Insurers and on behalf of the Insurers has/have here unto set his/their hand(s)"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="24" width="90" height="15" uuid="2b6336bc-e97f-4672-8927-650f967b819b">
+				<reportElement x="0" y="24" width="90" height="18" uuid="2b6336bc-e97f-4672-8927-650f967b819b">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1048,10 +1005,12 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Place :"+($F{PLACE}==null?"":$F{PLACE})]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Place :"+($F{place}==null?"":$F{place})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="42" width="90" height="15" uuid="91bb4bce-360e-43aa-a028-98cfab592d14"/>
+				<reportElement x="0" y="42" width="40" height="20" uuid="91bb4bce-360e-43aa-a028-98cfab592d14">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.5"/>
 				</box>
@@ -1061,29 +1020,27 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textFieldExpression><![CDATA["Agent :"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="90" y="42" width="100" height="15" uuid="89e630a9-9e29-4d5d-9b74-85a7d79a5e18"/>
+				<reportElement stretchType="RelativeToTallestObject" x="40" y="42" width="151" height="20" uuid="89e630a9-9e29-4d5d-9b74-85a7d79a5e18">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{BROKER_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="210" y="57" width="90" height="13" forecolor="#7A7373" backcolor="#E8E8E8" uuid="2b5c83c8-df64-4bf8-b345-a21bd2a1fd34">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement stretchType="RelativeToTallestObject" x="251" y="62" width="130" height="20" forecolor="#7A7373" backcolor="#E8E8E8" uuid="2b5c83c8-df64-4bf8-b345-a21bd2a1fd34"/>
 				<box leftPadding="2">
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PRINTED_BY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="150" y="57" width="60" height="13" forecolor="#7A7373" backcolor="#787373" uuid="05b8de7b-8bf5-450c-bb83-74ef07aec814">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement x="191" y="62" width="60" height="20" forecolor="#7A7373" backcolor="#787373" uuid="05b8de7b-8bf5-450c-bb83-74ef07aec814"/>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.0"/>
 					<bottomPen lineWidth="0.5"/>
@@ -1094,19 +1051,17 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textFieldExpression><![CDATA["Printed By : "]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="60" y="57" width="90" height="13" uuid="ed356e7f-a3eb-4d7c-a027-49033c5f7492">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement stretchType="RelativeToTallestObject" x="60" y="62" width="131" height="20" uuid="ed356e7f-a3eb-4d7c-a027-49033c5f7492"/>
 				<box leftPadding="2">
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PREPARED_BY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="430" y="57" width="125" height="13" uuid="4ad07a45-63c2-4475-ac2b-7b76d5d940fa">
+				<reportElement x="430" y="62" width="125" height="20" uuid="4ad07a45-63c2-4475-ac2b-7b76d5d940fa">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1131,9 +1086,7 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="57" width="60" height="13" uuid="aa0aa86b-1fa0-452b-94ac-806b748cf773">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement x="0" y="62" width="60" height="20" uuid="aa0aa86b-1fa0-452b-94ac-806b748cf773"/>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
@@ -1144,15 +1097,19 @@ HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 				<textFieldExpression><![CDATA["Prepared By :  "]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="281" y="42" width="100" height="15" isPrintInFirstWholeBand="true" uuid="54bd813e-78c5-4cd2-a623-47172a201983"/>
+				<reportElement x="281" y="42" width="100" height="20" isPrintInFirstWholeBand="true" uuid="54bd813e-78c5-4cd2-a623-47172a201983">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{FOOTER_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="191" y="42" width="90" height="15" uuid="1ee6dfc7-7e1b-4db4-a462-e1786b7945d6"/>
+				<reportElement x="191" y="42" width="90" height="20" uuid="1ee6dfc7-7e1b-4db4-a462-e1786b7945d6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.0"/>
 				</box>

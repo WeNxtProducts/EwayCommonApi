@@ -98,7 +98,6 @@ public class JasperServiceImpl implements JasperService {
 	@Override
 	public JasperDocumentRes policyform(JasperDocumentReq req) {
 		JasperDocumentRes res = new JasperDocumentRes();
-		String getPdfOutFilePath = "";
 		try {
 			
 			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
@@ -111,14 +110,11 @@ public class JasperServiceImpl implements JasperService {
 				input.put("pvPolicyNo", homeData.getPolicyNo());
 				input.put("pvImagepath", config.getImagePath().substring(1, config.getImagePath().length()-0));
 				filePath = config.getPolicyPath() + "pdf";
-				getPdfOutFilePath = filePath + "/" + homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")
-						+ ".pdf";
 
 			} else {
 				input.put("QuoteNo", req.getQuoteNo());
 				input.put("pvImagePath", config.getImagePath().substring(1, config.getImagePath().length()-0));
 				filePath = config.getDraftPath() + "pdf";
-				getPdfOutFilePath = filePath + "/" + req.getQuoteNo() + ".pdf";
 			}
 			
 			if (null != input && input.size() > 0) {
@@ -129,7 +125,7 @@ public class JasperServiceImpl implements JasperService {
 				if(StringUtils.isBlank(homeData.getPolicyNo()) && homeData.getProductId()==5) {
 					Map<String,Object> brokerQuotation = jasperCustomeImple.getMotorBrokerQuotation(homeData.getQuoteNo());
 					String jsonString = gson.toJson(brokerQuotation);
-					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getQuoteNo();
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, input, "- BrokerQuotation.json");
 				}else if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
 						Map<String, Object> input2 = new HashMap<String, Object>();
@@ -141,10 +137,10 @@ public class JasperServiceImpl implements JasperService {
 								System.out.println("Jasper compileToReport path" +path);		
 						TravelReportRes travelRes = jasperCustomeImple.getTravelReport(homeData.getPolicyNo());
 						String jsonString = gson.toJson(travelRes);
-						String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 						res = getCommonJasperPdfFileByJson("/report/jasper/EwayTravelReport.jrxml", jasperSaveLocation, jsonString, input2, "- TravelReport.json");
 				} else if (product.getMotorYn().equalsIgnoreCase("M") && !"46".equalsIgnoreCase(homeData.getProductId().toString())) {
-					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo())) {
 						Map<String,Object> MotorEndorsementScheduleRes = jasperCustomeImple.getMotorEndorsementSchedule(homeData.getPolicyNo());
 						String jsonString = gson.toJson(MotorEndorsementScheduleRes);
@@ -160,18 +156,17 @@ public class JasperServiceImpl implements JasperService {
 					input2.put("pvImagePath", imagePath);
 					Map<String,Object> cyberInsurance = jasperCustomeImple.getCyberInsurance(homeData.getPolicyNo());
 					String jsonString = gson.toJson(cyberInsurance);
-					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					res = getCommonJasperPdfFileByJson("/report/jasper/CyberInsurance.jrxml", jasperSaveLocation, jsonString, input2, "- CyberInsurance.json");
 				}else if(product.getMotorYn().equalsIgnoreCase("M") && "46".equalsIgnoreCase(homeData.getProductId().toString())){
 					Map<String,Object> map = new HashMap<String,Object>();
 					map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-					String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					MotorCoverNoteRes MotorCoverNote = jasperCustomeImple.getMotorCoverNote(homeData.getPolicyNo());
 					String jsonString = gson.toJson(MotorCoverNote);
 					res = getCommonJasperPdfFileByJson("/report/jasper/EwayMotorCoverNote.jrxml",jasperSaveLocation,jsonString,map,"- MotorCoveNote.json");
 				}else {
 					Map<String, Object> input2 = new HashMap<String, Object>();
-					input2.put("pvQuoteNo", req.getQuoteNo());
 					input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
 					String obj[] =new String[2];
@@ -182,8 +177,10 @@ public class JasperServiceImpl implements JasperService {
 					String path = JasperCompileManager.compileReportToFile(jrxml_path);
 					System.out.println("Jasper compileToReport path" +path);
 					}
-					
-					res = getJasperPdfFile("/report/jasper/EwaySchedule.jrxml", getPdfOutFilePath, input2);
+	                Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
+					String jsonString = gson.toJson(EwaySchedule);
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+					res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
 				}
 				
 			}
@@ -624,7 +621,7 @@ public class JasperServiceImpl implements JasperService {
 		log.info("Enter into getCommonJasperPdfFileByJson");
 		JasperDocumentRes res = new JasperDocumentRes();
 		InputStream inputStream=null;
-		log.info(fileNameEnd.substring(2, fileNameEnd.length()-5)+" JsonResponse ==> "+jsonString);
+		log.info(fileNameEnd.substring(2).replaceAll(".json", " ")+"JsonResponse ==> "+jsonString);
 		try {
 			FileWriter fileWriter = new FileWriter(jasperSaveLocation+fileNameEnd, false);
 			fileWriter.write(jsonString);

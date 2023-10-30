@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CoverageDetails" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="fe31f29b-8d95-4863-a7bc-19b4276b243b">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -41,162 +41,90 @@
 	</style>
 	<subDataset name="ContentInfo" uuid="2d7e0568-0aee-4fa3-9aa6-f6d0096b331e">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 		<parameter name="pvQuoteNo" class="java.lang.String"/>
 		<parameter name="pvSectionId" class="java.lang.String"/>
-		<queryString language="SQL">
-			<![CDATA[SELECT ITEM_ID,ITEM_DESC,CONTENT_RISK_DESC ,SUM_INSURED FROM CONTENT_AND_RISK WHERE Quote_no = $P{pvQuoteNo}  AND SECTION_ID= $P{pvSectionId} 
-ORDER BY ITEM_ID]]>
+		<queryString language="JSON">
+			<![CDATA[coverageDetails.coverValue.contentList]]>
 		</queryString>
-		<field name="ITEM_ID" class="java.lang.Integer">
-			<property name="com.jaspersoft.studio.field.name" value="ITEM_ID"/>
-			<property name="com.jaspersoft.studio.field.label" value="ITEM_ID"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="content_and_risk"/>
+		<field name="itemId" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="itemId"/>
+			<fieldDescription><![CDATA[itemId]]></fieldDescription>
 		</field>
-		<field name="ITEM_DESC" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="ITEM_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="ITEM_DESC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="content_and_risk"/>
+		<field name="itemDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="itemDesc"/>
+			<fieldDescription><![CDATA[itemDesc]]></fieldDescription>
 		</field>
-		<field name="CONTENT_RISK_DESC" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="CONTENT_RISK_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="CONTENT_RISK_DESC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="content_and_risk"/>
+		<field name="contentRiskDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="contentRiskDesc"/>
+			<fieldDescription><![CDATA[contentRiskDesc]]></fieldDescription>
 		</field>
-		<field name="SUM_INSURED" class="java.lang.Long">
-			<property name="com.jaspersoft.studio.field.name" value="SUM_INSURED"/>
-			<property name="com.jaspersoft.studio.field.label" value="SUM_INSURED"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="content_and_risk"/>
+		<field name="sumInsured" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
+			<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
 		</field>
 	</subDataset>
 	<subDataset name="EmployeeDetails" uuid="1e8e7afd-d04d-48b2-8247-a870f5c652db">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 		<parameter name="pvQuoteNo" class="java.lang.String"/>
 		<parameter name="pvSectionId" class="java.lang.String"/>
-		<queryString language="SQL">
-			<![CDATA[SELECT EMPLOYEE_ID,EMPLOYEE_NAME,OCCUPATION_DESC ,SALARY FROM PRODUCT_EMPLOYEE_DETAILS WHERE Quote_no = $P{pvQuoteNo}  AND SECTION_ID= $P{pvSectionId} 
-ORDER BY EMPLOYEE_ID]]>
+		<queryString language="JSON">
+			<![CDATA[coverageDetails.coverValue.employeeList]]>
 		</queryString>
-		<field name="EMPLOYEE_ID" class="java.lang.Long">
-			<property name="com.jaspersoft.studio.field.name" value="EMPLOYEE_ID"/>
-			<property name="com.jaspersoft.studio.field.label" value="EMPLOYEE_ID"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="product_employee_details"/>
+		<field name="employeeId" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="employeeId"/>
+			<fieldDescription><![CDATA[employeeId]]></fieldDescription>
 		</field>
-		<field name="EMPLOYEE_NAME" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="EMPLOYEE_NAME"/>
-			<property name="com.jaspersoft.studio.field.label" value="EMPLOYEE_NAME"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="product_employee_details"/>
+		<field name="employeeName" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="employeeName"/>
+			<fieldDescription><![CDATA[employeeName]]></fieldDescription>
 		</field>
-		<field name="OCCUPATION_DESC" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="OCCUPATION_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="OCCUPATION_DESC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="product_employee_details"/>
+		<field name="occupationDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="occupationDesc"/>
+			<fieldDescription><![CDATA[occupationDesc]]></fieldDescription>
 		</field>
-		<field name="SALARY" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="SALARY"/>
-			<property name="com.jaspersoft.studio.field.label" value="SALARY"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="product_employee_details"/>
+		<field name="salary" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="salary"/>
+			<fieldDescription><![CDATA[salary]]></fieldDescription>
 		</field>
 	</subDataset>
 	<subDataset name="Conditions" uuid="ff92c7a7-a7a1-4c21-b3b6-e71b67535bfb">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 		<parameter name="pvQuoteNo" class="java.lang.String"/>
 		<parameter name="pvSectionId" class="java.lang.String"/>
-		<queryString language="SQL">
-			<![CDATA[SELECT ROW_NUMBER() OVER(ORDER BY terms) AS ROW_NUM,terms FROM (
-  SELECT CLAUSES_DESCRIPTION AS terms
- FROM CLAUSES_MASTER CM INNER JOIN home_position_master HPM ON
-  CM.COMPANY_ID=HPM.COMPANY_ID AND
-  CM.PRODUCT_ID=HPM.PRODUCT_ID
- WHERE HPM.QUOTE_NO =$P{pvQuoteNo} AND (CM.SECTION_ID= $P{pvSectionId} OR CM.SECTION_ID= '99999') AND
-  (CM.BRANCH_CODE=HPM.BRANCH_CODE OR CM.BRANCH_CODE='99999')AND
-  CM.STATUS = 'Y' AND
-  CURDATE() BETWEEN CM.EFFECTIVE_DATE_START AND CM.EFFECTIVE_DATE_END AND
-  HPM.QUOTE_NO NOT IN (SELECT QUOTE_NO FROM terms_and_condition)
-  UNION
-  SELECT SUB_ID_DESC AS terms FROM terms_and_condition CM INNER JOIN home_position_master HPM
-  ON  CM.COMPANY_ID=HPM.COMPANY_ID AND
-  CM.PRODUCT_ID=HPM.PRODUCT_ID
-  WHERE  HPM.QUOTE_NO =$P{pvQuoteNo} AND  CM.SECTION_ID= $P{pvSectionId} AND
-  HPM.QUOTE_NO IN (CM.QUOTE_NO) AND
-  CM.STATUS = 'Y' AND
-  (CM.BRANCH_CODE=HPM.BRANCH_CODE OR CM.BRANCH_CODE='99999')
-  UNION ALL
-  SELECT EXCLUSION_DESCRIPTION AS terms
- FROM EXCLUSION_MASTER CM INNER JOIN home_position_master HPM ON
-  CM.COMPANY_ID=HPM.COMPANY_ID AND
-  CM.PRODUCT_ID=HPM.PRODUCT_ID
- WHERE HPM.QUOTE_NO =$P{pvQuoteNo} AND  (CM.SECTION_ID= $P{pvSectionId} OR CM.SECTION_ID= '99999')  AND
-  (CM.BRANCH_CODE=HPM.BRANCH_CODE OR CM.BRANCH_CODE='99999')AND
-  CM.STATUS = 'Y' AND
-  CURDATE() BETWEEN CM.EFFECTIVE_DATE_START AND CM.EFFECTIVE_DATE_END AND
-  HPM.QUOTE_NO NOT IN (SELECT QUOTE_NO FROM terms_and_condition)
-  UNION
-  SELECT SUB_ID_DESC AS terms FROM terms_and_condition CM INNER JOIN home_position_master HPM
-  ON  CM.COMPANY_ID=HPM.COMPANY_ID AND
-  CM.PRODUCT_ID=HPM.PRODUCT_ID
-  WHERE  HPM.QUOTE_NO =$P{pvQuoteNo} AND  CM.SECTION_ID= $P{pvSectionId} AND
-  HPM.QUOTE_NO IN (CM.QUOTE_NO) AND
-  CM.STATUS = 'Y' AND
-  (CM.BRANCH_CODE=HPM.BRANCH_CODE OR CM.BRANCH_CODE='99999')
-  UNION ALL
-  SELECT WARRANTY_DESCRIPTION AS terms
- FROM WARRANTY_MASTER CM INNER JOIN home_position_master HPM ON
-  CM.COMPANY_ID=HPM.COMPANY_ID AND
-  CM.PRODUCT_ID=HPM.PRODUCT_ID
- WHERE HPM.QUOTE_NO =$P{pvQuoteNo} AND  (CM.SECTION_ID= $P{pvSectionId} OR CM.SECTION_ID= '99999')  AND
-  (CM.BRANCH_CODE=HPM.BRANCH_CODE OR CM.BRANCH_CODE='99999')AND
-  CM.STATUS = 'Y' AND
-  CURDATE() BETWEEN CM.EFFECTIVE_DATE_START AND CM.EFFECTIVE_DATE_END AND
-  HPM.QUOTE_NO NOT IN (SELECT QUOTE_NO FROM terms_and_condition)
-  UNION
-  SELECT SUB_ID_DESC AS terms FROM terms_and_condition CM INNER JOIN home_position_master HPM
-  ON  CM.COMPANY_ID=HPM.COMPANY_ID AND
-  CM.PRODUCT_ID=HPM.PRODUCT_ID
-  WHERE  HPM.QUOTE_NO =$P{pvQuoteNo} AND  CM.SECTION_ID= $P{pvSectionId} AND
-  HPM.QUOTE_NO IN (CM.QUOTE_NO) AND
-  CM.STATUS = 'Y' AND
-  (CM.BRANCH_CODE=HPM.BRANCH_CODE OR CM.BRANCH_CODE='99999'))X]]>
+		<queryString language="JSON">
+			<![CDATA[coverageDetails.coverValue.termsAndconditions]]>
 		</queryString>
-		<field name="ROW_NUM" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="ROW_NUM"/>
-			<property name="com.jaspersoft.studio.field.label" value="ROW_NUM"/>
+		<field name="conditionTerms" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="conditionTerms"/>
+			<fieldDescription><![CDATA[conditionTerms]]></fieldDescription>
 		</field>
-		<field name="terms" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="terms"/>
-			<property name="com.jaspersoft.studio.field.label" value="terms"/>
-		</field>
-		<group name="ROW_NUM">
-			<groupExpression><![CDATA[$F{ROW_NUM}]]></groupExpression>
-		</group>
-		<group name="terms">
-			<groupExpression><![CDATA[$F{terms}]]></groupExpression>
-		</group>
 	</subDataset>
-	<parameter name="pvQuoteNo" class="java.lang.String"/>
-	<parameter name="pvSubReportPath" class="java.lang.String"/>
-	<parameter name="pvPolicyNo" class="java.lang.String"/>
-	<queryString language="SQL">
-		<![CDATA[SELECT SECTION_ID,SECTION_DESC FROM SECTION_DATA_DETAILS WHERE QUOTE_NO = $P{pvQuoteNo}  ORDER BY SECTION_ID]]>
+	<queryString language="JSON">
+		<![CDATA[coverageDetails]]>
 	</queryString>
-	<field name="SECTION_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SECTION_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="SECTION_ID"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="section_data_details"/>
+	<field name="coverId" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="coverId"/>
+		<fieldDescription><![CDATA[coverId]]></fieldDescription>
 	</field>
-	<field name="SECTION_DESC" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SECTION_DESC"/>
-		<property name="com.jaspersoft.studio.field.label" value="SECTION_DESC"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="section_data_details"/>
+	<field name="coverKey" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="coverKey"/>
+		<fieldDescription><![CDATA[coverKey]]></fieldDescription>
 	</field>
-	<group name="SECTION_ID">
-		<groupExpression><![CDATA[$F{SECTION_ID}]]></groupExpression>
-	</group>
-	<group name="SECTION_DESC">
-		<groupExpression><![CDATA[$F{SECTION_DESC}]]></groupExpression>
-	</group>
+	<field name="coverValue" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="coverValue"/>
+		<fieldDescription><![CDATA[coverValue]]></fieldDescription>
+	</field>
+	<field name="quoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="quoteNo"/>
+		<fieldDescription><![CDATA[quoteNo]]></fieldDescription>
+	</field>
+	<field name="policyNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
+		<fieldDescription><![CDATA[policyNo]]></fieldDescription>
+	</field>
 	<detail>
 		<band height="21">
 			<break>
@@ -217,7 +145,7 @@ ORDER BY EMPLOYEE_ID]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="true" isItalic="false" isUnderline="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{SECTION_DESC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{coverKey}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="24">
@@ -233,7 +161,7 @@ ORDER BY EMPLOYEE_ID]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{pvPolicyNo}==null?$P{pvQuoteNo}:$P{pvPolicyNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="4" width="279" height="15" uuid="5acdae5f-92f8-4dc7-8430-a1d15fa09947">
@@ -247,11 +175,11 @@ ORDER BY EMPLOYEE_ID]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{pvPolicyNo}==null?"SCHEDULE FORMING PART AND ATTACHED TO QUOTE  NO:-":"SCHEDULE FORMING PART AND ATTACHED TO POLICY NO:-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null?"SCHEDULE FORMING PART AND ATTACHED TO QUOTE  NO:-":"SCHEDULE FORMING PART AND ATTACHED TO POLICY NO:-"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="21">
-			<printWhenExpression><![CDATA["47".equals($F{SECTION_ID})]]></printWhenExpression>
+			<printWhenExpression><![CDATA["47".equals($F{coverId}.toString())]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="45" y="0" width="449" height="20" uuid="320b42d3-eff7-4605-951a-085be1e82f3e">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -260,14 +188,8 @@ ORDER BY EMPLOYEE_ID]]>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="ContentInfo" uuid="605fdbbe-592c-428c-bf79-f05c81359905">
-						<datasetParameter name="pvQuoteNo">
-							<datasetParameterExpression><![CDATA[$P{pvQuoteNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="pvSectionId">
-							<datasetParameterExpression><![CDATA[$F{SECTION_ID}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="ContentInfo" uuid="73f059ea-f42b-4951-93b6-f0b0437f7cac">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.contentList")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="30" uuid="700e7fff-cdcf-42f6-a856-861b99c8e644">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -313,7 +235,7 @@ ORDER BY EMPLOYEE_ID]]>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{ITEM_DESC}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{itemDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -336,7 +258,7 @@ ORDER BY EMPLOYEE_ID]]>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{CONTENT_RISK_DESC}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{contentRiskDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -359,7 +281,7 @@ ORDER BY EMPLOYEE_ID]]>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{sumInsured}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -367,7 +289,7 @@ ORDER BY EMPLOYEE_ID]]>
 			</componentElement>
 		</band>
 		<band height="20">
-			<printWhenExpression><![CDATA["43".equals($F{SECTION_ID}) || "45".equals($F{SECTION_ID})]]></printWhenExpression>
+			<printWhenExpression><![CDATA["43".equals($F{coverId}.toString()) || "45".equals($F{coverId}.toString())]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="45" y="0" width="449" height="20" uuid="5affe143-59d1-4e12-8f4c-3790c9b717d7">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -376,14 +298,8 @@ ORDER BY EMPLOYEE_ID]]>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="EmployeeDetails" uuid="14512c2c-0cf1-4689-a92d-a34955e1bbcd">
-						<datasetParameter name="pvQuoteNo">
-							<datasetParameterExpression><![CDATA[$P{pvQuoteNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="pvSectionId">
-							<datasetParameterExpression><![CDATA[$F{SECTION_ID}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="EmployeeDetails" uuid="209aa6e0-198b-4e2f-8c1f-766ebb425c83">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.employeeList")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="30" uuid="6759a847-2c68-4d3f-a18c-9a0a54fe9a66">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -429,7 +345,7 @@ ORDER BY EMPLOYEE_ID]]>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{EMPLOYEE_NAME}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{employeeName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -452,7 +368,7 @@ ORDER BY EMPLOYEE_ID]]>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{OCCUPATION_DESC}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{occupationDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -475,26 +391,12 @@ ORDER BY EMPLOYEE_ID]]>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SALARY}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{salary}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
 				</jr:table>
 			</componentElement>
-		</band>
-		<band height="20">
-			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<printWhenExpression><![CDATA["9999".equals($F{SECTION_ID})]]></printWhenExpression>
-			<subreport>
-				<reportElement x="45" y="0" width="449" height="20" uuid="7b1918ac-5f17-4208-84c9-888e9178c075">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<subreportParameter name="pvSubReportPath">
-					<subreportParameterExpression><![CDATA[$P{pvSubReportPath}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{pvSubReportPath}+"/BuildingDetails.jasper"]]></subreportExpression>
-			</subreport>
 		</band>
 		<band height="50"/>
 		<band height="52">
@@ -519,14 +421,8 @@ ORDER BY EMPLOYEE_ID]]>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table 3_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Conditions" uuid="c6895db0-a02a-4a82-89cb-c3c9eb36363b">
-						<datasetParameter name="pvQuoteNo">
-							<datasetParameterExpression><![CDATA[$P{pvQuoteNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="pvSectionId">
-							<datasetParameterExpression><![CDATA[$F{SECTION_ID}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Conditions" uuid="4c498d62-fb34-48e1-8bd5-b06db04ce59b">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.termsAndconditions")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="519" uuid="d1c9db73-9d73-4648-b7aa-a63d4b64b867">
 						<jr:detailCell height="17">
@@ -536,7 +432,7 @@ ORDER BY EMPLOYEE_ID]]>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{ROW_NUM}+". "+$F{terms}]]></textFieldExpression>
+								<textFieldExpression><![CDATA["*"+" "+$F{conditionTerms}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

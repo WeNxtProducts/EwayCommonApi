@@ -6,12 +6,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
@@ -38,6 +41,7 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
@@ -46,11 +50,13 @@ import com.maan.eway.bean.MotorMakeModelMaster;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.ProductGroupMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.TravelPassengerDetails;
+import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.jasper.res.CreditDataSetOne;
 import com.maan.eway.jasper.res.CreditDataSetTwo;
 import com.maan.eway.jasper.res.CreditNoteRes;
@@ -63,9 +69,11 @@ import com.maan.eway.jasper.res.TaxInvoiceRes;
 import com.maan.eway.jasper.res.TravelDataSetOneRes;
 import com.maan.eway.jasper.res.TravelDataSetTwoRes;
 import com.maan.eway.jasper.res.TravelReportRes;
+import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
+import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 
 @Component
 public class JasperCustomServiceImple {
@@ -83,6 +91,12 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private ContentAndRiskRepository conAndRiskRepo;
+	
+	@Autowired
+	private BuildingDetailsRepository buildingDetRepo;
+	
+	@Autowired
+	private ProductEmployeesDetailsRepository productEmpDetRepo;
 		
 	private String RenewalDate(String Input) {
 		DateTimeFormatter inputformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -846,99 +860,10 @@ public class JasperCustomServiceImple {
 			}).collect(Collectors.toList());
 			
 			// CONDITIONS
-			CriteriaBuilder cb2 = em.getCriteriaBuilder();
-			List<Tuple> conditionRes = new ArrayList<>();
-			
-			for(int i=1;i<=2;i++) {
-				CriteriaQuery<Tuple> cq2 = cb2.createQuery(Tuple.class);
-				Root<HomePositionMaster> hpmRoot2 = cq2.from(HomePositionMaster.class);
-				Root<SectionDataDetails> sddRoot2 = cq2.from(SectionDataDetails.class);
-				List<Predicate> predicates = new ArrayList<Predicate>();
-				predicates.add(cb.equal(sddRoot2.get("quoteNo"), hpmRoot2.get("quoteNo")));
-				predicates.add(cb.equal(hpmRoot2.get("policyNo"), map.get("policyNo")));
-				if(i == 1) {
-					Subquery<Tuple> CquoteIn = cq2.subquery(Tuple.class);
-					Root<TermsAndCondition> StacRoot = CquoteIn.from(TermsAndCondition.class);
-					CquoteIn.select(StacRoot.get("quoteNo")).where(cb.equal(StacRoot.get("quoteNo"), map.get("quoteNo")));
-					
-					Root<ClausesMaster> cmRoot2 = cq2.from(ClausesMaster.class);
-					cq2.multiselect(cmRoot2.get("clausesDescription").alias("conditionTerms"));
-					predicates.add(cb.equal(cmRoot2.get("companyId"), hpmRoot2.get("companyId")));
-					predicates.add(cb.equal(cmRoot2.get("productId"), hpmRoot2.get("productId")));
-					predicates.add(cb.or(cb.equal(cmRoot2.get("sectionId"), sddRoot2.get("sectionId")), cb.equal(cmRoot2.get("sectionId"), "99999")));
-					predicates.add(cb.or(cb.equal(cmRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(cmRoot2.get("branchCode"), "99999")));
-					predicates.add(cb.between(cb.literal(new Date()), cmRoot2.get("effectiveDateStart"), cmRoot2.get("effectiveDateEnd")));
-					predicates.add(cb.equal(cmRoot2.get("status"), "Y"));
-					predicates.add(cb.not(cb.in(hpmRoot2.get("quoteNo")).value(CquoteIn)));
-				}else {
-					Root<TermsAndCondition> tacRoot2 = cq2.from(TermsAndCondition.class);
-					cq2.multiselect(tacRoot2.get("subIdDesc").alias("conditionTerms"));
-					predicates.add(cb.equal(tacRoot2.get("companyId"), hpmRoot2.get("companyId")));
-					predicates.add(cb.equal(tacRoot2.get("productId"), hpmRoot2.get("productId")));
-					predicates.add(cb.equal(tacRoot2.get("sectionId"), sddRoot2.get("sectionId")));
-					predicates.add(cb.in(hpmRoot2.get("quoteNo")).value(tacRoot2.get("quoteNo")));
-					predicates.add(cb.equal(tacRoot2.get("status"), "Y"));
-					predicates.add(cb.or(cb.equal(tacRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(tacRoot2.get("branchCode"), "99999")));
-				}
-					Predicate [] predicatArray = new Predicate[predicates.size()];
-					predicates.toArray(predicatArray);
-					conditionRes.addAll(em.createQuery(cq2.where(predicatArray)).getResultList());
-			}
-			
-			List<Map<String,Object>> conditionList = conditionRes.stream().distinct().map(c ->{
-				LinkedHashMap<String,Object> Cmap = new LinkedHashMap<String,Object>();
-				Cmap.put("conditionTerms", c.get("conditionTerms")==null?"":c.get("conditionTerms").toString());
-				return Cmap;
-			}).collect(Collectors.toList());
+			List<Map<String,Object>> conditionList = getConditionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"");
 
 			// EXCLUSION
-			CriteriaBuilder cb3 = em.getCriteriaBuilder();
-			List<Tuple> exclusionRes = new ArrayList<>();
-			
-			for(int i=1;i<=2;i++) {
-				CriteriaQuery<Tuple> cq3 = cb3.createQuery(Tuple.class);
-				Root<HomePositionMaster> hpmRoot3 = cq3.from(HomePositionMaster.class);
-				Root<SectionDataDetails> sddRoot3 = cq3.from(SectionDataDetails.class);
-				List<Predicate> predicates = new ArrayList<Predicate>();
-				predicates.add(cb.equal(sddRoot3.get("quoteNo"), hpmRoot3.get("quoteNo")));
-				predicates.add(cb.equal(hpmRoot3.get("policyNo"), map.get("policyNo")));
-				if(i == 1) {
-					Subquery<Tuple> EquoteIn = cq3.subquery(Tuple.class);
-					Root<TermsAndCondition> SEtacRoot = EquoteIn.from(TermsAndCondition.class);
-					EquoteIn.select(SEtacRoot.get("quoteNo")).where(cb.equal(SEtacRoot.get("quoteNo"), map.get("quoteNo")));
-					
-					Root<ExclusionMaster> emRoot3 = cq3.from(ExclusionMaster.class);
-					cq3.multiselect(emRoot3.get("exclusionDescription").alias("exclusionTerms"));
-					predicates.add(cb.equal(emRoot3.get("companyId"), hpmRoot3.get("companyId")));
-					predicates.add(cb.equal(emRoot3.get("productId"), hpmRoot3.get("productId")));
-					predicates.add(cb.or(cb.equal(emRoot3.get("sectionId"), sddRoot3.get("sectionId")), cb.equal(emRoot3.get("sectionId"), "99999")));
-					predicates.add(cb.or(cb.equal(emRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(emRoot3.get("branchCode"), "99999")));
-					predicates.add(cb.between(cb.literal(new Date()), emRoot3.get("effectiveDateStart"), emRoot3.get("effectiveDateEnd")));
-					predicates.add(cb.equal(emRoot3.get("status"), "Y"));
-					predicates.add(cb.not(cb.in(hpmRoot3.get("quoteNo")).value(EquoteIn)));
-					Predicate [] predicatArray = new Predicate[predicates.size()];
-					predicates.toArray(predicatArray);
-					exclusionRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
-				}else {
-					Root<TermsAndCondition> tacRoot3 = cq3.from(TermsAndCondition.class);
-					cq3.multiselect(tacRoot3.get("subIdDesc").alias("exclusionTerms"));
-					predicates.add(cb.equal(tacRoot3.get("companyId"), hpmRoot3.get("companyId")));
-					predicates.add(cb.equal(tacRoot3.get("productId"), hpmRoot3.get("productId")));
-					predicates.add(cb.equal(tacRoot3.get("sectionId"), sddRoot3.get("sectionId")));
-					predicates.add(cb.in(hpmRoot3.get("quoteNo")).value(tacRoot3.get("quoteNo")));
-					predicates.add(cb.equal(tacRoot3.get("status"), "Y"));
-					predicates.add(cb.or(cb.equal(tacRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(tacRoot3.get("branchCode"), "99999")));
-					Predicate [] predicatArray = new Predicate[predicates.size()];
-					predicates.toArray(predicatArray);
-					exclusionRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
-				}
-			}
-			
-			List<Map<String,Object>> exclusionList = exclusionRes.stream().distinct().map(c ->{
-				LinkedHashMap<String,Object> Emap = new LinkedHashMap<String,Object>();
-				Emap.put("exclusioTerms", c.get("exclusionTerms")==null?"":c.get("exclusionTerms").toString());
-				return Emap;
-			}).collect(Collectors.toList());
+			List<Map<String,Object>> exclusionList = getExclusionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"");
 			
 			result.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
 			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
@@ -1055,6 +980,385 @@ public class JasperCustomServiceImple {
 		}
 		log.info("Exit into getMotorBrokerQuotation");
 		return result;
+	}
+	
+	public Map<String,Object> getEwaySchedule(String QuoteNo){
+		log.info("Enter into EwaySchedule.\nArgument ==> "+QuoteNo);
+		Map<String,Object> result = new HashMap<String,Object>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+			Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
+			Root<PersonalInfo> piRoot = cq.from(PersonalInfo.class);
+			Root<LoginUserInfo> luiRoot = cq.from(LoginUserInfo.class);
+			Root<InsuranceCompanyMaster> icmRoot = cq.from(InsuranceCompanyMaster.class);
+			Root<LoginBranchMaster> lbmRoot= cq.from(LoginBranchMaster.class);
+			
+			Subquery<Integer> cmAmd = cq.subquery(Integer.class);
+			Root<CountryMaster> cmAmdRoot = cmAmd.from(CountryMaster.class);
+			cmAmd.select(cb.max(cmAmdRoot.get("amendId"))).where(cb.equal(cmAmdRoot.get("countryId"), piRoot.get("nationality")),cb.equal(cmAmdRoot.get("companyId"), hpmRoot.get("companyId")),
+					cb.equal(cmAmdRoot.get("status"), "Y"));
+			
+			Subquery<String> countryName = cq.subquery(String.class);
+			Root<CountryMaster> ScmRoot = countryName.from(CountryMaster.class);
+			countryName.select(ScmRoot.get("countryName")).where(cb.equal(ScmRoot.get("countryId"), piRoot.get("nationality")),cb.equal(ScmRoot.get("companyId"), hpmRoot.get("companyId")),
+					cb.equal(ScmRoot.get("status"), "Y"),cb.equal(ScmRoot.get("amendId"), cmAmd));
+			
+			Subquery<Integer> icmAmd = cq.subquery(Integer.class);
+			Root<InsuranceCompanyMaster> icmAmdRoot = icmAmd.from(InsuranceCompanyMaster.class);
+			icmAmd.select(cb.max(icmAmdRoot.get("amendId"))).where(cb.equal(hpmRoot.get("companyId"), icmAmdRoot.get("companyId")),cb.equal(icmAmdRoot.get("status"), "Y"),
+					cb.between(cb.literal(new Date()), icmAmdRoot.get("effectiveDateStart"), icmAmdRoot.get("effectiveDateEnd")));
+			
+			cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "")
+							.when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),
+									cb.concat(",", countryName)))))))).alias("address"),
+					hpmRoot.get("inceptionDate").alias("inceptionDate"),hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("brokerBranchName").alias("brokerBranchName"),
+					hpmRoot.get("productName").alias("productName"),piRoot.get("stateName").alias("stateName"),piRoot.get("cityName").alias("cityName"),cb.concat(piRoot.get("mobileCodeDesc1"), cb.concat("-", piRoot.get("mobileNo1"))).alias("mobileNo"),
+					piRoot.get("customerId").alias("customerId"),cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Agent","Premia Direct","Premia Broker")), hpmRoot.get("customerName"))
+					.otherwise(luiRoot.get("userName")).alias("brokerName"),luiRoot.get("coreAppBrokerCode").alias("coreAppBrokerCode"),hpmRoot.get("currency").alias("currency"),hpmRoot.get("vatPercent").alias("vatPercent"),
+					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("premiumLc")).otherwise(hpmRoot.get("premiumFc")).alias("premium"),
+					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),
+					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),
+					icmRoot.get("signature").alias("signature"),lbmRoot.get("branchName").alias("place"))
+			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("agencyCode"), luiRoot.get("agencyCode")),cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
+					cb.equal(hpmRoot.get("loginId"), lbmRoot.get("loginId")),cb.equal(hpmRoot.get("companyId"), lbmRoot.get("companyId")),cb.equal(hpmRoot.get("branchCode"), lbmRoot.get("branchCode")),cb.equal(lbmRoot.get("status"), "Y"),
+					cb.equal(icmRoot.get("status"), "Y"),cb.between(cb.literal(new Date()), icmRoot.get("effectiveDateStart"), icmRoot.get("effectiveDateEnd")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("quoteNo"), QuoteNo));
+			List<Tuple> list = em.createQuery(cq).getResultList();
+			if(!CollectionUtils.isEmpty(list)) {
+				Tuple map = list.get(0);
+				List<BuildingDetails> Blist = buildingDetRepo.findByQuoteNo(map.get("quoteNo").toString());
+				List<Map<String,Object>> locationDetails = Blist.stream().map(k ->{
+					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
+					lmap.put("locationName", k.getLocationName()==null?"":StringUtils.capitalize(k.getLocationName()));
+					lmap.put("buildingAddress", k.getBuildingAddress()==null?"":k.getBuildingAddress());
+					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
+					return lmap;
+				}).collect(Collectors.toList());
+				
+				CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> cq1 = cb1.createQuery(Tuple.class);
+				Root<PolicyCoverData> pcdRoot = cq1.from(PolicyCoverData.class);
+				Root<SectionDataDetails> sddRoot = cq1.from(SectionDataDetails.class);
+				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
+						 pcdRoot.get("sumInsured").alias("sumInsured"),pcdRoot.get("rate").alias("rate"),pcdRoot.get("premiumIncludedTaxLc").alias("premiumIncludedTaxLc"),
+						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"))
+				 .where(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")),cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), sddRoot.get("sectionId")),
+						 cb.equal(pcdRoot.get("taxId"),"0"),cb.equal(pcdRoot.get("discLoadId"), "0"),cb.equal(pcdRoot.get("subCoverId"), "0"))
+				 .orderBy(cb.asc(sddRoot.get("sectionId")));			
+			List<Tuple> Slist = em.createQuery(cq1).getResultList();
+			Map<Object, List<Map<String,Object>>> sectionRes = Slist.stream().collect(Collectors.groupingBy(g -> g.get("sectionDesc"),Collectors.mapping(v ->{
+				LinkedHashMap<String,Object> Smap = new LinkedHashMap<String,Object>();
+				Smap.put("coverDesc", v.get("coverDesc"));
+				Smap.put("sumInsured", v.get("sumInsured"));
+				Smap.put("rate", v.get("rate"));
+				Smap.put("premiumIncludedTaxLc", v.get("premiumIncludedTaxLc"));
+				Smap.put("premiumIncludedTaxFc", v.get("premiumIncludedTaxFc"));
+				return Smap;
+			}, Collectors.toList())));			
+			List<Map<String,Object>> sectionList = new ArrayList<Map<String,Object>>();
+			for(Map.Entry<Object, List<Map<String,Object>>> entry :sectionRes.entrySet()) {
+				LinkedHashMap<String, Object> sectionMap = new LinkedHashMap<String, Object>();
+				sectionMap.put("sectionKey", entry.getKey());
+				sectionMap.put("sectionValue", entry.getValue());
+				sectionList.add(sectionMap);
+			}
+			List<Object> sectionIds = Slist.stream().map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
+			List<Map<String,Object>> coverageList = new ArrayList<Map<String,Object>>();
+			for(int i=0;i<sectionIds.size();i++) {
+				Map<String,Object> coverMap = new HashMap<String,Object>();
+				String sectionId = sectionIds.get(i).toString();
+				List<ContentAndRisk> contentInfo = conAndRiskRepo.findByQuoteNoAndSectionId(map.get("quoteNo").toString(),sectionId);
+				List<Map<String,Object>> contentList = contentInfo.stream().map(k ->{
+					LinkedHashMap<String, Object> contentMap = new LinkedHashMap<String, Object>();
+						contentMap.put("itemId", k.getItemId());
+						contentMap.put("itemDesc", k.getItemDesc());
+						contentMap.put("contentRiskDesc", k.getContentRiskDesc());
+						contentMap.put("sumInsured", k.getSumInsured());
+						return contentMap;
+					}).collect(Collectors.toList());
+				
+				List<ProductEmployeeDetails> empDetails = productEmpDetRepo.findByQuoteNoAndSectionId(map.get("quoteNo").toString(),sectionId);
+				List<Map<String,Object>> employeeList = empDetails.stream().map(e ->{
+					LinkedHashMap<String,Object> empMap = new LinkedHashMap<String,Object>();
+						empMap.put("employeeId", e.getEmployeeId());
+						empMap.put("employeeName", e.getEmployeeName());
+						empMap.put("occupationDesc", e.getOccupationDesc());
+						empMap.put("salary", e.getSalary());
+						return empMap;
+					}).collect(Collectors.toList());
+				
+				// CONDITIONS
+				List<Map<String,Object>> conditionList = getConditionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
+
+				// EXCLUSION
+				List<Map<String,Object>> exclusionRes = getExclusionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
+				List<Map<String,Object>> exclusionList = exclusionRes.stream().map(k -> {
+					Map<String,Object> eMap = new HashMap<String,Object>();
+					eMap.put("conditionTerms", k.get("exclusioTerms"));
+					return eMap;
+				}).collect(Collectors.toList());
+				
+				//WARRANTY
+				List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
+				
+				List<Map<String,Object>> termsAndconditions = new ArrayList<Map<String,Object>>();
+				termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).collect(Collectors.toList());
+				termsAndconditions = termsAndconditions.stream().distinct().collect(Collectors.toList());
+				coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
+				coverMap.put("contentList", contentList);
+				coverMap.put("employeeList", employeeList);
+				coverMap.put("termsAndconditions", termsAndconditions);
+				coverageList.add(coverMap);
+			}
+			
+			Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream().collect(Collectors.groupingBy(k -> k.get("sectionDesc"), Collectors.toList()));
+			List<Map<String,Object>> coverageDetails = new ArrayList<Map<String,Object>>();
+			for(Map.Entry<Object, List<Map<String,Object>>> CDEntry : groupBycoverageDetails.entrySet()) {
+				LinkedHashMap<String, Object> coverMap = new LinkedHashMap<String, Object>();
+				coverMap.put("coverId", Slist.stream().filter(f -> f.get("sectionDesc").equals(CDEntry.getKey())).map(m -> m.get("sectionId")).findFirst().orElse(""));
+				coverMap.put("coverKey", CDEntry.getKey());
+				coverMap.put("coverValue", CDEntry.getValue());
+				coverMap.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
+				coverMap.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
+				coverageDetails.add(coverMap);
+			}
+			
+			result.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
+			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
+			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
+			result.put("address", map.get("address")==null?"":map.get("address").toString());
+			result.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
+			result.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
+			result.put("branchName", map.get("branchName")==null?"":map.get("branchName").toString());
+			result.put("brokerBranchName", map.get("brokerBranchName")==null?"":map.get("brokerBranchName").toString());
+			result.put("productName", map.get("productName")==null?"":map.get("productName").toString());
+			result.put("stateName", map.get("stateName")==null?"":map.get("stateName").toString());
+			result.put("cityName", map.get("cityName")==null?"":map.get("cityName").toString());
+			result.put("mobileNo", map.get("mobileNo")==null?"":map.get("mobileNo").toString());
+			result.put("customerId", map.get("customerId")==null?"":map.get("customerId").toString());
+			result.put("brokerName", map.get("brokerName")==null?"":map.get("brokerName").toString());
+			result.put("coreAppBrokerCode", map.get("coreAppBrokerCode")==null?"":map.get("coreAppBrokerCode").toString());
+			result.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+			result.put("vatPercent", map.get("vatPercent")==null?"":Double.parseDouble(map.get("vatPercent").toString()));
+			result.put("premium", map.get("premium")==null?"":map.get("premium").toString());
+			result.put("vatPremium", map.get("vatPremium")==null?"":Double.parseDouble(map.get("vatPremium").toString()));
+			result.put("totalPremium", map.get("totalPremium")==null?"":map.get("totalPremium").toString());
+			result.put("signature", map.get("signature")==null?"":map.get("signature").toString());
+			result.put("place", map.get("place")==null?"":map.get("place").toString());
+			result.put("sectionDetails", sectionList);
+			result.put("locationDetails", locationDetails);
+			result.put("coverageDetails", coverageDetails);
+			}
+		}catch(Exception e) {
+			log.info("Error in EwaySchedule ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		log.info("Exit into EwaySchedule");
+		return result;
+	}
+	
+	private List<Map<String,Object>> getConditionList(String policyNo,String QuoteNo, String sectionId){
+		List<Map<String,Object>> conditionList = new ArrayList<Map<String,Object>>();
+	try {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		List<Tuple> conditionRes = new ArrayList<>();
+		for(int i=1;i<=2;i++) {
+			CriteriaQuery<Tuple> cq2 = cb.createQuery(Tuple.class);
+			Root<HomePositionMaster> hpmRoot2 = cq2.from(HomePositionMaster.class);
+			
+			List<Predicate> predicates = new ArrayList<Predicate>();
+			
+			if(StringUtils.isNotBlank(policyNo)) {
+				predicates.add(cb.equal(hpmRoot2.get("policyNo"), policyNo));
+			}else {
+				predicates.add(cb.equal(hpmRoot2.get("quoteNo"), QuoteNo));
+			}
+			if(i == 1) {
+				Subquery<Tuple> CquoteIn = cq2.subquery(Tuple.class);
+				Root<TermsAndCondition> StacRoot = CquoteIn.from(TermsAndCondition.class);
+				CquoteIn.select(StacRoot.get("quoteNo")).where(cb.equal(StacRoot.get("quoteNo"), QuoteNo));
+				
+				Root<ClausesMaster> cmRoot2 = cq2.from(ClausesMaster.class);
+				if(StringUtils.isNotBlank(sectionId)) {
+					predicates.add(cb.or(cb.equal(cmRoot2.get("sectionId"), sectionId), cb.equal(cmRoot2.get("sectionId"), "99999")));
+				}else {
+					Root<SectionDataDetails> sddRoot2 = cq2.from(SectionDataDetails.class);
+					predicates.add(cb.equal(sddRoot2.get("quoteNo"), hpmRoot2.get("quoteNo")));
+					predicates.add(cb.or(cb.equal(cmRoot2.get("sectionId"), sddRoot2.get("sectionId")), cb.equal(cmRoot2.get("sectionId"), "99999")));
+				}
+				cq2.multiselect(cmRoot2.get("clausesDescription").alias("conditionTerms"));
+				predicates.add(cb.equal(cmRoot2.get("companyId"), hpmRoot2.get("companyId")));
+				predicates.add(cb.equal(cmRoot2.get("productId"), hpmRoot2.get("productId")));
+				predicates.add(cb.or(cb.equal(cmRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(cmRoot2.get("branchCode"), "99999")));
+				predicates.add(cb.between(cb.literal(new Date()), cmRoot2.get("effectiveDateStart"), cmRoot2.get("effectiveDateEnd")));
+				predicates.add(cb.equal(cmRoot2.get("status"), "Y"));
+				predicates.add(cb.not(cb.in(hpmRoot2.get("quoteNo")).value(CquoteIn)));
+			}else {
+				Root<TermsAndCondition> tacRoot2 = cq2.from(TermsAndCondition.class);
+				if(StringUtils.isNotBlank(sectionId)) {
+					predicates.add(cb.or(cb.equal(tacRoot2.get("sectionId"), sectionId), cb.equal(tacRoot2.get("sectionId"), "99999")));
+				}else {
+					Root<SectionDataDetails> sddRoot2 = cq2.from(SectionDataDetails.class);
+					predicates.add(cb.equal(sddRoot2.get("quoteNo"), hpmRoot2.get("quoteNo")));
+					predicates.add(cb.equal(tacRoot2.get("sectionId"), sddRoot2.get("sectionId")));
+				}
+				cq2.multiselect(tacRoot2.get("subIdDesc").alias("conditionTerms"));
+				predicates.add(cb.equal(tacRoot2.get("companyId"), hpmRoot2.get("companyId")));
+				predicates.add(cb.equal(tacRoot2.get("productId"), hpmRoot2.get("productId")));
+				
+				predicates.add(cb.in(hpmRoot2.get("quoteNo")).value(tacRoot2.get("quoteNo")));
+				predicates.add(cb.equal(tacRoot2.get("status"), "Y"));
+				predicates.add(cb.or(cb.equal(tacRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(tacRoot2.get("branchCode"), "99999")));
+			}
+				Predicate [] predicatArray = new Predicate[predicates.size()];
+				predicates.toArray(predicatArray);
+				conditionRes.addAll(em.createQuery(cq2.where(predicatArray)).getResultList());
+		}
+		conditionList = conditionRes.stream().distinct().map(c ->{
+			LinkedHashMap<String,Object> Cmap = new LinkedHashMap<String,Object>();
+			Cmap.put("conditionTerms", c.get("conditionTerms")==null?"":c.get("conditionTerms").toString());
+			return Cmap;
+		}).collect(Collectors.toList());
+	}catch(Exception e) {
+		log.info("Error in getConditionList ==> "+e.getMessage());
+		e.printStackTrace();
+	}
+	return conditionList;
+	}
+	
+	private List<Map<String,Object>> getExclusionList(String policyNo,String QuoteNo,String sectionId){
+		List<Map<String,Object>> exclusionList = new ArrayList<Map<String,Object>>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			List<Tuple> exclusionRes = new ArrayList<>();
+			
+			for(int i=1;i<=2;i++) {
+				CriteriaQuery<Tuple> cq3 = cb.createQuery(Tuple.class);
+				Root<HomePositionMaster> hpmRoot3 = cq3.from(HomePositionMaster.class);
+				
+				List<Predicate> predicates = new ArrayList<Predicate>();
+				if(StringUtils.isNotBlank(policyNo)) {
+					predicates.add(cb.equal(hpmRoot3.get("policyNo"), policyNo));
+				}else {
+					predicates.add(cb.equal(hpmRoot3.get("quoteNo"), QuoteNo));
+				}
+				if(i == 1) {
+					
+					Subquery<Tuple> EquoteIn = cq3.subquery(Tuple.class);
+					Root<TermsAndCondition> SEtacRoot = EquoteIn.from(TermsAndCondition.class);
+					EquoteIn.select(SEtacRoot.get("quoteNo")).where(cb.equal(SEtacRoot.get("quoteNo"), QuoteNo));
+					
+					Root<ExclusionMaster> emRoot3 = cq3.from(ExclusionMaster.class);
+					if(StringUtils.isNotBlank(sectionId)) {
+						predicates.add(cb.or(cb.equal(emRoot3.get("sectionId"), sectionId), cb.equal(emRoot3.get("sectionId"), "99999")));
+					}else {
+						Root<SectionDataDetails> sddRoot3 = cq3.from(SectionDataDetails.class);
+						predicates.add(cb.equal(sddRoot3.get("quoteNo"), hpmRoot3.get("quoteNo")));
+						predicates.add(cb.or(cb.equal(emRoot3.get("sectionId"), sddRoot3.get("sectionId")), cb.equal(emRoot3.get("sectionId"), "99999")));
+					}
+					cq3.multiselect(emRoot3.get("exclusionDescription").alias("exclusionTerms"));
+					predicates.add(cb.equal(emRoot3.get("companyId"), hpmRoot3.get("companyId")));
+					predicates.add(cb.equal(emRoot3.get("productId"), hpmRoot3.get("productId")));
+					predicates.add(cb.or(cb.equal(emRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(emRoot3.get("branchCode"), "99999")));
+					predicates.add(cb.between(cb.literal(new Date()), emRoot3.get("effectiveDateStart"), emRoot3.get("effectiveDateEnd")));
+					predicates.add(cb.equal(emRoot3.get("status"), "Y"));
+					predicates.add(cb.not(cb.in(hpmRoot3.get("quoteNo")).value(EquoteIn)));
+					Predicate [] predicatArray = new Predicate[predicates.size()];
+					predicates.toArray(predicatArray);
+					exclusionRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
+				}else {
+					Root<TermsAndCondition> tacRoot3 = cq3.from(TermsAndCondition.class);
+					if(StringUtils.isNotBlank(sectionId)) {
+						predicates.add(cb.equal(tacRoot3.get("sectionId"), sectionId));
+						predicates.add(cb.or(cb.equal(tacRoot3.get("sectionId"), sectionId), cb.equal(tacRoot3.get("sectionId"), "99999")));
+					}else {
+						Root<SectionDataDetails> sddRoot3 = cq3.from(SectionDataDetails.class);
+						predicates.add(cb.equal(sddRoot3.get("quoteNo"), hpmRoot3.get("quoteNo")));
+						predicates.add(cb.equal(tacRoot3.get("sectionId"), sddRoot3.get("sectionId")));
+					}
+					
+					cq3.multiselect(tacRoot3.get("subIdDesc").alias("exclusionTerms"));
+					predicates.add(cb.equal(tacRoot3.get("companyId"), hpmRoot3.get("companyId")));
+					predicates.add(cb.equal(tacRoot3.get("productId"), hpmRoot3.get("productId")));
+					
+					predicates.add(cb.in(hpmRoot3.get("quoteNo")).value(tacRoot3.get("quoteNo")));
+					predicates.add(cb.equal(tacRoot3.get("status"), "Y"));
+					predicates.add(cb.or(cb.equal(tacRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(tacRoot3.get("branchCode"), "99999")));
+					Predicate [] predicatArray = new Predicate[predicates.size()];
+					predicates.toArray(predicatArray);
+					exclusionRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
+				}
+			}
+			exclusionList = exclusionRes.stream().distinct().map(c ->{
+				LinkedHashMap<String,Object> Emap = new LinkedHashMap<String,Object>();
+				Emap.put("exclusioTerms", c.get("exclusionTerms")==null?"":c.get("exclusionTerms").toString());
+				return Emap;
+			}).collect(Collectors.toList());
+		}catch(Exception e) {
+			log.info("Error in getExclusionList ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		return exclusionList;
+	}
+	
+	private List<Map<String,Object>> getWarrantyDescription(String policyNo,String QuoteNo, String sectionId){
+		List<Map<String,Object>> warrantyList = new ArrayList<Map<String,Object>>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			List<Tuple> warrantyRes = new ArrayList<>();
+			
+			for(int i=1;i<=2;i++) {
+				CriteriaQuery<Tuple> cq3 = cb.createQuery(Tuple.class);
+				Root<HomePositionMaster> hpmRoot3 = cq3.from(HomePositionMaster.class);
+				List<Predicate> predicates = new ArrayList<Predicate>();
+				if(StringUtils.isNotBlank(policyNo)) {
+					predicates.add(cb.equal(hpmRoot3.get("policyNo"), policyNo));
+				}else {
+					predicates.add(cb.equal(hpmRoot3.get("quoteNo"), QuoteNo));
+				}
+				if(i == 1) {
+					
+					Subquery<Tuple> EquoteIn = cq3.subquery(Tuple.class);
+					Root<TermsAndCondition> SEtacRoot = EquoteIn.from(TermsAndCondition.class);
+					EquoteIn.select(SEtacRoot.get("quoteNo")).where(cb.equal(SEtacRoot.get("quoteNo"), QuoteNo));
+					Root<WarrantyMaster> wmRoot3 = cq3.from(WarrantyMaster.class);
+					cq3.multiselect(wmRoot3.get("warrantyDescription").alias("warrantyTerms"));
+					predicates.add(cb.equal(wmRoot3.get("companyId"), hpmRoot3.get("companyId")));
+					predicates.add(cb.equal(wmRoot3.get("productId"), hpmRoot3.get("productId")));
+					predicates.add(cb.or(cb.equal(wmRoot3.get("sectionId"), sectionId), cb.equal(wmRoot3.get("sectionId"), "99999")));
+					predicates.add(cb.or(cb.equal(wmRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(wmRoot3.get("branchCode"), "99999")));
+					predicates.add(cb.between(cb.literal(new Date()), wmRoot3.get("effectiveDateStart"), wmRoot3.get("effectiveDateEnd")));
+					predicates.add(cb.equal(wmRoot3.get("status"), "Y"));
+					predicates.add(cb.not(cb.in(hpmRoot3.get("quoteNo")).value(EquoteIn)));
+					Predicate [] predicatArray = new Predicate[predicates.size()];
+					predicates.toArray(predicatArray);
+					warrantyRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
+				}else {
+					Root<TermsAndCondition> tacRoot3 = cq3.from(TermsAndCondition.class);
+					cq3.multiselect(tacRoot3.get("subIdDesc").alias("warrantyTerms"));
+					predicates.add(cb.equal(tacRoot3.get("companyId"), hpmRoot3.get("companyId")));
+					predicates.add(cb.equal(tacRoot3.get("productId"), hpmRoot3.get("productId")));
+					predicates.add(cb.or(cb.equal(tacRoot3.get("sectionId"), sectionId), cb.equal(tacRoot3.get("sectionId"), "99999")));
+					predicates.add(cb.in(hpmRoot3.get("quoteNo")).value(tacRoot3.get("quoteNo")));
+					predicates.add(cb.equal(tacRoot3.get("status"), "Y"));
+					predicates.add(cb.or(cb.equal(tacRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(tacRoot3.get("branchCode"), "99999")));
+					Predicate [] predicatArray = new Predicate[predicates.size()];
+					predicates.toArray(predicatArray);
+					warrantyRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
+				}
+			}
+			warrantyList = warrantyRes.stream().distinct().map(c ->{
+				LinkedHashMap<String,Object> Emap = new LinkedHashMap<String,Object>();
+				Emap.put("conditionTerms", c.get("warrantyTerms")==null?"":c.get("warrantyTerms").toString());
+				return Emap;
+			}).collect(Collectors.toList());
+		}catch(Exception e) {
+			log.info("Error in getWarrantyDescription ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		return warrantyList;
+		
 	}
 
 }

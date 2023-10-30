@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SectionDetails" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="fe31f29b-8d95-4863-a7bc-19b4276b243b">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -41,59 +41,44 @@
 	</style>
 	<subDataset name="SectionInfo" uuid="2d7e0568-0aee-4fa3-9aa6-f6d0096b331e">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 		<parameter name="pvQuoteNo" class="java.lang.String"/>
 		<parameter name="pvSectionId" class="java.lang.String"/>
-		<queryString language="SQL">
-			<![CDATA[SELECT PC.COVER_DESC,PC.SUM_INSURED,PC.RATE,PC.PREMIUM_INCLUDED_TAX_LC,PC.PREMIUM_INCLUDED_TAX_FC FROM POLICY_COVER_DATA PC WHERE Quote_no = $P{pvQuoteNo}  AND SECTION_ID IN ($P{pvSectionId})  AND TAX_ID='0' AND DISC_LOAD_ID='0' AND SUB_COVER_ID='0'
-ORDER BY COVER_ID]]>
+		<queryString language="JSON">
+			<![CDATA[sectionDetails.sectionValue]]>
 		</queryString>
-		<field name="COVER_DESC" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="COVER_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="COVER_DESC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+		<field name="coverDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="coverDesc"/>
+			<fieldDescription><![CDATA[coverDesc]]></fieldDescription>
 		</field>
-		<field name="SUM_INSURED" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="SUM_INSURED"/>
-			<property name="com.jaspersoft.studio.field.label" value="SUM_INSURED"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+		<field name="sumInsured" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
+			<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
 		</field>
-		<field name="RATE" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="RATE"/>
-			<property name="com.jaspersoft.studio.field.label" value="RATE"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+		<field name="rate" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="rate"/>
+			<fieldDescription><![CDATA[rate]]></fieldDescription>
 		</field>
-		<field name="PREMIUM_INCLUDED_TAX_LC" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="PREMIUM_INCLUDED_TAX_LC"/>
-			<property name="com.jaspersoft.studio.field.label" value="PREMIUM_INCLUDED_TAX_LC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+		<field name="premiumIncludedTaxLc" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="premiumIncludedTaxLc"/>
+			<fieldDescription><![CDATA[premiumIncludedTaxLc]]></fieldDescription>
 		</field>
-		<field name="PREMIUM_INCLUDED_TAX_FC" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="PREMIUM_INCLUDED_TAX_FC"/>
-			<property name="com.jaspersoft.studio.field.label" value="PREMIUM_INCLUDED_TAX_FC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+		<field name="premiumIncludedTaxFc" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="premiumIncludedTaxFc"/>
+			<fieldDescription><![CDATA[premiumIncludedTaxFc]]></fieldDescription>
 		</field>
 	</subDataset>
-	<parameter name="pvQuoteNo" class="java.lang.String"/>
-	<queryString language="SQL">
-		<![CDATA[SELECT SECTION_ID,SECTION_DESC FROM SECTION_DATA_DETAILS WHERE QUOTE_NO = $P{pvQuoteNo}  ORDER BY SECTION_ID]]>
+	<queryString language="JSON">
+		<![CDATA[sectionDetails]]>
 	</queryString>
-	<field name="SECTION_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SECTION_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="SECTION_ID"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="section_data_details"/>
+	<field name="sectionKey" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="sectionKey"/>
+		<fieldDescription><![CDATA[sectionKey]]></fieldDescription>
 	</field>
-	<field name="SECTION_DESC" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SECTION_DESC"/>
-		<property name="com.jaspersoft.studio.field.label" value="SECTION_DESC"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="section_data_details"/>
+	<field name="sectionValue" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="sectionValue"/>
+		<fieldDescription><![CDATA[sectionValue]]></fieldDescription>
 	</field>
-	<group name="SECTION_ID">
-		<groupExpression><![CDATA[$F{SECTION_ID}]]></groupExpression>
-	</group>
-	<group name="SECTION_DESC">
-		<groupExpression><![CDATA[$F{SECTION_DESC}]]></groupExpression>
-	</group>
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField>
@@ -109,7 +94,7 @@ ORDER BY COVER_ID]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="true" isItalic="false" isUnderline="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{SECTION_DESC}+":-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{sectionKey}+":-"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="21">
@@ -123,14 +108,8 @@ ORDER BY COVER_ID]]>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="SectionInfo" uuid="605fdbbe-592c-428c-bf79-f05c81359905">
-						<datasetParameter name="pvQuoteNo">
-							<datasetParameterExpression><![CDATA[$P{pvQuoteNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="pvSectionId">
-							<datasetParameterExpression><![CDATA[$F{SECTION_ID}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="SectionInfo" uuid="ef33bdc3-51be-41c5-b8d2-bd8819203437">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("sectionValue")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="180" uuid="700e7fff-cdcf-42f6-a856-861b99c8e644">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -159,7 +138,7 @@ ORDER BY COVER_ID]]>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{COVER_DESC}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{coverDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -189,7 +168,7 @@ ORDER BY COVER_ID]]>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{sumInsured}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -219,7 +198,7 @@ ORDER BY COVER_ID]]>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{RATE}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{rate}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -249,7 +228,7 @@ ORDER BY COVER_ID]]>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{PREMIUM_INCLUDED_TAX_LC}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{premiumIncludedTaxLc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
