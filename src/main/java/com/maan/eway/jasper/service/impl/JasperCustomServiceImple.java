@@ -1073,7 +1073,7 @@ public class JasperCustomServiceImple {
 						
 			List<Tuple> Slist = em.createQuery(cq1).getResultList();
 			Map<Object, List<Map<String,Object>>> sectionRes = Slist.stream().collect(Collectors.groupingBy(g -> g.get("sectionDesc"),Collectors.mapping(v ->{
-				LinkedHashMap<String,Object> Smap = new LinkedHashMap<String,Object>();
+				Map<String,Object> Smap = new HashMap<String,Object>();
 				Smap.put("occupationDesc", v.get("occupationDesc"));
 				Smap.put("coverDesc", v.get("coverDesc"));
 				Smap.put("sumInsured", v.get("sumInsured"));
@@ -1084,7 +1084,7 @@ public class JasperCustomServiceImple {
 			}, Collectors.toList())));			
 			List<Map<String,Object>> sectionList = new ArrayList<Map<String,Object>>();
 			for(Map.Entry<Object, List<Map<String,Object>>> entry :sectionRes.entrySet()) {
-				LinkedHashMap<String, Object> sectionMap = new LinkedHashMap<String, Object>();
+				Map<String, Object> sectionMap = new HashMap<String, Object>();
 				sectionMap.put("sectionKey", entry.getKey());
 				sectionMap.put("sectionValue", entry.getValue());
 				sectionList.add(sectionMap);
