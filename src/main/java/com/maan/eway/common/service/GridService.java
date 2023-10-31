@@ -31,6 +31,7 @@ import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
+import com.maan.eway.common.res.RegNumberRes;
 import com.maan.eway.common.res.RevertGridRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.impl.PortFolioSearchGridRes;
@@ -136,6 +137,6 @@ public interface GridService {
 
 	List<GetExistingBrokerListRes> getAdminReferralReQuoteDropdown(ExistingBrokerUserListReq req);
 
-	List<GetRegNumberQuoteRes> getRegNumberQuotes(RegSearchReq req);
+	RegNumberRes getRegNumberQuotes(RegSearchReq req);
 
 }

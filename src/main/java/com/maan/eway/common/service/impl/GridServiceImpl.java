@@ -110,6 +110,7 @@ import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
+import com.maan.eway.common.res.RegNumberRes;
 import com.maan.eway.common.res.RegirsterSearchCriteeriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.RevertGridListRes;
@@ -5211,7 +5212,8 @@ public class GridServiceImpl implements GridService {
 	}
 
 	@Override
-	public List<GetRegNumberQuoteRes> getRegNumberQuotes(RegSearchReq req) {
+	public RegNumberRes getRegNumberQuotes(RegSearchReq req) {
+		RegNumberRes res2 = new RegNumberRes();
 		List<GetRegNumberQuoteRes> reslist = new ArrayList<GetRegNumberQuoteRes>();
 		
 		try {
@@ -5333,12 +5335,14 @@ public class GridServiceImpl implements GridService {
 				reslist.add(res);
 			}
 			
+			res2.setRegisterNumberQuotes(reslist);
+			res2.setTotalCount(reslist==null ? "0" : String.valueOf(reslist.size()) );
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
 			return null;
 		}
-		return reslist ;
+		return res2 ;
 	}
 
 }

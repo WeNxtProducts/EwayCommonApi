@@ -42,6 +42,7 @@ import com.maan.eway.common.res.GetallReferralDetailsCommonRes;
 import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioGridRes;
+import com.maan.eway.common.res.RegNumberRes;
 import com.maan.eway.common.res.RevertGridRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.GridService;
@@ -864,7 +865,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getRegNumberQuotes(@RequestBody RegSearchReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<GetRegNumberQuoteRes> res = entityService.getRegNumberQuotes(req);
+		RegNumberRes res = entityService.getRegNumberQuotes(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
