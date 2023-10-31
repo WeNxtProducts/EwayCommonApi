@@ -303,7 +303,7 @@ public class PaymentController {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>(data, HttpStatus.CREATED);
 			}
 		}
 	
