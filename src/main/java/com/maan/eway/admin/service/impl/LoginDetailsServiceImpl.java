@@ -653,18 +653,26 @@ this.repository = repo;
 				updateLogin.setOaCode(Integer.valueOf(loginReq.getOaCode()));
 				updateLogin.setAgencyCode(loginReq.getAgencyCode());
 			}
-			Instant now = Instant.now();
-			Instant date = now.minus(Duration.ofDays(1));	
-			Date firstlogindate = Date.from(date);
+//			Instant now = Instant.now();
+//			Instant date = now.minus(Duration.ofDays(1));	
+//			Date firstlogindate = Date.from(date);
 			
-			updateLogin.setPassword(findLogin.getPassword() );
+			if(StringUtils.isNotBlank(loginReq.getPassword()) ) {
+				passwordEnc passEnc = new passwordEnc();
+				String newpass =  passEnc.crypt(loginReq.getPassword().trim());
+				updateLogin.setPassword(newpass );
+			} else {
+				updateLogin.setPassword(StringUtils.isNotBlank(loginReq.getPassword()) ? loginReq.getPassword() : findLogin.getPassword()  );
+			}
+			
+			
 			updateLogin.setPwdCount(findLogin.getPwdCount() );	
 			updateLogin.setLpass1(findLogin.getLpass1());
 			updateLogin.setLpass2(findLogin.getLpass2());
 			updateLogin.setLpass3(findLogin.getLpass3());
 			updateLogin.setLpass4(findLogin.getLpass4());
 			updateLogin.setLpass5(findLogin.getLpass5());
-			updateLogin.setLpassDate(firstlogindate);
+			updateLogin.setLpassDate(updateLogin.getLpassDate());
 			updateLogin.setUpdatedDate(new Date());
 			updateLogin.setUpdatedBy(loginReq.getCreatedBy());
 			updateLogin.setLoginId(loginReq.getLoginId());
