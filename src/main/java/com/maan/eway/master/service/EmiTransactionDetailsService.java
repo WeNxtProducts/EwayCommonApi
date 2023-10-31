@@ -27,9 +27,9 @@ public interface EmiTransactionDetailsService  {
 
 	List<Error> validateEmiInstallmentDetails(EmiInstallmentDetailsReq req);
 
-	SuccessRes updateEmiTransactionDetails(EmiTransactionDetailsUpdateReq req);
+	SuccessRes updateEmiTransactionDetails(List<EmiTransactionDetailsUpdateReq> req);
 
-	List<Error> validateUpdateEmiTransactionDetails(EmiTransactionDetailsUpdateReq req);
+	List<Error> validateUpdateEmiTransactionDetails(List<EmiTransactionDetailsUpdateReq> req);
 
 	List<EmiTransactionDetailsRes> getEmiDetailsByQuoteNo(EmiTransactionDetailsGetReq req);
 

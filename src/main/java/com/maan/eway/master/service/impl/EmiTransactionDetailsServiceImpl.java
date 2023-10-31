@@ -58,6 +58,7 @@ import com.maan.eway.repository.ExchangeMasterRepository;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.FactorRateMaster;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.error.Error;
@@ -329,7 +330,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	}
 	//Update Validation
 	@Override
-	public List<Error> validateUpdateEmiTransactionDetails(EmiTransactionDetailsUpdateReq req) {
+	public List<Error> validateUpdateEmiTransactionDetails(List<EmiTransactionDetailsUpdateReq> reqList) {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
@@ -337,13 +338,15 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 //			if (StringUtils.isBlank(req.getPremiumWithTax())) {
 //				errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
 //			} 
-
+			int row=0;
+			for(EmiTransactionDetailsUpdateReq req:reqList) {
+				row=row+1;
 			if (StringUtils.isBlank(req.getInstallmentPeriod())) {
-				errorList.add(new Error("02", "InstallmentPeriod", "Please Enter InstallmentPeriod"));
+				errorList.add(new Error("02", "InstallmentPeriod", "Please Enter InstallmentPeriod"+row));
 			}
 
 			if (StringUtils.isBlank(req.getQuoteNo())) {
-				errorList.add(new Error("03", "QuoteNo", "Please Enter QuoteNo"));
+				errorList.add(new Error("03", "QuoteNo", "Please Enter QuoteNo"+row));
 			}
 			
 //			// Status Validation
@@ -354,15 +357,15 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 //			} 
 			//Payment Staus validation
 			else if (!("Paid".equals(req.getPaymentStatus()))) {
-				errorList.add(new Error("05", "PaymentStatus", "Please Enter PaymentStatus "));
+				errorList.add(new Error("05", "PaymentStatus", "Please Enter PaymentStatus "+row));
 			}
 
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"+row));
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"+row));
 			}
-
+			}
 	
 		} catch (Exception e) {
 			log.error(e);
@@ -373,12 +376,13 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	
 	//Update
 	@Override
-	public SuccessRes updateEmiTransactionDetails(EmiTransactionDetailsUpdateReq req) {
+	public SuccessRes updateEmiTransactionDetails(List<EmiTransactionDetailsUpdateReq> reqList) {
 		SuccessRes res = new SuccessRes();
 		EmiTransactionDetails saveData = new EmiTransactionDetails();
 		List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			for(EmiTransactionDetailsUpdateReq req:reqList) {
 			Date entryDate = null;
 			String createdBy = "";
 			String quoteNo = req.getQuoteNo();
@@ -436,6 +440,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			saveData.setPaymentDetails(req.getPaymentDetails());
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -476,12 +481,23 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			TypedQuery<EmiTransactionDetails> result = em.createQuery(query);
 			list = result.getResultList();
 			// Map
+			List<EmiTransactionDetails> list1 = new ArrayList<EmiTransactionDetails>();
+			list1 = repo.findTop2ByQuoteNoAndPaymentStatusOrderByDueDateAsc(quoteNo, "Pending");
+			
 			for (EmiTransactionDetails data : list) {
 				EmiTransactionDetailsRes res = new EmiTransactionDetailsRes();
 				res = mapper.map(data, EmiTransactionDetailsRes.class);
 				res.setInstallment(data.getInstalment());
 				res.setDueAmount((Double.valueOf(Math.round(data.getDueAmount()))).toString());
 				res.setBalanceAmount((Double.valueOf(Math.round(data.getBalanceAmount()))).toString());
+				if (list1 != null && list1.size() > 0) {
+					List<EmiTransactionDetails> filter =  list1.stream().filter( o -> o.getInstalment().equals(data.getInstalment())).collect(Collectors.toList());
+						if (filter.size()>0) {
+							res.setSelectYn("Y");
+						} else {
+							res.setSelectYn("N");
+						}
+				}
 				resList.add(res);
 			}
 
