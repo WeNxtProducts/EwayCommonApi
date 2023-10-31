@@ -89,7 +89,7 @@ public class EmiTransactionDetailsController {
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/updateemitransactiondetails")
 	@ApiOperation(value = "This method is Insert Emi Transaction Details")
-	public ResponseEntity<CommonRes> updateEmiTransactionDetails(@RequestBody EmiTransactionDetailsUpdateReq req) {
+	public ResponseEntity<CommonRes> updateEmiTransactionDetails(@RequestBody List<EmiTransactionDetailsUpdateReq> req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();

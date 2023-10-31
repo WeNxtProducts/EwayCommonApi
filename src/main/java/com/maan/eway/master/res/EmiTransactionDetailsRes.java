@@ -60,4 +60,7 @@ public class EmiTransactionDetailsRes implements Serializable {
 	@JsonProperty("PaymentDetails")
     private String     paymentDetails ;
 	
+	@JsonProperty("SelectYn")
+    private String     selectYn ;
+	
 }
