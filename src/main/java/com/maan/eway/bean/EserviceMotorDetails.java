@@ -551,6 +551,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MOTOR_USAGE_DESC")
     private String     motorUsageDesc ;
+    
+    @Column(name="TIRA_BODY_TYPE")
+    private String     tiraBodyType ;
+    
+    @Column(name="TIRA_MOTOR_USAGE")
+    private String     tiraMotorUsage ;
 }
 
 
