@@ -268,6 +268,10 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="driverDetails"/>
 		<fieldDescription><![CDATA[driverDetails]]></fieldDescription>
 	</field>
+	<field name="accessoriesDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="accessoriesDetails"/>
+		<fieldDescription><![CDATA[accessoriesDetails]]></fieldDescription>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -3397,18 +3401,21 @@
 			</break>
 		</band>
 		<band height="21">
+			<printWhenExpression><![CDATA[$F{accessoriesDetails}.length() !=2 && $F{accessoriesDetails} != null]]></printWhenExpression>
 			<textField>
 				<reportElement x="0" y="5" width="555" height="16" uuid="bfbf1195-7af2-4741-9058-59b779ffc4b9">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{accessoriesDetails}.length() !=2 && $F{accessoriesDetails} != null]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="4"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Accessories Details :"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Accessories Details : "]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="35">
+			<printWhenExpression><![CDATA[$F{accessoriesDetails}.length() !=2 && $F{accessoriesDetails} != null]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="0" y="0" width="555" height="35" uuid="4253edf3-1f80-4697-afa3-94308e5acc2a">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
