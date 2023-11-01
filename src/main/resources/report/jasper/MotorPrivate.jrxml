@@ -167,7 +167,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
 			<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
 		</field>
-		<field name="serialNoDesc" class="java.lang.Integer">
+		<field name="serialNoDesc" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="serialNoDesc"/>
 			<fieldDescription><![CDATA[serialNoDesc]]></fieldDescription>
 		</field>
@@ -3446,7 +3446,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{itemNo}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
