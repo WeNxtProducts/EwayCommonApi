@@ -1280,7 +1280,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								
 						}
 						else {
-							commissionPercent=5.0;
+							commissionPercent=12.5;
 						}
 					
 					String premiumFc = v.getActualPremiumFc().toString();
@@ -1433,7 +1433,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							}
 						}
 						else {
-							commissionPercent=5.0;
+							commissionPercent=12.5;
 						}
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = String.valueOf( v.getOverallPremiumFc() -  v.getActualPremiumFc());
@@ -1590,7 +1590,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							}
 						}
 						else {
-							commissionPercent=5.0;
+							commissionPercent=12.5;
 						}
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = String.valueOf( v.getOverallPremiumFc().subtract( v.getActualPremiumFc()));
@@ -1908,7 +1908,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							}
 						}
 						else {
-							commissionPercent=5.0;
+							commissionPercent=12.5;
 						}
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = String.valueOf( v.getOverallPremiumFc().subtract( v.getActualPremiumFc()));
