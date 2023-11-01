@@ -69,7 +69,7 @@ public class CreateMinimumPremium {
 				.endtCount(endtCount)
 				.effectiveDate(engine.getEffectiveDate())
 				.policyEndDate(engine.getPolicyEndDate())
-				.coverageLimit(BigDecimal.ZERO)
+				.coverageLimit(BigDecimal.ONE)
 				.status("Y")
 				.minSumInsured(BigDecimal.ZERO)
 				.taxes(taxey)
