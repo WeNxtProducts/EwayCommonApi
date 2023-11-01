@@ -2741,8 +2741,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 					endtChargeOrRefund="CHARGE";
 				}
 				
-				Double endtPremiumTax = 0D;
-				home.setEndtPremiumTax(new BigDecimal(endtPremiumTax));
+				BigDecimal endtPremiumTax = endtPremium.multiply(new BigDecimal(df.format(vatPercent)).divide(new BigDecimal("100"),MathContext.DECIMAL32) ,MathContext.DECIMAL32);
+				home.setEndtPremiumTax(endtPremiumTax);
 				home.setEndtPremium(endtPremium);
 				home.setEndtPremiumLc(endtPremium.multiply(home.getExchangeRate(),MathContext.DECIMAL32));
 				home.setIsChargRefund(endtChargeOrRefund);
