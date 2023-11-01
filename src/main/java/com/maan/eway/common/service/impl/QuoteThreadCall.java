@@ -575,12 +575,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    			&&  o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId()) ).collect(Collectors.toList());
 		    	
 	    		Object motorKey =  motorKeyValue.get(cov.getCoverBasedOn());
-	    		if(cov.getCoverId().equals(42) ) {
-	    			//skip
-	    		} else if(motorKey!=null && filterCovers.size() > 0 && (! cov.getCoverName().contains("Minimum Premium") || ! cov.getCoverBasedOn().equalsIgnoreCase("suminsured") )  ){
-			    		motorKeyValue.put(cov.getCoverBasedOn(),  cov.getSumInsured()==null ?  null : cov.getSumInsured().toPlainString());	
-			    		
-		    	} else if (motorKey!=null && "N".equalsIgnoreCase(cov.getDependentCoverYn())  && (! cov.getCoverName().contains("Minimum Premium") || ! cov.getCoverBasedOn().equalsIgnoreCase("suminsured") )   ) {
+	    		
+	    		if(motorKey!=null && filterCovers.size() > 0 && (! cov.getCoverName().contains("Minimum Premium") || ! cov.getCoverBasedOn().equalsIgnoreCase("suminsured") )  ){
+	    			if(cov.getCoverId().equals(42) || cov.getCoverId().equals(55) ) {
+	    				// skip
+	    			} else {
+	    				motorKeyValue.put(cov.getCoverBasedOn(),  cov.getSumInsured()==null ?  null : cov.getSumInsured().toPlainString());
+	    			}
+	    		} else if (motorKey!=null && "N".equalsIgnoreCase(cov.getDependentCoverYn())  && (! cov.getCoverName().contains("Minimum Premium") || ! cov.getCoverBasedOn().equalsIgnoreCase("suminsured") )   ) {
 		    		motorKeyValue.put(cov.getCoverBasedOn(), null );
 		    	}
 		    	
