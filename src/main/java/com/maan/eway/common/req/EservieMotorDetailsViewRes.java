@@ -152,4 +152,10 @@ public class EservieMotorDetailsViewRes {
 	 
 	 @JsonProperty("VatCommission")
 	 private String vatCommission;
+	 
+	 @JsonProperty("PolicyNo")
+	 private String policyNo;
+	 
+	 @JsonProperty("OriginalPolicyNo")
+	 private String OriginalPolicyNo;
 }

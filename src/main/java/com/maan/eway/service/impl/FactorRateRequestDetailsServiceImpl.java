@@ -1292,6 +1292,10 @@ this.repository = repo;
 				res.setEffectiveDate(mot.getEndorsementEffdate()==null?null:mot.getEndorsementEffdate() );
 				res.setCommissionPercentage(mot.getCommissionPercentage()==null?"" :mot.getCommissionPercentage().toPlainString());
 				res.setVatCommission(mot.getVatCommission()==null?"" :mot.getVatCommission().toPlainString());
+				res.setPolicyNo(mot.getPolicyNo());
+				res.setOriginalPolicyNo(mot.getOriginalPolicyNo());
+				
+				
 				//res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
 				if(mot.getEndorsementType()!=null) {
 					EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(mot.getCompanyId(),req.getProductId(),mot.getEndorsementType().toString());
@@ -1435,6 +1439,9 @@ this.repository = repo;
 					res.setEffectiveDate(travelData.getEndorsementEffdate()==null?null:travelData.getEndorsementEffdate() );
 					res.setCommissionPercentage(travelData.getCommissionPercentage()==null?"" :travelData.getCommissionPercentage().toPlainString());
 					res.setVatCommission(travelData.getVatCommission()==null?"" :travelData.getVatCommission().toPlainString());
+					res.setPolicyNo(travelData.getPolicyNo());
+					res.setOriginalPolicyNo(travelData.getOriginalPolicyNo());
+					
 					//res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
 					Object riskDetails = new Object();
 					EserviceTravelGetRes  travelRes = new EserviceTravelGetRes();
@@ -1502,6 +1509,9 @@ this.repository = repo;
 						res.setEffectiveDate(acc.getEndorsementEffdate()==null?null:acc.getEndorsementEffdate() );
 						res.setCommissionPercentage(acc.getCommissionPercentage()==null?"" :acc.getCommissionPercentage().toPlainString());
 						res.setVatCommission(acc.getVatCommission()==null?"" :acc.getVatCommission().toPlainString());
+						res.setPolicyNo(acc.getPolicyNo());
+						res.setOriginalPolicyNo(acc.getOriginalPolicyNo());
+						
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(acc, buildRes);
@@ -1545,6 +1555,9 @@ this.repository = repo;
 						res.setEffectiveDate(buildData.getEndorsementEffdate()==null?null:buildData.getEndorsementEffdate() );
 						res.setCommissionPercentage(buildData.getCommissionPercentage()==null?"" :buildData.getCommissionPercentage().toPlainString());
 						res.setVatCommission(buildData.getVatCommission()==null?"" :buildData.getVatCommission().toPlainString());
+						res.setPolicyNo(buildData.getPolicyNo());
+						res.setOriginalPolicyNo(buildData.getOriginalPolicyNo());
+						
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(buildData, buildRes);
@@ -1598,6 +1611,9 @@ this.repository = repo;
 				res.setEffectiveDate(comData.getEndorsementEffdate()==null?null:comData.getEndorsementEffdate() );
 				res.setCommissionPercentage(comData.getCommissionPercentage()==null?"" :comData.getCommissionPercentage().toPlainString());
 				res.setVatCommission(comData.getVatCommission()==null?"" :comData.getVatCommission().toPlainString());
+				res.setPolicyNo(comData.getPolicyNo());
+				res.setOriginalPolicyNo(comData.getOriginalPolicyNo());
+				
 				//res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
