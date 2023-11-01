@@ -283,7 +283,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="30" width="50" height="15" uuid="a8c6433e-a5ba-4f6f-b097-471907b73630">

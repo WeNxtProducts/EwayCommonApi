@@ -63,6 +63,7 @@ import com.maan.eway.jasper.res.CreditDataSetOne;
 import com.maan.eway.jasper.res.CreditDataSetTwo;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.MotorCoverNoteRes;
+import com.maan.eway.jasper.res.MotorPrivateAccessoriesDetails;
 import com.maan.eway.jasper.res.MotorPrivateDriverDetails;
 import com.maan.eway.jasper.res.MotorPrivateRes;
 import com.maan.eway.jasper.res.MotorPrivateVehicleDetails;
@@ -470,6 +471,7 @@ public class JasperCustomServiceImple {
 	try {
 		List<MotorPrivateVehicleDetails> vehicleDetailsRes = new ArrayList<>();
 		List<MotorPrivateDriverDetails> driverDetailsRes = new ArrayList<>();
+		List<MotorPrivateAccessoriesDetails> accessoriesDetailsRes = new ArrayList<>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
@@ -543,6 +545,17 @@ public class JasperCustomServiceImple {
 						driverDetailsRes.add(y);
 			});
 			
+			List<ContentAndRisk> accessoriesDetails = conAndRiskRepo.findByQuoteNoOrderByRiskIdAsc(map.get("quoteNo").toString());
+			accessoriesDetails.forEach(a -> {
+				MotorPrivateAccessoriesDetails t = MotorPrivateAccessoriesDetails.builder()
+						.itemNo(a.getItemId()==null?"":a.getItemId().toString())
+						.itemDesc(a.getItemDesc()==null?"":a.getItemDesc().toString())
+						.sumInsured(a.getSumInsured()==null?"":a.getSumInsured().toString())
+						.serialNoDesc(a.getSerialNoDesc()==null?"":a.getSerialNoDesc())
+						.build();
+				accessoriesDetailsRes.add(t);
+			});
+			
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
 			response.setEffectiveDateStart(map.get("effectiveDateStart")==null?"":map.get("effectiveDateStart").toString());
 			response.setEffectiveDateEnd(map.get("effectiveDateEnd")==null?"":map.get("effectiveDateEnd").toString());
@@ -566,6 +579,7 @@ public class JasperCustomServiceImple {
 			response.setNoOfVehicle(map.get("noOfVehicle")==null?"":map.get("noOfVehicle").toString());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
+			response.setAccessoriesDetails(accessoriesDetailsRes);
 		}
 	}catch(Exception e) {
 		log.info("Error in getMotorPrivate ==>"+e.getMessage());
