@@ -40,7 +40,7 @@ public class CreateEndorsment {
   		Endorsement currentEndt = Endorsement.builder()
 				.endorsementDesc(d.getCoverDesc() + " " + endtmaster.getEndtTypeDesc())
 				.endorsementId(endtTypeId)
-				.endorsementRate(d.getRate().doubleValue())
+				.endorsementRate( "A".equals(d.getCalcType())? 0D:d.getRate().doubleValue())
 				.endorsementCalcType(d.getCalcType())
 				.endorsementforId(String.valueOf(d.getCoverId()))
 				.maxAmount(BigDecimal.ZERO)
