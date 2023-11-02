@@ -2062,7 +2062,7 @@ public class PaymentServiceImpl implements PaymentService {
 					   motorList.forEach( o -> {
 						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
 							   o.setPolicyNo(policyNo);
-							   o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
+							  // o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
 			    			   o.setStatus("P");
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
@@ -2102,7 +2102,7 @@ public class PaymentServiceImpl implements PaymentService {
 						passengerList.forEach( o -> {
 						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
 							   o.setPolicyNo(policyNo);
-							   o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
+							 //  o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
 			    			   o.setStatus("P");
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
@@ -2132,7 +2132,7 @@ public class PaymentServiceImpl implements PaymentService {
 						buildingList.forEach( o -> {
 						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
 							   o.setPolicyNo(policyNo);
-							   o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
+							//   o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
 			    			   o.setStatus("P");
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
@@ -2172,7 +2172,7 @@ public class PaymentServiceImpl implements PaymentService {
 						humanList.forEach( o -> {
 						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
 							   o.setPolicyNo(policyNo);
-							   o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
+							 //  o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
 			    			   o.setStatus("P");
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
