@@ -383,7 +383,48 @@ public class EndorsementService {
 				}
 				
 			}
+			
+			// Removal Of Vehicle Condition
+			if(request.getProductId()!=null && ( request.getProductId().equals(new BigDecimal("5")) ||	request.getProductId().equals(new BigDecimal("46")) ) ) {
+				if(StringUtils.isNotBlank(request.getOriginalPolicyNo())   ) {
+					// Get Datas
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+					// Find All
+					Root<EserviceMotorDetails> mot = query.from(EserviceMotorDetails.class);
+				
+					// Select
+					query.multiselect(cb.count(mot));
+					
+					// Endt Count Max Filter
+					Subquery<Long> endtCount = query.subquery(Long.class);
+					Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
+					endtCount.select(cb.max(ocpm1.get("endtCount")));
+					Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), mot.get("originalPolicyNo"));
+					Predicate a2 = cb.equal(ocpm1.get("status"),mot.get("status"));
+					endtCount.where(a1,a2);
+		
+					
+					// Where
+					Predicate n1 = cb.equal(mot.get("originalPolicyNo"), request.getOriginalPolicyNo());
+					Predicate n2 = cb.equal(mot.get("status"), "P");
+					Predicate n3 = cb.equal(mot.get("endtCount"), endtCount);
+				
+					query.where(n1, n2, n3);
+			
+					// Get Result
+					TypedQuery<Long> result = em.createQuery(query);
+					  List<Long> list = result.getResultList();
+					if(list.size() > 0 && list.get(0) <=1 ) {
+						ets.removeIf( o -> o.getEndtType().equals(new BigDecimal("847")) ) ;								
+					}
+				}
+				
+				
+			}
 			EndtMaster endt=EndtMaster.builder().endorsementTypes(ets).build();
+			
 			return endt;
 			
 			

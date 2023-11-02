@@ -43,6 +43,9 @@ public class Endorsment {
 	@JsonProperty("RequestReferenceNo")
 	private String requestReferenceNo;
 	
+	@JsonProperty("OriginalPolicyNo")
+	private String originalPolicyNo;
+	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
