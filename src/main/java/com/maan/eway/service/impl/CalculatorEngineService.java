@@ -478,7 +478,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					String rawtable = ratingutil.getProductIdBasedRawTable(engine);
 					String search = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 							+ ";sectionId:" + engine.getSectionId() + ";riskId:" + engine.getVehicleId()
-							+ ";status:{E,D};requestReferenceNo:" + requestRefercenNo + ";";
+							+ ";status:{E,D,RP};requestReferenceNo:" + requestRefercenNo + ";";
 					SpecCriteria criteria = crservice.createCriteria(Class.forName(rawtable), search,
 							"requestReferenceNo");
 					List<Long> count = crservice.getCount(criteria,0,2);
@@ -486,7 +486,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 						String riskid = engine.getVehicleId();
 						search = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
-								+ ";riskId:" + riskid + ";status:{E,D};requestReferenceNo:" + requestRefercenNo + ";";
+								+ ";riskId:" + riskid + ";status:{E,D,RP};requestReferenceNo:" + requestRefercenNo + ";";
 					}
 
 					List<Tuple> result = null;
