@@ -53,4 +53,8 @@ public class EndorsementCriteriaRes {
 		private BigDecimal     overallPremiumFc ;
 		private BigDecimal       endtPremium ;
 		private String     currency ;
+		
+		private String     debitNoteNo;
+		private String     creditNo;
+		
 }

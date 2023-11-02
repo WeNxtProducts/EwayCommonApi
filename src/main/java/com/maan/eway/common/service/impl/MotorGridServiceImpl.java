@@ -2335,6 +2335,13 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			savedata.setEndtTypeDesc(entMaster.getEndtTypeDesc());
 			savedata.setStatus("E");
 			savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
+			savedata.setDebitAcNo(null);
+			savedata.setDebitNoteDate(null);
+			savedata.setDebitNoteNo(null);
+			savedata.setCreditDate(null);
+			savedata.setCreditNo(null);
+			savedata.setCreditTo(null);
+			savedata.setCreditToId(null);
 
 			homePosistionRepo.saveAndFlush(savedata);
 		
@@ -2580,7 +2587,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(loginId);
-						savedata.setCoverageType("T");
+						savedata.setCoverageType("E");
 						savedata.setDiscLoadId(Integer.valueOf(req.getEndtTypeId()));
 						savedata.setCoverName(coverDesc + " " + endTypeDesc + " " + count);
 						savedata.setCoverDesc(coverDesc + " " + endTypeDesc + " " + count);
@@ -3078,6 +3085,24 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
 				Root<PersonalInfo> c = query.from(PersonalInfo.class);
 
+				// Endt Count Max Filter
+				Subquery<Long> endtCount2 = query.subquery(Long.class);
+				Root<HomePositionMaster> ocpm3 = endtCount2.from(HomePositionMaster.class);
+				endtCount2.select(cb.min(ocpm3.get("endtCount")));
+				Predicate a5 = cb.equal(ocpm3.get("originalPolicyNo"), m.get("originalPolicyNo"));
+				Predicate a6 = cb.equal(ocpm3.get("status"),m.get("status"));
+				endtCount2.where(a5,a6);
+				
+				// Quote No Filter
+				Subquery<String> quoteNo = query.subquery(String.class);
+				Root<HomePositionMaster> ocpm2 = quoteNo.from(HomePositionMaster.class);
+				quoteNo.select(ocpm2.get("quoteNo"));
+				Predicate a3 = cb.equal(ocpm2.get("originalPolicyNo"), m.get("originalPolicyNo"));
+				Predicate a4 = cb.equal(ocpm2.get("status"),m.get("status"));
+				Predicate a7 = cb.equal(ocpm2.get("endtCount"), endtCount2);  
+				quoteNo.where(a3,a4,a7);
+				
+				
 				// Select
 				query.multiselect(
 						// Customer Info
@@ -3093,7 +3118,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						m.get("productName").alias("productName"),
 						m.get("branchCode").alias("branchCode"), 
 						m.get("requestReferenceNo").alias("requestReferenceNo"),
-						m.get("quoteNo").alias("quoteNo"),
+						quoteNo.alias("quoteNo"),
 						m.get("customerId").alias("customerId"),
 						m.get("inceptionDate").alias("inceptionDate"),
 						m.get("expiryDate").alias("expiryDate"),
@@ -3124,10 +3149,13 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				// Endt Count Max Filter
 				Subquery<Long> endtCount = query.subquery(Long.class);
 				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
-				endtCount.select(cb.min(ocpm1.get("endtCount")));
+				endtCount.select(cb.max(ocpm1.get("endtCount")));
 				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
 				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
 				endtCount.where(a1,a2);
+				
+
+				
 				
 				// Where
 				Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));

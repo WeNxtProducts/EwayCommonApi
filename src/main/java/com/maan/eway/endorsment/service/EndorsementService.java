@@ -514,8 +514,24 @@ public class EndorsementService {
 				endtPre.select(cb.sum(h.get("endtPremium"))) ;
 				Predicate pm1 = cb.equal(h.get("companyId"), m.get("companyId"));
 				Predicate pm2 = cb.equal(h.get("productId"), m.get("productId"));
-				Predicate pm3   = cb.like(h.get("policyNo"), m.get("policyNo"));
+				Predicate pm3   = cb.equal(h.get("policyNo"), m.get("policyNo"));
 				endtPre.where(pm1,pm2,pm3);
+				
+				Subquery<Long> debitNoteNo = query.subquery(Long.class);
+				Root<HomePositionMaster> h2 = debitNoteNo.from(HomePositionMaster.class);
+				debitNoteNo.select(cb.max(h2.get("debitNoteNo"))) ;
+				Predicate pm4 = cb.equal(h2.get("companyId"), m.get("companyId"));
+				Predicate pm5 = cb.equal(h2.get("productId"), m.get("productId"));
+				Predicate pm6   = cb.equal(h2.get("policyNo"), m.get("policyNo"));
+				debitNoteNo.where(pm4,pm5,pm6);
+				
+				Subquery<Long> creditNo = query.subquery(Long.class);
+				Root<HomePositionMaster> h3 = creditNo.from(HomePositionMaster.class);
+				creditNo.select(cb.max(h3.get("creditNo"))) ;
+				Predicate pm7 = cb.equal(h3.get("companyId"), m.get("companyId"));
+				Predicate pm8 = cb.equal(h3.get("productId"), m.get("productId"));
+				Predicate pm9   = cb.equal(h3.get("policyNo"), m.get("policyNo"));
+				creditNo.where(pm7,pm8,pm9);
 		
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
@@ -540,7 +556,8 @@ public class EndorsementService {
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
 						//Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						endtPre.alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
+						endtPre.alias("endtPremium"),cb.max( m.get("currency")).alias("currency"),
+						debitNoteNo.alias("debitNoteNo") ,creditNo.alias("creditNo")
 						
 						);
 			 

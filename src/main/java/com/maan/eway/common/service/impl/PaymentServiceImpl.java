@@ -1416,6 +1416,10 @@ public class PaymentServiceImpl implements PaymentService {
 				if (StringUtils.isBlank(req.getPayments())  || ( StringUtils.isNotBlank(req.getPayments()) && ! req.getPayments().equalsIgnoreCase("Refund") ) ){
 					if(StringUtils.isBlank(req.getChequeNo())) {
 						error.add(new Error("01","ChequeNo","Please Enter ChequeNo"));
+					}else if (! req.getChequeNo().matches("[0-9]+")) {
+						error.add(new Error("01","ChequeNo","Please Enter valid Number in ChequeNo"));
+					}else if (req.getChequeNo().length() != 6 ) {
+						error.add(new Error("01","ChequeNo","ChequeNo Must Be 6 Digits only allowed "));
 					}else if (req.getChequeDate() == null) {
 						error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate "));
 					} else if (req.getChequeDate().before(today)) {
@@ -1424,8 +1428,10 @@ public class PaymentServiceImpl implements PaymentService {
 					
 					if(StringUtils.isBlank(req.getMicrNo())) {
 						error.add(new Error("01","MicrNo","Please Enter MicrNo"));
-					}else if (! req.getMicrNo().matches("^[a-zA-Z0-9 ]+")) {
-						error.add(new Error("01","MicrNo","Please Enter valid MicrNo"));
+//					}else if (! req.getMicrNo().matches("^[a-zA-Z0-9 ]+")) {
+//						error.add(new Error("01","MicrNo","Please Enter valid MicrNo"));
+					}else if ( req.getMicrNo().length() < 6 || req.getMicrNo().length() > 8 ) {
+						error.add(new Error("01","MicrNo","MicrNo  Must be Min 6 To Max 8 Charecter Only Allowed"));
 					}
 					
 				}
