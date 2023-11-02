@@ -289,9 +289,9 @@ public class JasperCustomServiceImple {
 				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("premiumLc")).otherwise(hpmRoot.get("premiumFc")))
 					.otherwise(hpmRoot.get("endtPremium")).alias("premium"),
 				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")))
-					.otherwise(hpmRoot.get("endtPremiumTax")).alias("vatPremium"),
+					.otherwise(cb.quot(cb.prod(hpmRoot.get("endtPremium"), hpmRoot.get("vatPercent")), 100)).alias("vatPremium"),
 				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")))
-					.otherwise(cb.sum(hpmRoot.get("endtPremium"), hpmRoot.get("endtPremiumTax"))).alias("overAllPremium"),
+					.otherwise(cb.sum(hpmRoot.get("endtPremium"),cb.quot(cb.prod(hpmRoot.get("endtPremium"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremium"),
 				hpmRoot.get("vatPercent").alias("vatPercent"),pdRoot.get("bankName").alias("bankName"),pdRoot.get("accountNumber").alias("accountNumber"),sumInsured.alias("totSumInsured"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
 				cb.equal(pdRoot.get("quoteNo"), hpmRoot.get("quoteNo")),

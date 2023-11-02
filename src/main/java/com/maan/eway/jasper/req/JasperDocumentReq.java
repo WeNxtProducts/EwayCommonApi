@@ -21,4 +21,7 @@ public class JasperDocumentReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("EndorsementType")
+	private String endorsementType;
+	
 }
