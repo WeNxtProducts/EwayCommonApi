@@ -2266,7 +2266,7 @@ this.repository = repo;
 										o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
 								if(filterEndt.size()>0 ) {
 									FactorRateRequestDetails  updateEndt = filterEndt.get(0);
-									updateEndt.setRate(endt.getEndorsementRate()==null ? new BigDecimal(0) :new BigDecimal(endt.getEndorsementRate()));
+									updateEndt.setRate( new BigDecimal(endt.getEndorsementRate()) );
 									updateCoverList.add(updateEndt);
 								}
 							}
@@ -2332,7 +2332,7 @@ this.repository = repo;
 									o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
 							if(filterEndt.size()>0 ) {
 								FactorRateRequestDetails  updateEndt = filterEndt.get(0);
-								updateEndt.setRate(endt.getEndorsementRate()==null ? new BigDecimal(0) :new BigDecimal(endt.getEndorsementRate()));
+								updateEndt.setRate( new BigDecimal(endt.getEndorsementRate()) );
 								updateCoverList.add(updateEndt);
 							}
 						}
