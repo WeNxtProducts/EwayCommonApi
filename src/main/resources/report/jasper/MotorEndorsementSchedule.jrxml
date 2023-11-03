@@ -138,7 +138,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["MOTOR COMMERCIAL INSURANCE ENDORSEMENT ADVICE"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["MOTOR INSURANCE ENDORSEMENT ADVICE"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
