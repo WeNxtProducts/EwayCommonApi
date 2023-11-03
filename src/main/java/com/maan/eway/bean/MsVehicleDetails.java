@@ -213,6 +213,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="UW_LOADING")
     private BigDecimal     uwLoading;
+    
+    @Column(name="CUBIC_CAPACITY")
+    private BigDecimal     cubicCapacity ;
 }
 
 
