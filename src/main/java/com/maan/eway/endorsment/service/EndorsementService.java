@@ -417,7 +417,7 @@ public class EndorsementService {
 								filterLastEndtList  = list.stream().filter( o -> o.getPolicyNo().equalsIgnoreCase( request.getOriginalPolicyNo() ) ).collect(Collectors.toList());
 								
 							} else {
-								filterLastEndtList  = list.stream().filter( o -> o.getEndtCount().equals(lastData.getEndtCount()) && 
+								filterLastEndtList  = list.stream().filter( o -> o.getEndtCount()!=null && o.getEndtCount().equals(lastData.getEndtCount()) && 
 										o.getPolicyNo().equalsIgnoreCase(lastData.getPolicyNo()) 	).collect(Collectors.toList());
 							}
 							
