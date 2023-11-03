@@ -384,43 +384,57 @@ public class EndorsementService {
 				
 			}
 			
-			// Removal Of Vehicle Condition
+			// Vehicle Endt Condition
 			if(request.getProductId()!=null && ( request.getProductId().equals(new BigDecimal("5")) ||	request.getProductId().equals(new BigDecimal("46")) ) ) {
 				if(StringUtils.isNotBlank(request.getOriginalPolicyNo())   ) {
 					// Get Datas
 					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<Long> query = cb.createQuery(Long.class);
+					CriteriaQuery<EserviceMotorDetails> query = cb.createQuery(EserviceMotorDetails.class);
 
 					// Find All
 					Root<EserviceMotorDetails> mot = query.from(EserviceMotorDetails.class);
 				
 					// Select
-					query.multiselect(cb.count(mot));
+					query.select(mot);
 					
-					// Endt Count Max Filter
-					Subquery<Long> endtCount = query.subquery(Long.class);
-					Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
-					endtCount.select(cb.max(ocpm1.get("endtCount")));
-					Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), mot.get("originalPolicyNo"));
-					Predicate a2 = cb.equal(ocpm1.get("status"),mot.get("status"));
-					endtCount.where(a1,a2);
-		
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.desc(mot.get("entryDate")));
 					
 					// Where
 					Predicate n1 = cb.equal(mot.get("originalPolicyNo"), request.getOriginalPolicyNo());
-					Predicate n2 = cb.equal(mot.get("status"), "P");
-					Predicate n3 = cb.equal(mot.get("endtCount"), endtCount);
-				
-					query.where(n1, n2, n3);
+					Predicate n2 = cb.equal(mot.get("policyNo"), request.getOriginalPolicyNo());
+					Predicate n3 = cb.or(n1,n2);
+					Predicate n4 = cb.equal(mot.get("status"), "P");
+					query.where( n3,n4).orderBy(orderList);
 			
 					// Get Result
-					TypedQuery<Long> result = em.createQuery(query);
-					  List<Long> list = result.getResultList();
-					if(list.size() > 0 && list.get(0) <=1 ) {
-						ets.removeIf( o -> o.getEndtType().equals(new BigDecimal("847")) ) ;								
+					TypedQuery<EserviceMotorDetails> result = em.createQuery(query);
+					List<EserviceMotorDetails> list = result.getResultList();
+						if(list.size() > 0 ) {
+							EserviceMotorDetails lastData = list.get(0);
+							List<EserviceMotorDetails> filterLastEndtList = new ArrayList<EserviceMotorDetails>();
+							if( lastData.getEndtCount()==null) {
+								filterLastEndtList  = list.stream().filter( o -> o.getPolicyNo().equalsIgnoreCase( request.getOriginalPolicyNo() ) ).collect(Collectors.toList());
+								
+							} else {
+								filterLastEndtList  = list.stream().filter( o -> o.getEndtCount().equals(lastData.getEndtCount()) && 
+										o.getPolicyNo().equalsIgnoreCase(lastData.getPolicyNo()) 	).collect(Collectors.toList());
+							}
+							
+							// Removal Of Vehicle Condition
+							if(filterLastEndtList.size() == 1  ) {
+								ets.removeIf( o -> o.getEndtType().equals(new BigDecimal("847")) ) ;								
+							}	
+							
+							// Modification of Suminsured Condition
+							if(lastData.getInsuranceClass().equalsIgnoreCase("3")) {
+								ets.removeIf( o -> o.getEndtType().equals(new BigDecimal("850")) ) ;
+							}
+									
+						}
+						
 					}
-				}
-				
+					
 				
 			}
 			EndtMaster endt=EndtMaster.builder().endorsementTypes(ets).build();
@@ -552,7 +566,7 @@ public class EndorsementService {
 				
 				Subquery<Long> endtPre = query.subquery(Long.class);
 				Root<HomePositionMaster> h = endtPre.from(HomePositionMaster.class);
-				endtPre.select(cb.sum(h.get("endtPremium"))) ;
+				endtPre.select(cb.sum(h.get("endtPremium") ,h.get("endtPremiumTax")) ) ;
 				Predicate pm1 = cb.equal(h.get("companyId"), m.get("companyId"));
 				Predicate pm2 = cb.equal(h.get("productId"), m.get("productId"));
 				Predicate pm3   = cb.equal(h.get("policyNo"), m.get("policyNo"));
@@ -565,6 +579,7 @@ public class EndorsementService {
 				Predicate pm5 = cb.equal(h2.get("productId"), m.get("productId"));
 				Predicate pm6   = cb.equal(h2.get("policyNo"), m.get("policyNo"));
 				debitNoteNo.where(pm4,pm5,pm6);
+				
 				
 				Subquery<Long> creditNo = query.subquery(Long.class);
 				Root<HomePositionMaster> h3 = creditNo.from(HomePositionMaster.class);
