@@ -198,7 +198,7 @@
 				<textFieldExpression><![CDATA["TAX INVOICE"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="50">
+		<band height="15">
 			<textField>
 				<reportElement x="15" y="0" width="15" height="15" uuid="0fe1ac8e-3ede-44f6-8265-481c0c486749">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -210,8 +210,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA["To:"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="30" y="0" width="120" height="15" uuid="79b5add7-c94b-440b-8bbe-d37f769a7a14">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="30" y="0" width="306" height="15" uuid="79b5add7-c94b-440b-8bbe-d37f769a7a14">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -221,8 +221,10 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
+		</band>
+		<band height="35">
 			<textField textAdjust="StretchHeight">
-				<reportElement x="39" y="30" width="290" height="20" uuid="f7927e65-f0b3-49af-8c5e-fc989a4c7c2d">
+				<reportElement x="39" y="15" width="300" height="20" uuid="d269499f-5cc7-45a9-ab11-485c1eaea038">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2"/>
@@ -232,28 +234,7 @@
 				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="336" y="10" width="64" height="15" uuid="cc8a1628-a72c-4ab1-84f4-8ce66a4525ce">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Invoice Number"]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="410" y="10" width="99" height="15" uuid="901fdb86-bb2d-467c-b05f-ca392d912a15">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{debitNoteNo}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="375" y="25" width="25" height="15" uuid="eb32fc5a-780c-4a9b-babc-769b59606087">
+				<reportElement x="375" y="15" width="25" height="15" uuid="d479397e-1e98-4356-a38e-7ea2f0dbf034">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -263,8 +244,18 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Date"]]></textFieldExpression>
 			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="410" y="0" width="99" height="15" uuid="b073938e-324b-44ac-9c37-ee99b8d99765">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{debitNoteNo}]]></textFieldExpression>
+			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="410" y="25" width="99" height="15" uuid="d95455a1-9c93-46ca-ad39-5fb4315351ab">
+				<reportElement x="410" y="15" width="99" height="15" uuid="80f323b4-0dce-49d3-9ae2-b9094d35dfbe">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2"/>
@@ -274,7 +265,7 @@
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="400" y="25" width="10" height="15" uuid="737433ee-9cfb-43cc-a1da-34afd48175b3">
+				<reportElement x="400" y="0" width="10" height="15" uuid="42985efa-bdc7-43fb-99a1-cd5a4bee44eb">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -283,7 +274,7 @@
 				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="400" y="10" width="10" height="15" uuid="38fea6f3-c804-4da5-847d-e42fb513196b">
+				<reportElement x="400" y="15" width="10" height="15" uuid="46871343-54ea-4595-a68a-fb72e1797a65">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -292,7 +283,18 @@
 				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="15" y="15" width="65" height="15" uuid="8fbbd918-ff31-4277-9484-55fae9b6a796">
+				<reportElement x="336" y="0" width="64" height="15" uuid="a4cb893d-0701-4111-a979-456a1e89a269">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Invoice Number"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="0" width="65" height="15" uuid="3ae16d04-6ee1-4e14-8886-9e963c25d3ad">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -568,7 +570,7 @@
 				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
-				<reportElement x="420" y="0" width="70" height="15" uuid="b6e3c3b6-428b-478a-9582-5e5ed4172e43"/>
+				<reportElement x="420" y="0" width="130" height="15" uuid="b6e3c3b6-428b-478a-9582-5e5ed4172e43"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
@@ -641,7 +643,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
+			<textField isBlankWhenNull="true">
 				<reportElement x="442" y="15" width="86" height="15" uuid="a0eb2977-b5be-4472-80b4-7cc21add73fa">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -653,7 +655,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
+			<textField isBlankWhenNull="true">
 				<reportElement x="442" y="30" width="86" height="15" uuid="ba2500d8-30bf-4b63-aa7b-2dd8eed7e261">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -665,7 +667,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
+			<textField isBlankWhenNull="true">
 				<reportElement x="442" y="45" width="86" height="20" uuid="543d91a2-bbb5-416a-9928-882230e0801e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -677,7 +679,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{vatPremium}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
+			<textField isBlankWhenNull="true">
 				<reportElement x="442" y="65" width="86" height="15" uuid="f6a72648-cf5d-4949-8ad5-b76a3d30a35e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
