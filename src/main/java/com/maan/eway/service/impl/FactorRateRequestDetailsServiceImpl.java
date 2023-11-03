@@ -2258,6 +2258,19 @@ this.repository = repo;
 								}
 							}
 						}
+						
+						// Endt
+						if( covReq.getEndorsements()!=null && covReq.getEndorsements().size() > 0 ) {
+							for ( Endorsement endt : covReq.getEndorsements() ) {
+								List<FactorRateRequestDetails> filterEndt = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(endt.getEndorsementId())) && 
+										o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
+								if(filterEndt.size()>0 ) {
+									FactorRateRequestDetails  updateEndt = filterEndt.get(0);
+									updateEndt.setRate(endt.getEndorsementRate()==null ? new BigDecimal(0) :new BigDecimal(endt.getEndorsementRate()));
+									updateCoverList.add(updateEndt);
+								}
+							}
+						}
 					}
 				} else {
 					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
@@ -2308,6 +2321,19 @@ this.repository = repo;
 									updateDisc.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
 									updateCoverList.add(updateDisc);
 								}
+							}
+						}
+					}
+					
+					// Endt
+					if( covReq.getEndorsements()!=null && covReq.getEndorsements().size() > 0 ) {
+						for ( Endorsement endt : covReq.getEndorsements() ) {
+							List<FactorRateRequestDetails> filterEndt = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(Integer.valueOf(endt.getEndorsementId())) && 
+									o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
+							if(filterEndt.size()>0 ) {
+								FactorRateRequestDetails  updateEndt = filterEndt.get(0);
+								updateEndt.setRate(endt.getEndorsementRate()==null ? new BigDecimal(0) :new BigDecimal(endt.getEndorsementRate()));
+								updateCoverList.add(updateEndt);
 							}
 						}
 					}
