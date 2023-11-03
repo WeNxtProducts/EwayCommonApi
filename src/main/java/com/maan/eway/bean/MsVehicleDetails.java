@@ -216,6 +216,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CUBIC_CAPACITY")
     private BigDecimal     cubicCapacity ;
+    
+    @Column(name="SOURCE_TYPE", length=100)
+    private String     sourceType;
 }
 
 
