@@ -60,6 +60,7 @@ import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.PolicyCoverDataEndt;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
@@ -88,6 +89,7 @@ import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.MasterReferralDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.PolicyCoverDataEndtRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
@@ -178,6 +180,9 @@ this.repository = repo;
 }
 
   */
+@Autowired
+private PolicyCoverDataEndtRepository policyCoverEndtRepo;
+
  @Override
     public FactorRateRequestDetails create(FactorRateRequestDetails d) {
 
@@ -2103,6 +2108,7 @@ this.repository = repo;
 			String currencyId = "" ;
 			String endtTypdId="";
 			String endtPrevQuoteNo="";
+			String originalPolicyNo="";
 			BigDecimal endtCount=BigDecimal.ZERO;
 			CalcEngine engine= new CalcEngine();
 			
@@ -2138,6 +2144,7 @@ this.repository = repo;
 				endtTypdId= findMot.getEndorsementType()!=null?findMot.getEndorsementType().toString():"";
 				endtCount=findMot.getEndtCount();
 				endtPrevQuoteNo=findMot.getEndtPrevQuoteNo();
+				originalPolicyNo=findMot.getOriginalPolicyNo();
 				if(findMot.getEndorsementType() == null ) {
 					engine.setEffectiveDate(findMot.getPolicyStartDate());
 					engine.setPolicyEndDate(findMot.getPolicyEndDate());
@@ -2160,6 +2167,7 @@ this.repository = repo;
 				endtTypdId= findTra.getEndorsementType()!=null?findTra.getEndorsementType().toString():"";
 				endtCount=findTra.getEndtCount();
 				endtPrevQuoteNo=findTra.getEndtPrevQuoteNo();
+				originalPolicyNo=findTra.getOriginalPolicyNo();
 			//	EserviceTravelGroupDetails  findGroup = eserGroupRepo.findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,Integer.valueOf(req.getGroupId()) ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 				// Update Commission
@@ -2174,6 +2182,7 @@ this.repository = repo;
 				endtTypdId= findBuild.getEndorsementType()!=null?findBuild.getEndorsementType().toString():"";
 				endtCount=findBuild.getEndtCount();
 				endtPrevQuoteNo=findBuild.getEndtPrevQuoteNo();
+				originalPolicyNo=findBuild.getOriginalPolicyNo();
 				// Update Commission
 				findBuild.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findBuild.getCommissionPercentage() );
 				findBuild.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findBuild.getVatCommission() );
@@ -2188,6 +2197,7 @@ this.repository = repo;
 				endtTypdId= findCommon.getEndorsementType()!=null?findCommon.getEndorsementType().toString():"";
 				endtCount=findCommon.getEndtCount();
 				endtPrevQuoteNo=findCommon.getEndtPrevQuoteNo();
+				originalPolicyNo=findCommon.getOriginalPolicyNo();
 				// Update Commission
 				findCommon.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findCommon.getCommissionPercentage() );
 				findCommon.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findCommon.getVatCommission() );
@@ -2202,7 +2212,28 @@ this.repository = repo;
 			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
 			DecimalFormat df = new DecimalFormat(pattern);
 			List<FactorRateRequestDetails>  updateCoverList = new ArrayList<FactorRateRequestDetails>(); 
+
 			
+			
+			engine.setAgencyCode(agencyCode);
+			engine.setBranchCode(branchCode);
+			engine.setCdRefNo(findCovers.get(0).getCdRefno());
+			engine.setVdRefNo(findCovers.get(0).getVdRefno());
+			engine.setInsuranceId(findCovers.get(0).getCompanyId());
+			engine.setMsrefno(findCovers.get(0).getMsRefno());
+			engine.setProductId(findCovers.get(0).getProductId().toString());
+			engine.setRequestReferenceNo(findCovers.get(0).getRequestReferenceNo());
+			engine.setSectionId(findCovers.get(0).getSectionId().toString());
+			engine.setVehicleId(findCovers.get(0).getVehicleId()+"");
+			engine.setCreatedBy(findCovers.get(0).getCreatedBy());
+			engine.setMsVehicleDetails(null);
+			engine.setEffectiveDate(findCovers.get(0).getCoverPeriodFrom());
+			engine.setPolicyEndDate(findCovers.get(0).getCoverPeriodTo());
+			
+			
+			List<PolicyCoverDataEndt> oldPolicyData = policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
+					Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
+					Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()));
 			for (CoverIdReq2 covReq :    req.getCoverIdList()  ) {
 				
 				if(StringUtils.isBlank(covReq.getSubCoverYn()) || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
@@ -2261,12 +2292,16 @@ this.repository = repo;
 						
 						// Endt
 						if( covReq.getEndorsements()!=null && covReq.getEndorsements().size() > 0 ) {
+						
 							for ( Endorsement endt : covReq.getEndorsements() ) {
 								List<FactorRateRequestDetails> filterEndt = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(endt.getEndorsementId())) && 
 										o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
 								if(filterEndt.size()>0 ) {
 									FactorRateRequestDetails  updateEndt = filterEndt.get(0);
 									updateEndt.setRate( new BigDecimal(endt.getEndorsementRate()) );
+									List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> i.getCoverId()== covReq.getCoverId()).collect(Collectors.toList()) ;
+									BigDecimal totalSumInsured=coverData.stream().map(x -> x.getSumInsured()).reduce(BigDecimal.ZERO,BigDecimal::add);
+									updateEndt.setSumInsuredLc(totalSumInsured);
 									updateCoverList.add(updateEndt);
 								}
 							}
@@ -2342,22 +2377,6 @@ this.repository = repo;
 				
 			}
 			
-			
-			
-			engine.setAgencyCode(agencyCode);
-			engine.setBranchCode(branchCode);
-			engine.setCdRefNo(findCovers.get(0).getCdRefno());
-			engine.setVdRefNo(findCovers.get(0).getVdRefno());
-			engine.setInsuranceId(findCovers.get(0).getCompanyId());
-			engine.setMsrefno(findCovers.get(0).getMsRefno());
-			engine.setProductId(findCovers.get(0).getProductId().toString());
-			engine.setRequestReferenceNo(findCovers.get(0).getRequestReferenceNo());
-			engine.setSectionId(findCovers.get(0).getSectionId().toString());
-			engine.setVehicleId(findCovers.get(0).getVehicleId()+"");
-			engine.setCreatedBy(findCovers.get(0).getCreatedBy());
-			engine.setMsVehicleDetails(null);
-			engine.setEffectiveDate(findCovers.get(0).getCoverPeriodFrom());
-			engine.setPolicyEndDate(findCovers.get(0).getCoverPeriodTo());
 			Gson json = new Gson();
 			log.info( "Referral Calc Request --> " +  json.toJson(engine) );
 			
