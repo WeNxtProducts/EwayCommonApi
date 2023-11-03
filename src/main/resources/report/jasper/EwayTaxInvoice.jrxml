@@ -852,7 +852,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Invoice Total (Tshs)"]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="95" y="17" width="80" height="12" uuid="fb44a9ef-3655-4fd5-941f-6a542e6e7fb5"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -876,7 +876,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Vat Total (Tshs)"]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="95" y="47" width="80" height="12" uuid="48852c9f-0667-4a1d-879a-38e980d72657"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">

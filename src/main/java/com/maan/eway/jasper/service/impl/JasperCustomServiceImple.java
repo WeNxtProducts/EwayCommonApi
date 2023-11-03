@@ -332,9 +332,9 @@ public class JasperCustomServiceImple {
 			response.setTinNumber(map.get("tinNumber")==null?"":map.get("tinNumber").toString());
 			response.setBrokerName(map.get("brokerName")==null?"":map.get("brokerName").toString());
 			response.setPremium(map.get("premium")==null?"":map.get("premium").toString());
-			response.setVatPremium(map.get("vatPremium")==null?"":map.get("vatPremium").toString());
+			response.setVatPremium(map.get("vatPremium")==null?"":new BigDecimal(Double.valueOf(map.get("vatPremium").toString())).toString());
 			response.setVatPercent(map.get("vatPercent")==null?"":map.get("vatPercent").toString());
-			response.setOverAllPremium(map.get("overAllPremium")==null?"":map.get("overAllPremium").toString());
+			response.setOverAllPremium(map.get("overAllPremium")==null?"":new BigDecimal(Double.valueOf(map.get("overAllPremium").toString())).toString());
 			response.setTotSumInsured(map.get("totSumInsured")==null?"":new BigDecimal(Double.valueOf(map.get("totSumInsured").toString())).toString());
 			response.setIntermediaryRefNo(map.get("intermediaryRefNo")==null?"":map.get("intermediaryRefNo").toString());
 			response.setDataset1List(dataset1Res);
@@ -395,7 +395,7 @@ public class JasperCustomServiceImple {
 			hpmRoot.get("vatPercent").alias("vatPercent"),hpmRoot.get("quoteNo").alias("quoteNo"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),
 				cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
-				cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("status"), "P"),cb.equal(hpmRoot.get("policyNo"), policyNo))
+				cb.equal(icmRoot.get("amendId"), icmAmd),cb.in(hpmRoot.get("status")).value(Arrays.asList("P","D")),cb.equal(hpmRoot.get("policyNo"), policyNo))
 		.orderBy(cb.desc(hpmRoot.get("entryDate")));
 		
 		List<Tuple> list = em.createQuery(cq).getResultList();
@@ -755,7 +755,7 @@ public class JasperCustomServiceImple {
 			hpmRoot.get("companyName").alias("companyName"),hpmRoot.get("branchName").alias("branchName"),cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
 			.otherwise(luiRoot.get("userName")).alias("userName"),hpmRoot.get("quoteNo").alias("quoteNo"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),
-				cb.equal(hpmRoot.get("productId"), "5"),cb.equal(hpmRoot.get("status"), "P"),cb.equal(hpmRoot.get("policyNo"), policyNo))
+				cb.equal(hpmRoot.get("productId"), "5"),cb.in(hpmRoot.get("status")).value(Arrays.asList("P","D")),cb.equal(hpmRoot.get("policyNo"), policyNo))
 		.orderBy(cb.asc(hpmRoot.get("entryDate")));
 		
 		List<Tuple> list = em.createQuery(cq).getResultList();
