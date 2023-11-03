@@ -335,7 +335,7 @@ public class JasperCustomServiceImple {
 			response.setVatPremium(map.get("vatPremium")==null?"":map.get("vatPremium").toString());
 			response.setVatPercent(map.get("vatPercent")==null?"":map.get("vatPercent").toString());
 			response.setOverAllPremium(map.get("overAllPremium")==null?"":map.get("overAllPremium").toString());
-			response.setTotSumInsured(map.get("totSumInsured")==null?"":map.get("totSumInsured").toString());
+			response.setTotSumInsured(map.get("totSumInsured")==null?"":new BigDecimal(Double.valueOf(map.get("totSumInsured").toString())).toString());
 			response.setIntermediaryRefNo(map.get("intermediaryRefNo")==null?"":map.get("intermediaryRefNo").toString());
 			response.setDataset1List(dataset1Res);
 		}
