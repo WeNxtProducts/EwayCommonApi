@@ -269,9 +269,11 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 //			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 
-			effectiveDate.where(a1);
+			effectiveDate.where(a1,a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -280,8 +282,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("policyTypeId"), req.getPolicyTypeId());
-
-			query.where(n1, n2).orderBy(orderList);
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(b.get("companyId"), req.getCompanyId());
+			query.where(n1, n2,n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
