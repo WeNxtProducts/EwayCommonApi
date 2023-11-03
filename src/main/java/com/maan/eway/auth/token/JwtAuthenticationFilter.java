@@ -68,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				if(today.before(table.getEndTime())  ) {
 					table.setStartTime(today);
 					Calendar cal = Calendar.getInstance();
-					cal.add(Calendar.MINUTE, 20);
+					cal.add(Calendar.MINUTE, 45);
 					Date endTime = cal.getTime();
 					table.setEndTime(endTime );
 					String token = jwtTokenUtil.doGenerateToken(table.getLoginId());
@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				if(today.before(table.getEndTime())  ) {
 					table.setStartTime(today);
 					Calendar cal = Calendar.getInstance();
-					cal.add(Calendar.MINUTE, 20);
+					cal.add(Calendar.MINUTE, 45);
 					Date endTime = cal.getTime();
 					table.setEndTime(endTime );
 					String token = jwtTokenUtil.doGenerateToken(table.getLoginId());

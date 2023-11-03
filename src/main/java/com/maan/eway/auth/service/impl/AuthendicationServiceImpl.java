@@ -186,7 +186,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				session.setEntryDate(today);
 				session.setStartTime(today);
 				Calendar cal = Calendar.getInstance();
-				cal.add(Calendar.MINUTE, 20);
+				cal.add(Calendar.MINUTE, 45);
 				Date endTime = cal.getTime();
 				session.setEndTime(endTime );
 				session =sessionRep.save(session);

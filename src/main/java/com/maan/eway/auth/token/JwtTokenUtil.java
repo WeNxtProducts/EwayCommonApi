@@ -57,7 +57,7 @@ public class JwtTokenUtil implements Serializable {
     		try {
     		expiration = formatter.parse(value);
     		long addMinuteTime = expiration.getTime();  
-    		expiration = new Date(addMinuteTime + (30*60*1000));
+    		expiration = new Date(addMinuteTime + (45*60*1000));
     		time = expiration.before(new Date());
     		if(!time) {
     		req.getSession().setAttribute(token,new Date());
@@ -83,7 +83,7 @@ public class JwtTokenUtil implements Serializable {
                 .setClaims(claims)
                 .setIssuer("http://devglan.com")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1800000 )) 
+                .setExpiration(new Date(System.currentTimeMillis() + 2700000 )) 
                 .signWith(SignatureAlgorithm.HS256, SIGNING_KEY)
                 .compact();
         return token;
