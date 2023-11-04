@@ -830,7 +830,9 @@ public class EndorsementService {
 				
 				}
 				
-				
+				if(StringUtils.isNotBlank(request.getPolicyNo())) {
+					copycover.copy(request.getPolicyNo());
+				}
 				
 				CommonRes com=new CommonRes();
 				com.setCommonResponse(response);
