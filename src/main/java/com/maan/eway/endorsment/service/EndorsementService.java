@@ -787,7 +787,7 @@ public class EndorsementService {
 			}else if ("1".equals(entTypeMaster.getEndtTypeCategoryId().toString()) ) { 
 				// Non- Finacial
 				Object response = null ;
-				
+				String policyNo = "" ;
 				if(hp!=null) {
 				CopyQuoteReq c = new CopyQuoteReq();
 				c.setRequestReferenceNo(hp.getRequestReferenceNo());
@@ -808,24 +808,28 @@ public class EndorsementService {
 					List<EserviceMotorDetails> copyQuote = new ArrayList<EserviceMotorDetails>();
 					copyQuote.add((EserviceMotorDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = copyQuote;
+					 policyNo=copyQuote.get(0).getEndtPrevPolicyNo();
 					updateTermsAndCondition(hp , (copyQuote.size() > 0 ?  copyQuote.get(0).getRequestReferenceNo() : "" ));
 					
 				} else if (product.getMotorYn().equalsIgnoreCase("H")  &&  request.getProductId().equals(new BigDecimal(travelProductId))  ) {
 					List<EserviceTravelDetails> travelCopyQuote = new ArrayList<EserviceTravelDetails>(); 
 					travelCopyQuote.add((EserviceTravelDetails)copyquoteService.copyQuote(c).getCommonResponse());
 					response = travelCopyQuote ;
+					 policyNo=travelCopyQuote.get(0).getEndtPrevPolicyNo();
 					updateTermsAndCondition(hp , (travelCopyQuote.size() > 0 ?  travelCopyQuote.get(0).getRequestReferenceNo() : "" ));
 					
 				}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					List<EserviceBuildingDetails> buildcopyquote = new ArrayList<EserviceBuildingDetails>(); 
 					buildcopyquote.add((EserviceBuildingDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = buildcopyquote ;
+					 policyNo=buildcopyquote.get(0).getEndtPrevPolicyNo();
 					updateTermsAndCondition(hp , (buildcopyquote.size() > 0 ?  buildcopyquote.get(0).getRequestReferenceNo() : "" ));
 					
 				} else {
 					List<EserviceCommonDetails> commonCopyQuote = new ArrayList<EserviceCommonDetails>();
 					commonCopyQuote.add((EserviceCommonDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = commonCopyQuote ;
+					 policyNo=commonCopyQuote.get(0).getEndtPrevPolicyNo();
 					updateTermsAndCondition(hp , (commonCopyQuote.size() > 0 ?  commonCopyQuote.get(0).getRequestReferenceNo() : "" ));
 				
 				}
