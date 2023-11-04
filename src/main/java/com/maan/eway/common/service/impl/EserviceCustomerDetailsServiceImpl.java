@@ -111,7 +111,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getClientName().length() > 100) {
 					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
 				} 
-				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.& ]+")) {
+				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
 					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
 				}
 				
@@ -1592,7 +1592,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getClientName().length() > 100) {
 					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
 				} 
-				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.& ]+")) {
+				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
 					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
 				}
 				 
