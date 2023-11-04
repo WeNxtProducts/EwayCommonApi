@@ -1202,7 +1202,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 				minies.stream().forEach(calc);
 				retc.add(mini);
 				
-			}
+			}else {
+				retc.removeIf(t -> "945".equals(t.getCoverId()));//.stream().filter(t-> "945".equals(t.getCoverId()).de
+						}
 			try {
 				EserviceMotorDetailsSaveRes response = new EserviceMotorDetailsSaveRes();
 				response.setCoverList(retc);
