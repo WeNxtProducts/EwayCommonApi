@@ -1188,7 +1188,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				retc.sort(comp);
 			}
 			//if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
-			BigDecimal totalPremium=retc.stream().filter(x -> (!"N".equals(x.getIsselected()) )).map(x -> x.getPremiumAfterDiscountLC()).reduce(BigDecimal.ZERO,BigDecimal::add);
+			BigDecimal totalPremium=retc.stream().filter(x -> (!"N".equals(x.getIsselected()) )).map(x -> x.getPremiumExcluedTaxLC()).reduce(BigDecimal.ZERO,BigDecimal::add);
 			if(totalPremium.compareTo(minimumPremium)<0) {
 				List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
 						.collect(Collectors.toList());
