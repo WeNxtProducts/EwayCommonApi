@@ -326,7 +326,7 @@ public class CopyCommonRaw {
 
 				Subquery<Long> endtPre = query.subquery(Long.class);
 				Root<HomePositionMaster> h = endtPre.from(HomePositionMaster.class);
-				endtPre.select(cb.sum(h.get("endtPremium") ,h.get("endtPremiumTax")) ) ;
+				endtPre.select(cb.sum(h.get("endtPremium") ) ) ;
 				Predicate pm1 = cb.equal(h.get("companyId"), m.get("companyId"));
 				Predicate pm2 = cb.equal(h.get("productId"), m.get("productId"));
 				Predicate pm3   = cb.like(h.get("policyNo"), m.get("policyNo"));

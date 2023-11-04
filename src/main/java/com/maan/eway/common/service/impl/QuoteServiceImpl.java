@@ -354,7 +354,7 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setEndtPremium(homeData.getEndtPremium()==null?BigDecimal.ZERO:homeData.getEndtPremium());
 			req.setEndtTypeId(homeData.getEndtTypeId());
 			quoteRes.setEndtPremiumTax(homeData.getEndtPremiumTax()==null?BigDecimal.ZERO:homeData.getEndtPremiumTax());
-			quoteRes.setTotalEndtPremium(quoteRes.getEndtPremium().add(quoteRes.getEndtPremiumTax()));
+			quoteRes.setTotalEndtPremium(quoteRes.getEndtPremium());//.add(quoteRes.getEndtPremiumTax()));
 			// Emi Details 
 			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());
 			if (emiDetails.size()>0 ) {
