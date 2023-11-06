@@ -23,6 +23,10 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="paymentDate"/>
 		<fieldDescription><![CDATA[paymentDate]]></fieldDescription>
 	</field>
+	<field name="inceptionDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="inceptionDate"/>
+		<fieldDescription><![CDATA[inceptionDate]]></fieldDescription>
+	</field>
 	<field name="dateofIssue" class="java.sql.Timestamp">
 		<property name="net.sf.jasperreports.json.field.expression" value="dateofIssue"/>
 		<fieldDescription><![CDATA[dateofIssue]]></fieldDescription>
@@ -111,7 +115,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="sectionName"/>
 		<fieldDescription><![CDATA[sectionName]]></fieldDescription>
 	</field>
-	<field name="modelNumber" class="java.lang.String">
+	<field name="modelNumber" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="modelNumber"/>
 		<fieldDescription><![CDATA[modelNumber]]></fieldDescription>
 	</field>
