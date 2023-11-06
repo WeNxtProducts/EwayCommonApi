@@ -64,6 +64,7 @@ import com.maan.eway.jasper.res.CreditDataSetTwo;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.MotorCoverNoteRes;
 import com.maan.eway.jasper.res.MotorPrivateAccessoriesDetails;
+import com.maan.eway.jasper.res.MotorPrivateCollateralDetails;
 import com.maan.eway.jasper.res.MotorPrivateDriverDetails;
 import com.maan.eway.jasper.res.MotorPrivateRes;
 import com.maan.eway.jasper.res.MotorPrivateVehicleDetails;
@@ -475,6 +476,7 @@ public class JasperCustomServiceImple {
 		List<MotorPrivateVehicleDetails> vehicleDetailsRes = new ArrayList<>();
 		List<MotorPrivateDriverDetails> driverDetailsRes = new ArrayList<>();
 		List<MotorPrivateAccessoriesDetails> accessoriesDetailsRes = new ArrayList<>();
+		List<MotorPrivateCollateralDetails> collateralDetailsRes = new ArrayList<>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
@@ -560,6 +562,17 @@ public class JasperCustomServiceImple {
 				accessoriesDetailsRes.add(t);
 			});
 			
+			List<MotorDataDetails> collateralDetails = vehicleDetails.stream().filter(f -> f.getCollateralYn().equalsIgnoreCase("Y")).collect(Collectors.toList());
+			collateralDetails.forEach(k ->{
+				MotorPrivateCollateralDetails u = MotorPrivateCollateralDetails.builder()
+						.borrowerType(k.getBorrowerTypeDesc())
+						.collateralName(k.getCollateralName())
+						.collateralStatus(k.getCollateralYn())
+						.firstLossPayee(k.getFirstLossPayee())
+						.build();
+				collateralDetailsRes.add(u);
+			});
+			
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
 			response.setEffectiveDateStart(map.get("effectiveDateStart")==null?"":map.get("effectiveDateStart").toString());
 			response.setEffectiveDateEnd(map.get("effectiveDateEnd")==null?"":map.get("effectiveDateEnd").toString());
@@ -585,6 +598,7 @@ public class JasperCustomServiceImple {
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
+			response.setCollateralDetails(collateralDetailsRes);
 		}
 	}catch(Exception e) {
 		log.info("Error in getMotorPrivate ==>"+e.getMessage());

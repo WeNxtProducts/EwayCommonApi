@@ -57,6 +57,33 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
+	<style name="Table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
 	<subDataset name="TableDataSet 1" uuid="2dfcad32-0f3a-4426-ab2d-d52922456687">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -172,6 +199,28 @@
 			<fieldDescription><![CDATA[serialNoDesc]]></fieldDescription>
 		</field>
 	</subDataset>
+	<subDataset name="Table Dataset 4" uuid="bed00aed-eb40-4e6b-abe3-3c2131b9efe7">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
+		<queryString language="json">
+			<![CDATA[collateralDetails]]>
+		</queryString>
+		<field name="collateralStatus" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="collateralStatus"/>
+			<fieldDescription><![CDATA[collateralStatus]]></fieldDescription>
+		</field>
+		<field name="borrowerType" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="borrowerType"/>
+			<fieldDescription><![CDATA[borrowerType]]></fieldDescription>
+		</field>
+		<field name="collateralName" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="collateralName"/>
+			<fieldDescription><![CDATA[collateralName]]></fieldDescription>
+		</field>
+		<field name="firstLossPayee" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="firstLossPayee"/>
+			<fieldDescription><![CDATA[firstLossPayee]]></fieldDescription>
+		</field>
+	</subDataset>
 	<parameter name="pvImagepath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[]]>
@@ -275,6 +324,10 @@
 	<field name="accessoriesDetails" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="accessoriesDetails"/>
 		<fieldDescription><![CDATA[accessoriesDetails]]></fieldDescription>
+	</field>
+	<field name="collateralDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="collateralDetails"/>
+		<fieldDescription><![CDATA[collateralDetails]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -3551,6 +3604,109 @@
 									<font fontName="Arial" size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{serialNoDesc}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="21">
+			<printWhenExpression><![CDATA[$F{collateralDetails}.length() !=2 && $F{collateralDetails} != null]]></printWhenExpression>
+			<textField>
+				<reportElement x="0" y="5" width="555" height="16" uuid="259f159f-ba51-49b1-b5de-0938cb158cf4">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{accessoriesDetails}.length() !=2 && $F{accessoriesDetails} != null]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Collateral Details : "]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="35">
+			<printWhenExpression><![CDATA[$F{collateralDetails}.length() !=2 && $F{collateralDetails} != null]]></printWhenExpression>
+			<componentElement>
+				<reportElement x="0" y="0" width="554" height="35" uuid="19127769-10a4-47aa-858c-fa3413217f17">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 2_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 2_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 2_TD"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Table Dataset 4" uuid="542bde06-9cd4-4a77-9002-3b4c69609fd0">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("collateralDetails")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="160" uuid="0ca2b03b-a520-4abc-ad5b-10940d38a901">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:columnHeader style="Table 2_TD" height="15" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="160" height="15" uuid="97fe05f4-2336-445e-97e6-dc39fee8fe14"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Borrower Type"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 2_TD" height="20">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="160" height="20" uuid="ab0a6c25-6521-4bc9-9c3d-a82c037158e7"/>
+								<box leftPadding="2"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{borrowerType}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="190" uuid="6bd18ad1-b929-4f60-8a00-9f6a32dc6a59">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:columnHeader style="Table 2_TD" height="15" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="190" height="15" uuid="2e9d53f6-6d88-4a73-8f27-adebb8ce72ee"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Collateral Name"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 2_TD" height="20">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="190" height="20" uuid="c286d15c-3531-41bd-aa57-e71874e05fbc"/>
+								<box leftPadding="2"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{collateralName}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="204" uuid="62775f6c-2619-470b-95cc-0e9a1da8227d">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:columnHeader style="Table 2_TD" height="15" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="204" height="15" uuid="9cc9d707-da14-4b46-af86-b1477d94a6a4"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["First Loss Payee"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 2_TD" height="20">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="204" height="20" uuid="cb5fbfb8-780c-47aa-b7ac-e757b4e6bd7f"/>
+								<box leftPadding="2"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{firstLossPayee}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

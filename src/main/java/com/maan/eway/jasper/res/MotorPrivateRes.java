@@ -84,4 +84,7 @@ public class MotorPrivateRes {
 	@JsonProperty("AccessoriesDetails")
 	private List<MotorPrivateAccessoriesDetails> accessoriesDetails;
 	
+	@JsonProperty("collateralDetails")
+	private List<MotorPrivateCollateralDetails> collateralDetails;
+	
 }
