@@ -158,4 +158,7 @@ public class EservieMotorDetailsViewRes {
 	 
 	 @JsonProperty("OriginalPolicyNo")
 	 private String OriginalPolicyNo;
+	 
+	 @JsonProperty("SourceType")
+	 private String sourceType;
 }

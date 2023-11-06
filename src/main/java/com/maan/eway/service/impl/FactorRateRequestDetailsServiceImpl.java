@@ -1299,7 +1299,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				res.setVatCommission(mot.getVatCommission()==null?"" :mot.getVatCommission().toPlainString());
 				res.setPolicyNo(mot.getPolicyNo());
 				res.setOriginalPolicyNo(mot.getOriginalPolicyNo());
-				
+				res.setSourceType(mot.getSourceType());
 				
 				//res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
 				if(mot.getEndorsementType()!=null) {
@@ -1446,6 +1446,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					res.setVatCommission(travelData.getVatCommission()==null?"" :travelData.getVatCommission().toPlainString());
 					res.setPolicyNo(travelData.getPolicyNo());
 					res.setOriginalPolicyNo(travelData.getOriginalPolicyNo());
+					res.setSourceType(travelData.getSourceType());
 					
 					//res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
 					Object riskDetails = new Object();
@@ -1516,6 +1517,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setVatCommission(acc.getVatCommission()==null?"" :acc.getVatCommission().toPlainString());
 						res.setPolicyNo(acc.getPolicyNo());
 						res.setOriginalPolicyNo(acc.getOriginalPolicyNo());
+						res.setSourceType(acc.getSourceType());
 						
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
@@ -1562,6 +1564,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setVatCommission(buildData.getVatCommission()==null?"" :buildData.getVatCommission().toPlainString());
 						res.setPolicyNo(buildData.getPolicyNo());
 						res.setOriginalPolicyNo(buildData.getOriginalPolicyNo());
+						res.setSourceType(buildData.getSourceType());
 						
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
@@ -1618,6 +1621,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				res.setVatCommission(comData.getVatCommission()==null?"" :comData.getVatCommission().toPlainString());
 				res.setPolicyNo(comData.getPolicyNo());
 				res.setOriginalPolicyNo(comData.getOriginalPolicyNo());
+				res.setSourceType(comData.getSourceType());
 				
 				//res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
