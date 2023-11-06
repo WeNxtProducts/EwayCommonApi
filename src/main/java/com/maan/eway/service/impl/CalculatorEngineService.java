@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
+import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -2065,6 +2066,15 @@ public class CalculatorEngineService implements CalculatorEngine {
 		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
 		try {
 			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
@@ -2076,27 +2086,43 @@ public class CalculatorEngineService implements CalculatorEngine {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<BrokerCommissionDetails> ocpm1 = amendId.from(BrokerCommissionDetails.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("id"), b.get("id"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a4 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
-			Predicate a5 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
-			Predicate a6 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a2 = cb.equal(ocpm1.get("id"), b.get("id"));
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
+			Predicate a6 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			Predicate a7 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			effectiveDate.where(a1,a2,  a3,a4, a5,a6,a7);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm2 = effectiveDate2.from(BrokerCommissionDetails.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a9 = cb.equal(ocpm2.get("id"), b.get("id"));
+			Predicate a10 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a11 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a12 = cb.equal(ocpm2.get("policyType"), b.get("policyType"));
+			Predicate a13 = cb.equal(ocpm2.get("loginId"), b.get("loginId"));
+			Predicate a14 = cb.equal(ocpm2.get("agencyCode"), b.get("agencyCode"));
 
-			amendId.where(a1, a2, a3, a4, a5, a6);
-
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			effectiveDate2.where(a8,  a9, a10, a11 ,a12 ,a13, a14);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("policyType"), policyType);
 			Predicate n3 = cb.equal(b.get("companyId"), companyId);
 			Predicate n4 = cb.equal(b.get("productId"), productId);
 			Predicate n5 = cb.equal(b.get("loginId"), loginId);
-			Predicate n6 = cb.equal(b.get("agencyCode"), agencyCode);
-
-			query.where(n1, n2, n3, n4, n5, n6);
-
+		//	Predicate n6 = cb.like(b.get("agencyCode"), "%" + agencyCode + "%");
+			Predicate n7 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n8 = cb.equal(b.get("status"), "Y");
+			
+			query.where(n1, n2, n3, n4, n5,n7,n8);
+		
 			// Get Result
 			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
 			list = result.getResultList();

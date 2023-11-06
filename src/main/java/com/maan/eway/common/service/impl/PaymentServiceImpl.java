@@ -1794,7 +1794,7 @@ public class PaymentServiceImpl implements PaymentService {
 			Date creditDate =null;
 			String creditTo = "";
 			BigDecimal commission = new BigDecimal(0);
-			BigDecimal commissionPercent = null;
+			BigDecimal commissionPercent = new BigDecimal(0);
 			if(filterCredit!=null && !filterCredit.isEmpty()) {
 			// Credit
 			 creditNo =  filterCredit.get(0).getDocNo();
