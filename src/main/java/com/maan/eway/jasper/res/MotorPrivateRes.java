@@ -72,6 +72,9 @@ public class MotorPrivateRes {
 	@JsonProperty("NoOfVehicle")
 	private String noOfVehicle;
 	
+	@JsonProperty("PostalAddress")
+	private String postalAddress;
+	
 	@JsonProperty("VehicleDetails")
 	private List<MotorPrivateVehicleDetails> vehicleDetails;
 	

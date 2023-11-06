@@ -499,9 +499,10 @@ public class JasperCustomServiceImple {
 		
 		cq.multiselect(cpmRoot.get("companyId").alias("companyId"),cpmRoot.get("effectiveDateStart").alias("effectiveDateStart"),cpmRoot.get("effectiveDateEnd").alias("effectiveDateEnd"),
 			hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
-			hpmRoot.get("debitNoteNo").alias("debitNoteNo"),cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), 
-				cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"),
-				cb.concat(",", cb.concat(piRoot.get("cityName"), cb.concat(",", countryName)))))))).alias("address"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
+			hpmRoot.get("debitNoteNo").alias("debitNoteNo"),cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(piRoot.get("cityName"),
+				cb.concat(" Street", cb.concat(",", cb.concat(piRoot.get("stateName"), cb.concat(",", countryName))))))).alias("address"),
+			cb.selectCase().when(cb.isNotNull(piRoot.get("pinCode")), cb.concat("P.O.BOX ", cb.concat(piRoot.get("pinCode"), cb.concat(",", cb.concat(piRoot.get("cityName"),
+				cb.concat(" Street",cb.concat(",", cb.concat(piRoot.get("stateName"), cb.concat(",", countryName))))))))).otherwise("").alias("postalAddress"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
 			hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("currency").alias("currency"),hpmRoot.get("stickerNumber").alias("stickerNumber"),
 			mddRoot.get("insuranceTypeDesc").alias("insuranceTypeDesc"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("premiumLc"))
 			.otherwise(hpmRoot.get("premiumFc")).alias("premium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("vatPremiumLc"))
@@ -529,7 +530,7 @@ public class JasperCustomServiceImple {
 					.seatingCapacity(k.getSeatingCapacity()==null?"":k.getSeatingCapacity().toString())
 					.colorDesc(k.getColorDesc()==null?"":k.getColorDesc().toString())
 					.policyTypeDesc(k.getPolicyTypeDesc()==null?"":k.getPolicyTypeDesc().toString())
-					.windScreenSumInsuredLc(k.getWindScreenSumInsured()==null?"":k.getWindScreenSumInsured().toString())
+					.windScreenSumInsuredLc(k.getWindScreenSumInsured()==null?null:k.getWindScreenSumInsured().toString())
 					.sumInsured(k.getSumInsured()==null?"":k.getSumInsured().toString())
 					.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
 					.build();
@@ -580,6 +581,7 @@ public class JasperCustomServiceImple {
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
 			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
 			response.setNoOfVehicle(map.get("noOfVehicle")==null?"":map.get("noOfVehicle").toString());
+			response.setPostalAddress(map.get("postalAddress")==null?"":map.get("postalAddress").toString());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
