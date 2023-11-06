@@ -78,8 +78,9 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 }else {
 					 t.setProRata(new BigDecimal("1"));
 				 }
-					 
- 				 BigDecimal si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
+				 BigDecimal si=BigDecimal.ZERO;
+				 if(!"A".equals(t.getCalcType()))
+					 si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
 				 if("Y".equals(t.getDependentCoveryn())) {
 					 if(calculatedcover!=null) {
 						Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);

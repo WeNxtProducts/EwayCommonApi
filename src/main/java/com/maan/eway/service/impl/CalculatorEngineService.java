@@ -612,7 +612,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					
 					
 					List<Endorsement> endorsements = new ArrayList<Endorsement>();
-					List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> i.getCoverId()== d.getCoverId()).collect(Collectors.toList()) ;
+					List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> i.getCoverId().compareTo(d.getCoverId())==0 ).collect(Collectors.toList()) ;
 					
 					CreateEndorsment createEndt=new CreateEndorsment(endtmaster,endtCount,tzxeyEndt,coverData,d);
 					Endorsement currentEndt =createEndt.create();

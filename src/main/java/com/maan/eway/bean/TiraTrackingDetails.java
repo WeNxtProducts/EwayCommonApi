@@ -99,7 +99,7 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
-    @Column(name="CHASSIS_NO", nullable=false, length=500)
+    @Column(name="CHASSIS_NO", length=500)
     private String     chassisNo ;
     
     
