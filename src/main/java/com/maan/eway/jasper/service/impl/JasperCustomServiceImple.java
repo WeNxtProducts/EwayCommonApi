@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,7 +65,6 @@ import com.maan.eway.jasper.res.CreditDataSetTwo;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.MotorCoverNoteRes;
 import com.maan.eway.jasper.res.MotorPrivateAccessoriesDetails;
-import com.maan.eway.jasper.res.MotorPrivateCollateralDetails;
 import com.maan.eway.jasper.res.MotorPrivateDriverDetails;
 import com.maan.eway.jasper.res.MotorPrivateRes;
 import com.maan.eway.jasper.res.MotorPrivateVehicleDetails;
@@ -480,7 +480,6 @@ public class JasperCustomServiceImple {
 		List<MotorPrivateVehicleDetails> vehicleDetailsRes = new ArrayList<>();
 		List<MotorPrivateDriverDetails> driverDetailsRes = new ArrayList<>();
 		List<MotorPrivateAccessoriesDetails> accessoriesDetailsRes = new ArrayList<>();
-		List<MotorPrivateCollateralDetails> collateralDetailsRes = new ArrayList<>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
@@ -566,16 +565,7 @@ public class JasperCustomServiceImple {
 				accessoriesDetailsRes.add(t);
 			});
 			
-			List<MotorDataDetails> collateralDetails = vehicleDetails.stream().filter(f -> f.getCollateralYn().equalsIgnoreCase("Y")).collect(Collectors.toList());
-			collateralDetails.forEach(k ->{
-				MotorPrivateCollateralDetails u = MotorPrivateCollateralDetails.builder()
-						.borrowerType(k.getBorrowerTypeDesc())
-						.collateralName(k.getCollateralName())
-						.collateralStatus(k.getCollateralYn())
-						.firstLossPayee(k.getFirstLossPayee())
-						.build();
-				collateralDetailsRes.add(u);
-			});
+			List<MotorDataDetails> collateralDetails = vehicleDetails.stream().filter(f -> "Y".equalsIgnoreCase(Objects.requireNonNullElse(f.getCollateralYn(),""))).collect(Collectors.toList());
 			
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
 			response.setEffectiveDateStart(map.get("effectiveDateStart")==null?"":map.get("effectiveDateStart").toString());
@@ -599,10 +589,12 @@ public class JasperCustomServiceImple {
 			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
 			response.setNoOfVehicle(map.get("noOfVehicle")==null?"":map.get("noOfVehicle").toString());
 			response.setPostalAddress(map.get("postalAddress")==null?"":map.get("postalAddress").toString());
+			response.setBorrowerType(collateralDetails.isEmpty()?"":collateralDetails.get(0).getBorrowerTypeDesc());
+			response.setCollateralName(collateralDetails.isEmpty()?"":collateralDetails.get(0).getCollateralName());
+			response.setFirstLossPayee(collateralDetails.isEmpty()?"":collateralDetails.get(0).getFirstLossPayee());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
-			response.setCollateralDetails(collateralDetailsRes);
 		}
 	}catch(Exception e) {
 		log.info("Error in getMotorPrivate ==>"+e.getMessage());
@@ -799,7 +791,7 @@ public class JasperCustomServiceImple {
 				return vMap;
 			}).collect(Collectors.toList());
 			
-			List<LinkedHashMap<String,Object>> collateralDetails = vehicleInfo.stream().filter(k -> k.get("collateralYn").equals("Y")).map(m ->{
+			List<LinkedHashMap<String,Object>> collateralDetails = vehicleInfo.stream().filter(k -> "Y".equals(Objects.requireNonNullElse(k.get("collateralYn"), ""))).map(m ->{
 				LinkedHashMap<String,Object> cdMap = new LinkedHashMap<String,Object>();
 				cdMap.put("BorrowerType", m.get("borrowerTypeDesc")==null?"":m.get("borrowerTypeDesc").toString());
 				cdMap.put("CollateralName", m.get("collateralName")==null?"":m.get("collateralName").toString());
@@ -809,7 +801,7 @@ public class JasperCustomServiceImple {
 			}).collect(Collectors.toList());
 			
 			List<PaymentDetail> paymentDetail = paymentDetailRepo.findByQuoteNo(map.get("quoteNo").toString());
-			List<LinkedHashMap<String,Object>> refundPaymentDetail = paymentDetail.stream().filter(f -> f.getPayments().equalsIgnoreCase("REFUND")).map(k ->{
+			List<LinkedHashMap<String,Object>> refundPaymentDetail = paymentDetail.stream().filter(f -> "REFUND".equalsIgnoreCase(Objects.requireNonNullElse(f.getPayments(), ""))).map(k ->{
 				LinkedHashMap<String,Object> pMap = new LinkedHashMap<String,Object>();
 				pMap.put("BankName",k.getBankName());
 				pMap.put("AccountNumber",k.getAccountNumber());
