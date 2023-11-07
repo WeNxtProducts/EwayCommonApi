@@ -108,12 +108,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
 				if (StringUtils.isBlank(req.getClientName())) {
 					errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
-				} else if (req.getClientName().length() > 100) {
-					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
+				} else if (req.getClientName().length() > 250) {
+					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 250 Characters"));
 				} 
-				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
-					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
-				}
+//				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
+//					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
+//				}
 				
 				
 				if (StringUtils.isBlank(req.getAddress1())) {
@@ -1589,12 +1589,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
 				if (StringUtils.isBlank(req.getClientName())) {
 					errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
-				} else if (req.getClientName().length() > 100) {
-					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
+				} else if (req.getClientName().length() > 250) {
+					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 250 Characters"));
 				} 
-				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
-					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
-				}
+//				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
+//					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
+//				}
 				 
 				if (StringUtils.isBlank(req.getTitle())) {
 					errorList.add(new Error("04", "Title", "Please Select Title"));

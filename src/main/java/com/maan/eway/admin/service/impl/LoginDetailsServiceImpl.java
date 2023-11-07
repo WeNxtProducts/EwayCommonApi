@@ -340,42 +340,42 @@ this.repository = repo;
 					LoginCreationRes productRes = loginProductService.saveIssuerProductDetails(productReq) ;
 				}
 				
-				//Remove unmatched branches
-				if(loginData!=null) {
-					List<LoginBranchMaster> findBranches = loginBranchRepo.findByLoginIdAndCompanyId(loginData.getLoginId() ,  loginData.getCompanyId());
-					List<LoginBranchMaster> filtermatch = new ArrayList<LoginBranchMaster>();
-					if(findBranches.size()>0) {
-						for (String branh :   req.getLoginInformation().getAttachedBranches() ) {
-							List<LoginBranchMaster> filter = findBranches.stream().filter(o -> o.getBranchCode().equalsIgnoreCase(branh) ).collect(Collectors.toList());		
-							if(filter.size()>0)
-								filtermatch.add(filter.get(0));
-						}
-						findBranches.removeAll(filtermatch);
-						loginBranchRepo.deleteAll(findBranches);
-					}
-				}
 				
-				
-				
-				// Branch Insert 
-				for (String branch :   req.getLoginInformation().getAttachedBranches() ) {
-					AttachBrokerBranchReq branchReq = new AttachBrokerBranchReq();
-					branchReq.setAddress1(req.getPersonalInformation().getAddress1());
-					branchReq.setAddress2(req.getPersonalInformation().getAddress2());
-					branchReq.setBranchCode(branch);
-					branchReq.setCreatedBy(req.getLoginInformation().getCreatedBy());
-					branchReq.setCompanyId(req.getLoginInformation().getCompanyId());
-					branchReq.setEmail(req.getPersonalInformation().getUserMail());
-					branchReq.setMobile(req.getPersonalInformation().getUserMobile() );
-					branchReq.setRemarks(req.getPersonalInformation().getRemarks());
-					branchReq.setStatus(req.getLoginInformation().getStatus());
-					branchReq.setLoginId(req.getLoginInformation().getLoginId());
-					
-					LoginCreationRes branchRes  = loginBranchService.attachBrokerCompanyBranch(branchReq);
-				}
 				
 			}
-		
+			//Remove unmatched branches
+			if(loginData!=null) {
+				List<LoginBranchMaster> findBranches = loginBranchRepo.findByLoginIdAndCompanyId(loginData.getLoginId() ,  loginData.getCompanyId());
+				List<LoginBranchMaster> filtermatch = new ArrayList<LoginBranchMaster>();
+				if(findBranches.size()>0) {
+					for (String branh :   req.getLoginInformation().getAttachedBranches() ) {
+						List<LoginBranchMaster> filter = findBranches.stream().filter(o -> o.getBranchCode().equalsIgnoreCase(branh) ).collect(Collectors.toList());		
+						if(filter.size()>0)
+							filtermatch.add(filter.get(0));
+					}
+					findBranches.removeAll(filtermatch);
+					loginBranchRepo.deleteAll(findBranches);
+				}
+			}
+			
+			
+			
+			// Branch Insert 
+			for (String branch :   req.getLoginInformation().getAttachedBranches() ) {
+				AttachBrokerBranchReq branchReq = new AttachBrokerBranchReq();
+				branchReq.setAddress1(req.getPersonalInformation().getAddress1());
+				branchReq.setAddress2(req.getPersonalInformation().getAddress2());
+				branchReq.setBranchCode(branch);
+				branchReq.setCreatedBy(req.getLoginInformation().getCreatedBy());
+				branchReq.setCompanyId(req.getLoginInformation().getCompanyId());
+				branchReq.setEmail(req.getPersonalInformation().getUserMail());
+				branchReq.setMobile(req.getPersonalInformation().getUserMobile() );
+				branchReq.setRemarks(req.getPersonalInformation().getRemarks());
+				branchReq.setStatus(req.getLoginInformation().getStatus());
+				branchReq.setLoginId(req.getLoginInformation().getLoginId());
+				
+				LoginCreationRes branchRes  = loginBranchService.attachBrokerCompanyBranch(branchReq);
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
