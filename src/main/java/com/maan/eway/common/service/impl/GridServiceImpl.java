@@ -538,7 +538,7 @@ public class GridServiceImpl implements GridService {
 				cres = buiService.getBuildingRejectedQuoteDetails(req, before30, today, limit, offset);
 				rejectedQuoteList = cres.getQuoteRes();
 			} 
-			if (product.getMotorYn().equalsIgnoreCase("L")) {
+			else if (product.getMotorYn().equalsIgnoreCase("L")) {
 				cres = lifeService.getLifeRejectedQuoteDetails(req, before30, today, limit, offset);
 				rejectedQuoteList = cres.getQuoteRes();
 
