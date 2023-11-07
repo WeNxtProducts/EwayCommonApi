@@ -1083,7 +1083,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["BorrowerType"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Borrower Type"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="20">
@@ -1107,7 +1107,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["CollateralName"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Collateral Name"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="20">
@@ -1131,7 +1131,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["FirstLossPayee"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["First Loss Payee"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="20">
@@ -1210,7 +1210,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
-								<text><![CDATA[BankName]]></text>
+								<text><![CDATA[Bank Name]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 2_TD" height="20">
@@ -1234,7 +1234,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
-								<text><![CDATA[AccountNumber]]></text>
+								<text><![CDATA[Account Number]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 2_TD" height="20">
@@ -1258,7 +1258,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
-								<text><![CDATA[IbanNumber]]></text>
+								<text><![CDATA[IBAN Number]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 2_TD" height="20">
