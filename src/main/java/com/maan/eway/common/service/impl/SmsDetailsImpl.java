@@ -79,7 +79,10 @@ public class SmsDetailsImpl {
 			savedata.setSmsContent(req.getSmsBody());
 			savedata.setEntryDate(new Date());
 			savedata.setSNo(sno.toString());
-	//		savedata.setSenderId(smsconfig.get(0).getSenderId());
+			if(homeposition!=null && homeposition.size() > 0 ) {
+				savedata.setPushedBy("1".equalsIgnoreCase(homeposition.get(0).getApplicationId()) ? homeposition.get(0).getLoginId() : homeposition.get(0).getApplicationId() );
+			}
+		//	savedata.setSenderId(smsconfig.get(0).getSenderId());
 			
 			
 			res.setResponse("SMS Sent Successfully");
