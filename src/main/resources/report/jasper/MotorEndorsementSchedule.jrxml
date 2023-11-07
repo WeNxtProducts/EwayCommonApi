@@ -117,7 +117,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="CollateralName"/>
 			<fieldDescription><![CDATA[CollateralName]]></fieldDescription>
 		</field>
-		<field name="FirstLossPayee" class="java.math.BigDecimal">
+		<field name="FirstLossPayee" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="FirstLossPayee"/>
 			<fieldDescription><![CDATA[FirstLossPayee]]></fieldDescription>
 		</field>
