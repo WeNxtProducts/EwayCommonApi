@@ -78,6 +78,7 @@ import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
+import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 
 @Component
@@ -105,6 +106,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private EserviceCommonDetailsRepository eserviceCommonDetRepo;
+	
+	@Autowired
+	private PaymentDetailRepository paymentDetailRepo;
 		
 	private String RenewalDate(String Input) {
 		DateTimeFormatter inputformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -782,7 +786,8 @@ public class JasperCustomServiceImple {
 			Root<MotorDataDetails> mddRoot = cq1.from(MotorDataDetails.class);
 			
 			cq1.multiselect(mddRoot.get("insuranceClassDesc").alias("insuranceClassDesc"),mddRoot.get("registrationNumber").alias("registrationNumber"),
-					mddRoot.get("chassisNumber").alias("chassisNumber"))
+					mddRoot.get("chassisNumber").alias("chassisNumber"),mddRoot.get("borrowerTypeDesc").alias("borrowerTypeDesc"),mddRoot.get("collateralName").alias("collateralName"),
+					mddRoot.get("firstLossPayee").alias("firstLossPayee"),mddRoot.get("collateralYn").alias("collateralYn"))
 			.where(cb.equal(mddRoot.get("quoteNo"), map.get("quoteNo")));
 			
 			List<Tuple> vehicleInfo = em.createQuery(cq1).getResultList();
@@ -792,6 +797,24 @@ public class JasperCustomServiceImple {
 				vMap.put("RegistrationNumber", k.get("registrationNumber")==null?"":k.get("registrationNumber").toString());
 				vMap.put("ChassisNumber", k.get("chassisNumber")==null?"":k.get("chassisNumber").toString());
 				return vMap;
+			}).collect(Collectors.toList());
+			
+			List<LinkedHashMap<String,Object>> collateralDetails = vehicleInfo.stream().filter(k -> k.get("collateralYn").equals("Y")).map(m ->{
+				LinkedHashMap<String,Object> cdMap = new LinkedHashMap<String,Object>();
+				cdMap.put("BorrowerType", m.get("borrowerTypeDesc")==null?"":m.get("borrowerTypeDesc").toString());
+				cdMap.put("CollateralName", m.get("collateralName")==null?"":m.get("collateralName").toString());
+				cdMap.put("CollateralYn", m.get("collateralYn")==null?"":m.get("collateralYn").toString());
+				cdMap.put("FirstLossPayee", m.get("firstLossPayee")==null?"":m.get("firstLossPayee").toString());
+				return cdMap;
+			}).collect(Collectors.toList());
+			
+			List<PaymentDetail> paymentDetail = paymentDetailRepo.findByQuoteNo(map.get("quoteNo").toString());
+			List<LinkedHashMap<String,Object>> refundPaymentDetail = paymentDetail.stream().filter(f -> f.getPayments().equalsIgnoreCase("REFUND")).map(k ->{
+				LinkedHashMap<String,Object> pMap = new LinkedHashMap<String,Object>();
+				pMap.put("BankName",k.getBankName());
+				pMap.put("AccountNumber",k.getAccountNumber());
+				pMap.put("IbanNumber",k.getIbanNumber());
+				return pMap;
 			}).collect(Collectors.toList());
 			
 			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
@@ -809,6 +832,8 @@ public class JasperCustomServiceImple {
 			result.put("userName", map.get("userName")==null?"":map.get("userName").toString());
 			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			result.put("vehicleList", vehicleList);
+			result.put("refundPaymentDetail", refundPaymentDetail);
+			result.put("collateralDetails", collateralDetails);
 		}
 	}catch(Exception e) {
 		log.info("Error in getMotorEndorsementSchedule ==>"+e.getMessage());
