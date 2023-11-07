@@ -1475,9 +1475,11 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			if(StringUtils.isNotBlank(req.getCommissionModifyYn()) && "Y".equalsIgnoreCase(req.getCommissionModifyYn()) ) {
 				if(StringUtils.isBlank(req.getCommissionPercent() )) {
-					errors.add(new Error("03","Admin Remarks","Please Enter Commission Percent"));
+					errors.add(new Error("03","CommissionPercent","Please Enter Commission Percent"));
 				} else if(! req.getCommissionPercent().matches("[0-9.]+") ) {
-					errors.add(new Error("03","Admin Remarks","Please Enter Valid Commission Percent"));
+					errors.add(new Error("03","CommissionPercent","Please Enter Valid Commission Percent"));
+				} else if(Double.valueOf(req.getCommissionPercent()) <1   ) {
+					errors.add(new Error("03","CommissionPercent","Commission Percent Zero Not Allowed"));
 				}
 			}
 		} catch ( Exception e) {
