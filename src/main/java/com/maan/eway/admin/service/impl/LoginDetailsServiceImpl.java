@@ -994,7 +994,7 @@ this.repository = repo;
 			// Where
 			Predicate n1 = cb.equal(l.get("loginId"), u.get("loginId"));
 			Predicate n2 = cb.equal(l.get("userType"), req.getUserType());
-			Predicate n4 = cb.equal(l.get("companyId"), req.getCompanyId());
+			Predicate n4 = cb.like(l.get("companyId"), "%"+req.getCompanyId()+"%");
 			if(StringUtils.isNotBlank( req.getSubUserType())  ) {
 				Predicate n3 = cb.equal(l.get("subUserType"), req.getSubUserType());
 				query.where(n1,n2,n3,n4).orderBy(orderList);
