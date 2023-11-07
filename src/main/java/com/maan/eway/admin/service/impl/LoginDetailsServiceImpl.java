@@ -492,13 +492,13 @@ this.repository = repo;
 			}
 			loginRepo.saveAndFlush(saveLogin);
 				
-			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc("MOBILE_CODE" , "Y",loginReq.getCompanyId() );
+			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc("MOBILE_CODE" , "Y",saveLogin.getCompanyId() );
 			// Login User Details Insert
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ;
 			LoginUserInfo userInfo = new LoginUserInfo(); 
 			dozerMapper.map(personalReq, userInfo);
 			userInfo.setLoginId(loginReq.getLoginId());
-			userInfo.setAgencyCode(countId.toString());
+			userInfo.setAgencyCode(saveLogin.getAgencyCode());
 			userInfo.setEntryDate(new Date());
 			userInfo.setUpdatedDate(new Date());
 			userInfo.setUpdatedBy(loginReq.getCreatedBy());
@@ -701,7 +701,7 @@ this.repository = repo;
 			updateUser.setUpdatedDate(new Date());
 			updateUser.setUpdatedBy(loginReq.getCreatedBy());
 			updateUser.setStatus(updateLogin.getStatus());
-			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc("MOBILE_CODE" , "Y", loginReq.getCompanyId());
+			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc("MOBILE_CODE" , "Y", findLogin.getCompanyId());
 			updateUser.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			updateUser.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			updateUser.setTaxExemptedYn(StringUtils.isBlank(personalReq.getTaxExemptedYn())?"N":personalReq.getTaxExemptedYn() );
