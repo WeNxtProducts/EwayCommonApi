@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -164,8 +163,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="POLICY_YN", length=20)
     private String     policyYn ;
-
-
+    
+    @Column(name="MODEL_NUMBER", length=30)
+    private String     ModelNumber;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
