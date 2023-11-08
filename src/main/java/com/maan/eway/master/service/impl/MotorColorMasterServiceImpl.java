@@ -458,7 +458,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			Predicate n5 = cb.or(n3,n4);
 			query.where(n1,n2,n5).orderBy(orderList);
 			
-			query.where(n1).orderBy(orderList);
+		//	query.where(n1).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<MotorColorMaster> result = em.createQuery(query);
