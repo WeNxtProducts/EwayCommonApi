@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -120,7 +119,7 @@ private static final long serialVersionUID = 1L;
     private String     countryName ;
 
     @Column(name="POBOX")
-    private BigDecimal pobox ;
+    private String   pobox ;
 
     @Column(name="FAX", length=50)
     private String     fax ;

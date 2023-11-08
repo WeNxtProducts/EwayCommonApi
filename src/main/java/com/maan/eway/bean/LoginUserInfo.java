@@ -115,7 +115,7 @@ private static final long serialVersionUID = 1L;
     private String     cityName ;
 
     @Column(name="POBOX")
-    private BigDecimal pobox ;
+    private String pobox ;
 
     @Column(name="STATE_NAME", length=50)
     private String     stateName ;
