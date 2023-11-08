@@ -144,6 +144,10 @@
 	<queryString language="JSON">
 		<![CDATA[]]>
 	</queryString>
+	<field name="vehicleSumInsured" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="vehicleSumInsured"/>
+		<fieldDescription><![CDATA[vehicleSumInsured]]></fieldDescription>
+	</field>
 	<field name="EndorsementNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="EndorsementNo"/>
 		<fieldDescription><![CDATA[EndorsementNo]]></fieldDescription>
@@ -664,9 +668,9 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA["VEHICLE SUM INSURED"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="381" y="0" width="164" height="15" uuid="c3c4ba4c-cab6-4269-99c5-636ace44fdc8">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -678,7 +682,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vehicleSumInsured}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="545" y="0" width="10" height="15" uuid="b9498765-6b1a-4e0f-b325-f891ad779086">

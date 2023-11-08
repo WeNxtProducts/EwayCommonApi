@@ -767,7 +767,7 @@ public class JasperCustomServiceImple {
 			hpmRoot.get("companyName").alias("companyName"),hpmRoot.get("branchName").alias("branchName"),cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
 			.otherwise(luiRoot.get("userName")).alias("userName"),hpmRoot.get("quoteNo").alias("quoteNo"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),
-				cb.equal(hpmRoot.get("productId"), "5"),cb.in(hpmRoot.get("status")).value(Arrays.asList("P","D")),cb.equal(hpmRoot.get("policyNo"), policyNo))
+				cb.equal(hpmRoot.get("productId"), "5"),cb.in(hpmRoot.get("status")).value(Arrays.asList("P","D","E")),cb.equal(hpmRoot.get("policyNo"), policyNo))
 		.orderBy(cb.asc(hpmRoot.get("entryDate")));
 		
 		List<Tuple> list = em.createQuery(cq).getResultList();
@@ -779,7 +779,7 @@ public class JasperCustomServiceImple {
 			
 			cq1.multiselect(mddRoot.get("insuranceClassDesc").alias("insuranceClassDesc"),mddRoot.get("registrationNumber").alias("registrationNumber"),
 					mddRoot.get("chassisNumber").alias("chassisNumber"),mddRoot.get("borrowerTypeDesc").alias("borrowerTypeDesc"),mddRoot.get("collateralName").alias("collateralName"),
-					mddRoot.get("firstLossPayee").alias("firstLossPayee"),mddRoot.get("collateralYn").alias("collateralYn"))
+					mddRoot.get("firstLossPayee").alias("firstLossPayee"),mddRoot.get("collateralYn").alias("collateralYn"),mddRoot.get("sumInsured").alias("sumInsured"))
 			.where(cb.equal(mddRoot.get("quoteNo"), map.get("quoteNo")));
 			
 			List<Tuple> vehicleInfo = em.createQuery(cq1).getResultList();
@@ -826,6 +826,7 @@ public class JasperCustomServiceImple {
 			result.put("vehicleList", vehicleList);
 			result.put("refundPaymentDetail", refundPaymentDetail);
 			result.put("collateralDetails", collateralDetails);
+			result.put("vehicleSumInsured", vehicleInfo.get(0).get("sumInsured")==null?null:new BigDecimal(Double.parseDouble(vehicleInfo.get(0).get("sumInsured").toString())).toString());
 		}
 	}catch(Exception e) {
 		log.info("Error in getMotorEndorsementSchedule ==>"+e.getMessage());
