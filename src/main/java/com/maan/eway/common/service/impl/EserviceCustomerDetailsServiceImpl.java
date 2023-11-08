@@ -404,7 +404,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				
 				if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
-
+					if( StringUtils.isNotBlank(req.getIdType()) && req.getIdType().equalsIgnoreCase("1")) {
+						if (req.getDobOrRegDate() == null) {
+							errorList.add(new Error("38", "DobOrRegDate", "Please Select Dob "));
+						}
+					}
+					
+					
 					if (req.getDobOrRegDate() != null) {
 						if (req.getDobOrRegDate().after(today)) {
 							errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob as Past Date"));
