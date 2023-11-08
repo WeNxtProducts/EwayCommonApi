@@ -1841,44 +1841,46 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				today = cal.getTime();
 				if (req.getPolicyHolderType().equalsIgnoreCase("1")) {
 
-					if (req.getDobOrRegDate() == null) {
-						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
+					if (req.getDobOrRegDate() != null) {
+						if (req.getDobOrRegDate().after(today)) {
+							errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
 
-					} else if (req.getDobOrRegDate().after(today)) {
-						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+						} 
+						LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+								.toLocalDate();
+						LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-					}
+						Integer years = Period.between(localDate1, localDate2).getYears();
+						if (years > 100) {
+							errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
 
-					LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
-							.toLocalDate();
-					LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+						}
 
-					Integer years = Period.between(localDate1, localDate2).getYears();
-					if (years > 100) {
-						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+					}  
 
-					}
+					
 				}
 
 				if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
 
-					if (req.getDobOrRegDate() == null) {
-						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
+					if (req.getDobOrRegDate() != null) {
+						if (req.getDobOrRegDate().after(today)) {
+							errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
 
-					} else if (req.getDobOrRegDate().after(today)) {
-						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+						}
+						LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+								.toLocalDate();
+						LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-					}
+						Integer years = Period.between(localDate1, localDate2).getYears();
+						if (years > 100) {
+							errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
 
-					LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
-							.toLocalDate();
-					LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+						}
 
-					Integer years = Period.between(localDate1, localDate2).getYears();
-					if (years > 100) {
-						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+					}  
 
-					}
+					
 				}
 			}
 			/*
