@@ -27,6 +27,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -52,6 +53,7 @@ import com.maan.eway.master.controller.ProductGroupDropDownReq;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.master.res.ProductGroupMasterDropDownRes;
 import com.maan.eway.master.service.ProductGroupMasterService;
+import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
@@ -71,7 +73,8 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 	private ProductGroupMasterService groupService;
 	@Autowired
 	private TravelPassengerDetailsRepository traPassRepo  ;
-	
+	@Autowired
+	private EserviceCustomerDetailsRepository cusrepo;
 
 	@Autowired
 	private PremiaCustomerDetailsRepository premiaRepo;
@@ -393,10 +396,13 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 	}
 	
 	@Override
-	public List<SearchCustomerDetailsRes> travelCustSearch(SearchReq req,List<HomePositionMaster> homeData) {
+	public List<SearchCustomerDetailsRes> travelCustSearch(SearchReq req) {
 		List<SearchCustomerDetailsRes> reslist = new ArrayList<SearchCustomerDetailsRes>();
 		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
 		try {
+			List<HomePositionMaster> homeData=null;
+			if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				homeData = homeRepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
 			String customerId = homeData.get(0).getCustomerId();
 			String loginId = "";
 			String userName = "";
@@ -445,6 +451,54 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 			res.setSource(source);
 			reslist.add(res);
 		//	}
+			}else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+				String customerId ="";
+				String loginId = "";
+				String userName = "";
+				String aproverName = "";
+				String appId = "";
+				String sourceType="";
+				String coustomerCode="";
+				String customerCodeName="";
+				String source=""; 
+				List<PremiaCustomerDetails> premiadata =null;
+				LoginUserInfo loginUserData=new LoginUserInfo();
+				List<EserviceTravelDetails> motor = eTravelRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(),req.getProductId());
+				if (motor.size() > 0) {
+					sourceType = motor.get(0).getSourceType();
+					coustomerCode = motor.get(0).getCustomerCode();
+					loginId = motor.get(0).getLoginId();
+					appId = motor.get(0).getApplicationId();
+					source = motor.get(0).getLoginId();
+					customerCodeName = motor.get(0).getCustomerName();
+//					premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+//					if (premiadata.size() > 0) {
+//						customerCodeName = premiadata.get(0).getCustomerName();
+//					}
+				}
+				EserviceCustomerDetails list = cusrepo.findByCustomerReferenceNo(motor.get(0).getCustomerReferenceNo());
+				if ("Broker".equalsIgnoreCase(sourceType)) {
+					loginUserData=loginUserRepo.findByLoginId(loginId);
+					userName=loginUserData.getUserName();
+					
+				}
+				if(!"1".equalsIgnoreCase(appId)){
+					loginUserData=loginUserRepo.findByLoginId(appId);
+					aproverName=loginUserData.getUserName();
+				}
+				SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
+				res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
+				res.setLoginId(loginId);
+				res.setBrokerName(userName==null?"":userName);
+				res.setApplicationId(appId);
+				res.setApproverName(aproverName==null?"":aproverName);
+				res.setCustomerCode(coustomerCode);
+				res.setCustomerName(customerCodeName);	
+				res.setSourceType(sourceType);
+				res.setBranchCode(list.getBranchCode().toString());
+				res.setSource(source);
+				reslist.add(res);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
