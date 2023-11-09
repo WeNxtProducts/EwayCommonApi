@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.admin.res.GetallPortfolioActiveRes;
 import com.maan.eway.bean.YiPolicyDetail;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.integration.req.GetAllPolicy;
 import com.maan.eway.integration.req.PremiaGetReq;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.YiPolicyDetailReq;
@@ -38,6 +40,26 @@ public class PremiaTableGetController {
 	
 	@Autowired
 	private IntegrationGetService service;
+	
+	
+	@PostMapping("/getallpolicydetails")
+	public ResponseEntity<CommonRes> getAllPolicyDetails(@RequestBody GetAllPolicy req) {
+		CommonRes data = new CommonRes();
+		GetallPortfolioActiveRes res = service.getAllPolicyDetails(req);
+
+		if (res != null) {
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
 	
 	@PostMapping("/getyipolicydetails")
 	public ResponseEntity<CommonRes> getYiPolicyDetails(@RequestBody PremiaGetReq req)

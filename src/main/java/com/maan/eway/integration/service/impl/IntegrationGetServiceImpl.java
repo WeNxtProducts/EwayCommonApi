@@ -31,11 +31,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.maan.eway.admin.res.GetMotorProtfolioActiveRes;
+import com.maan.eway.admin.res.GetallPortfolioActiveRes;
+import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.bean.CreditLimitDetail;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotCommDiscountDetail;
 import com.maan.eway.bean.MotDriverDetail;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PgithPolRiskAddlInfo;
 import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.PremiaConfigMaster;
@@ -46,6 +50,9 @@ import com.maan.eway.bean.YiPolicyDetail;
 import com.maan.eway.bean.YiPremCal;
 import com.maan.eway.bean.YiSectionDetail;
 import com.maan.eway.bean.YiVatDetail;
+import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
+import com.maan.eway.integration.req.GetAllPolicy;
 import com.maan.eway.integration.req.PremiaGetReq;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.YiPolicyDetailReq;
@@ -124,6 +131,178 @@ private EntityManager em;
 
 Gson json = new Gson(); 
 private Logger log=LogManager.getLogger(IntegrationGetServiceImpl.class);
+
+
+@Override
+public GetallPortfolioActiveRes getAllPolicyDetails(GetAllPolicy req) {
+	GetallPortfolioActiveRes resp = new GetallPortfolioActiveRes();
+	List<PortfolioCustomerDetailsRes> custRes = new ArrayList<PortfolioCustomerDetailsRes>();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	try {
+	
+
+		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+		int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+		List<PortfolioGridCriteriaRes> portfolioActiveList = new ArrayList<PortfolioGridCriteriaRes>();
+
+		GetMotorProtfolioActiveRes response = getAllPolicy(req, limit, offset);
+																													// "p"
+																													// policy
+		portfolioActiveList = response.getPortfolioList();
+		resp.setCount(response.getCount());
+
+		for (PortfolioGridCriteriaRes data : portfolioActiveList) {
+			PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
+			res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
+			res.setClientName(data.getClientName());
+			custRes.add(res);
+		}
+		resp.setCustRes(custRes);
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+	}
+	return resp;
+}
+public synchronized GetMotorProtfolioActiveRes getAllPolicy(GetAllPolicy req,int limit,int offset) {
+	List<PortfolioGridCriteriaRes> portfolio = new ArrayList<PortfolioGridCriteriaRes>();
+	GetMotorProtfolioActiveRes resp = new GetMotorProtfolioActiveRes();
+	try {
+		resp.setCount(0l);
+		Calendar cal = new GregorianCalendar();
+
+		Date startDate = req.getStartDate();
+		cal.setTime(startDate);
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		startDate = cal.getTime();
+
+		Date endDate = req.getEndDate();
+		cal.setTime(endDate);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		endDate = cal.getTime();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PortfolioGridCriteriaRes> query = cb.createQuery(PortfolioGridCriteriaRes.class);
+
+		// Find All
+		Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+		Root<PersonalInfo> c = query.from(PersonalInfo.class);
+
+		// Select
+		query.multiselect(
+				// Customer Info
+				c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+				c.get("clientName").alias("clientName"), c.get("mobileNo1").alias("mobileNo1"),
+				c.get("isTaxExempted").alias("isTaxExempted"), c.get("taxExemptedId").alias("taxExemptedId"),
+				// Vehicle Info
+				m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+				m.get("productName").alias("productName"), m.get("branchCode").alias("branchCode"),
+				m.get("requestReferenceNo").alias("requestReferenceNo"), m.get("quoteNo").alias("quoteNo"),
+				m.get("customerId").alias("customerId"), m.get("inceptionDate").alias("inceptionDate"),
+				m.get("expiryDate").alias("expiryDate"), m.get("overallPremiumLc").alias("overallPremiumLc"),
+				m.get("overallPremiumFc").alias("overallPremiumFc"), m.get("policyNo").alias("policyNo"),
+				m.get("debitAcNo").alias("debitAcNo"), m.get("debitTo").alias("debitTo"),
+				m.get("debitToId").alias("debitToId"), m.get("debitNoteNo").alias("debitNoteNo"),
+				m.get("debitNoteDate").alias("debitNoteDate"), m.get("creditTo").alias("creditTo"),
+				m.get("creditToId").alias("creditToId"), m.get("creditNo").alias("creditNo"),
+				m.get("creditDate").alias("creditDate"), m.get("emiYn").alias("emiYn"),
+				m.get("installmentPeriod").alias("installmentPeriod"),
+				m.get("noOfInstallment").alias("noOfInstallment"), m.get("emiPremium").alias("emiPremium"),
+				m.get("effectiveDate").alias("effectiveDate"), m.get("currency").alias("currency"),
+				m.get("originalPolicyNo").alias("originalPolicyNo")
+
+		);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(m.get("entryDate")));
+
+//		// Endt Count Max Filter
+//		Subquery<Long> endtCount = query.subquery(Long.class);
+//		Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
+//		endtCount.select(cb.min(ocpm1.get("endtCount")));
+//		Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
+//		Predicate a2 = cb.equal(ocpm1.get("status"), m.get("status"));
+//		endtCount.where(a1, a2);
+
+		// Where
+		Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
+		Predicate n2 = cb.equal(m.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+		Predicate n4 = cb.equal(m.get("status"), "P");
+		Predicate n9 = cb.equal(m.get("integrationStatus"), "S"); 
+		Predicate n7 = (cb.greaterThanOrEqualTo(m.get("entryDate"), startDate));
+		Predicate n8 = (cb.lessThanOrEqualTo(m.get("entryDate"), endDate));
+//		Predicate n10 = cb.equal(m.get("endtCount"), endtCount); 
+		Predicate n11 = cb.notEqual(m.get("endtTypeId"), "842"); 
+		Predicate n12 = cb.isNull(m.get("endtTypeId"));
+		Predicate n13 = cb.or(n11, n12);
+		query.where(n1, n2, n3, n4, n7,n8,n9,n13);
+		
+		// Get Result
+		TypedQuery<PortfolioGridCriteriaRes> result = em.createQuery(query);
+//		result.setFirstResult(limit * offset);
+//		result.setMaxResults(offset);
+		portfolio = result.getResultList();
+
+		resp.setPortfolioList(portfolio);
+		resp.setCount(totalcountpolicy(req,startDate,endDate));
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+	}
+	return resp;
+}
+private Long totalcountpolicy(GetAllPolicy req,Date startDate,Date endDate) {
+	Long count = 0l;
+	try {	
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+	
+		// Find All
+		Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+		Root<PersonalInfo> c = query.from(PersonalInfo.class);
+	
+		// Select
+		query.multiselect(cb.count(m));
+	
+	
+		// Where
+		Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
+		Predicate n2 = cb.equal(m.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+		Predicate n4 = cb.equal(m.get("status"), "P");
+		Predicate n9 = cb.equal(m.get("integrationStatus"), "S"); 
+		Predicate n7 = (cb.greaterThanOrEqualTo(m.get("entryDate"), startDate));
+		Predicate n8 = (cb.lessThanOrEqualTo(m.get("entryDate"), endDate));
+		Predicate n11 = cb.notEqual(m.get("endtTypeId"),"842");   
+		Predicate n12 = cb.isNull(m.get("endtTypeId"));     
+		Predicate n13 = cb.or(n11,n12);
+			
+		query.where(n1, n2, n3, n4,n7,n8,n9,n13);
+
+		TypedQuery<Long> result = em.createQuery(query);
+		List<Long> val = result.getResultList();
+			
+				if(val.size()>0)
+					count = val.get(0);
+
+
+} catch (Exception e) {
+	e.printStackTrace();
+	log.info("Log Details" + e.getMessage());
+	return null;
+}
+return count;
+}
+
+
 
 
 //YiPolicyDetails Get
