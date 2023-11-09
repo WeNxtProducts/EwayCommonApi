@@ -1180,6 +1180,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setEndtCount(request.getEndtCount());
 	            	request2.setEndtFields(request.getEndtFields());
 	            	request2.setMotorYn(request.getMotorYn());
+	            	request2.setIsFinYn(request.getIsFinYn());
 	            	
 	            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
 	            			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
@@ -1254,6 +1255,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	 request2.setEndtFields(request.getEndtFields());	
 		            	 request2.setMotorYn(request.getMotorYn());
 		            	 request2.setIndividualId(passCount);
+		            	 request2.setIsFinYn(request.getIsFinYn());
 		            	 
 		            	 request.setSectionId(sectionId.get(0));
 		            	 request.setGroupId(filterGroup.get(0).getGroupId());
@@ -1300,7 +1302,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	    	            	 request2.setEndtFields(request.getEndtFields());	
 	    	            	 request2.setMotorYn(request.getMotorYn());
 	    	            	 request2.setIndividualId(passCount);
-	    	            	 
+	    	            	 request2.setIsFinYn(request.getIsFinYn());
 //	    	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 //	    	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
 //	    	            			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
@@ -1374,6 +1376,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			            	request2.setEndtCount(request.getEndtCount());
 			            	request2.setEndtFields(request.getEndtFields());
 			            	request2.setMotorYn(request.getMotorYn());
+			            	request2.setIsFinYn(request.getIsFinYn());
 			            	
 			            	if("0".equalsIgnoreCase(sec)  ) {
 		            			threadCount = threadCount +  1 ;
@@ -1451,7 +1454,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setEndtCount(request.getEndtCount());
 	            	request2.setEndtFields(request.getEndtFields());
 	            	request2.setMotorYn(request.getMotorYn());
-	            	 
+	            	request2.setIsFinYn(request.getIsFinYn());
+	            	
 					QuoteThreadCall commonDataSave = new QuoteThreadCall("CommonDataSave", request2, em,eserCustRepo, eserMotRepo, facRateRepo, perInfoRepo, motorRepo,driverRepo , coverRepo, homeRepo,eserRepo,
 							 eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
 						    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
@@ -1491,6 +1495,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			String endtCount = "" ;
 			String endtFields = "" ;
 			String originalPolicyNo = "" ;
+			String isFinYn = "" ;
 			DecimalFormat df = new DecimalFormat("####");
 			// Find Old QuoteNo
 			 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
@@ -1507,6 +1512,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
 					endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString())) ;
 					originalPolicyNo = data.getOriginalPolicyNo();
+					isFinYn 	 = data.getIsFinaceYn()==null ? "N" :data.getIsFinaceYn() ;
 					
 			} else if( req.getMotorYn().equalsIgnoreCase("M") ) {
 				EserviceMotorDetails data =  eserMotRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
@@ -1522,6 +1528,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
 				endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString()))  ;
 				originalPolicyNo = data.getOriginalPolicyNo();
+				isFinYn 	 = data.getIsFinaceYn()==null ? "N" :data.getIsFinaceYn() ;
 			
 			} else if( req.getMotorYn().equalsIgnoreCase("A")) {
 				List<EserviceBuildingDetails> datas =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
@@ -1538,6 +1545,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
 				endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString()))  ;
 				originalPolicyNo = data.getOriginalPolicyNo();
+				isFinYn 	 = data.getIsFinaceYn()==null ? "N" :data.getIsFinaceYn() ;
 				
 			} else {
 				List<EserviceCommonDetails> datas =  eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
@@ -1556,6 +1564,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
 				endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString()))  ;
 				originalPolicyNo = data.getOriginalPolicyNo();
+				isFinYn 	 = data.getIsFinaceYn()==null ? "N" :data.getIsFinaceYn() ;
+				
 			}
 			
 			// Get Endt Fields
@@ -1600,6 +1610,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             request.setOriginalPolicyNo(originalPolicyNo);
             request.setCommissionModifyYn(req.getCommissionModifyYn());
             request.setCommissionPercent(req.getCommissionPercent());
+            request.setIsFinYn(isFinYn);
             
             commonRes.setCommonResponse(request);
 			commonRes.setIsError(false);
@@ -1723,7 +1734,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					javax.persistence.criteria.Predicate a6 = cb.equal(c.get("endtTypeId"), ocpm2.get("endtTypeId"));
 					javax.persistence.criteria.Predicate a7 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 					javax.persistence.criteria.Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
-					javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(cb.function("trunc", Date.class,ocpm2.get("effectiveDateEnd")), todayEnd);
+					javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd")), todayEnd);
 					effectiveDate2.where(a6, a7, a8, a10);
 
 					// Where

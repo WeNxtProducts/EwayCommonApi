@@ -253,7 +253,7 @@ public List<Error> validateBankDetails(BankMasterSaveReq req) {
 		}
 		if (StringUtils.isBlank(req.getBankShortName())) {
 			errorList.add(new Error("03", "BankShortName", "Please Select BankShortName"));
-		}else if (req.getBankShortName().length() > 20){
+		}else if (req.getBankShortName().length() > 100){
 			errorList.add(new Error("03","BankShortName", "Please Enter BankShortName 100 Characters")); 
 		} 
 		
