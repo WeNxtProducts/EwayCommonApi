@@ -1669,10 +1669,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCoverPeriodTo(periodEnd);
 					coverData.setNoOfDays(new BigDecimal(diff));
 					coverData.setStatus("Y");
-					
-					boolean isFinYn = request.getIsFinYn().equalsIgnoreCase("Y") ? true : false ;
 					// Premium
-					if( endtCovModify == true && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
+					if(endtCovModify == true && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
 				//	if(endtCovModify == true && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
 					
 						coverData.setDiffPremiumIncludedTaxLc(BigDecimal.ZERO);
@@ -1686,7 +1684,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						coverData.setPremiumIncludedTaxFc(BigDecimal.ZERO);
 						coverData.setPremiumIncludedTaxLc(BigDecimal.ZERO);
 						
-					} else if(isFinYn==true  ){
+					} else {
 						
 						coverData.setDiffPremiumIncludedTaxLc(cov.getDiffPremiumIncludedTaxLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
 						coverData.setDiffPremiumIncludedTaxFc(cov.getDiffPremiumIncludedTaxFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
@@ -1699,17 +1697,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 						coverData.setPremiumIncludedTaxFc(cov.getPremiumIncludedTaxFc()  != null ? cov.getPremiumIncludedTaxFc() : BigDecimal.ZERO );
 						coverData.setPremiumIncludedTaxLc(cov.getPremiumIncludedTaxLc() != null ? cov.getPremiumIncludedTaxLc() : BigDecimal.ZERO );
 						
-					} else {
-						coverData.setDiffPremiumIncludedTaxLc(BigDecimal.ZERO);
-						coverData.setDiffPremiumIncludedTaxFc(BigDecimal.ZERO);
-						coverData.setPremiumBeforeDiscountFc(BigDecimal.ZERO);
-						coverData.setPremiumBeforeDiscountLc(BigDecimal.ZERO);
-						coverData.setPremiumAfterDiscountFc(BigDecimal.ZERO);
-						coverData.setPremiumAfterDiscountLc(BigDecimal.ZERO);
-						coverData.setPremiumExcludedTaxFc(BigDecimal.ZERO);
-						coverData.setPremiumExcludedTaxLc(BigDecimal.ZERO);
-						coverData.setPremiumIncludedTaxFc(BigDecimal.ZERO);
-						coverData.setPremiumIncludedTaxLc(BigDecimal.ZERO);
 					}
 					
 					

@@ -91,7 +91,4 @@ public class QuoteThreadReq {
 	@JsonProperty("CommissionPercent")
 	private String commissionPercent;
 	
-	@JsonProperty("IsFinYn")
-	private String isFinYn;
-	
 }
