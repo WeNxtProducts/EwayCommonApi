@@ -1734,7 +1734,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					javax.persistence.criteria.Predicate a6 = cb.equal(c.get("endtTypeId"), ocpm2.get("endtTypeId"));
 					javax.persistence.criteria.Predicate a7 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 					javax.persistence.criteria.Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
-					javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd")), todayEnd);
+					javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(cb.function("trunc", Date.class,ocpm2.get("effectiveDateEnd")), todayEnd);
 					effectiveDate2.where(a6, a7, a8, a10);
 
 					// Where
