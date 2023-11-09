@@ -27,7 +27,7 @@ public interface BuildingSearchService {
 
 	List<SearchEservieMotorDetailsViewRatingRes> buildingRating();
 
-	List<SearchCustomerDetailsRes> buildingCustSearch(SearchReq req, List<HomePositionMaster> homeData);
+	List<SearchCustomerDetailsRes> buildingCustSearch(SearchReq req);
 
 	
 }

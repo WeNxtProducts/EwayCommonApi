@@ -57,6 +57,7 @@ import com.maan.eway.common.res.SearchTax;
 import com.maan.eway.common.service.MotorSearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
@@ -87,7 +88,8 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 	@Autowired
 	private MotorDataDetailsRepository motorRepo;
 	
-
+	@Autowired
+	private EserviceCustomerDetailsRepository cusrepo;
 	@Autowired
 	private PremiaCustomerDetailsRepository premiaRepo;
 
@@ -367,9 +369,14 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			// Find Motor Data
-			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+			List<MotorDataDetails> motorDatas=null;
+			if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				motorDatas =  motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+				
+			}else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+				 motorDatas =  motorRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+			}
 			List<SearchEserviceMotorDetailsRes>   motorResList = new ArrayList<SearchEserviceMotorDetailsRes>();
-			
 						
 			for (MotorDataDetails mot :  motorDatas) {
 				SearchEserviceMotorDetailsRes vehicleDetails = new  SearchEserviceMotorDetailsRes()  ;
@@ -729,10 +736,13 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 
 	//Customer Search
 	@Override
-	public List<SearchCustomerDetailsRes> motorCustSearch(SearchReq req,List<HomePositionMaster> homeData) {
+	public List<SearchCustomerDetailsRes> motorCustSearch(SearchReq req) {
 		List<SearchCustomerDetailsRes> reslist = new ArrayList<SearchCustomerDetailsRes>();
 		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
 		try {
+			List<HomePositionMaster> homeData=null;
+			if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				homeData = homeRepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
 			String customerId=homeData.get(0).getCustomerId();
 			String loginId = "";
 			String appId = "";
@@ -780,6 +790,54 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			res.setBranchCode(list.getBranchCode().toString());
 			res.setSource(source);
 			reslist.add(res);
+			}else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+				String customerId="";
+				String loginId = "";
+				String appId = "";
+				String aproverName = "";
+				String sourceType="";
+				String coustomerCode="";
+				String customerCodeName="";
+				String userName="";
+				String source=""; 
+				LoginUserInfo loginUserData=new LoginUserInfo();
+				List<EserviceMotorDetails> motor = repo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				if (motor.size() > 0) {
+					sourceType = motor.get(0).getSourceType();
+					coustomerCode = motor.get(0).getCustomerCode();
+					loginId = motor.get(0).getLoginId();
+					appId = motor.get(0).getApplicationId();
+					source = motor.get(0).getLoginId();
+					customerCodeName = motor.get(0).getCustomerName();
+//					premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+//					if (premiadata.size() > 0) {
+//						customerCodeName = premiadata.get(0).getCustomerName();
+//					}
+				}
+				EserviceCustomerDetails list = cusrepo.findByCustomerReferenceNo(motor.get(0).getCustomerReferenceNo());
+				if ("Broker".equalsIgnoreCase(sourceType)) {
+					loginUserData=loginUserInfoRepo.findByLoginId(loginId);
+					userName=loginUserData.getUserName();
+					
+				}
+				if(!"1".equalsIgnoreCase(appId)){
+					loginUserData=loginUserInfoRepo.findByLoginId(appId);
+					aproverName=loginUserData.getUserName();
+				}
+				SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
+				res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
+				res.setClientName(list.getClientName());
+				res.setLoginId(loginId);
+				res.setBrokerName(userName==null?"":userName);
+				res.setApplicationId(appId);
+				res.setApproverName(aproverName==null?"":aproverName);
+				res.setCustomerCode(coustomerCode);
+				res.setCustomerName(customerCodeName);	
+				res.setSourceType(sourceType);
+				res.setBranchCode(list.getBranchCode().toString());
+				res.setSource(source);
+				reslist.add(res);	
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());

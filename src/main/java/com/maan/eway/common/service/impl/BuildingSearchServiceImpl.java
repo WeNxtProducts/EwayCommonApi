@@ -58,6 +58,7 @@ import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
@@ -74,7 +75,8 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 	private EntityManager em;
 
 	private Logger log = LogManager.getLogger(BuildingSearchServiceImpl.class);
-
+	@Autowired
+	private EserviceCustomerDetailsRepository cusrepo;
 	
 	@Autowired
 	private EserviceBuildingDetailsRepository repo;
@@ -821,10 +823,13 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 	
 	//Customer Search
 	@Override
-	public List<SearchCustomerDetailsRes> buildingCustSearch(SearchReq req,List<HomePositionMaster> homeData) {
+	public List<SearchCustomerDetailsRes> buildingCustSearch(SearchReq req) {
 			List<SearchCustomerDetailsRes> reslist = new ArrayList<SearchCustomerDetailsRes>();
 			DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
 			try {
+				List<HomePositionMaster> homeData=null;
+				if (StringUtils.isNotBlank(req.getQuoteNo())) {
+					homeData = homeRepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
 				String customerId=homeData.get(0).getCustomerId();
 				String loginId = "";
 				String appId = "";
@@ -872,7 +877,54 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 				res.setBranchCode(list.getBranchCode().toString());
 				res.setSource(source);
 				reslist.add(res);
-			} catch (Exception e) {
+			}else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+				String customerId="";
+				String loginId = "";
+				String appId = "";
+				String userName = "";
+				String aproverName = "";
+				String sourceType="";
+				String coustomerCode="";
+				String customerCodeName="";
+				String source=""; 
+				LoginUserInfo loginUserData=new LoginUserInfo();
+				List<EserviceBuildingDetails> motor = repo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				if (motor.size() > 0) {
+					sourceType = motor.get(0).getSourceType();
+					coustomerCode = motor.get(0).getCustomerCode();
+					loginId = motor.get(0).getLoginId();
+					appId = motor.get(0).getApplicationId();
+					source = motor.get(0).getLoginId();
+					customerCodeName = motor.get(0).getCustomerName();
+//					premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+//					if (premiadata.size() > 0) {
+//						customerCodeName = premiadata.get(0).getCustomerName();
+//					}
+				}
+				EserviceCustomerDetails list = cusrepo.findByCustomerReferenceNo(motor.get(0).getCustomerReferenceNo());
+				if ("Broker".equalsIgnoreCase(sourceType)) {
+					loginUserData=loginUserRepo.findByLoginId(loginId);
+					userName=loginUserData.getUserName();
+					
+				}
+				if(!"1".equalsIgnoreCase(appId)){
+					loginUserData=loginUserRepo.findByLoginId(appId);
+					aproverName=loginUserData.getUserName();
+				}
+				SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
+				res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
+				res.setLoginId(loginId);
+				res.setBrokerName(userName==null?"":userName);
+				res.setApplicationId(appId);
+				res.setApproverName(aproverName==null?"":aproverName);
+				res.setCustomerCode(coustomerCode);
+				res.setCustomerName(customerCodeName);	
+				res.setSourceType(sourceType);
+				res.setBranchCode(list.getBranchCode().toString());
+				res.setSource(source);
+				reslist.add(res);	
+			}
+			}catch (Exception e) {
 				e.printStackTrace();
 				log.info("Log Details" + e.getMessage());
 				return null;

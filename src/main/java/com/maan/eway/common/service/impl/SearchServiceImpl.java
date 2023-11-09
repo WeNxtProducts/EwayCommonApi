@@ -490,11 +490,10 @@ public class SearchServiceImpl implements SearchService {
 	public AdminViewQuoteRes adminViewQuoteDetails(SearchReq req) {
 		AdminViewQuoteRes viewRes = new AdminViewQuoteRes();
 		try {
-			HomePositionMaster homeData =null;
-			if(StringUtils.isNotBlank(req.getQuoteNo())){
-				homeData  =  homeRepo.findByQuoteNo(req.getQuoteNo());	
-			}
-			if(homeData!=null) {
+//			HomePositionMaster homeData =null;
+//			if(StringUtils.isNotBlank(req.getQuoteNo())){
+//				homeData  =  homeRepo.findByQuoteNo(req.getQuoteNo());	
+//			}
 			// Motor Product Details
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
 
@@ -502,7 +501,7 @@ public class SearchServiceImpl implements SearchService {
 				viewRes =motService.getMotorProductDetails( req);
 				
 			}
-			else if(product.getMotorYn().equalsIgnoreCase("H")  && homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
+			else if(product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equals(Integer.valueOf(travelProductId))) {
 				// Travel Product Details
 				viewRes =travelSearch.getTravelProductDetails( req);
 				
@@ -515,7 +514,6 @@ public class SearchServiceImpl implements SearchService {
 				// Travel Product Details
 				viewRes =commonSearch.getCommonProductDetails( req);
 				
-			}
 			}
 			
 		} catch ( Exception e) {
@@ -670,25 +668,20 @@ public class SearchServiceImpl implements SearchService {
 		List<SearchCustomerDetailsRes> reslist = new ArrayList<SearchCustomerDetailsRes>();
 		try {
 			List<HomePositionMaster> homeData = null;
-			// Product Wise Get
-			if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
-				homeData = homeRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(),Integer.valueOf(req.getProductId()));
-			} else if (StringUtils.isNotBlank(req.getQuoteNo())) {
-				homeData = homeRepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
-			}
-			if (homeData.size() > 0 && homeData!=null ) {
+			
+			
 				CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
 
 				if (product.getMotorYn().equalsIgnoreCase("M") ) {
-					reslist = motService.motorCustSearch(req, homeData);
+					reslist = motService.motorCustSearch(req);
 				} else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId)) {
-					reslist = travelSearch.travelCustSearch(req, homeData);
+					reslist = travelSearch.travelCustSearch(req);
 				} else if (product.getMotorYn().equalsIgnoreCase("A") ) {
-					reslist = buiService.buildingCustSearch(req, homeData);
+					reslist = buiService.buildingCustSearch(req);
 				} else {
-					reslist = commonSearch.commonCustSearch(req, homeData);
+					reslist = commonSearch.commonCustSearch(req);
 				}
-			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -775,7 +768,7 @@ public class SearchServiceImpl implements SearchService {
 				// Find Motor Data
 				 motorDatas = motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(), "D");
 				 driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
-			}else if (StringUtils.isNotBlank(req.getQuoteNo())) {
+			}else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
 				 motorDatas = motorRepo.findByRequestReferenceNoAndStatusNotOrderByVehicleIdAsc(req.getRequestReferenceNo(), "D");
 				 driverList = driverRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
 			}
@@ -901,6 +894,8 @@ public class SearchServiceImpl implements SearchService {
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
 
 				getList = coverdocumentuploaddetailsrepository.findByQuoteNo(req.getQuoteNo());
+			}else if(StringUtils.isNotBlank(req.getRequestReferenceNo())){
+				getList = coverdocumentuploaddetailsrepository.findByRequestReferenceNo(req.getRequestReferenceNo());
 			}
 
 			List<Tuple> list1 = new ArrayList<Tuple>();

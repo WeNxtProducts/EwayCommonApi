@@ -36,7 +36,7 @@ public interface MotorSearchService {
 	List<ListItemValue> searchDropdownMotor(CopyQuoteDropDownReq req);
 	AdminViewQuoteRes getMotorProductDetails(SearchReq req);
 	List<SearchEservieMotorDetailsViewRatingRes> motorRating(SearchReq req);
-	List<SearchCustomerDetailsRes> motorCustSearch(SearchReq req, List<HomePositionMaster> homeData);
+	List<SearchCustomerDetailsRes> motorCustSearch(SearchReq req);
 
 	
 }

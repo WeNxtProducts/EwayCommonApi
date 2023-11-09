@@ -29,7 +29,7 @@ public interface CommonSearchService {
 
 	List<SearchEservieMotorDetailsViewRatingRes> commonRating(SearchReq req);
 
-	List<SearchCustomerDetailsRes> commonCustSearch(SearchReq req, List<HomePositionMaster> homeData);
+	List<SearchCustomerDetailsRes> commonCustSearch(SearchReq req);
 
 
 }

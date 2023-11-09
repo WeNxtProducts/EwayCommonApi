@@ -26,7 +26,7 @@ List<Tuple> searchTravel(SearchReq req, List<String> branches);
 
 	List<SearchEservieMotorDetailsViewRatingRes> travelRating(SearchReq req);
 
-	List<SearchCustomerDetailsRes> travelCustSearch(SearchReq req, List<HomePositionMaster> homeData);
+	List<SearchCustomerDetailsRes> travelCustSearch(SearchReq req);
 
 
 }
