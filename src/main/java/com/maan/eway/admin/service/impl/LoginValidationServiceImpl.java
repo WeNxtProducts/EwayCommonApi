@@ -493,6 +493,12 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 			errors.add(new Error("02", "InsuranceId", "Plese Enter InsuranceId" ));
 		}
 		
+		if (StringUtils.isBlank(req.getSalePointCode())) {
+			errors.add(new Error("03", "SalePointCode", "Plese Enter Sale Point Code"));
+		} else if (req.getSalePointCode().length() > 100 ) {
+			errors.add(new Error("03", "SalePointCode", "Sale Point Code Must be under 100 charecter only allowed"));
+		}
+		
 //		if(StringUtils.isBlank(req.getCustomerCode()) ) {
 //			errors.add(new Error("02", "CustomerCode", "Plese Select CustomerCode" ));
 //		}

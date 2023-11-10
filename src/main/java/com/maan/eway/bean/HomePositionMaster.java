@@ -686,7 +686,8 @@ private Date       policyCovertedDate ;
 @Column(name="COMMISSION_MODIFY_YN")
 private String commissionModifyYn;
 
-
+@Column(name="SALE_POINT_CODE", length=200)
+private String    salePointCode;
 }
 
 

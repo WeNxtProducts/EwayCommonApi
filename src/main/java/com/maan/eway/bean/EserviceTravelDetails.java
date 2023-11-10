@@ -329,6 +329,8 @@ private static final long serialVersionUID = 1L;
     private String     agencyCode ;
     @Column(name="BRANCH_NAME ")
     private String     branchName  ;
+    @Column(name="SALE_POINT_CODE", length=200)
+    private String    salePointCode;
 }
 
 

@@ -557,6 +557,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="TIRA_MOTOR_USAGE")
     private String     tiraMotorUsage ;
+    
+    @Column(name="SALE_POINT_CODE", length=200)
+    private String    salePointCode;
 }
 
 

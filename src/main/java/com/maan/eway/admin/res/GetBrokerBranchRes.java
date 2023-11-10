@@ -93,4 +93,7 @@ public class GetBrokerBranchRes {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("SalePointCode")
+	private String salePointCode;
 }

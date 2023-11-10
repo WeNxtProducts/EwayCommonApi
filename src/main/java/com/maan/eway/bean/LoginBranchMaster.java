@@ -149,7 +149,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CUSTOMER_NAME", length=100)
     private String    customerName;
     
-
+    @Column(name="SALE_POINT_CODE", length=200)
+    private String    salePointCode;
 }
 
 

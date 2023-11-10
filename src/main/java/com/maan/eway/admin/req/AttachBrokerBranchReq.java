@@ -81,4 +81,7 @@ public class AttachBrokerBranchReq {
 //	@JsonProperty("CustomerCode")
 //	private String customerCode;
 	
+	@JsonProperty("SalePointCode")
+	private String salePointCode;
+	
 }
