@@ -1921,13 +1921,18 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}
 				List<EserviceMotorDetails> eserMotors = eserMotRepo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(request.getRequestReferenceNo() ,"D");
 				List<String> riskIds = new ArrayList<>();
-				eserMotors.forEach(  o -> {  
-					riskIds.add(String.valueOf(o.getRiskId())); 
+				List<String> accRiskIds = new ArrayList<>();
+				eserMotors.forEach(  o -> {
+					riskIds.add(String.valueOf(o.getRiskId()));
+					if(o.getAcccessoriesSumInsured() !=null && o.getAcccessoriesSumInsured().compareTo(BigDecimal.ZERO) > 0 ) {
+						accRiskIds.add(String.valueOf(o.getRiskId()));
+					}
+							 
 					} ) ;
 			
 				// COntent
 				List<ContentAndRisk> con = contentRepo.findByQuoteNo(req.getQuoteNo());
-				List<ContentAndRisk> confilter = con.stream().filter(o -> ! riskIds.contains(String.valueOf(o.getRiskId()))).collect(Collectors.toList());	
+				List<ContentAndRisk> confilter = con.stream().filter(o -> ! accRiskIds.contains(String.valueOf(o.getRiskId()))).collect(Collectors.toList());	
 				contentRepo.deleteAll(confilter);
 				
 				// Driver
