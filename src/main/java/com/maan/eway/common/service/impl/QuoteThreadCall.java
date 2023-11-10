@@ -2874,6 +2874,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(motorData.getCustomerReferenceNo());
 			home.setCustomerName(custData.getClientName());
 			
+			home.setSalePointCode(motorData.getSalePointCode());
 			home.setCompanyId(motorData.getCompanyId());
 			home.setProductId(Integer.valueOf(motorData.getProductId()));
 			home.setSectionId(Integer.valueOf(motorData.getSectionId()));
@@ -2986,6 +2987,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(travelData.getCustomerReferenceNo());
 			home.setCustomerName(custData.getClientName());
 			
+			home.setSalePointCode(travelData.getSalePointCode());
 			home.setCompanyId(travelData.getCompanyId());
 			home.setProductId(Integer.valueOf(travelData.getProductId()));
 			home.setSectionId(Integer.valueOf(travelData.getSectionId()));
@@ -3064,6 +3066,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setCustomerName(custData.getClientName());
 			
 			//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
+			home.setSalePointCode(buildingData.getSalePointCode());
 			home.setCompanyId(buildingData.getCompanyId());
 			home.setProductId(Integer.valueOf(buildingData.getProductId()));
 			home.setSectionId(Integer.valueOf(0));
@@ -3141,6 +3144,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(eserCommonData.getCustomerReferenceNo());
 			
 			//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
+			home.setSalePointCode(eserCommonData.getSalePointCode());
 			home.setCompanyId(eserCommonData.getCompanyId());
 			home.setCustomerName(eserCommonData.getCustomerName() );
 			home.setProductId(Integer.valueOf(eserCommonData.getProductId()));
