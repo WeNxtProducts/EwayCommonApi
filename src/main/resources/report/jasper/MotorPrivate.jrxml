@@ -61,7 +61,7 @@
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<parameter name="pvPolicyNo" class="java.lang.String"/>
-		<parameter name="pvSticker" class="java.lang.String"/>
+		<parameter name="pvCurrency" class="java.lang.String"/>
 		<queryString language="JSON">
 			<![CDATA[vehicleDetails]]>
 		</queryString>
@@ -864,7 +864,10 @@
 					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="TableDataSet 1" uuid="fed5222c-d57e-437a-abee-57ad7a7c00c5">
+					<datasetRun subDataset="TableDataSet 1" uuid="f44f403e-fc10-49e3-aa76-8abdb011d7da">
+						<datasetParameter name="pvCurrency">
+							<datasetParameterExpression><![CDATA[$F{currency}]]></datasetParameterExpression>
+						</datasetParameter>
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("vehicleDetails")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="19" uuid="5ce3b4fa-5224-4afb-819e-5b80c96e29ff">
@@ -1130,7 +1133,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["Insured's Estimate of Value"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Insured's Estimate of Value "+"("+$P{pvCurrency}+")"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
@@ -1963,7 +1966,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["Insured's Estimate of Value"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Insured's Estimate of Value "+"("+$P{pvCurrency}+")"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
@@ -1972,7 +1975,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{stickerNumber}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{sumInsured}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

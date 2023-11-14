@@ -535,8 +535,8 @@ public class JasperCustomServiceImple {
 					.seatingCapacity(k.getSeatingCapacity()==null?"":k.getSeatingCapacity().toString())
 					.colorDesc(k.getColorDesc()==null?"":k.getColorDesc().toString())
 					.policyTypeDesc(k.getPolicyTypeDesc()==null?"":k.getPolicyTypeDesc().toString())
-					.windScreenSumInsuredLc(k.getWindScreenSumInsured()==null?null:k.getWindScreenSumInsured().toString())
-					.sumInsured(k.getSumInsured()==null?"":k.getSumInsured().toString())
+					.windScreenSumInsuredLc(k.getWindScreenSumInsured()==null?null:new BigDecimal(Double.parseDouble(k.getWindScreenSumInsured().toString())).toString())
+					.sumInsured(k.getSumInsured()==null?"":new BigDecimal(Double.parseDouble(k.getSumInsured().toString())).toString())
 					.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
 					.build();
 				vehicleDetailsRes.add(t);
@@ -581,9 +581,9 @@ public class JasperCustomServiceImple {
 			response.setCurrency(map.get("currency")==null?"":map.get("currency").toString());
 			response.setStickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString());
 			response.setInsuranceTypeDesc(map.get("insuranceTypeDesc")==null?"":map.get("insuranceTypeDesc").toString());
-			response.setPremium(map.get("premium")==null?"":map.get("premium").toString());
-			response.setVatPremium(map.get("vatPremium")==null?"":map.get("vatPremium").toString());
-			response.setTotalPremium(map.get("totalPremium")==null?"":map.get("totalPremium").toString());
+			response.setPremium(map.get("premium")==null?"":new BigDecimal(Double.parseDouble(map.get("premium").toString())).toString());
+			response.setVatPremium(map.get("vatPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("vatPremium").toString())).toString());
+			response.setTotalPremium(map.get("totalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("totalPremium").toString())).toString());
 			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
 			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
