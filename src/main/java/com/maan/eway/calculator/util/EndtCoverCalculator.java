@@ -307,9 +307,13 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
 							 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
 							 endorsement.setExchangeRate(exchangeRate);
-							 endorsement.setEndorsementsumInsuredLc(t.getSumInsuredLc().subtract(endorsement.getEndorsementsumInsuredLc()));//.multiply(exchangeRate,MathContext.DECIMAL64));
-							 endorsement.setEndorsementsumInsured((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getEndorsementsumInsuredLc().divide(exchangeRate,MathContext.DECIMAL64))));
-							 
+							 if(!"A".equals(t.getCalcType())) {
+								 endorsement.setEndorsementsumInsuredLc(t.getSumInsuredLc().subtract(endorsement.getEndorsementsumInsuredLc()));//.multiply(exchangeRate,MathContext.DECIMAL64));
+								 endorsement.setEndorsementsumInsured((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getEndorsementsumInsuredLc().divide(exchangeRate,MathContext.DECIMAL64))));
+							 }else {
+								 endorsement.setEndorsementsumInsuredLc(BigDecimal.ZERO);
+								 endorsement.setEndorsementsumInsured(BigDecimal.ZERO);
+							 }
 							 
 							 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
 							 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
