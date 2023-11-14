@@ -1274,7 +1274,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 							v.getProductId().toString(), loginId, v.getBrokerCode(), v.getPolicyType());
 					 
 						
-						if("Premia Broker".equalsIgnoreCase(v.getSourceType()) || "Premia Agent".equalsIgnoreCase(v.getSourceType()) ) {
+					// Premia Broker , Agent Condition
+					 if(StringUtils.isNotBlank(homeData.getSourceType()) && ("Premia Broker".equalsIgnoreCase(homeData.getSourceType()) || "Premia Agent".equalsIgnoreCase(homeData.getSourceType())) ) {
 							commissionPercent=12.5;
 							
 						} else if(policylist.size()>0 && policylist!=null) {
@@ -1430,7 +1431,8 @@ public class CalculatorEngineService implements CalculatorEngine {
  					String loginId = "b2c".equalsIgnoreCase(v.getSourceType()) ? "guest" : v.getLoginId() ;
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
 							v.getProductId().toString(), loginId, v1.getQuoteDetails().getBrokerCode(), "99999");
-					if("Premia Broker".equalsIgnoreCase(v.getSourceType()) || "Premia Agent".equalsIgnoreCase(v.getSourceType()) ) {
+					// Premia Broker , Agent Condition
+					 if(StringUtils.isNotBlank(homeData.getSourceType()) && ("Premia Broker".equalsIgnoreCase(homeData.getSourceType()) || "Premia Agent".equalsIgnoreCase(homeData.getSourceType())) ) {
 						commissionPercent=12.5;
 						
 					} else if(policylist.size()>0 && policylist!=null) {
@@ -1590,7 +1592,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
 							v.getProductId().toString(), loginId, v.getBrokerCode(),"99999");
 					 // Double commissionPercent = v.getCommissionPercentage().doubleValue();
-					if("Premia Broker".equalsIgnoreCase(v.getSourceType()) || "Premia Agent".equalsIgnoreCase(v.getSourceType()) ) {
+					
+					// Premia Broker , Agent Condition
+					 if(StringUtils.isNotBlank(homeData.getSourceType()) && ("Premia Broker".equalsIgnoreCase(homeData.getSourceType()) || "Premia Agent".equalsIgnoreCase(homeData.getSourceType())) ) {
 						commissionPercent=12.5;
 						
 					} else if(policylist.size()>0 && policylist!=null) {
@@ -1752,7 +1756,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							v.getProductId().toString(), loginId, v.getBrokerCode(),"99999");
 					 Double commissionPercent =0.0 ; //v.getCommissionPercentage().doubleValue();
 					 // Premia Broker , Agent Condition
-					 if(StringUtils.isNotBlank(v.getSourceType()) && ("Premia Broker".equalsIgnoreCase(v.getSourceType()) || "Premia Agent".equalsIgnoreCase(v.getSourceType())) ) {
+					 if(StringUtils.isNotBlank(homeData.getSourceType()) && ("Premia Broker".equalsIgnoreCase(homeData.getSourceType()) || "Premia Agent".equalsIgnoreCase(homeData.getSourceType())) ) {
 							commissionPercent=12.5;
 							
 					} else if(policylist.size()>0 && policylist!=null) {
