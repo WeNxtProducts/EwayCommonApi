@@ -213,7 +213,7 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 					amendId = list.get(0).getAmendId() ;
 					entryDate = list.get(0).getEntryDate() ;
 					createdBy = list.get(0).getCreatedBy();
-					saveData = list.get(0) ;
+				//	saveData = list.get(0) ;
 					if (list.size()>1 ) {
 						PaymentMaster lastRecord = list.get(1);
 						lastRecord.setEffectiveDateEnd(oldEndDate);
@@ -238,7 +238,7 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 		saveData.setAmendId(amendId);
 		saveData.setBranchCode(req.getBranchCode()==null?"99999":req.getBranchCode());
 		saveData.setCompanyId(req.getCompanyId()==null?"99999": req.getCompanyId());
-		
+		saveData.setAgencyCode(StringUtils.isBlank(req.getAgencyCode())?"99999": req.getAgencyCode());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}
