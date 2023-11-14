@@ -872,6 +872,124 @@ public class PaymentServiceImpl implements PaymentService {
 				
 			} else {
 				paymentId = filterPendings.get(0).getPaymentId() ;
+				HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
+				PersonalInfo personaldata = personalrepo.findByCustomerId(data.getCustomerId());
+				String productName =   getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString()).getProductName();//productRepo.findByProductIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()));
+				String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
+				String branchName = getCompanyBranchMasterDropdown(data.getCompanyId() , data.getBranchCode());
+				
+				// Save Paymetn Info
+				PaymentInfo paymentinfo = filterPendings.get(0) ;
+				paymentinfo.setAddress1(personaldata.getAddress1());
+				paymentinfo.setAmentId(0);
+				paymentinfo.setBranchCode(data.getBranchCode());
+				paymentinfo.setBranchName(branchName);
+				paymentinfo.setCompanyId(data.getCompanyId());
+				paymentinfo.setCompanyName(companyName);
+				paymentinfo.setCreatedBy(req.getCreatedBy());
+				paymentinfo.setCustomerCity(personaldata.getCityName());
+				paymentinfo.setCustomerName(personaldata.getClientName() );
+				paymentinfo.setEmailId(personaldata.getEmail1());
+				paymentinfo.setEmiYn(req.getEmiYn());
+				paymentinfo.setEntryDate(new Date());
+				paymentinfo.setLoginId(req.getCreatedBy()); 
+				paymentinfo.setMerchantReference("");
+				paymentinfo.setMobileNo(personaldata.getMobileNo1());
+				paymentinfo.setPaymentId(paymentId);
+				paymentinfo.setPaymentStatus("PENDING");			
+				paymentinfo.setPolicyEndDate(data.getExpiryDate());
+				paymentinfo.setPolicyStartDate(data.getInceptionDate() );
+				
+				String pattern = "#####0.00" ;
+				DecimalFormat df = new DecimalFormat(pattern);
+				
+				 if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
+							&& StringUtils.isNotBlank(req.getInstallmentPeriod())  )  {
+					
+					// Emi Premium
+					EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,req.getInstallmentMonth() , req.getInstallmentPeriod());
+					paymentinfo.setPremium(new BigDecimal( emiDetails.getPremiumWithTax()));
+					paymentinfo.setPremiumLc(new BigDecimal( emiDetails.getPremiumWithTax() ));
+					
+					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
+					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
+						
+				 } else {
+					 
+					// Overall Premium
+					paymentinfo.setPremium(data.getOverallPremiumLc());
+					paymentinfo.setPremiumLc(data.getOverallPremiumLc() );
+					paymentinfo.setPremiumFc( new BigDecimal(df.format(data.getOverallPremiumFc())));
+						 
+				 }
+				 
+				if(StringUtils.isNotBlank(data.getEndtTypeId())) {
+					
+					// Endorsment Premium
+					paymentinfo.setPremium(data.getEndtPremium().add(data.getEndtPremiumTax()));
+					paymentinfo.setPremiumLc(data.getEndtPremium().add(data.getEndtPremiumTax()));
+					
+					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
+					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
+					
+				}
+				
+				
+				
+				//BigDecimal premium = new BigDecimal(req.getPremium()) ;
+				//BigDecimal premiumFc = premium.divide(data.getExchangeRate(), MathContext.DECIMAL128 );
+				
+				paymentinfo.setCurrencyId(data.getCurrency());
+				paymentinfo.setExchangeRate(data.getExchangeRate() );
+				paymentinfo.setProductId(data.getProductId());
+				paymentinfo.setProductDesc(productName);
+				paymentinfo.setQuoteNo(req.getQuoteNo());
+				paymentinfo.setRemarks(req.getRemarks());
+				paymentinfo.setShorternUrl("");
+				paymentinfo.setStatus("Y");			;
+				paymentinfo.setSubUserType(req.getSubUserType());
+				paymentinfo.setUpdatedBy(req.getCreatedBy());
+				paymentinfo.setUpdatedDate(new Date());
+				paymentinfo.setUserType(req.getUserType());
+				paymentinfo.setInstallmentMonth(req.getInstallmentMonth());
+				paymentinfo.setInstallmentPeriod(req.getInstallmentPeriod());
+				
+	//			Integer validateHour = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_HOUR"));
+	//			Integer validateMinutes = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_MINUTES"));
+	//			Date today  = new Date();
+	//			Calendar cal = new GregorianCalendar(); 
+	//			cal.setTime(today);
+	//			cal.set(Calendar.HOUR_OF_DAY, +validateHour);
+	//			cal.set(Calendar.MINUTE, +validateMinutes);
+	//			Date validateDate = cal.getTime();
+	//			
+	//			paymentinfo.setValidityDate(validateDate);
+				
+				
+				/*
+				//SMS Calling
+				
+				SendSmsReq smsreq = new SendSmsReq();
+				smsreq.setCompanyId(data.getCompanyId());
+				smsreq.setBranchCode(data.getBranchCode());
+				smsreq.setCustomerId(data.getCustomerId());
+				smsreq.setQuoteNo(req.getQuoteNo());
+				smsreq.setProductId(data.getProductId().toString());
+				smsreq.setLoginId(req.getCreatedBy()); 
+				smsreq.setRequestReferenceNo(data.getRequestReferenceNo());
+				smsreq.setSectionId(data.getSectionId().toString());
+				smsreq.setNotifTemplateName("Payment Message");
+				smsreq.setMobileNo(personaldata.getMobileNo1());
+				smsreq.setMobileNoDesc(personaldata.getMobileCodeDesc1());
+
+				List<NotifTemplateMaster> notiftemplate = notifRepo.findByCompanyIdAndProductIdOrderByAmendIdDesc(data.getCompanyId(),Long.valueOf(data.getProductId()));
+				smsreq.setSmsSubject(notiftemplate.get(0).getSmsSubject());
+				smsreq.setSmsBody(notiftemplate.get(0).getSmsBodyEn());
+				smsRepo.sendSms(smsreq);
+				*/
+				
+				paymentinforepo.save(paymentinfo);
+				log.info("Saved Details " + json.toJson(paymentinfo));
 			}
 			
 			res.setPaymentId(paymentId);
