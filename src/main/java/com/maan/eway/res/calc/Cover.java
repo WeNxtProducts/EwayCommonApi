@@ -195,6 +195,9 @@ public class Cover implements Serializable{
 				  
 				  @JsonProperty("MinSumInsured")
 				  private BigDecimal minSumInsured;
+				  
+				  @JsonProperty("PolicyPeriod")
+				  private BigDecimal policyPeriod;
 }
 
 

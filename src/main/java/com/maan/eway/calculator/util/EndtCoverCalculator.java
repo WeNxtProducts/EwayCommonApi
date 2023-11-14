@@ -75,9 +75,13 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 }else  if(prorata!=null && prorata.size()>0 && "Y".equals(t.getProRataYn()) ) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
 					 t.setProRata(percenat.divide(new BigDecimal("100")));
-				 }else {
+				 }else if("D".equals(t.getProRataYn())) {
+						String periodOfInsurance =vehicles.get(0).get("periodOfInsurance") == null ? "365": vehicles.get(0).get("periodOfInsurance").toString();
+						t.setPolicyPeriod(new BigDecimal(periodOfInsurance));
+						t.setProRata(t.getPolicyPeriod().divide(new BigDecimal("365") ,MathContext.DECIMAL32));
+				}else {
 					 t.setProRata(new BigDecimal("1"));
-				 }
+				}
 				 BigDecimal si=BigDecimal.ZERO;
 				 if(!"A".equals(t.getCalcType()))
 					 si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());

@@ -42,6 +42,10 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 if(prorata!=null && prorata.size()>0 && "Y".equals(t.getProRataYn())) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
 					 t.setProRata(percenat.divide(new BigDecimal("100"),MathContext.DECIMAL32));
+				 }else if("D".equals(t.getProRataYn())) {
+					String periodOfInsurance =vehicles.get(0).get("periodOfInsurance") == null ? "365": vehicles.get(0).get("periodOfInsurance").toString();
+					t.setPolicyPeriod(new BigDecimal(periodOfInsurance));
+					t.setProRata(t.getPolicyPeriod().divide(new BigDecimal("365") ,MathContext.DECIMAL32));
 				 }
 				 
 				 /// this particular variable is for is rate defined for Single

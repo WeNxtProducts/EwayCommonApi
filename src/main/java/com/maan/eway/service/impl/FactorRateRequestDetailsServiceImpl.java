@@ -399,7 +399,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					String diff = "0";
 					BigDecimal NoOfDays = new BigDecimal(0);
 					
-					if(periodStart!=null && periodEnd!=null ) {
+					if(periodStart!=null && periodEnd!=null && !"D".equals(coverData.getProRataYn())) {
 						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
 						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS)  + 1 ;
 						
@@ -410,6 +410,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
 						NoOfDays = new BigDecimal(diff);
 						
+					}else if("D".equals(coverData.getProRataYn())){
+						NoOfDays=coverData.getPolicyPeriod();
 					}
 					saveCover.setNoOfDays(NoOfDays);
 					
@@ -551,7 +553,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						String diff = "0";
 						BigDecimal NoOfDays = new BigDecimal(0);
 						
-						if(periodStart!=null && periodEnd!=null ) {
+						if(periodStart!=null && periodEnd!=null && !"D".equals(coverData.getProRataYn())) {
 							Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
 							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS)  + 1 ;
 							
@@ -562,6 +564,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 							System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
 							NoOfDays = new BigDecimal(diff);
 							
+						}else if("D".equals(coverData.getProRataYn())){
+							NoOfDays=coverData.getPolicyPeriod();
 						}
 						saveSubCover.setNoOfDays(NoOfDays);
 						

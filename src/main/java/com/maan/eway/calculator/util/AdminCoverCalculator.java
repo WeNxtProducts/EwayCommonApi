@@ -40,7 +40,11 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 				 if(prorata!=null  && "Y".equals(t.getProRataYn())) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
 					 t.setProRata(percenat.divide(new BigDecimal("100")));
-				 }
+				 }else if("D".equals(t.getProRataYn())) {
+						String periodOfInsurance =vehicles.get(0).get("periodOfInsurance") == null ? "365": vehicles.get(0).get("periodOfInsurance").toString();
+						t.setPolicyPeriod(new BigDecimal(periodOfInsurance));
+						t.setProRata(t.getPolicyPeriod().divide(new BigDecimal("365") ,MathContext.DECIMAL32));
+				}
 				 
 				 //BigDecimal si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
 				 BigDecimal si=BigDecimal.ZERO;
