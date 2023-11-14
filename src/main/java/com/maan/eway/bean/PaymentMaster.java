@@ -52,6 +52,10 @@ public class PaymentMaster {
 	@Column(name="SUB_USER_TYPE",length=20)
 	private String subUserType;
 	
+	@Id
+	@Column(name="AGENCY_CODE",length=100)
+	private String agencyCode;
+	
 	@Column(name="CASH_YN",length=20)
 	private String cashYn;
 	
@@ -91,6 +95,5 @@ public class PaymentMaster {
 	@Column(name="UPDATED_BY",length=100)
 	private String updatedBy;
 	
-	@Column(name="AGENCY_CODE",length=100)
-	private String agencyCode;
+	
 }

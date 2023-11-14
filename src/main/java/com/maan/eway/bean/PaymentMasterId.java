@@ -24,4 +24,5 @@ public class PaymentMasterId implements Serializable {
 	private Integer productId;
 	private String userType;
 	private String subUserType;
+	private String agencyCode;
 }
