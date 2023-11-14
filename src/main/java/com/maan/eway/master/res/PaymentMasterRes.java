@@ -72,5 +72,8 @@ public class PaymentMasterRes {
 	@JsonProperty("OnlineYn")
 	private String onlineYn;
 	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
 	
 }

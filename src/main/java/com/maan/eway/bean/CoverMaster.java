@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -197,6 +196,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRO_RATA_YN")
     private String       proRataYn;
+    
+    @Column(name="PRO_RATA_DESC")
+    private String       proRataDesc;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

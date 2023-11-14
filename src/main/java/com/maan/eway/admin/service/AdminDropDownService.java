@@ -36,6 +36,9 @@ public interface AdminDropDownService {
 	List<DropDownRes> getCommissionType(LovDropDownReq req);
 
 
+	List<DropDownRes> getProRataType(LovDropDownReq req);
+
+
 	
 
 

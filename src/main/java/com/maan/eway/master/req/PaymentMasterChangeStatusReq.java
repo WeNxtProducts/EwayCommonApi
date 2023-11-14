@@ -21,4 +21,8 @@ public class PaymentMasterChangeStatusReq {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
-	}
+	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
+}

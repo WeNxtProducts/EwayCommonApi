@@ -23,4 +23,7 @@ public class PaymentMasterDropdownReq {
 	@JsonProperty("SubUserType")
 	private String subUserType;
 	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
 }

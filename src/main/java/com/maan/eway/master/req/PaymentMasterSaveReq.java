@@ -62,7 +62,8 @@ public class PaymentMasterSaveReq {
 	@JsonProperty("OnlineYn")
 	private String onlineYn;
 	
-	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
 	
 	
 

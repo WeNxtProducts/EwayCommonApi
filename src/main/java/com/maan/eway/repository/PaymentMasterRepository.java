@@ -20,4 +20,8 @@ public interface PaymentMasterRepository  extends JpaRepository<PaymentMaster,Pa
 	List<PaymentMaster> findByCompanyIdAndBranchCodeAndUserTypeAndSubUserTypeAndEffectiveDateStartOrderByEntryDateDesc(
 			String companyId, String branchCode, String userType, String subUserType, Date effectiveDateStart);
 
+	List<PaymentMaster> findByCompanyIdAndBranchCodeAndUserTypeAndSubUserTypeAndAgencyCodeAndEffectiveDateStartOrderByEntryDateDesc(
+			String companyId, String branchCode, String userType, String subUserType, String agencyCode,
+			Date effectiveDateStart);
+
 }
