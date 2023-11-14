@@ -1273,7 +1273,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
 							v.getProductId().toString(), loginId, v.getBrokerCode(), v.getPolicyType());
 					 
-						if(policylist.size()>0 && policylist!=null) {
+						
+						if("Premia Broker".equalsIgnoreCase(v.getSourceType()) || "Premia Agent".equalsIgnoreCase(v.getSourceType()) ) {
+							commissionPercent=12.5;
+							
+						} else if(policylist.size()>0 && policylist!=null) {
 								if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
 									commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
 								} else {
@@ -1426,18 +1430,21 @@ public class CalculatorEngineService implements CalculatorEngine {
  					String loginId = "b2c".equalsIgnoreCase(v.getSourceType()) ? "guest" : v.getLoginId() ;
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
 							v.getProductId().toString(), loginId, v1.getQuoteDetails().getBrokerCode(), "99999");
-						if(policylist.size()>0 && policylist!=null) {
+					if("Premia Broker".equalsIgnoreCase(v.getSourceType()) || "Premia Agent".equalsIgnoreCase(v.getSourceType()) ) {
+						commissionPercent=12.5;
 						
-							if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
-								commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
-							} else {
-								commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
-										: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
-							}
+					} else if(policylist.size()>0 && policylist!=null) {
+						
+						if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
+							commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
+						} else {
+							commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
+									: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
 						}
-						else {
-							commissionPercent=12.5;
-						}
+					}
+					else {
+						commissionPercent=12.5;
+					}
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = String.valueOf( v.getOverallPremiumFc() -  v.getActualPremiumFc());
 
@@ -1583,18 +1590,21 @@ public class CalculatorEngineService implements CalculatorEngine {
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
 							v.getProductId().toString(), loginId, v.getBrokerCode(),"99999");
 					 // Double commissionPercent = v.getCommissionPercentage().doubleValue();
-						if(policylist.size()>0 && policylist!=null) {
+					if("Premia Broker".equalsIgnoreCase(v.getSourceType()) || "Premia Agent".equalsIgnoreCase(v.getSourceType()) ) {
+						commissionPercent=12.5;
 						
-							if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
-								commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
-							} else {
-								commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
-										: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
-							}
+					} else if(policylist.size()>0 && policylist!=null) {
+						
+						if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
+							commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
+						} else {
+							commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
+									: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
 						}
-						else {
-							commissionPercent=12.5;
-						}
+					}
+					else {
+						commissionPercent=12.5;
+					}
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = String.valueOf( v.getOverallPremiumFc().subtract( v.getActualPremiumFc()));
 
@@ -1741,14 +1751,18 @@ public class CalculatorEngineService implements CalculatorEngine {
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
 							v.getProductId().toString(), loginId, v.getBrokerCode(),"99999");
 					 Double commissionPercent =0.0 ; //v.getCommissionPercentage().doubleValue();
-						if(policylist.size()>0 && policylist!=null) {
-						
-							commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
-							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
-						}
-						else {
-							commissionPercent=5.0;
-						}
+					 // Premia Broker , Agent Condition
+					 if(StringUtils.isNotBlank(v.getSourceType()) && ("Premia Broker".equalsIgnoreCase(v.getSourceType()) || "Premia Agent".equalsIgnoreCase(v.getSourceType())) ) {
+							commissionPercent=12.5;
+							
+					} else if(policylist.size()>0 && policylist!=null) {
+					
+						commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
+						: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
+					}
+					else {
+						commissionPercent=5.0;
+					}
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc =String.valueOf( v.getOverallPremiumFc().subtract( v.getActualPremiumFc()));
 
