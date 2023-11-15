@@ -51,5 +51,10 @@ public class BrokerLoginInfoReq {
 	 @JsonFormat(pattern = "dd/MM/yyyy")
 	 @JsonProperty("EffectiveDateStart")
 	 private Date    effectiveDateStart ;
+	 //Deposit Cbc Request
+	@JsonProperty("CbcNo")
+	private String     cbcNo    ;
+	 
+
 	   
 }

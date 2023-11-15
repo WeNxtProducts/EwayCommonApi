@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -135,25 +136,6 @@ public class DepositServiceImpl implements DepositService {
 				if(!optDetail.isPresent()) {
 					depositcbcRepo.save(cbcMaster);
 				}
-				
-				//Framing Request  Save Payment Details
-				SavePaymentDepositReq paymentSaveReq= new SavePaymentDepositReq();
-				paymentSaveReq.setCbcNo(cbcNo);
-				paymentSaveReq.setPaymentType("1");
-				paymentSaveReq.setLoginId(req.getLoginId());
-				paymentSaveReq.setPremium("");
-				paymentSaveReq.setChequeNo("");
-				paymentSaveReq.setChequeDate(null);
-				paymentSaveReq.setAccountNo("");
-				paymentSaveReq.setIbanNumber("");
-				paymentSaveReq.setMicrNo("");
-				paymentSaveReq.setPayeeName("");
-				paymentSaveReq.setReferenceNo("");
-				paymentSaveReq.setDepositNo(depositNo.toString());
-				paymentSaveReq.setCompanyId(req.getCompanyId());
-				savePaymentDeposit(paymentSaveReq);
-			
-				
 				count = 1;
 				if(count == 1) {
 					response.setStatus(true);
@@ -295,18 +277,6 @@ public class DepositServiceImpl implements DepositService {
 			error.add(new Error("500","BrokerId","Please Enter BrokerId"));
 		}
 		
-//		HomePositionMaster homeData=homeRepo.findByQuoteNo(req.getQuoteNo());
-//		if(homeData!=null) {
-//			
-//		}
-		
-		if(StringUtils.isNotBlank(req.getBrokerId())&&StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getPolicyTypeId())) {
-			List<LoginProductMaster> loginList= getExistingBrokerById(req.getBrokerId() , req.getCompanyId() ,req.getProductId(),req.getPolicyTypeId());
-			creditLimit=loginList.get(0).getCreditYn();
-			if((!"Y".equalsIgnoreCase(creditLimit))||StringUtils.isBlank(creditLimit)) {
-				error.add(new Error("500","BrokerId","Credit Option is not Available"));
-			}
-		}
 		if(StringUtils.isBlank(req.getPremium())) {
 			error.add(new Error("500","Premium","Please Enter Premium"));
 		}
@@ -316,9 +286,9 @@ public class DepositServiceImpl implements DepositService {
 		if(StringUtils.isBlank(req.getCompanyId())) {
 			error.add(new Error("500","Company","Please Enter Company Id"));
 		}
-		if(StringUtils.isBlank(req.getPolicyTypeId())) {
-			error.add(new Error("500","PolicyType","Please Enter Policy Type"));
-		}
+//		if(StringUtils.isBlank(req.getPolicyTypeId())) {
+//			error.add(new Error("500","PolicyType","Please Enter Policy Type"));
+//		}
 		if(StringUtils.isBlank(req.getQuoteNo())) {
 			error.add(new Error("500","QuoteNo","Please Enter QuoteNo"));
 		}
@@ -334,55 +304,14 @@ public class DepositServiceImpl implements DepositService {
 		return error;
 	}
 
-	public List<LoginProductMaster> getExistingBrokerById(String brokerId , String InsuranceId , String productId,String policyTypeId) {
-		List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
-		try {
-			Date today = new Date();
-			// Find Latest Record
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
-
-			// Find All
-			Root<LoginProductMaster> b = query.from(LoginProductMaster.class);
-
-			// Select
-			query.select(b);
-
-			// Effective Date Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<LoginProductMaster> ocpm1 = amendId.from(LoginProductMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a4 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
-			Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a6 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
-			amendId.where(a1,a2,a3,a4,a5,a6);
-
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal( b.get("agencyCode"), brokerId);
-			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
-			Predicate n4 = cb.equal(b.get("productId"), productId);
-			Predicate n5 = cb.equal(b.get("policyTypeId"),policyTypeId);
-			
-			query.where(n1,n2,n3,n4,n5);
-			
-			// Get Result
-			TypedQuery<LoginProductMaster> result = em.createQuery(query);
-			list = result.getResultList();		
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info(e.getMessage());
-
-		}
-		return list;
-	}
+	
 
 	public String getDepositDetails(SavePremiumDepositReq req, String type) {
 		String result="",customerOption="",cbcNo="",totalAmount="";
 		List<DepositcbcMaster>list=null;
+		String pattern ="#####0.0";
+		DecimalFormat df = new DecimalFormat(pattern);
+		Long depNo = null;
 		try {
 			int cunt=depositcbcRepo.countByBrokerId(req.getBrokerId());
 			int count=depositdetailRepo.countByProductIdAndQuoteNoAndPremiumAmountAndStatus(req.getProductId(),req.getQuoteNo(),Double.valueOf(req.getPremium()),"Y");
@@ -401,9 +330,9 @@ public class DepositServiceImpl implements DepositService {
 				if(list!=null && list.size()>0) {
 					cbcNo=list.get(0).getCbcNo()==null?"0":list.get(0).getCbcNo().toString();
 					customerOption="NONE";
-					String depositAMount=list.get(0).getDepositAmount()==null?"0":list.get(0).getDepositAmount().toString();
-					String utilizedAmt=list.get(0).getDepositUtilized()==null?"0":list.get(0).getDepositUtilized().toString();
-					String refundAmt=list.get(0).getRefundAmount()==null?"0":list.get(0).getRefundAmount().toString();
+					String depositAMount=list.get(0).getDepositAmount()==null?"0":(df.format(list.get(0).getDepositAmount())).toString();
+					String utilizedAmt=list.get(0).getDepositUtilized()==null?"0":(df.format(list.get(0).getDepositUtilized())).toString();
+					String refundAmt=list.get(0).getRefundAmount()==null?"0":(df.format(list.get(0).getRefundAmount())).toString();
 					totalAmount=String.valueOf(Double.valueOf(depositAMount)-Double.valueOf(utilizedAmt)+Double.valueOf(refundAmt));
 				}else {
 					result="DEPOSIT IS NOT AVAILABLE FOR THIS BROKER";
@@ -426,6 +355,7 @@ public class DepositServiceImpl implements DepositService {
 						String depositbal=getDepositBalance(req.getPremium(),cbcNo,req.getProductId(),req.getBrokerId());
 						if(StringUtils.isNotBlank(depositbal)) {
 							DepositDetail des=new DepositDetail();
+							des.setDepositNo(depNo = DepositMax());
 							des.setCbcNo(cbcNo);
 							des.setProductId(req.getProductId());
 							des.setQuoteNo(req.getQuoteNo()); 
@@ -435,8 +365,8 @@ public class DepositServiceImpl implements DepositService {
 							des.setBalanceAmount(Double.parseDouble(depositbal));
 							des.setBrokerId(Long.parseLong(req.getBrokerId()));
 							des.setPremium(Double.valueOf(req.getPremium()));
-							des.setPolicyInsuranceFee(Double.valueOf(req.getPolicyfee()));
-							des.setVatAmount(Double.valueOf(req.getVattaxamt()));
+							des.setPolicyInsuranceFee(req.getPolicyfee()==null?0d:Double.valueOf(req.getPolicyfee()));
+							des.setVatAmount(req.getVattaxamt()==null?0d:Double.valueOf(req.getVattaxamt()));
 							des.setChargableType(Double.parseDouble(req.getPremium())<0?"R":"C");
 							depositdetailRepo.save(des);
 							result="Y";
@@ -463,7 +393,8 @@ public class DepositServiceImpl implements DepositService {
 	private void updateDepositCBCUtilized(String premium, String cbcNo, String productId, String brokerId) {
 			try {
 			EntityManager em1 = emfactory.createEntityManager();
-			String qutext = "Update eway_deposit_cbc_master Set Deposit_Utilised=NVL(Deposit_Utilised,0)+TO_NUMBER(NVL(round(?,2),0)) Where product_Id =? and Cbc_no=? and broker_id=? and Status='Y'";
+//			String qutext = "Update eway_deposit_cbc_master Set Deposit_Utilised=NVL(Deposit_Utilised,0)+TO_NUMBER(NVL(round(?,2),0)) Where product_Id =? and Cbc_no=? and broker_id=? and Status='Y'";
+			String qutext = "Update eway_deposit_cbc_master Set Deposit_Utilised=COALESCE(Deposit_Utilised,0)+(COALESCE(round(?,2),0)) Where product_Id =? and Cbc_no=? and broker_id=? and Status='Y'";
 			Query query = em1.createNativeQuery(qutext);
 			query.setParameter(1, premium);
 			query.setParameter(2, productId);
@@ -648,7 +579,8 @@ public class DepositServiceImpl implements DepositService {
 					.quoteNo(StringUtils.isBlank(req.getQuoteNo())?"":req.getQuoteNo())
 					.productId(req.getProductId())
 					// .productName(getProductNameById(req.getProductId()))
-					.premiumAmount(Double.valueOf(req.getPremiumAmount()))
+				//	.premiumAmount(Double.valueOf(req.getPremium()))
+					.premiumAmount(Double.valueOf(req.getPremium()))
 					.entryDate(new Date())
 					.status(req.getStatus())
 					.cbcNo(req.getCbcNo())
@@ -659,7 +591,7 @@ public class DepositServiceImpl implements DepositService {
 					.brokerName(getBrokerNameById(brokerId))
 					.premium(Double.parseDouble(req.getPremium()))
 					.policyInsuranceFee(StringUtils.isBlank(req.getPolicyInsuranceFee())?null:Double.parseDouble(req.getPolicyInsuranceFee()))
-					.vatAmount(Double.valueOf(req.getVatAmount()))
+					.vatAmount(StringUtils.isBlank(req.getVatAmount())?null:Double.valueOf(req.getVatAmount()))
 					.depositType("C".equalsIgnoreCase(req.getDepositType())?"Deposit":"Refund")
 					.build();
 				depositdetailRepo.save(depDetail);
@@ -768,6 +700,8 @@ public class DepositServiceImpl implements DepositService {
 
 	@Override
 	public CommonRes CbcbyBrokerId(String LoginId) {
+		String pattern ="#####0.0";
+		DecimalFormat df = new DecimalFormat(pattern);
 		CommonRes res = new CommonRes();
 		List<GetDepositMasterRes> response = new ArrayList<>();
 		String brokerId = "";
@@ -782,10 +716,10 @@ public class DepositServiceImpl implements DepositService {
 					.brokerId(k.getBrokerId())
 					.productId(k.getProductId())
 					.status(k.getStatus())
-					.depositAmount(k.getDepositAmount()==null?"":k.getDepositAmount().toString())
-					.depositUtilised(k.getDepositUtilized()==null?"":k.getDepositUtilized().toString())
+					.depositAmount(k.getDepositAmount()==null?"":(df.format(k.getDepositAmount())).toString())
+					.depositUtilised(k.getDepositUtilized()==null?"":(df.format(k.getDepositUtilized())).toString())
 					.refundAmt(k.getRefundAmount()==null?"":k.getRefundAmount().toString())
-					.policyRefundAmt(k.getPolicyrefundamount()==null?"":k.getPolicyrefundamount().toString())
+					.policyRefundAmt(k.getPolicyrefundamount()==null?"":(df.format(k.getPolicyrefundamount())).toString())
 					.brokerName(k.getBrokerName())
 					.updatedBy(k.getUpdatedBy())
 					.build();

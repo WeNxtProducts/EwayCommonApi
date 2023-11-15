@@ -68,6 +68,7 @@ import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.req.UserDetailsGetReq;
 import com.maan.eway.admin.req.UserLoginGridReq;
 import com.maan.eway.admin.res.BrokerDatailsGetRes;
+import com.maan.eway.admin.res.BrokerDepositCbcDetailsGetRes;
 import com.maan.eway.admin.res.BrokerLoginDetailsGetRes;
 import com.maan.eway.admin.res.BrokerPersonalDetailsGetRes;
 import com.maan.eway.admin.res.IssuerDatailsGetRes;
@@ -91,6 +92,7 @@ import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.DepositcbcMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
@@ -102,9 +104,13 @@ import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.SeqAgencycode;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.StateMaster;
+import com.maan.eway.common.req.SaveDepositeMasterReq;
+import com.maan.eway.common.req.SavePaymentDepositReq;
+import com.maan.eway.common.service.DepositService;
 import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.repository.DepositcbcMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -126,6 +132,9 @@ public class LoginDetailsServiceImpl implements LoginDetailsService {
 
 	@Autowired
 	private LoginMasterRepository loginRepo;
+	
+	@Autowired
+	private DepositService depoService;
 	
 	@Autowired
 	private LoginMasterArchRepository loginArchRepo;
@@ -151,7 +160,10 @@ public class LoginDetailsServiceImpl implements LoginDetailsService {
 	@Autowired
 	private SeqAgencycodeRepository seqAgencyRepo;
 	
+	@Autowired
+	private DepositcbcMasterRepository depositcbcRepo;
 	@PersistenceContext
+	
 	private EntityManager em;
 
 	Gson json = new Gson();
@@ -543,8 +555,24 @@ this.repository = repo;
 		      loginUserRepo.saveAndFlush(userInfo);
 			
 			
-			res = saveLogin.getAgencyCode() ; 
+			res = saveLogin.getAgencyCode() ;
 			
+			//Framing Request  Save Deposit Cbc Master
+			String cbcNo=null;
+			if(StringUtils.isBlank(cbcNo)||"".equalsIgnoreCase(cbcNo)) {
+				cbcNo=loginReq.getCbcNo();
+			}else {
+				cbcNo=null;
+			}
+			SaveDepositeMasterReq depoReq=new SaveDepositeMasterReq();
+			depoReq.setBrokerId(countId.toString());
+			depoReq.setCbcNo(cbcNo);
+			depoReq.setDepositAmount(personalReq.getCreditLimit());
+			depoReq.setCustomerid(personalReq.getCustomerCode());
+			depoReq.setCompanyId(loginReq.getCompanyId());
+			depoReq.setLoginId(loginReq.getLoginId());
+			depoService.saveDepositeMaster(depoReq);
+		
 			// Branch Id
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -746,6 +774,19 @@ this.repository = repo;
 			updateLogin.setAttachedCompanies(companies);
 			 
 			 */
+			
+			//Framing Request  Update Deposit Cbc Master
+			String cbcNo=loginReq.getCbcNo();
+			
+			SaveDepositeMasterReq depoReq=new SaveDepositeMasterReq();
+			depoReq.setBrokerId(loginReq.getAgencyCode());
+			depoReq.setCbcNo(cbcNo);
+			depoReq.setDepositAmount(personalReq.getCreditLimit());
+			depoReq.setCustomerid(personalReq.getCustomerCode());
+			depoReq.setCompanyId(loginReq.getCompanyId());
+			depoReq.setLoginId(loginReq.getLoginId());
+			depoService.saveDepositeMaster(depoReq);
+		
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1233,10 +1274,19 @@ this.repository = repo;
 			personalInfo = dozerMapper.map(userData, BrokerPersonalDetailsGetRes.class);
 			personalInfo.setCreditLimit(userData.getCreditLimit()!=null ?  df.format(userData.getCreditLimit()) : "");
 			
+			//Deposit Cbc Master
+			List<DepositcbcMaster> depoCbcList= depositcbcRepo.findByBrokerId(loginData.getAgencyCode());
+			List<BrokerDepositCbcDetailsGetRes> depoReslist =new ArrayList<BrokerDepositCbcDetailsGetRes>();
+			BrokerDepositCbcDetailsGetRes depoCbcRes=new BrokerDepositCbcDetailsGetRes ();
+			for(DepositcbcMaster data:depoCbcList) {
+				depoCbcRes = dozerMapper.map(data, BrokerDepositCbcDetailsGetRes.class);
+				depoReslist.add(depoCbcRes);
+			}
 			
 			// Response
 			res.setLoginInformation(loginInfo);
 			res.setPersonalInformation(personalInfo);
+			res.setDepositCbcInformation(depoReslist);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

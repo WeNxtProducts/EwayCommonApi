@@ -58,11 +58,13 @@ import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.DepositcbcMaster;
 import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
@@ -78,10 +80,12 @@ import com.maan.eway.master.res.BrokerCommissionDetailsMasterGetRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.master.res.GetAllNonSelectedBrokerProductMasterRes;
 import com.maan.eway.repository.BrokerCommissionDetailsRepository;
+import com.maan.eway.repository.DepositcbcMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -94,6 +98,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 	
 	@Autowired
 	private LoginMasterRepository loginRepo ;
+	
+	@Autowired
+	private LoginUserInfoRepository loginUserInfoRepo;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -109,6 +116,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 	
 	@Autowired
 	private BrokerCommissionDetailsRepository commissionRepo ;
+	
+	@Autowired
+	private DepositcbcMasterRepository depositcbcRepo;
 
 	Gson json = new Gson();
 
@@ -3082,6 +3092,12 @@ List<Error> errorList = new ArrayList<Error>();
 
 				// Save Broker Commission Details
 				res = saveBrokerCommission1(req, login);
+				
+//				//Save Deposit cbc Master Based on Credit Y and product
+//				
+//				saveDepositCbcMaster(req,login,productName);	
+				
+				
 
 			}
 			List<Integer> productIds =  reqList.stream().map( BrokerCompanyListProductReq :: getProductId ) .collect(Collectors.toList());
@@ -3089,6 +3105,7 @@ List<Error> errorList = new ArrayList<Error>();
 			for(int i=0;i<productIds.size();i++) {
 			pro.add(productIds.get(i).toString());
 			}
+			
 			List<BrokerCommissionDetails>   oldCommList1 = commissionRepo.findByProductIdNotInAndLoginId(pro, reqList.get(0).getLoginId() ) ;
 
 			oldCommList1.forEach ( o -> { 
@@ -3100,6 +3117,10 @@ List<Error> errorList = new ArrayList<Error>();
 				startDate1 = cal.getTime();
 				o.setEffectiveDateEnd(startDate1);  }   );
 			commissionRepo.saveAll(oldCommList1);
+			
+		
+			
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3373,6 +3394,108 @@ List<Error> errorList = new ArrayList<Error>();
 
 	}
 
+/*	public SuccessRes saveDepositCbcMaster(BrokerCompanyListProductReq req ,LoginMaster login,String productName  ) {
+		// TODO Auto-generated method stub
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		SuccessRes res = new SuccessRes();
+		DepositcbcMaster saveData = new DepositcbcMaster();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			Date entryDate = new Date();
+			String cbcNo ="";
+//			Integer id = 1;
+//			id = StringUtils.isBlank(req.getPolicyTypeId()) ? 1 : Integer.valueOf(req.getPolicyTypeId());
+//			String policytype = policyName(req.getCompanyId(), req.getProductId().toString(), req.getPolicyTypeId());
+			LoginUserInfo userInfo=loginUserInfoRepo.findByLoginId(login.getLoginId());
+			if(StringUtils.isNotBlank(login.getAgencyCode())) {
+				List<DepositcbcMaster> depositcbcMasterList=depositcbcRepo.findByBrokerIdAndProductIdAndPolicyTypeId(login.getAgencyCode(), req.getProductId().toString(),req.getPolicyTypeId());
+				if(depositcbcMasterList!=null && depositcbcMasterList.size()>0) {
+					cbcNo =depositcbcMasterList.get(0).getCbcNo();
+					saveData.setBrokerId(login.getAgencyCode());
+					saveData.setBrokerName(userInfo.getUserName());
+					saveData.setCbcNo(cbcNo);
+					saveData.setDepositAmount(Double.valueOf(userInfo.getCreditLimit().toString()));
+					saveData.setProductId(req.getProductId().toString());
+					saveData.setProductName(productName);
+					//Status For Credit Y or N
+					saveData.setStatus(req.getCreditYn());
+					saveData.setEntryDate(entryDate);
+					saveData.setUpdatedBy(req.getCreatedBy());
+					saveData.setCustomerId("");
+					saveData.setDepositUtilized(0.0);
+					saveData.setPolicyrefundamount(0.0);
+					saveData.setRefundAmount(0.0);		
+					saveData.setCompanyId(req.getCompanyId());
+//					saveData.setPolicyTypeId(req.getPolicyTypeId());
+//					saveData.setPolicyTypeDesc(req.getPolicyTypeDesc());
+					depositcbcRepo.save(saveData);
+				}else {
+					if("Y".equalsIgnoreCase(req.getCreditYn())) {
+					cbcNo = getCbcNumber();
+					cbcNo="CBC"+cbcNo;
+					saveData.setBrokerId(login.getAgencyCode());
+					saveData.setBrokerName(userInfo.getUserName());
+					saveData.setCbcNo(cbcNo);
+					saveData.setDepositAmount(Double.valueOf(userInfo.getCreditLimit().toString()));
+					saveData.setProductId(req.getProductId().toString());
+					saveData.setProductName(productName);
+					//Status For Credit Y or N
+					saveData.setStatus(req.getCreditYn());
+					saveData.setEntryDate(entryDate);
+					saveData.setUpdatedBy(req.getCreatedBy());
+					saveData.setCustomerId("");
+					saveData.setDepositUtilized(0.0);
+					saveData.setPolicyrefundamount(0.0);
+					saveData.setRefundAmount(0.0);		
+					saveData.setCompanyId(req.getCompanyId());
+					saveData.setPolicyTypeId(req.getPolicyTypeId());
+					saveData.setPolicyTypeDesc(req.getPolicyTypeDesc());
+					depositcbcRepo.save(saveData);
+					}
+					
+				}
+			}
+			
+			
+
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(login.getLoginId());
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+
+		return res;
+
+	}
+	*/
+	private String getCbcNumber() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<DepositcbcMaster> dmRoot = cq.from(DepositcbcMaster.class);
+		String result = "",cbc = "";
+		CriteriaQuery<String> cbcNo = null;
+		try {
+			cbcNo = cq.multiselect(cb.max(dmRoot.get("cbcNo")).as(String.class));
+			cbc = em.createQuery(cbcNo).getSingleResult();
+		} catch (Exception e) {
+			log.info("No Entity Found");
+		}
+		if(StringUtils.isNotBlank(cbc)) {
+			String parts [] = cbc.split("[^\\d]");
+			if(parts!=null) {
+				String cbcCurrenctNo = parts[3];
+				int sumCbc = Integer.valueOf(cbcCurrenctNo)+1;
+				result = String.valueOf(sumCbc);
+			}
+		}else {
+			cq.multiselect(cb.coalesce(cb.sum(cb.max(dmRoot.get("cbcNo")),1), 100076).as(String.class));
+			result = em.createQuery(cq).getSingleResult();
+		}
+		
+		return result;
+	}
+	
 	//Get All Broker product List
 
 	@Override

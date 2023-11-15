@@ -34,4 +34,7 @@ public class PaymentDetailsSaveRes {
 	
 	@JsonProperty("isError")
 	private String iserror;
+	
+	@JsonProperty("DepositResponse")
+	private String depositResponse;
 }
