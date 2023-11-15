@@ -18,4 +18,10 @@ public class PaymentMasterGetallReq {
 
 	@JsonProperty("AgencyCode")
 	private String agencyCode;
+	
+	@JsonProperty("UserType")
+	private String userType;
+	
+	@JsonProperty("SubUserType")
+	private String subUserType;
 }
