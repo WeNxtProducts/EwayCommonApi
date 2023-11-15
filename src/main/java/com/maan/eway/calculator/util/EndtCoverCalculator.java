@@ -168,7 +168,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 			 		 
 					 	if("Y".equals(engine.getCoverModification())) {
 					 		
-					 		 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
+					 		 if(("Y".equals(t.getProRataYn()) || "D".equals(t.getProRataYn())) && "Y".equals(t.getUserOpt())) {
 									// Date Differents
 										 Date periodStart =  effectiveDate;
 											Date periodEnd = t.getPolicyEndDate() ;
@@ -180,24 +180,33 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 										String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 										
 										String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
-										//Removal Logic
+										//Removal Logic									
 										diff= String.valueOf(Integer.parseInt(periodOfInsurance)-Integer.parseInt(diff));
-										if(Integer.parseInt(diff)<0) diff="0";
-										List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
 										
+										if(Integer.parseInt(diff)<0) diff="0";
+										List<Tuple> prorata =null;
+										if(!"D".equals(t.getProRataYn())) 
+											prorata = crservice.loadProRataData(engine, diff);
+										
+											
 										endorsement.setProRataYn("Y");
-										if(prorata.size()>0) {
+										if(prorata!=null && prorata.size()>0) {
 										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
 										 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
 										 t.setProRata(p);
 										 endorsement.setProRata(p);
+										}else if("D".equals(t.getProRataYn())){
+											BigDecimal endtPolicyPeriod= new BigDecimal(periodOfInsurance).subtract(endorsement.getPolicyPeriod());
+											BigDecimal p = endtPolicyPeriod.divide(new BigDecimal("365") ,MathContext.DECIMAL32);
+											t.setProRata(p);
+											endorsement.setProRata(p);
 										}else {
 											 BigDecimal p=new BigDecimal("1");
 											t.setProRata(p);
 											 endorsement.setProRata(p);
 										}
 										
-					 		 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt())) {
+					 		 }else if(("Y".equals(t.getProRataYn()) || "D".equals(t.getProRataYn())) && !"Y".equals(t.getUserOpt())) {
 					 			 // Date Differents
 					 			 Date periodStart =  effectiveDate;
 					 			 Date periodEnd = t.getPolicyEndDate() ;
@@ -208,13 +217,22 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 			 boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
 					 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 					 			 if(Integer.parseInt(diff)<0) diff="0";
-					 			 List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
-					 			 if(prorata.size()>0) {
+					 			 
+					 			List<Tuple> prorata =null;
+								if(!"D".equals(t.getProRataYn())) 
+									prorata =  crservice.loadProRataData(engine, diff);
+								
+					 			 if(prorata !=null && prorata.size()>0) {
 					 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
 					 				 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
 					 				 t.setProRata(p);
 					 				 endorsement.setProRata(p);
-					 			 }else {
+					 			 }else if("D".equals(t.getProRataYn())){
+										BigDecimal endtPolicyPeriod= new BigDecimal(diff).subtract(endorsement.getPolicyPeriod());
+										BigDecimal p = endtPolicyPeriod.divide(new BigDecimal("365") ,MathContext.DECIMAL32);
+										t.setProRata(p);
+										endorsement.setProRata(p);
+								 }else {
 					 				 BigDecimal p=new BigDecimal("1");
 					 				 t.setProRata(p);
 					 				 endorsement.setProRata(p);
@@ -287,13 +305,22 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 			 boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
 					 			 if(daysBetween>366) daysBetween=365L;
 					 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-					 			 List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
-					 			 if(prorata.size()>0) {
+					 			 
+					 			List<Tuple> prorata =null;
+								if(!"D".equals(t.getProRataYn()))
+									prorata =  crservice.loadProRataData(engine, diff);
+								
+					 			 if(prorata !=null && prorata.size()>0) {
 					 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
 					 				 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
 					 				 t.setProRata(p);
 					 				 endorsement.setProRata(p);
-					 			 }else {
+					 			 }else if("D".equals(t.getProRataYn())){
+										BigDecimal endtPolicyPeriod= new BigDecimal(diff).subtract(endorsement.getPolicyPeriod());
+										BigDecimal p = endtPolicyPeriod.divide(new BigDecimal("365") ,MathContext.DECIMAL32);
+										t.setProRata(p);
+										endorsement.setProRata(p);
+								 }else {
 					 				 BigDecimal p=new BigDecimal("1");
 					 				 t.setProRata(p);
 					 				 endorsement.setProRata(p);
