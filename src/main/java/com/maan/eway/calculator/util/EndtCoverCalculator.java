@@ -101,7 +101,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 //t.setCalcType("P");
 				 }
  				 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
-				 t.setPremiumBeforeDiscount(domath.multiply(t.getProRata()));				 
+				 t.setPremiumBeforeDiscount(domath);				 
 				 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 				 
 					 
