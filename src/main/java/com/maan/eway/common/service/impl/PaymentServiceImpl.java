@@ -1955,8 +1955,9 @@ public class PaymentServiceImpl implements PaymentService {
 						saveDate.setPaymentDetails(paymentMode);
 						saveDate.setPaymentDate(new Date());
 						saveDate.setPaymentId(req.getPaymentId());
+						emiRepo.saveAndFlush(saveDate);
 					}
-					emiRepo.saveAndFlush(saveDate);
+					
 				
 			}
 
