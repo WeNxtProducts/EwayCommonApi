@@ -1014,7 +1014,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveLod.setRate(lod.getEndorsementRate()==null?null:new BigDecimal(lod.getEndorsementRate()));
 	 			saveLod.setCalcType(lod.getEndorsementCalcType());
 				saveLod.setCoverageLimit(lod.getCoverageLimit());
-				saveLod.setNoOfDays(new BigDecimal(diff));
+				saveLod.setNoOfDays("D".equals(coverReq.getProRataYn())? lod.getPolicyPeriod(): new BigDecimal(diff));
 				saveLod.setProRataYn(lod.getProRataYn()==null?"N":lod.getProRataYn());
 				saveLod.setProRataPercent(lod.getProRata()==null?new BigDecimal("100"):lod.getProRata().multiply( new BigDecimal("100")));
 				//repository.saveAndFlush(saveLod);

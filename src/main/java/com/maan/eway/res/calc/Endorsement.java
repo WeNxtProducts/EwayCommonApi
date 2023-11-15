@@ -178,6 +178,7 @@ public class Endorsement implements Serializable {
 	private BigDecimal diffPremiumIncludedTaxLC;
 	@JsonProperty("CoverageLimit")
 	private BigDecimal     coverageLimit ;
-
+	@JsonProperty("PolicyPeriod")
+	  private BigDecimal policyPeriod;
 
 }

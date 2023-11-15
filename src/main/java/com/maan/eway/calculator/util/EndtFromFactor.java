@@ -74,6 +74,7 @@ public class EndtFromFactor  implements Function<FactorRateRequestDetails,Endors
 						.diffPremiumIncludedTax(BigDecimal.ZERO)
 						.coverageLimit(t.getCoverageLimit())
 						.diffPremiumIncludedTaxLC(BigDecimal.ZERO)
+						.policyPeriod(t.getNoOfDays())
 						.build();
 
 				return d;

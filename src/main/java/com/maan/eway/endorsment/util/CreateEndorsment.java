@@ -97,6 +97,7 @@ public class CreateEndorsment {
 				.diffPremiumIncludedTax(BigDecimal.ZERO)
 				.coverageLimit(d.getCoverageLimit())
 				.diffPremiumIncludedTaxLC(BigDecimal.ZERO)
+				.policyPeriod(new BigDecimal(d.getNoOfDays()))
 				.build();
   		
 
