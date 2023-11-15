@@ -333,9 +333,7 @@ public List<PaymentMasterRes> getallPayment(PaymentMasterGetallReq req) {
 		amendId.where(a1, a2,a3,a4,a5);
 
 		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("branchCode")));
-
+		
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
@@ -349,8 +347,14 @@ public List<PaymentMasterRes> getallPayment(PaymentMasterGetallReq req) {
 		if(StringUtils.isNotBlank(req.getAgencyCode())) {
 			Predicate n16 = cb.equal(b.get("userType"),req.getUserType());
 			Predicate n17 = cb.equal(b.get("subUserType"),req.getUserType());
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("amendId")));
+
 			query.where(n1,n2,n5,n6,n15,n16,n17).orderBy(orderList);
 		} else {
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
 			query.where(n1,n2,n5,n6,n15).orderBy(orderList);
 				
 		}
