@@ -492,9 +492,10 @@ public PaymentMasterRes getByPaymentId(PaymentMasterGetReq req) {
 		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 =  cb.equal(b.get("productId"), req.getProductId());
 		Predicate n7 = cb.equal(b.get("paymentMasterId"), req.getPaymentMasterId());
-		String agencyCode = StringUtils.isNotBlank(req.getAgencyCode())  ? req.getAgencyCode() : "99999"   ;
-		Predicate n13 = cb.equal(b.get("agencyCode"),agencyCode);
-		query.where(n1,n2,n5,n6,n7,n13).orderBy(orderList);
+		Predicate n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
+		Predicate n14 = cb.equal(b.get("agencyCode"),"99999" );
+		Predicate n15 = cb.or(n13,n14);
+		query.where(n1,n2,n5,n6,n7,n15).orderBy(orderList);
 		
 		
 		// Get Result
