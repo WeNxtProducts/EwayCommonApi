@@ -63,6 +63,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SNO", nullable=false)
     private Integer    sno ;
+    
+    @Id
+	@Column(name = "POLICY_TYPE_ID", nullable = false)
+	private Integer policyTypeId;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="STARTFROM")

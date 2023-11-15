@@ -35,5 +35,6 @@ public class CompanyProrataMasterId implements Serializable {
     
     private Integer    sno ;
     
+    private Integer policyTypeId;
      
 }

@@ -218,6 +218,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="UW_LOADING")
     private BigDecimal     uwLoading;
+    
+    @Column(name="INSURANCE_CLASS", length=10)
+    private String     insuranceClass ;    
 }
 
 

@@ -382,6 +382,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CARPETS_SI_LC")
     private BigDecimal carpetsSiLc  ;
+    
+    @Column(name="INSURANCE_CLASS", length=10)
+    private String     insuranceClass ;    
 }
 
 
