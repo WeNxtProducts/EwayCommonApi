@@ -8,6 +8,7 @@ import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.GetExistingBrokerListReq;
+import com.maan.eway.common.req.GetPaymentStatusReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
@@ -21,6 +22,7 @@ import com.maan.eway.common.res.AdminPendingGridRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetPaymentStatusRes;
 import com.maan.eway.common.res.GetRegNumberQuoteRes;
 import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
@@ -138,5 +140,11 @@ public interface GridService {
 	List<GetExistingBrokerListRes> getAdminReferralReQuoteDropdown(ExistingBrokerUserListReq req);
 
 	RegNumberRes getRegNumberQuotes(RegSearchReq req);
+
+	GetPaymentStatusRes getPaymentStatus(GetPaymentStatusReq req);
+
+	GetPaymentStatusRes getPaymentFailedStatus(GetPaymentStatusReq req);
+
+	GetPaymentStatusRes getPaymentSucessStatus(GetPaymentStatusReq req);
 
 }

@@ -34,6 +34,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.asn1.dvcs.Data;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,12 +65,15 @@ import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.PaymentDetail;
+import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.GetExistingBrokerListReq;
+import com.maan.eway.common.req.GetPaymentStatusReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
@@ -89,6 +93,7 @@ import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetExistingBrokerRes;
 import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
+import com.maan.eway.common.res.GetPaymentStatusRes;
 import com.maan.eway.common.res.GetRegNumberQuoteRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
@@ -99,6 +104,7 @@ import com.maan.eway.common.res.GetallPortfolioPendingRes;
 import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
 import com.maan.eway.common.res.GetallReferralDetailsCommonRes;
 import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
+import com.maan.eway.common.res.PaymentStausRes;
 import com.maan.eway.common.res.PortFolioAdminTupleRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioAdminGridRes;
@@ -135,6 +141,8 @@ import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.PaymentDetailRepository;
+import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
@@ -187,6 +195,11 @@ public class GridServiceImpl implements GridService {
 	@Autowired
 	private LoginMasterRepository loginRepo;
 	
+	@Autowired
+	private PaymentDetailRepository paymentdetailrepo;
+	
+	@Autowired
+	private PaymentInfoRepository paymentinforepo;
 	
 	@Autowired
 	private UWReferralDetailsRepository uwReferalDetailsRepo;
@@ -5345,4 +5358,338 @@ public class GridServiceImpl implements GridService {
 		return res2 ;
 	}
 
+	@Override
+	public GetPaymentStatusRes  getPaymentStatus(GetPaymentStatusReq req) {
+	//	List<GetPaymentStatusRes> reslist = new ArrayList<GetPaymentStatusRes>();
+		GetPaymentStatusRes res = new GetPaymentStatusRes();
+		try {
+			if(StringUtils.isNotBlank(req.getLoginId())) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<PaymentDetail> p = query.from(PaymentDetail.class);
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			List<Tuple> list =new ArrayList<Tuple>();
+
+			query.multiselect(p.get("quoteNo").alias("quoteNo"),h.get("loginId").alias("loginId"),
+					p.get("paymentId").alias("paymentId"),p.get("branchCode").alias("branchCode"),
+					p.get("paymentStatus").alias("paymentStatus"),
+					p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
+					h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
+					h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(p.get("paymentType"),"4"));
+			predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+			predics.add(cb.equal(h.get("productId"),req.getProductId()));
+			predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+			predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+			query.where(predics.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			list = typedQuery.getResultList();
+			
+			list =list.stream().filter(o->o.get("paymentStatus").equals("PENDING")).collect(Collectors.toList());
+			List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
+			if (list != null && list.size() > 0) {
+				
+				for (Tuple data : list) {
+					PaymentStausRes res1 = new PaymentStausRes();
+					res1.setBranchCode(data.get("branchCode")==null?"":data.get("branchCode").toString());
+					res1.setBranchCode(data.get("branchName")==null?"":data.get("branchName").toString());
+					res1.setCompanyId(data.get("companyId")==null?"":data.get("companyId").toString());
+					res1.setClientName(data.get("customerName")==null?"":data.get("customerName").toString());
+					res1.setLoginId(data.get("loginId")==null?"":data.get("loginId").toString());
+					res1.setUserType(data.get("userType")==null?"":data.get("userType").toString());
+					res1.setQuoteNo(data.get("quoteNo")==null?"":data.get("quoteNo").toString());
+					res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
+					res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
+					res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+					statusResList.add(res1);
+
+				}
+				
+			}
+			res.setPaymentStausRes(statusResList);
+		//	reslist.add(statusResList);
+			}else {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<PaymentDetail> p = query.from(PaymentDetail.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				List<Tuple> list =new ArrayList<Tuple>();
+
+				query.multiselect(p.get("quoteNo").alias("quoteNo"),h.get("loginId").alias("loginId"),
+						p.get("paymentId").alias("paymentId"),p.get("branchCode").alias("branchCode"),
+						p.get("paymentStatus").alias("paymentStatus"),
+						p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
+						h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
+						h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("paymentType"),"4"));
+				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+				predics.add(cb.equal(h.get("productId"),req.getProductId()));
+				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+				query.where(predics.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				
+				list =list.stream().filter(o->o.get("paymentStatus").equals("PENDING")).collect(Collectors.toList());
+				List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
+				if (list != null && list.size() > 0) {
+					
+					for (Tuple data : list) {
+						PaymentStausRes res1 = new PaymentStausRes();
+						res1.setBranchCode(data.get("branchCode")==null?"":data.get("branchCode").toString());
+						res1.setBranchCode(data.get("branchName")==null?"":data.get("branchName").toString());
+						res1.setCompanyId(data.get("companyId")==null?"":data.get("companyId").toString());
+						res1.setClientName(data.get("customerName")==null?"":data.get("customerName").toString());
+						res1.setLoginId(data.get("loginId")==null?"":data.get("loginId").toString());
+						res1.setUserType(data.get("userType")==null?"":data.get("userType").toString());
+						res1.setQuoteNo(data.get("quoteNo")==null?"":data.get("quoteNo").toString());
+						res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
+						res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
+						res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+						statusResList.add(res1);
+
+					}
+					
+				}
+				res.setPaymentStausRes(statusResList);
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+	@Override
+	public GetPaymentStatusRes getPaymentFailedStatus(GetPaymentStatusReq req) {
+		GetPaymentStatusRes res = new GetPaymentStatusRes();
+		try {
+			if(StringUtils.isNotBlank(req.getLoginId())) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<PaymentDetail> p = query.from(PaymentDetail.class);
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			List<Tuple> list =new ArrayList<Tuple>();
+
+			query.multiselect(p.get("quoteNo").alias("quoteNo"),h.get("loginId").alias("loginId"),
+					p.get("paymentId").alias("paymentId"),p.get("branchCode").alias("branchCode"),
+					p.get("paymentStatus").alias("paymentStatus"),
+					p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
+					h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
+					h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(p.get("paymentType"),"4"));
+			predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+			predics.add(cb.equal(h.get("productId"),req.getProductId()));
+			predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+			predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+			query.where(predics.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			list = typedQuery.getResultList();
+			
+			list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
+			List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
+			if (list != null && list.size() > 0) {
+				
+				for (Tuple data : list) {
+					PaymentStausRes res1 = new PaymentStausRes();
+					res1.setBranchCode(data.get("branchCode")==null?"":data.get("branchCode").toString());
+					res1.setBranchCode(data.get("branchName")==null?"":data.get("branchName").toString());
+					res1.setCompanyId(data.get("companyId")==null?"":data.get("companyId").toString());
+					res1.setClientName(data.get("customerName")==null?"":data.get("customerName").toString());
+					res1.setLoginId(data.get("loginId")==null?"":data.get("loginId").toString());
+					res1.setUserType(data.get("userType")==null?"":data.get("userType").toString());
+					res1.setQuoteNo(data.get("quoteNo")==null?"":data.get("quoteNo").toString());
+					res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
+					res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
+					res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+					statusResList.add(res1);
+
+				}
+				
+			}
+			res.setPaymentStausRes(statusResList);
+		//	reslist.add(statusResList);
+			}else {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<PaymentDetail> p = query.from(PaymentDetail.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				List<Tuple> list =new ArrayList<Tuple>();
+
+				query.multiselect(p.get("quoteNo").alias("quoteNo"),h.get("loginId").alias("loginId"),
+						p.get("paymentId").alias("paymentId"),p.get("branchCode").alias("branchCode"),
+						p.get("paymentStatus").alias("paymentStatus"),
+						p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
+						h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
+						h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("paymentType"),"4"));
+				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+				predics.add(cb.equal(h.get("productId"),req.getProductId()));
+				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+				query.where(predics.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				
+				list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
+				List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
+				if (list != null && list.size() > 0) {
+					
+					for (Tuple data : list) {
+						PaymentStausRes res1 = new PaymentStausRes();
+						res1.setBranchCode(data.get("branchCode")==null?"":data.get("branchCode").toString());
+						res1.setBranchCode(data.get("branchName")==null?"":data.get("branchName").toString());
+						res1.setCompanyId(data.get("companyId")==null?"":data.get("companyId").toString());
+						res1.setClientName(data.get("customerName")==null?"":data.get("customerName").toString());
+						res1.setLoginId(data.get("loginId")==null?"":data.get("loginId").toString());
+						res1.setUserType(data.get("userType")==null?"":data.get("userType").toString());
+						res1.setQuoteNo(data.get("quoteNo")==null?"":data.get("quoteNo").toString());
+						res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
+						res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
+						res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+						statusResList.add(res1);
+
+					}
+					
+				}
+				res.setPaymentStausRes(statusResList);
+				
+			}
+		
+		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
+
+	@Override
+	public GetPaymentStatusRes getPaymentSucessStatus(GetPaymentStatusReq req) {
+		GetPaymentStatusRes res = new GetPaymentStatusRes();
+		try {
+			if(StringUtils.isNotBlank(req.getLoginId())) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<PaymentDetail> p = query.from(PaymentDetail.class);
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			List<Tuple> list =new ArrayList<Tuple>();
+
+			query.multiselect(p.get("quoteNo").alias("quoteNo"),h.get("loginId").alias("loginId"),
+					p.get("paymentId").alias("paymentId"),p.get("branchCode").alias("branchCode"),
+					p.get("paymentStatus").alias("paymentStatus"),
+					p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
+					h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
+					h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(p.get("paymentType"),"4"));
+			predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+			predics.add(cb.equal(h.get("productId"),req.getProductId()));
+			predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+			predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+			query.where(predics.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			list = typedQuery.getResultList();
+			
+			list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
+			List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
+			if (list != null && list.size() > 0) {
+				
+				for (Tuple data : list) {
+					PaymentStausRes res1 = new PaymentStausRes();
+					res1.setBranchCode(data.get("branchCode")==null?"":data.get("branchCode").toString());
+					res1.setBranchCode(data.get("branchName")==null?"":data.get("branchName").toString());
+					res1.setCompanyId(data.get("companyId")==null?"":data.get("companyId").toString());
+					res1.setClientName(data.get("customerName")==null?"":data.get("customerName").toString());
+					res1.setLoginId(data.get("loginId")==null?"":data.get("loginId").toString());
+					res1.setUserType(data.get("userType")==null?"":data.get("userType").toString());
+					res1.setQuoteNo(data.get("quoteNo")==null?"":data.get("quoteNo").toString());
+					res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
+					res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
+					res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+					statusResList.add(res1);
+
+				}
+				
+			}
+			res.setPaymentStausRes(statusResList);
+		//	reslist.add(statusResList);
+			}else {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<PaymentDetail> p = query.from(PaymentDetail.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				List<Tuple> list =new ArrayList<Tuple>();
+
+				query.multiselect(p.get("quoteNo").alias("quoteNo"),h.get("loginId").alias("loginId"),
+						p.get("paymentId").alias("paymentId"),p.get("branchCode").alias("branchCode"),
+						p.get("paymentStatus").alias("paymentStatus"),
+						p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
+						h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
+						h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("paymentType"),"4"));
+				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+				predics.add(cb.equal(h.get("productId"),req.getProductId()));
+				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+				query.where(predics.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				
+				list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
+				List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
+				if (list != null && list.size() > 0) {
+					
+					for (Tuple data : list) {
+						PaymentStausRes res1 = new PaymentStausRes();
+						res1.setBranchCode(data.get("branchCode")==null?"":data.get("branchCode").toString());
+						res1.setBranchCode(data.get("branchName")==null?"":data.get("branchName").toString());
+						res1.setCompanyId(data.get("companyId")==null?"":data.get("companyId").toString());
+						res1.setClientName(data.get("customerName")==null?"":data.get("customerName").toString());
+						res1.setLoginId(data.get("loginId")==null?"":data.get("loginId").toString());
+						res1.setUserType(data.get("userType")==null?"":data.get("userType").toString());
+						res1.setQuoteNo(data.get("quoteNo")==null?"":data.get("quoteNo").toString());
+						res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
+						res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
+						res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+						statusResList.add(res1);
+
+					}
+					
+				}
+				res.setPaymentStausRes(statusResList);
+				
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
 }
+

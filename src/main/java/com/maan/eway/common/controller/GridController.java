@@ -19,6 +19,7 @@ import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.GetExistingBrokerListReq;
+import com.maan.eway.common.req.GetPaymentStatusReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
@@ -33,6 +34,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetPaymentStatusRes;
 import com.maan.eway.common.res.GetRegNumberQuoteRes;
 import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
@@ -866,6 +868,56 @@ public class GridController {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		RegNumberRes res = entityService.getRegNumberQuotes(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/paymentpendingstatus")
+	public ResponseEntity<CommonRes> getPaymentStatus(@RequestBody GetPaymentStatusReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		GetPaymentStatusRes res = entityService.getPaymentStatus(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/paymentfailedstatus")
+	public ResponseEntity<CommonRes> getPaymentFailedStatus(@RequestBody GetPaymentStatusReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		GetPaymentStatusRes res = entityService.getPaymentFailedStatus(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/paymentsucessstatus")
+	public ResponseEntity<CommonRes> getPaymentSucessStatus(@RequestBody GetPaymentStatusReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		GetPaymentStatusRes res = entityService.getPaymentSucessStatus(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
