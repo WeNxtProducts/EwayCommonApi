@@ -111,8 +111,8 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
 			}
 			
-			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode())  ? req.getAgencyCode() : "99999"   ;
-			List<PaymentMaster>  datas = repo.findByCompanyIdAndBranchCodeAndUserTypeAndSubUserTypeAndAgencyCodeAndEffectiveDateStartOrderByEntryDateDesc(req.getCompanyId(),req.getBranchCode(),req.getUserType(),req.getSubUserType(),agencyCode , req.getEffectiveDateStart());
+			
+			List<PaymentMaster>  datas = repo.findByCompanyIdAndBranchCodeAndUserTypeAndSubUserTypeAndAgencyCodeAndEffectiveDateStartOrderByEntryDateDesc(req.getCompanyId(),req.getBranchCode(),req.getUserType(),req.getSubUserType(),req.getAgencyCode() , req.getEffectiveDateStart());
 			if(datas!=null && datas.size()>0) {
 				if(StringUtils.isBlank(req.getPaymentMasterId()))
 				{		
@@ -162,7 +162,7 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 		String createdBy = "" ;
 			Integer paymentId = 0;
 		if(StringUtils.isBlank(req.getPaymentMasterId())) {
-			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode() , req.getAgencyCode());
+			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode());
 			paymentId = totalCount+1;
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
@@ -186,8 +186,10 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
 			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
 			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode())  ? req.getAgencyCode() : "99999"   ;
-			Predicate n13 = cb.equal(b.get("agencyCode"),agencyCode);
-			query.where(n1,n2,n3,n4,n13).orderBy(orderList);
+			Predicate n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
+			Predicate n14 = cb.equal(b.get("agencyCode"),"99999" );
+			Predicate n15 = cb.or(n13,n14 );
+			query.where(n1,n2,n3,n4,n15).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<PaymentMaster> result = em.createQuery(query);
@@ -249,7 +251,7 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 	}
 	
 	
-public Integer getMasterTableCount(String companyId, String branchCode , String agencyCode)	{
+public Integer getMasterTableCount(String companyId, String branchCode)	{
 
 	Integer data =0;
 	try {
@@ -268,9 +270,9 @@ public Integer getMasterTableCount(String companyId, String branchCode , String 
 		Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"),b.get("paymentMasterId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-		Predicate a4 = cb.equal(ocpm1.get("agencyCode"),b.get("agencyCode"));
 		
-		effectiveDate.where(a1,a2,a3,a4);
+		
+		effectiveDate.where(a1,a2,a3);
 	
 		//OrderBy
 		List<Order> orderList = new ArrayList<Order>();
@@ -283,9 +285,9 @@ public Integer getMasterTableCount(String companyId, String branchCode , String 
 		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 = cb.equal(b.get("companyId"),"99999");
 		Predicate n7 = cb.or(n2,n6);
-		agencyCode = StringUtils.isNotBlank(agencyCode)  ? agencyCode : "99999"   ;
-		Predicate n13 = cb.equal(b.get("agencyCode"),agencyCode);
-		query.where(n1,n7,n5,n13).orderBy(orderList);
+		String agencyCode = "99999"   ;
+		Predicate n8 = cb.equal(b.get("agencyCode"),agencyCode );
+		query.where(n1,n7,n5,n8).orderBy(orderList);
 		
 		
 		
@@ -343,9 +345,10 @@ public List<PaymentMasterRes> getallPayment(PaymentMasterGetallReq req) {
 		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 =  cb.equal(b.get("productId"), req.getProductId());
-		String agencyCode = StringUtils.isNotBlank(req.getAgencyCode())  ? req.getAgencyCode() : "99999"   ;
-		Predicate n13 = cb.equal(b.get("agencyCode"),agencyCode);
-		query.where(n1,n2,n5,n6,n13).orderBy(orderList);
+		Predicate n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
+		Predicate n14 = cb.equal(b.get("agencyCode"),"99999" );
+		Predicate n15 = cb.or(n13,n14 );
+		query.where(n1,n2,n5,n6,n15).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PaymentMaster> result = em.createQuery(query);
@@ -414,9 +417,10 @@ public List<PaymentMasterRes> getActivePayment(PaymentMasterGetallReq req) {
 		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n5,n6);
 		Predicate n8 =  cb.equal(b.get("productId"), req.getProductId());
-		String agencyCode = StringUtils.isNotBlank(req.getAgencyCode())  ? req.getAgencyCode() : "99999"   ;
-		Predicate n13 = cb.equal(b.get("agencyCode"),agencyCode);
-		query.where(n1,n2,n4,n7,n8,n13).orderBy(orderList);
+		Predicate n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
+		Predicate n14 = cb.equal(b.get("agencyCode"),"99999" );
+		Predicate n15 = cb.or(n13,n14 );
+		query.where(n1,n2,n4,n7,n8,n15).orderBy(orderList);
 
 		
 		query.where(n1,n8,n4,n6).orderBy(orderList);
@@ -492,9 +496,10 @@ public PaymentMasterRes getByPaymentId(PaymentMasterGetReq req) {
 		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 =  cb.equal(b.get("productId"), req.getProductId());
 		Predicate n7 = cb.equal(b.get("paymentMasterId"), req.getPaymentMasterId());
-		String agencyCode = StringUtils.isNotBlank(req.getAgencyCode())  ? req.getAgencyCode() : "99999"   ;
-		Predicate n13 = cb.equal(b.get("agencyCode"),agencyCode);
-		query.where(n1,n2,n5,n6,n7,n13).orderBy(orderList);
+		Predicate n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
+		Predicate n14 = cb.equal(b.get("agencyCode"),"99999" );
+		Predicate n15 = cb.or(n13,n14 );
+		query.where(n1,n2,n5,n6,n7,n15).orderBy(orderList);
 		
 		
 		// Get Result
@@ -556,10 +561,11 @@ public SuccessRes changeStatusOfPayment(PaymentMasterChangeStatusReq req) {
 		Predicate n6 = cb.or(n3,n5);
 		Predicate n7 = cb.equal(b.get("companyId"),"99999");
 		Predicate n8 = cb.or(n2,n7);
-		String agencyCode = StringUtils.isNotBlank(req.getAgencyCode())  ? req.getAgencyCode() : "99999"   ;
-		Predicate n13 = cb.equal(b.get("agencyCode"),agencyCode);
+		Predicate n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
+		Predicate n14 = cb.equal(b.get("agencyCode"),"99999" );
+		Predicate n15 = cb.or(n13,n14 );
 		
-		query.where(n1,n8,n4,n6,n13).orderBy(orderList);
+		query.where(n1,n8,n4,n6,n15).orderBy(orderList);
 		
 		// Get Result 
 		TypedQuery<PaymentMaster> result = em.createQuery(query);
