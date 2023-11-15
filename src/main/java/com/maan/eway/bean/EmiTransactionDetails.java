@@ -122,7 +122,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
 
-
+    @Column(name="SELECT_YN", length=100)
+    private String     selectYn ;
+    
+    @Column(name="PAYMENT_ID", length=20)
+    private String     paymentId ;
 
 }
 

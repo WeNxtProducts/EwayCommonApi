@@ -6,6 +6,7 @@
 package com.maan.eway.master.service.impl;
 
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-
+import com.maan.eway.master.req.EmiEndtDetailsReq;
 import com.maan.eway.master.req.EmiInstallmentDetailsReq;
 import com.maan.eway.master.req.EmiTransactionDetailsGetReq;
 import com.maan.eway.master.req.EmiTransactionDetailsNextReq;
@@ -55,15 +56,20 @@ import com.maan.eway.master.res.EmiInfoListRes;
 import com.maan.eway.master.service.EmiTransactionDetailsService;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.ExchangeMasterRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.FactorRateMaster;
+import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.error.Error;
 
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.calc.Loading;
 
 /**
  * <h2>EmiTransactionDetailsServiceimpl</h2>
@@ -80,6 +86,13 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 	@Autowired
 	private ExchangeMasterRepository exchangeMasterRepo;
+	
+	@Autowired
+	private HomePositionMasterRepository homerepo;
+	
+
+	@Autowired
+	private PaymentDetailRepository paymentdetailrepo;
 	
 	Gson json = new Gson();
 
@@ -142,10 +155,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			} else if (req.getCreatedBy().length() > 100) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
-			if (StringUtils.isBlank(req.getPaymentDetails())) {
-				errorList.add(new Error("08", "PaymentDetails", "Please Enter PaymentDetails "));
-			}
-			
+//			if (StringUtils.isBlank(req.getPaymentDetails())) {
+//				errorList.add(new Error("08", "PaymentDetails", "Please Enter PaymentDetails "));
+//			}
+//			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -159,9 +172,17 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	public SuccessRes insertEmiTransactionDetails(EmiTransactionDetailsSaveReq req) {
 		SuccessRes res = new SuccessRes();
 		DecimalFormat df = new DecimalFormat("0.00");
+		EmiTransactionDetails saveData = new EmiTransactionDetails();
 		try {
-			
-			EmiTransactionDetails saveData = new EmiTransactionDetails();
+			BigDecimal adv=new BigDecimal(0);
+		if("N".equalsIgnoreCase(req.getStatus())) {
+			List<EmiTransactionDetails> list = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
+					req.getCompanyId(), req.getProductId());
+			if (list.size() > 0 && StringUtils.isNotBlank(req.getQuoteNo())) {
+				repo.deleteAll(list);
+			}
+		}else {
+		
 			String quoteNo = req.getQuoteNo();
 			String insDesc = "";
 			Date entryDate = new Date();
@@ -198,6 +219,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				interestAmount = premiumWithTax * interestPercent / 100;
 				totalLoanAmount = premiumWithTax + interestAmount;
 				advanceAmount = totalLoanAmount * advancePercent / 100;
+				adv=new BigDecimal(advanceAmount);
 				if (i == 0) {
 					balanceAmount = totalLoanAmount - advanceAmount;
 					installment = balanceAmount / noOfMonth;
@@ -241,10 +263,27 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				saveData.setRemarks(req.getRemarks());
 				repo.saveAndFlush(saveData);
 			}
-
 			res.setSuccessId(quoteNo);
 			res.setResponse("Saved Successful");
-
+		}
+			//Update Home Position Master
+			if("Y".equalsIgnoreCase(req.getStatus())) {
+				HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
+				homeData.setInstallmentPeriod(req.getInstallmentPeriod());
+				homeData.setEmiYn("Y");
+				homeData.setNoOfInstallment("0");
+				homeData.setEmiPremium(adv);
+				homerepo.save(homeData);
+			}else {
+				HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
+				homeData.setInstallmentPeriod("");
+				homeData.setEmiYn("N");
+				homeData.setNoOfInstallment(null);
+				homeData.setEmiPremium(null);
+				homerepo.save(homeData);
+			}
+			
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -344,7 +383,22 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			if (StringUtils.isBlank(req.getInstallmentPeriod())) {
 				errorList.add(new Error("02", "InstallmentPeriod", "Please Enter InstallmentPeriod"+row));
 			}
+			if (StringUtils.isBlank(req.getNoOfInstallment())) {
+				errorList.add(new Error("02", "No Of Installment", "Please Enter No Of Installment"+row));
+			}
+			if (row == 1) {
+				if (StringUtils.isNotBlank(req.getQuoteNo()) && StringUtils.isNotBlank(req.getCompanyId())) {
+					List<EmiTransactionDetails> list = repo
+							.findTop1ByQuoteNoAndCompanyIdAndPaymentStatusOrderByDueDateAsc(req.getQuoteNo(),
+									req.getCompanyId(), "Pending");
 
+					if (list != null) {
+						if (!list.get(0).getInstalment().equals(req.getNoOfInstallment())) {
+							errorList.add(new Error("08", "No Of Installment", "Please Enter Installment" + row));
+						}
+					}
+				}
+			}
 			if (StringUtils.isBlank(req.getQuoteNo())) {
 				errorList.add(new Error("03", "QuoteNo", "Please Enter QuoteNo"+row));
 			}
@@ -382,10 +436,20 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			
+			List<EmiTransactionDetails> list1 = repo.findByQuoteNoAndSelectYn(reqList.get(0).getQuoteNo(),"Y");
+			if (list1.size() > 0) {
+				for(EmiTransactionDetails req:list1) {
+					saveData=	dozerMapper.map(req, EmiTransactionDetails.class);
+					saveData.setSelectYn("N");
+					repo.saveAndFlush(saveData);
+				}
+			}
 			for(EmiTransactionDetailsUpdateReq req:reqList) {
 			Date entryDate = null;
 			String createdBy = "";
 			String quoteNo = req.getQuoteNo();
+			
 			
 			// Update
 			String productId = req.getProductId();
@@ -435,12 +499,27 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			saveData.setStatus(list.get(0).getStatus());
 			saveData.setCompanyId(req.getCompanyId());
 			saveData.setEntryDate(entryDate);
-			saveData.setPaymentStatus(req.getPaymentStatus());
-			saveData.setPaymentDate(entryDate);
+			saveData.setPaymentStatus("Pending");
+			saveData.setPaymentDate(null);
 			saveData.setPaymentDetails(req.getPaymentDetails());
+			saveData.setSelectYn(req.getSelectedYn());
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
-			}
+
+		}
+			//Update Home Position Master
+			List<EmiTransactionDetails> list2 = repo.findByQuoteNoAndSelectYnOrderByInstalmentDesc(reqList.get(0).getQuoteNo(),"Y");
+			
+			Double getData = list2.stream()
+					.filter(o -> o.getSelectYn().equalsIgnoreCase("Y"))
+					.mapToDouble( o ->   o.getDueAmount().doubleValue()).sum();
+			BigDecimal adv=new BigDecimal(getData);
+			HomePositionMaster homeData = homerepo.findByQuoteNo(list.get(0).getQuoteNo());
+			homeData.setInstallmentPeriod(list.get(0).getInstallmentPeriod());
+			homeData.setEmiYn("Y");
+			homeData.setNoOfInstallment(list2.get(0).getInstalment());
+			homeData.setEmiPremium(adv);
+			homerepo.save(homeData);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -482,7 +561,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			list = result.getResultList();
 			// Map
 			List<EmiTransactionDetails> list1 = new ArrayList<EmiTransactionDetails>();
-			list1 = repo.findTop2ByQuoteNoAndPaymentStatusOrderByDueDateAsc(quoteNo, "Pending");
+			list1 = repo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateAsc(quoteNo, "Pending");
 			
 			for (EmiTransactionDetails data : list) {
 				EmiTransactionDetailsRes res = new EmiTransactionDetailsRes();
@@ -490,6 +569,19 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				res.setInstallment(data.getInstalment());
 				res.setDueAmount((Double.valueOf(Math.round(data.getDueAmount()))).toString());
 				res.setBalanceAmount((Double.valueOf(Math.round(data.getBalanceAmount()))).toString());
+				res.setPaymentDetails(data.getPaymentDetails());
+				PaymentDetail paymentData=paymentdetailrepo.findByPaymentId(data.getPaymentId());
+				if(paymentData!=null) {
+				res.setMerchantReference(paymentData.getMerchantReference()==null?"":paymentData.getMerchantReference());
+				res.setBankName(paymentData.getBankName()==null?"":paymentData.getBankName());
+				res.setChequeNo(paymentData.getChequeNo()==null?"":paymentData.getChequeNo());
+				res.setChequeDate(paymentData.getChequeDate()==null?null:paymentData.getChequeDate());
+				res.setAccountNumber( paymentData.getAccountNumber()==null?"": paymentData.getAccountNumber()  ); 
+				res.setIbanNumber(paymentData.getIbanNumber()==null?"": paymentData.getIbanNumber() ); 
+				res.setPayments( StringUtils.isBlank(paymentData.getPayments() ) ? "" : paymentData.getPayments()  ); 
+				res.setPayeeName(paymentData.getPayeeName()==null?"":paymentData.getPayeeName() );
+				res.setMicrNo(paymentData.getMicrNo()==null?"":paymentData.getMicrNo());
+				}
 				if (list1 != null && list1.size() > 0) {
 					List<EmiTransactionDetails> filter =  list1.stream().filter( o -> o.getInstalment().equals(data.getInstalment())).collect(Collectors.toList());
 						if (filter.size()>0) {
@@ -758,6 +850,31 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			java.util.function.Function<? super T, ?> keyExtractor) {
 		Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+
+	@Override
+	public List<EmiTransactionDetailsRes> getEndorsementEmiDetails(EmiEndtDetailsReq req) {
+		List<EmiTransactionDetailsRes> resList=new ArrayList<EmiTransactionDetailsRes>();
+		try {
+			if("Y".equalsIgnoreCase(req.getEmiYn()) && StringUtils.isNotBlank(req.getEndtId())) {
+				List<EmiTransactionDetails> emiList=repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(), req.getCompanyId(), req.getProductId());
+				List<EmiTransactionDetails> filter =  emiList.stream().filter(e -> getPaymentStatus().equalsIgnoreCase("Paid"))
+						.collect(Collectors.toList());
+				
+			}
+					
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+
+		return resList;
+	}
+
+	private String getPaymentStatus() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

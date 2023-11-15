@@ -3136,6 +3136,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						m.get("creditDate").alias("creditDate"),
 						m.get("emiYn").alias("emiYn"),
 						m.get("installmentPeriod").alias("installmentPeriod"),
+						m.get("noOfInstallment").alias("noOfInstallment"),
+						m.get("emiPremium").alias("emiPremium"),
 						m.get("effectiveDate").alias("effectiveDate"),
 						m.get("currency").alias("currency"),
 						m.get("originalPolicyNo").alias("originalPolicyNo")

@@ -51,11 +51,13 @@ import com.google.gson.JsonPrimitive;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
 import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.DepositcbcMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.DocumentUniqueDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
@@ -97,6 +99,8 @@ import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
 import com.maan.eway.common.req.PaymentInfoGetReq;
 import com.maan.eway.common.req.PaymentResUrlReq;
+import com.maan.eway.common.req.SavePaymentDepositReq;
+import com.maan.eway.common.req.SavePremiumDepositReq;
 import com.maan.eway.common.req.TinyUrlGenerateReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
 import com.maan.eway.common.req.TiraFrameReqCall;
@@ -106,6 +110,7 @@ import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.TinyUrlGetRes;
+import com.maan.eway.common.service.DepositService;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.res.DocumentDropdownRes;
@@ -127,6 +132,7 @@ import com.maan.eway.payment.service.SelcomPaymentService;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDocumentMasterRepository;
+import com.maan.eway.repository.DepositcbcMasterRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -175,7 +181,6 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private EmiTransactionDetailsRepository emiRepo;
-	
 	
 	@Autowired
 	private ListItemValueRepository listrepo;
@@ -260,8 +265,8 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private NotifTemplateMasterRepository notifRepo;
 	
-	@Autowired
-	private TiraIntegerationServiceImpl tiraIntegService ;
+//	@Autowired
+//	private TiraIntegerationServiceImpl tiraIntegService ;
 
 	@Autowired
 	private ProductEmployeesDetailsRepository empDetailsRepo;
@@ -283,6 +288,12 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private	CoverDocumentMasterRepository docRepo;
+
+	@Autowired
+	private DepositService depoService;
+	
+	@Autowired
+	private DepositcbcMasterRepository depositcbcRepo;
 	
 	@Autowired
 	private EserviceTravelGroupDetailsRepository groupRepo ;
@@ -321,11 +332,24 @@ public class PaymentServiceImpl implements PaymentService {
 				
 			} else if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
 					&& StringUtils.isNotBlank(req.getInstallmentPeriod())  )  {
-				EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,req.getInstallmentMonth() , req.getInstallmentPeriod());
+				Double premium =0d;
+				Double overall=0d;
+				List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndSelectYn(req.getQuoteNo(),"Y");
+				if(emiDetails.size()>0) {
+				Double getData = emiDetails.stream()
+						.filter(o -> o.getSelectYn().equalsIgnoreCase("Y"))
+						.mapToDouble( o ->   o.getDueAmount().doubleValue()).sum();
 				String pattern = "#####0";
 			 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
-			 	Double premium =  Double.valueOf (decimalFormat.format(Double.valueOf (req.getPremium())));
-			 	Double overall =  Double.valueOf (decimalFormat.format(emiDetails.getDueAmount()));
+			 	premium =  Double.valueOf (decimalFormat.format(Double.valueOf (req.getPremium())));
+			 	overall =  Double.valueOf (decimalFormat.format(getData));
+			 	}else {
+				EmiTransactionDetails  emiDetails1 = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,req.getInstallmentMonth() , req.getInstallmentPeriod());
+				String pattern = "#####0";
+			 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
+			 	premium =  Double.valueOf (decimalFormat.format(Double.valueOf (req.getPremium())));
+			 	overall =  Double.valueOf (decimalFormat.format(emiDetails1.getDueAmount()));
+			 	}
 				if(! premium.equals(overall) ) {
 					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" + overall));
 				}
@@ -526,8 +550,10 @@ public class PaymentServiceImpl implements PaymentService {
 				error.addAll(checkGroupValidation(req.getQuoteNo()));
 					
 					
-			} else if(product.getMotorYn().equalsIgnoreCase("H") && !productId.equalsIgnoreCase("43") ) {
-				error.addAll(employeeCountAndSIValid(req.getQuoteNo(),sectionId));
+			} else if (product.getMotorYn().equalsIgnoreCase("H")) {
+				if (!(productId.equalsIgnoreCase("43") || productId.equalsIgnoreCase("27"))) {
+					error.addAll(employeeCountAndSIValid(req.getQuoteNo(), sectionId));
+				}
 			}
 			
 			
@@ -1563,6 +1589,14 @@ public class PaymentServiceImpl implements PaymentService {
 					error.add(new Error("01","PayeeName","Please Enter Valid PayeeName"));
 				}
 			}
+			if("3".equals(req.getPaymentType())) {
+				HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
+				
+				Long cbcDatacount=depositcbcRepo.countByBrokerIdAndStatus(homeData.getAgencyCode().toString(),"Y");
+				if(cbcDatacount==0){
+					error.add(new Error("01","Credit","Credit Option is not Activated For This Broker"));
+				}
+			}
 			
 			// Check Paymetn Info
 			if (StringUtils.isNotBlank(req.getQuoteNo()) && StringUtils.isNotBlank(req.getPaymentId()) ) {
@@ -1643,13 +1677,40 @@ public class PaymentServiceImpl implements PaymentService {
 					if( req.getPremium()==null ) {
 						error.add(new Error("01","Premium","Please Enter Premium "));
 					} else if ( req.getPremium().compareTo(new BigDecimal("0")) <= 0) {
-						error.add(new Error("01","Premium","Please Enter Premium Above Zero"));
-					} else if(data.getOverallPremiumFc().compareTo(req.getPremium())>0 ) {
-						error.add(new Error("01","Premium","Required Premium Should Not be Lesser than "+data.getOverallPremiumFc()));
-					} 
+						error.add(new Error("01", "Premium", "Please Enter Premium Above Zero"));
+					}
+					if (StringUtils.isNotBlank(req.getEmiYn())) {
+						if (!"Y".equalsIgnoreCase(req.getEmiYn())) {
+							if (data.getOverallPremiumFc().compareTo(req.getPremium()) > 0) {
+								error.add(new Error("01", "Premium",
+										"Required Premium Should Not be Lesser than " + data.getOverallPremiumFc()));
+							}
+						}
+					}
 				}
  				
 			}
+			
+		/*	// Credit Y/N Validation
+			String companyId="";
+			Integer productId=null;
+			Integer agencyCode=null;
+			String creditLimit="";
+			HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
+			if(homeData!=null) {
+				companyId=homeData.getCompanyId();
+				productId=homeData.getProductId();
+				agencyCode=homeData.getAgencyCode();
+				
+			}
+			if(StringUtils.isNotBlank(agencyCode.toString()) 
+					&& StringUtils.isNotBlank(productId.toString())&& StringUtils.isNotBlank(companyId)) {
+				List<BrokerCommissionDetails> loginList= getExistingBrokerById(agencyCode.toString() , companyId ,productId.toString());
+				creditLimit=loginList.get(0).getCreditYn();
+				if((!"Y".equalsIgnoreCase(creditLimit))||StringUtils.isBlank(creditLimit)) {
+					error.add(new Error("500","BrokerId","Credit Option is not Available"));
+				}
+			}*/
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -1658,6 +1719,51 @@ public class PaymentServiceImpl implements PaymentService {
 		return error;
 	}
 
+	public List<BrokerCommissionDetails> getExistingBrokerById(String brokerId , String InsuranceId , String productId) {
+		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+
+			// Find All
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = amendId.from(BrokerCommissionDetails.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+		//	Predicate a4 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+			amendId.where(a1,a2,a3,a5,a6);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal( b.get("agencyCode"), brokerId);
+			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
+			Predicate n4 = cb.equal(b.get("productId"), productId);
+		//	Predicate n5 = cb.equal(b.get("policyTypeId"),policyTypeId);
+			
+			query.where(n1,n2,n3,n4);
+			
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return list;
+	}
 
 	@Override
 	@Transactional
@@ -1669,7 +1775,7 @@ public class PaymentServiceImpl implements PaymentService {
 			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
 			PersonalInfo personaldata = personalrepo.findByCustomerId(data.getCustomerId());
 			String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
-
+			String installment="";
 			String branchName = getCompanyBranchMasterDropdown(data.getCompanyId() , data.getBranchCode());
 			String paymentMode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_MODE",req.getPaymentType());
 			String refShortCode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_REF_SHORTCODE","1");
@@ -1779,13 +1885,58 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
 			}
-			
-			
-			
+
+			//Payment Type Credit
+			CommonRes depores=null;
+			if (req.getPaymentType().equalsIgnoreCase("3")) {
+				List<DepositcbcMaster> cbcData=depositcbcRepo.findByBrokerId(data.getAgencyCode().toString());
+				if(cbcData!=null && cbcData.size()>0) {
+				//Framing Request  Save Payment Details
+				SavePaymentDepositReq paymentSaveReq= new SavePaymentDepositReq();
+				paymentSaveReq.setCbcNo(cbcData.get(0).getCbcNo());
+				paymentSaveReq.setQuoteNo(req.getQuoteNo());
+				paymentSaveReq.setPaymentType("1");
+				paymentSaveReq.setLoginId(data.getLoginId());
+				paymentSaveReq.setPremium(req.getPremium().toString());
+				paymentSaveReq.setChequeNo("");
+				paymentSaveReq.setChequeDate(null);
+				paymentSaveReq.setAccountNo("");
+				paymentSaveReq.setIbanNumber("");
+				paymentSaveReq.setMicrNo("");
+				paymentSaveReq.setPayeeName(req.getPayeeName());
+				paymentSaveReq.setReferenceNo(refno);
+				paymentSaveReq.setDepositNo("");
+				paymentSaveReq.setCompanyId(data.getCompanyId());
+				depoService.savePaymentDeposit(paymentSaveReq);
+				
+				SavePremiumDepositReq savDepositePayment =new SavePremiumDepositReq();
+				savDepositePayment.setBrokerId(data.getAgencyCode().toString());
+				savDepositePayment.setCompanyId(data.getCompanyId());
+				savDepositePayment.setCustomerId(data.getCustomerId());
+				savDepositePayment.setPremium(req.getPremium().toString());
+				savDepositePayment.setProductId(data.getProductId().toString());
+				savDepositePayment.setQuoteNo(req.getQuoteNo());
+				depores=depoService.savePremiumDeposit(savDepositePayment);
+				depores.getCommonResponse();
+				res.setResponse(depores.getCommonResponse().toString());
+
+				if (depores != null && "SUCCESS".equalsIgnoreCase(depores.getMessage())) {
+					if ("Y".equalsIgnoreCase(depores.getCommonResponse().toString())) {
+						paymentStatus = "ACCEPTED";
+					} else {
+						paymentStatus = "PENDING";
+					}
+
+				} else {
+					paymentStatus = "FAILED";
+				}
+			}
+
+		}
+
 			paymentdetailrepo.saveAndFlush(paymentDetail);
 		//	if(req.getPaymentType().equalsIgnoreCase("4")) 
 				 
-			
 			log.info("Saved Details " + json.toJson(paymentDetail));
 			
 			try{// Notification Trigger
@@ -1793,37 +1944,88 @@ public class PaymentServiceImpl implements PaymentService {
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+			// Update Emi Transaction Details
+			if (paymentInfo.getEmiYn().equalsIgnoreCase("Y")) {
+					//EmiTransactionDetails emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo(), paymentInfo.getInstallmentMonth(), paymentInfo.getInstallmentPeriod());
+					List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndSelectYn(req.getQuoteNo(),"Y");
+					EmiTransactionDetails saveDate=new EmiTransactionDetails();
+					for(EmiTransactionDetails data1:emiDetails) {
+						saveDate=dozermapper.map(data1, EmiTransactionDetails.class);
+						saveDate.setPaymentStatus("Paid");
+						saveDate.setPaymentDetails(paymentMode);
+						saveDate.setPaymentDate(new Date());
+						saveDate.setPaymentId(req.getPaymentId());
+					}
+					emiRepo.saveAndFlush(saveDate);
+				
+			}
+
 			// Update Payment Info
 			paymentInfo.setValidityDate(validateDate);
 			paymentInfo.setShorternUrl(tinyUrl);
 			paymentInfo.setPaymentStatus(paymentStatus);
 			paymentInfo.setMerchantReference(refno);
-			paymentInfo.setPayments( StringUtils.isBlank(req.getPayments() ) ? "Charge" : req.getPayments()  ); 			
+			paymentInfo.setPayments( StringUtils.isBlank(req.getPayments() ) ? "Charge" : req.getPayments()  ); 
+			if (req.getEmiYn().equalsIgnoreCase("Y" )) {
+				//EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,paymentInfo.getInstallmentMonth() , paymentInfo.getInstallmentPeriod());
+				List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(req.getQuoteNo(), "Paid");
+				if(emiDetails!=null) {
+					installment=emiDetails.get(0).getInstalment();
+					paymentInfo.setEmiYn(req.getEmiYn());
+					paymentInfo.setInstallmentMonth(emiDetails.get(0).getInstalment());
+				}
+			}
 			paymentinforepo.saveAndFlush(paymentInfo);
 			
+			if (req.getEmiYn().equalsIgnoreCase("Y" )) {
+			//	EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,paymentInfo.getInstallmentMonth() , paymentInfo.getInstallmentPeriod());
+				List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(req.getQuoteNo(), "Paid");
+
+				if(emiDetails!=null) {
+				data.setEmiYn(req.getEmiYn());
+				data.setEmiPremium(req.getPremium());
+				data.setInstallmentPeriod(emiDetails.get(0).getInstallmentPeriod());
+				data.setNoOfInstallment(emiDetails.get(0).getInstalment());
+				data.setEmiinstallYn(req.getEmiYn());
+				
+				}
+			}
 			data.setPaymentMode(req.getPaymentType());
 			data.setPaymentType(paymentDetail.getPaymentTypedesc());
 			data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
 			data.setEffectiveDate(data.getInceptionDate());
 			data.setPolicyCovertedDate(new Date());			
 			homerepo.saveAndFlush(data);
-			// Update Emi 
-			if (  paymentInfo.getEmiYn().equalsIgnoreCase("Y" )) {
-				EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,paymentInfo.getInstallmentMonth() , paymentInfo.getInstallmentPeriod());
-				emiDetails.setPaymentStatus(paymentStatus);
-				emiRepo.saveAndFlush(emiDetails);
-				
-			}
-			res.setResponse("Payment Success");
 			
-			
+			res.setResponse("Payment Success");	
 			
 			// Policy Convertion
-			if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("N") || paymentInfo.getInstallmentMonth().equalsIgnoreCase("0") )  ) {
+			if("Y".equalsIgnoreCase(req.getEmiYn())){
+				if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("Y") || paymentInfo.getInstallmentMonth().equalsIgnoreCase(installment) )  ) {
+					List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
+					
+					String policyNo = policyDetails.get(0).getPolicyNo();
+					List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+					List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
+					// Debit
+					String debitNo = filterDebit.size() > 0 ? filterDebit.get(0).getDocNo() : "";
+					// Credit
+					String creditNo ="";
+					if(filterCredit!=null && !filterCredit.isEmpty()){
+						creditNo =filterCredit.get(0).getDocNo();
+				}
+					
+					res.setPolicyNo(policyNo);
+					res.setDebitNoteNo(debitNo);
+					res.setCreditNoteNo(creditNo);
+					res.setResponse("Policy Converted");
+
+				
+			}
+			}else {
+			
+			if(paymentStatus.equalsIgnoreCase("ACCEPTED")&& paymentInfo.getEmiYn().equalsIgnoreCase("N")) {
 				List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
-				
-				
 				
 				String policyNo = policyDetails.get(0).getPolicyNo();
 				List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
@@ -1843,6 +2045,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 			}
 			
+			}
 			res.setPaymentId(paymentDetail.getPaymentId().toString());
 			res.setQuoteNo(req.getQuoteNo());
 			res.setMerchantReference(refno);
@@ -1857,6 +2060,14 @@ public class PaymentServiceImpl implements PaymentService {
 				}else {
 					res.setResponse(((JsonPrimitive) payment.get("message")).getAsString());
 				}
+			}else if(req.getPaymentType().equalsIgnoreCase("3")) {
+				res.setIserror(depores.getMessage().toString()); //;
+				if(res.getIserror().equals("SUCCESS")) {
+					res.setDepositResponse(depores.getCommonResponse().toString());
+					}else {
+					res.setResponse(depores.getMessage().toString());
+				}
+				
 			}
 			//Tracking Details
 			

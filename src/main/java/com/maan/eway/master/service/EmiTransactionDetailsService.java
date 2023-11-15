@@ -8,6 +8,7 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.EmiEndtDetailsReq;
 import com.maan.eway.master.req.EmiInstallmentDetailsReq;
 import com.maan.eway.master.req.EmiTransactionDetailsGetReq;
 import com.maan.eway.master.req.EmiTransactionDetailsNextReq;
@@ -34,5 +35,7 @@ public interface EmiTransactionDetailsService  {
 	List<EmiTransactionDetailsRes> getEmiDetailsByQuoteNo(EmiTransactionDetailsGetReq req);
 
 	List<EmiTransactionDetailsRes> getNextEmiDetails(EmiTransactionDetailsNextReq req);
+
+	List<EmiTransactionDetailsRes> getEndorsementEmiDetails(EmiEndtDetailsReq req);
 
 }

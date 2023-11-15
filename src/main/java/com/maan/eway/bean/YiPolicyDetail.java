@@ -184,7 +184,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ADDRESS_LINE3", length=240)
     private String     addressLine3 ;
 
-    @Column(name="STATE", length=12)
+    @Column(name="STATE", length=100)
     private String     state ;
 
     @Column(name="CITY", length=12)

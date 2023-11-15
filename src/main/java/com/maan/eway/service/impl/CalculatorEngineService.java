@@ -1251,8 +1251,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 			ViewQuoteRes v1 = quoteservice.viewQuoteDetails(q);
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(v1.getQuoteDetails().getCompanyId() , v1.getQuoteDetails().getProductId().toString());
 			String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+			String emiYn=v1.getQuoteDetails().getEmiYn();
+			String instalment=v1.getQuoteDetails().getInstallmentMonth();
 			 List<BranchMaster> branchCode=ratingutil.collectBranchMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getBranchCode());
-			if (StringUtils.isBlank(endttypeid)) {			 
+			if (StringUtils.isBlank(endttypeid)&& ( emiYn.equalsIgnoreCase("N") || instalment.equalsIgnoreCase("0"))) {			 
 				List<SectionDataDetails> sections = sectionRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
 		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),sections.get(0).getSectionId());
 		 	String policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());

@@ -42,6 +42,9 @@ public class EmiTransactionDetailsUpdateReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("SelectedYn")
+	private String selectedYn;
+	
 //	@JsonProperty("PolicyType")
 //	private String policyType;
 	//

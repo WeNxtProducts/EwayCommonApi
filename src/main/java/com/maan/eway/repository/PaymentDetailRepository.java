@@ -46,6 +46,8 @@ public interface PaymentDetailRepository  extends JpaRepository<PaymentDetail,Pa
 
 	PaymentDetail findByMerchantReferenceAndPaymentTypeAndPaymentStatus(String merchantRefernceNo, String paymentType,String PaymentStatus);
 
+	PaymentDetail findByPaymentId(String paymentId);
+
 
 	
 }

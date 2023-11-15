@@ -62,5 +62,27 @@ public class EmiTransactionDetailsRes implements Serializable {
 	
 	@JsonProperty("SelectYn")
     private String     selectYn ;
+
+	@JsonProperty("PaymentId")
+    private String     PaymentId ;
+	@JsonProperty("MerchantReference")
+    private String     merchantReference ;
+	@JsonProperty("BankName")
+    private String     bankName ;
+	@JsonProperty("ChequeNo")
+    private String     chequeNo ;
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("ChequeDate")
+    private Date     chequeDate ;
+	@JsonProperty("AccountNumber")
+    private String     accountNumber ;
+	@JsonProperty("IbanNumber")
+    private String     ibanNumber ;
+	@JsonProperty("Payments")
+    private String    payments ;
+	@JsonProperty("PayeeName")
+    private String     payeeName ;
+	@JsonProperty("MicrNo")
+    private String     micrNo ;
 	
 }

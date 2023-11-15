@@ -49,6 +49,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -57,6 +58,7 @@ import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PolicyCoverData;
@@ -87,6 +89,7 @@ import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MasterReferralDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PolicyCoverDataEndtRepository;
@@ -139,6 +142,9 @@ private EserviceCommonDetailsRepository eserCommonRepo;
 
 @Autowired
 private MasterReferralDetailsRepository masReferralRepo;
+
+@Autowired
+private HomePositionMasterRepository homeRepo ;
 
 @Autowired
 private UwQuestionsDetailsRepository uwReferalRepo;
@@ -1220,6 +1226,22 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				res.setCoverList(coverListRes);
 				res.setUwList(uwReferals);
 				res.setReferals(masterreferrals);
+				
+				// Emi Details 
+				List<HomePositionMaster> homeData  =  homeRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				if(homeData!=null && homeData.size()>0) {
+				List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(homeData.get(0).getQuoteNo() ,homeData.get(0).getCompanyId() , homeData.get(0).getProductId().toString());
+				if (emiDetails.size()>0 ) {
+					List<EmiTransactionDetails> filterEmi =  emiDetails.stream().filter( o -> (!o.getPaymentStatus().equalsIgnoreCase("Accepted")) &&  ( o.getInstalment().equalsIgnoreCase("0") || o.getInstalment()!=null ) ).collect(Collectors.toList());
+					if(filterEmi.size()>0   ) {
+						res.setEmiYn("Y");
+						res.setInstallmentPeriod(filterEmi.get(0).getInstallmentPeriod());
+						res.setInstallmentMonth(filterEmi.get(0).getInstalment() );
+						res.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":new BigDecimal(filterEmi.get(0).getDueAmount()).toPlainString());
+					}
+				}
+				}
+				
 
 			}
 			

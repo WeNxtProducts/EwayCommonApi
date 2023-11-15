@@ -339,7 +339,7 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setCustomerCode(homeData.getCustomerCode());
 			quoteRes.setBranchName(homeData.getBranchName());
 			quoteRes.setBrokerBranchName(homeData.getBrokerBranchName());		
-			quoteRes.setEmiYn("N");
+			//quoteRes.setEmiYn("N");
 			quoteRes.setEndtTypeId(homeData.getEndtTypeId());
 			quoteRes.setEndtTypeDesc(homeData.getEndtTypeDesc()==null?"":homeData.getEndtTypeDesc());
 			quoteRes.setEndtCategDesc(homeData.getEndtCategDesc()==null?null:homeData.getEndtCategDesc());
@@ -356,16 +356,28 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setEndtPremiumTax(homeData.getEndtPremiumTax()==null?BigDecimal.ZERO:homeData.getEndtPremiumTax());
 			quoteRes.setTotalEndtPremium(quoteRes.getEndtPremium());//.add(quoteRes.getEndtPremiumTax()));
 			// Emi Details 
-			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());
-			if (emiDetails.size()>0 ) {
-				List<EmiTransactionDetails> filterEmi =  emiDetails.stream().filter( o -> (!o.getPaymentStatus().equalsIgnoreCase("Accepted")) &&  ( o.getInstalment().equalsIgnoreCase("0") || o.getInstalment()!=null ) ).collect(Collectors.toList());
-				if(filterEmi.size()>0   ) {
-					quoteRes.setEmiYn("Y");
-					quoteRes.setInstallmentPeriod(filterEmi.get(0).getInstallmentPeriod());
-					quoteRes.setInstallmentMonth(filterEmi.get(0).getInstalment() );
-					quoteRes.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":new BigDecimal(filterEmi.get(0).getDueAmount()).toPlainString());
-				}
-			}
+			quoteRes.setEmiYn(homeData.getEmiYn()==null?"N":homeData.getEmiYn());
+			quoteRes.setInstallmentPeriod(homeData.getInstallmentPeriod()==null?"":homeData.getInstallmentPeriod());
+			quoteRes.setInstallmentMonth(homeData.getNoOfInstallment()==null?"":homeData.getNoOfInstallment());
+			quoteRes.setDueAmount(homeData.getEmiPremium()==null?null:homeData.getEmiPremium().toString());
+//			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductIdOrderByInstalmentAsc(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());
+//			if (emiDetails.size()>0 ) {
+//				List<EmiTransactionDetails> filterEmi =  emiDetails.stream().filter( o -> (!o.getPaymentStatus().equalsIgnoreCase("Paid")) &&  ( o.getInstalment().equalsIgnoreCase("0") || o.getInstalment()!=null ) ).collect(Collectors.toList());
+//				if(filterEmi.size()>0   ) {
+//					quoteRes.setEmiYn("Y");
+//					quoteRes.setInstallmentPeriod(filterEmi.get(0).getInstallmentPeriod());
+//					quoteRes.setInstallmentMonth(filterEmi.get(0).getInstalment() );
+//					quoteRes.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":new BigDecimal(filterEmi.get(0).getDueAmount()).toPlainString());
+//				}
+//			}
+			
+//			List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateAsc(homeData.getQuoteNo(), "Paid");
+//			if (emiDetails.size()>0 ) {
+//					quoteRes.setEmiYn("Y");
+//					quoteRes.setInstallmentPeriod(emiDetails.get(0).getInstallmentPeriod());
+//					quoteRes.setInstallmentMonth(emiDetails.get(0).getInstalment() );
+//					quoteRes.setDueAmount(emiDetails.get(0).getDueAmount()==null?"":new BigDecimal(emiDetails.get(0).getDueAmount()).toPlainString());
+//				}
 				
 			
 			// Customer Details

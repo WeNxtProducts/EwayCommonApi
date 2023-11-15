@@ -413,7 +413,7 @@ private String     promoAgencyCode ;
 private String     empcode ;
 
 @Column(name="NO_OF_INSTALLMENT")
-private BigDecimal     noOfInstallment ;
+private String     noOfInstallment ;
 
 @Column(name="INSURED_BY", length=25)
 private String     insuredBy ;

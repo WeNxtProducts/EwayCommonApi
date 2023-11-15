@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class EmiTransactionDetailsNextReq implements Serializable {
+public class EmiEndtDetailsReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,6 +21,20 @@ public class EmiTransactionDetailsNextReq implements Serializable {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
+	@JsonProperty("EmiYn")
+	private String emiYn;
+	
+	@JsonProperty("EndtId")
+	private String endtId;
+	
+	@JsonProperty("Premium")
+	private String premium;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 
 	
 }

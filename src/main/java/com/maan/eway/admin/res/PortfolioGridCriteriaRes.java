@@ -59,6 +59,9 @@ public class PortfolioGridCriteriaRes {
 
 	private String installmentPeriod;
 	
+	private String     noOfInstallment ;
+
+	private BigDecimal     emiPremium ;
 	private Date effectiveDate;
 	
 	private String currency;

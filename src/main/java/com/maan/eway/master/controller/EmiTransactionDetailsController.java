@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.EmiEndtDetailsReq;
 import com.maan.eway.master.req.EmiInstallmentDetailsReq;
 import com.maan.eway.master.req.EmiTransactionDetailsGetReq;
 import com.maan.eway.master.req.EmiTransactionDetailsNextReq;
@@ -183,6 +184,27 @@ public class EmiTransactionDetailsController {
 			reqPrinter.reqPrint(req);
 
 			List<EmiTransactionDetailsRes> res = service.getNextEmiDetails(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+   //Endorsement Emi Calculation
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PostMapping("/emiendtcalc")
+		@ApiOperation("This method is  Endorsement Emi Calculation s")
+		public ResponseEntity<CommonRes> getEndorsementEmiDetails(@RequestBody EmiEndtDetailsReq req) {
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+
+			List<EmiTransactionDetailsRes> res = service.getEndorsementEmiDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

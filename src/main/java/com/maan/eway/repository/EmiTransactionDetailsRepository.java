@@ -30,7 +30,25 @@ public interface EmiTransactionDetailsRepository extends JpaRepository<EmiTransa
 	EmiTransactionDetails findByQuoteNoAndInstalmentAndInstallmentPeriod(String quoteNo, String installmentMonth,
 			String installmentPeriod);
 
-	List<EmiTransactionDetails> findTop2ByQuoteNoAndPaymentStatusOrderByDueDateAsc(String quoteNo, String string);
+	//List<EmiTransactionDetails> findTop2ByQuoteNoAndPaymentStatusOrderByDueDateAsc(String quoteNo, String string);
+
+	List<EmiTransactionDetails> findTop1ByQuoteNoAndCompanyIdAndPaymentStatusOrderByDueDateAsc(String quoteNo,
+			String companyId, String string);
+
+	List<EmiTransactionDetails> findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(String quoteNo, String string);
+
+	List<EmiTransactionDetails> findByQuoteNoAndCompanyIdAndProductIdOrderByInstalmentAsc(String quoteNo,
+			String companyId, String string);
+
+	List<EmiTransactionDetails> findByQuoteNoAndInstallmentPeriod(String quoteNo, String installmentPeriod);
+
+	List<EmiTransactionDetails> findByQuoteNoAndSelectYn(String quoteNo, String string);
+
+	List<EmiTransactionDetails> findByQuoteNoAndSelectYnOrderByInstalmentDesc(String quoteNo, String string);
+
+
+
+
 
 
 	

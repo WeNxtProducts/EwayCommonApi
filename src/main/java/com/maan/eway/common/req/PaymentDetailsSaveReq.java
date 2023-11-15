@@ -65,4 +65,7 @@ public class PaymentDetailsSaveReq {
 	
 	@JsonProperty("Premium")
 	private BigDecimal premium;
+
+	@JsonProperty("EmiYn")
+	private String emiYn;
 }
