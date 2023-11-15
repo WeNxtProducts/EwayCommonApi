@@ -343,9 +343,18 @@ public List<PaymentMasterRes> getallPayment(PaymentMasterGetallReq req) {
 		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 =  cb.equal(b.get("productId"), req.getProductId());
-		String agencyCode = StringUtils.isNotBlank(req.getAgencyCode())  ? req.getAgencyCode() : "99999"   ;
-		Predicate n13 = cb.equal(b.get("agencyCode"),agencyCode);
-		query.where(n1,n2,n5,n6,n13).orderBy(orderList);
+		Predicate n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
+		Predicate n14 = cb.equal(b.get("agencyCode"),"99999" );
+		Predicate n15 = cb.or(n13, n14);
+		if(StringUtils.isNotBlank(req.getAgencyCode())) {
+			Predicate n16 = cb.equal(b.get("userType"),req.getUserType());
+			Predicate n17 = cb.equal(b.get("subUserType"),req.getUserType());
+			query.where(n1,n2,n5,n6,n15,n16,n17).orderBy(orderList);
+		} else {
+			query.where(n1,n2,n5,n6,n15).orderBy(orderList);
+				
+		}
+		
 		
 		// Get Result
 		TypedQuery<PaymentMaster> result = em.createQuery(query);
@@ -493,7 +502,7 @@ public PaymentMasterRes getByPaymentId(PaymentMasterGetReq req) {
 		Predicate n6 =  cb.equal(b.get("productId"), req.getProductId());
 		Predicate n7 = cb.equal(b.get("paymentMasterId"), req.getPaymentMasterId());
 		Predicate n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
-		Predicate n14 = cb.equal(b.get("agencyCode"),"99999" );
+		Predicate n14 = cb.equal(b.get("agencyCode"), "99999");
 		Predicate n15 = cb.or(n13,n14);
 		query.where(n1,n2,n5,n6,n7,n15).orderBy(orderList);
 		
@@ -504,12 +513,14 @@ public PaymentMasterRes getByPaymentId(PaymentMasterGetReq req) {
 		list = result.getResultList();
 		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPaymentMasterId()))).collect(Collectors.toList());
 		list.sort(Comparator.comparing(PaymentMaster :: getPaymentMasterId ));
+		if (list.size() > 0) {
+			res = mapper.map(list.get(0), PaymentMasterRes.class);
+			res.setPaymentMasterId(list.get(0).getPaymentMasterId().toString());
+			res.setEntryDate(list.get(0).getEntryDate());
+			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+		}
 		
-		res = mapper.map(list.get(0), PaymentMasterRes.class);
-		res.setPaymentMasterId(list.get(0).getPaymentMasterId().toString());
-		res.setEntryDate(list.get(0).getEntryDate());
-		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
