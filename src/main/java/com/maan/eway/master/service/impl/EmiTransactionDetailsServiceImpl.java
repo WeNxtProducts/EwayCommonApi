@@ -354,7 +354,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			Predicate n12 = cb.or(n7,  n11);
 			Predicate n9 = cb.equal(b.get("installmentPeriod"), insPeriod);
 			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
-			query.where(n1, n5, n6, n12,n9,n10).orderBy(orderList);
+			Predicate n13 = cb.equal(b.get("status"), "Y");
+			query.where(n1, n5, n6, n12,n9,n10,n13).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);
@@ -805,7 +806,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			Predicate n12 = cb.or(n7, n11);
 			Predicate n9 = cb.between(cb.literal(amt).as(Double.class) , b.get("premiumStart"), b.get("premiumEnd"));
 			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
-			query.where(n1, n5, n6, n12,n9,n10).orderBy(orderList);
+			Predicate n13 = cb.equal(b.get("status"), "Y");
+			query.where(n1, n5, n6, n12,n9,n10,n13).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);
