@@ -19,12 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.document.controller.DocumentController;
 import com.maan.eway.error.CommonValidationException;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.FileUploadReq;
 import com.maan.eway.master.req.GetOptedSectionAdditionalInfoReq;
 import com.maan.eway.master.req.GetSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.InsertAdditionalInfoReq;

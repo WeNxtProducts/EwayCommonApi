@@ -1,6 +1,5 @@
 package com.maan.eway.master.service.impl;
 
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,18 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.CoverDocumentMaster;
-import com.maan.eway.bean.DocumentTransactionDetails;
-import com.maan.eway.bean.DocumentUniqueDetails;
-import com.maan.eway.bean.EndtTypeMaster;
-import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ProductSectionAdditionalInfoMaster;
-import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.FileUploadReq;
 import com.maan.eway.master.req.GetOptedSectionAdditionalInfoReq;
 import com.maan.eway.master.req.GetSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.InsertAdditionalInfoReq;
@@ -408,8 +399,21 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 
 	@Override
 	public List<Error> docvalidation( MultipartFile file) {
-		// TODO Auto-generated method stub
-		return null;
+		 List<Error>  errorList = new ArrayList<Error>();
+		try {
+			
+			long fileSizeInBytes = file.getSize();
+			double size_kb = fileSizeInBytes / 1024;
+			double size_mb = size_kb / 1024;
+	
+			if (size_mb > 25) {
+				errorList.add(new Error("01", "FileSize", "File Size Must Not Greater Than 25Mb Current file value is" + size_mb
+						+ "MB"));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return errorList;
 	}
 
 
