@@ -996,7 +996,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 				if (vehicles != null && vehicles.size() > 0) {
 					String periodOfInsurance = (vehicles.get(0).get("periodOfInsurance") == null ? "365"
 							: vehicles.get(0).get("periodOfInsurance").toString());
-					prorata = ratingutil.loadProRataData(engine, periodOfInsurance);
+					String policyTypeId = (vehicles.get(0).get("insuranceClass") == null ? "99999"
+							: vehicles.get(0).get("insuranceClass").toString());
+					
+					prorata = ratingutil.loadProRataData(engine, periodOfInsurance,policyTypeId);
 
 					String currencyId = vehicles.get(0).get("currency") == null ? "TTT"
 							: vehicles.get(0).get("currency").toString();

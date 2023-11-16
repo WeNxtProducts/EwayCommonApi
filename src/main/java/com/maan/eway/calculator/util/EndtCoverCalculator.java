@@ -182,11 +182,12 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 										String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
 										//Removal Logic									
 										diff= String.valueOf(Integer.parseInt(periodOfInsurance)-Integer.parseInt(diff));
-										
+										String policyTypeId = (vehicles.get(0).get("insuranceClass") == null ? "99999"
+												: vehicles.get(0).get("insuranceClass").toString());
 										if(Integer.parseInt(diff)<0) diff="0";
 										List<Tuple> prorata =null;
 										if(!"D".equals(t.getProRataYn())) 
-											prorata = crservice.loadProRataData(engine, diff);
+											prorata = crservice.loadProRataData(engine, diff,policyTypeId);
 										
 											
 										endorsement.setProRataYn("Y");
@@ -218,9 +219,12 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 					 			 if(Integer.parseInt(diff)<0) diff="0";
 					 			 
+					 			String policyTypeId = (vehicles.get(0).get("insuranceClass") == null ? "99999"
+										: vehicles.get(0).get("insuranceClass").toString());
+					 			
 					 			List<Tuple> prorata =null;
 								if(!"D".equals(t.getProRataYn())) 
-									prorata =  crservice.loadProRataData(engine, diff);
+									prorata =  crservice.loadProRataData(engine, diff,policyTypeId);
 								
 					 			 if(prorata !=null && prorata.size()>0) {
 					 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
@@ -306,9 +310,11 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 			 if(daysBetween>366) daysBetween=365L;
 					 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 					 			 
+					 			String policyTypeId = (vehicles.get(0).get("insuranceClass") == null ? "99999"
+										: vehicles.get(0).get("insuranceClass").toString());
 					 			List<Tuple> prorata =null;
 								if(!"D".equals(t.getProRataYn()))
-									prorata =  crservice.loadProRataData(engine, diff);
+									prorata =  crservice.loadProRataData(engine, diff,policyTypeId);
 								
 					 			 if(prorata !=null && prorata.size()>0) {
 					 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());

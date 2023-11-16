@@ -111,9 +111,11 @@ public class CachingConfig   {
 	    			public Object generate(Object target, Method method, Object... params) {
 	    				CalcEngine e=(CalcEngine)params[0];
 	    				String periodOfInsurance=(String) params[1];
+	    				String policyTypeId=(String) params[2];
 	    				String string = new StringBuilder().append(e.getInsuranceId())
 	    						.append(e.getProductId())
 	    						.append(periodOfInsurance)
+	    						.append(policyTypeId)
 	    						.append("prorata")
 	    						.toString();
 	    				return string;

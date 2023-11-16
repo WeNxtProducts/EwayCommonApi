@@ -360,13 +360,20 @@ public class RatingFactorsUtil {
 	}
 	
 	@Cacheable(cacheNames = {"loadProRata"},keyGenerator  = "loadProRataKeyGen",value = "loadProRata" )
-	public List<Tuple> loadProRataData(CalcEngine engine,String periodOfInsurance){
+	public List<Tuple> loadProRataData(CalcEngine engine,String periodOfInsurance,String policyTypeId){
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="insuranceid:"+engine.getInsuranceId()+";productid:"+engine.getProductId()+";status:Y;"+periodOfInsurance+"~startfrom&endto;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			String search="insuranceid:"+engine.getInsuranceId()+";productid:"+engine.getProductId()+";status:Y;"+periodOfInsurance+"~startfrom&endto;"+todayInString+"~effectiveDateStart&effectiveDateEnd;policyTypeId:"+policyTypeId+";";
 			SpecCriteria criteria = crservice.createCriteria(CompanyProrataMaster.class, search, "sno");
 			List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
-			return prorata.size()>0?prorata:null;
+			if(prorata!=null && prorata.size()>0)
+					return prorata;
+			else {
+				 search="insuranceid:"+engine.getInsuranceId()+";productid:"+engine.getProductId()+";status:Y;"+periodOfInsurance+"~startfrom&endto;"+todayInString+"~effectiveDateStart&effectiveDateEnd;policyTypeId:99999;";
+				 criteria = crservice.createCriteria(CompanyProrataMaster.class, search, "sno");
+				 prorata = crservice.getResult(criteria, 0, 50);				 
+				 return prorata.size()>0?prorata:null;
+			}
 		}catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
