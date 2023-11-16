@@ -636,7 +636,8 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		Predicate a5 = cb.equal(c.get("subUserType"),ocpm1.get("subUserType"));
 		Predicate a6 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 		Predicate a7 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2,a3,a4,a5,a6,a7);
+		Predicate a15 = cb.equal(c.get("agencyCode"),ocpm1.get("agencyCode"));
+		effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a15);
 		
 		// Effective Date End Max Filter
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -649,8 +650,9 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		Predicate a12 = cb.equal(c.get("subUserType"),ocpm2.get("subUserType"));
 		Predicate a13 = cb.equal(c.get("productId"),ocpm2.get("productId"));
 	//	Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		Predicate a16 = cb.equal(c.get("agencyCode"),ocpm2.get("agencyCode"));
 	//	effectiveDate2.where(a8,a9,a10,a11,a12,a13,a14);
-		effectiveDate2.where(a8,a9,a10,a11,a12,a13);
+		effectiveDate2.where(a8,a9,a10,a11,a12,a13,a16);
 		// Where
 		Predicate n1 = cb.equal(c.get("status"),"Y");
 		Predicate n11 = cb.equal(c.get("status"),"R");
