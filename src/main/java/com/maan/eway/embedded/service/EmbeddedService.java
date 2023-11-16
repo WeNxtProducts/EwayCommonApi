@@ -156,8 +156,8 @@ public class EmbeddedService {
 					if(rating!=null && rating.size()>0) {
 						String noofDays=rating.get(0).get("remarks").toString();
 						
-						expiredDate=Date.from(LocalDate.now(ZoneId.of("Africa/Dar_es_Salaam")).plusDays(Long.parseLong(noofDays))
-								.atTime(23, 59, 59).toInstant(ZoneOffset.MIN));
+						expiredDate=Date.from(LocalDate.now(ZoneId.of("Africa/Dar_es_Salaam")).plusDays(Long.parseLong(noofDays)-2)
+								.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
 
 						double sum = rating.stream().filter(t-> t.get("baseRate")!=null).mapToDouble(t-> Double.parseDouble(t.get("baseRate").toString())).sum();
 						premium=new BigDecimal(Math.round(sum));
