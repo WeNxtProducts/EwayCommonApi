@@ -217,6 +217,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 				premiumWithTax = Double.valueOf(req.getPremiumWithTax());
 				interestAmount = premiumWithTax * interestPercent / 100;
+				interestAmount=interestAmount/12;
+				interestAmount=interestAmount*noOfMonth;
 				totalLoanAmount = premiumWithTax + interestAmount;
 				advanceAmount = totalLoanAmount * advancePercent / 100;
 				adv=new BigDecimal(advanceAmount);
@@ -669,6 +671,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 						// Response
 						
 						interestAmount = premiumWithTax * interestPercent / 100;
+						interestAmount=interestAmount/12;
+						interestAmount=interestAmount*noOfMonth;
 						totalLoanAmount = premiumWithTax + interestAmount;
 						advanceAmount = totalLoanAmount * advancePercent / 100;
 						if (i == 0) {
