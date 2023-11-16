@@ -3,7 +3,9 @@ package com.maan.eway.auth.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -146,8 +148,18 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 						updatelogout.setStatus("DE-ACTIVE");
 						sessionRep.save(updatelogout);
 				}else if(sessionlist.size()!=0) {
-				
-						if(sessionlist.get(0).getLogoutDate()==null && list.size()<=0) {
+						Calendar cal = new GregorianCalendar();
+						cal.setTime(sessionlist.get(0).getStartTime());
+						cal.set(Calendar.MINUTE, +45);
+						Date after45Minutes = cal.getTime();
+						Date today = new Date();
+						if(sessionlist.get(0).getStartTime()!=null && after45Minutes.before(today) ) {
+							SessionMaster updatelogout = sessionlist.get(0);
+							updatelogout.setLogoutDate(new Date());
+							updatelogout.setStatus("DE-ACTIVE");
+							sessionRep.save(updatelogout);
+							
+						}else if(sessionlist.get(0).getLogoutDate()==null && list.size()<=0) {
 							list.add(new Error("", "SessionError", "You already have an active logged in session on another device or window Do you want to start new session and terminate that session?"));
 							list.add(new Error("", "SessionError", "User :" + sessionlist.get(0).getUserName() + " : logged in at " +sessionlist.get(0).getEntryDate().toString()));
 						}
