@@ -33,8 +33,13 @@ public class EmiEndtDetailsReq implements Serializable {
 	@JsonProperty("Premium")
 	private String premium;
 	
+	@JsonProperty("IsChargeRefund")
+	private String isChargeRefund;
+	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	
 
 	
 }

@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -127,6 +128,66 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PAYMENT_ID", length=20)
     private String     paymentId ;
+    
+    //Endt Fields
+    @Column(name="ENDT_CATEG_DESC", length=100)
+    private String     endtCategDesc ;
+
+    @Column(name="ENDORSEMENT_REMARKS", length=500)
+    private String     endorsementRemarks ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_EFFDATE")
+    private Date       endorsementEffdate ;
+
+    @Column(name="ENDT_PREV_POLICY_NO", length=100)
+    private String     endtPrevPolicyNo ;
+
+    @Column(name="ENDT_PREV_QUOTE_NO", length=50)
+    private String     endtPrevQuoteNo ;
+    
+    @Column(name="ENDT_STATUS", length=10)
+    private String     endtStatus ;
+
+    @Column(name="ENDT_TYPE_ID", length=100)
+    private String     endtTypeId ;
+
+    @Column(name="ENDT_COUNT")
+    private Integer    endtCount ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDT_DATE")
+    private Date       endtDate ;
+    
+    @Column(name="ENDT_BY")
+    private String    endtBy ;
+
+    @Column(name="IS_CHARG_REFUND")
+    private String isChargRefund;
+
+    @Column(name="ENDT_TYPE_DESC")
+    private String endtTypeDesc;
+
+    @Column(name="ENDT_PREMIUM_TAX")
+    private BigDecimal endtPremiumTax;
+    
+    @Column(name="POLICY_NO", length=100)
+    private String     policyNo ;
+
+    @Column(name="ORIGINAL_POLICY_NO", length=100)
+    private String     originalPolicyNo ;
+    
+    @Column(name="ENDT_PREMIUM")
+    private BigDecimal       endtPremium ;
+    
+    @Column(name="ENDT_PREMIUM_LC")
+    private BigDecimal       endtPremiumLc ;
+    
+    @Column(name="IS_FINACIAL_ENDT", length=20)
+    private String     isFinacialEndt ;
+    
+    @Column(name="ENDT_COMMISSION")
+    private BigDecimal endtCommission ;
 
 }
 
