@@ -346,7 +346,7 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setBranchName(homeData.getBranchName());
 			quoteRes.setBrokerBranchName(homeData.getBrokerBranchName());		
 			//quoteRes.setEmiYn("N");
-			quoteRes.setEndtTypeId(homeData.getEndtTypeId());
+			quoteRes.setEndtTypeId(homeData.getEndtTypeId()==null?null:homeData.getEndtTypeId());
 			quoteRes.setEndtTypeDesc(homeData.getEndtTypeDesc()==null?"":homeData.getEndtTypeDesc());
 			quoteRes.setEndtCategDesc(homeData.getEndtCategDesc()==null?null:homeData.getEndtCategDesc());
 			quoteRes.setEndorsementRemarks(homeData.getEndorsementRemarks()==null?null:homeData.getEndorsementRemarks());
@@ -358,7 +358,7 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setPolicyNo(homeData.getPolicyNo()==null?"":homeData.getPolicyNo());
 			quoteRes.setOriginalPolicyNo(homeData.getOriginalPolicyNo()==null?"":homeData.getOriginalPolicyNo());
 			quoteRes.setEndtPremium(homeData.getEndtPremium()==null?BigDecimal.ZERO:homeData.getEndtPremium());
-			req.setEndtTypeId(homeData.getEndtTypeId());
+			req.setEndtTypeId(homeData.getEndtTypeId()==null?null:homeData.getEndtTypeId());
 			quoteRes.setEndtPremiumTax(homeData.getEndtPremiumTax()==null?BigDecimal.ZERO:homeData.getEndtPremiumTax());
 			quoteRes.setTotalEndtPremium(quoteRes.getEndtPremium());//.add(quoteRes.getEndtPremiumTax()));
 			// Emi Details 
