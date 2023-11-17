@@ -3,6 +3,8 @@ package com.maan.eway.common.res;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -244,4 +246,19 @@ public class QuoteDetailsRes {
 	
 	@JsonProperty("VatCommission")
 	private String vatCommission;
+	
+	//Payment Details
+	@JsonProperty("MerchantReference")
+    private String     merchantReference ;
+	
+	@JsonProperty("DebitNoteNo")
+	private String     debitNoteNo ;
+	
+	@JsonProperty("CreditNo")
+	private String     creditNo ;
+	
+	@JsonProperty("StickerNumber")
+	private String stickerNumber;
+	
+	
 }

@@ -63,6 +63,7 @@ import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
+import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
@@ -132,6 +133,8 @@ import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
+import com.maan.eway.repository.PaymentDepositRepository;
+import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
@@ -297,6 +300,9 @@ public class QuoteServiceImpl implements QuoteService {
 	private UWReferralDetailsRepository uwReferralRepo ;
 	
 	@Autowired
+	private PaymentDetailRepository paymentRepo ;
+	
+	@Autowired
 	private EserviceLifeDetailsRepository lifeRepo;
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
@@ -360,6 +366,18 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setInstallmentPeriod(homeData.getInstallmentPeriod()==null?"":homeData.getInstallmentPeriod());
 			quoteRes.setInstallmentMonth(homeData.getNoOfInstallment()==null?"":homeData.getNoOfInstallment());
 			quoteRes.setDueAmount(homeData.getEmiPremium()==null?null:homeData.getEmiPremium().toString());
+			//PaymentDetails
+			if(StringUtils.isNotBlank(homeData.getPolicyNo())){
+				quoteRes.setCreditNo(homeData.getCreditNo()==null?"":homeData.getCreditNo()	);		
+				quoteRes.setDebitNoteNo(homeData.getDebitNoteNo()==null?"":homeData.getDebitNoteNo());
+				quoteRes.setStickerNumber(homeData.getStickerNumber()==null?"":homeData.getStickerNumber());
+				List<PaymentDetail> payment=paymentRepo.findByQuoteNoAndPaymentStatusOrderByEntryDateDesc(homeData.getQuoteNo(),"ACCEPTED");
+				if(payment.size()>0 && payment!=null) {
+					quoteRes.setMerchantReference(payment.get(0).getMerchantReference()==null?"":payment.get(0).getMerchantReference());
+				}
+				
+			}
+			
 //			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductIdOrderByInstalmentAsc(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());
 //			if (emiDetails.size()>0 ) {
 //				List<EmiTransactionDetails> filterEmi =  emiDetails.stream().filter( o -> (!o.getPaymentStatus().equalsIgnoreCase("Paid")) &&  ( o.getInstalment().equalsIgnoreCase("0") || o.getInstalment()!=null ) ).collect(Collectors.toList());
