@@ -338,35 +338,35 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			query.select( b );
 
 //			// Effective Date Max Filter
-//			Subquery<Long> effectiveDate = query.subquery(Long.class);
-//			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
-//			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-//			Predicate a1 = cb.equal( b.get("emiId"),ocpm1.get("emiId"));
-//			Predicate a2 = cb.equal( b.get("companyId"),ocpm1.get("companyId"));
-//			Predicate a3 = cb.equal( b.get("productId"),ocpm1.get("productId"));
-//			Predicate a9 = cb.equal( b.get("policyType"),ocpm1.get("policyType"));
-//			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);	
-//			effectiveDate.where(a1, a2, a3, a4,a9);
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal( b.get("emiId"),ocpm1.get("emiId"));
+			Predicate a2 = cb.equal( b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a3 = cb.equal( b.get("productId"),ocpm1.get("productId"));
+			Predicate a9 = cb.equal( b.get("policyType"),ocpm1.get("policyType"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);	
+			effectiveDate.where(a1, a2, a3, a4,a9);
 //			
 //			// Effective Date End Max Filter
-//			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-//			Root<EmiMaster> ocpm2 = effectiveDate2.from(EmiMaster.class);
-//			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-//			Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
-//			Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
-//			Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
-//			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-//			Predicate a10 = cb.equal( b.get("policyType"),ocpm2.get("policyType"));
-//			effectiveDate2.where(a5, a6, a7, a8,a10);
-			// amendId Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<EmiMaster> ocpm2 = amendId.from(EmiMaster.class);
-			amendId.select(cb.max(ocpm2.get("amendId")));
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<EmiMaster> ocpm2 = effectiveDate2.from(EmiMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
 			Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
 			Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
+			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a10 = cb.equal( b.get("policyType"),ocpm2.get("policyType"));
-			amendId.where(a5, a6, a7,a10);
+			effectiveDate2.where(a5, a6, a7, a8,a10);
+//			// amendId Max Filter
+//			Subquery<Long> amendId = query.subquery(Long.class);
+//			Root<EmiMaster> ocpm2 = amendId.from(EmiMaster.class);
+//			amendId.select(cb.max(ocpm2.get("amendId")));
+//			Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
+//			Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
+//			Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
+//			Predicate a10 = cb.equal( b.get("policyType"),ocpm2.get("policyType"));
+//			amendId.where(a5, a6, a7,a10);
 			
 
 			// Order By
@@ -374,7 +374,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			orderList.add(cb.asc(b.get("companyId")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
 			Predicate n3 = cb.equal(b.get("companyId"), "99999");
 			Predicate n5 = cb.or(n3, n2);
@@ -383,9 +383,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 //			Predicate n11 = cb.equal(b.get("policyType"),  "99999");
 //			Predicate n12 = cb.or(n7,  n11);
 			Predicate n9 = cb.equal(b.get("installmentPeriod"), insPeriod);
-//			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n13 = cb.equal(b.get("status"), "Y");
-			query.where(n1, n5, n6, n7,n9,n13).orderBy(orderList);
+			query.where(n1, n5, n6, n7,n9,n10,n13).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);
@@ -802,43 +802,44 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			query.select( b );
 
 //			// Effective Date Max Filter
-//			Subquery<Long> effectiveDate = query.subquery(Long.class);
-//			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
-//			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-//			Predicate a1 = cb.equal( b.get("emiId"),ocpm1.get("emiId"));
-//			Predicate a2 = cb.equal( b.get("companyId"),ocpm1.get("companyId"));
-//			Predicate a3 = cb.equal( b.get("productId"),ocpm1.get("productId"));
-//			Predicate a9 = cb.equal( b.get("policyType"),ocpm1.get("policyType"));
-//			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);	
-//			effectiveDate.where(a1, a2, a3, a4,a9);
-//			
-//			// Effective Date End Max Filter
-//			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-//			Root<EmiMaster> ocpm2 = effectiveDate2.from(EmiMaster.class);
-//			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-//			Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
-//			Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
-//			Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
-//			Predicate a10 = cb.equal( b.get("policyType"),ocpm2.get("policyType"));
-//			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-//			effectiveDate2.where(a5, a6, a7, a8,a10);
-			// AmendI Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal( b.get("emiId"),ocpm1.get("emiId"));
+			Predicate a2 = cb.equal( b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a3 = cb.equal( b.get("productId"),ocpm1.get("productId"));
+			Predicate a9 = cb.equal( b.get("policyType"),ocpm1.get("policyType"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);	
+			effectiveDate.where(a1, a2, a3, a4,a9);
 			
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<EmiMaster> ocpm2 = amendId.from(EmiMaster.class);
-			amendId.select(cb.max(ocpm2.get("amendId")));
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<EmiMaster> ocpm2 = effectiveDate2.from(EmiMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
 			Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
 			Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
 			Predicate a10 = cb.equal( b.get("policyType"),ocpm2.get("policyType"));
-			amendId.where(a5, a6, a7,a10);
+			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a5, a6, a7, a8,a10);
+//			// AmendI Max Filter
+//			
+//			Subquery<Long> amendId = query.subquery(Long.class);
+//			Root<EmiMaster> ocpm2 = amendId.from(EmiMaster.class);
+//			amendId.select(cb.max(ocpm2.get("amendId")));
+//			Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
+//			Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
+//			Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
+//			Predicate a10 = cb.equal( b.get("policyType"),ocpm2.get("policyType"));
+//			amendId.where(a5, a6, a7,a10);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("companyId")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		//	Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
 			Predicate n3 = cb.equal(b.get("companyId"), "99999");
 			Predicate n5 = cb.or(n3, n2);
@@ -847,9 +848,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 //			Predicate n11 = cb.equal(b.get("policyType"), "99999");
 //			Predicate n12 = cb.or(n7, n11);
 			Predicate n9 = cb.between(cb.literal(amt).as(Double.class) , b.get("premiumStart"), b.get("premiumEnd"));
-//			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n13 = cb.equal(b.get("status"), "Y");
-			query.where(n1, n5, n6,n7,n9,n13).orderBy(orderList);
+			query.where(n1, n5, n6,n7,n9,n13,n10).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);
