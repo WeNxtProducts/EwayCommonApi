@@ -361,7 +361,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			// amendId Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<EmiMaster> ocpm2 = amendId.from(EmiMaster.class);
-			amendId.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			amendId.select(cb.max(ocpm2.get("amendId")));
 			Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
 			Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
 			Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
