@@ -562,10 +562,10 @@ public class DepositServiceImpl implements DepositService {
 				}
 				NewcbcMaster.setCbcNo(req.getCbcNo());
 				if("C".equalsIgnoreCase(req.getDepositType())) {
-					NewcbcMaster.setDepositAmount(Double.valueOf(req.getDepositAmount()));
-					NewcbcMaster.setDepositUtilized(NewcbcMaster.getDepositUtilized() + Double.valueOf(req.getPremium()));
+					//NewcbcMaster.setDepositAmount(Double.valueOf(req.getDepositAmount()));
+					NewcbcMaster.setDepositAmount(NewcbcMaster.getDepositAmount() + Double.valueOf(req.getPremium()));
 				}else if("R".equalsIgnoreCase(req.getDepositType())) {
-					NewcbcMaster.setDepositUtilized(NewcbcMaster.getDepositUtilized() - Double.valueOf(req.getPremium()));
+					//NewcbcMaster.setDepositUtilized(NewcbcMaster.getDepositUtilized() - Double.valueOf(req.getPremium()));
 					NewcbcMaster.setPolicyrefundamount(NewcbcMaster.getPolicyrefundamount()==null?0.0:NewcbcMaster.getPolicyrefundamount() + Double.parseDouble(req.getPremium()));
 				}
 				depositcbcRepo.save(NewcbcMaster);
@@ -645,7 +645,8 @@ public class DepositServiceImpl implements DepositService {
 //		}
 		if(StringUtils.isBlank(req.getPaymentType())) {
 			error.add(new Error("500","PaymentType","Please Enter PaymentType"));
-		}else if("Refund".equalsIgnoreCase(req.getPaymentType())) {
+		}
+		if("R".equalsIgnoreCase(req.getDepositType())) {
 			Double totalAmount=0.0;
 			Optional<DepositcbcMaster> depositcbc = depositcbcRepo.findById(req.getCbcNo());
 			if (depositcbc.isPresent()) {
