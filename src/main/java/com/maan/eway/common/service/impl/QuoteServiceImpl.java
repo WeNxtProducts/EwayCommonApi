@@ -2771,25 +2771,39 @@ public class QuoteServiceImpl implements QuoteService {
 			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , req.getProductId().toString());
 
-			 if(product.getMotorYn().equalsIgnoreCase("M")) {
-				 List<MotorDataDetails> motList = motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
-				 Double accSuminsured = 0D;
-				 for (MotorDataDetails o : motList ) {
-					 accSuminsured = accSuminsured +  (o.getAcccessoriesSumInsured()==null ? 0D : o.getAcccessoriesSumInsured())  ;
-				 }
-				 MotorSuminsuredDetails motSum = new MotorSuminsuredDetails(); 
-				 motSum.setAccessoriesSuminsured(accSuminsured.toString() );
-				 motSum.setQuoteNo(motList.get(0).getQuoteNo());
-				motSum.setCurrency(motList.get(0).getCurrency());
-				 res.setProductSuminsuredDetails(motSum);
-			}else  if(product.getMotorYn().equalsIgnoreCase("A")) {
-				 BuildingSumInsuredDetails builSum  = buildingSuminsuredDetails(req);
-				 res.setProductSuminsuredDetails(builSum);	
-			} else {
+		
+				 if(product.getMotorYn().equalsIgnoreCase("M")) {
+					 List<MotorDataDetails> motList = motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
+					 Double accSuminsured = 0D;
+					 for (MotorDataDetails o : motList ) {
+						 accSuminsured = accSuminsured +  (o.getAcccessoriesSumInsured()==null ? 0D : o.getAcccessoriesSumInsured())  ;
+					 }
+					 MotorSuminsuredDetails motSum = new MotorSuminsuredDetails(); 
+					 motSum.setAccessoriesSuminsured(accSuminsured.toString() );
+					 motSum.setQuoteNo(motList.get(0).getQuoteNo());
+					motSum.setCurrency(motList.get(0).getCurrency());
+					 res.setProductSuminsuredDetails(motSum);
+				}else  if(product.getMotorYn().equalsIgnoreCase("A") ) {
+					BuildingSumInsuredDetails builSum  = buildingSuminsuredDetails(req);
+					
+					 if(req.getProductId().equalsIgnoreCase("19")  ) {
+//						if( req.getSectionIds().contains("43")	||req.getSectionIds().contains("45") ) {
+							CommonSumInsuredDetails Sum  = commonSuminsuredDetails(req);
+							if(Sum!=null) {
+								builSum.setEmpLiabilitySi(Sum.getEmpLiabilitySi());
+								builSum.setFidEmpSi(Sum.getFidEmpSi());
+							}
+					//	}
+					 }
+						 
+					 res.setProductSuminsuredDetails(builSum);	
 				
-				CommonSumInsuredDetails Sum  = commonSuminsuredDetails(req);
-				res.setProductSuminsuredDetails(Sum);
-			}
+				} else {
+					
+					CommonSumInsuredDetails Sum  = commonSuminsuredDetails(req);
+					res.setProductSuminsuredDetails(Sum);
+				}
+			
 			res.setQuoteNo(req.getQuoteNo());
 			
 			res.setRequestReferenceNo(req.getRequestReferenceNo());
@@ -3059,27 +3073,30 @@ public class QuoteServiceImpl implements QuoteService {
 	}
 	public CommonSumInsuredDetails commonSuminsuredDetails(SectionSumInsuredGetReq req) {
 		CommonSumInsuredDetails res = new CommonSumInsuredDetails();
+		List<CommonDataDetails> paccDatas = new ArrayList<CommonDataDetails>();
 		try {
-			List<CommonDataDetails> paccDatas = commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-			CommonDataDetails pacc = paccDatas.get(0) ;
-			List<EserviceSectionDetails>   sections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(pacc.getRequestReferenceNo());	
-			List<String> sectionIds = sections.stream().map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
-			
-			res.setCurrencyId(pacc.getCurrency());
-			res.setRiskId(pacc.getRiskId().toString());
-
-			Double sumInsured = paccDatas.stream().filter( o -> o.getStatus().equalsIgnoreCase("D") &&  o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
-			res.setSumInsured(sumInsured.toString());
-			
-			Double empliabiltiySi = paccDatas.stream().filter( o -> o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
-			Double fidEmpSi = paccDatas.stream().filter( o -> o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
-			Double liabiltiySi = paccDatas.stream().filter( o -> o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
-			
-			res.setEmpLiabilitySi(empliabiltiySi.toString());
-			res.setFidEmpSi(fidEmpSi.toString());
-			res.setLiabilitySi(liabiltiySi.toString());
-			
-			res.setSectionId(sectionIds);
+			paccDatas = commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			if( paccDatas.size() > 0 ){
+				CommonDataDetails pacc = paccDatas.get(0) ;
+				List<EserviceSectionDetails>   sections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(pacc.getRequestReferenceNo());	
+				List<String> sectionIds = sections.stream().map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
+				
+				res.setCurrencyId(pacc.getCurrency());
+				res.setRiskId(pacc.getRiskId().toString());
+	
+				Double sumInsured = paccDatas.stream().filter( o -> o.getStatus().equalsIgnoreCase("D") &&  o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
+				res.setSumInsured(sumInsured.toString());
+				
+				Double empliabiltiySi = paccDatas.stream().filter( o -> o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
+				Double fidEmpSi = paccDatas.stream().filter( o -> o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
+				Double liabiltiySi = paccDatas.stream().filter( o -> o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
+				
+				res.setEmpLiabilitySi(empliabiltiySi.toString());
+				res.setFidEmpSi(fidEmpSi.toString());
+				res.setLiabilitySi(liabiltiySi.toString());
+				
+				res.setSectionId(sectionIds);
+			}
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
