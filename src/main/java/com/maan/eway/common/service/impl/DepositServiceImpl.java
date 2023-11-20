@@ -555,12 +555,12 @@ public class DepositServiceImpl implements DepositService {
 						.build();
 					paymentDepositRepo.save(paymentdep);
 				
-				/*Optional<DepositcbcMaster> depositcbc = depositcbcRepo.findById(cbcNo);
+				Optional<DepositcbcMaster> depositcbc = depositcbcRepo.findById(req.getCbcNo());
 				DepositcbcMaster NewcbcMaster = new DepositcbcMaster();
 				if(depositcbc.isPresent()) {
 					NewcbcMaster = depositcbc.get();
 				}
-				NewcbcMaster.setCbcNo(cbcNo);
+				NewcbcMaster.setCbcNo(req.getCbcNo());
 				if("C".equalsIgnoreCase(req.getDepositType())) {
 					NewcbcMaster.setDepositAmount(Double.valueOf(req.getDepositAmount()));
 					NewcbcMaster.setDepositUtilized(NewcbcMaster.getDepositUtilized() + Double.valueOf(req.getPremium()));
@@ -568,7 +568,7 @@ public class DepositServiceImpl implements DepositService {
 					NewcbcMaster.setDepositUtilized(NewcbcMaster.getDepositUtilized() - Double.valueOf(req.getPremium()));
 					NewcbcMaster.setPolicyrefundamount(NewcbcMaster.getPolicyrefundamount()==null?0.0:NewcbcMaster.getPolicyrefundamount() + Double.parseDouble(req.getPremium()));
 				}
-				depositcbcRepo.save(NewcbcMaster);*/
+				depositcbcRepo.save(NewcbcMaster);
 
 				Optional<DepositDetail> detailMaster = depositdetailRepo.findById(StringUtils.isBlank(req.getDepositNo())?0L:Long.valueOf(req.getDepositNo()));
 				DepositDetail k = new DepositDetail();
@@ -643,12 +643,25 @@ public class DepositServiceImpl implements DepositService {
 //				error.add(new Error("500","ProductId","Please Enter ProductId"));
 //			}
 //		}
-//		if(StringUtils.isBlank(req.getPaymentType())) {
-//			error.add(new Error("500","PaymentType","Please Enter PaymentType"));
+		if(StringUtils.isBlank(req.getPaymentType())) {
+			error.add(new Error("500","PaymentType","Please Enter PaymentType"));
+		}else if("Refund".equalsIgnoreCase(req.getPaymentType())) {
+			Double totalAmount=0.0;
+			Optional<DepositcbcMaster> depositcbc = depositcbcRepo.findById(req.getCbcNo());
+			if (depositcbc.isPresent()) {
+				String depositAMount = depositcbc.get().getDepositAmount() == null ? "0": depositcbc.get().getDepositAmount().toString();
+				String utilizedAmt = depositcbc.get().getDepositUtilized() == null ? "0": depositcbc.get().getDepositUtilized().toString();
+				String refundAmt = depositcbc.get().getRefundAmount() == null ? "0": depositcbc.get().getRefundAmount().toString();
+				totalAmount = Double.valueOf(depositAMount) - Double.valueOf(utilizedAmt) + Double.valueOf(refundAmt);
+			}
+			if(Double.parseDouble(req.getPremium())>totalAmount) {
+				error.add(new Error("500","Premium","Refund Amount not greater than Balance Amount"));
+			}
+		}
 //		}
-//		if(StringUtils.isBlank(req.getPremium())) {
-//			error.add(new Error("500","Premium","Please Enter Premium"));
-//		}
+		if(StringUtils.isBlank(req.getPremium())) {
+			error.add(new Error("500","Premium","Please Enter Premium"));
+		}
 //		if(StringUtils.isBlank(req.getPayeeName())) {
 //			error.add(new Error("500","PayeeName","Please Enter PayeeName"));
 //		}
