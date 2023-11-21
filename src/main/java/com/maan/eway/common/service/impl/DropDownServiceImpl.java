@@ -2725,8 +2725,9 @@ public class DropDownServiceImpl  implements DropDownService{
 		GetMachineryContentRes resp = new GetMachineryContentRes();
 	
 		List<MachineryDropDownRes> resList = new ArrayList<MachineryDropDownRes>();
+		BigDecimal sumInsured = BigDecimal.ZERO ;
 		try {
-			BigDecimal sumInsured = BigDecimal.ZERO ;
+			
 			
 			LovDropDownReq req1 = new LovDropDownReq();
 			req1.setBranchCode(req.getBranchCode());
@@ -2824,11 +2825,23 @@ public class DropDownServiceImpl  implements DropDownService{
 						resList.add(res);
 						sumInsured = sumInsured.add(build.getPowerPlantSi());
 					}
-				}}
+				} }
+				
+				if(data.getItemCode().equals("8")) {
+					if(build.getPowerPlantSi()!=null) {
+						res.setCode(data.getItemCode());
+						res.setCodeDesc(data.getItemValue());
+						res.setStatus(data.getStatus());
+					//	res.setSumInsured(build.getPowerPlantSi());
+						resList.add(res);
+				} }
 				
 			
 			}
+			
+			
 			resp.setTotalSumInsured(sumInsured);
+			resList.stream().filter(o -> o.getCode().equalsIgnoreCase("8")).forEach(o -> o.setSumInsured(resp.getTotalSumInsured()));
 			resp.setContentTypeRes(resList);
 			
 		} catch (Exception e) {
