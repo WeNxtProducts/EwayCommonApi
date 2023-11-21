@@ -2277,6 +2277,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						updateCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
 						updateCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
 						updateCover.setExcessDesc(covReq.getExcessDesc());
+						updateCover.setUserOpt("Y");
 						updateCoverList.add(updateCover);
 						//repository.save(updateCover);
 						
@@ -2347,6 +2348,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						updateSubCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
 						updateSubCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
 						updateSubCover.setExcessDesc(covReq.getExcessDesc());
+						updateSubCover.setUserOpt("Y");
 						repository.save(updateSubCover);
 						
 						// Loadings
