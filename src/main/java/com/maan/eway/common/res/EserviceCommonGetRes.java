@@ -125,4 +125,7 @@ public class EserviceCommonGetRes {
 	
 	@JsonProperty("PolicyNo")
     private String policyNo;
+	
+	@JsonProperty("FinalyzeYn")
+	private String finalizeYn;
 }

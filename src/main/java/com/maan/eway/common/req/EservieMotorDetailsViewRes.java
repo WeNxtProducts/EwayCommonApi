@@ -161,4 +161,7 @@ public class EservieMotorDetailsViewRes {
 	 
 	 @JsonProperty("SourceType")
 	 private String sourceType;
+	 
+	 @JsonProperty("FinalizeYn")
+	 private String finalizeYn;
 }

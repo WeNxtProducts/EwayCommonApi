@@ -370,6 +370,8 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setInstallmentPeriod(homeData.getInstallmentPeriod()==null?"":homeData.getInstallmentPeriod());
 			quoteRes.setInstallmentMonth(homeData.getNoOfInstallment()==null?"":homeData.getNoOfInstallment());
 			quoteRes.setDueAmount(homeData.getEmiPremium()==null?null:homeData.getEmiPremium().toString());
+			quoteRes.setFinalizeYn(homeData.getFinalizeYn());
+			
 			//PaymentDetails
 			if(StringUtils.isNotBlank(homeData.getPolicyNo())){
 				quoteRes.setCreditNo(homeData.getCreditNo()==null?"":homeData.getCreditNo()	);		
@@ -527,6 +529,7 @@ public class QuoteServiceImpl implements QuoteService {
 				vehicleDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
 				vehicleDetails.setCommissionPercentage(mot.getCommissionPercentage()==null?"" : mot.getCommissionPercentage().toPlainString());
 				vehicleDetails.setVatCommission(mot.getVatCommission()==null?"" : mot.getVatCommission().toPlainString());	
+				vehicleDetails.setFinalizeYn(mot.getFinalizeYn());
 				// Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
 				
@@ -875,7 +878,7 @@ public class QuoteServiceImpl implements QuoteService {
 				 buildingRes.setRoofType(build.getRoofType()==null  ? "" :build.getRoofType().toString());
 				 buildingRes.setWallType(build.getWallType()==null  ? "" :build.getWallType().toString());				
 				 buildingRes.setRegionCode(build.getRegionCode()==null  ? "" :build.getRegionCode().toString());
-						
+				 buildingRes.setFinalizeYn(build.getFinalizeYn());
 			}
 			
 			// Fire And Material Damage
@@ -1202,7 +1205,7 @@ public class QuoteServiceImpl implements QuoteService {
 					 travelDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
 					 travelDetails.setCommissionPercentage(tra.getCommissionPercentage()==null?"" : tra.getCommissionPercentage().toPlainString());
 					 travelDetails.setVatCommission(tra.getVatCommission()==null?"" : tra.getVatCommission().toPlainString());				
-				
+					 			 
 					 // Cover Details
 					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getGroupId()))).collect(Collectors.toList());
 					
@@ -1271,7 +1274,8 @@ public class QuoteServiceImpl implements QuoteService {
 					sec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc.toString()==null?"":PremiumExcluedTaxLc.toString());
 					sec.setPremiumIncludedTax(PremiumIncludedTax.toString()==null?"":PremiumIncludedTax.toString());
 					sec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc.toString()==null?"":PremiumIncludedTaxLc.toString());
-				
+				        
+					
 					SectionList.add(sec);
 					travelDetails.setSectionDetails(SectionList);	
 					travelResList.add(travelDetails);
@@ -1351,7 +1355,7 @@ public class QuoteServiceImpl implements QuoteService {
 				commonDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
 				commonDetails.setCommissionPercentage(com.getCommissionPercentage()==null?"" : com.getCommissionPercentage().toPlainString());
 				commonDetails.setVatCommission(com.getVatCommission()==null?"" : com.getVatCommission().toPlainString());				
-			
+				commonDetails.setFinalizeYn(com.getFinalizeYn());
 				
 				// Section Details
 				SectionDetails sec = new SectionDetails(); 

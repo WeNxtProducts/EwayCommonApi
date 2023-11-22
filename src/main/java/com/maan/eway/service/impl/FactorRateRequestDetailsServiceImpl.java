@@ -1326,7 +1326,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				res.setPolicyNo(mot.getPolicyNo());
 				res.setOriginalPolicyNo(mot.getOriginalPolicyNo());
 				res.setSourceType(mot.getSourceType());
-				
+				res.setFinalizeYn(mot.getFinalizeYn());				
 				//res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
 				if(mot.getEndorsementType()!=null) {
 					EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(mot.getCompanyId(),req.getProductId(),mot.getEndorsementType().toString());
@@ -1473,6 +1473,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					res.setPolicyNo(travelData.getPolicyNo());
 					res.setOriginalPolicyNo(travelData.getOriginalPolicyNo());
 					res.setSourceType(travelData.getSourceType());
+					res.setFinalizeYn(travelData.getFinalizeYn());
 					
 					//res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
 					Object riskDetails = new Object();
@@ -1544,6 +1545,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setPolicyNo(acc.getPolicyNo());
 						res.setOriginalPolicyNo(acc.getOriginalPolicyNo());
 						res.setSourceType(acc.getSourceType());
+						res.setFinalizeYn(acc.getFinalizeYn());
 						
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
@@ -1648,7 +1650,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				res.setPolicyNo(comData.getPolicyNo());
 				res.setOriginalPolicyNo(comData.getOriginalPolicyNo());
 				res.setSourceType(comData.getSourceType());
-				
+				res.setFinalizeYn(comData.getFinalizeYn());			
 				//res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
