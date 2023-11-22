@@ -2935,7 +2935,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBrokerBranchCode(motorData.getBrokerBranchCode() );
 			home.setBrokerBranchName(motorData.getBrokerBranchName() );
 			home.setLoginId(motorData.getLoginId());
-			
+			home.setPolicyPeriod(motorData.getPeriodOfInsurance()==null?"" :motorData.getPeriodOfInsurance().toString());
+			home.setPolicyTerm(motorData.getPeriodOfInsurance()==null?"" :motorData.getPeriodOfInsurance().toString());
 			
 			List<EserviceMotorDetails> motList = eserMotRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 			
@@ -3050,6 +3051,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBrokerBranchName(travelData.getBrokerBranchName() );
 			home.setUserType(travelData.getSourceType() );
 			home.setLoginId(travelData.getLoginId());
+			home.setPolicyPeriod(travelData.getTravelCoverDuration()==null?"" :travelData.getTravelCoverDuration().toString());
+			home.setPolicyTerm(travelData.getTravelCoverDuration()==null?"" :travelData.getTravelCoverDuration().toString());
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -3129,6 +3132,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBrokerBranchName(buildingData.getBrokerBranchName() );
 			home.setUserType(buildingData.getSourceType() );
 			home.setLoginId(buildingData.getLoginId());
+			home.setPolicyPeriod(buildingData.getPolicyPeriord()==null?"" :buildingData.getPolicyPeriord().toString());
+			home.setPolicyTerm(buildingData.getPolicyPeriord()==null?"" :buildingData.getPolicyPeriord().toString());
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -3209,6 +3214,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBrokerBranchName(eserCommonData.getBrokerBranchName() );
 			home.setUserType(eserCommonData.getSourceType() );
 			home.setLoginId(eserCommonData.getLoginId());
+			home.setPolicyPeriod(eserCommonData.getPolicyPeriod()==null?"" :eserCommonData.getPolicyPeriod().toString());
+			home.setPolicyTerm(eserCommonData.getPolicyPeriod()==null?"" :eserCommonData.getPolicyPeriod().toString());
 			
 		}catch (Exception e) {
 			e.printStackTrace();
