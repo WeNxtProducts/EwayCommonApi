@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.persistence.Tuple;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +20,7 @@ import com.maan.eway.notification.req.JobCredentials;
 import com.maan.eway.notification.req.Mail;
 import com.maan.eway.notification.req.Messenger;
 import com.maan.eway.notification.req.Sms;
+import com.maan.eway.notification.req.SmsConfigMasterDto;
 
 public class PushedStateChange implements  Function<NotifTransactionDetails,List<Object>>{
 
@@ -61,13 +60,16 @@ public class PushedStateChange implements  Function<NotifTransactionDetails,List
 				Object smsTo= getValue(t,master.getToSmsno()) ;
 				if(smsTo!=null) {
 					Sms s=Sms.builder()
-							.smsBody((String) getContentFrame(t, master.getSmsBodyEn()))
+							.smsContent((String) getContentFrame(t, master.getSmsBodyEn()))
 							.smsRegards((String) getContentFrame(t, master.getSmsRegards()))
 							.smsSubject((String) getContentFrame(t, master.getSmsSubject()))
-							.smsTo((String) smsTo)	
-							.smsFrom(smsmaster.getSenderId())
-							.credential(JobCredentials.builder().smtpHost(smsmaster.getSmsPartyUrl()).smtpPwd(smsmaster.getSmsUserPass()).smtpUser(smsmaster.getSmsUserName()).build())
-							.smsToCode(obj.getCustomerPhoneCode().toString())
+							.mobileNo((String) smsTo)	
+							//.smsFrom(smsmaster.getSenderId())
+							.master(SmsConfigMasterDto.builder().smsPartyUrl(smsmaster.getSmsPartyUrl()).smsUserPass(smsmaster.getSmsUserPass()).smsUserName(smsmaster.getSmsUserName())
+									.senderid(smsmaster.getSenderId())
+									.secureYn("Y")
+									.build())
+							.mobileCode(obj.getCustomerPhoneCode().toString())
 							.notifNo(t.get("notifNo")==null?0L:Long.parseLong(t.get("notifNo").toString()))
 							.build();
 					a.add(s);

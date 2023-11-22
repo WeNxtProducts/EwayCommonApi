@@ -16,6 +16,19 @@ public class Sms implements Serializable {
 		SmsBody	
 		SmsRegards
 	 */
+	
+
+
+	private String mobileNo;
+	private String mobileCode;
+	private String smsContent;
+	private String smsRegards;
+	private String smsSubject;
+	private SmsConfigMasterDto master;
+
+	private Long    notifNo ;
+
+	/*
 	private String smsToCode;	
 	private String smsTo;
 	private String smsSubject;
@@ -25,6 +38,6 @@ public class Sms implements Serializable {
 	private String whatsappRegards;
 	private JobCredentials credential;
 	private String senderId;
-	private Long    notifNo ;
-
+	
+*/
 }
