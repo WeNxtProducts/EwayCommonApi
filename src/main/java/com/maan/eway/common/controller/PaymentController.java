@@ -307,6 +307,11 @@ public class PaymentController {
 			}
 		}
 	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@GetMapping("/getCreditLimit/{brokerId}")
+	public CommonRes getCreditLimit(@PathVariable ("brokerId") String brokerId) {
+		return service.getCreditLimit(brokerId);
+	}
 	 
 		
 }

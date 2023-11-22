@@ -14,6 +14,7 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -34,9 +35,15 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -82,7 +89,6 @@ import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataIndividuals;
-import com.maan.eway.bean.PolicyDrcrDetail;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqPaymentid;
@@ -103,7 +109,6 @@ import com.maan.eway.common.req.SavePaymentDepositReq;
 import com.maan.eway.common.req.SavePremiumDepositReq;
 import com.maan.eway.common.req.TinyUrlGenerateReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
-import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.LoginEncryptResponse;
 import com.maan.eway.common.res.PaymentDetailGetRes;
@@ -125,7 +130,6 @@ import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.notification.req.Broker;
 import com.maan.eway.notification.req.Customer;
 import com.maan.eway.notification.req.Notification;
-import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.payment.service.SelcomPaymentService;
@@ -218,6 +222,9 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
+	
+	@Value(value ="${madison.auth}")
+	private String madisonAuth;
 	
 	@Autowired
 	private LoginBranchMasterRepository lbranchRepo ;
@@ -3151,6 +3158,61 @@ public class PaymentServiceImpl implements PaymentService {
 				return null;
 			}
 			return product;
+		}
+
+
+		@Override
+		public CommonRes getCreditLimit(String brokerId) {
+			log.info("Enter in getCreditLimit\nArgument ==> "+brokerId);
+			CommonRes res = new CommonRes();
+			Map<String,Object> map = new HashMap<>();
+			List<Error> error = new ArrayList<>();
+			String result=null;
+			try {
+				String ApiURL= paymentdetailrepo.getCreditLimitApiURL();
+				if(StringUtils.isNotBlank(ApiURL)) {
+					JSONObject json = new JSONObject();
+					JSONObject json1 = new JSONObject();
+					JSONParser parser = new JSONParser();
+					CloseableHttpClient httpClient = HttpClients.createDefault();
+					HttpGet httpPost = new HttpGet(ApiURL+brokerId);
+					httpPost.setHeader("content-type", "application/json; charset=utf8");
+					httpPost.setHeader("Authorization", "Basic "+madisonAuth);
+					CloseableHttpResponse response = httpClient.execute(httpPost);
+					if(response.getStatusLine().getStatusCode()<=400) {
+						BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),"UTF-8"));
+						StringBuffer responseAsString = new StringBuffer();
+						String line = "";
+						while((line = rd.readLine()) != null) {
+							responseAsString.append(line);
+						}
+						if(StringUtils.isNotBlank(responseAsString))
+							result = responseAsString.toString();
+						if(StringUtils.isNotBlank(result)) {
+							json = (JSONObject) parser.parse(result);
+							if("SUCCESS".equals(json.get("Message"))) {
+								json1 = (JSONObject) json.get("Response");
+								map.put("CustomerName", json1.get("CustomerName"));
+								map.put("CreditLimit", json1.get("CreditLimit"));
+								map.put("UpdateDate", json1.get("UpdateDate"));
+								res.setCommonResponse(map);
+								res.setMessage("SUCCESS");
+								res.setErrorMessage(error);
+							}else {
+								error.add(new Error("No Data Found","BrokerId","500"));
+								res.setCommonResponse(null);
+								res.setMessage("FAILED");
+								res.setErrorMessage(error);
+							}
+						}
+					}
+				}
+				log.info("Exit into getCreditLimit");
+			}catch(Exception e) {
+				log.info("Error in getCreditLimit ==> "+e.getMessage());
+				e.printStackTrace();
+			}
+			return res;
 		}
 		
 		

@@ -3,13 +3,16 @@ package com.maan.eway.embedded;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.embedded.request.ClaimDetailsReq;
 import com.maan.eway.embedded.request.Inalipa;
+import com.maan.eway.embedded.response.InalipaDetailsRes;
 import com.maan.eway.embedded.response.ResponseForInalipa;
 import com.maan.eway.embedded.service.EmbeddedService;
 
@@ -42,5 +45,10 @@ public class EmbeddedController {
 		else
 			return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);	
 		
+	}
+	
+	@PostMapping("getClaimDetails")
+	public InalipaDetailsRes getClaimDetails(@RequestBody ClaimDetailsReq req){
+		return embService.getClaimDetails(req);
 	}
 }
