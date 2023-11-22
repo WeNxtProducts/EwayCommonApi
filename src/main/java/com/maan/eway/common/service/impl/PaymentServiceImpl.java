@@ -223,8 +223,8 @@ public class PaymentServiceImpl implements PaymentService {
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 	
-	@Value(value ="${madison.auth}")
-	private String madisonAuth;
+//	@Value(value ="${madison.auth}")
+//	private String madisonAuth;
 	
 	@Autowired
 	private LoginBranchMasterRepository lbranchRepo ;
@@ -3177,7 +3177,7 @@ public class PaymentServiceImpl implements PaymentService {
 					CloseableHttpClient httpClient = HttpClients.createDefault();
 					HttpGet httpPost = new HttpGet(ApiURL+brokerId);
 					httpPost.setHeader("content-type", "application/json; charset=utf8");
-					httpPost.setHeader("Authorization", "Basic "+madisonAuth);
+					httpPost.setHeader("Authorization", "Basic "+"");
 					CloseableHttpResponse response = httpClient.execute(httpPost);
 					if(response.getStatusLine().getStatusCode()<=400) {
 						BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),"UTF-8"));
