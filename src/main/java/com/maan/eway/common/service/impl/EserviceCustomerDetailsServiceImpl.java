@@ -43,6 +43,7 @@ import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.OccupationMaster;
@@ -133,9 +134,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getAddress2().length() > 100) {
 					errorList.add(new Error("03", "Address2", "Please Enter Address2 within 100 Characters"));
 				}*/
-				if (StringUtils.isBlank(req.getTitle())) {
-					errorList.add(new Error("04", "Title", "Please Select Title"));
-				}
+				
 				if (StringUtils.isBlank(req.getClientStatus())) {
 					errorList.add(new Error("05", "Client Status", "Please Select Client Status"));
 				}
@@ -146,19 +145,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
 					errorList.add(new Error("09", " Identity Type", "Please Select Identity Type"));
 				}
-				if (StringUtils.isBlank(req.getPreferredNotification())) {
-					errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
-				}
 				
 				
-				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
-
-					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
-						if (StringUtils.isBlank(req.getBusinessType())) {
-							errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
-						}
-					}
-				}
 				
 
 				if (StringUtils.isBlank(req.getIdNumber())) {
@@ -168,9 +156,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (! req.getIdNumber().matches("[A-Za-z0-9]+") ) {
 					errorList.add(new Error("11", "IdNumber", "Please Enter Valid IdNumber "));
 				}
-				if (StringUtils.isBlank(req.getNationality())) {
-					errorList.add(new Error("12", "Country", "Please select Country"));
-				}
+				
 				
 //				if (StringUtils.isBlank(req.getPreferredNotification())) {
 //					errorList.add(new Error("12", "PreferredNotification", "Please select Preferred Notification"));
@@ -218,11 +204,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //			if (req.getVrnGst().length() > 20) {
 //				errorList.add(new Error("17", "VrnGst", "Please Enter VrnGst within 20 Characters"));
 //			}
-				if (StringUtils.isBlank(req.getRegionCode())) {
-					errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode"));
-				} else if (req.getRegionCode().length() > 20) {
-					errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
-				}
+				
 				if (StringUtils.isNotBlank(req.getPinCode())) {
 //					 if (! req.getPinCode().matches("[0-9a-bA-Z]+") ) {
 //						 errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
@@ -275,14 +257,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo only in numbers"));
 				}
 
-				if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
-					errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 within 20 Characters"));
-				} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo2().matches("\\d+")) {
-					errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 only in numbers"));
-				}
+				
+				
 				if (StringUtils.isNotBlank(req.getMobileNo3()) && req.getMobileNo3().length() > 20) {
 					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 within 20 Characters"));
-				} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo3().matches("\\d+")) {
+				} else if (StringUtils.isNotBlank(req.getMobileNo3()) && !req.getMobileNo3().matches("\\d+")) {
 					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 only in numbers"));
 				}
 //				if (StringUtils.isBlank(req.getEmail1())) {
@@ -364,29 +343,83 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //					errorList.add(new Error("28", "Address2", "Address2 Is Already Available In Address"));
 //				}
 
-				if (StringUtils.isBlank(req.getIsTaxExempted())) {
-					errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
-
-				}
-
-				if (req.getIsTaxExempted().equals("Y")) {
-					if (StringUtils.isBlank(req.getTaxExemptedId())) {
-						errorList.add(new Error("32", "TaxExemptedId", "Please Enter TaxExemptedId"));
-					} else if (req.getTaxExemptedId().length() > 20) {
-						errorList.add(
-								new Error("33", "TaxExemptedId", "Please Enter TaxExemptedId within 20 Characters"));
-					}
-
-				}
+				
+				
+				
 				// Status Validation
-				if (StringUtils.isBlank(req.getStatus())) {
-					errorList.add(new Error("34", "Status", "Please Enter Status"));
-				} else if (req.getStatus().length() > 1) {
-					errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
-				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())
-						|| "P".equals(req.getStatus()))) {
-					errorList.add(new Error("34", "Status", "Plese Enter Status"));
+				if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId())) {
+					//
+					if(req.getPolicyHolderType().equalsIgnoreCase("2")) {
+					if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
+						errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 within 20 Characters"));
+					} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo2().matches("\\d+")) {
+						errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 only in numbers"));
+					}
+					}
+					
+				} else {
+					if (StringUtils.isBlank(req.getTitle()))  {
+						errorList.add(new Error("04", "Title", "Please Select Title"));
+					}
+					if (StringUtils.isBlank(req.getNationality())) {
+						errorList.add(new Error("12", "Country", "Please select Country"));
+					}
+					if (StringUtils.isBlank(req.getPreferredNotification())) {
+						errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
+					}
+					
+					if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+
+						if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+							if (StringUtils.isBlank(req.getBusinessType())) {
+								errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+							}
+						}
+					}
+					if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
+						if (StringUtils.isBlank(req.getVrTinNo())) {
+							errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
+						} else if (req.getVrTinNo().length() > 20) {
+							errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
+						}
+						
+					}
+					if (StringUtils.isBlank(req.getRegionCode())) {
+						errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode"));
+					} else if (req.getRegionCode().length() > 20) {
+						errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
+					}
+					
+					if (StringUtils.isBlank(req.getIsTaxExempted())) {
+						errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
+
+					}else if (req.getIsTaxExempted().equals("Y")) {
+						if (StringUtils.isBlank(req.getTaxExemptedId())) {
+							errorList.add(new Error("32", "TaxExemptedId", "Please Enter TaxExemptedId"));
+						} else if (req.getTaxExemptedId().length() > 20) {
+							errorList.add(
+									new Error("33", "TaxExemptedId", "Please Enter TaxExemptedId within 20 Characters"));
+						}
+
+					}
+					if (StringUtils.isBlank(req.getStatus())) {
+						errorList.add(new Error("34", "Status", "Please Enter Status"));
+					} else if (req.getStatus().length() > 1) {
+						errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
+					} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())
+							|| "P".equals(req.getStatus()))) {
+						errorList.add(new Error("34", "Status", "Plese Enter Status"));
+					}
+					if (StringUtils.isBlank(req.getStateCode())) {
+						errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
+					}
+					
+					if (StringUtils.isBlank(req.getMobileCode1())) {
+						errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
+					}
 				}
+				
+				
 				if (StringUtils.isBlank(req.getCreatedBy())) {
 					errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy "));
 				} else if (req.getCreatedBy().length() > 100) {
@@ -481,14 +514,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("41", "CompanyId", "Please Enter CompanyId within 20 Characters"));
 				}
 				
-				if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
-					if (StringUtils.isBlank(req.getVrTinNo())) {
-						errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
-					} else if (req.getVrTinNo().length() > 20) {
-						errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
-					}
-					
-				}
+				
 				
 
 //			if (StringUtils.isBlank(req.getStateName())) {
@@ -507,12 +533,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("44", "Street", "Please Enter Street within 100 Characters"));
 				}*/
 				
-				if (StringUtils.isBlank(req.getStateCode())) {
-					errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
-				}
-				if (StringUtils.isBlank(req.getMobileCode1())) {
-					errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
-				}
+				
 				
 //				if (StringUtils.isBlank(req.getWhatsappCode())) {
 //					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
@@ -800,7 +821,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			String title = getListItem (req.getCompanyId() , req.getBranchCode() ,"NAME_TITLE",req.getTitle());//listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
 			String language = getListItem (req.getCompanyId() , req.getBranchCode() ,"LANGUAGE",req.getLanguage());//listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
 			String policyHolderType = getListItem ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
-			String policyHolderTypeId = getListItem ("99999" , req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+			String policyHolderTypeId = getListItem (req.getCompanyId(), req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
 			
 			if(StringUtils.isNotBlank(req.getMobileCode1())){		        
 				String mobileCode1 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode1());
@@ -812,6 +833,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setMobileCodeDesc2(mobileCode2);
 
 	        }
+	       
+	        
 	        if(StringUtils.isNotBlank(req.getMobileCode3())){		        
 	        	String mobileCode3 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode3());
 			saveData.setMobileCodeDesc3(mobileCode3);
@@ -828,6 +851,34 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				saveData.setBusinessTypeDesc(businessType);
 			}
 			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
+			
+			if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId()) ) {
+				saveData.setTitleDesc(null);
+				saveData.setPreferredNotification("Sms");
+				saveData.setIsTaxExempted("N");
+				saveData.setRegionCode(null);
+				saveData.setStatus("Y");
+				saveData.setBusinessType(null);
+				saveData.setVrTinNo(null);
+				saveData.setVrnGst(null);
+			    String mobileCode2 = getListItem1(req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE");
+		        saveData.setMobileCode1(mobileCode2);
+				saveData.setMobileCode2(mobileCode2);
+		     	String country = getByCountry(req.getCompanyId());
+				saveData.setNationality(country);
+			 	
+			}else {
+				saveData.setTitleDesc(title);
+				saveData.setPreferredNotification(req.getPreferredNotification());
+				saveData.setIsTaxExempted(req.getIsTaxExempted());
+				saveData.setRegionCode(req.getRegionCode());
+				saveData.setStatus(req.getStatus());
+				saveData.setBusinessType(req.getBusinessType());
+				saveData.setVrTinNo(req.getVrTinNo());
+				saveData.setVrnGst(req.getVrTinNo());
+				saveData.setMobileCode1(req.getMobileCode1());
+				saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+			}
 			saveData.setGenderDesc(gender);
 			saveData.setTitleDesc(title);
 			saveData.setLanguageDesc(language);
@@ -850,6 +901,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setCityCode(StringUtils.isBlank(req.getCityCode())?null :Integer.valueOf(req.getCityCode()));
 			saveData.setCityName(req.getCityName());
 			saveData.setRegionCode(req.getRegionCode());
+			
+			
+			
 //			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
 //			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
 //			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" : stateCityNames.get(0).getStateName().toString());
@@ -1145,6 +1199,74 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return itemDesc ;
 	}
 
+	public synchronized String getListItem1(String insuranceId , String branchCode, String itemType) {
+		String countryCode = "" ;
+		List<ListItemValue> list = new ArrayList<ListItemValue>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			effectiveDate.where(a1,a2,b1,b2);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate b4= cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			effectiveDate2.where(a3,a4,b3,b4);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+			//Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			//Predicate n8 = cb.or(n4,n5);
+			Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType );
+			query.where(n1,n2,n3,n4,n9,n10).orderBy(orderList);
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			countryCode = list.size() > 0 ? list.get(0).getItemValue() : "" ; 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return countryCode ;
+	}
+
 	public String getByOccupationId(String occupationId, String insuranceId, String productId , String branchCode) {
 		String occupationDesc = "";
 		try {
@@ -1214,6 +1336,72 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				return null;
 		}
 			return occupationDesc;
+		}
+
+	public String getByCountry(String insuranceId) {
+		String country = "";
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query=  cb.createQuery(InsuranceCompanyMaster.class);
+			List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+			
+			// Find All
+			Root<InsuranceCompanyMaster> c = query.from(InsuranceCompanyMaster.class);
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("amendId")));
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a5 = cb.equal(c.get("amendId"),ocpm1.get("amendId"));
+			//Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			//Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+			effectiveDate.where(a1,a2,a5);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a7 = cb.equal(c.get("amendId"),ocpm2.get("amendId"));
+			//Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			//Predicate a10 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+			effectiveDate2.where(a3,a4,a7);
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+			//Predicate n5 = cb.equal(c.get("branchCode"),branchCode);
+			//Predicate n6 = cb.equal(c.get("branchCode"),"99999");
+			//Predicate n7 = cb.or(n5,n6);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+			if(list.size()>0) {
+				list = result.getResultList();
+				country = list.size() > 0 ? list.get(0).getCountryId() : "";
+			}
+		} catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+		}
+			return country;
 		}
 
 	public List<StateMaster> getStateAndCityName(String countryId, String stateCode) {

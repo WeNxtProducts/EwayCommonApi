@@ -737,8 +737,13 @@ private static final long serialVersionUID = 1L;
       @Column(name="TYPE_OF_PROPERTY_DESC")
       private String typeOfPropertyDesc  ;
       
+
       @Column(name="SALE_POINT_CODE", length=200)
       private String    salePointCode;
+
+      @Column(name="FINALIZE_YN")
+      private String finalizeYn;
+
 }
 
 

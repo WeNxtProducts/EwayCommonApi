@@ -75,6 +75,7 @@ import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.bean.UWRefferralHistory;
 import com.maan.eway.common.req.AdminReferalStatusReq;
+import com.maan.eway.common.req.ChangeFinalyzereq;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.EmployeeCountGetReq;
@@ -89,12 +90,15 @@ import com.maan.eway.common.res.CustomerDetailsRes;
 import com.maan.eway.common.res.DocumentDetails;
 import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.EserviceCommonGetRes;
+import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.PaccGetRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
+import com.maan.eway.common.res.TravelQuoteCriteriaRes;
+import com.maan.eway.common.res.TravelQuoteCriteriaResponse;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.common.service.QuoteService;
@@ -4451,5 +4455,124 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 		return resList;
 	}
+
+	@Override
+	public SuccessRes changefinalyzestatus(ChangeFinalyzereq req) {
+		
+		SuccessRes res = new SuccessRes();
+		 
+      try
+      {  
+    	  CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),req.getProductId());
+
+		  if (product.getMotorYn().equalsIgnoreCase("M")) {
+			
+			List<EserviceMotorDetails> motors =  eserMotRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			motors.forEach( o -> {
+				o.setFinalizeYn(req.getFinalizeYn());
+			});			
+			eserMotRepo.saveAll(motors);
+			
+		} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
+				
+			List<EserviceTravelDetails> travels = eserTraRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(),req.getProductId());
+			travels.forEach( o -> {
+				o.setFinalizeYn(req.getFinalizeYn());
+			});	
+			eserTraRepo.saveAll(travels);
+    	
+		} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+			
+			List<EserviceBuildingDetails> building = eserBuildRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			building.forEach( o -> {
+				o.setFinalizeYn(req.getFinalizeYn());
+			});	
+			eserBuildRepo.saveAll(building);
+			
+		} else {
+			
+			List<EserviceCommonDetails> common = eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			common.forEach( o ->{
+				o.setFinalizeYn(req.getFinalizeYn());		
+			});
+			eserCommonRepo.saveAll(common);
+		}
+		
+		res.setResponse("Success");
+		res.setSuccessId(req.getRequestReferenceNo());    
+		return res;
+      }
+      catch(Exception e)
+      {
+    	  e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+
+      }
+  }
+
+	
+	public synchronized CompanyProductMaster getCompanyProductMasterDropdown1(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return product;
+	}
+
 	
 }

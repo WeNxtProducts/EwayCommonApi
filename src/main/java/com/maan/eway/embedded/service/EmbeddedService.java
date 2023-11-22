@@ -16,11 +16,12 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,7 +31,10 @@ import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.bean.GroupMedicalDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
+import com.maan.eway.embedded.request.ClaimDetailsReq;
 import com.maan.eway.embedded.request.Inalipa;
+import com.maan.eway.embedded.response.InalipaDetailsRes;
+import com.maan.eway.embedded.response.InalipaDetailsRes1;
 import com.maan.eway.embedded.response.ResponseForInalipa;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
@@ -57,6 +61,9 @@ public class EmbeddedService {
 	
 	@Value(value = "${embedded.scheduleUrl}")
 	private String scheduleUrl;
+	
+	@Autowired
+	private GroupMedicalDetailsRepository groupMedicalRepo;
 	
 	public ResponseForInalipa createPolicy(String loginId, Inalipa request) {
 		try {
@@ -270,6 +277,50 @@ public class EmbeddedService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public InalipaDetailsRes getClaimDetails(ClaimDetailsReq req) {
+		Log.info("Enter into getClaimDetails");
+		InalipaDetailsRes res = new InalipaDetailsRes();
+		List<InalipaDetailsRes1> resultList = new ArrayList<>();
+		try {
+			List<GroupMedicalDetails> list = groupMedicalRepo.findByMobileNo(req.getMobileNo());
+			if(!CollectionUtils.isEmpty(list)) {
+				String accDate = new SimpleDateFormat("yyyy-MM-dd").format(DD_MM_YYYY.parse(req.getAccidentDate()));
+				List<Map<String,Object>> validCustList = groupMedicalRepo.getCustomerDetails(req.getMobileNo(),accDate,req.getClaimType());
+				if(!CollectionUtils.isEmpty(validCustList)) {
+					validCustList.forEach(k -> {
+						InalipaDetailsRes1 m = InalipaDetailsRes1.builder()
+								.policyNo(k.get("POLICY_NO")==null?"":k.get("POLICY_NO").toString())
+								.mobileNo(k.get("MOBILE_NO")==null?"":k.get("MOBILE_NO").toString())
+								.inceptionDate(k.get("INCEPTION_DATE")==null?"":DD_MM_YYYY.format(k.get("INCEPTION_DATE")))
+								.expiryDate(k.get("EXPIRY_DATE")==null?"":DD_MM_YYYY.format(k.get("EXPIRY_DATE")))
+								.intimatedDate(DD_MM_YYYY.format(new Date()))
+								.claimType(k.get("CLAIM_TYPE")==null?"":k.get("CLAIM_TYPE").toString())
+								.build();
+						resultList.add(m);
+					});
+					res.setCommonResponse(resultList);
+					res.setMessage("SUCCESS");
+					res.setErrorMessage(null);
+					res.setError(true);
+				}else {
+					res.setCommonResponse(null);
+					res.setMessage("NO ACTIVE PERIOD");
+					res.setErrorMessage("On the date of the accident, your policy was not active.");
+					res.setError(true);
+				}
+			}else {
+				res.setCommonResponse(null);
+				res.setErrorMessage("You're not a legitimate client.");
+				res.setMessage("NO DATA FOUND");
+			}
+			Log.info("Exit into getClaimDetails");
+		}catch(Exception e) {
+			Log.info("Error in getClaimDetails");
+			e.printStackTrace();
+		}
+		return res;
 	}
 
 }

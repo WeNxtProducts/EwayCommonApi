@@ -32,9 +32,8 @@ public class InsuranceCompanyMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private String     companyId ;
     
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
+    private Integer    amendId ;
+
     
      
 }

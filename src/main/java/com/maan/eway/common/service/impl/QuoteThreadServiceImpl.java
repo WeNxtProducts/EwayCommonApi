@@ -62,6 +62,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MasterReferralDetails;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqQuoteno;
@@ -271,6 +272,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	@Autowired
 	private UWReferralHistoryRepository uwReferralHistRepo;
+	
+
+	
 	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -608,11 +612,45 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
 			
 				// Covers Referrral Checking
-				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
+				List<PolicyCoverData> 	alreadyOptCovers = coverRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
 				
+				
+//				String finalizeYn = "Y" ;
+//				 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
+//						EserviceTravelDetails data =  eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
+//						finalizeYn = StringUtils.isNotBlank(data.getFinalizeYn()) ? data.getFinalizeYn() :finalizeYn ; 
+//						
+//				} else if( req.getMotorYn().equalsIgnoreCase("M") ) {
+//					EserviceMotorDetails data =  eserMotRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
+//					finalizeYn = StringUtils.isNotBlank(data.getFinalizeYn()) ? data.getFinalizeYn() :finalizeYn ; 
+//				
+//				} else if( req.getMotorYn().equalsIgnoreCase("A")) {
+//					List<EserviceBuildingDetails> datas =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
+//					EserviceBuildingDetails data = datas.get(0);
+//					finalizeYn = StringUtils.isNotBlank(data.getFinalizeYn()) ? data.getFinalizeYn() :finalizeYn ; 
+//					
+//				} else {
+//					List<EserviceCommonDetails> datas =  eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
+//					EserviceCommonDetails data = datas.get(0) ;
+//					finalizeYn = StringUtils.isNotBlank(data.getFinalizeYn()) ? data.getFinalizeYn() :finalizeYn ; 
+//					
+//				}
+				
+				boolean alreadyOpt = false ; 
+				if(alreadyOptCovers.size() >0) {
+					alreadyOpt = true ;
+				}
 				companyId = covers.size() > 0 ? covers.get(0).getCompanyId()  :"" ;
 						
 				for (VehicleIdsReq veh : req.getVehicleIdsList()) {
+					List<PolicyCoverData> alreadyOptVeh = alreadyOptCovers.stream().filter(o -> veh.getVehicleId() !=null && o.getVehicleId().equals(veh.getVehicleId()) &&
+					StringUtils.isNotBlank(veh.getSectionId())		&& o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) ).collect(Collectors.toList());	
+					
+					boolean alreadyOpt2 = false ; 
+					if(alreadyOptVeh.size() >0) {
+						alreadyOpt2 = true ;
+					}
 					
 					String referrals = "" ;
 					// Cover Referal Checking
@@ -625,9 +663,14 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							
 							List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o ->  o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
 							if(filterReferalCovers.size()>0 ) { 
-							
-								referrals = StringUtils.isBlank(referrals)? filterReferalCovers.get(0).getCoverName()  : referrals ;// +"~" +filterReferalCovers.get(0).getCoverName() ;
-								referral = true ;
+								List<PolicyCoverData> filterAlreadyOpt = alreadyOptCovers.stream().filter(o -> o.getVehicleId().equals(veh.getVehicleId())
+										&& o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	
+								
+								if(filterAlreadyOpt.size() <=0 ) {
+									referrals = StringUtils.isBlank(referrals)? filterReferalCovers.get(0).getCoverName()  : referrals ;// +"~" +filterReferalCovers.get(0).getCoverName() ;
+									referral = true ;
+								}
+								
 							}
 						
 						} else {
@@ -635,8 +678,13 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							userOptCovers.addAll(filterSubCovers);
 							List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o ->  o.getVehicleId().equals(veh.getVehicleId()) &&  o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&   o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
 							if(filterReferalSubCovers.size()>0  ) { 
-								referrals = StringUtils.isBlank(referrals)? filterReferalSubCovers.get(0).getCoverName() : referrals ;// +"~" +filterReferalSubCovers.get(0).getCoverName() ;
-								referral = true ;
+								List<PolicyCoverData> filterAlreadyOpt = alreadyOptCovers.stream().filter(o -> o.getVehicleId().equals(veh.getVehicleId())
+										&& o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))   ).collect(Collectors.toList());	
+								
+								if(filterAlreadyOpt.size() <=0 ) {
+									referrals = StringUtils.isBlank(referrals)? filterReferalSubCovers.get(0).getCoverName() : referrals ;// +"~" +filterReferalSubCovers.get(0).getCoverName() ;
+									referral = true ;
+								}
 							}
 						}
 					}
@@ -646,7 +694,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							&& o.getProductId().equals(Integer.valueOf(req.getProductId())) 
 							&& o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) ).collect(Collectors.toList());
 							
-					if (  filterMasterReferals!=null && filterMasterReferals.size()>0 ) {
+					if (  filterMasterReferals!=null && filterMasterReferals.size()>0 && alreadyOpt2==false) {
 						for ( MasterReferralDetails masRef : filterMasterReferals) {
 							if(! masRef.getReferralDesc().contains("Exception")) {
 								referrals = StringUtils.isBlank(referrals)? masRef.getReferralDesc() : referrals ;// +"~" +masRef.getReferralDesc() ;
@@ -668,7 +716,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				// Under Writter Refral Checking
 				List<UwQuestionsDetails>  uwQuestions = uwRepo.findByRequestReferenceNo( req.getRequestReferenceNo());
 				List<UwQuestionsDetails>  filterUwQuestions = uwQuestions.stream().filter( o -> o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
-				if(filterUwQuestions.size()>0 ) {
+				if(filterUwQuestions.size()>0 && alreadyOpt==false ) {
 					referral = true ;
 					
 					uwRemarks = filterUwQuestions.get(0).getUwQuestionDesc() ;

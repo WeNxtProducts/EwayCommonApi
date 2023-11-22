@@ -1,12 +1,16 @@
 package com.maan.eway.notification.service;
 
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -20,10 +24,11 @@ public class SmsJob implements Consumer<Sms> {
 
 	/*@Autowired
 	private SmsDataDetailsRepository smsRepo;*/
-	private String type="0";	
+	/*private String type="0";	
 	private String dlr="1";
 	String statuscode="";
-	Integer statusvalue =0;/*
+	Integer statusvalue =0;*/
+	private String kafkaLink; /*
 	public void pushSms(Sms m) {
 
 		String statusResponse = null;
@@ -80,10 +85,26 @@ public class SmsJob implements Consumer<Sms> {
 
 	}
 */
+	public SmsJob(String kafkaLinksms) {
+		// TODO Auto-generated constructor stub
+		kafkaLink=kafkaLinksms;
+	}
 	@Override
 	public void accept(Sms t) {
-	//	pushSms(t);
+		try {
 
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("Authorization", "Basic dmlzaW9uOnZpc2lvbkAxMjMj");
+			HttpEntity<Object> entityReq = new HttpEntity<>(t, headers);
+			System.out.println(entityReq.getBody());
+			ResponseEntity<Object> response = restTemplate.postForEntity(kafkaLink, entityReq, Object.class);
+			System.out.println(response.getBody());
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

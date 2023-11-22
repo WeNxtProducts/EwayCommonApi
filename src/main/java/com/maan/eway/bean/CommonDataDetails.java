@@ -393,8 +393,12 @@ private static final long serialVersionUID = 1L;
    @Column(name="SOURCE_TYPE")
    private String     sourceType ;
    
+
    @Column(name="SALE_POINT_CODE", length=200)
    private String    salePointCode;
+
+   @Column(name="FINALIZE_YN")
+   private String finalizeYn;
 }
 
 

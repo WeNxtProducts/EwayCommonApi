@@ -12,11 +12,14 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
-import com.maan.eway.bean.GroupMedicalDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+
+import com.maan.eway.bean.GroupMedicalDetails;
 import com.maan.eway.bean.GroupMedicalDetailsId;
 /**
  * <h2>GroupMedicalDetailsRepository</h2>
@@ -29,5 +32,10 @@ import com.maan.eway.bean.GroupMedicalDetailsId;
  
  
 public interface GroupMedicalDetailsRepository  extends JpaRepository<GroupMedicalDetails,GroupMedicalDetailsId > , JpaSpecificationExecutor<GroupMedicalDetails> {
+
+	List<GroupMedicalDetails> findByMobileNo(String mobileNo);
+
+	@Query(value = "SELECT POLICY_NO,INCEPTION_DATE,EXPIRY_DATE,MOBILE_NO, (SELECT SECTION_NAME FROM PRODUCT_SECTION_MASTER WHERE STATUS='Y' AND SYSDATE() BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END AND COMPANY_ID=GMD.COMPANY_ID AND SECTION_ID=GMD.SECTION_ID AND PRODUCT_ID=GMD.PRODUCT_ID AND AMEND_ID=(SELECT MAX(AMEND_ID) FROM PRODUCT_SECTION_MASTER WHERE STATUS='Y' AND SYSDATE() BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END AND COMPANY_ID=GMD.COMPANY_ID AND SECTION_ID=GMD.SECTION_ID AND PRODUCT_ID=GMD.PRODUCT_ID)) AS CLAIM_TYPE FROM GROUP_MEDICAL_DETAILS GMD WHERE MOBILE_NO = ?1 AND ?2 BETWEEN INCEPTION_DATE AND EXPIRY_DATE AND section_id = ?3",nativeQuery = true)
+	List<Map<String,Object>> getCustomerDetails(String mobileNo, String accidentDate,String claimType);
 
 }

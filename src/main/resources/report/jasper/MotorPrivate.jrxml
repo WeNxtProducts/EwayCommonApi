@@ -1700,7 +1700,10 @@
 					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="TableDataSet 1" uuid="b85565b3-fb1a-4e43-8e75-f3ec5315d358">
+					<datasetRun subDataset="TableDataSet 1" uuid="3491b284-f55d-4861-8f95-01d7f65f797b">
+						<datasetParameter name="pvCurrency">
+							<datasetParameterExpression><![CDATA[$F{currency}]]></datasetParameterExpression>
+						</datasetParameter>
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("vehicleDetails")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="19" uuid="42b2628a-dc58-491e-93c8-61af6c575382">

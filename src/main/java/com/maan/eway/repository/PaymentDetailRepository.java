@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentDetailId;
@@ -47,6 +48,9 @@ public interface PaymentDetailRepository  extends JpaRepository<PaymentDetail,Pa
 	PaymentDetail findByMerchantReferenceAndPaymentTypeAndPaymentStatus(String merchantRefernceNo, String paymentType,String PaymentStatus);
 
 	PaymentDetail findByPaymentId(String paymentId);
+
+	@Query(value="SELECT ITEM_VALUE FROM EWAY_LIST_ITEM_VALUE WHERE ITEM_CODE='CREDIT_URL' AND COMPANY_ID='100004'",nativeQuery=true)
+	String getCreditLimitApiURL();
 
 
 	
