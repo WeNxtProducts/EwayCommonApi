@@ -3,6 +3,7 @@ package com.maan.eway.common.service;
 import java.util.List;
 
 import com.maan.eway.common.req.AdminReferalStatusReq;
+import com.maan.eway.common.req.ChangeFinalyzereq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.EmployeeCountGetReq;
 import com.maan.eway.common.req.NewQuoteReq;
@@ -46,6 +47,6 @@ public interface QuoteService {
 
 	List<GroupSuminsuredDetailsRes> groupSuminsuredDetails(SectionSumInsuredGetReq req);
 
-
+     SuccessRes changefinalyzestatus(ChangeFinalyzereq req);
 
 }

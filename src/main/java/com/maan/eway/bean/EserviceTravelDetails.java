@@ -325,12 +325,19 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CUSTOMER_NAME")
     private String     customerName ;
+    
     @Column(name="AGENCY_CODE")
     private String     agencyCode ;
+    
     @Column(name="BRANCH_NAME ")
     private String     branchName  ;
+
     @Column(name="SALE_POINT_CODE", length=200)
     private String    salePointCode;
+
+    
+    @Column(name="FINALIZE_YN")
+    private String finalizeYn;
 }
 
 

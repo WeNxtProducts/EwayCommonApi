@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.AdminReferalStatusReq;
+import com.maan.eway.common.req.ChangeFinalyzereq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.EmployeeCountGetReq;
 import com.maan.eway.common.req.NewQuoteReq;
@@ -262,4 +263,24 @@ public class QuoteController {
 		
 
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/changefinalyzestatus")
+	public ResponseEntity<CommonRes> changefinalyzestatus(@RequestBody ChangeFinalyzereq req)
+	{
+		CommonRes common = new CommonRes();
+		SuccessRes res = entityService.changefinalyzestatus(req);
+		common.setCommonResponse(res);
+		common.setIsError(false);
+		common.setErrorMessage(Collections.emptyList());
+		common.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(common, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	
 }
