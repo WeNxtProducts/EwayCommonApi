@@ -821,7 +821,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			String title = getListItem (req.getCompanyId() , req.getBranchCode() ,"NAME_TITLE",req.getTitle());//listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
 			String language = getListItem (req.getCompanyId() , req.getBranchCode() ,"LANGUAGE",req.getLanguage());//listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
 			String policyHolderType = getListItem ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
-			String policyHolderTypeId = getListItem ("99999" , req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+			String policyHolderTypeId = getListItem (req.getCompanyId(), req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
 			
 			if(StringUtils.isNotBlank(req.getMobileCode1())){		        
 				String mobileCode1 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode1());
@@ -861,17 +861,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				saveData.setBusinessType(null);
 				saveData.setVrTinNo(null);
 				saveData.setVrnGst(null);
-			 if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId()) ) {
-		        	String mobileCode2 = getListItem1(req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE");
-		        	saveData.setMobileCode1(mobileCode2);
-					saveData.setMobileCode2(mobileCode2);
-		     }
-			 
-			 if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId()) ) {
-				 String country = getByCountry(req.getCompanyId());
-				 saveData.setNationality(country);
-			 }
-				
+			    String mobileCode2 = getListItem1(req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE");
+		        saveData.setMobileCode1(mobileCode2);
+				saveData.setMobileCode2(mobileCode2);
+		     	String country = getByCountry(req.getCompanyId());
+				saveData.setNationality(country);
+			 	
 			}else {
 				saveData.setTitleDesc(title);
 				saveData.setPreferredNotification(req.getPreferredNotification());
