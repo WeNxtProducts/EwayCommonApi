@@ -688,6 +688,10 @@ private String commissionModifyYn;
 
 @Column(name="SALE_POINT_CODE", length=200)
 private String    salePointCode;
+
+@Column(name="POLICY_PERIOD", length=20)
+private String    policyPeriod;
+
 }
 
 

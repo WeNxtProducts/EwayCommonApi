@@ -108,6 +108,8 @@ public class NotificationService {
 	@Value(value = "${kafka.push.mail}")
 	private String kafkaLink;
 	
+	@Value(value = "${kafka.push.sms}")
+	private String kafkaLinksms;	
 	private Logger log = LogManager.getLogger(NotificationService.class);
 	
 	
@@ -438,7 +440,7 @@ public class NotificationService {
 										totalMailJob.stream().forEach(job);									
 									}
 									if(!totalSmSJob.isEmpty()) {
-										SmsJob sms=new SmsJob();
+										SmsJob sms=new SmsJob(kafkaLinksms);
 										totalSmSJob.stream().forEach(sms);									
 									}
 
