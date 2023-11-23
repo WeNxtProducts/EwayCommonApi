@@ -96,6 +96,9 @@ public class PortfolioCustomerDetailsRes {
 	@JsonProperty("NoOfInstallment")
 	private String noOfInstallment;
 	
+	@JsonProperty("PaymentStatus")
+	private String     paymentStatus ;
+	
 	@JsonProperty("EmiPremium")
 	private String emiPremium;
 	

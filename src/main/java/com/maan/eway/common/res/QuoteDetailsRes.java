@@ -22,6 +22,9 @@ public class QuoteDetailsRes {
 	@JsonProperty("CustomerId")
 	private String   customerId;
 	
+	@JsonProperty("CustomerReferenceNo")
+	private String customerReferenceNo;
+	
 	@JsonProperty("CompanyId")
 	private String   companyId;
 	

@@ -151,6 +151,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.NotifTemplateMasterRepository;
@@ -298,13 +299,15 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Autowired
 	private DepositService depoService;
-	
+
 	@Autowired
 	private DepositcbcMasterRepository depositcbcRepo;
-	
-	@Autowired
-	private EserviceTravelGroupDetailsRepository groupRepo ;
 
+	@Autowired
+	private LoginProductMasterRepository loginProductRepo;
+
+	@Autowired
+	private EserviceTravelGroupDetailsRepository groupRepo;
 
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -1705,12 +1708,19 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 			}
 			if("3".equals(req.getPaymentType())) {
+				
 				HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
 				
 				Long cbcDatacount=depositcbcRepo.countByBrokerIdAndStatus(homeData.getAgencyCode().toString(),"Y");
 				if(cbcDatacount==0){
 					error.add(new Error("01","Credit","Credit Option is not Activated For This Broker"));
+				}else {
+				Long count=loginProductData(homeData.getLoginId(),homeData.getCompanyId(),homeData.getProductId());
+				if(count==0) {
+					error.add(new Error("01","Credit","Credit Option is not Available  For This Product"));
 				}
+				}
+				
 			}
 			
 			// Check Paymetn Info
@@ -1721,7 +1731,8 @@ public class PaymentServiceImpl implements PaymentService {
 						error.add(new Error("01","Accepted","This Payment Already Accepted "));
 
 					} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Rejected") ) {
-						error.add(new Error("01","Rejected","This Payment Already Rejected "));
+						error.add(new Error("01","Rejected","This Payment Already Reject"
+								+ "ed "));
 
 					} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Cancelled") ) {
 						error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
@@ -1834,6 +1845,41 @@ public class PaymentServiceImpl implements PaymentService {
 		return error;
 	}
 
+	public Long loginProductData(String loginId,String companyId,Integer productId ) {
+		Long data=null;
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+
+			// Find All
+			Root<LoginProductMaster> b = query.from(LoginProductMaster.class);
+			List<LoginProductMaster> list= new ArrayList<LoginProductMaster>();
+			// Select
+			query.select(b);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("amendId")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("status"), "Y");
+			Predicate n3 = cb.equal(b.get("productId"), productId);
+			Predicate n4 = cb.equal(b.get("companyId"), companyId);
+			Predicate n5 = cb.equal(b.get("loginId"), loginId);
+
+			query.where(n1,n3, n4, n5).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			data=list.size() > 0 ? Long.valueOf(list.get(0).getCreditYn()) : 0 ;
+
+		}catch(Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return data;
+	}
 	public List<BrokerCommissionDetails> getExistingBrokerById(String brokerId , String InsuranceId , String productId) {
 		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
 		try {
