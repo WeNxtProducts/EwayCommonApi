@@ -9,6 +9,12 @@ import lombok.Data;
 
 @Data
 public class PortfolioGridRes {
+	
+	   @JsonProperty("CreditNo")
+	   private String     creditNo; 
+	   
+	   @JsonProperty("DebitNo")
+	   private String     debitNo; 
 
 	   @JsonProperty("ApplicationId")
 	   private String     applicationId;
@@ -111,4 +117,6 @@ public class PortfolioGridRes {
 	   
 	   @JsonProperty("EndorsementRemarks")
 	   private String     endorsementRemarks; 
+	   
+
 }
