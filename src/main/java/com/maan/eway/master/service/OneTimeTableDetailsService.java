@@ -8,6 +8,7 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.master.req.ColumnNameDropDownlReq;
+import com.maan.eway.master.req.OneTimeTableReq;
 import com.maan.eway.res.DropDownRes;
 
 public interface OneTimeTableDetailsService  {
@@ -16,13 +17,13 @@ public interface OneTimeTableDetailsService  {
 
 	List<DropDownRes> columnName(ColumnNameDropDownlReq req);
 
-	List<DropDownRes> masterTable();
+	List<DropDownRes> masterTable(OneTimeTableReq req);
 
-	List<DropDownRes> eserviceTable();
+	List<DropDownRes> eserviceTable(OneTimeTableReq req);
 
-	List<DropDownRes> sourcetable();
+	List<DropDownRes> sourcetable(OneTimeTableReq req);
 
-	List<DropDownRes> integrationtable();
+	List<DropDownRes> integrationtable(OneTimeTableReq req);
 
 	List<DropDownRes> exceltable(String type);
 

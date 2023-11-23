@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.master.req.ColumnNameDropDownlReq;
+import com.maan.eway.master.req.OneTimeTableReq;
 import com.maan.eway.master.service.OneTimeTableDetailsService;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
@@ -48,12 +49,12 @@ public class OneTimeTableDetailsController {
 
 	}
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@GetMapping("/mastertable")
+	@PostMapping("/mastertable")
 	@ApiOperation(value = "This method is to masterTable Drop Down")
-	public ResponseEntity<CommonRes> masterTable() {
+	public ResponseEntity<CommonRes> masterTable(@RequestBody OneTimeTableReq req) {
 		CommonRes data = new CommonRes();
 
-		List<DropDownRes> res = service.masterTable();
+		List<DropDownRes> res = service.masterTable(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -67,12 +68,12 @@ public class OneTimeTableDetailsController {
 
 	}
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@GetMapping("/eservicetable")
+	@PostMapping("/eservicetable")
 	@ApiOperation(value = "This method is to masterTable Drop Down")
-	public ResponseEntity<CommonRes> eserviceTable() {
+	public ResponseEntity<CommonRes> eserviceTable(@RequestBody OneTimeTableReq req) {
 		CommonRes data = new CommonRes();
 
-		List<DropDownRes> res = service.eserviceTable();
+		List<DropDownRes> res = service.eserviceTable(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -106,12 +107,12 @@ public class OneTimeTableDetailsController {
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@GetMapping("/integratointable")
+	@PostMapping("/integratointable")
 	@ApiOperation(value = "This method is to Integration Table Name Drop Down")
-	public ResponseEntity<CommonRes> integrationtable() {
+	public ResponseEntity<CommonRes> integrationtable(@RequestBody OneTimeTableReq req) {
 		CommonRes data = new CommonRes();
 
-		List<DropDownRes> res = service.integrationtable();
+		List<DropDownRes> res = service.integrationtable(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -126,12 +127,12 @@ public class OneTimeTableDetailsController {
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@GetMapping("/sourcetable")
+	@PostMapping("/sourcetable")
 	@ApiOperation(value = "This method is to Source Table Name Drop Down")
-	public ResponseEntity<CommonRes> sourcetable() {
+	public ResponseEntity<CommonRes> sourcetable(@RequestBody OneTimeTableReq req) {
 		CommonRes data = new CommonRes();
 
-		List<DropDownRes> res = service.sourcetable();
+		List<DropDownRes> res = service.sourcetable(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
