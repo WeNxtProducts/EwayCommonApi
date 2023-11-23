@@ -44,7 +44,6 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.DocumentTransactionDetails;
-import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -66,6 +65,7 @@ import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.PolicyCoverDataIndividuals;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SectionCoverMaster;
@@ -82,6 +82,7 @@ import com.maan.eway.common.req.EmployeeCountGetReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
 import com.maan.eway.common.req.TracesRemovedReq;
+import com.maan.eway.common.req.UpdatePolicyStartEndDateReq;
 import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
@@ -90,15 +91,12 @@ import com.maan.eway.common.res.CustomerDetailsRes;
 import com.maan.eway.common.res.DocumentDetails;
 import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.EserviceCommonGetRes;
-import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.PaccGetRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
-import com.maan.eway.common.res.TravelQuoteCriteriaRes;
-import com.maan.eway.common.res.TravelQuoteCriteriaResponse;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.common.service.QuoteService;
@@ -137,7 +135,6 @@ import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
-import com.maan.eway.repository.PaymentDepositRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
@@ -4457,6 +4454,7 @@ public class QuoteServiceImpl implements QuoteService {
 	}
 
 	@Override
+
 	public SuccessRes changefinalyzestatus(ChangeFinalyzereq req) {
 		
 		SuccessRes res = new SuccessRes();
@@ -4511,20 +4509,263 @@ public class QuoteServiceImpl implements QuoteService {
       }
   }
 
+
+	public List<Error> validateStartdate(UpdatePolicyStartEndDateReq req) {
+		List<Error> error = new ArrayList<Error>();
+
+		try {
+			
+			if(StringUtils.isBlank(req.getQuoteNo())){
+				error.add(new Error("01","Quote No","Please Enter Quote No"));
+			}
+			
+			HomePositionMaster hp = homeRepo.findByQuoteNo(req.getQuoteNo());
+			
+			if(hp!=null) {
+				if (req.getPolicyStartDate()== null) {
+					error.add(new Error("13", "PolicyStartDate", "Please Enter PolicyStartDate"));
+				} else if ((hp.getEndtTypeId() == null || hp.getEndtTypeId().equalsIgnoreCase("0"))) {
+					int before = getBackDays(hp.getCompanyId(), String.valueOf(hp.getProductId()), hp.getLoginId());
+					int days = before == 0 ? -1 : -before;
+					long MILLS_IN_A_DAY = 1000 * 60 * 60 * 24;
+					long backDays = MILLS_IN_A_DAY * days;
+					Date today = new Date();
+					Date resticDate = new Date(today.getTime() + backDays);
+					long days90 = MILLS_IN_A_DAY * 90;
+					Date after90 = new Date(today.getTime() + days90);
+					if (req.getPolicyStartDate().before(resticDate)) {
+						error.add(new Error("14", "PolicyStartDate", "Policy Start Date Back Days Not Allowed "));
+					} else if (req.getPolicyStartDate().after(after90)) {
+						error.add(new Error("14", "PolicyStartDate", "PolicyStartDate  even after 90 days Not Allowed"));
+					}
+	
+				}
+			}
+//			
+//			if (req.getPolicyEndDate()==null) {
+//				error.add(new Error("13", "PolicyEndDate", "Please Enter PolicyEndDate"));
+//			} else if ( req.getPolicyEndDate().before(req.getPolicyStartDate() )){
+//				error.add(new Error("13", "PolicyEndDate", "Please Enter PolicyEndDate Greater Than PolicyStartDate"));
+//			}	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return error;
+	}
+
+	@Override
+	public SuccessRes updatePolicyStartEndDate(UpdatePolicyStartEndDateReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			HomePositionMaster hp = homeRepo.findByQuoteNo(req.getQuoteNo());
+			
+			CompanyProductMaster product = getCompanyProductMasterDropdown(hp.getCompanyId(),
+					hp.getProductId().toString());
+			
+			//End date
+			int period = hp.getPolicyPeriod()==null?0:Integer.valueOf(hp.getPolicyPeriod())	;
+				
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(req.getPolicyStartDate());
+			
+			if(hp.getProductId()==4 )
+				calendar.add(Calendar.DAY_OF_MONTH, (period-1));
+			else
+				calendar.add(Calendar.DAY_OF_MONTH, period);
+
+			Date endDate = calendar.getTime();
+			
+			
+			// main tables update
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<MotorDataDetails> update = cb.createCriteriaUpdate(MotorDataDetails.class);
+				Root<MotorDataDetails> m = update.from(MotorDataDetails.class);
+				update.set("policyStartDate", req.getPolicyStartDate());
+				update.set("policyEndDate", endDate);
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+				
+			} else if (product.getMotorYn().equalsIgnoreCase("H")&& hp.getProductId().toString().equalsIgnoreCase(travelProductId)) {
+					
+
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<TravelPassengerDetails> update = cb.createCriteriaUpdate(TravelPassengerDetails.class);
+				Root<TravelPassengerDetails> m = update.from(TravelPassengerDetails.class);
+				update.set("travelStartDate", req.getPolicyStartDate());
+				update.set("travelEndDate", endDate);
+				update.set("effectiveDate", req.getPolicyStartDate());
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+				
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<BuildingRiskDetails> update = cb.createCriteriaUpdate(BuildingRiskDetails.class);
+				Root<BuildingRiskDetails> m = update.from(BuildingRiskDetails.class);
+				update.set("policyStartDate", req.getPolicyStartDate());
+				update.set("policyEndDate", endDate);
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+				
+			} else {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<CommonDataDetails> update = cb.createCriteriaUpdate(CommonDataDetails.class);
+				Root<CommonDataDetails> m = update.from(CommonDataDetails.class);
+				update.set("policyStartDate", req.getPolicyStartDate());
+				update.set("policyEndDate", endDate);
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+
+			}
+			
+			//Row tables update
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<EserviceMotorDetails> update = cb.createCriteriaUpdate(EserviceMotorDetails.class);
+				Root<EserviceMotorDetails> m = update.from(EserviceMotorDetails.class);
+				update.set("policyStartDate", req.getPolicyStartDate());
+				update.set("policyEndDate", endDate);
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+				
+			} else if (product.getMotorYn().equalsIgnoreCase("H")&& hp.getProductId().toString().equalsIgnoreCase(travelProductId)) {
+
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<EserviceTravelDetails> update = cb.createCriteriaUpdate(EserviceTravelDetails.class);
+				Root<EserviceTravelDetails> m = update.from(EserviceTravelDetails.class);
+				update.set("travelStartDate", req.getPolicyStartDate());
+				update.set("travelEndDate", endDate);
+				update.set("effectiveDate", req.getPolicyStartDate());
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+				
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<EserviceBuildingDetails> update = cb.createCriteriaUpdate(EserviceBuildingDetails.class);
+				Root<EserviceBuildingDetails> m = update.from(EserviceBuildingDetails.class);
+				update.set("policyStartDate", req.getPolicyStartDate());
+				update.set("policyEndDate", endDate);
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+				
+			} else {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
+				Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+				update.set("policyStartDate", req.getPolicyStartDate());
+				update.set("policyEndDate", endDate);
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+
+			}
+			//other tables
+//			{
+//				CriteriaBuilder cb = em.getCriteriaBuilder();
+//				CriteriaUpdate<SectionDataDetails> update = cb.createCriteriaUpdate(SectionDataDetails.class);
+//				Root<SectionDataDetails> m = update.from(SectionDataDetails.class);
+//				update.set("policyStartDate", req.getPolicyStartDate());
+//				update.set("policyEndDate", endDate);
+//				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+//				update.where(n1);
+//				em.createQuery(update).executeUpdate();
+//			}
+			
+//			{
+//				CriteriaBuilder cb = em.getCriteriaBuilder();
+//				CriteriaUpdate<EserviceSectionDetails> update = cb.createCriteriaUpdate(EserviceSectionDetails.class);
+//				Root<EserviceSectionDetails> m = update.from(EserviceSectionDetails.class);
+//				update.set("policyStartDate", req.getPolicyStartDate());
+//				update.set("policyEndDate", endDate);
+//				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+//				update.where(n1);
+//				em.createQuery(update).executeUpdate();
+//			}
+			
+			{
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<PolicyCoverData> update = cb.createCriteriaUpdate(PolicyCoverData.class);
+				Root<PolicyCoverData> m = update.from(PolicyCoverData.class);
+				update.set("coverPeriodFrom", req.getPolicyStartDate());
+				update.set("coverPeriodTo", endDate);
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+			}
+			
+			{
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<PolicyCoverDataIndividuals> update = cb.createCriteriaUpdate(PolicyCoverDataIndividuals.class);
+				Root<PolicyCoverDataIndividuals> m = update.from(PolicyCoverDataIndividuals.class);
+				update.set("coverPeriodFrom", req.getPolicyStartDate());
+				update.set("coverPeriodTo", endDate);
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+			}
+			
+			{
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<HomePositionMaster> update = cb.createCriteriaUpdate(HomePositionMaster.class);
+				Root<HomePositionMaster> m = update.from(HomePositionMaster.class);
+				update.set("inceptionDate", req.getPolicyStartDate());
+				update.set("expiryDate", endDate);
+				update.set("effectiveDate", req.getPolicyStartDate());
+				Predicate n1 = cb.equal(m.get("quoteNo"), req.getQuoteNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+			}
+			
+			{
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<FactorRateRequestDetails> update = cb.createCriteriaUpdate(FactorRateRequestDetails.class);
+				Root<FactorRateRequestDetails> m = update.from(FactorRateRequestDetails.class);
+				update.set("coverPeriodFrom", req.getPolicyStartDate());
+				update.set("coverPeriodTo", endDate);
+				Predicate n1 = cb.equal(m.get("requestReferenceNo"), hp.getRequestReferenceNo());
+				update.where(n1);
+				em.createQuery(update).executeUpdate();
+			}
+
+		res.setResponse("Policy Start/End Dates Updated Successfully")	;
+		res.setSuccessId(req.getQuoteNo());		
+		
+		
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return res;
+	}
 	
 	public synchronized CompanyProductMaster getCompanyProductMasterDropdown1(String companyId, String productId) {
 		CompanyProductMaster product = new CompanyProductMaster();
+
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
-			;
+
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
+
 
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -4573,6 +4814,85 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 		return product;
 	}
+
+
+	public Integer getBackDays(String companyId , String productId , String loginId ) {
+		Integer backDays = 0 ;
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+
+			// Find All
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			javax.persistence.criteria.Predicate a3 = cb.equal(b.get("loginId"), ocpm1.get("loginId"));
+			javax.persistence.criteria.Predicate a4 = cb.equal(b.get("productId"), ocpm1.get("productId"));
+			javax.persistence.criteria.Predicate a11 = cb.equal(b.get("policyType"), ocpm1.get("policyType"));
+			javax.persistence.criteria.Predicate a12 = cb.equal(b.get("id"), ocpm1.get("id"));
+			effectiveDate.where(a1, a2, a3,a4,a11,a12);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm2 = effectiveDate2.from(BrokerCommissionDetails.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a6 = cb.equal(b.get("companyId"), ocpm2.get("companyId"));
+			javax.persistence.criteria.Predicate a8 = cb.equal(b.get("productId"), ocpm2.get("productId"));
+			javax.persistence.criteria.Predicate a9 = cb.equal(b.get("loginId"), ocpm2.get("loginId"));
+			javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			javax.persistence.criteria.Predicate a13 = cb.equal(b.get("policyType"), ocpm2.get("policyType"));
+			javax.persistence.criteria.Predicate a14 = cb.equal(b.get("id"), ocpm2.get("id"));
+			effectiveDate2.where(a6,  a8, a9, a10,a13,a14);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("policyType")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("companyId"), companyId);
+			Predicate n4 = cb.equal(b.get("productId"),productId);
+			Predicate n5 = cb.equal(b.get("loginId"), loginId);
+			Predicate n6 = cb.equal(b.get("policyType"),"99999");
+			Predicate n7 = cb.equal(b.get("id"),"99999");
+			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+
+			list = result.getResultList();
+			backDays = list.size() > 0 ? (list.get(0).getBackDays() !=null ? list.get(0).getBackDays() : 0)  : 0 ;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return backDays;
+	}
+			
 
 	
 }

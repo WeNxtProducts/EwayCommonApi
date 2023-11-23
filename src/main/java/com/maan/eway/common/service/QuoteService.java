@@ -9,6 +9,7 @@ import com.maan.eway.common.req.EmployeeCountGetReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
 import com.maan.eway.common.req.TracesRemovedReq;
+import com.maan.eway.common.req.UpdatePolicyStartEndDateReq;
 import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
@@ -48,5 +49,10 @@ public interface QuoteService {
 	List<GroupSuminsuredDetailsRes> groupSuminsuredDetails(SectionSumInsuredGetReq req);
 
      SuccessRes changefinalyzestatus(ChangeFinalyzereq req);
+
+	List<Error> validateStartdate(UpdatePolicyStartEndDateReq req);
+
+	SuccessRes updatePolicyStartEndDate(UpdatePolicyStartEndDateReq req);
+
 
 }
