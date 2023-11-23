@@ -379,4 +379,8 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 	
 	@JsonProperty("FirePlantSi")
     private String firePlantSi;
+
+	@JsonProperty("FinalyzeYn")
+	private String finalizeYn;
+
 }

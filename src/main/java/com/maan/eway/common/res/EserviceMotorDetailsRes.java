@@ -225,4 +225,7 @@ public class EserviceMotorDetailsRes implements Serializable {
 		
 		@JsonProperty("BankName")
 	    private String bankName;
+		
+		@JsonProperty("FinalyseYn")
+		private String finalizeYn;
 }

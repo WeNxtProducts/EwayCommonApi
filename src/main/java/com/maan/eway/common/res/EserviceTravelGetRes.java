@@ -101,4 +101,5 @@ public class EserviceTravelGetRes {
 		
 		@JsonProperty("PolicyNo")
 	    private String policyNo;
+		
 }
