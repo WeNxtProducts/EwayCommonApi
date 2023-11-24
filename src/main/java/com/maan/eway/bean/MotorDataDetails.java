@@ -539,6 +539,16 @@ private static final long serialVersionUID = 1L;
 
    @Column(name="FINALIZE_YN")
    private String finalizeYn;
+   
+   @Column(name = "NON_ELEC_ACCESSORIES_SI")
+   private Double nonElecAccessoriesSi; 
+   
+   @Column(name = "NON_ELEC_ACCESSORIES_SI_LC")
+   private Double nonElecAccessoriesSiLc;
+   
+   @Column(name="EXCESS_LIMIT")
+   private Double excessLimit;
+   
 
 }
 

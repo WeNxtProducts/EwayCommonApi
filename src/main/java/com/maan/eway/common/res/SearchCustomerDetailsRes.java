@@ -110,7 +110,12 @@ public class SearchCustomerDetailsRes {
 
 	@JsonProperty("TaxExemptedId")
     private String     taxExemptedId ;
-
+   
+	@JsonProperty("Title")
+	private String title;
+	
+	@JsonProperty("Status")
+	private String status;
 	
 
 }

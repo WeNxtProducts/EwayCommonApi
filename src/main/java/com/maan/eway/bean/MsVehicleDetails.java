@@ -219,6 +219,18 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="SOURCE_TYPE", length=100)
     private String     sourceType;
+    
+    @Column(name="EXCESS_LIMIT")
+    private Double excessLimit;
+    
+    @Column(name="EXCESS_LIMIT_LC")
+    private Double excessLimitLc;
+    
+    @Column(name="NON_ELEC_ACCESSORIES_SI")
+    private Double nonElecAccessoriesSi;
+    
+    @Column(name="NON_ELEC_ACCESSORIES_SI_LC")
+    private Double nonElecAccessoriesSiLc;
 }
 
 
