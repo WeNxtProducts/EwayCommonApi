@@ -1,23 +1,17 @@
 package com.maan.eway.common.res;
 
-import java.util.Date;
-import java.util.List;
+import java.math.BigDecimal;
 
-import javax.persistence.Column;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
 public class SearchROPVehicleRes {
-	
-	@JsonProperty("RegistrationNo")
-	private String resRegNumber;
 
-	@JsonProperty("ChassisNumber")
-	private String resChassisNumber;
+	@JsonProperty("RiskId")
+	private Integer riskId;
+
 
 	@JsonProperty("Make")
 	private String resMake;
@@ -27,16 +21,54 @@ public class SearchROPVehicleRes {
 
 	@JsonProperty("VehicleType")
 	private String resBodyType;
+	
+	@JsonProperty("RegistrationNo")
+	private String resRegNumber;
+
+	@JsonProperty("ChassisNumber")
+	private String resChassisNumber;
+	
+	@JsonProperty("EngineNumber")
+	private String resEngineNumber;
+	
+	
 
 	@JsonProperty("Color")
 	private String resColor;
 
 	@JsonProperty("YearOfManufacture")
 	private Integer resYearOfManufacture;
+	
+	@JsonProperty("MotorDesc")
+	private String motorDesc; //commercial
 
-	@JsonProperty("EngineNumber")
-	private String resEngineNumber;
+	@JsonProperty("MotorCategory")
+	private String motorCategory; //Motor Cycle
 	
+	@JsonProperty("FuelType")
+	private String fuelType;
 	
+	@JsonProperty("VehicleUsage")
+	private String vehicleUsage;
+	
+	@JsonProperty("EngineCapacity")
+	private String engineCapacity;
+	
+	@JsonProperty("SeatingCapacity")
+	private Integer seatingCapacity;
+	
+	@JsonProperty("GrossWeight")
+	private Double grossWeight;
+	
+	@JsonProperty("TareWeight")
+	private Double tareWeight;
+	
+	@JsonProperty("PolicyType")
+	private String policyType;
+	
+	@JsonProperty("SumInsured")
+	private BigDecimal sumInsured;
+
+
 }
 
