@@ -161,7 +161,8 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 					m.get("bdmCode").alias("bdmCode"),m.get("branchName").alias("branchName"),
 					m.get("productName").alias("productName"),m.get("brokerCode").alias("brokerCode"),
 					m.get("customerCode").alias("customerCode"),m.get("customerId").alias("customerId"),
-					m.get("sourceType").alias("sourceType"),m.get("userType").alias("userType"));
+					m.get("sourceType").alias("sourceType"),m.get("userType").alias("userType"),
+					m.get("inceptionDate").alias("inceptionDate"),m.get("expiryDate").alias("expiryDate"));
 		
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -188,7 +189,9 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			for(Tuple data:list) {
 				AdminTiraIntegrationGirdRes	res= new AdminTiraIntegrationGirdRes();
 				
-				res.setAgencyCode(data.get("agencyCode")==null?null:data.get("agencyCode").toString());				res.setApplicationId(null);
+				res.setAgencyCode(data.get("agencyCode")==null?null:data.get("agencyCode").toString());		
+				res.setApplicationId(data.get("applicationId")==null?null:data.get("applicationId").toString());
+				res.setPolicyNo(data.get("policyNo")==null?null:data.get("policyNo").toString());
 				res.setBdmCode(data.get("bdmCode")==null?null:data.get("bdmCode").toString());
 				res.setBranchCode(data.get("branchCode")==null?null:data.get("branchCode").toString());
 				res.setBranchName(data.get("branchName")==null?null:data.get("branchName").toString());
@@ -216,8 +219,8 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 				res.setTiraRequestId(data.get("tiraRequestId")==null?null:data.get("tiraRequestId").toString());
 				res.setTiraResponseId(data.get("tiraResponseId")==null?null:data.get("tiraResponseId").toString());
 				res.setUserType(data.get("userType")==null?null:data.get("userType").toString());
-//				res.setInceptionDate(data.get("brokerCode")==null?null:data.get("brokerCode").toString());
-//				res.setExpiryDate(data.get("brokerCode")==null?null:data.get("brokerCode").toString());
+				res.setInceptionDate(data.get("brokerCode")==null?null:sdf.format(data.get("inceptionDate")).toString());
+				res.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
 				reslist.add(res);
 			}
 		} catch (Exception e) {
@@ -281,7 +284,8 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 					m.get("bdmCode").alias("bdmCode"),m.get("branchName").alias("branchName"),
 					m.get("productName").alias("productName"),m.get("brokerCode").alias("brokerCode"),
 					m.get("customerCode").alias("customerCode"),m.get("customerId").alias("customerId"),
-					m.get("sourceType").alias("sourceType"),m.get("userType").alias("userType"));
+					m.get("sourceType").alias("sourceType"),m.get("userType").alias("userType"),
+					m.get("inceptionDate").alias("inceptionDate"),m.get("expiryDate").alias("expiryDate"));
 		
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -310,7 +314,9 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			for(Tuple data:list) {
 				AdminTiraIntegrationGirdRes	res= new AdminTiraIntegrationGirdRes();
 				
-				res.setAgencyCode(data.get("agencyCode")==null?null:data.get("agencyCode").toString());				res.setApplicationId(null);
+				res.setAgencyCode(data.get("agencyCode")==null?null:data.get("agencyCode").toString());	
+				res.setApplicationId(data.get("applicationId")==null?null:data.get("applicationId").toString());
+				res.setPolicyNo(data.get("policyNo")==null?null:data.get("policyNo").toString());
 				res.setBdmCode(data.get("bdmCode")==null?null:data.get("bdmCode").toString());
 				res.setBranchCode(data.get("branchCode")==null?null:data.get("branchCode").toString());
 				res.setBranchName(data.get("branchName")==null?null:data.get("branchName").toString());
@@ -338,8 +344,8 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 				res.setTiraRequestId(data.get("tiraRequestId")==null?null:data.get("tiraRequestId").toString());
 				res.setTiraResponseId(data.get("tiraResponseId")==null?null:data.get("tiraResponseId").toString());
 				res.setUserType(data.get("userType")==null?null:data.get("userType").toString());
-//				res.setInceptionDate(data.get("brokerCode")==null?null:data.get("brokerCode").toString());
-//				res.setExpiryDate(data.get("brokerCode")==null?null:data.get("brokerCode").toString());
+				res.setInceptionDate(data.get("brokerCode")==null?null:sdf.format(data.get("inceptionDate")).toString());
+				res.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
 				reslist.add(res);
 			}
 		} catch (Exception e) {
@@ -394,7 +400,8 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 					m.get("bdmCode").alias("bdmCode"),m.get("branchName").alias("branchName"),
 					m.get("productName").alias("productName"),m.get("brokerCode").alias("brokerCode"),
 					m.get("customerCode").alias("customerCode"),m.get("customerId").alias("customerId"),
-					m.get("sourceType").alias("sourceType"),m.get("userType").alias("userType"));
+					m.get("sourceType").alias("sourceType"),m.get("userType").alias("userType"),
+					m.get("inceptionDate").alias("inceptionDate"),m.get("expiryDate").alias("expiryDate"));
 		
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -423,7 +430,9 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			for(Tuple data:list) {
 				AdminTiraIntegrationGirdRes	res= new AdminTiraIntegrationGirdRes();
 				
-				res.setAgencyCode(data.get("agencyCode")==null?null:data.get("agencyCode").toString());				res.setApplicationId(null);
+				res.setAgencyCode(data.get("agencyCode")==null?null:data.get("agencyCode").toString());
+				res.setApplicationId(data.get("applicationId")==null?null:data.get("applicationId").toString());
+				res.setPolicyNo(data.get("policyNo")==null?null:data.get("policyNo").toString());
 				res.setBdmCode(data.get("bdmCode")==null?null:data.get("bdmCode").toString());
 				res.setBranchCode(data.get("branchCode")==null?null:data.get("branchCode").toString());
 				res.setBranchName(data.get("branchName")==null?null:data.get("branchName").toString());
@@ -451,8 +460,8 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 				res.setTiraRequestId(data.get("tiraRequestId")==null?null:data.get("tiraRequestId").toString());
 				res.setTiraResponseId(data.get("tiraResponseId")==null?null:data.get("tiraResponseId").toString());
 				res.setUserType(data.get("userType")==null?null:data.get("userType").toString());
-//				res.setInceptionDate(data.get("brokerCode")==null?null:data.get("brokerCode").toString());
-//				res.setExpiryDate(data.get("brokerCode")==null?null:data.get("brokerCode").toString());
+				res.setInceptionDate(data.get("brokerCode")==null?null:sdf.format(data.get("inceptionDate")).toString());
+				res.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
 				reslist.add(res);
 			}
 		} catch (Exception e) {

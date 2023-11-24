@@ -5482,6 +5482,7 @@ public class GridServiceImpl implements GridService {
 				
 			}
 			res.setPaymentStausRes(statusResList);
+			res.setTotalCount(pendingCount(req));
 		//	reslist.add(statusResList);
 			}else {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -5530,7 +5531,7 @@ public class GridServiceImpl implements GridService {
 					
 				}
 				res.setPaymentStausRes(statusResList);
-				
+				res.setTotalCount(pendingCount(req));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5591,6 +5592,7 @@ public class GridServiceImpl implements GridService {
 				
 			}
 			res.setPaymentStausRes(statusResList);
+			res.setTotalCount(failureCount(req));
 		//	reslist.add(statusResList);
 			}else {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -5639,6 +5641,7 @@ public class GridServiceImpl implements GridService {
 					
 				}
 				res.setPaymentStausRes(statusResList);
+				res.setTotalCount(failureCount(req));
 				
 			}
 		
@@ -5704,6 +5707,7 @@ public class GridServiceImpl implements GridService {
 				
 			}
 			res.setPaymentStausRes(statusResList);
+			res.setTotalCount(successCount(req));
 		//	reslist.add(statusResList);
 			}else {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -5752,6 +5756,7 @@ public class GridServiceImpl implements GridService {
 					
 				}
 				res.setPaymentStausRes(statusResList);
+				res.setTotalCount(successCount(req));
 				
 			}
 		
@@ -5761,6 +5766,184 @@ public class GridServiceImpl implements GridService {
 			return null;
 		}
 		return res;
+	}
+	private Long successCount(GetPaymentStatusReq req) {
+		Long count = 0l;
+		try {
+			if(StringUtils.isNotBlank(req.getLoginId())) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+				Root<PaymentDetail> p = query.from(PaymentDetail.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				List<Long> list =new ArrayList<Long>();
+
+				query.multiselect(cb.count(h));
+				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("paymentType"),"4"));
+				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+				predics.add(cb.equal(h.get("productId"),req.getProductId()));
+				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+				predics.add(cb.equal(h.get("paymentStatus"),"SUCCESS"));
+				query.where(predics.toArray(new Predicate[0]));
+
+				TypedQuery<Long> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				
+//				list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
+				
+				count=list.get(0);
+				//	reslist.add(statusResList);
+				}else {
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+
+					CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+					Root<PaymentDetail> p = query.from(PaymentDetail.class);
+					Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+					List<Long> list =new ArrayList<Long>();
+
+					query.multiselect(cb.count(h));
+					List<Predicate> predics = new ArrayList<Predicate>();
+					predics.add(cb.equal(p.get("paymentType"),"4"));
+					predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+					predics.add(cb.equal(h.get("productId"),req.getProductId()));
+					predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+					//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+					predics.add(cb.equal(h.get("paymentStatus"),"SUCCESS"));
+					query.where(predics.toArray(new Predicate[0]));
+
+					TypedQuery<Long> typedQuery = em.createQuery(query);
+					list = typedQuery.getResultList();
+//					
+//					list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
+					
+					count=list.get(0);	
+					}
+					
+
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return count;
+	}
+	
+	private Long failureCount(GetPaymentStatusReq req) {
+		Long count = 0l;
+		try {
+			if(StringUtils.isNotBlank(req.getLoginId())) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+				Root<PaymentDetail> p = query.from(PaymentDetail.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				List<Long> list =new ArrayList<Long>();
+
+				query.multiselect(cb.count(h));
+				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("paymentType"),"4"));
+				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+				predics.add(cb.equal(h.get("productId"),req.getProductId()));
+				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+				predics.add(cb.equal(h.get("paymentStatus"),"FAILED"));
+				query.where(predics.toArray(new Predicate[0]));
+
+				TypedQuery<Long> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				count=list.get(0);
+				//				list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
+		
+				}else {
+					
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+					Root<PaymentDetail> p = query.from(PaymentDetail.class);
+					Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+					List<Long> list =new ArrayList<Long>();
+
+					query.multiselect(cb.count(h));
+					List<Predicate> predics = new ArrayList<Predicate>();
+					predics.add(cb.equal(p.get("paymentType"),"4"));
+					predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+					predics.add(cb.equal(h.get("productId"),req.getProductId()));
+					predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+					predics.add(cb.equal(h.get("paymentStatus"),"FAILED"));
+					//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+					query.where(predics.toArray(new Predicate[0]));
+
+					TypedQuery<Long> typedQuery = em.createQuery(query);
+					list = typedQuery.getResultList();
+					count=list.get(0);
+					//list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
+					
+					
+				}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return count;
+	}
+	private Long pendingCount(GetPaymentStatusReq req) {
+		Long count = 0l;
+		try {
+			if(StringUtils.isNotBlank(req.getLoginId())) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+				Root<PaymentDetail> p = query.from(PaymentDetail.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				List<Long> list =new ArrayList<Long>();
+
+				query.multiselect(cb.count(h));
+				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("paymentType"),"4"));
+				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+				predics.add(cb.equal(h.get("productId"),req.getProductId()));
+				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+				predics.add(cb.equal(h.get("paymentStatus"),"PENDING"));
+				query.where(predics.toArray(new Predicate[0]));
+
+				TypedQuery<Long> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				count=list.get(0);
+				}else {
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+					Root<PaymentDetail> p = query.from(PaymentDetail.class);
+					Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+					List<Long> list =new ArrayList<Long>();
+
+					query.multiselect(cb.count(h));
+					List<Predicate> predics = new ArrayList<Predicate>();
+					predics.add(cb.equal(p.get("paymentType"),"4"));
+					predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
+					predics.add(cb.equal(h.get("productId"),req.getProductId()));
+					predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+					predics.add(cb.equal(h.get("paymentStatus"),"PENDING"));
+					query.where(predics.toArray(new Predicate[0]));
+
+					TypedQuery<Long> typedQuery = em.createQuery(query);
+					list = typedQuery.getResultList();
+					count=list.get(0);
+					
+				}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return count;
 	}
 
 }

@@ -13,7 +13,7 @@ public class GetPaymentStatusRes {
 	private List<PaymentStausRes> paymentStausRes;
 	
 	@JsonProperty("TotalCount")
-	private String totalCount ;
+	private Long totalCount ;
 	
 //	@JsonProperty("PendingPaymentStatus")
 //	private List<PendingPaymentStatusRes> pendingPaymentStatusRes;

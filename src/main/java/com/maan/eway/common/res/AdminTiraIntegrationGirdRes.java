@@ -17,6 +17,10 @@ public class AdminTiraIntegrationGirdRes {
 	@JsonProperty("QuoteNo")
 	private String   quoteNo;
 	
+
+	@JsonProperty("PolicyNo")
+	private String  policyNo;
+	
 	@JsonProperty("RequestReferenceNo")
 	private String   requestReferenceNo;
 	
@@ -51,9 +55,9 @@ public class AdminTiraIntegrationGirdRes {
 //	@JsonProperty("EffectiveDate")
 //	private Date effectiveDate;
 	
-	@JsonFormat( pattern = "dd/MM/yyyy")
+//	@JsonFormat( pattern = "dd/MM/yyyy")
 	@JsonProperty("ExpiryDate")
-	private Date expiryDate;
+	private String expiryDate;
 	
 	@JsonProperty("Status")
 	private String status ;
@@ -62,9 +66,9 @@ public class AdminTiraIntegrationGirdRes {
 //	@JsonProperty("EntryDate")
 //	private Date entryDate ;
 	
-	@JsonFormat( pattern = "dd/MM/yyyy")
+//	@JsonFormat( pattern = "dd/MM/yyyy")
 	@JsonProperty("InceptionDate")
-	private Date   inceptionDate;
+	private String   inceptionDate;
 	
 	// No OF Vehicles
 	@JsonProperty("NoOfVehicles")
