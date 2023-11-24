@@ -60,7 +60,7 @@ public class PortfolioGridCriteriaRes {
 	private String installmentPeriod;
 	
 	private String     noOfInstallment ;
-
+	private String     paymentStatus ;
 	private BigDecimal     emiPremium ;
 	private Date effectiveDate;
 	

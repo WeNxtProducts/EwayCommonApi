@@ -970,15 +970,23 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setTitleDesc(title);
 				savePersonalInfo.setLanguageDesc(language);
 				savePersonalInfo.setOccupationDesc(occupationDesc);
-				savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
-				savePersonalInfo.setIdType(req.getIdType());
+				
+				// Induvidual / Corporate
+				savePersonalInfo.setPolicyHolderType(req.getPolicyHolderType());
 				savePersonalInfo.setPolicyHolderTypeDesc(policyHolderType);
+				
+				// Possport or etc
+				savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
 				savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
 				savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
 				savePersonalInfo.setIdTypeDesc(policyHolderTypeId);
+				
 				savePersonalInfo.setMobileCode1(req.getMobileCode1());
 				savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 				savePersonalInfo.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+				savePersonalInfo.setMobileNo1(req.getMobileNo1());
+				savePersonalInfo.setMobileNo2(req.getMobileNo2());
+				savePersonalInfo.setMobileNo3(req.getMobileNo3());
 				savePersonalInfo.setWhatsappCode(req.getWhatsappCode());
 				if (StringUtils.isNotBlank(req.getMobileCode1())) {
 					ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode1(),req.getCompanyId());
@@ -1006,6 +1014,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setStateName(req.getStateName());
 				savePersonalInfo.setStatus(req.getStatus());
 				savePersonalInfo.setNationality(req.getNationality());
+				savePersonalInfo.setVrTinNo(req.getVrTinNo());
+				savePersonalInfo.setVrnGst(req.getVrTinNo());
 				personalInforepo.save(savePersonalInfo);
 			}
 			}else if(StringUtils.isNotBlank(req.getType())) {
@@ -1061,18 +1071,29 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					savePersonalInfo.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
 					savePersonalInfo.setGenderDesc(gender);
 					savePersonalInfo.setGenderDesc(gender);
+					savePersonalInfo.setTitle(req.getTitle());
 					savePersonalInfo.setTitleDesc(title);
 					savePersonalInfo.setLanguageDesc(language);
 					savePersonalInfo.setOccupationDesc(occupationDesc);
-					savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
-					savePersonalInfo.setIdType(req.getIdType());
+					savePersonalInfo.setIdType(req.getIdType()); 
+					savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
+					
+					// Induvidual / Corporate
+					savePersonalInfo.setPolicyHolderType(req.getPolicyHolderType());
 					savePersonalInfo.setPolicyHolderTypeDesc(policyHolderType);
+					
+					// Possport or etc
+					savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
 					savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
 					savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
 					savePersonalInfo.setIdTypeDesc(policyHolderTypeId);
+					
 					savePersonalInfo.setMobileCode1(req.getMobileCode1());
 					savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 					savePersonalInfo.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+					savePersonalInfo.setMobileNo1(req.getMobileNo1());
+					savePersonalInfo.setMobileNo2(req.getMobileNo2());
+					savePersonalInfo.setMobileNo3(req.getMobileNo3());
 					savePersonalInfo.setWhatsappCode(req.getWhatsappCode());
 					if (StringUtils.isNotBlank(req.getMobileCode1())) {
 						ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode1(),req.getCompanyId());
@@ -1100,7 +1121,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					savePersonalInfo.setStateName(req.getStateName());
 					savePersonalInfo.setStatus(req.getStatus());
 					savePersonalInfo.setNationality(req.getNationality());
-					
+					savePersonalInfo.setVrTinNo(req.getVrTinNo());
+					savePersonalInfo.setVrnGst(req.getVrTinNo());
 					personalInforepo.save(savePersonalInfo);
 				}
 			}

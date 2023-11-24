@@ -2755,7 +2755,10 @@ public class GridServiceImpl implements GridService {
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 
 			// Select
-			query.multiselect(h.get("applicationId").alias("applicationId"),
+			query.multiselect(
+					 h.get("creditNo").alias("creditNo"),
+					 h.get("debitNoteNo").alias("debitNoteNo"),
+					h.get("applicationId").alias("applicationId"),
 					h.get("noOfVehicles").as(Long.class).alias("count"),
 					h.get("overallPremiumLc").alias("overallPremiumLc"),
 					h.get("overallPremiumFc").alias("overallPremiumFc"), h.get("currency").alias("currencyCode"),
@@ -2873,9 +2876,26 @@ public class GridServiceImpl implements GridService {
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			
+			// creditNo
+			Subquery<Long> creditNo = query.subquery(Long.class);
+			Root<HomePositionMaster> hp = creditNo.from(HomePositionMaster.class);
+			creditNo.select(cb.max(hp.get("creditNo")));
+			Predicate b1 = cb.equal(h.get("quoteNo"),hp.get("quoteNo") );
+			creditNo.where(b1);
+			
+			// debitNoteNo
+			Subquery<Long> debitNoteNo = query.subquery(Long.class);
+			Root<HomePositionMaster> hp1 = debitNoteNo.from(HomePositionMaster.class);
+			debitNoteNo.select(cb.max(hp1.get("debitNoteNo")));
+			Predicate b2 = cb.equal(h.get("quoteNo"),hp1.get("quoteNo") );
+			debitNoteNo.where(b2);
 
 			// Select
-			query.multiselect(h.get("applicationId").alias("applicationId"),
+			query.multiselect(
+					creditNo.alias("creditNo"),
+					debitNoteNo.alias("debitNoteNo"),
+					h.get("applicationId").alias("applicationId"),
 					cb.sum(h.get("totalPassengers")).as(Long.class).alias("count"),
 					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
 					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"),
@@ -2893,6 +2913,7 @@ public class GridServiceImpl implements GridService {
 					h.get("brokerBranchName").alias("brokerBranchName"), u.get("userName").alias("brokerName"),
 					l.get("userType").alias("userType"), l.get("subUserType").alias("subUserType"),
 					h.get("updatedDate").alias("updatedDate"), h.get("endorsementRemarks").alias("endorsementRemarks"));
+			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(h.get("updatedDate")));
@@ -3005,8 +3026,23 @@ public class GridServiceImpl implements GridService {
 			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 
+			// creditNo
+			Subquery<Long> creditNo = query.subquery(Long.class);
+			Root<HomePositionMaster> hp = creditNo.from(HomePositionMaster.class);
+			creditNo.select(cb.max(hp.get("creditNo")));
+			Predicate b1 = cb.equal(h.get("quoteNo"), hp.get("quoteNo"));
+			creditNo.where(b1);
+
+			// debitNoteNo
+			Subquery<Long> debitNoteNo = query.subquery(Long.class);
+			Root<HomePositionMaster> hp1 = debitNoteNo.from(HomePositionMaster.class);
+			debitNoteNo.select(cb.max(hp1.get("debitNoteNo")));
+			Predicate b2 = cb.equal(h.get("quoteNo"), hp1.get("quoteNo"));
+			debitNoteNo.where(b2);
+
 			// Select
-			query.multiselect(h.get("applicationId").alias("applicationId"), cb.count(h).alias("count"),
+			query.multiselect(creditNo.alias("creditNo"), debitNoteNo.alias("debitNoteNo"),
+					h.get("applicationId").alias("applicationId"), cb.count(h).alias("count"),
 					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
 					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"),
 					h.get("currency").alias("currencyCode"), h.get("exchangeRate").alias("exchangeRate"),
@@ -3136,8 +3172,24 @@ public class GridServiceImpl implements GridService {
 			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 
+			// creditNo
+			Subquery<Long> creditNo = query.subquery(Long.class);
+			Root<HomePositionMaster> hp = creditNo.from(HomePositionMaster.class);
+			creditNo.select(cb.max(hp.get("creditNo")));
+			Predicate b1 = cb.equal(h.get("quoteNo"), hp.get("quoteNo"));
+			creditNo.where(b1);
+
+			// debitNoteNo
+			Subquery<Long> debitNoteNo = query.subquery(Long.class);
+			Root<HomePositionMaster> hp1 = debitNoteNo.from(HomePositionMaster.class);
+			debitNoteNo.select(cb.max(hp1.get("debitNoteNo")));
+			Predicate b2 = cb.equal(h.get("quoteNo"), hp1.get("quoteNo"));
+			debitNoteNo.where(b2);
+
 			// Select
-			query.multiselect(h.get("applicationId").alias("applicationId"), cb.count(h).alias("count"),
+			query.multiselect(creditNo.alias("creditNo"), debitNoteNo.alias("debitNoteNo"),
+					
+					h.get("applicationId").alias("applicationId"), cb.count(h).alias("count"),
 					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
 					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"),
 					h.get("currency").alias("currencyCode"), h.get("exchangeRate").alias("exchangeRate"),
@@ -3266,8 +3318,24 @@ public class GridServiceImpl implements GridService {
 			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 
+			// creditNo
+			Subquery<Long> creditNo = query.subquery(Long.class);
+			Root<HomePositionMaster> hp = creditNo.from(HomePositionMaster.class);
+			creditNo.select(cb.max(hp.get("creditNo")));
+			Predicate b1 = cb.equal(h.get("quoteNo"), hp.get("quoteNo"));
+			creditNo.where(b1);
+
+			// debitNoteNo
+			Subquery<Long> debitNoteNo = query.subquery(Long.class);
+			Root<HomePositionMaster> hp1 = debitNoteNo.from(HomePositionMaster.class);
+			debitNoteNo.select(cb.max(hp1.get("debitNoteNo")));
+			Predicate b2 = cb.equal(h.get("quoteNo"), hp1.get("quoteNo"));
+			debitNoteNo.where(b2);
+
 			// Select
-			query.multiselect(h.get("applicationId").alias("applicationId"), cb.count(h).alias("count"),
+			query.multiselect(creditNo.alias("creditNo"), debitNoteNo.alias("debitNoteNo"),
+					
+					h.get("applicationId").alias("applicationId"), cb.count(h).alias("count"),
 					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
 					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"),
 					h.get("currency").alias("currencyCode"), h.get("exchangeRate").alias("exchangeRate"),
@@ -3602,6 +3670,10 @@ public class GridServiceImpl implements GridService {
 
 				res.setStatusDesc(statusDesc);
 				res.setEndtStatusDesc(endtStatusDesc);
+				
+				res.setCreditNo(data.getCreditNo() )	;
+				res.setDebitNo(data.getDebitNoteNo()) ;			
+				
 				resList.add(res);
 			}
 

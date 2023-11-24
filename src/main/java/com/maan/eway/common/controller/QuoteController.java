@@ -19,6 +19,7 @@ import com.maan.eway.common.req.EmployeeCountGetReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
 import com.maan.eway.common.req.TracesRemovedReq;
+import com.maan.eway.common.req.UpdatePolicyStartEndDateReq;
 import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
@@ -43,6 +44,7 @@ public class QuoteController {
 	
 	@Autowired
 	private  QuoteService entityService ;
+	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/buypolicy")
 	@ApiOperation(value = "This method is New Quote ")
@@ -265,6 +267,7 @@ public class QuoteController {
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+
 	@PostMapping("/changefinalyzestatus")
 	public ResponseEntity<CommonRes> changefinalyzestatus(@RequestBody ChangeFinalyzereq req)
 	{
@@ -282,5 +285,40 @@ public class QuoteController {
 		}
 	}
 
+
+	@PostMapping("/updatepolicystartenddate")
+	@ApiOperation(value = "This method is New Update Policy Start And End Date")
+	public ResponseEntity<CommonRes> updatepolicystartenddate(@RequestBody UpdatePolicyStartEndDateReq req) {
+
+		reqPrinter.reqPrint(req);
 	
+		CommonRes data = new CommonRes();
+
+		List<Error> validation = entityService.validateStartdate(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+
+			// Get All
+			SuccessRes res = entityService.updatePolicyStartEndDate(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+
 }

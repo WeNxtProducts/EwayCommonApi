@@ -151,6 +151,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.NotifTemplateMasterRepository;
@@ -298,13 +299,15 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Autowired
 	private DepositService depoService;
-	
+
 	@Autowired
 	private DepositcbcMasterRepository depositcbcRepo;
-	
-	@Autowired
-	private EserviceTravelGroupDetailsRepository groupRepo ;
 
+	@Autowired
+	private LoginProductMasterRepository loginProductRepo;
+
+	@Autowired
+	private EserviceTravelGroupDetailsRepository groupRepo;
 
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -315,6 +318,8 @@ public class PaymentServiceImpl implements PaymentService {
 		List<Error> error = new ArrayList<Error>();
 
 		try {
+			
+			
 			
 			if(StringUtils.isBlank(req.getQuoteNo())){
 				error.add(new Error("01","Quote No","Please Enter Quote No"));
@@ -573,6 +578,88 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	
+	
+
+
+	public Integer getBackDays(String companyId , String productId , String loginId ) {
+		Integer backDays = 0 ;
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+
+			// Find All
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			javax.persistence.criteria.Predicate a3 = cb.equal(b.get("loginId"), ocpm1.get("loginId"));
+			javax.persistence.criteria.Predicate a4 = cb.equal(b.get("productId"), ocpm1.get("productId"));
+			javax.persistence.criteria.Predicate a11 = cb.equal(b.get("policyType"), ocpm1.get("policyType"));
+			javax.persistence.criteria.Predicate a12 = cb.equal(b.get("id"), ocpm1.get("id"));
+			effectiveDate.where(a1, a2, a3,a4,a11,a12);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm2 = effectiveDate2.from(BrokerCommissionDetails.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a6 = cb.equal(b.get("companyId"), ocpm2.get("companyId"));
+			javax.persistence.criteria.Predicate a8 = cb.equal(b.get("productId"), ocpm2.get("productId"));
+			javax.persistence.criteria.Predicate a9 = cb.equal(b.get("loginId"), ocpm2.get("loginId"));
+			javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			javax.persistence.criteria.Predicate a13 = cb.equal(b.get("policyType"), ocpm2.get("policyType"));
+			javax.persistence.criteria.Predicate a14 = cb.equal(b.get("id"), ocpm2.get("id"));
+			effectiveDate2.where(a6,  a8, a9, a10,a13,a14);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("policyType")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("companyId"), companyId);
+			Predicate n4 = cb.equal(b.get("productId"),productId);
+			Predicate n5 = cb.equal(b.get("loginId"), loginId);
+			Predicate n6 = cb.equal(b.get("policyType"),"99999");
+			Predicate n7 = cb.equal(b.get("id"),"99999");
+			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+
+			list = result.getResultList();
+			backDays = list.size() > 0 ? (list.get(0).getBackDays() !=null ? list.get(0).getBackDays() : 0)  : 0 ;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return backDays;
+	}
+	
+
+
 	private List<Error> checkGroupValidation(String quoteNo  ) {
 		List<Error> errors = new ArrayList<Error>();
 		try {
@@ -1524,6 +1611,30 @@ public class PaymentServiceImpl implements PaymentService {
 
 		try {
 			
+			HomePositionMaster hp = homerepo.findByQuoteNo(req.getQuoteNo());
+			if(hp!=null) { 
+				
+				if (hp.getInceptionDate() == null) {
+					error.add(new Error("13", "PolicyStartDate", "Please Enter PolicyStartDate"));
+				} else if( ( hp.getEndtTypeId()==null || hp.getEndtTypeId().equalsIgnoreCase("0"))) {
+						int before = getBackDays(hp.getCompanyId() , String.valueOf( hp.getProductId()) , req.getCreatedBy()) ;
+						int days = before ==0 ? -1 : - before ;
+						long MILLS_IN_A_DAY = 1000*60*60*24;
+						long backDays = MILLS_IN_A_DAY * days ;
+						Date today = new Date() ;
+						Date resticDate = new Date(today.getTime() + backDays);
+						long days90 = MILLS_IN_A_DAY * 90 ;
+						Date after90 = new Date(today.getTime() + days90);
+						if( hp.getInceptionDate().before(resticDate) ) {
+							error.add(new Error("14", "PolicyStartDate", "Policy Start Date Back Days Not Allowed "));
+						} else if( hp.getInceptionDate().after(after90) ) {
+							error.add(new Error("14", "PolicyStartDate", "PolicyStartDate  even after 90 days Not Allowed"));
+						}
+					
+				}
+				
+			}	
+			
 			if(StringUtils.isBlank(req.getQuoteNo())){
 				error.add(new Error("01","Quote No","Please Enter Quote No"));
 			}
@@ -1597,12 +1708,19 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 			}
 			if("3".equals(req.getPaymentType())) {
+				
 				HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
 				
 				Long cbcDatacount=depositcbcRepo.countByBrokerIdAndStatus(homeData.getAgencyCode().toString(),"Y");
 				if(cbcDatacount==0){
 					error.add(new Error("01","Credit","Credit Option is not Activated For This Broker"));
+				}else {
+				Long count=loginProductData(homeData.getLoginId(),homeData.getCompanyId(),homeData.getProductId());
+				if(count==0) {
+					error.add(new Error("01","Credit","Credit Option is not Available  For This Product"));
 				}
+				}
+				
 			}
 			
 			// Check Paymetn Info
@@ -1613,7 +1731,8 @@ public class PaymentServiceImpl implements PaymentService {
 						error.add(new Error("01","Accepted","This Payment Already Accepted "));
 
 					} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Rejected") ) {
-						error.add(new Error("01","Rejected","This Payment Already Rejected "));
+						error.add(new Error("01","Rejected","This Payment Already Reject"
+								+ "ed "));
 
 					} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Cancelled") ) {
 						error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
@@ -1726,6 +1845,41 @@ public class PaymentServiceImpl implements PaymentService {
 		return error;
 	}
 
+	public Long loginProductData(String loginId,String companyId,Integer productId ) {
+		Long data=null;
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+
+			// Find All
+			Root<LoginProductMaster> b = query.from(LoginProductMaster.class);
+			List<LoginProductMaster> list= new ArrayList<LoginProductMaster>();
+			// Select
+			query.select(b);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("amendId")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("status"), "Y");
+			Predicate n3 = cb.equal(b.get("productId"), productId);
+			Predicate n4 = cb.equal(b.get("companyId"), companyId);
+			Predicate n5 = cb.equal(b.get("loginId"), loginId);
+
+			query.where(n1,n3, n4, n5).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			data=list.size() > 0 ? Long.valueOf(list.get(0).getCreditYn()) : 0 ;
+
+		}catch(Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return data;
+	}
 	public List<BrokerCommissionDetails> getExistingBrokerById(String brokerId , String InsuranceId , String productId) {
 		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
 		try {
