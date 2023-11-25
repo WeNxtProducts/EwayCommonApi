@@ -39,4 +39,7 @@ Entrydatetime
 	@JsonProperty("TransactionNo")
 	private String transactionNo;
 	
+	@JsonProperty("OrderDate")
+	private String orderDate;
+	
 }

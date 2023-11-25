@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Tuple;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -138,7 +140,7 @@ public class EmbeddedService {
 				return response;
 			}	
 			
-			Date expiredDate = new Date();//LocalDate.now();
+			//Date expiredDate = new Date();//LocalDate.now();
 			
 
 			if(loginInfo!=null) {
@@ -161,11 +163,11 @@ public class EmbeddedService {
 							}
 					BigDecimal premium=null;
 					if(rating!=null && rating.size()>0) {
+						Date inceptionDate =null;
+						Date expiredDate=null;
 						String noofDays=rating.get(0).get("remarks").toString();
 						
-						expiredDate=Date.from(LocalDate.now(ZoneId.of("Africa/Dar_es_Salaam")).plusDays(Long.parseLong(noofDays)-2)
-								.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
-
+						
 						double sum = rating.stream().filter(t-> t.get("baseRate")!=null).mapToDouble(t-> Double.parseDouble(t.get("baseRate").toString())).sum();
 						premium=new BigDecimal(Math.round(sum));
 						Double totalTax_percent=(Double) commissionDetails.get("TOTALTAX");
@@ -177,6 +179,23 @@ public class EmbeddedService {
 						
 						String policyNo=genNo.generatePolicyNo("1001","100");
 						//notifcationService.getShorternURL(pdfUrl+""+policyNo);
+						
+						if(StringUtils.isNotEmpty(request.getOrderDate())) {
+							SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+							sdf.setTimeZone(TimeZone.getTimeZone(ZoneId.of("Africa/Dar_es_Salaam")));
+							
+							inceptionDate=sdf.parse(request.getOrderDate());
+							LocalDate inception_date =inceptionDate.toInstant().atZone(ZoneId.of("Africa/Dar_es_Salaam")).toLocalDate();
+							expiredDate=Date.from(inception_date.plusDays(Long.parseLong(noofDays)-2)
+									.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
+								
+						}else {
+							expiredDate=Date.from(LocalDate.now(ZoneId.of("Africa/Dar_es_Salaam")).plusDays(Long.parseLong(noofDays)-2)
+									.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
+							inceptionDate=new Date();
+
+						}
+						
 						GroupMedicalDetails medical=GroupMedicalDetails.builder()
 								.amountPaid(request.getOrderValue())
 								.applicationId("1")
@@ -185,7 +204,7 @@ public class EmbeddedService {
 								.customerName(request.getInsurerName())
 								.entryDate(new Date())
 								.expiryDate(expiredDate)
-								.inceptionDate(new Date())
+								.inceptionDate(inceptionDate)
 								.loginId(loginId)
 								.mobileCode(request.getMobileCode())
 								.mobileNo(request.getMobileNumber())
