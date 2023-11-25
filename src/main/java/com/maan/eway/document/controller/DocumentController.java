@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import com.maan.eway.document.res.DocumentTypeDetails;
 import com.maan.eway.document.res.FilePathRes;
 import com.maan.eway.document.res.TermsDocRes;
 import com.maan.eway.document.service.DocumentService;
+import com.maan.eway.document.service.impl.GetFileFromPath;
 import com.maan.eway.error.CommonValidationException;
 import com.maan.eway.error.Error;
 import com.maan.eway.service.PrintReqService;
@@ -259,6 +261,29 @@ public class DocumentController {
 	            .contentLength(file.length())
 	            .contentType(MediaType.APPLICATION_OCTET_STREAM)
 	            .body(resource);
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@RequestMapping(path = "/downloadbase64", method = RequestMethod.POST)
+	public ResponseEntity<CommonRes> downloadBase64(@RequestParam("FilePath") String param) throws Exception {
+		CommonRes data = new CommonRes()  ; 
+		FilePathRes fileRes = new FilePathRes();
+		fileRes.setFilepathname(param);
+		if (StringUtils.isNotBlank(fileRes.getFilepathname()) && new File(fileRes.getFilepathname()).exists()) {
+			fileRes.setImgurl(new GetFileFromPath(fileRes.getFilepathname()).call().getImgUrl());
+		} else
+			System.out.println("File is Not found!!" + fileRes.getFilepathname());
+		data .setCommonResponse(fileRes);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (fileRes != null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
