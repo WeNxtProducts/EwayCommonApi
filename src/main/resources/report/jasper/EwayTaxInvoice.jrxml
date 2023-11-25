@@ -76,7 +76,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="address"/>
 		<fieldDescription><![CDATA[address]]></fieldDescription>
 	</field>
-	<field name="vrTinNo" class="java.lang.Long">
+	<field name="vrTinNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="vrTinNo"/>
 		<fieldDescription><![CDATA[vrTinNo]]></fieldDescription>
 	</field>
@@ -156,7 +156,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="bankaccountName"/>
 		<fieldDescription><![CDATA[bankaccountName]]></fieldDescription>
 	</field>
-	<field name="bankaccountNumber" class="java.lang.Integer">
+	<field name="bankaccountNumber" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="bankaccountNumber"/>
 		<fieldDescription><![CDATA[bankaccountNumber]]></fieldDescription>
 	</field>

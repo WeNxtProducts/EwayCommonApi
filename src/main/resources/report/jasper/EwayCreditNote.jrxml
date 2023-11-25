@@ -1204,7 +1204,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Entered in the books of the Company at Dar Es Salaam this :"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Entered in the books of the Company at "+$F{branchName}+" this :"]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="230" y="110" width="80" height="15" uuid="1b0110c1-4f19-4949-bd64-926a55ff753a">
