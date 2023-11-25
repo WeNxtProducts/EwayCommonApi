@@ -5435,6 +5435,8 @@ public class GridServiceImpl implements GridService {
 	//	List<GetPaymentStatusRes> reslist = new ArrayList<GetPaymentStatusRes>();
 		GetPaymentStatusRes res = new GetPaymentStatusRes();
 		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			if(StringUtils.isNotBlank(req.getLoginId())) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
@@ -5458,6 +5460,8 @@ public class GridServiceImpl implements GridService {
 			query.where(predics.toArray(new Predicate[0]));
 
 			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			typedQuery.setFirstResult(limit * offset);
+			typedQuery.setMaxResults(offset);
 			list = typedQuery.getResultList();
 			
 			list =list.stream().filter(o->o.get("paymentStatus").equals("PENDING")).collect(Collectors.toList());
@@ -5507,6 +5511,9 @@ public class GridServiceImpl implements GridService {
 				query.where(predics.toArray(new Predicate[0]));
 
 				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				typedQuery.setFirstResult(limit * offset);
+				typedQuery.setMaxResults(offset);
+				
 				list = typedQuery.getResultList();
 				
 				list =list.stream().filter(o->o.get("paymentStatus").equals("PENDING")).collect(Collectors.toList());
@@ -5545,6 +5552,8 @@ public class GridServiceImpl implements GridService {
 	public GetPaymentStatusRes getPaymentFailedStatus(GetPaymentStatusReq req) {
 		GetPaymentStatusRes res = new GetPaymentStatusRes();
 		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			if(StringUtils.isNotBlank(req.getLoginId())) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
@@ -5568,6 +5577,8 @@ public class GridServiceImpl implements GridService {
 			query.where(predics.toArray(new Predicate[0]));
 
 			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			typedQuery.setFirstResult(limit * offset);
+			typedQuery.setMaxResults(offset);
 			list = typedQuery.getResultList();
 			
 			list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
@@ -5617,6 +5628,8 @@ public class GridServiceImpl implements GridService {
 				query.where(predics.toArray(new Predicate[0]));
 
 				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				typedQuery.setFirstResult(limit * offset);
+				typedQuery.setMaxResults(offset);
 				list = typedQuery.getResultList();
 				
 				list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
@@ -5660,6 +5673,8 @@ public class GridServiceImpl implements GridService {
 	public GetPaymentStatusRes getPaymentSucessStatus(GetPaymentStatusReq req) {
 		GetPaymentStatusRes res = new GetPaymentStatusRes();
 		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			if(StringUtils.isNotBlank(req.getLoginId())) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
@@ -5683,6 +5698,8 @@ public class GridServiceImpl implements GridService {
 			query.where(predics.toArray(new Predicate[0]));
 
 			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			typedQuery.setFirstResult(limit * offset);
+			typedQuery.setMaxResults(offset);
 			list = typedQuery.getResultList();
 			
 			list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
@@ -5732,6 +5749,8 @@ public class GridServiceImpl implements GridService {
 				query.where(predics.toArray(new Predicate[0]));
 
 				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				typedQuery.setFirstResult(limit * offset);
+				typedQuery.setMaxResults(offset);
 				list = typedQuery.getResultList();
 				
 				list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
@@ -5895,6 +5914,7 @@ public class GridServiceImpl implements GridService {
 	private Long pendingCount(GetPaymentStatusReq req) {
 		Long count = 0l;
 		try {
+			
 			if(StringUtils.isNotBlank(req.getLoginId())) {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<Long> query = cb.createQuery(Long.class);
