@@ -2009,6 +2009,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setReqBillToAddrPostalCode(personaldata.getPinCode());
 			paymentDetail.setReqBillToCountry(personaldata.getNationality());
 			if("2".equals(req.getPaymentType())) {
+				paymentDetail.setBankCode(req.getBankCode());
 				paymentDetail.setBankName(req.getBankName());
 				paymentDetail.setChequeNo(req.getChequeNo());
 				paymentDetail.setChequeDate(req.getChequeDate());

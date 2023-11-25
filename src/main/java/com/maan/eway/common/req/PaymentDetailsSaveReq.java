@@ -38,6 +38,9 @@ public class PaymentDetailsSaveReq {
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
 	
+	@JsonProperty("BankCode")
+	private String bankCode;
+	
 	@JsonProperty("BankName")
 	private String bankName;
 
