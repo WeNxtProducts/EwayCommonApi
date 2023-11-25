@@ -45,6 +45,12 @@ public class TravelReportRes {
 	@JsonProperty("Currency")
 	private String currency;
 	
+	@JsonProperty("CompanyName")
+	private String companyName;
+	
+	@JsonProperty("Companylogo")
+	private String companylogo;
+	
 	@JsonProperty("PassangerDetails")
 	private List<TravelDataSetOneRes> passangerDetails;
 	

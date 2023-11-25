@@ -53,7 +53,6 @@
 			<fieldDescription><![CDATA[motorCategoryDesc]]></fieldDescription>
 		</field>
 	</subDataset>
-	<parameter name="pvImagePath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[]]>
 	</queryString>
@@ -77,11 +76,11 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="address"/>
 		<fieldDescription><![CDATA[address]]></fieldDescription>
 	</field>
-	<field name="vrTinNo" class="java.lang.String">
+	<field name="vrTinNo" class="java.lang.Long">
 		<property name="net.sf.jasperreports.json.field.expression" value="vrTinNo"/>
 		<fieldDescription><![CDATA[vrTinNo]]></fieldDescription>
 	</field>
-	<field name="identificationNo" class="java.lang.String">
+	<field name="identificationNo" class="java.lang.Long">
 		<property name="net.sf.jasperreports.json.field.expression" value="identificationNo"/>
 		<fieldDescription><![CDATA[identificationNo]]></fieldDescription>
 	</field>
@@ -129,15 +128,15 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
 		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="vatPremium" class="java.math.BigDecimal">
+	<field name="vatPremium" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="vatPremium"/>
 		<fieldDescription><![CDATA[vatPremium]]></fieldDescription>
 	</field>
-	<field name="overAllPremium" class="java.math.BigDecimal">
+	<field name="overAllPremium" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="overAllPremium"/>
 		<fieldDescription><![CDATA[overAllPremium]]></fieldDescription>
 	</field>
-	<field name="totSumInsured" class="java.math.BigDecimal">
+	<field name="totSumInsured" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="totSumInsured"/>
 		<fieldDescription><![CDATA[totSumInsured]]></fieldDescription>
 	</field>
@@ -145,9 +144,33 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vatPercent"/>
 		<fieldDescription><![CDATA[vatPercent]]></fieldDescription>
 	</field>
-	<field name="intermediaryRefNo" class="java.lang.Long">
+	<field name="intermediaryRefNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="intermediaryRefNo"/>
 		<fieldDescription><![CDATA[intermediaryRefNo]]></fieldDescription>
+	</field>
+	<field name="companyName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
+		<fieldDescription><![CDATA[companyName]]></fieldDescription>
+	</field>
+	<field name="bankaccountName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="bankaccountName"/>
+		<fieldDescription><![CDATA[bankaccountName]]></fieldDescription>
+	</field>
+	<field name="bankaccountNumber" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="bankaccountNumber"/>
+		<fieldDescription><![CDATA[bankaccountNumber]]></fieldDescription>
+	</field>
+	<field name="bankaddress" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="bankaddress"/>
+		<fieldDescription><![CDATA[bankaddress]]></fieldDescription>
+	</field>
+	<field name="bankswiftCode" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="bankswiftCode"/>
+		<fieldDescription><![CDATA[bankswiftCode]]></fieldDescription>
+	</field>
+	<field name="companyLogo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyLogo"/>
+		<fieldDescription><![CDATA[companyLogo]]></fieldDescription>
 	</field>
 	<field name="dataset1List" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="dataset1List"/>
@@ -179,7 +202,7 @@
 					<leftPen lineWidth="0.0" lineStyle="Solid"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
-				<imageExpression><![CDATA[$P{pvImagePath}+"AllianceHearderlogo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$F{companyLogo}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -850,7 +873,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Invoice Total (Tshs)"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Invoice Total ("+$F{currency}+")"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="95" y="17" width="80" height="12" uuid="fb44a9ef-3655-4fd5-941f-6a542e6e7fb5"/>
@@ -874,7 +897,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat Total (Tshs)"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Vat Total ("+$F{currency}+")"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="95" y="47" width="80" height="12" uuid="48852c9f-0667-4a1d-879a-38e980d72657"/>
@@ -1062,7 +1085,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Alliance Insurance Corporation Limited"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{bankaccountName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="115" y="48" width="425" height="15" uuid="bc6657a3-a293-4be9-b91b-13bd161c68c6"/>
@@ -1072,7 +1095,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Exim Bank (Tanzania) Limited  P.O.Box 1431, Exim Tower, Das Es Salaam"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{bankaddress}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="115" y="63" width="85" height="15" uuid="94a970c0-c631-4fb3-b19d-5ea51c802ccf"/>
@@ -1082,7 +1105,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["0300174027"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{bankaccountNumber}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="200" y="63" width="90" height="15" uuid="0687816f-a388-4fcb-bc7e-54b8e75e4b38">
@@ -1104,7 +1127,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["0300174019"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="115" y="78" width="425" height="15" uuid="0dc18ae2-72d2-49b4-a121-9da555964c1d"/>
@@ -1114,7 +1137,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["EXTNTZTZ"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{bankswiftCode}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="15" y="93" width="525" height="15" uuid="e6db8913-c499-4c46-beb7-b8f021edfd21">

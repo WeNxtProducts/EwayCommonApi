@@ -14,12 +14,14 @@ package com.maan.eway.repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ListItemValueId;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 /**
  * <h2>ListItemValueRepository</h2>
  *
@@ -55,6 +57,9 @@ public interface ListItemValueRepository  extends JpaRepository<ListItemValue,Li
 
 	List<ListItemValue> findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc(String string, String string2,
 			String companyId);
+
+	@Query(value = "SELECT item_code,item_value FROM eway_list_item_value lv WHERE item_type='BANK_DETAILS' AND company_id=?1 AND amend_id = (SELECT MAX(amend_id) FROM eway_list_item_value WHERE item_type='BANK_DETAILS' AND company_id = lv.company_id AND item_id = lv.item_id AND branch_code = lv.branch_code AND item_code = lv.item_code AND STATUS = 'Y')",nativeQuery = true)
+	List<Map<String,Object>> getBankDetailsByCompanyId(String companyId);
 
 
 

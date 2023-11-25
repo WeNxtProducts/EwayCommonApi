@@ -177,6 +177,18 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="quoteNo"/>
 		<fieldDescription><![CDATA[quoteNo]]></fieldDescription>
 	</field>
+	<field name="companyLogo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyLogo"/>
+		<fieldDescription><![CDATA[companyLogo]]></fieldDescription>
+	</field>
+	<field name="companyName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
+		<fieldDescription><![CDATA[companyName]]></fieldDescription>
+	</field>
+	<field name="customerCode" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerCode"/>
+		<fieldDescription><![CDATA[customerCode]]></fieldDescription>
+	</field>
 	<field name="sectionDescList" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="sectionDescList"/>
 		<fieldDescription><![CDATA[sectionDescList]]></fieldDescription>
@@ -192,7 +204,7 @@
 		<band height="59" splitType="Stretch">
 			<image>
 				<reportElement x="0" y="0" width="555" height="59" uuid="1c6e2562-20fe-4909-8b38-657d46ec3b19"/>
-				<imageExpression><![CDATA[$P{pvImagePath}+"Alliancelogo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$F{companyLogo}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -720,7 +732,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{customerId}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{customerCode}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -1125,7 +1137,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Premium - "+$F{productName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Commission - "+$F{productName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="150" y="90" width="120" height="15" uuid="616a5601-e257-4740-b16f-aca473d44242">
@@ -1135,7 +1147,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Vat Output (Commission) - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="480" y="60" width="75" height="15" uuid="ddb0d666-dc7f-485f-b27a-aa426061cad0">
@@ -1313,7 +1325,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Alliance Insurance Corporation Ltd"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
 			</textField>
 			<break>
 				<reportElement x="0" y="69" width="100" height="1" uuid="bacb9ea3-bee4-4bdd-879d-2d594acc1b57"/>

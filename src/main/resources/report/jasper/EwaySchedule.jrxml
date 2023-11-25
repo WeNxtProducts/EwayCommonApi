@@ -94,6 +94,10 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="signature"/>
 		<fieldDescription><![CDATA[signature]]></fieldDescription>
 	</field>
+	<field name="companyName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
+		<fieldDescription><![CDATA[companyName]]></fieldDescription>
+	</field>
 	<field name="policyNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
 		<fieldDescription><![CDATA[policyNo]]></fieldDescription>
@@ -121,6 +125,10 @@
 	<field name="stateName" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="stateName"/>
 		<fieldDescription><![CDATA[stateName]]></fieldDescription>
+	</field>
+	<field name="companylogo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companylogo"/>
+		<fieldDescription><![CDATA[companylogo]]></fieldDescription>
 	</field>
 	<field name="inceptionDate" class="java.sql.Timestamp">
 		<property name="net.sf.jasperreports.json.field.expression" value="inceptionDate"/>
@@ -204,7 +212,7 @@
 			<image>
 				<reportElement x="0" y="0" width="180" height="53" uuid="5897be8c-a11a-44f1-bc23-69c8f8e04d1d"/>
 				<box topPadding="0"/>
-				<imageExpression><![CDATA[$P{pvImagepath}+"Alliancelogo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$F{companylogo}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>

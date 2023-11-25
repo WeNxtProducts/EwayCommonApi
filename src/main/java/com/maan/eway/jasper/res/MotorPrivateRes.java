@@ -93,4 +93,10 @@ public class MotorPrivateRes {
 	@JsonProperty("FirstLossPayee")
 	private String firstLossPayee;
 	
+	@JsonProperty("Companylogo")
+	private String companylogo;
+	
+	@JsonProperty("CompanyName")
+	private String companyName;
+	
 }

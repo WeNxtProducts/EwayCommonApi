@@ -78,6 +78,15 @@ public class CreditNoteRes {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
+	@JsonProperty("CompanyLogo")
+	private String companyLogo;
+	
+	@JsonProperty("CompanyName")
+	private String companyName;
+	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	
 	@JsonProperty("SectionDescList")
 	private List<CreditDataSetOne> sectionDescList;
 

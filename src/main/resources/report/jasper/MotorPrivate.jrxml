@@ -232,15 +232,15 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="insuranceTypeDesc"/>
 		<fieldDescription><![CDATA[insuranceTypeDesc]]></fieldDescription>
 	</field>
-	<field name="premium" class="java.math.BigDecimal">
+	<field name="premium" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
 		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="vatPremium" class="java.math.BigDecimal">
+	<field name="vatPremium" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="vatPremium"/>
 		<fieldDescription><![CDATA[vatPremium]]></fieldDescription>
 	</field>
-	<field name="totalPremium" class="java.math.BigDecimal">
+	<field name="totalPremium" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="totalPremium"/>
 		<fieldDescription><![CDATA[totalPremium]]></fieldDescription>
 	</field>
@@ -288,6 +288,14 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="firstLossPayee"/>
 		<fieldDescription><![CDATA[firstLossPayee]]></fieldDescription>
 	</field>
+	<field name="companylogo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companylogo"/>
+		<fieldDescription><![CDATA[companylogo]]></fieldDescription>
+	</field>
+	<field name="companyName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
+		<fieldDescription><![CDATA[companyName]]></fieldDescription>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -295,7 +303,7 @@
 		<band height="64">
 			<image>
 				<reportElement x="0" y="0" width="200" height="64" uuid="2e66645b-7b3e-40a7-a8d7-b0f7367a85c1"/>
-				<imageExpression><![CDATA[$P{pvImagepath}+"Alliancelogo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$F{companylogo}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -3852,7 +3860,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["For ALLIANCE INSURANCE CORPORATION LTD"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>

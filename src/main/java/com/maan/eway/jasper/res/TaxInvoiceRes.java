@@ -78,6 +78,24 @@ public class TaxInvoiceRes {
 	@JsonProperty("IntermediaryRefNo")
 	private String intermediaryRefNo;
 	
+	@JsonProperty("CompanyName")
+	private String companyName;
+	
+	@JsonProperty("BankAccountName")
+	private String bankaccountName;
+	
+	@JsonProperty("BankAccountNumber")
+	private String bankaccountNumber;
+	
+	@JsonProperty("BankAddress")
+	private String bankaddress;
+	
+	@JsonProperty("BankSwiftCode")
+	private String bankswiftCode;
+	
+	@JsonProperty("CompanyLogo")
+	private String companyLogo;
+	
 	@JsonProperty("Dataset1List")
 	private List<TaxDataSetOneRes> dataset1List;
 	

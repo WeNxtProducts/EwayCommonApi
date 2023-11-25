@@ -53,17 +53,25 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="coverDesc"/>
 			<fieldDescription><![CDATA[coverDesc]]></fieldDescription>
 		</field>
+		<field name="premiumExcludedTaxLc" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="premiumExcludedTaxLc"/>
+			<fieldDescription><![CDATA[premiumExcludedTaxLc]]></fieldDescription>
+		</field>
 		<field name="sumInsured" class="java.math.BigDecimal">
 			<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
 			<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
+		</field>
+		<field name="premiumIncludedTaxLc" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="premiumIncludedTaxLc"/>
+			<fieldDescription><![CDATA[premiumIncludedTaxLc]]></fieldDescription>
 		</field>
 		<field name="rate" class="java.math.BigDecimal">
 			<property name="net.sf.jasperreports.json.field.expression" value="rate"/>
 			<fieldDescription><![CDATA[rate]]></fieldDescription>
 		</field>
-		<field name="premiumIncludedTaxLc" class="java.math.BigDecimal">
-			<property name="net.sf.jasperreports.json.field.expression" value="premiumIncludedTaxLc"/>
-			<fieldDescription><![CDATA[premiumIncludedTaxLc]]></fieldDescription>
+		<field name="premiumExcludedTaxFc" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="premiumExcludedTaxFc"/>
+			<fieldDescription><![CDATA[premiumExcludedTaxFc]]></fieldDescription>
 		</field>
 		<field name="premiumIncludedTaxFc" class="java.math.BigDecimal">
 			<property name="net.sf.jasperreports.json.field.expression" value="premiumIncludedTaxFc"/>
@@ -269,7 +277,7 @@
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{premiumIncludedTaxLc}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{premiumExcludedTaxLc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
