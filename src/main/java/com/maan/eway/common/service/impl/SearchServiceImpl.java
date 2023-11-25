@@ -35,11 +35,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.DocumentUniqueDetails;
+import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -60,6 +62,11 @@ import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.DocumentDetailsRes;
 import com.maan.eway.common.res.DocumentRes;
+import com.maan.eway.common.res.PaymentCashRes;
+import com.maan.eway.common.res.PaymentChequeRes;
+import com.maan.eway.common.res.PaymentCreditRes;
+import com.maan.eway.common.res.PaymentEmiRes;
+import com.maan.eway.common.res.PaymentOnlineRes;
 import com.maan.eway.common.res.PersonalAccidentRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchDriverDetailsRes;
@@ -81,6 +88,7 @@ import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
@@ -103,6 +111,9 @@ public class SearchServiceImpl implements SearchService {
 
 	@Autowired
 	private EServiceMotorDetailsRepository repo;
+	
+	@Autowired
+	private EmiTransactionDetailsRepository emirepo;
 
 	@Autowired
 	private LoginBranchMasterRepository loginBranchRepo;
@@ -883,28 +894,73 @@ public class SearchServiceImpl implements SearchService {
 
 		try {
 			List<PaymentInfo> paymentinfo = null;
-			List<PaymentDetail>  pay=null;
-			List<PaymentDetail> patmentDetails=null;
+			List<PaymentDetail> pay = null;
+			List<PaymentDetail> patmentDetails = null;
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
-				
-				paymentinfo = paymentrepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
-				if(paymentinfo!=null && paymentinfo.size()>0) {
-				String paymentId=paymentinfo.get(0).getPaymentId();
+
+				paymentinfo = paymentrepo.findByQuoteNoAndProductId(req.getQuoteNo(),
+						Integer.valueOf(req.getProductId()));
+				if (paymentinfo != null && paymentinfo.size() > 0) {
+					String paymentId = paymentinfo.get(0).getPaymentId();
+
+					patmentDetails = paymentRepo.findByQuoteNo(req.getQuoteNo());
+//					pay = patmentDetails.stream().filter(o -> o.getPaymentId().equals(paymentId))
+//							.collect(Collectors.toList());
+
+					for (PaymentDetail pi : patmentDetails) {
+
+						paymentgetres = new DozerBeanMapper().map(pi, SearchPaymentInfoRes.class);
+						paymentgetres.setEntryDate(pi.getEntryDate());
+
+						paymentgetres.setInstallmentMonth(pi.getInstallmentMonth()==null?null:pi.getInstallmentMonth());
+						paymentgetres.setInstallmentPeriod(pi.getInstallmentPeriod()==null?null:pi.getInstallmentPeriod());
 						
-				patmentDetails= paymentRepo.findByQuoteNo(req.getQuoteNo());
-				pay=patmentDetails.stream().filter( o -> o.getPaymentId().equals(paymentId) ).collect(Collectors.toList());
-				
-			 
-			
-			for (PaymentDetail pi : pay) {
+						PaymentCashRes res1 = new PaymentCashRes();
 
-				paymentgetres = new DozerBeanMapper().map(pi, SearchPaymentInfoRes.class);
-				paymentgetres.setEntryDate(pi.getEntryDate());
-				paylist.add(paymentgetres);
+						// Cash
+						if ("1".equalsIgnoreCase(pi.getPaymentType())) {
+							res1.setPayeeName(pi.getPayeeName());
+							paymentgetres.setPaymentCashRes(res1);
+						}
 
-			}
+						// Cheque
+						PaymentChequeRes res2 = new PaymentChequeRes();
+						if ("2".equalsIgnoreCase(pi.getPaymentType())) {
+							res2.setBankName(pi.getBankName() == null ? null : pi.getBankName());
+							res2.setChequeDate(pi.getChequeDate() == null ? null : pi.getChequeDate());
+							res2.setChequeNo(pi.getChequeNo() == null ? null : pi.getChequeNo());
+							res2.setMicrNo(pi.getMicrNo() == null ? null : pi.getMicrNo());
+							paymentgetres.setPaymentChequeRes(res2);
+						}
+
+						// Credit
+						PaymentCreditRes res3 = new PaymentCreditRes();
+						if ("3".equalsIgnoreCase(pi.getPaymentType())) {
+							res3.setCbcNo(pi.getCbcNo() == null ? null : pi.getCbcNo());
+							paymentgetres.setPaymentCreditRes(res3);
+						}
+
+						// Online
+						PaymentOnlineRes res4 = new PaymentOnlineRes();
+						if ("4".equalsIgnoreCase(pi.getPaymentType())) {
+							res4.setAuthAmount(pi.getAuthAmount() == null ? null : pi.getAuthAmount());
+							res4.setAuthResponse(pi.getAuthResponse() == null ? null : pi.getAuthResponse());
+							res4.setAuthTransRefNo(pi.getAuthTransRefNo() == null ? null : pi.getAuthTransRefNo());
+							res4.setChannel(pi.getChannel() == null ? null : pi.getChannel());
+							res4.setMsisdn(pi.getMsisdn() == null ? null : pi.getMsisdn());
+							res4.setReference(pi.getReference() == null ? null : pi.getReference());
+							res4.setRequestTime(pi.getRequestTime() == null ? null : pi.getRequestTime());
+							res4.setResponseMessage(pi.getResponseMessage() == null ? null : pi.getResponseMessage());
+							res4.setResponseStatus(pi.getResponseStatus() == null ? null : pi.getResponseStatus());
+							res4.setResponseTime(pi.getResponseTime() == null ? null : pi.getResponseTime());
+							paymentgetres.setPaymentOnlineRes(res4);
+						}
+
+						paylist.add(paymentgetres);
+
+					}
 				}
-		}
+			}
 
 		} catch (Exception e) {
 

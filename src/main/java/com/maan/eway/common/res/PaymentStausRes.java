@@ -56,6 +56,17 @@ public class PaymentStausRes {
 	@JsonProperty("PaymentTypedesc")
 	private String paymentTypedesc;
 	
+	@JsonProperty("InceptionDate")
+	private String   inceptionDate;
+	@JsonProperty("EntryDate")
+	private String entryDate ;
+	@JsonProperty("ExpiryDate")
+	private String expiryDate;
+	@JsonProperty("ApplicationId")
+	private String   applicationId;
+	@JsonProperty("LoginId")
+	private String   loginId;
+	
 	
 //	@JsonProperty("CustomerId")
 //	private String customerId;

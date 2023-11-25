@@ -13,6 +13,8 @@ public class AdminTiraIntegrationGridReq {
 	   private String     insuranceId     ;
 	   @JsonProperty("ProductId")
 	   private String     productId     ;
+	   @JsonProperty("BranchCode")
+	   private String     branchCode     ;
 	   @JsonProperty("StartDate")
 	   private String     pushStartDate     ;
 	   @JsonProperty("EndDate")

@@ -173,13 +173,14 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n1 = cb.equal(  c.get("customerId"),  m.get("customerId"));
 			Predicate n2 = cb.equal(  m.get("companyId"),  req.getInsuranceId()) ;
 			Predicate n3 = cb.equal(  m.get("productId"),  req.getProductId());
+			Predicate n9 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			Predicate n4 = cb.equal(m.get("status"), "P");
 			Predicate n5 = cb.equal(m.get("responseStatusCode"), "TIRA001");
 			Predicate n6 = cb.equal(m.get("responseStatusCode"), "TIRA214");
 			Predicate n7 = cb.or(n5,n6);
 		
 			Predicate n8=cb.between(m.get("entryDate"), startDate, endDate);
-			query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n7,n8,n9).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
@@ -219,7 +220,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 				res.setTiraRequestId(data.get("tiraRequestId")==null?null:data.get("tiraRequestId").toString());
 				res.setTiraResponseId(data.get("tiraResponseId")==null?null:data.get("tiraResponseId").toString());
 				res.setUserType(data.get("userType")==null?null:data.get("userType").toString());
-				res.setInceptionDate(data.get("brokerCode")==null?null:sdf.format(data.get("inceptionDate")).toString());
+				res.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
 				res.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
 				reslist.add(res);
 			}
@@ -296,6 +297,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n1 = cb.equal(  c.get("customerId"),  m.get("customerId"));
 			Predicate n2 = cb.equal(  m.get("companyId"),  req.getInsuranceId()) ;
 			Predicate n3 = cb.equal(  m.get("productId"),  req.getProductId());
+			Predicate n11 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			Predicate n4 = cb.equal(m.get("status"), "P");
 			Predicate n5 = cb.notEqual(m.get("responseStatusCode"), "TIRA001");
 			Predicate n6 = cb.notEqual(m.get("responseStatusCode"), "TIRA214");
@@ -303,7 +305,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n8 = cb.isNotNull(m.get("responseStatusCode"));
 			Predicate n9 = cb.isNotNull(m.get("tiraResponseId"));
 			Predicate n10=cb.between(m.get("entryDate"), startDate, endDate);
-			query.where(n1,n2,n3,n4,n7,n8,n9,n10).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n7,n8,n9,n10,n11).orderBy(orderList);
 			
 			
 			// Get Result
@@ -344,7 +346,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 				res.setTiraRequestId(data.get("tiraRequestId")==null?null:data.get("tiraRequestId").toString());
 				res.setTiraResponseId(data.get("tiraResponseId")==null?null:data.get("tiraResponseId").toString());
 				res.setUserType(data.get("userType")==null?null:data.get("userType").toString());
-				res.setInceptionDate(data.get("brokerCode")==null?null:sdf.format(data.get("inceptionDate")).toString());
+				res.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
 				res.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
 				reslist.add(res);
 			}
@@ -412,6 +414,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n1 = cb.equal(  c.get("customerId"),  m.get("customerId"));
 			Predicate n2 = cb.equal(  m.get("companyId"),  req.getInsuranceId()) ;
 			Predicate n3 = cb.equal(  m.get("productId"),  req.getProductId());
+			Predicate n12 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			Predicate n4 = cb.equal(m.get("status"), "P");
 //			Predicate n5 = cb.notEqual(m.get("responseStatusCode"), "TIRA001");
 //			Predicate n6 = cb.notEqual(m.get("responseStatusCode"), "TIRA214");
@@ -420,7 +423,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n9 = cb.isNull(m.get("tiraResponseId"));
 			Predicate n10 = cb.or(n8,n9);
 			Predicate n11=cb.between(m.get("entryDate"), startDate, endDate);
-			query.where(n1,n2,n3,n4,n10,n11).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n10,n11,n12).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
@@ -460,7 +463,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 				res.setTiraRequestId(data.get("tiraRequestId")==null?null:data.get("tiraRequestId").toString());
 				res.setTiraResponseId(data.get("tiraResponseId")==null?null:data.get("tiraResponseId").toString());
 				res.setUserType(data.get("userType")==null?null:data.get("userType").toString());
-				res.setInceptionDate(data.get("brokerCode")==null?null:sdf.format(data.get("inceptionDate")).toString());
+				res.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
 				res.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
 				reslist.add(res);
 			}

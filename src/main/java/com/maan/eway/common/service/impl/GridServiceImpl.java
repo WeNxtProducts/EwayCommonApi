@@ -5434,6 +5434,7 @@ public class GridServiceImpl implements GridService {
 	public GetPaymentStatusRes  getPaymentStatus(GetPaymentStatusReq req) {
 	//	List<GetPaymentStatusRes> reslist = new ArrayList<GetPaymentStatusRes>();
 		GetPaymentStatusRes res = new GetPaymentStatusRes();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try {
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
@@ -5450,21 +5451,35 @@ public class GridServiceImpl implements GridService {
 					p.get("paymentStatus").alias("paymentStatus"),
 					p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
 					h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
-					h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+					p.get("customerName").alias("customerName"),h.get("userType").alias("userType"),
+					p.get("entryDate").alias("entryDate"),
+					h.get("inceptionDate").alias("inceptionDate"),h.get("expiryDate").alias("expiryDate"),
+					h.get("applicationId").alias("applicationId")).distinct(true);
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(p.get("entryDate")));
+			//max of merchantReference
+			Subquery<Long> merchantReference = query.subquery(Long.class);
+			Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+			merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+			Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+			merchantReference.where(a3);
 			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 			predics.add(cb.equal(p.get("paymentType"),"4"));
 			predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 			predics.add(cb.equal(h.get("productId"),req.getProductId()));
-			predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+			predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+			predics.add(cb.equal(p.get("paymentStatus"),"PENDING"));
+			predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 			predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-			query.where(predics.toArray(new Predicate[0]));
+			query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 			TypedQuery<Tuple> typedQuery = em.createQuery(query);
 			typedQuery.setFirstResult(limit * offset);
 			typedQuery.setMaxResults(offset);
 			list = typedQuery.getResultList();
 			
-			list =list.stream().filter(o->o.get("paymentStatus").equals("PENDING")).collect(Collectors.toList());
+		//	list =list.stream().filter(o->o.get("paymentStatus").equals("PENDING")).collect(Collectors.toList());
 			List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
 			if (list != null && list.size() > 0) {
 				
@@ -5480,6 +5495,10 @@ public class GridServiceImpl implements GridService {
 					res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
 					res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
 					res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+					res1.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
+					res1.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
+					res1.setEntryDate(data.get("entryDate")==null?null:sdf.format(data.get("entryDate")).toString());
+					res1.setApplicationId(data.get("applicationId")==null?null:data.get("applicationId").toString());
 					statusResList.add(res1);
 
 				}
@@ -5496,27 +5515,41 @@ public class GridServiceImpl implements GridService {
 				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 				List<Tuple> list =new ArrayList<Tuple>();
 
+				
 				query.multiselect(p.get("quoteNo").alias("quoteNo"),h.get("loginId").alias("loginId"),
 						p.get("paymentId").alias("paymentId"),p.get("branchCode").alias("branchCode"),
 						p.get("paymentStatus").alias("paymentStatus"),
 						p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
 						h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
-						h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+						h.get("userType").alias("userType"),
+						p.get("customerName").alias("customerName"),p.get("entryDate").alias("entryDate"),
+						h.get("inceptionDate").alias("inceptionDate"),h.get("expiryDate").alias("expiryDate"),
+						h.get("applicationId").alias("applicationId")).distinct(true);
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(p.get("entryDate")));
+				//max of merchantReference
+				Subquery<Long> merchantReference = query.subquery(Long.class);
+				Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+				merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+				Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+				merchantReference.where(a3);
 				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 				predics.add(cb.equal(p.get("paymentType"),"4"));
 				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 				predics.add(cb.equal(h.get("productId"),req.getProductId()));
-				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("paymentStatus"),"PENDING"));
+				predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 				//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-				query.where(predics.toArray(new Predicate[0]));
+				query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 				TypedQuery<Tuple> typedQuery = em.createQuery(query);
 				typedQuery.setFirstResult(limit * offset);
 				typedQuery.setMaxResults(offset);
 				
 				list = typedQuery.getResultList();
-				
-				list =list.stream().filter(o->o.get("paymentStatus").equals("PENDING")).collect(Collectors.toList());
+			//	list =list.stream().filter(o->o.get("paymentStatus").equals("PENDING")).collect(Collectors.toList());
 				List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
 				if (list != null && list.size() > 0) {
 					
@@ -5532,6 +5565,10 @@ public class GridServiceImpl implements GridService {
 						res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
 						res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
 						res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+						res1.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
+						res1.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
+						res1.setEntryDate(data.get("entryDate")==null?null:sdf.format(data.get("entryDate")).toString());
+						res1.setApplicationId(data.get("applicationId")==null?null:data.get("applicationId").toString());
 						statusResList.add(res1);
 
 					}
@@ -5551,6 +5588,7 @@ public class GridServiceImpl implements GridService {
 	@Override
 	public GetPaymentStatusRes getPaymentFailedStatus(GetPaymentStatusReq req) {
 		GetPaymentStatusRes res = new GetPaymentStatusRes();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try {
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
@@ -5567,21 +5605,34 @@ public class GridServiceImpl implements GridService {
 					p.get("paymentStatus").alias("paymentStatus"),
 					p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
 					h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
-					h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+					p.get("customerName").alias("customerName"),h.get("userType").alias("userType"),p.get("entryDate").alias("entryDate"),
+					h.get("inceptionDate").alias("inceptionDate"),h.get("expiryDate").alias("expiryDate"),
+				h.get("applicationId").alias("applicationId")).distinct(true);
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(p.get("entryDate")));
+			//max of merchantReference
+			Subquery<Long> merchantReference = query.subquery(Long.class);
+			Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+			merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+			Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+			merchantReference.where(a3);
 			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 			predics.add(cb.equal(p.get("paymentType"),"4"));
 			predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 			predics.add(cb.equal(h.get("productId"),req.getProductId()));
-			predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+			predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+			predics.add(cb.equal(p.get("paymentStatus"),"FAILED"));
+			predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 			predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-			query.where(predics.toArray(new Predicate[0]));
+			query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 			TypedQuery<Tuple> typedQuery = em.createQuery(query);
 			typedQuery.setFirstResult(limit * offset);
 			typedQuery.setMaxResults(offset);
 			list = typedQuery.getResultList();
 			
-			list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
+//			list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
 			List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
 			if (list != null && list.size() > 0) {
 				
@@ -5597,7 +5648,10 @@ public class GridServiceImpl implements GridService {
 					res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
 					res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
 					res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
-					statusResList.add(res1);
+					res1.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
+					res1.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
+					res1.setEntryDate(data.get("entryDate")==null?null:sdf.format(data.get("entryDate")).toString());
+					res1.setApplicationId(data.get("applicationId")==null?null:data.get("applicationId").toString());					statusResList.add(res1);
 
 				}
 				
@@ -5618,21 +5672,35 @@ public class GridServiceImpl implements GridService {
 						p.get("paymentStatus").alias("paymentStatus"),
 						p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
 						h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
-						h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+						p.get("customerName").alias("customerName"),h.get("userType").alias("userType"),
+						p.get("entryDate").alias("entryDate"),
+						h.get("inceptionDate").alias("inceptionDate"),h.get("expiryDate").alias("expiryDate"),
+						h.get("applicationId").alias("applicationId")).distinct(true);
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(p.get("entryDate")));
+				//max of merchantReference
+				Subquery<Long> merchantReference = query.subquery(Long.class);
+				Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+				merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+				Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+				merchantReference.where(a3);
 				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 				predics.add(cb.equal(p.get("paymentType"),"4"));
 				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 				predics.add(cb.equal(h.get("productId"),req.getProductId()));
-				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("paymentStatus"),"FAILED"));
+				predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 				//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-				query.where(predics.toArray(new Predicate[0]));
+				query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 				TypedQuery<Tuple> typedQuery = em.createQuery(query);
 				typedQuery.setFirstResult(limit * offset);
 				typedQuery.setMaxResults(offset);
 				list = typedQuery.getResultList();
 				
-				list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
+//				list =list.stream().filter(o->o.get("paymentStatus").equals("FAILED")).collect(Collectors.toList());
 				List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
 				if (list != null && list.size() > 0) {
 					
@@ -5648,6 +5716,10 @@ public class GridServiceImpl implements GridService {
 						res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
 						res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
 						res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+						res1.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
+						res1.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
+						res1.setEntryDate(data.get("entryDate")==null?null:sdf.format(data.get("entryDate")).toString());
+						res1.setApplicationId(data.get("applicationId")==null?null:data.get("applicationId").toString());
 						statusResList.add(res1);
 
 					}
@@ -5672,6 +5744,7 @@ public class GridServiceImpl implements GridService {
 	@Override
 	public GetPaymentStatusRes getPaymentSucessStatus(GetPaymentStatusReq req) {
 		GetPaymentStatusRes res = new GetPaymentStatusRes();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try {
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
@@ -5688,21 +5761,35 @@ public class GridServiceImpl implements GridService {
 					p.get("paymentStatus").alias("paymentStatus"),
 					p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
 					h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
-					h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+					p.get("customerName").alias("customerName"),h.get("userType").alias("userType"),
+					p.get("entryDate").alias("entryDate"),
+					h.get("inceptionDate").alias("inceptionDate"),h.get("expiryDate").alias("expiryDate"),
+					h.get("applicationId").alias("applicationId")).distinct(true);
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(p.get("entryDate")));
+			//max of merchantReference
+			Subquery<Long> merchantReference = query.subquery(Long.class);
+			Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+			merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+			Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+			merchantReference.where(a3);
 			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 			predics.add(cb.equal(p.get("paymentType"),"4"));
 			predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 			predics.add(cb.equal(h.get("productId"),req.getProductId()));
-			predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+			predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+			predics.add(cb.equal(p.get("paymentStatus"),"ACCEPTED"));
+			predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 			predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-			query.where(predics.toArray(new Predicate[0]));
+			query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 			TypedQuery<Tuple> typedQuery = em.createQuery(query);
 			typedQuery.setFirstResult(limit * offset);
 			typedQuery.setMaxResults(offset);
 			list = typedQuery.getResultList();
 			
-			list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
+//			list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
 			List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
 			if (list != null && list.size() > 0) {
 				
@@ -5718,6 +5805,10 @@ public class GridServiceImpl implements GridService {
 					res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
 					res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
 					res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+					res1.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
+					res1.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
+					res1.setEntryDate(data.get("entryDate")==null?null:sdf.format(data.get("entryDate")).toString());
+					res1.setApplicationId(data.get("applicationId")==null?null:data.get("applicationId").toString());
 					statusResList.add(res1);
 
 				}
@@ -5739,21 +5830,35 @@ public class GridServiceImpl implements GridService {
 						p.get("paymentStatus").alias("paymentStatus"),
 						p.get("branchName").alias("branchName"),p.get("paymentTypedesc").alias("paymentTypedesc"),
 						h.get("companyId").alias("companyId"),h.get("productId").alias("productId"),
-						h.get("customerName").alias("customerName"),h.get("userType").alias("userType")).distinct(true);
+						p.get("customerName").alias("customerName"),h.get("userType").alias("userType"),
+						p.get("entryDate").alias("entryDate"),
+						h.get("inceptionDate").alias("inceptionDate"),h.get("expiryDate").alias("expiryDate"),
+						h.get("applicationId").alias("applicationId")).distinct(true);
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(p.get("entryDate")));
+				//max of merchantReference
+				Subquery<Long> merchantReference = query.subquery(Long.class);
+				Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+				merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+				Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+				merchantReference.where(a3);
 				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 				predics.add(cb.equal(p.get("paymentType"),"4"));
 				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 				predics.add(cb.equal(h.get("productId"),req.getProductId()));
-				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("paymentStatus"),"ACCEPTED"));
+				predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 				//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-				query.where(predics.toArray(new Predicate[0]));
+				query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 				TypedQuery<Tuple> typedQuery = em.createQuery(query);
 				typedQuery.setFirstResult(limit * offset);
 				typedQuery.setMaxResults(offset);
 				list = typedQuery.getResultList();
 				
-				list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
+//				list =list.stream().filter(o->o.get("paymentStatus").equals("SUCCESS")).collect(Collectors.toList());
 				List<PaymentStausRes> statusResList=new ArrayList<PaymentStausRes>();
 				if (list != null && list.size() > 0) {
 					
@@ -5769,6 +5874,10 @@ public class GridServiceImpl implements GridService {
 						res1.setPaymentId(data.get("paymentId")==null?"":data.get("paymentId").toString());		
 						res1.setPaymentStatus(data.get("paymentStatus")==null?"":data.get("paymentStatus").toString());
 						res1.setPaymentTypedesc(data.get("paymentTypedesc")==null?"":data.get("paymentTypedesc").toString());
+						res1.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
+						res1.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
+						res1.setEntryDate(data.get("entryDate")==null?null:sdf.format(data.get("entryDate")).toString());
+						res1.setApplicationId(data.get("applicationId")==null?null:data.get("applicationId").toString());
 						statusResList.add(res1);
 
 					}
@@ -5798,14 +5907,24 @@ public class GridServiceImpl implements GridService {
 				List<Long> list =new ArrayList<Long>();
 
 				query.multiselect(cb.count(h));
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(p.get("entryDate")));
+				//max of merchantReference
+				Subquery<Long> merchantReference = query.subquery(Long.class);
+				Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+				merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+				Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+				merchantReference.where(a3);
 				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 				predics.add(cb.equal(p.get("paymentType"),"4"));
 				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 				predics.add(cb.equal(h.get("productId"),req.getProductId()));
-				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("paymentStatus"),"ACCEPTED"));
+				predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 				predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-				predics.add(cb.equal(h.get("paymentStatus"),"SUCCESS"));
-				query.where(predics.toArray(new Predicate[0]));
+				query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 				TypedQuery<Long> typedQuery = em.createQuery(query);
 				list = typedQuery.getResultList();
@@ -5824,14 +5943,24 @@ public class GridServiceImpl implements GridService {
 					List<Long> list =new ArrayList<Long>();
 
 					query.multiselect(cb.count(h));
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.desc(p.get("entryDate")));
+					//max of merchantReference
+					Subquery<Long> merchantReference = query.subquery(Long.class);
+					Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+					merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+					Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+					merchantReference.where(a3);
 					List<Predicate> predics = new ArrayList<Predicate>();
+					predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 					predics.add(cb.equal(p.get("paymentType"),"4"));
 					predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 					predics.add(cb.equal(h.get("productId"),req.getProductId()));
-					predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+					predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+					predics.add(cb.equal(p.get("paymentStatus"),"ACCEPTED"));
+					predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 					//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-					predics.add(cb.equal(h.get("paymentStatus"),"SUCCESS"));
-					query.where(predics.toArray(new Predicate[0]));
+					query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 					TypedQuery<Long> typedQuery = em.createQuery(query);
 					list = typedQuery.getResultList();
@@ -5863,14 +5992,24 @@ public class GridServiceImpl implements GridService {
 				List<Long> list =new ArrayList<Long>();
 
 				query.multiselect(cb.count(h));
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(p.get("entryDate")));
+				//max of merchantReference
+				Subquery<Long> merchantReference = query.subquery(Long.class);
+				Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+				merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+				Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+				merchantReference.where(a3);
 				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 				predics.add(cb.equal(p.get("paymentType"),"4"));
 				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 				predics.add(cb.equal(h.get("productId"),req.getProductId()));
-				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("paymentStatus"),"FAILED"));
+				predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 				predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-				predics.add(cb.equal(h.get("paymentStatus"),"FAILED"));
-				query.where(predics.toArray(new Predicate[0]));
+				query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 				TypedQuery<Long> typedQuery = em.createQuery(query);
 				list = typedQuery.getResultList();
@@ -5887,14 +6026,24 @@ public class GridServiceImpl implements GridService {
 					List<Long> list =new ArrayList<Long>();
 
 					query.multiselect(cb.count(h));
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.desc(p.get("entryDate")));
+					//max of merchantReference
+					Subquery<Long> merchantReference = query.subquery(Long.class);
+					Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+					merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+					Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+					merchantReference.where(a3);
 					List<Predicate> predics = new ArrayList<Predicate>();
+					predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 					predics.add(cb.equal(p.get("paymentType"),"4"));
 					predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 					predics.add(cb.equal(h.get("productId"),req.getProductId()));
-					predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
-					predics.add(cb.equal(h.get("paymentStatus"),"FAILED"));
+					predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+					predics.add(cb.equal(p.get("paymentStatus"),"FAILED"));
+					predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 					//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-					query.where(predics.toArray(new Predicate[0]));
+					query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 					TypedQuery<Long> typedQuery = em.createQuery(query);
 					list = typedQuery.getResultList();
@@ -5924,14 +6073,24 @@ public class GridServiceImpl implements GridService {
 				List<Long> list =new ArrayList<Long>();
 
 				query.multiselect(cb.count(h));
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(p.get("entryDate")));
+				//max of merchantReference
+				Subquery<Long> merchantReference = query.subquery(Long.class);
+				Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+				merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+				Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+				merchantReference.where(a3);
 				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 				predics.add(cb.equal(p.get("paymentType"),"4"));
 				predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 				predics.add(cb.equal(h.get("productId"),req.getProductId()));
-				predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+				predics.add(cb.equal(p.get("paymentStatus"),"PENDING"));
+				predics.add(cb.equal(p.get("merchantReference"),merchantReference));
 				predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
-				predics.add(cb.equal(h.get("paymentStatus"),"PENDING"));
-				query.where(predics.toArray(new Predicate[0]));
+				query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 				TypedQuery<Long> typedQuery = em.createQuery(query);
 				list = typedQuery.getResultList();
@@ -5945,13 +6104,24 @@ public class GridServiceImpl implements GridService {
 					List<Long> list =new ArrayList<Long>();
 
 					query.multiselect(cb.count(h));
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.desc(p.get("entryDate")));
+					//max of merchantReference
+					Subquery<Long> merchantReference = query.subquery(Long.class);
+					Root<PaymentDetail> ocpm2 = merchantReference.from(PaymentDetail.class);
+					merchantReference.select(cb.max(ocpm2.get("merchantReference")));
+					Predicate a3 = cb.equal(p.get("quoteNo"), ocpm2.get("quoteNo"));
+					merchantReference.where(a3);
 					List<Predicate> predics = new ArrayList<Predicate>();
+					predics.add(cb.equal(p.get("quoteNo"),h.get("quoteNo")));
 					predics.add(cb.equal(p.get("paymentType"),"4"));
 					predics.add(cb.equal(p.get("branchCode"),req.getBranchCode()));
 					predics.add(cb.equal(h.get("productId"),req.getProductId()));
-					predics.add(cb.equal(h.get("companyId"),req.getCompanyId()));
-					predics.add(cb.equal(h.get("paymentStatus"),"PENDING"));
-					query.where(predics.toArray(new Predicate[0]));
+					predics.add(cb.equal(p.get("companyId"),req.getCompanyId()));
+					predics.add(cb.equal(p.get("paymentStatus"),"PENDING"));
+					predics.add(cb.equal(p.get("merchantReference"),merchantReference));
+					//predics.add(cb.equal(h.get("loginId"),req.getLoginId()));
+					query.where(predics.toArray(new Predicate[0])).orderBy(orderList);
 
 					TypedQuery<Long> typedQuery = em.createQuery(query);
 					list = typedQuery.getResultList();
