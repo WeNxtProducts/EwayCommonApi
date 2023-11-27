@@ -202,7 +202,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			oldDatas.forEach( o -> {
 				UwQuestionsDetailsArch arch = new UwQuestionsDetailsArch();
 				dozerMapper.map(o, arch);
-				arch.setArchId(o.getVehicleId().toString());
+				arch.setArchId(o.getVehicleId());
 				saveArchs.add(arch);
 					
 			});

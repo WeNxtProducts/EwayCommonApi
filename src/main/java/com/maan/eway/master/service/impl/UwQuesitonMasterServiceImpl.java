@@ -436,7 +436,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 							.uwQuesOptionDesc(options.getUwQuesOptionDesc())  //DisplayName (i.e, Options)
 							.uwQuesOptionId(StringUtils.isBlank(options.getUwQuesOptionId())?null:Integer.valueOf(options.getUwQuesOptionId())) //value
 							.dependentYn(options.getDependentYn())
-							.dependentUnderwriterId(StringUtils.isBlank(options.getDependentUnderwriterId())?null:Integer.valueOf(options.getDependentUnderwriterId())) //dropdown 
+							.dependentUnderwriterId(StringUtils.isBlank(options.getDependentUnderwriterId())?null:options.getDependentUnderwriterId()) //dropdown 
 							.dependentUwAction(options.getDependentUwAction()==null?"":options.getDependentUwAction())
 							.loadingPercent(StringUtils.isBlank(options.getLoadingPercent())?null:new BigDecimal(options.getLoadingPercent()))
 							.referralYn(options.getReferralYn()) 
