@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -25,6 +25,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,6 +81,14 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
+			if (StringUtils.isBlank(req.getQuestionCategory())) {
+				errorList.add(new Error("02", "QuestionCategory", "Please Select Question Category"));
+			}
+			
+			if (StringUtils.isBlank(req.getUwQuestionDesc())) {
+				errorList.add(new Error("02", "QuestionCategory Desc", "Please Select Question Category Desc"));
+			}
+			
 		
 			if (StringUtils.isBlank(req.getUwQuestionDesc())) {
 				errorList.add(new Error("02", "UwQuestionDesc", "Please Select UwQuestionDesc"));
@@ -213,7 +222,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 						
 							if(ops.getDependentYn().equalsIgnoreCase("Y")) {
 							
-								if (StringUtils.isBlank(ops.getDependentUnderwriterId())) {
+								if (CollectionUtils.isEmpty(ops.getDependentUnderwriterId())) {
 									errorList.add(new Error("07", "Dependant Question", "Please Select Dependant Question in Row "+ row));
 								}
 								
@@ -421,8 +430,21 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 					optionsRepo.deleteAll(optionsfilter);
 				}
 				
+				String listAsString = "";
 				List<UwQuestionsOptionsMaster> opsList = new ArrayList<UwQuestionsOptionsMaster>();
 				for(OptionsReq options : req.getOptionsReq()) {
+					
+					if(!CollectionUtils.isEmpty(options.getDependentUnderwriterId())){
+//						listAsString = options.getDependentUnderwriterId().stream()
+//					                .collect(Collectors.joining(" "));
+						
+						listAsString =  String.join(",", options.getDependentUnderwriterId()); ;
+						listAsString = listAsString.replace("[", "").replace("]", "");
+						
+					}
+					
+				
+					
 					UwQuestionsOptionsMaster ops =  UwQuestionsOptionsMaster.builder()
 							.amendId(amendId)
 							.branchCode(req.getBranchCode())
@@ -436,7 +458,11 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 							.uwQuesOptionDesc(options.getUwQuesOptionDesc())  //DisplayName (i.e, Options)
 							.uwQuesOptionId(StringUtils.isBlank(options.getUwQuesOptionId())?null:Integer.valueOf(options.getUwQuesOptionId())) //value
 							.dependentYn(options.getDependentYn())
-							.dependentUnderwriterId(StringUtils.isBlank(options.getDependentUnderwriterId())?null:options.getDependentUnderwriterId()) //dropdown 
+
+					//		.dependentUnderwriterId(StringUtils.isBlank(options.getDependentUnderwriterId())?null:options.getDependentUnderwriterId()) //dropdown 
+
+							.dependentUnderwriterId(CollectionUtils.isEmpty(options.getDependentUnderwriterId())?null:listAsString) //dropdown 
+
 							.dependentUwAction(options.getDependentUwAction()==null?"":options.getDependentUwAction())
 							.loadingPercent(StringUtils.isBlank(options.getLoadingPercent())?null:new BigDecimal(options.getLoadingPercent()))
 							.referralYn(options.getReferralYn()) 
@@ -536,10 +562,11 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("uwQuestionId"), b.get("uwQuestionId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("questionCategory"),req.getQuestionCategory());
 
-			amendId.where(a1, a2,a3,a4);
+			amendId.where(a1, a2,a3,a4,a5);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -553,8 +580,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n7 = cb.equal(b.get("questionCategory"), req.getQuestionCategory());
 			
-			query.where(n1,n2,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n5,n6,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
@@ -620,8 +648,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
 			Predicate a4 = cb.equal(b.get("branchCode"),ocpm1.get("branchCode"));
 			Predicate a5 = cb.equal(b.get("productId"),ocpm1.get("productId"));
+			Predicate a11 = cb.equal(b.get("questionCategory"),ocpm1.get("questionCategory"));
 
-			effectiveDate.where(a1,a2,a3,a4,a5);
+			effectiveDate.where(a1,a2,a3,a4,a5,a11);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<UWQuestionsMaster> ocpm2 = effectiveDate2.from(UWQuestionsMaster.class);
@@ -631,7 +660,8 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate a8 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
 			Predicate a9 = cb.equal(b.get("branchCode"),ocpm2.get("branchCode"));
 			Predicate a10 = cb.equal(b.get("productId"),ocpm2.get("productId"));
-			effectiveDate2.where(a6,a7,a8,a9,a10);
+			Predicate a12 = cb.equal(b.get("questionCategory"),ocpm2.get("questionCategory"));
+			effectiveDate2.where(a6,a7,a8,a9,a10,a12);
 			
 			//amendId
 
@@ -651,8 +681,10 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate n8 = cb.equal(b.get("status"), "R");
 			Predicate n9 = cb.or(n4,n8);
 			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
-				
-			query.where(n1,n2,n9,n6,n7,n10).orderBy(orderList);
+			Predicate n11 = cb.equal(b.get("questionCategory"), req.getProductId().equalsIgnoreCase("45")?req.getQuestionCategory()
+					: "99999"); //anticipated endowmwnt
+			
+			query.where(n1,n2,n9,n6,n7,n10,n11).orderBy(orderList);
 			
 			
 			// Get Result
@@ -698,7 +730,19 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 					List<OptionsRes> optionsRes = new ArrayList<OptionsRes>();
 					for(UwQuestionsOptionsMaster ops : optionsfilter ) {
 						OptionsRes options = new OptionsRes();
-						options = mapper.map(ops, OptionsRes.class);
+						//options = mapper.map(ops, OptionsRes.class);
+						
+						options.setDependentUwAction(ops.getDependentUwAction()==null?"":ops.getDependentUwAction());
+						options.setDependentYn(ops.getDependentYn()==null?"":ops.getDependentYn());
+						options.setLoadingPercent(ops.getLoadingPercent()==null?"0":ops.getLoadingPercent().toString());
+						options.setReferralYn(ops.getReferralYn()==null?"":ops.getReferralYn());
+						options.setStatus(ops.getStatus()==null?"":ops.getStatus());
+						options.setUwQuesOptionDesc(ops.getUwQuesOptionDesc()==null?"":ops.getUwQuesOptionDesc());
+						options.setUwQuesOptionId(ops.getUwQuesOptionId()==null?"":ops.getUwQuesOptionId().toString());
+						
+						List<String> dependantIds = new ArrayList<String>(ops.getDependentUnderwriterId()==null?Collections.emptyList() : Arrays.asList(ops.getDependentUnderwriterId().split(",")));
+						options.setDependentUnderwriterId(dependantIds);
+						
 						optionsRes.add(options);
 					}
 					res.setOptionsRes(optionsRes);
@@ -818,7 +862,19 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 					List<OptionsRes> optionsRes = new ArrayList<OptionsRes>();
 					for(UwQuestionsOptionsMaster ops : optionsfilter ) {
 						OptionsRes options = new OptionsRes();
-						options = mapper.map(ops, OptionsRes.class);
+						//options = mapper.map(ops, OptionsRes.class);
+						
+						options.setDependentUwAction(ops.getDependentUwAction()==null?"":ops.getDependentUwAction());
+						options.setDependentYn(ops.getDependentYn()==null?"":ops.getDependentYn());
+						options.setLoadingPercent(ops.getLoadingPercent()==null?"0":ops.getLoadingPercent().toString());
+						options.setReferralYn(ops.getReferralYn()==null?"":ops.getReferralYn());
+						options.setStatus(ops.getStatus()==null?"":ops.getStatus());
+						options.setUwQuesOptionDesc(ops.getUwQuesOptionDesc()==null?"":ops.getUwQuesOptionDesc());
+						options.setUwQuesOptionId(ops.getUwQuesOptionId()==null?"":ops.getUwQuesOptionId().toString());
+						
+						List<String> dependantIds = new ArrayList<String>(ops.getDependentUnderwriterId()==null?Collections.emptyList() : Arrays.asList(ops.getDependentUnderwriterId().split(",")));
+						options.setDependentUnderwriterId(dependantIds);
+						
 						optionsRes.add(options);
 					}
 					res.setOptionsRes(optionsRes);
