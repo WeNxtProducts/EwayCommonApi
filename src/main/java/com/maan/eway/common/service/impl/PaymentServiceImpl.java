@@ -1617,19 +1617,20 @@ public class PaymentServiceImpl implements PaymentService {
 				if (hp.getInceptionDate() == null) {
 					error.add(new Error("13", "PolicyStartDate", "Please Enter PolicyStartDate"));
 				} else if( ( hp.getEndtTypeId()==null || hp.getEndtTypeId().equalsIgnoreCase("0"))) {
-						int before = getBackDays(hp.getCompanyId() , String.valueOf( hp.getProductId()) , req.getCreatedBy()) ;
-						int days = before ==0 ? -1 : - before ;
-						long MILLS_IN_A_DAY = 1000*60*60*24;
-						long backDays = MILLS_IN_A_DAY * days ;
-						Date today = new Date() ;
-						Date resticDate = new Date(today.getTime() + backDays);
-						long days90 = MILLS_IN_A_DAY * 90 ;
-						Date after90 = new Date(today.getTime() + days90);
-						if( hp.getInceptionDate().before(resticDate) ) {
+//						int before = getBackDays(hp.getCompanyId() , String.valueOf( hp.getProductId()) , req.getCreatedBy()) ;
+//						int days = before ==0 ? -1 : - before ;
+//						long MILLS_IN_A_DAY = 1000*60*60*24;
+//						long backDays = MILLS_IN_A_DAY * days ;
+//						Date today = new Date() ;
+//						Date resticDate = new Date(today.getTime() + backDays);
+//						long days90 = MILLS_IN_A_DAY * 90 ;
+//						Date after90 = new Date(today.getTime() + days90);
+						if( hp.getInceptionDate().before(new Date()) ) {
 							error.add(new Error("14", "PolicyStartDate", "Policy Start Date Back Days Not Allowed "));
-						} else if( hp.getInceptionDate().after(after90) ) {
-							error.add(new Error("14", "PolicyStartDate", "PolicyStartDate  even after 90 days Not Allowed"));
-						}
+						} 
+//						else if( hp.getInceptionDate().after(after90) ) {
+//							error.add(new Error("14", "PolicyStartDate", "PolicyStartDate  even after 90 days Not Allowed"));
+//						}
 					
 				}
 				
