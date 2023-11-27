@@ -2085,17 +2085,26 @@ public class PaymentServiceImpl implements PaymentService {
 				if (depores != null && "SUCCESS".equalsIgnoreCase(depores.getMessage())) {
 					if ("Y".equalsIgnoreCase(depores.getCommonResponse().toString())) {
 						paymentStatus = "ACCEPTED";
-					} else {
-						paymentStatus = "PENDING";
+						paymentDetail.setPaymentStatus(paymentStatus);
+						paymentDetail.setCbcNo(cbcData.get(0).getCbcNo());
 					}
+//					else {
+//						paymentStatus = "PENDING";
+//						paymentDetail.setPaymentStatus(paymentStatus);
+//					
+//					}
 
-				} else {
-					paymentStatus = "FAILED";
-				}
+				} 
+//				else {
+//					paymentStatus = "FAILED";
+//					paymentDetail.setPaymentStatus(paymentStatus);
+//				
+//				}
 			}
 
 		}
 
+			
 			paymentdetailrepo.saveAndFlush(paymentDetail);
 		//	if(req.getPaymentType().equalsIgnoreCase("4")) 
 				 
@@ -2141,6 +2150,17 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentinforepo.saveAndFlush(paymentInfo);
 			
 			if (req.getEmiYn().equalsIgnoreCase("Y" )) {
+				List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(req.getQuoteNo(), "Paid");
+				if(emiDetails!=null) {
+					installment=emiDetails.get(0).getInstalment();
+				
+					paymentDetail.setInstallmentMonth(emiDetails.get(0).getInstalment());
+				}
+				paymentdetailrepo.saveAndFlush(paymentDetail);
+			}
+			
+			
+			if (req.getEmiYn().equalsIgnoreCase("Y" )) {
 			//	EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,paymentInfo.getInstallmentMonth() , paymentInfo.getInstallmentPeriod());
 				List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(req.getQuoteNo(), "Paid");
 
@@ -2155,7 +2175,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 			data.setPaymentMode(req.getPaymentType());
 			data.setPaymentType(paymentDetail.getPaymentTypedesc());
-			data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
+			data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("Y") ? paymentInfo.getPaymentStatus() :"Pending");
 			data.setEffectiveDate(data.getInceptionDate());
 			data.setPolicyCovertedDate(new Date());			
 			homerepo.saveAndFlush(data);
@@ -2335,7 +2355,8 @@ public class PaymentServiceImpl implements PaymentService {
 			data.setVatCommission(commissionVat);
 			data.setPaymentMode(req.getPaymentType());
 			data.setPaymentType(paymentDetail.getPaymentTypedesc());
-			data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
+			//data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
+			data.setPaymentStatus(paymentInfo.getPaymentStatus());
 			data.setPolicyNo(policyNo);
 			
 			data.setStatus(StringUtils.isNotBlank(data.getEndtTypeId()) && "842".equalsIgnoreCase(data.getEndtTypeId()) ? "D" : "P");
