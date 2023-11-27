@@ -41,6 +41,7 @@ import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -49,9 +50,11 @@ import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.req.ViewQuoteDetailsReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.DocumentDetails;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
+import com.maan.eway.common.res.ViewQuoteDetailsRes;
 import com.maan.eway.common.service.BuildingSearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
@@ -931,5 +934,52 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			}
 			return reslist;
 		}
+
+	@Override
+	public ViewQuoteDetailsRes viewQuoteBuilding(ViewQuoteDetailsReq req) {
+
+		ViewQuoteDetailsRes res = new ViewQuoteDetailsRes();
+		try {
+		
+			List<EserviceBuildingDetails> motor = repo.findByRequestReferenceNo(req.getRequestReferenceNo());
+
+				if(motor.size()>0) {
+					EserviceBuildingDetails mot = motor.get(0);
+			//		res.setAdminReferralStatus(null);		
+					res.setAdminRemarks(mot.getAdminRemarks()==null?"":mot.getAdminRemarks());
+					res.setApplicationid(mot.getApplicationId()==null?"":mot.getApplicationId());
+					res.setBranchCode(mot.getBranchCode()==null?"":mot.getBranchCode());
+			//		res.setCommission(mot.getcomm);
+					res.setCommissionPercentage(mot.getCommissionPercentage()==null?"":mot.getCommissionPercentage().toString());
+				//	res.setCreditNo(mot.getcre);
+					res.setCurrency(mot.getCurrency()==null?"":mot.getCurrency());
+					res.setCustomerCode(mot.getCustomerCode()==null?"":mot.getCustomerCode());
+					res.setCustomerName(mot.getCustomerName()==null?"":mot.getCustomerName());
+				//	res.setDebitNoteNo(mot.getde);
+					res.setEndtCount(mot.getEndtCount()==null?"":mot.getEndtCount().toString());
+					res.setEndtPremium(mot.getEndtPremium()==null?"":mot.getEndtPremium().toString());
+					res.setEndtTypeDesc(mot.getEndorsementTypeDesc()==null?"":mot.getEndorsementTypeDesc().toString());
+					res.setEndtTypeId(mot.getEndorsementType()==null?"": mot.getEndorsementType().toString());
+					res.setExchangeRate(mot.getExchangeRate()==null?"":mot.getExchangeRate().toString() );
+					res.setExpiryDate(mot.getPolicyEndDate()==null?null:mot.getPolicyEndDate() );
+					res.setInceptionDate(mot.getPolicyStartDate()==null?null:mot.getPolicyStartDate());
+				//	res.setIntegrationStatus(mot.getint);
+					res.setLoginid(mot.getLoginId()==null?"":mot.getLoginId());
+					res.setOverallPremiumFc(mot.getOverallPremiumFc()==null?"":mot.getOverallPremiumFc().toString() );
+					res.setOverallPremiumLc(mot.getOverallPremiumLc()==null?"": mot.getOverallPremiumLc().toString());
+			//		res.setPolicyCovertedDate(mot.getdate);
+					res.setPolicyPeriod(mot.getPolicyPeriord()==null?"":mot.getPolicyPeriord().toString());
+				//	res.setQuoteCreatedDate(mot.getdate);
+					res.setReferralDescription(mot.getReferalRemarks()==null?"":mot.getReferalRemarks());
+					res.setSourcetype(mot.getSourceType()==null?"":mot.getSourceType().toString());
+					res.setVatCommission(mot.getVatCommission()==null?"":mot.getVatCommission().toString());				
+				}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			}
+		return res;
+	
+	}
 	}
 		

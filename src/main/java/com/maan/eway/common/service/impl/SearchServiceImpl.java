@@ -28,21 +28,21 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.asn1.dvcs.Data;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.DocumentUniqueDetails;
-import com.maan.eway.bean.EmiTransactionDetails;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
@@ -56,6 +56,7 @@ import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.req.ViewQuoteDetailsReq;
 import com.maan.eway.common.res.AccessoriesRes;
 import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
@@ -65,7 +66,6 @@ import com.maan.eway.common.res.DocumentRes;
 import com.maan.eway.common.res.PaymentCashRes;
 import com.maan.eway.common.res.PaymentChequeRes;
 import com.maan.eway.common.res.PaymentCreditRes;
-import com.maan.eway.common.res.PaymentEmiRes;
 import com.maan.eway.common.res.PaymentOnlineRes;
 import com.maan.eway.common.res.PersonalAccidentRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
@@ -77,6 +77,7 @@ import com.maan.eway.common.res.SearchROPDetailsRes;
 import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
 import com.maan.eway.common.res.SearchROPVehicleRes;
 import com.maan.eway.common.res.SearchRes;
+import com.maan.eway.common.res.ViewQuoteDetailsRes;
 import com.maan.eway.common.service.BuildingSearchService;
 import com.maan.eway.common.service.CommonSearchService;
 import com.maan.eway.common.service.MotorSearchService;
@@ -89,6 +90,9 @@ import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
@@ -163,6 +167,16 @@ public class SearchServiceImpl implements SearchService {
 
 	@Autowired
 	ProductEmployeesDetailsRepository personalRepository;
+	
+	@Autowired
+	private	EserviceTravelDetailsRepository eTravelrepo;
+	
+	@Autowired
+	private	EserviceCommonDetailsRepository eCommRepo;
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository eBuildingRepo;
+	
 
 	@PersistenceContext
 	private EntityManager em;
@@ -1145,4 +1159,82 @@ public class SearchServiceImpl implements SearchService {
 	}
 	return totalList;
 }
+
+	@Override
+	public ViewQuoteDetailsRes viewQuoteDetails(ViewQuoteDetailsReq req) {
+		ViewQuoteDetailsRes res = new ViewQuoteDetailsRes();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		
+		try {
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId(), req.getProductId().toString());
+
+			
+			if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				
+				List<HomePositionMaster> homeData = homeRepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
+				if(homeData.size()>0) {
+					HomePositionMaster home = homeData.get(0);
+					mapper.map(home, res);
+					String customerId=homeData.get(0).getCustomerId();
+					
+					if (product.getMotorYn().equalsIgnoreCase("M")) { 	
+						
+						List<EserviceMotorDetails> motor = repo.findByCustomerId(customerId);
+						if (motor.size() > 0) {
+							res.setLoginid(motor.get(0).getLoginId());
+							res.setApplicationid(motor.get(0).getApplicationId());
+							res.setSourcetype(motor.get(0).getSourceType());
+						}
+						
+					} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
+					
+						List<EserviceTravelDetails> motor = eTravelrepo.findByCustomerId(customerId);
+						if (motor.size() > 0) {
+							res.setLoginid(motor.get(0).getLoginId());
+							res.setApplicationid(motor.get(0).getApplicationId());
+							res.setSourcetype(motor.get(0).getSourceType());
+						}
+					
+					} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+
+						List<EserviceBuildingDetails> motor = eBuildingRepo.findByCustomerId(customerId);
+						if (motor.size() > 0) {
+							res.setLoginid(motor.get(0).getLoginId());
+							res.setApplicationid(motor.get(0).getApplicationId());
+							res.setSourcetype(motor.get(0).getSourceType());
+						}
+						
+					} else {
+
+						List<EserviceCommonDetails> motor = eCommRepo.findByCustomerId(customerId);
+						if (motor.size() > 0) {
+							res.setLoginid(motor.get(0).getLoginId());
+							res.setApplicationid(motor.get(0).getApplicationId());
+							res.setSourcetype(motor.get(0).getSourceType());
+						}
+						
+					}
+					
+				}
+			}else if(StringUtils.isNotBlank(req.getRequestReferenceNo())){ 	//ReqreferenceNo
+				
+				if (product.getMotorYn().equalsIgnoreCase("M")) { 	//get from raw tables
+					res = motService.viewQuoteMotor(req);
+				} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
+					res = travelSearch.viewQuoteTravel(req);
+				} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+					res = buiService.viewQuoteBuilding(req);
+				} else {
+					res = commonSearch.viewQuoteCommon(req);
+				}
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 }

@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.req.ViewQuoteDetailsReq;
 import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DocumentDetailsRes;
-import com.maan.eway.common.res.DocumentRes;
 import com.maan.eway.common.res.PersonalAccidentRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchPaymentInfoRes;
@@ -28,6 +28,7 @@ import com.maan.eway.common.res.SearchPremiumDetailsRes;
 import com.maan.eway.common.res.SearchROPDetailsRes;
 import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
 import com.maan.eway.common.res.SearchRes;
+import com.maan.eway.common.res.ViewQuoteDetailsRes;
 import com.maan.eway.common.service.SearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.DropDownRes;
@@ -182,7 +183,7 @@ public ResponseEntity<CommonRes> adminROPSearch(@RequestBody SearchReq req) {
 
 @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/adminviewropvehicledetails")
-public ResponseEntity<CommonRes> adminROPVehicleSearch(@RequestBody SearchReq req) {
+public ResponseEntity<CommonRes> adminROPVehicleSearch(@RequestBody SearchReq req) { 	//vehicle info tab in viewquotedetails (motor,short term policy only)
 	CommonRes data = new CommonRes();
 	SearchROPVehicleDetailsRes res = entityService.adminROPVehicleSearch(req);
 	data.setCommonResponse(res);
@@ -281,5 +282,22 @@ public ResponseEntity<CommonRes> getAccessoriesSuminsuredByQuoteNo(@RequestBody 
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
+
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/viewquotedetails")
+	public ResponseEntity<CommonRes> viewQuoteDetails(@RequestBody ViewQuoteDetailsReq req) { 	//quote info tab in viewquotedetails (all products)
+		CommonRes data = new CommonRes();
+		ViewQuoteDetailsRes res = entityService.viewQuoteDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }
