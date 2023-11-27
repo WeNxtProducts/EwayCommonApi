@@ -183,6 +183,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			if (list.size() > 0 && StringUtils.isNotBlank(req.getQuoteNo())) {
 				repo.deleteAll(list);
 			}
+			res.setSuccessId(req.getQuoteNo());
+			res.setResponse("Saved Successful");
 		}else {
 		
 			String quoteNo = req.getQuoteNo();
@@ -286,6 +288,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			res.setSuccessId(quoteNo);
 			res.setResponse("Saved Successful");
 		}
+	
 			//Update Home Position Master
 			if("Y".equalsIgnoreCase(req.getStatus())) {
 				HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
