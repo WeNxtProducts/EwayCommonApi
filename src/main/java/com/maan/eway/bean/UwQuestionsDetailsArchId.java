@@ -29,7 +29,7 @@ public class UwQuestionsDetailsArchId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private String     archId ;
+    private Integer     archId ;
     
     private String     companyId ;
     
@@ -41,5 +41,5 @@ public class UwQuestionsDetailsArchId implements Serializable {
     
     private Integer    uwQuestionId ;
     
-     
+	private String questionCategory;
 }

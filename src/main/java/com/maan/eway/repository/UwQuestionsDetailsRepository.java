@@ -19,5 +19,10 @@ public interface UwQuestionsDetailsRepository  extends JpaRepository<UwQuestions
 	List<UwQuestionsDetails> findByRequestReferenceNoAndVehicleId(String refNo, Integer vehId);
 
 
+	List<UwQuestionsDetails> findByCompanyIdAndProductIdAndRequestReferenceNoAndBranchCodeAndQuestionCategoryAndVehicleIdNotAndIdTypeAndIdNumber(
+			String companyId, Integer valueOf, String requestReferenceNo, String branchCode, String questionCategory,
+			Integer valueOf2, String idType, String idNumber);
+
+
 
 }

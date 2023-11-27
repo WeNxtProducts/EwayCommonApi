@@ -67,5 +67,10 @@ public class UwQuestionMasterSaveReq implements Serializable {
 	@JsonProperty("Options")
 	private List<OptionsReq> optionsReq;	
 
+	@JsonProperty("QuestionCategory")
+	private String questionCategory;
 	
+
+	@JsonProperty("questionCategoryDesc")
+	private String questionCategoryDesc;
 }

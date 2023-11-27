@@ -40,6 +40,8 @@ public class UWQuestionsMasterId implements Serializable {
     private Integer  uwQuestionId;
     
     private String branchCode;
+    
+	private String questionCategory;
 	
     
     

@@ -13,16 +13,26 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-import java.util.Date;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -70,6 +80,9 @@ private static final long serialVersionUID = 1L;
     @Id
 	@Column(name="BRANCH_CODE",length=20, nullable=false)
 	private String branchCode;
+    
+    
+
 	
     
     @Temporal(TemporalType.TIMESTAMP)
@@ -121,7 +134,12 @@ private static final long serialVersionUID = 1L;
 	@Column(name="UPDATED_DATE")
 	private Date updatedDate;
 	
-	
+    @Id
+	@Column(name="QUESTION_CATEGORY", nullable=false)
+	private String questionCategory;
+    
+    @Column(name="QUESTION_CATEGORY_DESC")
+	private String questionCategoryDesc;
 }
 
 

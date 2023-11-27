@@ -49,6 +49,9 @@ public class UwQuestionsDetailsId implements Serializable {
     private Integer    uwQuestionId ;
     
     private String     branchCode ;
+    
+    private String questionCategory;
+    
 
      
 }

@@ -54,7 +54,7 @@ public class UwQuestionsOptionsMaster implements Serializable {
 	
 	    @Id
 	    @Column(name="DEPENDENT_UW_QUESTION_ID", nullable=false)
-	    private Integer  dependentUwQuestionId;  //2
+	    private Integer  dependentUwQuestionId;  //2  QuestionId
 	    
 	    @Id
 	    @Column(name="UW_QUES_OPTION_ID", nullable=false)
@@ -79,7 +79,7 @@ public class UwQuestionsOptionsMaster implements Serializable {
 	    private String     dependentYn ; // Y (add in 2)
 	    
 	    @Column(name="DEPENDENT_UNDERWRITER_ID")
-	    private Integer  dependentUnderwriterId; // 3
+	    private String  dependentUnderwriterId; // 3
 
 	    @Column(name="DEPENDENT_UW_ACTION")
 	    private String  dependentUwAction;  // show

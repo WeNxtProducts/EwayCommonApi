@@ -69,6 +69,15 @@ public class UwQuestionMasterRes implements Serializable {
 //	@JsonProperty("RegulatoryCode")
 //	private String regulatoryCode;
 //	
+	
+	@JsonProperty("QuestionCategory")
+	private String questionCategory;
+	
+
+	@JsonProperty("questionCategoryDesc")
+	private String questionCategoryDesc;
+	
+	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
