@@ -220,7 +220,13 @@ private static final long serialVersionUID = 1L;
     private BigDecimal     uwLoading;
     
     @Column(name="INSURANCE_CLASS", length=10)
-    private String     insuranceClass ;    
+    private String     insuranceClass ;
+    
+    @Column(name = "PRODUCT_TURNOVER_SI")
+   	private BigDecimal productTurnoverSi;
+       
+    @Column(name = "PRODUCT_TURNOVER_SI_LC")
+   	private BigDecimal productTurnoverSiLc;
 }
 
 

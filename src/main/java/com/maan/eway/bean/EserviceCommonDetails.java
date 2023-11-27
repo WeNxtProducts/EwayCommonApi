@@ -406,6 +406,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="FINALIZE_YN")
     private String finalizeYn;
     
+    @Column(name = "PRODUCT_TURNOVER_SI")
+   	private BigDecimal productTurnoverSi;
+       
+    @Column(name = "PRODUCT_TURNOVER_SI_LC")
+   	private BigDecimal productTurnoverSiLc;
 }
 
 
