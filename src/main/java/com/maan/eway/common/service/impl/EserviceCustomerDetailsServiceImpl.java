@@ -1617,6 +1617,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Predicate n2 = cb.equal(h.get("companyId"), req.getComapanyId());
 			Predicate n3 = cb.equal(c.get("customerReferenceNo"), p.get("customerReferenceNo"));
 		//	Predicate n3 = cb.equal(h.get("productId"), req.getProductId());
+			Predicate n7 = cb.equal(c.get("companyId"), req.getComapanyId());
 			Predicate n4 = null ;
 			Predicate n5 = null ;
 			
@@ -1630,7 +1631,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				n5 = cb.equal(  h.get("applicationId"), req.getCreatedBy());
 			}
 
-			query.where(n1, n2,n3, n4, n5).orderBy(orderList);
+			query.where(n1, n2,n3, n4, n5,n7).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
@@ -1801,6 +1802,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Predicate n2 = cb.equal(h.get("companyId"), req.getComapanyId());
 			Predicate n3 = cb.equal(c.get("customerReferenceNo"), p.get("customerReferenceNo"));
 			Predicate n6 = cb.equal(c.get("status"), "Y");
+			Predicate n7 = cb.equal(c.get("companyId"), req.getComapanyId());
 		//	Predicate n3 = cb.equal(h.get("productId"), req.getProductId());
 			Predicate n4 = null ;
 			Predicate n5 = null ;
@@ -1815,7 +1817,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				n5 = cb.equal(  h.get("applicationId"), req.getCreatedBy());
 			}
 
-			query.where(n1, n2,n3, n4, n5,n6).orderBy(orderList);
+			query.where(n1, n2,n3, n4, n5,n6,n7).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
