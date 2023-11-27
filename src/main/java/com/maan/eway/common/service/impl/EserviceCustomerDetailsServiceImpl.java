@@ -347,78 +347,138 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				
 				// Status Validation
-				if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId())) {
-					//
-					if(req.getPolicyHolderType().equalsIgnoreCase("2")) {
-					if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
-						errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 within 20 Characters"));
-					} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo2().matches("\\d+")) {
-						errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 only in numbers"));
-					}
-					}
-					
-				} else {
-					if (StringUtils.isBlank(req.getTitle()))  {
-						errorList.add(new Error("04", "Title", "Please Select Title"));
-					}
-					if (StringUtils.isBlank(req.getNationality())) {
-						errorList.add(new Error("12", "Country", "Please select Country"));
-					}
-					if (StringUtils.isBlank(req.getPreferredNotification())) {
-						errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
-					}
-					
-					if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
-
-						if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
-							if (StringUtils.isBlank(req.getBusinessType())) {
-								errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
-							}
-						}
-					}
-					if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
-						if (StringUtils.isBlank(req.getVrTinNo())) {
-							errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
-						} else if (req.getVrTinNo().length() > 20) {
-							errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
-						}
-						
-					}
-					if (StringUtils.isBlank(req.getRegionCode())) {
-						errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode"));
-					} else if (req.getRegionCode().length() > 20) {
-						errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
-					}
-					
-					if (StringUtils.isBlank(req.getIsTaxExempted())) {
-						errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
-
-					}else if (req.getIsTaxExempted().equals("Y")) {
-						if (StringUtils.isBlank(req.getTaxExemptedId())) {
-							errorList.add(new Error("32", "TaxExemptedId", "Please Enter TaxExemptedId"));
-						} else if (req.getTaxExemptedId().length() > 20) {
-							errorList.add(
-									new Error("33", "TaxExemptedId", "Please Enter TaxExemptedId within 20 Characters"));
-						}
-
-					}
-					if (StringUtils.isBlank(req.getStatus())) {
-						errorList.add(new Error("34", "Status", "Please Enter Status"));
-					} else if (req.getStatus().length() > 1) {
-						errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
-					} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())
-							|| "P".equals(req.getStatus()))) {
-						errorList.add(new Error("34", "Status", "Plese Enter Status"));
-					}
-					if (StringUtils.isBlank(req.getStateCode())) {
-						errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
-					}
-					
-					if (StringUtils.isBlank(req.getMobileCode1())) {
-						errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
-					}
+//				if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId())) {
+//					//
+//					if(req.getPolicyHolderType().equalsIgnoreCase("2")) {
+//					if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
+//						errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 within 20 Characters"));
+//					} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo2().matches("\\d+")) {
+//						errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 only in numbers"));
+//					}
+//					}
+//					
+//				} else {
+//					if (StringUtils.isBlank(req.getTitle()))  {
+//						errorList.add(new Error("04", "Title", "Please Select Title"));
+//					}
+//					if (StringUtils.isBlank(req.getNationality())) {
+//						errorList.add(new Error("12", "Country", "Please select Country"));
+//					}
+//					if (StringUtils.isBlank(req.getPreferredNotification())) {
+//						errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
+//					}
+//					
+//					if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+//
+//						if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+//							if (StringUtils.isBlank(req.getBusinessType())) {
+//								errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+//							}
+//						}
+//					}
+//					if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
+//						if (StringUtils.isBlank(req.getVrTinNo())) {
+//							errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
+//						} else if (req.getVrTinNo().length() > 20) {
+//							errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
+//						}
+//						
+//					}
+//					if (StringUtils.isBlank(req.getRegionCode())) {
+//						errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode"));
+//					} else if (req.getRegionCode().length() > 20) {
+//						errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
+//					}
+//					
+//					if (StringUtils.isBlank(req.getIsTaxExempted())) {
+//						errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
+//
+//					}else if (req.getIsTaxExempted().equals("Y")) {
+//						if (StringUtils.isBlank(req.getTaxExemptedId())) {
+//							errorList.add(new Error("32", "TaxExemptedId", "Please Enter TaxExemptedId"));
+//						} else if (req.getTaxExemptedId().length() > 20) {
+//							errorList.add(
+//									new Error("33", "TaxExemptedId", "Please Enter TaxExemptedId within 20 Characters"));
+//						}
+//
+//					}
+//					if (StringUtils.isBlank(req.getStatus())) {
+//						errorList.add(new Error("34", "Status", "Please Enter Status"));
+//					} else if (req.getStatus().length() > 1) {
+//						errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
+//					} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())
+//							|| "P".equals(req.getStatus()))) {
+//						errorList.add(new Error("34", "Status", "Plese Enter Status"));
+//					}
+//					if (StringUtils.isBlank(req.getStateCode())) {
+//						errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
+//					}
+//					
+//					if (StringUtils.isBlank(req.getMobileCode1())) {
+//						errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
+//					}
+//				}
+				
+				
+				if (StringUtils.isBlank(req.getTitle()))  {
+					errorList.add(new Error("04", "Title", "Please Select Title"));
+				}
+				if (StringUtils.isBlank(req.getNationality())) {
+					errorList.add(new Error("12", "Country", "Please select Country"));
+				}
+				if (StringUtils.isBlank(req.getPreferredNotification())) {
+					errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
 				}
 				
+				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+
+					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+						if (StringUtils.isBlank(req.getBusinessType())) {
+							errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+						}
+					}
+				}
+				if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
+					if (StringUtils.isBlank(req.getVrTinNo())) {
+						errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
+					} else if (req.getVrTinNo().length() > 20) {
+						errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
+					}
+					
+				}
+				if (StringUtils.isBlank(req.getRegionCode())) {
+					errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode"));
+				} else if (req.getRegionCode().length() > 20) {
+					errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
+				}
+				
+				if (StringUtils.isBlank(req.getIsTaxExempted())) {
+					errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
+
+				}else if (req.getIsTaxExempted().equals("Y")) {
+					if (StringUtils.isBlank(req.getTaxExemptedId())) {
+						errorList.add(new Error("32", "TaxExemptedId", "Please Enter TaxExemptedId"));
+					} else if (req.getTaxExemptedId().length() > 20) {
+						errorList.add(
+								new Error("33", "TaxExemptedId", "Please Enter TaxExemptedId within 20 Characters"));
+					}
+
+				}
+				if (StringUtils.isBlank(req.getStatus())) {
+					errorList.add(new Error("34", "Status", "Please Enter Status"));
+				} else if (req.getStatus().length() > 1) {
+					errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
+				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())
+						|| "P".equals(req.getStatus()))) {
+					errorList.add(new Error("34", "Status", "Plese Enter Status"));
+				}
+				if (StringUtils.isBlank(req.getStateCode())) {
+					errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
+				}
+				
+				if (StringUtils.isBlank(req.getMobileCode1())) {
+					errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
+				}
 				
 				if (StringUtils.isBlank(req.getCreatedBy())) {
 					errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy "));
@@ -852,33 +912,43 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			}
 			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
 			
-			if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId()) ) {
-				saveData.setTitleDesc(null);
-				saveData.setPreferredNotification("Sms");
-				saveData.setIsTaxExempted("N");
-				saveData.setRegionCode(null);
-				saveData.setStatus("Y");
-				saveData.setBusinessType(null);
-				saveData.setVrTinNo(null);
-				saveData.setVrnGst(null);
-			    String mobileCode2 = getListItem1(req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE");
-		        saveData.setMobileCode1(mobileCode2);
-				saveData.setMobileCode2(mobileCode2);
-		     	String country = getByCountry(req.getCompanyId());
-				saveData.setNationality(country);
-			 	
-			}else {
-				saveData.setTitleDesc(title);
-				saveData.setPreferredNotification(req.getPreferredNotification());
-				saveData.setIsTaxExempted(req.getIsTaxExempted());
-				saveData.setRegionCode(req.getRegionCode());
-				saveData.setStatus(req.getStatus());
-				saveData.setBusinessType(req.getBusinessType());
-				saveData.setVrTinNo(req.getVrTinNo());
-				saveData.setVrnGst(req.getVrTinNo());
-				saveData.setMobileCode1(req.getMobileCode1());
-				saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
-			}
+//			if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId()) ) {
+//				saveData.setTitleDesc(null);
+//				saveData.setPreferredNotification("Sms");
+//				saveData.setIsTaxExempted("N");
+//				saveData.setRegionCode(null);
+//				saveData.setStatus("Y");
+//				saveData.setBusinessType(null);
+//				saveData.setVrTinNo(null);
+//				saveData.setVrnGst(null);
+//			    String mobileCode2 = getListItem1(req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE");
+//		        saveData.setMobileCode1(mobileCode2);
+//				saveData.setMobileCode2(mobileCode2);
+//		     	String country = getByCountry(req.getCompanyId());
+//				saveData.setNationality(country);
+//			 	
+//			}else {
+//				saveData.setTitleDesc(title);
+//				saveData.setPreferredNotification(req.getPreferredNotification());
+//				saveData.setIsTaxExempted(req.getIsTaxExempted());
+//				saveData.setRegionCode(req.getRegionCode());
+//				saveData.setStatus(req.getStatus());
+//				saveData.setBusinessType(req.getBusinessType());
+//				saveData.setVrTinNo(req.getVrTinNo());
+//				saveData.setVrnGst(req.getVrTinNo());
+//				saveData.setMobileCode1(req.getMobileCode1());
+//				saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+//			}
+			saveData.setTitleDesc(title);
+			saveData.setPreferredNotification(req.getPreferredNotification());
+			saveData.setIsTaxExempted(req.getIsTaxExempted());
+			saveData.setRegionCode(req.getRegionCode());
+			saveData.setStatus(req.getStatus());
+			saveData.setBusinessType(req.getBusinessType());
+			saveData.setVrTinNo(req.getVrTinNo());
+			saveData.setVrnGst(req.getVrTinNo());
+			saveData.setMobileCode1(req.getMobileCode1());
+			saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 			saveData.setGenderDesc(gender);
 			saveData.setTitleDesc(title);
 			saveData.setLanguageDesc(language);
