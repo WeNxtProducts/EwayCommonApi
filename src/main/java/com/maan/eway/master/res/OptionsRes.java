@@ -1,5 +1,7 @@
 package com.maan.eway.master.res;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -23,7 +25,7 @@ public class OptionsRes {
     private String   dependentYn ;
     
 	@JsonProperty("DependentUnderwriterId")
-    private String   dependentUnderwriterId ; 
+    private List<String>   dependentUnderwriterId ; 
 	
 	@JsonProperty("DependentUwAction")
     private String   dependentUwAction ;
