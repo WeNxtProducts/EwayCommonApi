@@ -4537,7 +4537,16 @@ public class QuoteServiceImpl implements QuoteService {
 //					Date resticDate = new Date(today.getTime() + backDays);
 //					long days90 = MILLS_IN_A_DAY * 90;
 //					Date after90 = new Date(today.getTime() + days90);
-					if (req.getPolicyStartDate().before(new Date())) {
+					
+					Calendar cal = new GregorianCalendar();
+					Date today = new Date();
+					cal.setTime(today);
+					cal.add(Calendar.DAY_OF_MONTH, -1);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 50);
+					today = cal.getTime();
+					
+					if (req.getPolicyStartDate().before(today)) {
 						error.add(new Error("14", "PolicyStartDate", "Policy Start Date Back Days Not Allowed "));
 					}
 //					else if (req.getPolicyStartDate().after(after90)) {
