@@ -127,10 +127,10 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			// Warranty 
 			if (filterWarrantyList.size() > 0) {
 				for (TermsAndCondition data : filterWarrantyList) {
-						WarrantyRes warrantyres = new WarrantyRes(); ;
+						WarrantyRes warrantyres = new WarrantyRes();
 						warrantyres.setId(data.getId().toString());
-						warrantyres.setWarrateId(data.getSubId().toString());
-						warrantyres.setWarrateDesc(data.getSubIdDesc());
+						warrantyres.setSubId(data.getSubId().toString());
+						warrantyres.setSubIdDesc(data.getSubIdDesc());
 						warrantyres.setDocRefNo(data.getDocRefNo());
 						warrantyres.setDocumentId("16");
 						warrantyres.setTypeId("D");
@@ -147,8 +147,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						WarrantyRes warrantyres = new WarrantyRes();
 						warrantyres.setId("4");
 
-						warrantyres.setWarrateId(warranties.getWarrantyId().toString());
-						warrantyres.setWarrateDesc(warranties.getWarrantyDescription());
+						warrantyres.setSubId(warranties.getWarrantyId().toString());
+						warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
 						warrantyres.setDocRefNo(warranties.getDocRefNo());
 						warrantyres.setDocumentId("16");
 						warrantyres.setTypeId(warranties.getTypeId());
@@ -163,9 +163,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			if (filterClausesList.size() > 0) {
 				for (TermsAndCondition data : filterClausesList) {
 						ClausesRes clausesres = new ClausesRes();
-						clausesres.setId(data.getId().toString());;
-						clausesres.setClausesId(data.getSubId().toString());
-						clausesres.setClausesDesc(data.getSubIdDesc());
+						clausesres.setId(data.getId().toString());
+						clausesres.setSubId(data.getSubId().toString());
+						clausesres.setSubIdDesc(data.getSubIdDesc());
 						clausesres.setDocRefNo(data.getDocRefNo());
 						clausesres.setDocumentId("18");
 						clausesres.setTypeId("D");
@@ -180,8 +180,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					ClausesRes clausesres = new ClausesRes();
 					clausesres.setId("6");
 
-					clausesres.setClausesId(clauses.getClausesId().toString());
-					clausesres.setClausesDesc(clauses.getClausesDescription());
+					clausesres.setSubId(clauses.getClausesId().toString());
+					clausesres.setSubIdDesc(clauses.getClausesDescription());
 					clausesres.setDocRefNo(clauses.getDocRefNo());
 					clausesres.setDocumentId("18");
 					clausesres.setTypeId(clauses.getTypeId());
@@ -195,10 +195,10 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			if (filterExclusionList.size() > 0) {
 				for (TermsAndCondition data : filterExclusionList) {
 						ExclusionRes exclusionres = new ExclusionRes();
-						exclusionres.setId(data.getId().toString());;
+						exclusionres.setId(data.getId().toString());
 	
-						exclusionres.setExclusionId(data.getSubId().toString());
-						exclusionres.setExclusionDesc(data.getSubIdDesc());
+						exclusionres.setSubId(data.getSubId().toString());
+						exclusionres.setSubIdDesc(data.getSubIdDesc());
 						exclusionres.setDocRefNo(data.getDocRefNo());
 						exclusionres.setDocumentId("19");
 						exclusionres.setTypeId("D");
@@ -215,8 +215,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						ExclusionRes exclusionres = new ExclusionRes();
 						exclusionres.setId("7");
 
-						exclusionres.setExclusionId(exclusions.getExclusionId().toString());
-						exclusionres.setExclusionDesc(exclusions.getExclusionDescription());
+						exclusionres.setSubId(exclusions.getExclusionId().toString());
+						exclusionres.setSubIdDesc(exclusions.getExclusionDescription());
 						exclusionres.setDocRefNo(exclusions.getDocRefNo());
 						exclusionres.setDocumentId("19");
 						exclusionres.setTypeId(exclusions.getTypeId());
