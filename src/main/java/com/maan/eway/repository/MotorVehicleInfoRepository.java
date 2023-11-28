@@ -14,7 +14,6 @@ package com.maan.eway.repository;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import com.maan.eway.bean.MotorVehicleInfo;
 
@@ -37,7 +36,7 @@ public interface MotorVehicleInfoRepository  extends JpaRepository<MotorVehicleI
 
 
 
-	List<MotorVehicleInfo> findByResChassisNumberOrderByEntryDateDesc(String reqChassisNumber);
+	MotorVehicleInfo findByResChassisNumber(String reqChassisNumber);
 
 
 
