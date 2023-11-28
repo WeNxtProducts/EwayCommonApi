@@ -3089,12 +3089,12 @@ public class QuoteServiceImpl implements QuoteService {
 				res.setCurrencyId(pacc.getCurrency());
 				res.setRiskId(pacc.getRiskId().toString());
 	
-				Double sumInsured = paccDatas.stream().filter( o -> o.getStatus().equalsIgnoreCase("D") &&  o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
+				Double sumInsured = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&  o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
 				res.setSumInsured(sumInsured.toString());
 				
-				Double empliabiltiySi = paccDatas.stream().filter( o -> o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
-				Double fidEmpSi = paccDatas.stream().filter( o -> o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
-				Double liabiltiySi = paccDatas.stream().filter( o -> o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
+				Double empliabiltiySi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&  o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
+				Double fidEmpSi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&   o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
+				Double liabiltiySi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&   o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
 				
 				res.setEmpLiabilitySi(empliabiltiySi.toString());
 				res.setFidEmpSi(fidEmpSi.toString());
