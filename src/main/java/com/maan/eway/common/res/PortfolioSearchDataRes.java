@@ -90,6 +90,12 @@ public class PortfolioSearchDataRes {
 	@JsonProperty("InstallmentPeriod")
 	private String installmentPeriod;
 	
+	@JsonProperty("NoOfInstallment")
+	private String noOfInstallment;
+	
+	@JsonProperty("PaymentStatus")
+	private String     paymentStatus ;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate;

@@ -56,4 +56,8 @@ public interface DocumentTransactionDetailsRepository  extends JpaRepository<Doc
 	@Transactional
 	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
 			String originalPolicyNo);
+
+	List<DocumentTransactionDetails> findByQuoteNoAndInstallmentPeriodAndNoOfInstallment(String quoteNo,
+			String installmentPeriod, String noOfInstallment);
+
 }

@@ -136,4 +136,14 @@ public class ClientDocListRes {
 
     @JsonProperty("EndorsementTypeDesc") // EndorsementTypeDesc
     private String     endorsementTypeDesc ;
+    
+    
+	 @JsonProperty("EmiYn")
+	private String emiYn;
+
+	 @JsonProperty("InstallmentPeriod")
+	private String installmentPeriod;
+
+	 @JsonProperty("NoOfInstallment")
+	private String noOfInstallment;
 }

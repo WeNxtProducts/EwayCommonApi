@@ -17,6 +17,7 @@ import com.maan.eway.document.req.DocumentDeleteReq;
 import com.maan.eway.document.req.DocumentUploadReq;
 import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
+import com.maan.eway.document.req.GetEmiDocReq;
 import com.maan.eway.document.req.TermsDocUploadReq;
 import com.maan.eway.document.res.ClientDocListRes;
 import com.maan.eway.document.res.DocTypeRes;
@@ -59,5 +60,7 @@ public interface DocumentService {
 	CommonRes termsfileupload(TermsDocUploadReq req, MultipartFile file);
 
 	TermsDocRes getTermsFilePath(DocGetReq req);
+
+	DocumentListRes getEmiDoc(GetEmiDocReq req);
 
 }

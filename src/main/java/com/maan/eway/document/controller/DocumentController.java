@@ -37,6 +37,7 @@ import com.maan.eway.document.req.DocumentDeleteReq;
 import com.maan.eway.document.req.DocumentUploadReq;
 import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
+import com.maan.eway.document.req.GetEmiDocReq;
 import com.maan.eway.document.req.TermsDocUploadReq;
 import com.maan.eway.document.res.ClientDocListRes;
 import com.maan.eway.document.res.CommonDocumentRes;
@@ -245,6 +246,30 @@ public class DocumentController {
 
 	}
 
+	//Get EMI  Doc List
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+		@PostMapping("/getemidoc")
+		@ApiOperation(value = "This method is to Get Document List")
+		public ResponseEntity<CommonRes> getEmiDoc(@RequestBody GetEmiDocReq req) {
+
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+
+			// Total Doc List
+			DocumentListRes res = documentservice.getEmiDoc(req);
+
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 	//Get Original Image
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@RequestMapping(path = "/download", method = RequestMethod.POST)

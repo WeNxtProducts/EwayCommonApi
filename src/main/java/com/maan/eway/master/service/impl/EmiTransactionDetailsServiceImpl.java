@@ -595,6 +595,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			// Get Result
 			TypedQuery<EmiTransactionDetails> result = em.createQuery(query);
 			list = result.getResultList();
+			
+			list = list.stream().sorted((o1, o2)->Long.valueOf(o1.getInstalment()).compareTo(Long.valueOf(o2.getInstalment()))).collect(Collectors.toList());
 			// Map
 			List<EmiTransactionDetails> list1 = new ArrayList<EmiTransactionDetails>();
 			list1 = repo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateAsc(quoteNo, "Pending");

@@ -63,6 +63,7 @@ import com.maan.eway.document.req.DocumentDeleteReq;
 import com.maan.eway.document.req.DocumentUploadReq;
 import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
+import com.maan.eway.document.req.GetEmiDocReq;
 import com.maan.eway.document.req.TermsDocUploadReq;
 import com.maan.eway.document.res.ClientDocListRes;
 import com.maan.eway.document.res.CommonDoumentRes;
@@ -907,7 +908,11 @@ public class DocumentServiceImpl implements DocumentService{
 					uniqDoc.setId(req.getId());
 					uniqDoc.setIdType(req.getIdType());
 					uniqDoc.setProductType(secData==null ? product.getMotorYn() : secData.getMotorYn());
-					
+					if("Y".equalsIgnoreCase(req.getEmiYn())){
+						uniqDoc.setEmiYn(req.getEmiYn()==null?null:req.getEmiYn());
+						uniqDoc.setInstallmentPeriod(req.getInstallmentPeriod()==null?null:req.getInstallmentPeriod());
+						uniqDoc.setNoOfInstallment(req.getNoOfInstallment()==null?null:req.getNoOfInstallment());			
+					}
 					docUniqueRepo.saveAndFlush(uniqDoc);
 				}
 				
@@ -952,7 +957,11 @@ public class DocumentServiceImpl implements DocumentService{
 							docTran.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
 						}
 					}
-					
+					if("Y".equalsIgnoreCase(req.getEmiYn())){
+						docTran.setEmiYn(req.getEmiYn()==null?null:req.getEmiYn());
+						docTran.setInstallmentPeriod(req.getInstallmentPeriod()==null?null:req.getInstallmentPeriod());
+						docTran.setNoOfInstallment(req.getNoOfInstallment()==null?null:req.getNoOfInstallment());			
+					}
 					docTranRepo.saveAndFlush(docTran);
 				}
 				
@@ -1494,6 +1503,96 @@ public class DocumentServiceImpl implements DocumentService{
 				return null;
 			}
 			return res;
+		}
+
+
+		@Override
+		public DocumentListRes getEmiDoc(GetEmiDocReq req) {
+			DocumentListRes docRes = new DocumentListRes();
+			try {
+				List<DocumentTransactionDetails> docList = docTranRepo.findByQuoteNoAndInstallmentPeriodAndNoOfInstallment(req.getQuoteNo(),req.getInstallmentPeriod(),req.getNoOfInstallment())  ;
+				
+				
+				List<Integer>  uniqueIds = docList.stream().map( DocumentTransactionDetails :: getUniqueId ).collect( Collectors.toList());
+						
+				List<DocumentUniqueDetails> docUniqueList = docUniqueRepo.findByUniqueIdIn(uniqueIds)  ;
+				
+				List<ClientDocListRes> totalDocList = new ArrayList<ClientDocListRes>(); 
+				for (DocumentTransactionDetails doc :  docList) {
+					ClientDocListRes  res = new ClientDocListRes();
+					
+					// Transaction Related
+					res.setInsuranceId(doc.getCompanyId());
+					res.setCompanyName(doc.getCompanyName());
+					res.setId(doc.getId());
+					res.setIdType(doc.getIdType());
+					res.setLocationId(doc.getLocationId()==null?"" : doc.getLocationId().toString() );
+					res.setLocationName(doc.getLocationName());
+					res.setProductId(doc.getProductId()==null?"" : doc.getProductId().toString() );
+					res.setProductType(doc.getProductType());
+					res.setProducttName(doc.getProductName());
+					res.setQuoteNo(doc.getQuoteNo());
+					res.setRequestReferenceNo(doc.getRequestReferenceNo());
+					res.setRiskId(doc.getRiskId()==null?"" : doc.getRiskId().toString() );
+					res.setSectionId(doc.getSectionId()==null?"" : doc.getSectionId().toString() );
+					res.setSectionName(doc.getSectionName());
+					res.setUniqueId(doc.getUniqueId()==null?"" : doc.getUniqueId().toString() );
+					
+					List<DocumentUniqueDetails> filterUnique = docUniqueList.stream().filter( o -> o.getUniqueId().equals(doc.getUniqueId()) ).collect(Collectors.toList());   
+						
+					if( filterUnique.size() > 0) {
+						DocumentUniqueDetails unique = filterUnique.get(0);
+						// Document Related
+						res.setDocApplicable(unique.getDocApplicable());
+						res.setDocApplicableId(unique.getDocApplicableId());
+						res.setDocumentDesc(unique.getDocumentDesc());
+						res.setDocumentId(unique.getDocumentId()==null?"" : unique.getDocumentId().toString());
+						res.setDocumentName(unique.getDocumentName());
+						res.setDocumentType(unique.getDocumentType());
+						res.setDocumentTypeDesc(unique.getDocumentTypeDesc());
+						res.setFileName(unique.getFileName());
+						res.setFilePathOriginal(unique.getFilePathBackup());
+						res.setOriginalFileName(unique.getOrginalFileName());
+						res.setStatus(unique.getStatus());
+						res.setUploadedBy(unique.getUploadedBy());
+						res.setUploadedTime(unique.getUploadedTime());
+					}
+					
+					
+					// Endorsement Related
+					if (doc.getEndorsementType()!=null ) {
+						res.setEndorsementDate(doc.getEndorsementDate() == null ? null : new Date());
+						res.setEndorsementEffdate(doc.getEndorsementEffdate() == null ? null
+								: doc.getEndorsementEffdate());
+						res.setEndorsementRemarks(doc.getEndorsementRemarks() == null ? ""
+								: doc.getEndorsementRemarks());
+						res.setEndorsementTypeDesc(doc.getEndorsementTypeDesc());
+						res.setIsFinaceYn(doc.getIsFinaceYn());
+						res.setEndtCategDesc(doc.getEndtCategDesc());
+						res.setEndtStatus(doc.getEndtStatus());
+						res.setEndtCount(doc.getEndtCount());
+						res.setEndtPrevPolicyNo(doc.getEndtPrevPolicyNo());
+						res.setEndtPrevQuoteNo(doc.getEndtPrevQuoteNo());
+						res.setOriginalPolicyNo(doc.getOriginalPolicyNo());
+						
+					}
+					
+					totalDocList.add(res);
+					
+				}
+				
+				List<ClientDocListRes> filterCommonDocList = totalDocList.stream().filter( o ->  o.getSectionId().equalsIgnoreCase("99999") ).collect(Collectors.toList());	
+				List<ClientDocListRes> filterInduvidualDocList = totalDocList.stream().filter( o ->  ! o.getSectionId().equalsIgnoreCase("99999") ).collect(Collectors.toList());
+				filterInduvidualDocList.sort(Comparator.comparing(ClientDocListRes :: getLocationName).thenComparing(ClientDocListRes :: getSectionName) );
+				docRes.setCommmonDocument(filterCommonDocList);
+				docRes.setInduvidualDocument(filterInduvidualDocList);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info(e.getMessage());
+				return null;
+			}
+			return docRes;
 		}
 		
 }

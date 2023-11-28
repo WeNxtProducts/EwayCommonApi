@@ -2,6 +2,8 @@ package com.maan.eway.document.req;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -80,5 +82,15 @@ public class DocumentUploadReq {
 
     @JsonProperty("EndorsementTypeDesc") // EndorsementTypeDesc
     private String     endorsementTypeDesc ;
+    
+    
+	 @JsonProperty("EmiYn")
+	private String emiYn;
+
+	 @JsonProperty("InstallmentPeriod")
+	private String installmentPeriod;
+
+	 @JsonProperty("NoOfInstallment")
+	private String noOfInstallment;
 
 }
