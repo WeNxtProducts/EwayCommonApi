@@ -103,7 +103,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="VEHICLE_BODY_TYPE", nullable=false, length=20)
     private String     vehicleBodyType ;
 
-    @Column(name="FUEL_TYPE", nullable=false, length=10)
+    @Column(name="FUEL_TYPE",  length=10)
     private String     fuelType ;
 
     @Column(name="MANUFACTURE_YEAR", length=10)
