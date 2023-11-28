@@ -36,7 +36,7 @@ public interface MotorVehicleInfoRepository  extends JpaRepository<MotorVehicleI
 
 
 
-	MotorVehicleInfo findByResChassisNumber(String reqChassisNumber);
+	MotorVehicleInfo findTop1ByResChassisNumberOrderByEntryDateDesc(String reqChassisNumber);
 
 
 

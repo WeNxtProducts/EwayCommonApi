@@ -839,7 +839,7 @@ public class SearchServiceImpl implements SearchService {
 		for (EserviceMotorDetails data : motorDatas) { 
 			chassisNo=data.getChassisNumber();
 			if(req.getProductId().equalsIgnoreCase("5")){
-				MotorVehicleInfo vehInfo = motVehInfoRepo.findByResChassisNumber(chassisNo);
+				MotorVehicleInfo vehInfo = motVehInfoRepo.findTop1ByResChassisNumberOrderByEntryDateDesc(chassisNo);
 				if(vehInfo!=null) {
 				SearchROPVehicleRes res =new SearchROPVehicleRes();
 				res.setResRegNumber(vehInfo.getResRegNumber());
