@@ -27,11 +27,17 @@ public class WarrantyRes {
 private String id;
 	
 	
-@JsonProperty("SubId")
-private String subId;
+//@JsonProperty("SubId")
+//private String subId;
+//
+//@JsonProperty("SubIdDesc")
+//private String subIdDesc;
 
-@JsonProperty("SubIdDesc")
-private String subIdDesc;
+@JsonProperty("WarrateId")
+private String warrateId;
+
+@JsonProperty("WarrateDesc")
+private String warrateDesc;
 
 @JsonProperty("DocRefNo")
 private String docRefNo;

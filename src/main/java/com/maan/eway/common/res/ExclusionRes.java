@@ -26,19 +26,26 @@ public class ExclusionRes {
 	private String id;
 		
 	
-	@JsonProperty("SubId")
-	private String subId;
+//	@JsonProperty("SubId")
+//	private String subId;
+//
+//	@JsonProperty("SubIdDesc")
+//	private String subIdDesc;
+	
+	
+	@JsonProperty("ExclusionId")
+	private String exclusionId;
 
-	@JsonProperty("SubIdDesc")
-	private String subIdDesc;
+	@JsonProperty("ExclusionDesc")
+	private String exclusionDesc;
 
-@JsonProperty("DocRefNo")
-private String docRefNo;
-
-@JsonProperty("DocumentId")
-private String documentId;
-
-@JsonProperty("TypeId")
-private String typeId;
+	@JsonProperty("DocRefNo")
+	private String docRefNo;
+	
+	@JsonProperty("DocumentId")
+	private String documentId;
+	
+	@JsonProperty("TypeId")
+	private String typeId;
 
 }

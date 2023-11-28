@@ -24,21 +24,27 @@ public class ClausesRes {
 
 	@JsonProperty("Id")
 	private String id;
+	
+	@JsonProperty("ClausesId")
+	private String clausesId;
+	
+	@JsonProperty("ClausesDesc")
+	private String clausesDesc;
 		
 	
-	@JsonProperty("SubId")
-	private String subId;
+//	@JsonProperty("SubId")
+//	private String subId;
 
-	@JsonProperty("SubIdDesc")
-	private String subIdDesc;
+//	@JsonProperty("SubIdDesc")
+//	private String subIdDesc;
 
-@JsonProperty("DocRefNo")
-private String docRefNo;
-
-@JsonProperty("DocumentId")
-private String documentId;
-
-@JsonProperty("TypeId")
-private String typeId;
+	@JsonProperty("DocRefNo")
+	private String docRefNo;
+	
+	@JsonProperty("DocumentId")
+	private String documentId;
+	
+	@JsonProperty("TypeId")
+	private String typeId;
 
 }
