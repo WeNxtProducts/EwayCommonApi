@@ -3088,6 +3088,30 @@ public class QuoteServiceImpl implements QuoteService {
 				
 				res.setCurrencyId(pacc.getCurrency());
 				res.setRiskId(pacc.getRiskId().toString());
+				// Personal Accident
+				List<CommonDataDetails> filterPacc = paccDatas.stream().filter( o -> ! "D".equalsIgnoreCase(o.getStatus()) 
+						&& o.getSectionId().equals("35") ).collect(Collectors.toList());
+				
+				if( filterPacc.size() > 0 ) {
+					pacc = filterPacc.get(0);
+					res.setOccupationType( pacc.getOccupationType());
+					res.setOccupationTypeDesc(pacc.getOccupationDesc() );
+					res.setPersonalAccSuminsured(pacc.getSumInsured()==null ? "" : pacc.getSumInsured().toPlainString() );
+					res.setCount( pacc.getCount()==null ?  "" :pacc.getCount().toString());
+					
+					
+				}
+				
+				// Personal Libaility
+				List<CommonDataDetails> filterlialbity = paccDatas.stream().filter( o -> ! "D".equalsIgnoreCase(o.getStatus()) 
+						&& o.getSectionId().equals("36") ).collect(Collectors.toList());
+				if( filterlialbity.size() > 0 ) {
+					CommonDataDetails liability = filterlialbity.get(0);
+					res.setLiabilityOccupationId(liability.getOccupationType());
+					res.setLiabilityOccupationDesc(liability.getOccupationDesc());
+					res.setPersonalIntermediarySuminsured(liability.getSumInsured()==null ? "" : liability.getSumInsured().toPlainString() );
+					
+				}
 	
 				Double sumInsured = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&  o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
 				res.setSumInsured(sumInsured.toString());

@@ -28,8 +28,7 @@ public class BuildingSumInsuredDetails {
 	@JsonProperty("FidEmpSi")
     private String     fidEmpSi;
 	
-	@JsonProperty("LiabilitySi")
-    private String     liabilitySi;
+	
 	
 	@JsonProperty("WaterTankSi")
     private String    waterTankSi;
@@ -57,6 +56,10 @@ public class BuildingSumInsuredDetails {
 //	@JsonProperty("OccupationDetails")
 //    private List<OccupationReqClass>     occupationDetails ;
 	
+	
+	@JsonProperty("LiabilitySi")
+    private String     liabilitySi;
+	
 	@JsonProperty("OccupationType")
     private String    occupationType;
 	
@@ -71,6 +74,9 @@ public class BuildingSumInsuredDetails {
    
 	@JsonProperty("PersonalAccSuminsured")
     private String    personalAccSuminsured;
+	
+	@JsonProperty("PersonalIntermediarySuminsured")
+    private String     personalIntermediarySuminsured ;
 
 	@JsonProperty("Count")
     private String    count;
@@ -84,8 +90,7 @@ public class BuildingSumInsuredDetails {
 //    private String     paMedicalSuminsured ;
 	@JsonProperty("ContentSuminsured")
     private String     contentSuminsured ;
-	@JsonProperty("PersonalIntermediarySuminsured")
-    private String     personalIntermediarySuminsured ;
+
 	
 	@JsonProperty("SectionId")
 	private List<String> sectionId;
