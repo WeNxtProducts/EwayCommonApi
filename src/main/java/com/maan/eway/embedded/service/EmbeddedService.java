@@ -306,7 +306,7 @@ public class EmbeddedService {
 			List<GroupMedicalDetails> list = groupMedicalRepo.findByMobileNo(req.getMobileNo());
 			if(!CollectionUtils.isEmpty(list)) {
 				String accDate = new SimpleDateFormat("yyyy-MM-dd").format(DD_MM_YYYY.parse(req.getAccidentDate()));
-				List<Map<String,Object>> validCustList = groupMedicalRepo.getCustomerDetails(req.getMobileNo(),accDate,req.getClaimType());
+				List<Map<String,Object>> validCustList = groupMedicalRepo.getCustomerDetails(req.getMobileNo(),accDate);
 				if(!CollectionUtils.isEmpty(validCustList)) {
 					validCustList.forEach(k -> {
 						InalipaDetailsRes1 m = InalipaDetailsRes1.builder()

@@ -80,7 +80,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vrTinNo"/>
 		<fieldDescription><![CDATA[vrTinNo]]></fieldDescription>
 	</field>
-	<field name="identificationNo" class="java.lang.Long">
+	<field name="identificationNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="identificationNo"/>
 		<fieldDescription><![CDATA[identificationNo]]></fieldDescription>
 	</field>
