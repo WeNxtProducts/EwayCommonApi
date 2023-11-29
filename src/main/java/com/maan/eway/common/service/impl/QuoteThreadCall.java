@@ -2554,8 +2554,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 		QuoteThreadRes res= new QuoteThreadRes() ;
 		try {
 			// Home Positiom Master Thread Call
+			HomePositionMaster previousData = new HomePositionMaster();
 			Long homeInfo =  homeRepo.countByQuoteNo(request.getQuoteNo());
 			if (homeInfo > 0 ) {
+				previousData = homeRepo.findByQuoteNo(request.getQuoteNo());
+				
 				//Delete data
 				homeRepo.deleteByQuoteNo(request.getQuoteNo());
  				
@@ -2604,8 +2607,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setApplicationNo(0L);
 			
 			// Commsion Setup
-			home.setCommissionModifyYn(StringUtils.isBlank(request.getCommissionModifyYn()) ? "N" : request.getCommissionModifyYn()) ;
-			home.setCommissionPercentage(StringUtils.isNotBlank(request.getCommissionPercent()) ? new BigDecimal(request.getCommissionPercent())  : home.getCommissionPercentage()) ;
+			if(StringUtils.isNotBlank(request.getCommissionModifyYn()) && "Y".equalsIgnoreCase(request.getCommissionModifyYn()) ) {
+				home.setCommissionModifyYn( request.getCommissionModifyYn()) ;
+				home.setCommissionPercentage(StringUtils.isNotBlank(request.getCommissionPercent()) ? new BigDecimal(request.getCommissionPercent())  : home.getCommissionPercentage()) ;
+			} else {
+				home.setCommissionModifyYn(previousData!=null ? previousData.getCommissionModifyYn() : "N") ;
+				home.setCommissionPercentage(previousData!=null ? previousData.getCommissionPercentage() : home.getCommissionPercentage());
+			
+			}
 			
 			String loginId = "" ;
 			if(! "1".equalsIgnoreCase(home.getApplicationId()  )) {
