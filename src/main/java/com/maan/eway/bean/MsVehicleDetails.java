@@ -147,7 +147,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENTRY_DATE", nullable=false)
     private Date       entryDate ;
 
-    @Column(name="VEHICLE_WEIGHT", nullable=false)
+    @Column(name="VEHICLE_WEIGHT")
     private BigDecimal       vehicleWeight ;
 
     @Column(name="CURRENCY", nullable=false)

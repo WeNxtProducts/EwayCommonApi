@@ -577,7 +577,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	    		Object motorKey =  motorKeyValue.get(cov.getCoverBasedOn());
 	    		
 	    		if(motorKey!=null && filterCovers.size() > 0 && (! cov.getCoverName().contains("Minimum Premium") || ! cov.getCoverBasedOn().equalsIgnoreCase("suminsured") )  ){
-	    			if(cov.getCoverId().equals(42) || cov.getCoverId().equals(55) ) {
+	    			if(cov.getCoverId().equals(42)) {// || cov.getCoverId().equals(55) ) {
 	    				// skip
 	    			} else {
 	    				motorKeyValue.put(cov.getCoverBasedOn(),  cov.getSumInsured()==null ?  null : cov.getSumInsured().toPlainString());
