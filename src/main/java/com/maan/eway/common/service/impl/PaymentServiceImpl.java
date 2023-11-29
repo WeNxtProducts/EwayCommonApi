@@ -907,8 +907,13 @@ public class PaymentServiceImpl implements PaymentService {
 					
 					// Emi Premium
 					EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,req.getInstallmentMonth() , req.getInstallmentPeriod());
-					paymentinfo.setPremium(new BigDecimal( emiDetails.getPremiumWithTax()));
-					paymentinfo.setPremiumLc(new BigDecimal( emiDetails.getPremiumWithTax() ));
+//					paymentinfo.setPremium(new BigDecimal( emiDetails.getPremiumWithTax()));
+//					paymentinfo.setPremiumLc(new BigDecimal( emiDetails.getPremiumWithTax() ));
+//					
+//					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
+//					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
+					paymentinfo.setPremium(new BigDecimal(req.getPremium()));
+					paymentinfo.setPremiumLc(new BigDecimal( req.getPremium() ));
 					
 					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
 					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
@@ -1028,8 +1033,14 @@ public class PaymentServiceImpl implements PaymentService {
 					
 					// Emi Premium
 					EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,req.getInstallmentMonth() , req.getInstallmentPeriod());
-					paymentinfo.setPremium(new BigDecimal( emiDetails.getPremiumWithTax()));
-					paymentinfo.setPremiumLc(new BigDecimal( emiDetails.getPremiumWithTax() ));
+//					paymentinfo.setPremium(new BigDecimal( emiDetails.getPremiumWithTax()));
+//					paymentinfo.setPremiumLc(new BigDecimal( emiDetails.getPremiumWithTax() ));
+//					
+//					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
+//					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
+					
+					paymentinfo.setPremium(new BigDecimal(req.getPremium()));
+					paymentinfo.setPremiumLc(new BigDecimal( req.getPremium() ));
 					
 					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
 					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
