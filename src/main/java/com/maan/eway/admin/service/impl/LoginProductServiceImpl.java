@@ -2963,17 +2963,17 @@ List<Error> errorList = new ArrayList<Error>();
 		try {
 			
 			List<Integer> findproductId =  reqList.stream().map( BrokerCompanyListProductReq :: getProductId ) .collect(Collectors.toList());					
-			List<LoginProductMaster>   oldCommList = loginProductRepo.findByProductIdNotInAndLoginIdAndStatus(findproductId, reqList.get(0).getLoginId() , "Y" ) ;
-
-			oldCommList.forEach ( o -> { 
-				Date startDate1=null;
-				Date date1 = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(date1);
-				cal.add(Calendar.DATE, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
-				startDate1 = cal.getTime();
-				o.setEffectiveDateEnd(startDate1);  }   );
-			loginProductRepo.saveAll(oldCommList);
+//			List<LoginProductMaster>   oldCommList = loginProductRepo.findByProductIdNotInAndLoginIdAndStatus(findproductId, reqList.get(0).getLoginId() , "Y" ) ;
+//
+//			oldCommList.forEach ( o -> { 
+//				Date startDate1=null;
+//				Date date1 = new Date();
+//				Calendar cal = new GregorianCalendar();
+//				cal.setTime(date1);
+//				cal.add(Calendar.DATE, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+//				startDate1 = cal.getTime();
+//				o.setEffectiveDateEnd(startDate1);  }   );
+//			loginProductRepo.saveAll(oldCommList);
 			
 			for (BrokerCompanyListProductReq req : reqList) {
 				LoginMaster login = loginRepo.findByLoginId(req.getLoginId());
@@ -3106,17 +3106,17 @@ List<Error> errorList = new ArrayList<Error>();
 			pro.add(productIds.get(i).toString());
 			}
 			
-			List<BrokerCommissionDetails>   oldCommList1 = commissionRepo.findByProductIdNotInAndLoginId(pro, reqList.get(0).getLoginId() ) ;
-
-			oldCommList1.forEach ( o -> { 
-				Date startDate1=null;
-				Date date1 = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(date1);
-				cal.add(Calendar.DATE, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
-				startDate1 = cal.getTime();
-				o.setEffectiveDateEnd(startDate1);  }   );
-			commissionRepo.saveAll(oldCommList1);
+//			List<BrokerCommissionDetails>   oldCommList1 = commissionRepo.findByProductIdNotInAndLoginId(pro, reqList.get(0).getLoginId() ) ;
+//
+//			oldCommList1.forEach ( o -> { 
+//				Date startDate1=null;
+//				Date date1 = new Date();
+//				Calendar cal = new GregorianCalendar();
+//				cal.setTime(date1);
+//				cal.add(Calendar.DATE, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+//				startDate1 = cal.getTime();
+//				o.setEffectiveDateEnd(startDate1);  }   );
+//			commissionRepo.saveAll(oldCommList1);
 			
 		
 			
@@ -3342,6 +3342,7 @@ List<Error> errorList = new ArrayList<Error>();
 			String policytype = policyName(req.getCompanyId(), req.getProductId().toString(), req.getPolicyTypeId());
 
 			dozerMapper.map(req, saveData);
+		//	saveData.setSelectedYN("Y");
 			saveData.setEffectiveDateStart(StartDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
@@ -3505,10 +3506,10 @@ List<Error> errorList = new ArrayList<Error>();
 		try {
 			
 			// Company Commission List
-			List<BrokerCommissionDetails> companyComList = getCompanyCommissionList(req); 
+			List<BrokerCommissionDetails> companyComList = getCompanyCommissionList(req);  //"99999"
 			
 			// Broker Commission List
-			List<BrokerCommissionDetails> brokerComlist = getBrokerCommissionList(req);
+			List<BrokerCommissionDetails> brokerComlist = getBrokerCommissionList(req); //against loginId
 			
 			//Product Details
 			List<CompanyProductMaster> products =   getCompanyProducts(req.getInsuranceId() );
@@ -3519,6 +3520,9 @@ List<Error> errorList = new ArrayList<Error>();
 				
 				List<BrokerCommissionDetails> filterBrokerComlist = brokerComlist.stream().filter( o -> o.getLoginId().equalsIgnoreCase(req.getLoginId())
 						&& o.getProductId().equalsIgnoreCase(data.getProductId()) && o.getPolicyType().equalsIgnoreCase(data.getPolicyType()) ).collect(Collectors.toList());
+				
+//				List<BrokerCommissionDetails> filterBrokerComlist = brokerComlist.stream().filter( o -> o.getLoginId().equalsIgnoreCase(req.getLoginId())
+//						).collect(Collectors.toList());
 				
 				if( filterBrokerComlist.size() > 0) {
 					BrokerCommissionDetails brokerCom = filterBrokerComlist.get(0);
