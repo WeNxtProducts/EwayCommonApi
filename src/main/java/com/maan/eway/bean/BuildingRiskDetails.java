@@ -776,6 +776,19 @@ private static final long serialVersionUID = 1L;
       
       @Column(name = "MACHINERY_SI_LC")
   	private BigDecimal machinerySiLc;
+      
+      
+      @Column(name = "GROSS_PROFIT_FC")
+      private BigDecimal grossProfitFc;
+      
+      @Column(name = "GROSS_PROFIT_LC")
+      private BigDecimal grossProfitLc;
+      
+      @Column(name="INDEMNITY_PERIOD_FC")
+      private BigDecimal indemnityPeriodFc;
+      
+      @Column(name="INDEMNITY_PERIOD_LC ")
+      private BigDecimal indemnityPeriodLc;
 
 }
 
