@@ -724,10 +724,24 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="FINALIZE_YN")
 	      private String finalizeYn;
 	      
+
 	      
 	      @Column(name = "ON_STOCK_SI")
 	 	  private BigDecimal onStockSi;
 	      
+
+	      @Column(name = "GROSS_PROFIT_FC")
+	      private BigDecimal grossProfitFc;
+	      
+	      @Column(name = "GROSS_PROFIT_LC")
+	      private BigDecimal grossProfitLc;
+	      
+	      @Column(name="INDEMNITY_PERIOD_FC")
+	      private BigDecimal indemnityPeriodFc;
+	      
+	      @Column(name="INDEMNITY_PERIOD_LC ")
+	      private BigDecimal indemnityPeriodLc;
+
 
 	      @Column(name = "ON_STOCK_SI_LC")
 	 	  private BigDecimal onStockSiLc;

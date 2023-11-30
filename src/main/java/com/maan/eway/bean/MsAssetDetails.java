@@ -384,7 +384,8 @@ private static final long serialVersionUID = 1L;
     private BigDecimal carpetsSiLc  ;
     
     @Column(name="INSURANCE_CLASS", length=10)
-    private String     insuranceClass ;
+
+   private String     insuranceClass ;
     
     
     @Column(name = "ON_STOCK_SI")
@@ -415,6 +416,21 @@ private static final long serialVersionUID = 1L;
     
     @Column(name = "MACHINERY_SI_LC")
 	private BigDecimal machinerySiLc;
+
+    //private String     insuranceClass ;    
+    
+    @Column(name = "GROSS_PROFIT_FC")
+    private BigDecimal grossProfitFc;
+    
+    @Column(name = "GROSS_PROFIT_LC")
+    private BigDecimal grossProfitLc;
+    
+    @Column(name="INDEMNITY_PERIOD_FC")
+    private BigDecimal indemnityPeriodFc;
+    
+    @Column(name="INDEMNITY_PERIOD_LC ")
+    private BigDecimal indemnityPeriodLc;
+
 }
 
 
