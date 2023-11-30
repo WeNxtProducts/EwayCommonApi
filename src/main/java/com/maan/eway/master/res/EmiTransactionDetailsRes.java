@@ -84,5 +84,7 @@ public class EmiTransactionDetailsRes implements Serializable {
     private String     payeeName ;
 	@JsonProperty("MicrNo")
     private String     micrNo ;
+	@JsonProperty("CbcNo")
+    private String     cbcNo ;
 	
 }

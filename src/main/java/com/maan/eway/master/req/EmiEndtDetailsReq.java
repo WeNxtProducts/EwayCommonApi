@@ -18,8 +18,14 @@ public class EmiEndtDetailsReq implements Serializable {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
+	@JsonProperty("PrevPolicyNo")
+	private String prevPolicyNo;
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
+	
+	@JsonProperty("PolicyType")
+	private String policyType;
 	
 	@JsonProperty("ProductId")
 	private String productId;

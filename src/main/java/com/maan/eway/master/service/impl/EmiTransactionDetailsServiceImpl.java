@@ -619,6 +619,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				res.setPayments( StringUtils.isBlank(paymentData.getPayments() ) ? "" : paymentData.getPayments()  ); 
 				res.setPayeeName(paymentData.getPayeeName()==null?"":paymentData.getPayeeName() );
 				res.setMicrNo(paymentData.getMicrNo()==null?"":paymentData.getMicrNo());
+				res.setCbcNo(paymentData.getCbcNo()==null?"":paymentData.getCbcNo());
 				}
 				if (list1 != null && list1.size() > 0) {
 					List<EmiTransactionDetails> filter =  list1.stream().filter( o -> o.getInstalment().equals(data.getInstalment())).collect(Collectors.toList());
@@ -911,12 +912,17 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		List<EmiTransactionDetailsRes> resList=new ArrayList<EmiTransactionDetailsRes>();
 		try {
 			if("Y".equalsIgnoreCase(req.getEmiYn()) && StringUtils.isNotBlank(req.getEndtId())) {
+				HomePositionMaster homedata=homerepo.findByQuoteNo(req.getPrevPolicyNo());
 				List<EmiTransactionDetails> emiList=repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(), req.getCompanyId(), req.getProductId());
-//				List<EmiTransactionDetails> filter =  emiList.stream().filter(e -> e.getPaymentStatus().equalsIgnoreCase("Pending"))
-//						.collect(Collectors.toList());
+				Long noOfMonth =  emiList.stream().filter(e -> e.getPaymentStatus().equalsIgnoreCase("Pending")).mapToLong(i->Long.valueOf(i.getInstalment())).count();
 				Double pendingamt = emiList.stream().filter(e -> e.getPaymentStatus().equalsIgnoreCase("Pending")).mapToDouble(i->i.getDueAmount().doubleValue()).sum();
-				HomePositionMaster homedata=homerepo.findByQuoteNo(req.getQuoteNo());
-				
+				Double diffAmt =Math.abs(Double.valueOf(homedata.getPremiumLc().toString())- Double.valueOf(req.getPremium()));
+				Double premium= null;
+				if(Double.valueOf(homedata.getOverallPremiumLc().toString())> Double.valueOf(req.getPremium())) {
+					premium=Math.abs(pendingamt+diffAmt);
+				}else if(Double.valueOf(homedata.getOverallPremiumLc().toString())< Double.valueOf(req.getPremium())) {
+					premium=Math.abs(pendingamt-diffAmt);
+				}
 				
 			}
 					
