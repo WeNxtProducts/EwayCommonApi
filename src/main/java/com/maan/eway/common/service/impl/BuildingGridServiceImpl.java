@@ -1639,7 +1639,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEndtPremium(null);
 						savedata.setEndtPrevPolicyNo(null);
 						savedata.setEndtPrevQuoteNo(null);
-						savedata.setEndtStatus(null);					
+						savedata.setEndtStatus(null);	
+						savedata.setFinalizeYn("N");
 						repo.saveAndFlush(savedata);
 					}
 				
@@ -1685,6 +1686,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata2.setEndtPrevPolicyNo(null);
 					savedata2.setEndtPrevQuoteNo(null);
 					savedata2.setEndtStatus(null);
+					savedata2.setFinalizeYn("N");
 					eserCommonRepo.saveAndFlush(savedata2);
 				}
 				

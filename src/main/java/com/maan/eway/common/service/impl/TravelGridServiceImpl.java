@@ -1221,6 +1221,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata.setEndtPrevPolicyNo(null);
 					savedata.setEndtPrevQuoteNo(null);
 					savedata.setEndtStatus(null);
+					savedata.setFinalizeYn("N");
 				repo.saveAndFlush(savedata);
 				}
 				// Save Section
