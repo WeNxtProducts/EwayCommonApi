@@ -141,6 +141,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="DOC_REF_NO",length=100)
     private String  docRefNo;
+    
+    @Column(name="Type_Id",length=1) 	//o-optional, D-Default
+    private String  typeId;
 
 }
 
