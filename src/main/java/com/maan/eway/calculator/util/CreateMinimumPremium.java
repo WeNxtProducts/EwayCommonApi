@@ -85,6 +85,7 @@ public class CreateMinimumPremium {
 				.cdRefNo(engine.getCdRefNo())
 				.branchCode(engine.getBranchCode())
 				.agencyCode(engine.getAgencyCode())
+				.tiraRate(0D)
 				.build();
   		
 

@@ -891,7 +891,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 				Cover mini = min.create();
 				List<Cover> minies=new ArrayList<Cover>(1);
 				minies.add(mini);
-				CoverCalculator calc = new CoverCalculator();
+				//CoverCalculator calc = new CoverCalculator();
+				EndtCoverCalculator calc = new EndtCoverCalculator(isPolicyPeriod);
 				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);
 				minies.stream().forEach(calc);
 				retc.add(mini);
