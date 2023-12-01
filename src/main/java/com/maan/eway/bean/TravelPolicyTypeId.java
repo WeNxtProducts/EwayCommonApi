@@ -20,6 +20,10 @@ public class TravelPolicyTypeId implements Serializable {
 	private Integer planTypeId;
 	private Integer coverId;
 	private Integer subCoverId;
+	private Integer amendId;
+	private String companyId;
+	private Integer productId;
+	private String branchCode;
 
 
 }

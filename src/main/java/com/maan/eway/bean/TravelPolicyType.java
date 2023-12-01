@@ -57,19 +57,36 @@ public class TravelPolicyType implements Serializable {
 	// --- ENTITY PRIMARY KEY
 	@Id
 	@Column(name = "POLICY_TYPE_ID", nullable = false)
-	private Integer policyTypeId;
+	private Integer policyTypeId; //plan africa, asia...
 
 	@Id
 	@Column(name = "PLAN_TYPE_ID", nullable = false)
-	private Integer planTypeId;
+	private Integer planTypeId;  //indivual, family, group
 
 	@Id
 	@Column(name = "COVER_ID", nullable = false)
-	private Integer coverId;
+	private Integer coverId; 
 
 	@Id
 	@Column(name = "SUB_COVER_ID", nullable = false)
 	private Integer subCoverId;
+	
+	@Id
+	@Column(name = "AMEND_ID", nullable = false)
+	private Integer amendId;
+
+	@Id
+	@Column(name = "COMPANY_ID", nullable = false)
+	private String companyId;
+
+	@Id
+	@Column(name = "PRODUCT_ID", nullable = false)
+	private Integer productId;
+
+	@Id
+	@Column(name = "BRANCH_CODE", nullable = false)
+	private String branchCode;
+	
 
 	@Column(name = "POLICY_TYPE_DESC", length = 100)
 	private String policyTypeDesc;
@@ -101,7 +118,7 @@ public class TravelPolicyType implements Serializable {
 
 	@Column(name = "REMARKS", length = 100)
 	private String remarks;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "EFFECTIVE_START_DATE")
 	private Date effectiveStartdate;
@@ -109,29 +126,15 @@ public class TravelPolicyType implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "EFFECTIVE_END_DATE")
 	private Date effectiveEnddate;
-	
-	@Column(name = "AMEND_ID", nullable = false)
-	private Integer amendId;
-	
-	 @Column(name="COMPANY_ID")
-	    private String     companyId ;
 
-	  
-	    @Column(name="PRODUCT_ID")
-	    private String    productId ;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "UPDATED_DATE")
+	private Date updatedDate;
 
-	   
-	    @Column(name="BRANCH_CODE")
-	    private String     branchCode ;
-	    
-	    @Temporal(TemporalType.TIMESTAMP)
-		@Column(name = "UPDATED_DATE")
-		private Date updatedDate;
-		
-		@Column(name = "UPDATED_BY")
-		private String updatedBy;
-		
-		@Column(name = "COVER_STATUS")
-		private String coverStatus;
+	@Column(name = "UPDATED_BY")
+	private String updatedBy;
+
+	@Column(name = "COVER_STATUS")
+	private String coverStatus;
 
 }
