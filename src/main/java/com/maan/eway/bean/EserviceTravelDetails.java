@@ -338,6 +338,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="FINALIZE_YN")
     private String finalizeYn;
+    
+    @Column(name="BROKER_TIRA_CODE")
+    private String brokerTiraCode;
 }
 
 

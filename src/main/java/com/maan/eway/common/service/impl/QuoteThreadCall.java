@@ -2888,7 +2888,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(motorData.getCustomerReferenceNo());
 			home.setCustomerName(custData.getClientName());
 			
-			home.setSalePointCode(motorData.getSalePointCode());
 			home.setCompanyId(motorData.getCompanyId());
 			home.setProductId(Integer.valueOf(motorData.getProductId()));
 			home.setSectionId(Integer.valueOf(motorData.getSectionId()));
@@ -2946,6 +2945,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setLoginId(motorData.getLoginId());
 			home.setPolicyPeriod(motorData.getPeriodOfInsurance()==null?"" :motorData.getPeriodOfInsurance().toString());
 			home.setPolicyTerm(motorData.getPeriodOfInsurance()==null?"" :motorData.getPeriodOfInsurance().toString());
+			home.setSalePointCode(motorData.getSalePointCode());
+			home.setBrokerTiraCode(motorData.getBrokerTiraCode());
 			
 			List<EserviceMotorDetails> motList = eserMotRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 			
@@ -3002,7 +3003,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(travelData.getCustomerReferenceNo());
 			home.setCustomerName(custData.getClientName());
 			
-			home.setSalePointCode(travelData.getSalePointCode());
 			home.setCompanyId(travelData.getCompanyId());
 			home.setProductId(Integer.valueOf(travelData.getProductId()));
 			home.setSectionId(Integer.valueOf(travelData.getSectionId()));
@@ -3062,6 +3062,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setLoginId(travelData.getLoginId());
 			home.setPolicyPeriod(travelData.getTravelCoverDuration()==null?"" :travelData.getTravelCoverDuration().toString());
 			home.setPolicyTerm(travelData.getTravelCoverDuration()==null?"" :travelData.getTravelCoverDuration().toString());
+			home.setSalePointCode(travelData.getSalePointCode());
+			home.setBrokerTiraCode(travelData.getBrokerTiraCode());
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -3083,7 +3085,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setCustomerName(custData.getClientName());
 			
 			//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
-			home.setSalePointCode(buildingData.getSalePointCode());
 			home.setCompanyId(buildingData.getCompanyId());
 			home.setProductId(Integer.valueOf(buildingData.getProductId()));
 			home.setSectionId(Integer.valueOf(0));
@@ -3143,7 +3144,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setLoginId(buildingData.getLoginId());
 			home.setPolicyPeriod(buildingData.getPolicyPeriord()==null?"" :buildingData.getPolicyPeriord().toString());
 			home.setPolicyTerm(buildingData.getPolicyPeriord()==null?"" :buildingData.getPolicyPeriord().toString());
-			
+			home.setSalePointCode(buildingData.getSalePointCode());
+			home.setBrokerTiraCode(buildingData.getBrokerTiraCode());
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -3225,7 +3227,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setLoginId(eserCommonData.getLoginId());
 			home.setPolicyPeriod(eserCommonData.getPolicyPeriod()==null?"" :eserCommonData.getPolicyPeriod().toString());
 			home.setPolicyTerm(eserCommonData.getPolicyPeriod()==null?"" :eserCommonData.getPolicyPeriod().toString());
-			
+			home.setSalePointCode(eserCommonData.getSalePointCode());
+			home.setBrokerTiraCode(eserCommonData.getBrokerTiraCode());
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());

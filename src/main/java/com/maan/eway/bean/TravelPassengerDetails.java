@@ -416,6 +416,9 @@ private static final long serialVersionUID = 1L;
     private String     agencyCode ;
     @Column(name="BRANCH_NAME ")
     private String     branchName  ;
+    
+    @Column(name="BROKER_TIRA_CODE")
+    private String brokerTiraCode;
 }
 
 

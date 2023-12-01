@@ -549,7 +549,8 @@ private static final long serialVersionUID = 1L;
    @Column(name="EXCESS_LIMIT")
    private Double excessLimit;
    
-
+   @Column(name="BROKER_TIRA_CODE")
+   private String brokerTiraCode;
 }
 
 

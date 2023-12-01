@@ -792,4 +792,7 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="EST_ANNUAL_CARRIES_SI_FC ") 
 	      private Double estAnnualCarriesSiFc;
 	      
+	      @Column(name="BROKER_TIRA_CODE")
+	      private String brokerTiraCode;
+	      
 }

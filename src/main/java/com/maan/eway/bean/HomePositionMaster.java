@@ -692,6 +692,9 @@ private String    salePointCode;
 @Column(name="POLICY_PERIOD", length=20)
 private String    policyPeriod;
 
+@Column(name="BROKER_TIRA_CODE")
+private String brokerTiraCode;
+
 }
 
 
