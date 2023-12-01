@@ -1277,8 +1277,7 @@ public class JasperCustomServiceImple {
 				CriteriaQuery<Tuple> cq1 = cb.createQuery(Tuple.class);
 				Root<PolicyCoverData> pcdRoot = cq1.from(PolicyCoverData.class);
 				Root<SectionDataDetails> sddRoot = cq1.from(SectionDataDetails.class);
-				List<EserviceCommonDetails> eserviceCommonList = eserviceCommonDetRepo.findByQuoteNo(map.get("quoteNo").toString());
-				Selection<Object> eserviceQuote = null;
+				//List<EserviceCommonDetails> eserviceCommonList = eserviceCommonDetRepo.findByQuoteNo(map.get("quoteNo").toString());
 				
 				List<Predicate> predicate = new ArrayList<Predicate>();
 				predicate.add(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")));
@@ -1287,7 +1286,7 @@ public class JasperCustomServiceImple {
 				predicate.add(cb.equal(pcdRoot.get("taxId"),"0"));
 				predicate.add(cb.equal(pcdRoot.get("discLoadId"), "0"));
 				predicate.add(cb.equal(pcdRoot.get("subCoverId"), "0"));
-				if(!eserviceCommonList.isEmpty()) {
+				/*if(!eserviceCommonList.isEmpty()) {
 					Root<EserviceCommonDetails> ecdRoot = cq1.from(EserviceCommonDetails.class);
 					eserviceQuote = ecdRoot.get("occupationDesc").alias("occupationDesc");
 					predicate.add(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")));
@@ -1295,13 +1294,20 @@ public class JasperCustomServiceImple {
 					predicate.add(cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")));
 					predicate.add(cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")));
 					predicate.add(cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
-				}
+				}*/
 				Predicate [] predicateArray = new Predicate[predicate.size()];
 				predicate.toArray(predicateArray);
+				
+				Subquery<String> occDesc = cq1.subquery(String.class);
+				Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
+				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), ecdRoot.get("sectionId")),
+						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")),
+						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
+				
 				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
 						pcdRoot.get("coverId").alias("coverId"),pcdRoot.get("coverageType").alias("coverageType"),
 						 pcdRoot.get("sumInsured").alias("sumInsured"),pcdRoot.get("rate").alias("rate"),pcdRoot.get("premiumIncludedTaxLc").alias("premiumIncludedTaxLc"),
-						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"),!eserviceCommonList.isEmpty()?eserviceQuote:cb.literal("").alias("occupationDesc"),
+						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"),occDesc.alias("occupationDesc"),
 						 pcdRoot.get("premiumExcludedTaxLc").alias("premiumExcludedTaxLc"),pcdRoot.get("premiumExcludedTaxFc").alias("premiumExcludedTaxFc"))
 				.where(predicateArray).orderBy(cb.asc(sddRoot.get("sectionId")));
 						
