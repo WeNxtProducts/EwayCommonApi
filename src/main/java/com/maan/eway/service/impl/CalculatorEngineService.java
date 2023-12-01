@@ -882,6 +882,24 @@ public class CalculatorEngineService implements CalculatorEngine {
 				retc.sort(comp);
 
 			}
+			BigDecimal totalPremium=retc.stream().filter(x -> (!"N".equals(x.getIsselected()) && !"945".equals(x.getCoverId()) )).map(x -> x.getPremiumExcluedTaxLC()).reduce(BigDecimal.ZERO,BigDecimal::add);
+			if(totalPremium.compareTo(minimumPremium)<0) {
+				List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+						.collect(Collectors.toList());
+				BigDecimal difference=minimumPremium.subtract(totalPremium,MathContext.DECIMAL32);
+				CreateMinimumPremium min=new CreateMinimumPremium(difference, request,factors.get(0).getEndtCount() , taxey);
+				Cover mini = min.create();
+				List<Cover> minies=new ArrayList<Cover>(1);
+				minies.add(mini);
+				CoverCalculator calc = new CoverCalculator();
+				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);
+				minies.stream().forEach(calc);
+				retc.add(mini);
+				
+			}else {
+				retc.removeIf(t -> "945".equals(t.getCoverId()));//.stream().filter(t-> "945".equals(t.getCoverId()).de
+			}
+			
 			try {
 				EserviceMotorDetailsSaveRes response = new EserviceMotorDetailsSaveRes();
 				response.setCoverList(retc);

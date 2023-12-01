@@ -40,7 +40,7 @@ public class CreateMinimumPremium {
 				.isSubCover( "N")
 				.sumInsuredLc(BigDecimal.ZERO)
 				.sumInsured(BigDecimal.ZERO)
-				.rate(0D)
+				.rate(minimumPremium.doubleValue())
 				.subCoverId( null)
 				.subCoverDesc(null)
 				.subCoverName(null)
