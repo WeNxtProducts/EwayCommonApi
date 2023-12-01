@@ -56,6 +56,10 @@ public class SearchReq {
 	@JsonProperty("VehicleType")
 	private String vehicleType;
 	
+	@JsonProperty("SectionId")
+	private String sectionId;
+
+	
 //	@JsonProperty("PlateNumber")
 //	private String plateNo;
 	

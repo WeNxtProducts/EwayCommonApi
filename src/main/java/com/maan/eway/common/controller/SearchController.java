@@ -17,6 +17,7 @@ import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.req.ViewQuoteDetailsReq;
 import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
+import com.maan.eway.common.res.AdminViewQuoteCommonRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.CommonRes;
@@ -125,6 +126,29 @@ public class SearchController {
 		}
 
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/adminviewquoteriskdetails")
+	@ApiOperation(value = "This method is Get Quote Details")
+	public ResponseEntity<CommonRes> adminViewQuoteRiskDetails(@RequestBody SearchReq req) {
+		CommonRes commonRes = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		// Save
+		AdminViewQuoteCommonRes res = entityService.adminViewQuoteRiskDetails(req);
+		commonRes.setCommonResponse(res);
+		commonRes.setIsError(false);
+		commonRes.setErrorMessage(null);
+		commonRes.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(commonRes, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
 
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminviewratingdetails")

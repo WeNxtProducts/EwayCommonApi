@@ -40,7 +40,9 @@ import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.DocumentUniqueDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
+
 import com.maan.eway.bean.EserviceCommonDetails;
+
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
@@ -59,6 +61,22 @@ import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.req.ViewQuoteDetailsReq;
 import com.maan.eway.common.res.AccessoriesRes;
 import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
+import com.maan.eway.common.res.AdminViewQuoteAllRiskRes;
+import com.maan.eway.common.res.AdminViewQuoteBurglaryRes;
+import com.maan.eway.common.res.AdminViewQuoteBusinessInterruptionRes;
+import com.maan.eway.common.res.AdminViewQuoteBusinessRiskRes;
+import com.maan.eway.common.res.AdminViewQuoteCommonRes;
+import com.maan.eway.common.res.AdminViewQuoteContentRes;
+import com.maan.eway.common.res.AdminViewQuoteElecEquipmentRes;
+import com.maan.eway.common.res.AdminViewQuoteEmpLiabilityRes;
+import com.maan.eway.common.res.AdminViewQuoteFidelityRes;
+import com.maan.eway.common.res.AdminViewQuoteFirePerilsRes;
+import com.maan.eway.common.res.AdminViewQuoteGoodsInTransitRes;
+import com.maan.eway.common.res.AdminViewQuoteMachineryBreakDownRes;
+import com.maan.eway.common.res.AdminViewQuoteMoneyRes;
+import com.maan.eway.common.res.AdminViewQuotePersonalAccidentRes;
+import com.maan.eway.common.res.AdminViewQuotePlateGlassRes;
+import com.maan.eway.common.res.AdminViewQuotePubLiabilityRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.DocumentDetailsRes;
@@ -89,10 +107,14 @@ import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
+
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
@@ -164,6 +186,9 @@ public class SearchServiceImpl implements SearchService {
 
 	@Autowired
 	BuildingDetailsRepository buildingrepo;
+	
+	@Autowired
+   private	EserviceBuildingDetailsRepository eservicebuildingrepo;
 
 	@Autowired
 	ProductEmployeesDetailsRepository personalRepository;
@@ -177,6 +202,8 @@ public class SearchServiceImpl implements SearchService {
 	@Autowired
 	private EserviceBuildingDetailsRepository eBuildingRepo;
 	
+	@Autowired
+	private EserviceCommonDetailsRepository eCommonRepo;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -469,7 +496,7 @@ public class SearchServiceImpl implements SearchService {
 			
 			
 			// Find All
-			Root<BranchMaster>    c = query.from(BranchMaster.class);		
+			Root<BranchMaster> c = query.from(BranchMaster.class);		
 			
 			// Select
 			query.select(c );
@@ -549,6 +576,330 @@ public class SearchServiceImpl implements SearchService {
 		return viewRes;
 	}
 
+	
+	@Override
+	public AdminViewQuoteCommonRes adminViewQuoteRiskDetails(SearchReq req) {
+		
+		EserviceBuildingDetails build = new EserviceBuildingDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		
+		EserviceCommonDetails common = new EserviceCommonDetails();
+		
+		AdminViewQuoteCommonRes res = new AdminViewQuoteCommonRes();
+		
+		try
+		{
+			
+		List<EserviceBuildingDetails> building = eservicebuildingrepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+		List<EserviceCommonDetails> commondata = eCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+		
+		for(EserviceBuildingDetails id : building)
+		{	
+	    if(id.getSectionId().equalsIgnoreCase("47")) 
+	    {
+	    	if(building.size() > 0) 
+	    	{
+	    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+	    		
+	    		AdminViewQuoteContentRes contentres = new AdminViewQuoteContentRes();	    		
+	    		
+	    			dozerMapper.map(contentres, data);
+		    	    contentres.setContentSumInsured(id.getContentSuminsured());
+		    	    res.setContentRisk(contentres);
+	    		
+	    	 }
+	    }
+	    if(id.getSectionId().equalsIgnoreCase("3")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuoteAllRiskRes allriskres = new AdminViewQuoteAllRiskRes();	    		
+		    	    
+		    	    
+		    			dozerMapper.map(allriskres, data);
+		    			allriskres.setAllRiskSumInsured(id.getAllriskSuminsured());
+			    	    res.setAllRisk(allriskres);		    		}
+		    	
+		  }
+	    if(id.getSectionId().equalsIgnoreCase("41")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuoteMachineryBreakDownRes machineryBreakres = new AdminViewQuoteMachineryBreakDownRes();	    		
+		    	    
+		    	    
+		    		
+		    			dozerMapper.map(machineryBreakres, data);
+		    			machineryBreakres.setBoilerPlantsSi(id.getBoilerPlantsSi());
+		    			machineryBreakres.setElecMachinesSi(id.getElecMachinesSi());
+		    			machineryBreakres.setEquipmentSi(id.getEquipmentSi());
+		    			machineryBreakres.setGeneralMachineSi(id.getGeneralMachineSi());
+		    			machineryBreakres.setMachineEquipSi(id.getMachineEquipSi());	 
+		    			machineryBreakres.setManuUnitsSi(id.getManuUnitsSi());
+		    			machineryBreakres.setPowerPlantSi(id.getPowerPlantSi());    			
+		    			res.setMachineryBreakDownRisk(machineryBreakres);   		
+			    	
+		    	 }
+		  }
+		
+	    if(id.getSectionId().equalsIgnoreCase("42")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuoteMoneyRes moneyRes = new AdminViewQuoteMoneyRes();	    		
+		    	    
+		    	    
+		    		
+		    			dozerMapper.map(moneyRes, data);
+		    			moneyRes.setMoneyAnnualEstimate(id.getMoneyAnnualEstimate());
+		    			moneyRes.setMoneyCollector(id.getMoneyCollector());
+		    			moneyRes.setMoneyDirectorResidence(id.getMoneyDirectorResidence());
+		    			moneyRes.setMoneyMajorLoss(id.getMoneyMajorLoss());	
+		    			moneyRes.setMoneyOutofSafe(id.getMoneyOutofSafe());
+		    			moneyRes.setMoneySafeLimit(id.getMoneySafeLimit());
+		    			res.setMoneyRisk(moneyRes); 		
+			    	 
+		    	 }
+		  }
+		
+	     if(id.getSectionId().equalsIgnoreCase("52")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuoteBurglaryRes burglaryres = new AdminViewQuoteBurglaryRes();	    		
+		    	    
+		    	    
+		    		
+		    			dozerMapper.map(burglaryres, data);
+		    			burglaryres.setAccessibleWindows(id.getAccessibleWindows());
+		    			burglaryres.setAddress(id.getAddress());
+		    			burglaryres.setApplianceLossPercent(id.getApplianceLossPercent());
+		    			burglaryres.setApplianceSi(id.getApplianceSi());
+		    			burglaryres.setBackDoors(id.getBackDoors());
+		    			burglaryres.setBuildingBuildYear(id.getBuildingBuildYear());
+		    			burglaryres.setBuildingOccupied(id.getBuildingOccupied());
+		    			burglaryres.setCashValueablesLossPercent(id.getCashValueablesLossPercent());
+		    			burglaryres.setCashValueablesSi(id.getCashValueablesSi());	
+		    			burglaryres.setCeilingType(id.getCeilingType());
+		    			burglaryres.setDistrictCode(id.getDistrictCode());
+		    			burglaryres.setDoorsMaterialId(id.getDoorsMaterialDesc());	 
+		    			burglaryres.setFrontDoors(id.getFrontDoors());
+		    			burglaryres.setFurnitureLossPercent(id.getFurnitureLossPercent());
+		    			burglaryres.setFurnitureSi(id.getFurnitureSi());
+		    			burglaryres.setGoodsLossPercent(id.getGoodsLossPercent());
+		    			burglaryres.setGoodsSi(id.getGoodsSi());
+		    			burglaryres.setInsuranceForId(id.getInsuranceForId());
+		    			burglaryres.setInternalWallType(id.getInternalWallType());
+		    			burglaryres.setNatureOfTradeId(id.getNatureOfTradeId());	
+		    			burglaryres.setStockInTradeSi(id.getStockInTradeSi());	
+		    			burglaryres.setNightLeftDoor(id.getNightLeftDoor());
+		    			burglaryres.setOccupiedYear(id.getOccupiedYear());
+		    			burglaryres.setRegionCode(id.getRegionCode());
+		    			burglaryres.setRoofType(id.getRoofType());
+		    			burglaryres.setShowWindow(id.getShowWindow());
+		    			burglaryres.setStockLossPercent(id.getStockLossPercent());
+		    			burglaryres.setWallType(id.getWallType());
+		    			burglaryres.setWatchmanGuardHours(id.getWatchmanGuardHours());
+		    			burglaryres.setWindowsMaterialId(id.getWindowsMaterialId());	  
+		    			res.setBurglaryRisk(burglaryres);			    	 }
+		    	
+		  }
+		
+	    if(id.getSectionId().equalsIgnoreCase("69")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuoteBusinessRiskRes businessres = new AdminViewQuoteBusinessRiskRes();	    		
+		    	    
+		    	    
+		    		dozerMapper.map(businessres, data);
+		    			businessres.setAllriskSumInsured(id.getAllriskSuminsured());
+		    			res.setBusinessRisk(businessres);    	
+		    		
+		    	 }
+		  }
+	    
+	    if(id.getSectionId().equalsIgnoreCase("39")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuoteElecEquipmentRes elecequipres = new AdminViewQuoteElecEquipmentRes();	    		
+		    	    
+		    	    
+		    		dozerMapper.map(elecequipres, data);
+		    		elecequipres.setElecEquipSumInsured(id.getElecEquipSuminsured());	
+		    		res.setElecEquipRisk(elecequipres);	
+		    		
+		    	 }
+		  }
+	    
+	    if(id.getSectionId().equalsIgnoreCase("53")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuotePlateGlassRes plateglassres = new AdminViewQuotePlateGlassRes();	    		
+		    	    
+		    	    
+		    		dozerMapper.map(plateglassres, data);
+		    		plateglassres.setPlateGlassSi(id.getPlateGlassSi());
+		    		plateglassres.setPlateGlassType(id.getPlateGlassType());	    		
+		    		res.setPlateGlassRisk(plateglassres);		    		
+		    	 }
+		  }
+	    
+	    if(id.getSectionId().equalsIgnoreCase("75")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuoteBusinessInterruptionRes busiIntter = new AdminViewQuoteBusinessInterruptionRes();	    		
+		    	    
+		    	    
+		    		dozerMapper.map(busiIntter, data);
+		    		busiIntter.setGrossProfitSi(id.getGrossProfitFc()); 
+		    		busiIntter.setIndemnityPeriodSi(id.getIndemnityPeriodFc());		    		
+		    		res.setBusinessInterruptionRisk(busiIntter);		    		
+		    	 }
+		  }
+	    
+	    if(id.getSectionId().equalsIgnoreCase("46")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuoteGoodsInTransitRes goodsintrans = new AdminViewQuoteGoodsInTransitRes();	    		
+		    	    
+		    	    
+		    		dozerMapper.map(goodsintrans, data);
+		    		goodsintrans.setTransportedBy(id.getTransportedBy());
+		    		goodsintrans.setGeographicalCoverage(id.getGeographicalCoverage());
+		    		goodsintrans.setModeOfTransport(id.getModeOfTransport());
+		    		goodsintrans.setSingleRoadSiFc(id.getSingleRoadSiFc());
+		    		goodsintrans.setEstAnnualCarriesSiFc(id.getEstAnnualCarriesSiFc());
+		    		res.setGoodsInTransitRisk(goodsintrans);   		
+		    	 }
+		  }
+	    
+	    if(id.getSectionId().equalsIgnoreCase("40")) 
+		 {
+		    	if(building.size() > 0) 
+		    	{
+		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		
+		    		AdminViewQuoteFirePerilsRes fireperils = new AdminViewQuoteFirePerilsRes();	    		
+		    	    
+		    	    
+		    		dozerMapper.map(fireperils, data);
+		    		fireperils.setBuildingSumInsured(id.getBuildingSuminsured());
+		    		fireperils.setIndemityPeriod(id.getIndemityPeriod());
+		    		fireperils.setMakutiYn(id.getMakutiYn());
+		    		res.setFirePerilsRisk(fireperils); 		
+		    	 }
+		  }
+	    
+	    
+		}
+	
+	    
+	    for(EserviceCommonDetails ids : commondata)
+		{
+	    
+	          if(ids.getSectionId().equalsIgnoreCase("43")) 
+		      {
+		    	if(commondata.size() > 0) 
+		    	{
+		    		List<EserviceCommonDetails> data = new ArrayList<EserviceCommonDetails>();
+		    		
+		    		AdminViewQuoteFidelityRes fidelityres = new AdminViewQuoteFidelityRes();	    		
+		    	    
+		    	    
+		    		dozerMapper.map(fidelityres, data);
+		    		fidelityres.setFidEmpSi(ids.getFidEmpCount());	
+		    		fidelityres.setFidEmpSi(ids.getFidEmpSi());
+		    		res.setFidelityRisk(fidelityres);		    		
+		    	 }
+		    	
+		        if(ids.getSectionId().equalsIgnoreCase("35")) 
+				 {
+				    	if(commondata.size() > 0) 
+				    	{
+				    		List<EserviceCommonDetails> data = new ArrayList<EserviceCommonDetails>();
+				    		
+				    		AdminViewQuotePersonalAccidentRes pares = new AdminViewQuotePersonalAccidentRes();	    		
+				    	    
+				    	    
+				    		dozerMapper.map(pares, data);
+				    		pares.setOccupationType(ids.getOccupationType());
+				    		pares.setSumInsured(ids.getPersonalLiabilitySi());	    		
+				    		res.setPersonalAccident(pares); 	
+				    		
+				    	 }
+				  }
+		        
+		        if(ids.getSectionId().equalsIgnoreCase("45")) 
+				 {
+				    	if(commondata.size() > 0) 
+				    	{
+				    		List<EserviceCommonDetails> data = new ArrayList<EserviceCommonDetails>();
+				    		
+				    		AdminViewQuoteEmpLiabilityRes empliability = new AdminViewQuoteEmpLiabilityRes();	    		
+				    	    
+				    	    
+				    		dozerMapper.map(empliability, data);
+				    		empliability.setEmpLiabilitySi(ids.getEmpLiabilitySi());
+				    		empliability.setTotalNoOfEmployees(ids.getTotalNoOfEmployees());	
+				    		res.setEmpLiability(empliability);				    		
+				    	 }
+				  }
+		        
+		        if(ids.getSectionId().equalsIgnoreCase("54")) 
+				 {
+				    	if(commondata.size() > 0) 
+				    	{
+				    		List<EserviceCommonDetails> data = new ArrayList<EserviceCommonDetails>();
+				    		
+				    		AdminViewQuotePubLiabilityRes publiability = new AdminViewQuotePubLiabilityRes();	    		
+				    	    
+				    	    
+				    		dozerMapper.map(publiability, data);
+				    		publiability.setLiabilitySi(ids.getLiabilitySi());
+				    		publiability.setAggSumInsured(ids.getAggSuminsured());
+				    		publiability.setAooSumInsured(ids.getAooSuminsured());
+				    		publiability.setProductTurnoverSi(ids.getProductTurnoverSi());
+				    		publiability.setCategory(ids.getCategoryId());
+				    		res.setPublicLiabilityRisk(publiability);	    		
+				    	 }
+				   }
+		       }
+		 
+		  }
+		  
+	    res.setQuoteNo(req.getQuoteNo());
+	    res.setRequestReferenceNo(req.getRequestReferenceNo());
+	    }
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return res;
+	}
 	
 	public List<SearchPremiumCoverDetailsRes> getCoverDetails(Map<Integer,List<PolicyCoverData>> groupByCover  ) {
 		List<SearchPremiumCoverDetailsRes>  coverListRes = new ArrayList<SearchPremiumCoverDetailsRes>();
@@ -748,18 +1099,18 @@ public class SearchServiceImpl implements SearchService {
 	public SearchPremiumDetailsRes adminPremiumSearch(SearchReq req) {
 		SearchPremiumDetailsRes viewRes = new SearchPremiumDetailsRes();
 		try {
-			List<MotorDataDetails> motorDatas=null;
+			List<MotorDataDetails> motorid=null;
 			List<PolicyCoverData> covers=null;
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
 				// Find Motor Data
-				 motorDatas = motorRepo
+				 motorid = motorRepo
 						.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 				 covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			}else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
-				 motorDatas = motorRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+				 motorid = motorRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
 					 covers = coverRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
 			}
-				for (MotorDataDetails mot : motorDatas) {
+				for (MotorDataDetails mot : motorid) {
 					// Cover Details
 					List<PolicyCoverData> filterCovers = covers.stream()
 							.filter(o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId())))
@@ -787,17 +1138,17 @@ public class SearchServiceImpl implements SearchService {
 		SearchROPDetailsRes viewRes = new SearchROPDetailsRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			List<MotorDataDetails> motorDatas=null;
+			List<MotorDataDetails> motorid=null;
 			List<MotorDriverDetails> driverList =null;
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
 				// Find Motor Data
-				 motorDatas = motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(), "D");
+				 motorid = motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(), "D");
 				 driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
 			}else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
-				 motorDatas = motorRepo.findByRequestReferenceNoAndStatusNotOrderByVehicleIdAsc(req.getRequestReferenceNo(), "D");
+				 motorid = motorRepo.findByRequestReferenceNoAndStatusNotOrderByVehicleIdAsc(req.getRequestReferenceNo(), "D");
 				 driverList = driverRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
 			}
-			for (MotorDataDetails mot : motorDatas) {
+			for (MotorDataDetails mot : motorid) {
 			List<SearchDriverDetailsRes>   driverResList = new ArrayList<SearchDriverDetailsRes>();
 			List<MotorDriverDetails> filterDriverList = driverList.stream().filter( o -> o.getRiskId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
 			for (MotorDriverDetails dri :  filterDriverList) {
@@ -826,17 +1177,17 @@ public class SearchServiceImpl implements SearchService {
 		SearchROPVehicleDetailsRes viewRes = new SearchROPVehicleDetailsRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-		List<EserviceMotorDetails> motorDatas=null;
+		List<EserviceMotorDetails> motorid=null;
 		String chassisNo="";
 		if (StringUtils.isNotBlank(req.getQuoteNo())) {
 			// Find Motor Data
-			 motorDatas = repo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			 motorid = repo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			
 			 }else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
-			 motorDatas = repo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			 motorid = repo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 		}
 		List<SearchROPVehicleRes> resList=new ArrayList<SearchROPVehicleRes>();
-		for (EserviceMotorDetails data : motorDatas) { 
+		for (EserviceMotorDetails data : motorid) { 
 			chassisNo=data.getChassisNumber();
 			if(req.getProductId().equalsIgnoreCase("5")){
 				MotorVehicleInfo vehInfo = motVehInfoRepo.findTop1ByResChassisNumberOrderByEntryDateDesc(chassisNo);
@@ -1072,7 +1423,7 @@ public class SearchServiceImpl implements SearchService {
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
-			;
+			
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
 			cal.set(Calendar.HOUR_OF_DAY, 1);
@@ -1237,4 +1588,6 @@ public class SearchServiceImpl implements SearchService {
 		}
 		return res;
 	}
+
+	
 }

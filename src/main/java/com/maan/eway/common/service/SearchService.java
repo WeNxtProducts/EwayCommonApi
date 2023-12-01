@@ -8,6 +8,7 @@ import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.req.ViewQuoteDetailsReq;
 import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
+import com.maan.eway.common.res.AdminViewQuoteCommonRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.DocumentDetailsRes;
@@ -49,6 +50,8 @@ public interface SearchService {
 	List<BuildingSearchRes> adminSearchBuildingDeatails(SearchReq req);
 
 	AccessoriesSumInsureDropDownRes getAccessoriesSuminsuredByQuoteNo(SearchReq req);
+	
+	AdminViewQuoteCommonRes adminViewQuoteRiskDetails(SearchReq req);
 
 	ViewQuoteDetailsRes viewQuoteDetails(ViewQuoteDetailsReq req);
 
