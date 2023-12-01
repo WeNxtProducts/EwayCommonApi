@@ -76,6 +76,7 @@ public class CopyPolicyCoverData {
 
 			
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			newData.removeIf(t -> 945==t.getCoverId());
 			List<PolicyCoverDataEndt> mappedData = newData.stream().map( m->{ 
 				PolicyCoverDataEndt map = dozerMapper.map(m, PolicyCoverDataEndt.class);
 				map.setPolicyNo(StringUtils.isNotBlank(hpmData.getOriginalPolicyNo())?hpmData.getOriginalPolicyNo():hpmData.getPolicyNo());
