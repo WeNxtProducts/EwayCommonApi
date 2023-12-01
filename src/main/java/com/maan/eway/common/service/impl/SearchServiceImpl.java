@@ -337,7 +337,7 @@ public class SearchServiceImpl implements SearchService {
 				res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 				res.setMobileNo1(data.get("mobileNumber").toString());
 				res.setBranchName(branchName);
-				res.setLoginId(req.getLoginId());
+				res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
 				res.setEffectiveDate(effectiveDate);
 				res.setCurrency(data.get("currency").toString());
 				String entryDate = data.get("entryDate") == null ? null
@@ -366,7 +366,7 @@ public class SearchServiceImpl implements SearchService {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 					res.setMobileNo1(data.get("mobileNumber").toString());
 					res.setBranchName(branchName);
-					res.setLoginId(req.getLoginId());
+					res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
 					res.setEffectiveDate(effectiveDate);
 					res.setCurrency(data.get("currency").toString());
 					String entryDate = data.get("entryDate") == null ? null
@@ -392,7 +392,7 @@ public class SearchServiceImpl implements SearchService {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 					res.setMobileNo1(data.get("mobileNumber").toString());
 					res.setBranchName(branchName);
-					res.setLoginId(req.getLoginId());
+					res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
 					res.setEffectiveDate(effectiveDate);
 					res.setCurrency(data.get("currency").toString());
 					String entryDate = data.get("entryDate") == null ? null
@@ -418,7 +418,7 @@ public class SearchServiceImpl implements SearchService {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 					res.setMobileNo1(data.get("mobileNumber").toString());
 					res.setBranchName(branchName);
-					res.setLoginId(req.getLoginId());
+					res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
 					res.setEffectiveDate(effectiveDate);
 					res.setCurrency(data.get("currency").toString());
 					String entryDate = data.get("entryDate") == null ? null
