@@ -2741,7 +2741,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			for (ListItemValue data : getList) {
 				MachineryDropDownRes res = new MachineryDropDownRes();
 				if(data.getItemCode().equals("1")) {
-					if(build.getBoilerPlantsSi()!=null) {
+					if(build.getBoilerPlantsSi()!=null|| build.getMachinerySi()!=null) {
 							if(build.getBoilerPlantsSi().compareTo(BigDecimal.ZERO) > 0 ) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
@@ -2755,7 +2755,7 @@ public class DropDownServiceImpl  implements DropDownService{
 					
 				}}
 				if(data.getItemCode().equals("2")) {
-					if(build.getElecMachinesSi()!=null ) {
+					if(build.getElecMachinesSi()!=null || build.getMachinerySi()!=null) {
 							if(build.getElecMachinesSi().compareTo(BigDecimal.ZERO) > 0) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
@@ -2767,7 +2767,7 @@ public class DropDownServiceImpl  implements DropDownService{
 					}
 				}}
 				if(data.getItemCode().equals("3")) {
-					if(build.getMachineEquipSi()!=null) {
+					if(build.getMachineEquipSi()!=null|| build.getMachinerySi()!=null) {
 						if(build.getMachineEquipSi().compareTo(BigDecimal.ZERO) > 0) {
 					
 						res.setCode(data.getItemCode());
@@ -2780,7 +2780,7 @@ public class DropDownServiceImpl  implements DropDownService{
 					}
 				}}
 				if(data.getItemCode().equals("4")) {
-					if(build.getEquipmentSi()!=null ) {
+					if(build.getEquipmentSi()!=null|| build.getMachinerySi()!=null ) {
 						if(build.getEquipmentSi().compareTo(BigDecimal.ZERO) > 0) {
 					
 						res.setCode(data.getItemCode());
@@ -2792,7 +2792,7 @@ public class DropDownServiceImpl  implements DropDownService{
 					}
 				}}
 				if(data.getItemCode().equals("5")) {
-					if(build.getGeneralMachineSi()!=null ) {
+					if(build.getGeneralMachineSi()!=null|| build.getMachinerySi()!=null ) {
 						if(build.getGeneralMachineSi().compareTo(BigDecimal.ZERO) > 0) {
 					
 						res.setCode(data.getItemCode());
@@ -2805,7 +2805,7 @@ public class DropDownServiceImpl  implements DropDownService{
 					}
 				}}
 				if(data.getItemCode().equals("6")) {
-					if(build.getManuUnitsSi()!=null) {
+					if(build.getManuUnitsSi()!=null|| build.getMachinerySi()!=null) {
 						if(build.getManuUnitsSi().compareTo(BigDecimal.ZERO) > 0) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
@@ -2816,7 +2816,7 @@ public class DropDownServiceImpl  implements DropDownService{
 					}
 				}}
 				if(data.getItemCode().equals("7")) {
-					if(build.getPowerPlantSi()!=null) {
+					if(build.getPowerPlantSi()!=null|| build.getMachinerySi()!=null) {
 						if(build.getPowerPlantSi().compareTo(BigDecimal.ZERO) > 0) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
@@ -2828,7 +2828,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				} }
 				
 				if(data.getItemCode().equals("8")) {
-					if(build.getPowerPlantSi()!=null) {
+					if(build.getPowerPlantSi()!=null || build.getMachinerySi()!=null) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
 						res.setStatus(data.getStatus());
@@ -2840,6 +2840,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			}
 			
 			
+			sumInsured = sumInsured.add(build.getMachinerySi()==null ? new BigDecimal(0) : build.getMachinerySi());
 			resp.setTotalSumInsured(sumInsured);
 			resList.stream().filter(o -> o.getCode().equalsIgnoreCase("8")).forEach(o -> o.setSumInsured(resp.getTotalSumInsured()));
 			resp.setContentTypeRes(resList);
