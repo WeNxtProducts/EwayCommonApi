@@ -2857,7 +2857,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resp;
 	}
-
+ 
 
 	@Override
 	public List<DropDownRes> getTaxFor(LovDropDownReq req) {
@@ -3185,6 +3185,52 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "TYPE_OF_PROPERTIES" ;
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> modeOfTransPort(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "MODE_OF_TRANSPORT" ;
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> geographicalCoverage(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "GEOGRAPHICAL_COVERAGE" ;
 			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();

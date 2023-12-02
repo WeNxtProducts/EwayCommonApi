@@ -225,4 +225,8 @@ public interface DropDownService {
 	List<DropDownRes> buildingPropertyTypes(LovDropDownReq req);
 	List<DropDownRes> getReportBuissnessTypes(LovDropDownReq req);
 
+	List<DropDownRes> modeOfTransPort(LovDropDownReq req);
+
+	List<DropDownRes> geographicalCoverage(LovDropDownReq req);
+
 }
