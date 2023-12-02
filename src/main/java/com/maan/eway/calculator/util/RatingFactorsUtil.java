@@ -626,7 +626,7 @@ public class RatingFactorsUtil {
 				 e.setInsuranceId(data.get(0).get("companyId").toString());
 				 e.setProductId(data.get(0).get("productId").toString());
 				 e.setSectionId("99999");
-				  List<Tuple> loadTax = LoadTax(e, Arrays.asList("B", "N"));
+				  List<Tuple> loadTax = LoadTax(e, Arrays.asList("NB"));
 				  Double totalTax=loadTax==null?0D:loadTax.stream().mapToDouble(t->t.get("value")==null?0D:Double.parseDouble(t.get("value").toString())).sum();				  
 				  r.put("TOTALTAX", totalTax);
 				  

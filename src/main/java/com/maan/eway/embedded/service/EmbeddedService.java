@@ -1,9 +1,11 @@
 package com.maan.eway.embedded.service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -19,7 +21,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +71,9 @@ public class EmbeddedService {
 	
 	@Value(value = "${embedded.scheduleUrl}")
 	private String scheduleUrl;
+	
+	@PersistenceContext
+	private EntityManager em;
 	
 	@Autowired
 	private GroupMedicalDetailsRepository groupMedicalRepo;
@@ -169,7 +180,7 @@ public class EmbeddedService {
 						
 						
 						double sum = rating.stream().filter(t-> t.get("baseRate")!=null).mapToDouble(t-> Double.parseDouble(t.get("baseRate").toString())).sum();
-						premium=new BigDecimal(Math.round(sum));
+						premium=new BigDecimal(sum,MathContext.DECIMAL32);
 						Double totalTax_percent=(Double) commissionDetails.get("TOTALTAX");
 						BigDecimal totalTax = premium.multiply(new BigDecimal((Double) (totalTax_percent/ 100))).setScale(3, RoundingMode.HALF_UP);
 						BigDecimal overallPremium = premium.add(totalTax);
@@ -179,7 +190,7 @@ public class EmbeddedService {
 						
 						String policyNo=genNo.generatePolicyNo("1001","100");
 						//notifcationService.getShorternURL(pdfUrl+""+policyNo);
-						
+						LocalDate previousPolicyExpDate =getLatestExpiryDateByMobile(request.getMobileNumber());
 						if(StringUtils.isNotEmpty(request.getOrderDate())) {
 							SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 							sdf.setTimeZone(TimeZone.getTimeZone(ZoneId.of("Africa/Dar_es_Salaam")));
@@ -190,9 +201,17 @@ public class EmbeddedService {
 									.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
 								
 						}else {
-							expiredDate=Date.from(LocalDate.now(ZoneId.of("Africa/Dar_es_Salaam")).plusDays(Long.parseLong(noofDays)-2)
-									.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
-							inceptionDate=new Date();
+							if(previousPolicyExpDate==null) {
+								expiredDate=Date.from(LocalDate.now(ZoneId.of("Africa/Dar_es_Salaam")).plusDays(Long.parseLong(noofDays)-2)
+										.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
+								inceptionDate=new Date();
+							}else {
+								expiredDate=Date.from(previousPolicyExpDate.plusDays(Long.parseLong(noofDays)-2)
+										.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
+								inceptionDate= Date.from(previousPolicyExpDate.atStartOfDay(ZoneId.of("Africa/Dar_es_Salaam")).toInstant());
+
+
+							}
 
 						}
 						
@@ -340,6 +359,33 @@ public class EmbeddedService {
 			e.printStackTrace();
 		}
 		return res;
+	}
+	
+	private LocalDate getLatestExpiryDateByMobile(String mobileNo) {
+		 LocalDate localDate =null;
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Date> query =cb.createQuery(Date.class);
+			Root<GroupMedicalDetails> root =query.from(GroupMedicalDetails.class);
+			Expression<Date> expiryDate =cb.max(root.get("expiryDate")).as(Date.class);
+			query.select(expiryDate)
+			.where(cb.equal(root.get("mobileNo"), mobileNo),cb.greaterThanOrEqualTo(root.get("expiryDate"), cb.currentDate()));
+			Date date =em.createQuery(query).getSingleResult();
+			
+			if(date==null) {
+				return localDate;
+			}else {
+				Instant instant = date.toInstant();
+
+		        // Convert Instant to LocalDate
+		        return localDate = instant.atZone(ZoneId.of("Africa/Dar_es_Salaam")).toLocalDate().plusDays(1);
+			}
+					
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 }
