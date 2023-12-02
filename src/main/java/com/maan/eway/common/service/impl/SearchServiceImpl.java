@@ -709,8 +709,10 @@ public class SearchServiceImpl implements SearchService {
 		    			burglaryres.setStockLossPercent(id.getStockLossPercent());
 		    			burglaryres.setWallType(id.getWallType());
 		    			burglaryres.setWatchmanGuardHours(id.getWatchmanGuardHours());
-		    			burglaryres.setWindowsMaterialId(id.getWindowsMaterialId());	  
-		    			res.setBurglaryRisk(burglaryres);			    	 }
+		    			burglaryres.setWindowsMaterialId(id.getWindowsMaterialId());	 
+		    			burglaryres.setBurglarySi(id.getBurglarySi());
+		    			res.setBurglaryRisk(burglaryres);
+		    			}
 		    	
 		  }
 		

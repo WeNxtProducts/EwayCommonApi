@@ -85,6 +85,9 @@ public class AdminViewQuoteBurglaryRes {
 	@JsonProperty("CashValueablesSi")
 	private BigDecimal cashValueablesSi;
 	
+	@JsonProperty("BurglarySi")
+	private BigDecimal burglarySi;
+	
 	@JsonProperty("StockLossPercent")
 	private Integer stockLossPercent;
 	
