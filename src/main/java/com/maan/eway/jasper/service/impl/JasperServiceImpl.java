@@ -649,5 +649,22 @@ public class JasperServiceImpl implements JasperService {
 		log.info("Exit into getCommonJasperPdfFileByJson");
 		return res;
 	}
+
+	@Override
+	public JasperDocumentRes getInalipaSchedule(String policyNo) {
+		log.info("Enter into getInalipaSchedule \n Argument ==> "+policyNo);
+		JasperDocumentRes res = new JasperDocumentRes();
+		try {
+			Map<String,Object> response = jasperCustomeImple.getInalipaSchedule(policyNo);
+			String jsonString = gson.toJson(response);
+			String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+policyNo.replaceAll("[\\/:*?\"<>|]*", "");
+			res = getCommonJasperPdfFileByJson("/report/jasper/InalipaSchedule.jrxml", jasperSaveLocation, jsonString, null, "- InalipaSchedule.json");
+			log.info("Exit into getInalipaSchedule");
+		}catch(Exception e) {
+			log.info("Error in getInalipaSchedule ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		return res;
+	}
 	
 }

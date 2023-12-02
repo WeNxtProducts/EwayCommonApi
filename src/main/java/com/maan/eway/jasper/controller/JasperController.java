@@ -23,6 +23,8 @@ import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.service.PrintReqService;
 
+import nonapi.io.github.classgraph.utils.CollectionUtils;
+
 @RestController
 @RequestMapping("/pdf")
 public class JasperController {
@@ -135,6 +137,21 @@ public class JasperController {
 			return new ResponseEntity<JasperDocumentRes>(res, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping("/InalipaSchedule")
+	public ResponseEntity<CommonRes> getInalipaSchedule(@RequestParam ("policyNo") String policyNo) {
+		CommonRes data = new CommonRes();
+		JasperDocumentRes res = jasper.getInalipaSchedule(policyNo);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if(res !=null) {
+			return new ResponseEntity<CommonRes>(data,HttpStatus.CREATED);
+		}else {
+			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
 		}
 	}
 	

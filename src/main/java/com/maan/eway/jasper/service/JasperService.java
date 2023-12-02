@@ -24,5 +24,7 @@ public interface JasperService {
 
 	public JasperDocumentRes illustration(String jsonFile);
 
+	public JasperDocumentRes getInalipaSchedule(String policyNo);
+
 
 }

@@ -2,6 +2,7 @@ package com.maan.eway.jasper.service.impl;
 
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.ExclusionMaster;
+import com.maan.eway.bean.GroupMedicalDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -77,6 +79,7 @@ import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
+import com.maan.eway.repository.GroupMedicalDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
@@ -114,6 +117,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private ListItemValueRepository listItemValueRepo;
+	
+	@Autowired
+	private GroupMedicalDetailsRepository groupMedicalDetRepo;
 		
 	private String RenewalDate(String Input) {
 		DateTimeFormatter inputformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -1671,6 +1677,38 @@ public class JasperCustomServiceImple {
 		}
 		return warrantyList;
 		
+	}
+
+	public Map<String, Object> getInalipaSchedule(String policyNo) {
+		Map<String,Object> res = new HashMap<String,Object>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		try {
+			List<Map<String,Object>> list = groupMedicalDetRepo.getInalipaScheduleByPolicyNo(policyNo);
+			if(!CollectionUtils.isEmpty(list)) {
+				Map<String,Object> map = list.get(0);
+				res.put("PolicyNo", map.get("POLICY_NO")==null?"":map.get("POLICY_NO").toString());
+				res.put("InsuredName", map.get("CUSTOMER_NAME")==null?"":map.get("CUSTOMER_NAME").toString());
+				res.put("MobileCode", map.get("MOBILE_CODE")==null?"":map.get("MOBILE_CODE").toString());
+				res.put("MobileNo", map.get("MOBILE_NO")==null?"":map.get("MOBILE_NO").toString());
+				res.put("TranscationNo", map.get("CLIENT_TRANSACTION_NO")==null?"":map.get("CLIENT_TRANSACTION_NO").toString());
+				res.put("TranscationDate", map.get("ENTRY_DATE")==null?"":sdf.format(map.get("ENTRY_DATE")).toString());
+				res.put("LoginId", map.get("LOGIN_ID")==null?"":map.get("LOGIN_ID").toString());
+				res.put("StartDate", map.get("INCEPTION_DATE")==null?"":sdf.format(map.get("INCEPTION_DATE")).toString());
+				res.put("EndDate", map.get("EXPIRY_DATE")==null?"":sdf.format(map.get("EXPIRY_DATE")).toString());
+				res.put("AmountPaid", map.get("AMOUNT_PAID")==null?"":map.get("AMOUNT_PAID").toString());
+				res.put("Premium", map.get("PREMIUM")==null?"":map.get("PREMIUM").toString());
+				res.put("TaxPercent", map.get("TAX_PERCENTAGE")==null?"":map.get("TAX_PERCENTAGE").toString());
+				res.put("TaxPremium", map.get("TAX_PREMIUM")==null?"":map.get("TAX_PREMIUM").toString());
+				res.put("OverAllPremium", map.get("OVERALL_PREMIUM")==null?"":map.get("OVERALL_PREMIUM").toString());
+				res.put("PlanObtained", map.get("PLAN_OBTAINED")==null?"":map.get("PLAN_OBTAINED").toString());
+				res.put("Companylogo", map.get("COMPANY_LOGO")==null?"":map.get("COMPANY_LOGO").toString());
+				res.put("CompanyName", map.get("COMPANY_NAME")==null?"":map.get("COMPANY_NAME").toString());
+			}
+		}catch(Exception e) {
+			log.info("Error in jasperCustomServiceImple :: getInalipaSchedule ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		return res;
 	}
 
 }
