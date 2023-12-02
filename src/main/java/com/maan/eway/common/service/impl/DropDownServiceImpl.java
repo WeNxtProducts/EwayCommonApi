@@ -2749,7 +2749,7 @@ public class DropDownServiceImpl  implements DropDownService{
 						res.setSumInsured(build.getBoilerPlantsSi());
 						resList.add(res);
 						
-						sumInsured = sumInsured.add(build.getBoilerPlantsSi());
+						sumInsured = sumInsured.add(build.getBoilerPlantsSi()!=null ?build.getBoilerPlantsSi() :build.getMachinerySi()  );
 						
 					}
 					
@@ -2763,7 +2763,8 @@ public class DropDownServiceImpl  implements DropDownService{
 						res.setSumInsured(build.getElecMachinesSi());
 						resList.add(res);
 						
-						sumInsured = sumInsured.add(build.getElecMachinesSi());
+					//	sumInsured = sumInsured.add(build.getElecMachinesSi());
+						sumInsured = sumInsured.add(build.getElecMachinesSi()!=null ?build.getElecMachinesSi() :build.getMachinerySi()  );
 					}
 				}}
 				if(data.getItemCode().equals("3")) {
@@ -2776,7 +2777,8 @@ public class DropDownServiceImpl  implements DropDownService{
 						res.setSumInsured(build.getMachineEquipSi());
 						resList.add(res);
 						
-						sumInsured = sumInsured.add(build.getMachineEquipSi());
+						//sumInsured = sumInsured.add(build.getMachineEquipSi());
+						sumInsured = sumInsured.add(build.getMachineEquipSi()!=null ?build.getMachineEquipSi() :build.getMachinerySi()  );
 					}
 				}}
 				if(data.getItemCode().equals("4")) {
@@ -2788,7 +2790,8 @@ public class DropDownServiceImpl  implements DropDownService{
 						res.setStatus(data.getStatus());
 						res.setSumInsured(build.getEquipmentSi());
 						resList.add(res);
-						sumInsured = sumInsured.add(build.getEquipmentSi());
+						//sumInsured = sumInsured.add(build.getEquipmentSi());
+						sumInsured = sumInsured.add(build.getEquipmentSi()!=null ?build.getEquipmentSi() :build.getMachinerySi()  );
 					}
 				}}
 				if(data.getItemCode().equals("5")) {
@@ -2801,7 +2804,8 @@ public class DropDownServiceImpl  implements DropDownService{
 						res.setSumInsured(build.getGeneralMachineSi());
 						resList.add(res);
 						
-						sumInsured = sumInsured.add(build.getGeneralMachineSi());
+						//sumInsured = sumInsured.add(build.getGeneralMachineSi());
+						sumInsured = sumInsured.add(build.getGeneralMachineSi()!=null ?build.getGeneralMachineSi() :build.getMachinerySi()  );
 					}
 				}}
 				if(data.getItemCode().equals("6")) {
@@ -2812,7 +2816,8 @@ public class DropDownServiceImpl  implements DropDownService{
 						res.setStatus(data.getStatus());
 						res.setSumInsured(build.getManuUnitsSi());
 						resList.add(res);
-						sumInsured = sumInsured.add(build.getManuUnitsSi());
+						//sumInsured = sumInsured.add(build.getManuUnitsSi());
+						sumInsured = sumInsured.add(build.getManuUnitsSi()!=null ?build.getManuUnitsSi() :build.getMachinerySi()  );
 					}
 				}}
 				if(data.getItemCode().equals("7")) {
@@ -2824,6 +2829,7 @@ public class DropDownServiceImpl  implements DropDownService{
 						res.setSumInsured(build.getPowerPlantSi());
 						resList.add(res);
 						sumInsured = sumInsured.add(build.getPowerPlantSi());
+						sumInsured = sumInsured.add(build.getPowerPlantSi()!=null ?build.getPowerPlantSi() :build.getMachinerySi()  );
 					}
 				} }
 				
