@@ -2742,7 +2742,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				MachineryDropDownRes res = new MachineryDropDownRes();
 				if(data.getItemCode().equals("1")) {
 					if(build.getBoilerPlantsSi()!=null|| build.getMachinerySi()!=null) {
-							if(build.getBoilerPlantsSi().compareTo(BigDecimal.ZERO) > 0 ) {
+						if(build.getBoilerPlantsSi().compareTo(BigDecimal.ZERO) > 0 || build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
 						res.setStatus(data.getStatus());
@@ -2756,7 +2756,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				}}
 				if(data.getItemCode().equals("2")) {
 					if(build.getElecMachinesSi()!=null || build.getMachinerySi()!=null) {
-							if(build.getElecMachinesSi().compareTo(BigDecimal.ZERO) > 0) {
+						if(build.getElecMachinesSi().compareTo(BigDecimal.ZERO) > 0 || build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
 						res.setStatus(data.getStatus());
@@ -2769,7 +2769,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				}}
 				if(data.getItemCode().equals("3")) {
 					if(build.getMachineEquipSi()!=null|| build.getMachinerySi()!=null) {
-						if(build.getMachineEquipSi().compareTo(BigDecimal.ZERO) > 0) {
+						if(build.getMachineEquipSi().compareTo(BigDecimal.ZERO) > 0 || build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
 					
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
@@ -2783,7 +2783,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				}}
 				if(data.getItemCode().equals("4")) {
 					if(build.getEquipmentSi()!=null|| build.getMachinerySi()!=null ) {
-						if(build.getEquipmentSi().compareTo(BigDecimal.ZERO) > 0) {
+						if(build.getEquipmentSi().compareTo(BigDecimal.ZERO) > 0 || build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
 					
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
@@ -2796,7 +2796,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				}}
 				if(data.getItemCode().equals("5")) {
 					if(build.getGeneralMachineSi()!=null|| build.getMachinerySi()!=null ) {
-						if(build.getGeneralMachineSi().compareTo(BigDecimal.ZERO) > 0) {
+						if(build.getGeneralMachineSi().compareTo(BigDecimal.ZERO) > 0 || build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
 					
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
@@ -2810,7 +2810,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				}}
 				if(data.getItemCode().equals("6")) {
 					if(build.getManuUnitsSi()!=null|| build.getMachinerySi()!=null) {
-						if(build.getManuUnitsSi().compareTo(BigDecimal.ZERO) > 0) {
+						if(build.getManuUnitsSi().compareTo(BigDecimal.ZERO) > 0 || build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
 						res.setStatus(data.getStatus());
@@ -2822,7 +2822,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				}}
 				if(data.getItemCode().equals("7")) {
 					if(build.getPowerPlantSi()!=null|| build.getMachinerySi()!=null) {
-						if(build.getPowerPlantSi().compareTo(BigDecimal.ZERO) > 0) {
+						if(build.getPowerPlantSi().compareTo(BigDecimal.ZERO) > 0 || build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
 						res.setStatus(data.getStatus());
@@ -2834,13 +2834,12 @@ public class DropDownServiceImpl  implements DropDownService{
 				} }
 				
 				if(data.getItemCode().equals("8")) {
-					if(build.getPowerPlantSi()!=null || build.getMachinerySi()!=null) {
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
 						res.setStatus(data.getStatus());
 					//	res.setSumInsured(build.getPowerPlantSi());
 						resList.add(res);
-				} }
+				}
 				
 			
 			}
