@@ -2956,7 +2956,8 @@ public class QuoteServiceImpl implements QuoteService {
 					Double MachineEquipSi = build.getMachineEquipSi() == null?0D :Double.valueOf(build.getMachineEquipSi().toPlainString()) ;
 					Double ManuUnitsSi = build.getManuUnitsSi() == null?0D :Double.valueOf(build.getManuUnitsSi().toPlainString()) ;
 					Double plantSi = build.getPowerPlantSi() == null?0D :Double.valueOf(build.getPowerPlantSi().toPlainString()) ;
-					Double machinerySi = ElecMachinesSi + BoilerPlantsSi + EquipmentSi + GeneralMachineSi + MachineEquipSi + ManuUnitsSi + plantSi ;
+					Double machineSi = build.getMachinerySi() == null?0D :Double.valueOf(build.getMachinerySi().toPlainString()) ;
+					Double machinerySi = ElecMachinesSi + BoilerPlantsSi + EquipmentSi + GeneralMachineSi + MachineEquipSi + ManuUnitsSi + plantSi + machineSi ;
 							
 					res.setMachinerySi( machinerySi==null ? "" :machinerySi.toString());
 					
