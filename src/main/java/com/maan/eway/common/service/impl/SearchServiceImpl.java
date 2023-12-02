@@ -1527,42 +1527,54 @@ public class SearchServiceImpl implements SearchService {
 				if(homeData.size()>0) {
 					HomePositionMaster home = homeData.get(0);
 					mapper.map(home, res);
+					res.setEndorsementYn(home.getEndtTypeId()==null?"N":"Y");
+					res.setStrickerNo(home.getStickerNumber()==null?"":	home.getStickerNumber());
+					res.setCovernoteNo(home.getCoverNoteNumber()==null?"":	home.getCoverNoteNumber().toString());
+					res.setPaymentMode(home.getPaymentType()==null?"":home.getPaymentType());
+					res.setPaymentStatus(home.getPaymentStatus()==null?"":home.getPaymentStatus());
+					res.setPremiaIntegrationStatus(home.getIntegrationStatus()==null?"": home.getIntegrationStatus());	
+					res.setTirraIntegrationStatus(home.getResponseStatusDesc()==null?"": home.getResponseStatusDesc());
+					
 					String customerId=homeData.get(0).getCustomerId();
 					
 					if (product.getMotorYn().equalsIgnoreCase("M")) { 	
 						
 						List<EserviceMotorDetails> motor = repo.findByCustomerId(customerId);
 						if (motor.size() > 0) {
-							res.setLoginid(motor.get(0).getLoginId());
-							res.setApplicationid(motor.get(0).getApplicationId());
-							res.setSourcetype(motor.get(0).getSourceType());
+							res.setLoginid(motor.get(0).getLoginId()==null?"": motor.get(0).getLoginId());
+							res.setApplicationid(motor.get(0).getApplicationId()==null?"":motor.get(0).getApplicationId());
+							res.setSourcetype(motor.get(0).getSourceType()==null?"":motor.get(0).getSourceType());
 						}
 						
 					} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
 					
 						List<EserviceTravelDetails> motor = eTravelrepo.findByCustomerId(customerId);
 						if (motor.size() > 0) {
-							res.setLoginid(motor.get(0).getLoginId());
-							res.setApplicationid(motor.get(0).getApplicationId());
-							res.setSourcetype(motor.get(0).getSourceType());
+							res.setLoginid(motor.get(0).getLoginId()==null?"": motor.get(0).getLoginId());
+							res.setApplicationid(motor.get(0).getApplicationId()==null?"":motor.get(0).getApplicationId());
+							res.setSourcetype(motor.get(0).getSourceType()==null?"":motor.get(0).getSourceType());
+					
+									
 						}
 					
 					} else if (product.getMotorYn().equalsIgnoreCase("A")) {
 
 						List<EserviceBuildingDetails> motor = eBuildingRepo.findByCustomerId(customerId);
 						if (motor.size() > 0) {
-							res.setLoginid(motor.get(0).getLoginId());
-							res.setApplicationid(motor.get(0).getApplicationId());
-							res.setSourcetype(motor.get(0).getSourceType());
+							res.setLoginid(motor.get(0).getLoginId()==null?"": motor.get(0).getLoginId());
+							res.setApplicationid(motor.get(0).getApplicationId()==null?"":motor.get(0).getApplicationId());
+							res.setSourcetype(motor.get(0).getSourceType()==null?"":motor.get(0).getSourceType());
+						
 						}
 						
 					} else {
 
 						List<EserviceCommonDetails> motor = eCommRepo.findByCustomerId(customerId);
 						if (motor.size() > 0) {
-							res.setLoginid(motor.get(0).getLoginId());
-							res.setApplicationid(motor.get(0).getApplicationId());
-							res.setSourcetype(motor.get(0).getSourceType());
+							res.setLoginid(motor.get(0).getLoginId()==null?"": motor.get(0).getLoginId());
+							res.setApplicationid(motor.get(0).getApplicationId()==null?"":motor.get(0).getApplicationId());
+							res.setSourcetype(motor.get(0).getSourceType()==null?"":motor.get(0).getSourceType());
+						
 						}
 						
 					}

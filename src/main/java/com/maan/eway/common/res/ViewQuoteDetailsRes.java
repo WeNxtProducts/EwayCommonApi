@@ -76,8 +76,10 @@ public class ViewQuoteDetailsRes {
 	private String referralDescription;  //not in hpm
 	@JsonProperty("AdminRemarks")
 	private String adminRemarks;
-	@JsonProperty("IntegrationStatus")
-	private String integrationStatus;
+	@JsonProperty("PremiaIntegrationStatus")
+	private String premiaIntegrationStatus;
+	@JsonProperty("TirraIntegrationStatus")
+	private String tirraIntegrationStatus;
 	
 	// if endt presents
 	@JsonProperty("EndtType")
@@ -88,6 +90,20 @@ public class ViewQuoteDetailsRes {
 	private String endtPremium;
 	@JsonProperty("EndtCount")
 	private String endtCount;
+	
+	@JsonProperty("EndorsementYn")
+	private String endorsementYn;
+	
+	@JsonProperty("PolicyNo")
+	private String policyNo;
+	@JsonProperty("StrickerNo")
+	private String strickerNo;
+	@JsonProperty("CoverNoteNo")
+	private String covernoteNo;
+	@JsonProperty("PaymentStatus")
+	private String paymentStatus;
+	@JsonProperty("PaymentMode")
+	private String paymentMode;
 
 
 

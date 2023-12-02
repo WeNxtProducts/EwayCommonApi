@@ -676,12 +676,13 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 					res.setLoginid(mot.getLoginId()==null?"":mot.getLoginId());
 					res.setOverallPremiumFc(mot.getOverallPremiumFc()==null?"":mot.getOverallPremiumFc().toString() );
 					res.setOverallPremiumLc(mot.getOverallPremiumLc()==null?"": mot.getOverallPremiumLc().toString());
-			//		res.setPolicyCovertedDate(mot.getdate);
+			//		res.setPolicyCovertedDate(mot.getdate); 
 					res.setPolicyPeriod(mot.getTravelCoverDuration()==null?"":mot.getTravelCoverDuration().toString());
-				//	res.setQuoteCreatedDate(mot.getdate);
+				//	res.setQuoteCreatedDate(mot.getdate); 
 					res.setReferralDescription(mot.getReferalRemarks()==null?"":mot.getReferalRemarks());
 					res.setSourcetype(mot.getSourceType()==null?"":mot.getSourceType().toString());
-					res.setVatCommission(mot.getVatCommission()==null?"":mot.getVatCommission().toString());				
+					res.setVatCommission(mot.getVatCommission()==null?"":mot.getVatCommission().toString());
+					res.setEndorsementYn( mot.getEndorsementType()==null?"N":"Y");
 				}
 			
 		}catch(Exception e) {

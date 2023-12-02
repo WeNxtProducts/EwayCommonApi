@@ -972,7 +972,8 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 				//	res.setQuoteCreatedDate(mot.getdate);
 					res.setReferralDescription(mot.getReferalRemarks()==null?"":mot.getReferalRemarks());
 					res.setSourcetype(mot.getSourceType()==null?"":mot.getSourceType().toString());
-					res.setVatCommission(mot.getVatCommission()==null?"":mot.getVatCommission().toString());				
+					res.setVatCommission(mot.getVatCommission()==null?"":mot.getVatCommission().toString());
+					res.setEndorsementYn( mot.getEndorsementType()==null?"N":"Y");
 				}
 			
 		}catch(Exception e) {

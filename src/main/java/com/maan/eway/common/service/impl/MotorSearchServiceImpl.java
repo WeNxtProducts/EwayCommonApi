@@ -884,7 +884,8 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 				//	res.setQuoteCreatedDate(mot.getdate);
 					res.setReferralDescription(mot.getReferalRemarks()==null?"":mot.getReferalRemarks());
 					res.setSourcetype(mot.getSourceType()==null?"":mot.getSourceType().toString());
-					res.setVatCommission(mot.getVatCommission()==null?"":mot.getVatCommission().toString());				
+					res.setVatCommission(mot.getVatCommission()==null?"":mot.getVatCommission().toString());	
+				
 				}
 			
 		}catch(Exception e) {
