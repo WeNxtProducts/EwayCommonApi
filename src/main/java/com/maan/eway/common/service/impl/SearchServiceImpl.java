@@ -1531,7 +1531,7 @@ public class SearchServiceImpl implements SearchService {
 					mapper.map(home, res);
 					res.setEndorsementYn(home.getEndtTypeId()==null?"N":"Y");
 					res.setStrickerNo(home.getStickerNumber()==null?"":	home.getStickerNumber());
-					res.setCovernoteNo(home.getCoverNoteNumber()==null?"":	home.getCoverNoteNumber().toString());
+					res.setCovernoteNo(home.getTiraCoverNoteNo()==null?"":	home.getTiraCoverNoteNo().toString());
 					res.setPaymentMode(home.getPaymentType()==null?"":home.getPaymentType());
 					res.setPaymentStatus(home.getPaymentStatus()==null?"":home.getPaymentStatus());
 					res.setPremiaIntegrationStatus(home.getIntegrationStatus()==null?"": home.getIntegrationStatus());	
