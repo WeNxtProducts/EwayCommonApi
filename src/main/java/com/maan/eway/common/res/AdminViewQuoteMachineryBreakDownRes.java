@@ -30,4 +30,7 @@ public class AdminViewQuoteMachineryBreakDownRes {
 	@JsonProperty("MachineEquipSi")
 	private BigDecimal machineEquipSi;
 	
+	@JsonProperty("MachinerySi")
+	private BigDecimal machinerySi;
+	
 }

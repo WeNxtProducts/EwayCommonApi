@@ -640,7 +640,8 @@ public class SearchServiceImpl implements SearchService {
 		    			machineryBreakres.setGeneralMachineSi(id.getGeneralMachineSi());
 		    			machineryBreakres.setMachineEquipSi(id.getMachineEquipSi());	 
 		    			machineryBreakres.setManuUnitsSi(id.getManuUnitsSi());
-		    			machineryBreakres.setPowerPlantSi(id.getPowerPlantSi());    			
+		    			machineryBreakres.setPowerPlantSi(id.getPowerPlantSi());  
+		    			machineryBreakres.setMachinerySi(id.getMachinerySi());
 		    			res.setMachineryBreakDownRisk(machineryBreakres);   		
 			    	
 		    	 }
