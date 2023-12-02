@@ -408,6 +408,18 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="BROKER_TIRA_CODE")
    private String brokerTiraCode;
+   
+   @Column(name = "ANY_ACCIDENT_SI")
+   private BigDecimal anyAccidentSi;
+   
+   @Column(name = "ANY_ACCIDENT_SI_LC")
+   private BigDecimal anyAccidentSiLc;
+   
+   @Column(name = "INSURANCE_PERIOD_SI")
+   private BigDecimal insurancePeriodSi;
+   
+   @Column(name = "INSURANCE_PERIOD_SI_LC")
+   private BigDecimal insurancePeriodSiLc;
 }
 
 
