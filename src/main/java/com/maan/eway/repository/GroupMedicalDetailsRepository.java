@@ -41,4 +41,6 @@ public interface GroupMedicalDetailsRepository  extends JpaRepository<GroupMedic
 	@Query(value = "SELECT GMD.POLICY_NO, GMD.CUSTOMER_NAME, GMD.MOBILE_CODE, GMD.MOBILE_NO, GMD.CLIENT_TRANSACTION_NO, GMD.ENTRY_DATE, GMD.INCEPTION_DATE, GMD.EXPIRY_DATE, GMD.LOGIN_ID, GMD.AMOUNT_PAID, GMD.TAX_PERCENTAGE, GMD.TAX_PREMIUM,GMD.PREMIUM,GMD.OVERALL_PREMIUM, (SELECT item_value FROM eway_list_item_value e WHERE item_type = 'PLAN_OPTED' AND ITEM_CODE = GMD.SECTION_ID AND STATUS = 'Y' AND AMEND_ID = (SELECT MAX(AMEND_ID) FROM eway_list_item_value WHERE item_type = 'PLAN_OPTED' AND ITEM_CODE = e.ITEM_CODE AND STATUS = 'Y')) AS PLAN_OBTAINED, (SELECT COMPANY_LOGO FROM eway_insurance_company_master ei WHERE company_id = GMD.COMPANY_ID AND STATUS = 'Y' AND amend_id = (SELECT MAX(amend_id) FROM eway_insurance_company_master WHERE company_id = ei.COMPANY_ID AND STATUS = 'Y')) AS COMPANY_LOGO, (SELECT COMPANY_NAME FROM eway_insurance_company_master ei WHERE company_id = GMD.COMPANY_ID AND STATUS = 'Y' AND amend_id = (SELECT MAX(amend_id) FROM eway_insurance_company_master WHERE company_id = ei.COMPANY_ID AND STATUS = 'Y')) AS COMPANY_NAME FROM GROUP_MEDICAL_DETAILS GMD WHERE GMD.POLICY_NO = ?1",nativeQuery = true)
 	List<Map<String,Object>> getInalipaScheduleByPolicyNo(String policyNo);
 
+	
+	
 }

@@ -1,7 +1,18 @@
 package com.maan.eway.embedded;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +33,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/embedded")
 public class EmbeddedController {
 	
+	
 	@Autowired
 	private EmbeddedService embService;
 	
@@ -36,15 +48,31 @@ public class EmbeddedController {
 		
 	}
 	
-	@PostMapping("/create/{LoginId}/schedule/{EncodedPolicyNo}")
+	@GetMapping("/create/schedule/{LoginId}/{EncodedPolicyNo}")
 	@ApiOperation("This Method is to get by id")
-	public ResponseEntity<ResponseForInalipa>  createSchedule(@PathVariable("LoginId")  String loginId,@PathVariable("EncodedPolicyNo") String encodedPolicyNo) {
-		ResponseForInalipa response=embService.createSchedule(loginId,encodedPolicyNo);
-		if(response!=null)
-			return new ResponseEntity<>(response,HttpStatus.OK);
-		else
-			return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);	
+	public ResponseEntity<Resource> download(@PathVariable("LoginId") String loginId,@PathVariable("EncodedPolicyNo") String encodedPolicyNo) throws IOException {
+      
+		byte [] byteArray =Base64.getDecoder().decode(encodedPolicyNo);
 		
+		String policyNo =new String(byteArray);
+		
+		String pdfFilepath= embService.createSchedule(loginId, policyNo);
+		
+		HttpHeaders header = new HttpHeaders();
+	    header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+policyNo+".pdf");
+	    header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+	    header.add("Pragma", "no-cache");
+	    header.add("Expires", "0");
+		
+	    File file = new File(pdfFilepath);
+	    
+	    InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+	    return ResponseEntity.ok()
+	            .headers(header)
+	            .contentLength(file.length())
+	            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+	            .body(resource);
 	}
 	
 	@PostMapping("getClaimDetails")

@@ -25,11 +25,13 @@ public class WebSecurityConfigBasic extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		http.csrf().disable();
+				http.csrf().disable();
 	//	http.antMatcher("/post/notification/**").authorizeRequests().anyRequest().hasRole("USER").and().httpBasic();
 
-http
-                .requestMatchers().antMatchers("/basicauth/**","/embedded/create/**","post/notification/ack/mail")
+				http.authorizeRequests()
+				.antMatchers("/embedded/create/schedule/**").permitAll()
+				.and()
+                .requestMatchers().antMatchers("/basicauth/**","/embedded/create/**","post/notification/ack/mail") 
                 .and()
                 .authorizeRequests().anyRequest().hasRole("USER")
                 .and()

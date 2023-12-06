@@ -3,6 +3,7 @@ package com.maan.eway.embedded.service;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.sql.Connection;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -10,11 +11,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
@@ -46,6 +47,9 @@ import com.maan.eway.embedded.request.Inalipa;
 import com.maan.eway.embedded.response.InalipaDetailsRes;
 import com.maan.eway.embedded.response.InalipaDetailsRes1;
 import com.maan.eway.embedded.response.ResponseForInalipa;
+import com.maan.eway.jasper.res.JasperDocumentRes;
+import com.maan.eway.jasper.service.JasperService;
+import com.maan.eway.jasper.service.impl.JasperConfiguration;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
 
@@ -56,6 +60,8 @@ public class EmbeddedService {
 	private GenerateSeqNoServiceImpl genNo;
 	@Autowired
 	private RatingFactorsUtil ratingutil;
+	@Autowired
+	private JasperConfiguration config;
 	
 	@Autowired
 	private GroupMedicalDetailsRepository gmdRepo;
@@ -76,19 +82,22 @@ public class EmbeddedService {
 	private EntityManager em;
 	
 	@Autowired
+	private JasperService jasperService;
+	
+	@Autowired
 	private GroupMedicalDetailsRepository groupMedicalRepo;
 	
 	public ResponseForInalipa createPolicy(String loginId, Inalipa request) {
 		try {
 			SimpleDateFormat format=new SimpleDateFormat("YYYY-MM-dd");			
 			format.setTimeZone(TimeZone.getTimeZone("EAT"));
-			
+		
 			String requestReferenceNo=loginId.toUpperCase()+"-"+Calendar.getInstance().getTimeInMillis();
 			String encrypt = EncryDecryService.encrypt(requestReferenceNo);
 			 CompletableFuture<Tuple> task_1 = CompletableFuture.supplyAsync(()->(ratingutil.collectProductsFromLoginId(loginId)));
 			 CompletableFuture<Map<String,Object>> task_2 = CompletableFuture.supplyAsync(()->(ratingutil.collectCommissionDetails(loginId)));
 			 CompletableFuture<List<String>> task_3 = CompletableFuture.supplyAsync(()->(validator.validateRequest(request)));
-			 CompletableFuture<String> task_4 = CompletableFuture.supplyAsync(()->(notifcationService.getShorternURL(new String(scheduleUrl.replaceAll("<LoginId>", loginId)+encrypt))))
+			 CompletableFuture<String> task_4 = CompletableFuture.supplyAsync(()->(notifcationService.getShorternURL(new String(scheduleUrl+encrypt))))
 			/*		 .completeOnTimeout(new String(scheduleUrl.replaceAll("<LoginId>", loginId)+encrypt), 1, TimeUnit.SECONDS)*/;
 			 
 			 List<CompletableFuture<?>> allTask=new ArrayList<CompletableFuture<?>>();
@@ -192,13 +201,19 @@ public class EmbeddedService {
 						//notifcationService.getShorternURL(pdfUrl+""+policyNo);
 						LocalDate previousPolicyExpDate =getLatestExpiryDateByMobile(request.getMobileNumber());
 						if(StringUtils.isNotEmpty(request.getOrderDate())) {
-							SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-							sdf.setTimeZone(TimeZone.getTimeZone(ZoneId.of("Africa/Dar_es_Salaam")));
-							
-							inceptionDate=sdf.parse(request.getOrderDate());
-							LocalDate inception_date =inceptionDate.toInstant().atZone(ZoneId.of("Africa/Dar_es_Salaam")).toLocalDate();
-							expiredDate=Date.from(inception_date.plusDays(Long.parseLong(noofDays)-2)
-									.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
+							if(previousPolicyExpDate==null) {
+								SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+								sdf.setTimeZone(TimeZone.getTimeZone(ZoneId.of("Africa/Dar_es_Salaam")));
+								inceptionDate=sdf.parse(request.getOrderDate());
+								LocalDate inception_date =inceptionDate.toInstant().atZone(ZoneId.of("Africa/Dar_es_Salaam")).toLocalDate();
+								expiredDate=Date.from(inception_date.plusDays(Long.parseLong(noofDays)-2)
+										.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
+							}else {
+								expiredDate=Date.from(previousPolicyExpDate.plusDays(Long.parseLong(noofDays)-2)
+										.atTime(23, 59, 59).toInstant(ZoneOffset.ofHours(-18)));
+								inceptionDate= Date.from(previousPolicyExpDate.atStartOfDay(ZoneId.of("Africa/Dar_es_Salaam")).toInstant());
+
+							}
 								
 						}else {
 							if(previousPolicyExpDate==null) {
@@ -214,7 +229,10 @@ public class EmbeddedService {
 							}
 
 						}
-						
+						String policyDocumentUrl="";
+						String encodePolicyNo =Base64.getEncoder().encodeToString(policyNo.getBytes());
+						policyDocumentUrl=scheduleUrl.replace("{LoginId}", loginId).replace("{EncodedPolicyNo}", encodePolicyNo);
+						String tinyUrl=notifcationService.getShorternURL(policyDocumentUrl);
 						GroupMedicalDetails medical=GroupMedicalDetails.builder()
 								.amountPaid(request.getOrderValue())
 								.applicationId("1")
@@ -241,14 +259,14 @@ public class EmbeddedService {
 								.overallPremium(overallPremium)		
 								.policyNo(policyNo)
 								.planOpted(request.getPlanOpted())
-								.pdfPath(pdfUrl)											
+								.pdfPath(tinyUrl)											
 								.build();
 
 						gmdRepo.save(medical);
 						ResponseForInalipa response=ResponseForInalipa.builder()
 								.expiredDate(format.format(expiredDate)+"T23:59:59")
 								.policyNo(policyNo)
-								.pdfurl(pdfUrl)
+								.pdfurl(tinyUrl)
 								.transactionNo(request.getTransactionNo())	
 								.isError(false)
 								.premium(premium)
@@ -307,14 +325,15 @@ public class EmbeddedService {
 		}
 		return null;
 	}
-	public ResponseForInalipa createSchedule(String loginId, String encodedPolicyNo) {
+	public String createSchedule(String loginId, String encodedPolicyNo) {
+		String pdfPath ="";
 		try {
-		 
+			JasperDocumentRes response= jasperService.getInalipaSchedule(encodedPolicyNo);
+			pdfPath=response.getPdfoutfilepath();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return pdfPath;
 	}
 	
 	public InalipaDetailsRes getClaimDetails(ClaimDetailsReq req) {
