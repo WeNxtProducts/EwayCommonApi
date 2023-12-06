@@ -7,10 +7,12 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,9 +37,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.ProductSectionAdditionalInfoMaster;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.GetAllSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.GetOptedSectionAdditionalInfoReq;
 import com.maan.eway.master.req.GetSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.InsertAdditionalInfoReq;
@@ -46,6 +50,7 @@ import com.maan.eway.master.res.GetSectionAdditionalDetailsRes;
 import com.maan.eway.master.service.ProductSectionAdditionalInfoMasterService;
 import com.maan.eway.repository.ProductSectionAdditionalInfoMasterRepo;
 import com.maan.eway.repository.SectionMasterRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -452,6 +457,107 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 			res.setIsError(true);
 		}
 		return res;
+	}
+
+
+	@Override
+	public List<GetSectionAdditionalDetailsRes> getAllSectionAdditionalDetails(GetAllSectionAdditionalDetailsReq req) {
+		List<GetSectionAdditionalDetailsRes> resList = new ArrayList<GetSectionAdditionalDetailsRes>();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSectionMaster> query = cb.createQuery(ProductSectionMaster.class);
+			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			
+			// Find All
+			Root<ProductSectionMaster>    c = query.from(ProductSectionMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(c.get("amendId")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId") );
+			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId") );
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4);
+			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm2 = effectiveDate2.from(ProductSectionMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
+			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId") );
+			
+			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a5, a6,a7,a8);
+
+		    // Where	
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), req.getProductId());
+			Predicate n6 = cb.equal(c.get("status"),"R");
+			Predicate n7 = cb.or(n1,n6);
+			query.where(n7,n2,n3,n4,n5).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			
+			List<ProductSectionAdditionalInfoMaster> all = repo.findByProductIdAndCompanyId(Integer.valueOf(req.getProductId()),  req.getCompanyId());
+			for(ProductSectionMaster data1 : list ) {
+				GetSectionAdditionalDetailsRes res = new GetSectionAdditionalDetailsRes();
+				
+				List<ProductSectionAdditionalInfoMaster> sec = all.stream().filter(o -> o.getSectionId().equals(data1.getSectionId())).collect(Collectors.toList());
+				ProductSectionAdditionalInfoMaster data = sec.stream().max(Comparator.comparingInt(ProductSectionAdditionalInfoMaster :: getAmendId)).orElse(null);
+				if(data!=null) {
+					
+					mapper.map(data, res);
+					res.setAddDetailYn(data.getAddDetailYn()==null?"":data.getAddDetailYn());
+					res.setGetallUrl(data.getGetallUrl()==null?"":data.getGetallUrl());
+					res.setGetUrl(data.getGetUrl()==null?"":data.getGetUrl());
+					res.setJsonPath(data.getJsonPath()==null?"":data.getJsonPath());
+					res.setRemarks(data.getRemarks()==null?"":data.getRemarks());
+					res.setSaveUrl(data.getSaveUrl()==null?"":data.getSaveUrl());
+					res.setSectionId(data.getSectionId()==null?0:data.getSectionId());
+					res.setSectionName(data.getSectionName()==null?"":data.getSectionName());
+					res.setStatus(data.getStatus()==null?"":data.getStatus());
+					resList.add(res);
+				} else {
+					res.setSectionId(data1.getSectionId()==null?0:data1.getSectionId());
+					res.setSectionName(data1.getSectionName()==null?"":data1.getSectionName());
+					res.setAddDetailYn("N");
+				}
+				
+			}	
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	
 	}
 
 	

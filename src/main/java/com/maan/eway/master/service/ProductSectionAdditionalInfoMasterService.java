@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.GetAllSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.GetOptedSectionAdditionalInfoReq;
 import com.maan.eway.master.req.GetSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.InsertAdditionalInfoReq;
@@ -26,6 +27,8 @@ public interface ProductSectionAdditionalInfoMasterService {
 	List<Error> docvalidation( MultipartFile file);
 
 	CommonRes fileupload(MultipartFile file);
+
+	List<GetSectionAdditionalDetailsRes> getAllSectionAdditionalDetails(GetAllSectionAdditionalDetailsReq req);
 
 
 }

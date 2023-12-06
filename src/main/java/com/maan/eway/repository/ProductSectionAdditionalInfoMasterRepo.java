@@ -12,4 +12,6 @@ public interface ProductSectionAdditionalInfoMasterRepo extends JpaRepository< P
 	List<ProductSectionAdditionalInfoMaster> findByProductIdAndSectionIdAndCompanyId(Integer valueOf, Integer valueOf2,
 			String companyId);
 
+	List<ProductSectionAdditionalInfoMaster> findByProductIdAndCompanyId(Integer valueOf, String companyId);
+
 }

@@ -23,6 +23,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.document.controller.DocumentController;
 import com.maan.eway.error.CommonValidationException;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.GetAllSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.GetOptedSectionAdditionalInfoReq;
 import com.maan.eway.master.req.GetSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.InsertAdditionalInfoReq;
@@ -153,5 +154,29 @@ public class ProductSectionAdditionalInfoMasterController {
 			}
 			
 		}
+		
+	//  Get All Section Id (Admin side)
+			@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+			@PostMapping("/getallsectionadditionaldetails")
+			@ApiOperation("This method is get section additional details")
+			public ResponseEntity<CommonRes> getAllSectionAdditionalDetails(@RequestBody GetAllSectionAdditionalDetailsReq req)
+			{
+				CommonRes data = new CommonRes();
+				reqPrinter.reqPrint(req);
+				
+				List<GetSectionAdditionalDetailsRes> res = service.getAllSectionAdditionalDetails(req);
+				data.setCommonResponse(res);
+				data.setErrorMessage(Collections.emptyList());
+				data.setIsError(false);
+				data.setMessage("Success");
+				
+				if(res!= null) {
+					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+				}
+				else {
+					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				}
+			}
+
 		
 }
