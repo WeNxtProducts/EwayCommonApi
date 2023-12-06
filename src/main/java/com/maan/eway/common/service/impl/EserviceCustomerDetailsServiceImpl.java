@@ -524,6 +524,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		
 						}
 
+					}else {
+						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
 					}
 					}catch (Exception e) {
 						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
@@ -553,6 +555,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 							}
 						}
 
+					}else {
+						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
 					}
 					}catch (Exception e) {
 						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
