@@ -251,16 +251,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				if (StringUtils.isBlank(req.getMobileNo1())) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
-				} else if (req.getMobileNo1().length() > 20) {
-					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo within 20 Characters"));
+				} else if (req.getMobileNo1().length() > 10||req.getMobileNo1().length() < 10) {
+					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo must be 10 digts"));
 				} else if (!req.getMobileNo1().matches("\\d+")) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo only in numbers"));
 				}
 
 				
 				
-				if (StringUtils.isNotBlank(req.getMobileNo3()) && req.getMobileNo3().length() > 20) {
-					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 within 20 Characters"));
+				if (StringUtils.isNotBlank(req.getMobileNo3()) &&( req.getMobileNo3().length() > 10||req.getMobileNo3().length() < 10)) {
+					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 must be 10 digts"));
 				} else if (StringUtils.isNotBlank(req.getMobileNo3()) && !req.getMobileNo3().matches("\\d+")) {
 					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 only in numbers"));
 				}
@@ -499,7 +499,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
 					if( StringUtils.isNotBlank(req.getIdType()) && req.getIdType().equalsIgnoreCase("1")) {
 						if (req.getDobOrRegDate() == null) {
-							//errorList.add(new Error("38", "DobOrRegDate", "Please Select Dob "));
+							errorList.add(new Error("38", "DobOrRegDate", "Please Select Dob "));
 						}
 					}
 					

@@ -2675,8 +2675,10 @@ public class GridServiceImpl implements GridService {
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
 			predicate.add(cb.equal(h.get("loginId"), loginId));
-			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
-			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+//			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
+//			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("entryDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("entryDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("userType"), "Broker"));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
