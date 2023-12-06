@@ -178,8 +178,8 @@ public class BasicLoginValidationService {
 			} */ 
 			
 			
-			if ( loginReq.getUserType().equalsIgnoreCase("Broker") || loginReq.getUserType().equalsIgnoreCase("User") ) {
-				
+			//if ( loginReq.getUserType().equalsIgnoreCase("Broker") || loginReq.getUserType().equalsIgnoreCase("User") ) {
+			if ( loginReq.getUserType().equalsIgnoreCase("Broker")) {	
 				if( StringUtils.isBlank(personalReq.getCustomerCode()) ) {
 					errors.add(new Error("06", "Customer Code", "Please Enter Customer Code"));
 				} else
