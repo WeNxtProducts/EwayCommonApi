@@ -296,6 +296,10 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
 		<fieldDescription><![CDATA[companyName]]></fieldDescription>
 	</field>
+	<field name="coverNoteReferenceNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="coverNoteReferenceNo"/>
+		<fieldDescription><![CDATA[coverNoteReferenceNo]]></fieldDescription>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -376,10 +380,10 @@
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
-				<textElement textAlignment="Left">
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{coverNoteReferenceNo}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="14">

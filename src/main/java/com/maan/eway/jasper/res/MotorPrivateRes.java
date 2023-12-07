@@ -99,4 +99,7 @@ public class MotorPrivateRes {
 	@JsonProperty("CompanyName")
 	private String companyName;
 	
+	@JsonProperty("CoverNoteReferenceNo")
+	private String coverNoteReferenceNo;
+	
 }

@@ -21,6 +21,8 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+
 import com.maan.eway.bean.MotorDataDetailsId;
 /**
  * <h2>MotorDataDetailsRepository</h2>
@@ -66,5 +68,8 @@ public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDeta
 	@Transactional
 	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
 			String originalPolicyNo);
+
+	@Query(value = "SELECT NUM_TO_WORDS_CONVERT(?1) FROM DUAL",nativeQuery = true)
+	String getAmountByWords(BigDecimal amtInWordValue);
 
 }

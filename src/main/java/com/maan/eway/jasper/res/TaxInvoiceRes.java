@@ -96,6 +96,9 @@ public class TaxInvoiceRes {
 	@JsonProperty("CompanyLogo")
 	private String companyLogo;
 	
+	@JsonProperty("AmountInWords")
+	private String amountInWords;
+	
 	@JsonProperty("Dataset1List")
 	private List<TaxDataSetOneRes> dataset1List;
 	

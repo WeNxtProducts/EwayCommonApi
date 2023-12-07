@@ -314,7 +314,7 @@ public class JasperCustomServiceImple {
 		cq.multiselect(luiRoot.get("userName").alias("userName"),hpmRoot.get("approvedBy").alias("approvedBy"),hpmRoot.get("agencyCode").alias("agencyCode"),
 				cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),cb.concat(piRoot.get("address1"), cb.concat(",",
 				cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(cb.concat("P.O.BOX ", piRoot.get("pinCode"))).as(String.class),
-				cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("cityName"),cb.concat(",",cb.concat(piRoot.get("stateName"),cb.concat(",", countryName)))))))).alias("address"),
+				cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("cityName"),cb.concat(",",cb.concat(piRoot.get("stateName"),cb.concat(",\n", countryName)))))))).alias("address"),
 				piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("idTypeDesc").alias("identificationName"),piRoot.get("idNumber").alias("identificationNo"),hpmRoot.get("brokerCode").alias("intermediaryRefNo"),
 				hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
 				hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("currency").alias("currency"),hpmRoot.get("debitNoteNo").alias("debitNoteNo"),
@@ -369,6 +369,12 @@ public class JasperCustomServiceImple {
 					response.setBankswiftCode(entry.get("SWIFT CODE")==null?"":entry.get("SWIFT CODE").toString());
 			}
 			
+			BigDecimal amtInWordValue = map.get("overAllPremium")==null?null:new BigDecimal(Double.valueOf(map.get("overAllPremium").toString()));
+			String amtInWords="";
+			if(amtInWordValue!=null) {
+				amtInWords = motorRepo.getAmountByWords(amtInWordValue);
+			}
+			
 			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
 			response.setAgencyCode(map.get("agencyCode")==null?"":map.get("agencyCode").toString());
@@ -394,6 +400,7 @@ public class JasperCustomServiceImple {
 			response.setIntermediaryRefNo(map.get("intermediaryRefNo")==null?"":map.get("intermediaryRefNo").toString());
 			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
 			response.setCompanyLogo(map.get("companyLogo")==null?"":map.get("companyLogo").toString());
+			response.setAmountInWords(amtInWords);
 			response.setDataset1List(dataset1Res);
 		}
 	}catch(Exception e) {
@@ -605,7 +612,7 @@ public class JasperCustomServiceImple {
 			.otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("overallPremiumLc"))
 			.otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("approvedBy").alias("approvedBy"),
 			cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), hpmRoot.get("customerName"))
-			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),imageURL.alias("companylogo"))
+			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"))
 		.where(cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(cpmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cpmRoot.get("status"), "Y"),cb.equal(hpmRoot.get("productId"), cpmRoot.get("productId")),
 				cb.between(cb.literal(new Date()), cpmRoot.get("effectiveDateStart"), cpmRoot.get("effectiveDateEnd")),cb.equal(hpmRoot.get("policyNo"), policyNo)).distinct(true);
@@ -685,6 +692,7 @@ public class JasperCustomServiceImple {
 			response.setFirstLossPayee(collateralDetails.isEmpty()?"":collateralDetails.get(0).getFirstLossPayee());
 			response.setCompanylogo(map.get("companylogo")==null?"":map.get("companylogo").toString());
 			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
+			response.setCoverNoteReferenceNo(map.get("coverNoteReferenceNo")==null?"":map.get("coverNoteReferenceNo").toString());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
