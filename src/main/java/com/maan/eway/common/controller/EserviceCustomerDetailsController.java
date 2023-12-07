@@ -84,7 +84,7 @@ public class EserviceCustomerDetailsController {
 
 		} else {
 			/////// save
-			req.setDobOrRegDate(new Date());
+			//req.setDobOrRegDate(new Date());
 			req.setOccupation("12");
 			req.setStateCode(null);
 			req.setCityCode(null);
