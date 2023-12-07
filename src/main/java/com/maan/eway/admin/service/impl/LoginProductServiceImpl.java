@@ -3015,8 +3015,9 @@ List<Error> errorList = new ArrayList<Error>();
 				Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
 				Predicate n4 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n5 = cb.equal(b.get("loginId"), req.getLoginId());
+				Predicate n6 = cb.equal(b.get("policyTypeId"), req.getPolicyTypeId());
 
-				query.where(n3, n4, n5).orderBy(orderList);
+				query.where(n3, n4, n5, n6).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<LoginProductMaster> result = em.createQuery(query);
