@@ -392,7 +392,7 @@ public class JasperCustomServiceImple {
 			response.setVrnNumber(map.get("vrnNumber")==null?"":map.get("vrnNumber").toString());
 			response.setTinNumber(map.get("tinNumber")==null?"":map.get("tinNumber").toString());
 			response.setBrokerName(map.get("brokerName")==null?"":map.get("brokerName").toString());
-			response.setPremium(map.get("premium")==null?"":map.get("premium").toString());
+			response.setPremium(map.get("premium")==null?"":new BigDecimal(Double.valueOf(map.get("premium").toString())).toString());
 			response.setVatPremium(map.get("vatPremium")==null?"":new BigDecimal(Double.valueOf(map.get("vatPremium").toString())).toString());
 			response.setVatPercent(map.get("vatPercent")==null?"":map.get("vatPercent").toString());
 			response.setOverAllPremium(map.get("overAllPremium")==null?"":new BigDecimal(Double.valueOf(map.get("overAllPremium").toString())).toString());
