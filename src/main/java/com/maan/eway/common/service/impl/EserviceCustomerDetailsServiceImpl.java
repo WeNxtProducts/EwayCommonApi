@@ -251,8 +251,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				if (StringUtils.isBlank(req.getMobileNo1())) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
-				} else if (req.getMobileNo1().length() > 10||req.getMobileNo1().length() < 10) {
-					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo must be 10 digts"));
+				} else if (req.getMobileNo1().length() > 10||req.getMobileNo1().length() < 8) {
+					errorList.add(new Error("24", "MobileNo", "Please Enter Valid MobileNo"));
 				} else if (!req.getMobileNo1().matches("\\d+")) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo only in numbers"));
 				}
