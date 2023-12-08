@@ -191,6 +191,13 @@ public class QuoteDetailsRes {
 	@JsonProperty("BranchName")
 	private String branchName;
 	
+	@JsonProperty("PrevPaymentType")
+	private String prevPaymentType;
+	
+	@JsonProperty("PrevPaymentTypeDesc")
+	private String prevPaymentTypeDesc;
+	
+	
 	/*
 	@JsonProperty("ExcessSign(null);
 	@JsonProperty("ExcessPremium(null);
