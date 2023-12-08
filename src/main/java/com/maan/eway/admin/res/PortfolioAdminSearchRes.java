@@ -57,6 +57,11 @@ public class PortfolioAdminSearchRes {
 
 		private String installmentPeriod;
 		
+
+		private String noOfInstallment;
+		
+		private String paymentStatus;
+		
 		private Date effectiveDate;
 		
 		private String currency;
