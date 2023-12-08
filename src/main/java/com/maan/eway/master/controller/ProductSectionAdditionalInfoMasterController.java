@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.document.controller.DocumentController;
 import com.maan.eway.error.CommonValidationException;
@@ -27,6 +28,7 @@ import com.maan.eway.master.req.GetAllSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.GetOptedSectionAdditionalInfoReq;
 import com.maan.eway.master.req.GetSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.InsertAdditionalInfoReq;
+import com.maan.eway.master.req.UploadReq;
 import com.maan.eway.master.res.GetOptedSectionAdditionalInfoRes;
 import com.maan.eway.master.res.GetSectionAdditionalDetailsRes;
 import com.maan.eway.master.service.ProductSectionAdditionalInfoMasterService;
@@ -130,14 +132,14 @@ public class ProductSectionAdditionalInfoMasterController {
 		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/upload")
 		@ApiOperation(value = "This method is to Upload Document")
-		public ResponseEntity<CommonRes> uploadFile(@RequestParam("File") MultipartFile file) throws CommonValidationException, JsonMappingException, JsonProcessingException{
+		public ResponseEntity<CommonRes> uploadFile(@RequestParam("File") MultipartFile file,  @RequestParam("Req") String jsonString) throws CommonValidationException, JsonMappingException, JsonProcessingException{
 			
-//			log.info(jsonString);
-//			
-//			FileUploadReq req =  new ObjectMapper().readValue(jsonString, FileUploadReq.class); 
+			log.info(jsonString);
+			
+			UploadReq req =  new ObjectMapper().readValue(jsonString, UploadReq.class); 
 			
 	    	List<Error> error = new ArrayList<Error>();
-			error = service.docvalidation(file);
+			error = service.docvalidation(file, req);
 			if (error != null && error.size() > 0) {
 				
 				CommonRes res = new CommonRes();
@@ -149,7 +151,7 @@ public class ProductSectionAdditionalInfoMasterController {
 				return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(res);
 				
 			}else {
-				CommonRes res = service.fileupload(file);
+				CommonRes res = service.fileupload(file, req);
 				return ResponseEntity.status(HttpStatus.OK).body(res);
 			}
 			

@@ -98,8 +98,12 @@ public class ProductSectionAdditionalInfoMaster implements Serializable {
     @Column(name="GET_URL")
     private String     getUrl ;
     
-    @Column(name="GETALL_URL")
+    @Column(name="GETALL_URL")	
     private String     getallUrl ;
+    
+    @Column(name="FILE_NAME")
+    private String     fileName ;
+    
 }
 
 

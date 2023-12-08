@@ -37,7 +37,10 @@ public class GetSectionAdditionalDetailsRes {
 
 	@JsonProperty("GetallUrl")
 	private String getallUrl;
-
+	
+	@JsonProperty("FileName")
+	private String fileName;
+	
 //	@JsonProperty("CreatedBy")
 //	private String createdBy;
 	

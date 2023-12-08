@@ -28,8 +28,8 @@ public class InsertAdditionalInfoReq {
 	@JsonProperty("Remarks")
 	private String Remarks;
 
-	@JsonProperty("JsonPath")
-	private String jsonPath; 	//file upload and save file path
+//	@JsonProperty("JsonPath")
+//	private String jsonPath; 	//file upload and save file path
 
 	@JsonProperty("SaveUrl")
 	private String saveUrl;

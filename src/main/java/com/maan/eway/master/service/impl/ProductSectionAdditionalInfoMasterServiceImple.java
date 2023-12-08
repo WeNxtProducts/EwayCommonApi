@@ -45,12 +45,12 @@ import com.maan.eway.master.req.GetAllSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.GetOptedSectionAdditionalInfoReq;
 import com.maan.eway.master.req.GetSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.InsertAdditionalInfoReq;
+import com.maan.eway.master.req.UploadReq;
 import com.maan.eway.master.res.GetOptedSectionAdditionalInfoRes;
 import com.maan.eway.master.res.GetSectionAdditionalDetailsRes;
 import com.maan.eway.master.service.ProductSectionAdditionalInfoMasterService;
 import com.maan.eway.repository.ProductSectionAdditionalInfoMasterRepo;
 import com.maan.eway.repository.SectionMasterRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -161,56 +161,59 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 			if (req.getSectionId()==null) {
 				errorList.add(new Error("02", "SectionId", "Please Enter SectionId"));
 			}
-			
-			// Date Validation 
-			Calendar cal = new GregorianCalendar();
-			Date today = new Date();
-			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);
-			today = cal.getTime();
-			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
-
-			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			}
-			
-			if( StringUtils.isBlank(req.getAddDetailYn())) {
-				errorList.add(new Error("05", "Additional Detail", "Please Select Additional Detail Yes/No"));
-				
-			}
-			
-			//Status Validation
-			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status"));
-			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
-			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
-			}
-
-			if (StringUtils.isNotBlank(req.getRemarks()) && req.getRemarks().length() > 100) {
-				errorList.add(new Error("03", "Remark", "Please Enter Remark within 100 Characters"));
-			}
-			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
 			}else if (req.getCreatedBy().length() > 100){
 				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
 			}	
 			
-			if(StringUtils.isBlank(req.getJsonPath())) {
-				errorList.add(new Error("09", "Json File Path", "Please Enter File Path"));
-			}
-			if(StringUtils.isBlank(req.getSaveUrl())) {
-				errorList.add(new Error("09", "Save URL", "Please Enter Save URL"));
-			}
-			if(StringUtils.isBlank(req.getGetallUrl())) {
-				errorList.add(new Error("09", "Get All URL", "Please Enter Get All URL"));
-			}
-			if(StringUtils.isBlank(req.getGetUrl())) {
-				errorList.add(new Error("09", "Get URL", "Please Enter Get URL"));
-			}
+			if( StringUtils.isBlank(req.getAddDetailYn())) {
+				errorList.add(new Error("05", "Additional Detail", "Please Select Additional Detail Yes/No"));
+				
+			} else if (req.getAddDetailYn().equalsIgnoreCase("Y") ) {
 			
+				// Date Validation 
+				Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);
+				today = cal.getTime();
+				if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+					errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+	
+				} else if (req.getEffectiveDateStart().before(today)) {
+					errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				}
+				
+				
+				
+				//Status Validation
+				if (StringUtils.isBlank(req.getStatus())) {
+					errorList.add(new Error("05", "Status", "Please Select Status"));
+				} else if (req.getStatus().length() > 1) {
+					errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+					errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				}
+	
+				if (StringUtils.isNotBlank(req.getRemarks()) && req.getRemarks().length() > 100) {
+					errorList.add(new Error("03", "Remark", "Please Enter Remark within 100 Characters"));
+				}
+				
+				
+				
+	//			if(StringUtils.isBlank(req.getJsonPath())) {
+	//				errorList.add(new Error("09", "Json File Path", "Please Enter File Path"));
+	//			}
+				if(StringUtils.isBlank(req.getSaveUrl())) {
+					errorList.add(new Error("09", "Save URL", "Please Enter Save URL"));
+				}
+				if(StringUtils.isBlank(req.getGetallUrl())) {
+					errorList.add(new Error("09", "Get All URL", "Please Enter Get All URL"));
+				}
+				if(StringUtils.isBlank(req.getGetUrl())) {
+					errorList.add(new Error("09", "Get URL", "Please Enter Get URL"));
+				}
+			}
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -391,6 +394,7 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 				res.setSectionId(data.getSectionId()==null?0:data.getSectionId());
 				res.setSectionName(data.getSectionName()==null?"":data.getSectionName());
 				res.setStatus(data.getStatus()==null?"":data.getStatus());
+				res.setFileName(data.getFileName()==null?"":data.getFileName());
 			}
 			
 			}catch(Exception e) {
@@ -403,7 +407,7 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 
 
 	@Override
-	public List<Error> docvalidation( MultipartFile file) {
+	public List<Error> docvalidation( MultipartFile file, UploadReq req) {
 		 List<Error>  errorList = new ArrayList<Error>();
 		try {
 			
@@ -423,7 +427,7 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 
 
 	@Override
-	public CommonRes fileupload( MultipartFile file) {			
+	public CommonRes fileupload( MultipartFile file, UploadReq req) {			
 		CommonRes res = new CommonRes();
 		try {
 			
@@ -445,7 +449,17 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 			Files.copy(file.getInputStream(),destination1.resolve(newfilename1));
 		
 			String path = (directoryPath+newfilename);
-		
+			
+			// path save in table
+			List<ProductSectionAdditionalInfoMaster> list = repo.findByProductIdAndSectionIdAndCompanyIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()), Integer.valueOf(req.getSectionId()), req.getCompanyId());
+			if(list.size()>0) {
+				ProductSectionAdditionalInfoMaster pathsave = list.get(0) ;
+				pathsave.setJsonPath(path);
+				pathsave.setFileName(newfilename);
+				repo.saveAndFlush(pathsave);
+			}
+			
+			
 			res.setCommonResponse(path);
 			res.setIsError(false);						
 		} catch (Exception e) {
@@ -540,6 +554,7 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 					res.setSectionId(data.getSectionId()==null?0:data.getSectionId());
 					res.setSectionName(data.getSectionName()==null?"":data.getSectionName());
 					res.setStatus(data.getStatus()==null?"":data.getStatus());
+					res.setFileName(data.getFileName()==null?"":data.getFileName());
 					resList.add(res);
 				} else {
 					res.setSectionId(data1.getSectionId()==null?0:data1.getSectionId());

@@ -10,6 +10,7 @@ import com.maan.eway.master.req.GetAllSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.GetOptedSectionAdditionalInfoReq;
 import com.maan.eway.master.req.GetSectionAdditionalDetailsReq;
 import com.maan.eway.master.req.InsertAdditionalInfoReq;
+import com.maan.eway.master.req.UploadReq;
 import com.maan.eway.master.res.GetOptedSectionAdditionalInfoRes;
 import com.maan.eway.master.res.GetSectionAdditionalDetailsRes;
 import com.maan.eway.res.SuccessRes;
@@ -24,9 +25,9 @@ public interface ProductSectionAdditionalInfoMasterService {
 
 	GetSectionAdditionalDetailsRes getSectionAdditionalDetails(GetSectionAdditionalDetailsReq req);
 
-	List<Error> docvalidation( MultipartFile file);
+	List<Error> docvalidation( MultipartFile file, UploadReq req);
 
-	CommonRes fileupload(MultipartFile file);
+	CommonRes fileupload(MultipartFile file, UploadReq req);
 
 	List<GetSectionAdditionalDetailsRes> getAllSectionAdditionalDetails(GetAllSectionAdditionalDetailsReq req);
 
