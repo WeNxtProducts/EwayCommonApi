@@ -2160,9 +2160,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 							errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
 						}
 
-					}else {
+					}/*else {
 						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
-					}
+					}*/
 
 					
 				}
