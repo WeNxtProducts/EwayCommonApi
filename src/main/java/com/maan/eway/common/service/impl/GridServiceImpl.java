@@ -4574,7 +4574,7 @@ public class GridServiceImpl implements GridService {
 				
 				TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
 				list = typedQuery1.getResultList();
-				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc"))))
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
 						.collect(Collectors.toList());
 				if (list != null && list.size() > 0) {
 
@@ -4782,7 +4782,7 @@ public class GridServiceImpl implements GridService {
 
 				TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
 				list = typedQuery1.getResultList();
-				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc"))))
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
 						.collect(Collectors.toList());
 				if (list != null && list.size() > 0) {
 
