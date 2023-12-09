@@ -216,6 +216,9 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vehicleList"/>
 		<fieldDescription><![CDATA[vehicleList]]></fieldDescription>
 	</field>
+	<field name="payments" class="java.lang.String">
+		<fieldDescription><![CDATA[payments]]></fieldDescription>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -640,7 +643,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["PREMIUM"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{payments}.equalsIgnoreCase("REFUND")?"REFUND PREMIUM":"PREMIUM"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="110" y="0" width="50" height="15" uuid="447a2881-3acd-4320-8bfc-00820fc27a8d">
@@ -792,9 +795,10 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement stretchType="RelativeToTallestObject" x="10" y="5" width="130" height="15" uuid="85287bf0-9772-4ffd-a038-27bc27985e17">
+				<reportElement stretchType="RelativeToTallestObject" x="10" y="5" width="114" height="15" uuid="85287bf0-9772-4ffd-a038-27bc27985e17">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.0"/>
@@ -809,7 +813,7 @@
 				<textFieldExpression><![CDATA["ENDORSEMENT REMARKS : "]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="140" y="5" width="405" height="15" uuid="54828790-aeb9-469e-80d1-b36c678e8aa4">
+				<reportElement x="124" y="5" width="421" height="15" uuid="54828790-aeb9-469e-80d1-b36c678e8aa4">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -839,7 +843,7 @@
 			</textField>
 		</band>
 		<band height="40">
-			<textField>
+			<textField textAdjust="StretchHeight">
 				<reportElement x="10" y="15" width="535" height="25" uuid="efbba871-f4b4-46c0-92cc-d8ae0806df0a">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -851,7 +855,7 @@
 				<textFieldExpression><![CDATA["NOTWITHSTANDING ANYTHING CONTAINED HEREIN TO THE CONTRARY IT IS HEREBY DECLARED AND AGREED THAT W.E.F "+new SimpleDateFormat("dd/MM/yyyy").format(new Date())+" THE VEHICLE DETAILS MENTIONED BELOW HAS BEEN MODIFIED TO THE POLICY DUE TO "+$F{endtTypeDesc}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="545" y="0" width="10" height="40" uuid="76273c5e-72a0-4605-8207-4e086693041b">
+				<reportElement stretchType="RelativeToTallestObject" x="545" y="0" width="10" height="40" uuid="76273c5e-72a0-4605-8207-4e086693041b">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -866,7 +870,7 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="0" width="10" height="40" uuid="aec204cd-2064-47dc-b4b4-6e3ace17366a">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="10" height="40" uuid="aec204cd-2064-47dc-b4b4-6e3ace17366a">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -1292,7 +1296,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["(ALL OHER TERMS AND CONDITIONS REMAIN UNALTERED)"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["(ALL OTHER TERMS AND CONDITIONS REMAIN UNALTERED)"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="10" height="45" uuid="c7d16c5e-fd99-42a3-bf71-34fe6f2011b3">
@@ -1378,7 +1382,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["For Alliance Insurance Corporation Ltd"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["For "+$F{companyName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement stretchType="RelativeToTallestObject" x="0" y="19" width="60" height="19" uuid="9c0f40e2-cf21-49ac-815c-26d83524e9e4"/>

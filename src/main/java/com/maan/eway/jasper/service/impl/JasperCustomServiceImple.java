@@ -24,7 +24,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -43,10 +42,8 @@ import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.ExclusionMaster;
-import com.maan.eway.bean.GroupMedicalDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
@@ -54,6 +51,7 @@ import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorMakeModelMaster;
 import com.maan.eway.bean.PaymentDetail;
+import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
@@ -78,7 +76,6 @@ import com.maan.eway.jasper.res.TravelDataSetTwoRes;
 import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
-import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
@@ -108,9 +105,6 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private ProductEmployeesDetailsRepository productEmpDetRepo;
-	
-	@Autowired
-	private EserviceCommonDetailsRepository eserviceCommonDetRepo;
 	
 	@Autowired
 	private PaymentDetailRepository paymentDetailRepo;
@@ -462,7 +456,7 @@ public class JasperCustomServiceImple {
 			cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 			cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "")
 					.when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), 
-					cb.concat(",", cb.concat(piRoot.get("cityName"), cb.concat(",", countryName)))))))).alias("address"),
+					cb.concat(",", cb.concat(piRoot.get("cityName"), cb.concat(",\n", countryName)))))))).alias("address"),
 			hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("creditNo").alias("creditNo"),hpmRoot.get("currency").alias("currency"),
 			hpmRoot.get("productName").alias("productName"),cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"),
 			cb.selectCase().when(cb.isNull(hpmRoot.get("originalPolicyNo")), hpmRoot.get("policyNo")).otherwise(hpmRoot.get("originalPolicyNo")).alias("policyNo"),
@@ -474,7 +468,8 @@ public class JasperCustomServiceImple {
 					cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)).alias("vatPremiumFc"),
 			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)))
 				.when(cb.isNotNull(hpmRoot.get("creditNo")), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremiumFc"),
-			hpmRoot.get("vatPercent").alias("vatPercent"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("customerCode").alias("customerCode"),companyName.alias("companyName"),imageURL.alias("companyLogo"))
+			hpmRoot.get("vatPercent").alias("vatPercent"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("customerCode").alias("customerCode"),companyName.alias("companyName"),imageURL.alias("companyLogo"),
+			piRoot.get("vrTinNo").alias("vatRegNo"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),
 				cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(icmRoot.get("amendId"), icmAmd),cb.in(hpmRoot.get("status")).value(Arrays.asList("P","D")),cb.equal(hpmRoot.get("policyNo"), policyNo))
@@ -542,6 +537,7 @@ public class JasperCustomServiceImple {
 			response.setCompanyLogo(map.get("companyLogo")==null?"":map.get("companyLogo").toString());
 			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
 			response.setCustomerCode(map.get("customerCode")==null?"":map.get("customerCode").toString());
+			response.setVatRegNo(map.get("vatRegNo")==null?"":map.get("vatRegNo").toString());
 			response.setSectionDescList(DataSetOneRes);
 			response.setRiskCodeList(DataSetTwoRes);
 		}
@@ -899,12 +895,24 @@ public class JasperCustomServiceImple {
 		imageURL.select(imageURLRoot.get("companyLogo")).where(cb.equal(imageURLRoot.get("companyId"), hpmRoot.get("companyId")),
 				cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
 		
+		//Refund or Not
+		Subquery<String> payments = cq.subquery(String.class);
+		Root<PaymentInfo> paymentsRoot = payments.from(PaymentInfo.class);
+		
+		Subquery<Integer> paymentAmd = cq.subquery(Integer.class);
+		Root<PaymentInfo> paymentAmdRoot = paymentAmd.from(PaymentInfo.class);
+		paymentAmd.select(cb.max(paymentAmdRoot.get("merchantReference"))).where(cb.equal(paymentAmdRoot.get("quoteNo"), paymentsRoot.get("quoteNo")),
+				cb.equal(paymentAmdRoot.get("paymentStatus"), paymentsRoot.get("paymentStatus")));
+		
+		payments.select(paymentsRoot.get("payments")).where(cb.equal(paymentsRoot.get("quoteNo"), hpmRoot.get("quoteNo")),cb.equal(paymentsRoot.get("paymentStatus"), "ACCEPTED"),
+				cb.equal(paymentsRoot.get("merchantReference"), paymentAmd));
+		
 		cq.multiselect(cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 			hpmRoot.get("policyNo").alias("EndorsementNo"),hpmRoot.get("originalPolicyNo").alias("originalPolicyNo"),hpmRoot.get("effectiveDate").alias("effectiveDate"),
 			hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("inceptionDate").alias("inceptionDate"),hpmRoot.get("currency").alias("currency"),
 			hpmRoot.get("endtPremium").alias("endtPremium"),hpmRoot.get("endtTypeDesc").alias("endtTypeDesc"),hpmRoot.get("endorsementRemarks").alias("endorsementRemarks"),
-			hpmRoot.get("companyName").alias("companyName"),hpmRoot.get("branchName").alias("branchName"),cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
-			.otherwise(luiRoot.get("userName")).alias("userName"),hpmRoot.get("quoteNo").alias("quoteNo"),companyName.alias("companyName"),imageURL.alias("companylogo"))
+			hpmRoot.get("branchName").alias("branchName"),cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
+			.otherwise(luiRoot.get("userName")).alias("userName"),hpmRoot.get("quoteNo").alias("quoteNo"),companyName.alias("companyName"),imageURL.alias("companylogo"),payments.alias("payments"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),
 				cb.equal(hpmRoot.get("productId"), "5"),cb.in(hpmRoot.get("status")).value(Arrays.asList("P","D","E")),cb.equal(hpmRoot.get("policyNo"), policyNo))
 		.orderBy(cb.asc(hpmRoot.get("entryDate")));
@@ -964,6 +972,7 @@ public class JasperCustomServiceImple {
 			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			result.put("companyName", map.get("companyName")==null?"":map.get("companyName").toString());
 			result.put("companylogo", map.get("companylogo")==null?"":map.get("companylogo").toString());
+			result.put("payments", map.get("payments")==null?"":map.get("payments").toString());
 			result.put("vehicleList", vehicleList);
 			result.put("refundPaymentDetail", refundPaymentDetail);
 			result.put("collateralDetails", collateralDetails);

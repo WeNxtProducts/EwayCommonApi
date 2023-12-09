@@ -185,7 +185,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
 		<fieldDescription><![CDATA[companyName]]></fieldDescription>
 	</field>
-	<field name="customerCode" class="java.lang.String">
+	<field name="customerCode" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="customerCode"/>
 		<fieldDescription><![CDATA[customerCode]]></fieldDescription>
 	</field>
@@ -196,6 +196,9 @@
 	<field name="riskCodeList" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="riskCodeList"/>
 		<fieldDescription><![CDATA[riskCodeList]]></fieldDescription>
+	</field>
+	<field name="vatRegNo" class="java.lang.String">
+		<fieldDescription><![CDATA[vatRegNo]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -414,13 +417,13 @@
 		</band>
 		<band height="15">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="64" y="0" width="291" height="15" uuid="99dd0038-bbfc-47b9-b177-abd5556e5f76">
+				<reportElement x="59" y="0" width="291" height="15" uuid="99dd0038-bbfc-47b9-b177-abd5556e5f76">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<box leftPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
@@ -501,6 +504,20 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="554" y="0" width="1" height="15" uuid="553cc6af-45f5-4296-9c51-8992a309c680">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="16">
 			<textField>
@@ -535,7 +552,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vatRegNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="1" height="15" uuid="9fc9fcc4-8e12-4352-bb03-2e87b1cbabc7">
@@ -557,6 +574,20 @@
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="554" y="0" width="1" height="15" uuid="c80844f9-60b4-4864-a2d4-8030a20404ae">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement>
 					<font fontName="Arial" size="8"/>
