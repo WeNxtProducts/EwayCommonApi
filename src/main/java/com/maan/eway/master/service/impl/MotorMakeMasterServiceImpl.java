@@ -555,11 +555,11 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.HOUR_OF_DAY, 1);;
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
-			cal.set(Calendar.HOUR_OF_DAY, 1);
-			cal.set(Calendar.MINUTE, 1);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
 			Date todayEnd = cal.getTime();
 			
 			List<String> induvidualIds = new ArrayList<String>();  
