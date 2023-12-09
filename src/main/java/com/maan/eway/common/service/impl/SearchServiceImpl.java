@@ -673,23 +673,23 @@ public class SearchServiceImpl implements SearchService {
 		 {
 		    	if(building.size() > 0) 
 		    	{
-		    		List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
+		    		 List<EserviceBuildingDetails> data = new ArrayList<EserviceBuildingDetails>();
 		    		
-		    		AdminViewQuoteBurglaryRes burglaryres = new AdminViewQuoteBurglaryRes();	    		
+		    		 AdminViewQuoteBurglaryRes burglaryres = new AdminViewQuoteBurglaryRes();	    		
 		    	    
-		    	    
-		    		
 		    			dozerMapper.map(burglaryres, data);
-		    			burglaryres.setAccessibleWindows(id.getAccessibleWindows());
+		    			burglaryres.setAccessibleWindows(id.getAccessibleWindows());		    		
 		    			burglaryres.setAddress(id.getAddress());
 		    			burglaryres.setApplianceLossPercent(id.getApplianceLossPercent());
 		    			burglaryres.setApplianceSi(id.getApplianceSi());
 		    			burglaryres.setBackDoors(id.getBackDoors());
 		    			burglaryres.setBuildingBuildYear(id.getBuildingBuildYear());
+		    			burglaryres.setBuildingBuildYearDesc(id.getBuildingOccupationType());
 		    			burglaryres.setBuildingOccupied(id.getBuildingOccupied());
 		    			burglaryres.setCashValueablesLossPercent(id.getCashValueablesLossPercent());
 		    			burglaryres.setCashValueablesSi(id.getCashValueablesSi());	
 		    			burglaryres.setCeilingType(id.getCeilingType());
+		    			burglaryres.setCeilingTypeDesc(id.getCeilingTypeDesc());
 		    			burglaryres.setDistrictCode(id.getDistrictCode());
 		    			burglaryres.setDoorsMaterialId(id.getDoorsMaterialDesc());	 
 		    			burglaryres.setFrontDoors(id.getFrontDoors());
@@ -699,20 +699,27 @@ public class SearchServiceImpl implements SearchService {
 		    			burglaryres.setGoodsSi(id.getGoodsSi());
 		    			burglaryres.setInsuranceForId(id.getInsuranceForId());
 		    			burglaryres.setInternalWallType(id.getInternalWallType());
-		    			burglaryres.setNatureOfTradeId(id.getNatureOfTradeId());	
+		    			burglaryres.setInternalWallTypeDesc(id.getInternalWallDesc());
+		    			burglaryres.setNatureOfTradeId(id.getNatureOfTradeId());
+		    			burglaryres.setNatureOfTradeDesc(id.getNatureOfTradeDesc());	    			
 		    			burglaryres.setStockInTradeSi(id.getStockInTradeSi());	
 		    			burglaryres.setNightLeftDoor(id.getNightLeftDoor());
 		    			burglaryres.setOccupiedYear(id.getOccupiedYear());
+		    			burglaryres.setOccupiedYearDesc(id.getOccupationTypeDesc());
 		    			burglaryres.setRegionCode(id.getRegionCode());
 		    			burglaryres.setRoofType(id.getRoofType());
-		    			burglaryres.setShowWindow(id.getShowWindow());
+		    			burglaryres.setShowWindow(id.getShowWindow());;
 		    			burglaryres.setStockLossPercent(id.getStockLossPercent());
 		    			burglaryres.setWallType(id.getWallType());
 		    			burglaryres.setWatchmanGuardHours(id.getWatchmanGuardHours());
+		    			burglaryres.setWallTypeDesc(id.getWallTypeDesc());;
 		    			burglaryres.setWindowsMaterialId(id.getWindowsMaterialId());	 
 		    			burglaryres.setBurglarySi(id.getBurglarySi());
+		    			burglaryres.setWindowsMaterialDesc(id.getWindowsMaterialDesc());	
+		    			burglaryres.setDoorsMaterialIdDesc(id.getDoorsMaterialDesc());
+		    			burglaryres.setNightLeftDoorDesc(id.getNightLeftDoorDesc());
 		    			res.setBurglaryRisk(burglaryres);
-		    			}
+		    	}
 		    	
 		  }
 		
