@@ -1916,7 +1916,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 					//unmatched based on sectionid
 				
-					List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
+					List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> o.getLocationId()!=99999 && ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
 					docRepo.deleteAll(docfilter);
 				}
 				List<EserviceMotorDetails> eserMotors = eserMotRepo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(request.getRequestReferenceNo() ,"D");
