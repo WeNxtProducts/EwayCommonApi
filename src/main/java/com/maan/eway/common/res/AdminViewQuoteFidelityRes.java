@@ -14,6 +14,6 @@ public class AdminViewQuoteFidelityRes {
 	
 	
 	@JsonProperty("FidEmpCount")
-	private String fidEmpCount;
+	private BigDecimal fidEmpCount;
 	
 }

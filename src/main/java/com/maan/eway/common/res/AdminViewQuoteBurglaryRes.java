@@ -29,6 +29,13 @@ public class AdminViewQuoteBurglaryRes {
 	@JsonProperty("OccupiedYear")
 	private Integer occupiedYear;
 	
+	@JsonProperty("Occupion")
+	private String occupion;
+	
+	@JsonProperty("OccupionDesc")
+	private String occupionDesc;
+	
+	
 	@JsonProperty("OccupiedYearDesc")
 	private String occupiedYearDesc;
 	
@@ -40,6 +47,9 @@ public class AdminViewQuoteBurglaryRes {
 	
 	@JsonProperty("RoofType")
 	private String roofType;
+	
+	@JsonProperty("RoofTypeDesc")
+	private String roofTypeDesc;
 	
 	@JsonProperty("CeilingType")
 	private Integer ceilingType;

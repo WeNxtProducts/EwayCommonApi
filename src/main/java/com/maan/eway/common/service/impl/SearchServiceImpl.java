@@ -581,6 +581,7 @@ public class SearchServiceImpl implements SearchService {
 	public AdminViewQuoteCommonRes adminViewQuoteRiskDetails(SearchReq req) {
 		
 		EserviceBuildingDetails build = new EserviceBuildingDetails();
+		
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		
 		EserviceCommonDetails common = new EserviceCommonDetails();
@@ -710,7 +711,10 @@ public class SearchServiceImpl implements SearchService {
 		    			burglaryres.setRoofType(id.getRoofType());
 		    			burglaryres.setShowWindow(id.getShowWindow());;
 		    			burglaryres.setStockLossPercent(id.getStockLossPercent());
+		    			burglaryres.setOccupion(id.getOccupationType());
+		    			burglaryres.setOccupionDesc(id.getOccupationTypeDesc());
 		    			burglaryres.setWallType(id.getWallType());
+		    			burglaryres.setRoofTypeDesc(id.getRoofTypeDesc());
 		    			burglaryres.setWatchmanGuardHours(id.getWatchmanGuardHours());
 		    			burglaryres.setWallTypeDesc(id.getWallTypeDesc());;
 		    			burglaryres.setWindowsMaterialId(id.getWindowsMaterialId());	 
@@ -840,7 +844,7 @@ public class SearchServiceImpl implements SearchService {
 		    	    
 		    	    
 		    		dozerMapper.map(fidelityres, data);
-		    		fidelityres.setFidEmpSi(ids.getFidEmpCount());	
+		    		fidelityres.setFidEmpCount(ids.getFidEmpCount());
 		    		fidelityres.setFidEmpSi(ids.getFidEmpSi());
 		    		res.setFidelityRisk(fidelityres);		    		
 		    	 }
