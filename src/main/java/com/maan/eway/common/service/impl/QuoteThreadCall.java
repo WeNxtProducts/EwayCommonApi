@@ -2932,8 +2932,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Source Type Details 
 			home.setBranchCode(motorData.getBranchCode()) ;
 		    home.setBranchName(motorData.getBranchName());
-			home.setSourceType(motorData.getSourceType());
-		    home.setSubUserType(motorData.getSourceType());
+		    home.setSourceType(motorData.getSourceType());
+			home.setSourceTypeId(motorData.getSourceTypeId());
+		    home.setSubUserType(motorData.getSubUserType());
 		    home.setApplicationId(motorData.getApplicationId());
 		    home.setBrokerCode(motorData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
@@ -2942,6 +2943,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBdmCode(motorData.getBdmCode());
 			home.setBrokerBranchCode(motorData.getBrokerBranchCode() );
 			home.setBrokerBranchName(motorData.getBrokerBranchName() );
+			home.setUserType(motorData.getApplicationId().equalsIgnoreCase("1") ? motorData.getSourceType() : "Issuer" ) ;
 			home.setLoginId(motorData.getLoginId());
 			home.setPolicyPeriod(motorData.getPeriodOfInsurance()==null?"" :motorData.getPeriodOfInsurance().toString());
 			home.setPolicyTerm(motorData.getPeriodOfInsurance()==null?"" :motorData.getPeriodOfInsurance().toString());
@@ -3049,7 +3051,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBranchCode(travelData.getBranchCode()) ;
 		    home.setBranchName(travelData.getBranchName());
 			home.setSourceType(travelData.getSourceType());
-		    home.setSubUserType(travelData.getSourceType());
+			home.setSourceTypeId(travelData.getSourceTypeId());
+		    home.setSubUserType(travelData.getSubUserType());
 		    home.setApplicationId(travelData.getApplicationId());
 		    home.setBrokerCode(travelData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(travelData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
@@ -3058,7 +3061,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBdmCode(travelData.getBdmCode());
 			home.setBrokerBranchCode(travelData.getBrokerBranchCode() );
 			home.setBrokerBranchName(travelData.getBrokerBranchName() );
-			home.setUserType(travelData.getSourceType() );
+			home.setUserType(travelData.getApplicationId().equalsIgnoreCase("1") ? travelData.getSourceType() : "Issuer" ) ;
 			home.setLoginId(travelData.getLoginId());
 			home.setPolicyPeriod(travelData.getTravelCoverDuration()==null?"" :travelData.getTravelCoverDuration().toString());
 			home.setPolicyTerm(travelData.getTravelCoverDuration()==null?"" :travelData.getTravelCoverDuration().toString());
@@ -3130,8 +3133,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Source Type Details 
 			home.setBranchCode(buildingData.getBranchCode()) ;
 		    home.setBranchName(buildingData.getBranchName());
-			home.setSourceType(buildingData.getSourceType());
-		    home.setSubUserType(buildingData.getSourceType());
+		    home.setSourceType(buildingData.getSourceType());
+			home.setSourceTypeId(buildingData.getSourceTypeId());
+		    home.setSubUserType(buildingData.getSubUserType());
 		    home.setApplicationId(buildingData.getApplicationId());
 		    home.setBrokerCode(buildingData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(buildingData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
@@ -3140,7 +3144,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBdmCode(buildingData.getBdmCode());
 			home.setBrokerBranchCode(buildingData.getBrokerBranchCode() );
 			home.setBrokerBranchName(buildingData.getBrokerBranchName() );
-			home.setUserType(buildingData.getSourceType() );
+			home.setUserType(buildingData.getApplicationId().equalsIgnoreCase("1") ? buildingData.getSourceType() : "Issuer" ) ;
 			home.setLoginId(buildingData.getLoginId());
 			home.setPolicyPeriod(buildingData.getPolicyPeriord()==null?"" :buildingData.getPolicyPeriord().toString());
 			home.setPolicyTerm(buildingData.getPolicyPeriord()==null?"" :buildingData.getPolicyPeriord().toString());
@@ -3213,8 +3217,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Source Type Details 
 			home.setBranchCode(eserCommonData.getBranchCode()) ;
 		    home.setBranchName(eserCommonData.getBranchName());
-			home.setSourceType(eserCommonData.getSourceType());
-		    home.setSubUserType(eserCommonData.getSourceType());
+		    home.setSourceType(eserCommonData.getSourceType());
+			home.setSourceTypeId(eserCommonData.getSourceTypeId());
+		    home.setSubUserType(eserCommonData.getSubUserType());
 		    home.setApplicationId(eserCommonData.getApplicationId());
 		    home.setBrokerCode(eserCommonData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(eserCommonData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
@@ -3223,7 +3228,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBdmCode(eserCommonData.getBdmCode());
 			home.setBrokerBranchCode(eserCommonData.getBrokerBranchCode() );
 			home.setBrokerBranchName(eserCommonData.getBrokerBranchName() );
-			home.setUserType(eserCommonData.getSourceType() );
+			home.setUserType(eserCommonData.getApplicationId().equalsIgnoreCase("1") ? eserCommonData.getSourceType() : "Issuer" ) ;
 			home.setLoginId(eserCommonData.getLoginId());
 			home.setPolicyPeriod(eserCommonData.getPolicyPeriod()==null?"" :eserCommonData.getPolicyPeriod().toString());
 			home.setPolicyTerm(eserCommonData.getPolicyPeriod()==null?"" :eserCommonData.getPolicyPeriod().toString());

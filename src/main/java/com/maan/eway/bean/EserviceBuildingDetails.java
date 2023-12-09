@@ -795,4 +795,7 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="BROKER_TIRA_CODE")
 	      private String brokerTiraCode;
 	      
+	      @Column(name="SOURCE_TYPE_ID")
+	      private String sourceTypeId;
+	      
 }

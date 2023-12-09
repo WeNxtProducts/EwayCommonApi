@@ -112,6 +112,7 @@ public class TiraIntegerationServiceImpl {
 				  premiaIds.add( "3" ); premiaIds.add( "4" ); premiaIds.add( "5" );
 				  premiaIds.add( "6" ); premiaIds.add( "7" ); premiaIds.add( "8" );
 				 premiaIds.add( "9" ); premiaIds.add( "10" ); premiaIds.add( "11" );
+				 premiaIds.add( "12" );
 				  premiaReq.setPremiaIds(premiaIds);
 				  
 				 service.pushPremiaIntegration(premiaReq);
