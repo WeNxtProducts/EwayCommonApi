@@ -2949,6 +2949,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setPolicyTerm(motorData.getPeriodOfInsurance()==null?"" :motorData.getPeriodOfInsurance().toString());
 			home.setSalePointCode(motorData.getSalePointCode());
 			home.setBrokerTiraCode(motorData.getBrokerTiraCode());
+			home.setTiraCoverNoteNo(motorData.getTiraCoverNoteNo());
 			
 			List<EserviceMotorDetails> motList = eserMotRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 			
@@ -3046,6 +3047,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setOriginalPolicyNo(travelData.getOriginalPolicyNo()==null?"":travelData.getOriginalPolicyNo());
 			home.setCommissionPercentage(travelData.getCommissionPercentage());
 			home.setVatCommission(travelData.getVatCommission());
+			home.setTiraCoverNoteNo(travelData.getTiraCoverNoteNo());
 			
 			// Source Type Details 
 			home.setBranchCode(travelData.getBranchCode()) ;
@@ -3109,6 +3111,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setHavepromoYn(buildingData.getHavepromocode());
 			home.setPromocode(buildingData.getPromocode());
 			home.setManualReferalYn(buildingData.getManualReferalYn());
+			home.setTiraCoverNoteNo(buildingData.getTiraCoverNoteNo());
 			
 			home.setProductName(buildingData.getProductDesc());
 			home.setCompanyName(buildingData.getCompanyName());
@@ -3193,6 +3196,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setHavepromoYn(eserCommonData.getHavepromocode());
 			home.setPromocode(eserCommonData.getPromocode());
 			home.setManualReferalYn(eserCommonData.getManualReferalYn());
+			home.setTiraCoverNoteNo(eserCommonData.getTiraCoverNoteNo());
 			
 			home.setProductName(eserCommonData.getProductDesc());
 			home.setCompanyName(eserCommonData.getCompanyName());
