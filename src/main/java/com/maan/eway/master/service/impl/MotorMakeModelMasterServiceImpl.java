@@ -475,7 +475,7 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 	        saveData.setRemarks(req.getRemarks());
 	        saveData.setBaserate(req.getBaseRate()==null?0:Integer.valueOf(req.getBaseRate()));
 	        saveData.setCoreBOdyId(req.getCoreBodyId()==null?"":req.getCoreBodyId());
-	        saveData.setMakeNameEn(getMakeName(req.getInsuranceId(), req.getBranchCode() , req.getMakeId() ));
+	        saveData.setMakeNameEn(getMakeName(req.getInsuranceId(), req.getBranchCode() , req.getMakeId() )); // Make Name Query
 	        repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			
