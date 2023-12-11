@@ -14,6 +14,7 @@ package com.maan.eway.bean;
 
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -334,6 +335,18 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="INSURANCE_TYPE")
     private String     insuranceType ;
+    
+    @Column(name="EMI_YN", length=20)
+    private String     emiYn;
+
+    @Column(name="INSTALLMENT_PERIOD")
+    private Integer     installmentPeriod ;
+    
+    @Column(name="NO_OF_INSTALLMENT")
+    private Integer     noOfInstallment ;
+
+    @Column(name="EMI_PREMIUM")
+    private BigDecimal     emiPremium ;
 }
 
 
