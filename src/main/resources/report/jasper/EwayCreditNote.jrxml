@@ -185,7 +185,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
 		<fieldDescription><![CDATA[companyName]]></fieldDescription>
 	</field>
-	<field name="customerCode" class="java.lang.Integer">
+	<field name="customerCode" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="customerCode"/>
 		<fieldDescription><![CDATA[customerCode]]></fieldDescription>
 	</field>
