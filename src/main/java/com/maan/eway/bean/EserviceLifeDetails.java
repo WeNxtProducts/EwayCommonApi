@@ -336,6 +336,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSURANCE_TYPE")
     private String     insuranceType ;
     
+
     @Column(name="EMI_YN", length=20)
     private String     emiYn;
 
@@ -347,6 +348,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="EMI_PREMIUM")
     private BigDecimal     emiPremium ;
+
+    @Column(name="ENDT_CATEGORY_ID")
+    private Integer    endtCategoryId ;
+
 }
 
 
