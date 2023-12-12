@@ -1884,6 +1884,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			try {
 				req.setVehicleNeedberemove(new ArrayList<VehicleNeedToRemove>());
 				
+				// Delete Cover Table
+				 res = deleteCoverRecords(req);
+				
+	 			// Section
+				res = deleteSectionRecords(req);
+	 			
 				// Delete Risk Tables
 				 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 						res = deleteTravelRecords(req);
@@ -1899,13 +1905,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 				}
 				
-				// Delete Cover Table
-				 
-				 res = deleteCoverRecords(req);
 				
-	 			// Section
-				res = deleteSectionRecords(req);
-	 			
 				// Common Doc
 				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
 					// Copy Quote Doc
@@ -2538,10 +2538,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 				 for ( VehicleIdsReq vehId :  collect ) {
 		            	for (CoverIdsReq cov : vehId.getCoverIdList() ) {
 							
-		            		if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
+		            		if(( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N")) && ! request.getEndtType().equalsIgnoreCase("842")) {
 		            				deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
 		            					&& o.getSectionId().equals(Integer.valueOf(vehId.getSectionId())) && o.getCoverId().equals(cov.getCoverId())   );	            			
-		            		} else {
+		            		
+		            		} else if (! request.getEndtType().equalsIgnoreCase("842")) {
 		            			
 		            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
 		            					&& o.getSectionId().equals(Integer.valueOf(vehId.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  );	 

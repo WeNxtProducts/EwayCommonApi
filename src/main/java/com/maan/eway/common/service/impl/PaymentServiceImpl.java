@@ -2328,6 +2328,7 @@ public class PaymentServiceImpl implements PaymentService {
 			String creditTo = "";
 			BigDecimal commission = new BigDecimal(0);
 			BigDecimal commissionPercent = new BigDecimal(0);
+			BigDecimal commissionVat = new BigDecimal(0);
 			if(filterCredit!=null && !filterCredit.isEmpty()) {
 			// Credit
 			 creditNo =  filterCredit.get(0).getDocNo();
@@ -2342,6 +2343,15 @@ public class PaymentServiceImpl implements PaymentService {
 			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o ->(o.getChargeCode().equals(new BigDecimal(1005)) )).collect(Collectors.toList())	;
 			 for ( DebitAndCredit o : commissionList) {
 				 commission= commission.add(o.getAmountFc());
+				 
+			 };
+			 // Commission Vat
+			 String brokerDrFlag = commission.compareTo(new BigDecimal("0") ) < 0 ? "DR" :"CR"  ;
+			List<DebitAndCredit> commissionVatList = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase(brokerDrFlag) &&
+			 (o.getChargeCode().equals(new BigDecimal(1012)) )).collect(Collectors.toList())	;
+			
+			for ( DebitAndCredit o : commissionVatList) {
+				commissionVat= commissionVat.add(o.getAmountFc());
 				 
 			 };
 //			 commission= policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
@@ -2359,7 +2369,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 //			List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
 //					&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
-			BigDecimal commissionVat = BigDecimal.ZERO;
+
 //			if (filtercommissionVat.size()>0 ) {
 //				commissionVat =  filtercommissionVat.get(0).getAmountFc();
 //			}
