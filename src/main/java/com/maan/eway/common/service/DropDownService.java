@@ -230,5 +230,7 @@ public interface DropDownService {
 	List<DropDownRes> geographicalCoverage(LovDropDownReq req);
 
 	List<DropDownRes> transportedBy(LovDropDownReq req);
+	
+	List<DropDownRes> errormodules(LovDropDownReq req);
 
 }
