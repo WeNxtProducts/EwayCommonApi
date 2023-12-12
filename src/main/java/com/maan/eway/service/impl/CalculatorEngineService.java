@@ -1383,7 +1383,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 					
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus()) || ( v.getEndtPremium()!=null && v.getEndtPremium() <0 ) ){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {
@@ -1539,7 +1539,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 					
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus())|| ( v.getEndtPremium()!=null && v.getEndtPremium() <0)){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {
@@ -1705,7 +1705,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus())|| ( v.getEndtPremium()!=null && v.getEndtPremium() <0)){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {
@@ -1867,7 +1867,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus())|| ( v.getEndtPremium()!=null && v.getEndtPremium() <0)){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {
@@ -2034,7 +2034,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus())|| ( v.getEndtPremium()!=null && v.getEndtPremium() <0)){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {
