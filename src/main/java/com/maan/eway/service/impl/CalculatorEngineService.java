@@ -1271,6 +1271,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 			}
 			
 			HomePositionMaster homeData = homeRepo.findByQuoteNo(v1.getQuoteDetails().getQuoteNo());
+			// Source Type Search Condition
+			List<String> directSource = new ArrayList<String>();
+			directSource.add("1");
+			directSource.add("2");
+			directSource.add("3");
+			boolean directSourceAvailable = homeData.getSourceTypeId()!=null && directSource.contains(homeData.getSourceTypeId()) ? true : false ;  
 			
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				List<MotorDataDetails> motors = motorRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteno());
@@ -1284,7 +1290,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					 
 						
 					// Premia Broker , Agent Condition
-					 if(StringUtils.isNotBlank(homeData.getSourceType()) && homeData.getSourceType().contains("Premia") ) {
+					 if(directSourceAvailable == true ) {
 						//commissionPercent=12.5;
 						String  commission = getListItem (homeData.getCompanyId() , homeData.getBranchCode() ,"COMMISSION_PERCENT",homeData.getSourceType() );
 						commissionPercent = StringUtils.isNotBlank(commission) ? Double.valueOf(commission ) : 0D;
@@ -1443,7 +1449,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
 							v.getProductId().toString(), loginId, v1.getQuoteDetails().getBrokerCode(), "99999");
 					// Premia Broker , Agent Condition
-					 if(StringUtils.isNotBlank(homeData.getSourceType()) && homeData.getSourceType().contains("Premia") ) {
+					 if(directSourceAvailable == true) {
 						//commissionPercent=12.5;
 							String  commission = getListItem (homeData.getCompanyId() , homeData.getBranchCode() ,"COMMISSION_PERCENT",homeData.getSourceType() );
 							commissionPercent = StringUtils.isNotBlank(commission) ? Double.valueOf(commission ) : 0D;
@@ -1607,7 +1613,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					 // Double commissionPercent = v.getCommissionPercentage().doubleValue();
 					
 					// Premia Broker , Agent Condition
-					 if(StringUtils.isNotBlank(homeData.getSourceType()) && homeData.getSourceType().contains("Premia") ) {
+					 if(directSourceAvailable == true) {
 						//commissionPercent=12.5;
 						String  commission = getListItem (homeData.getCompanyId() , homeData.getBranchCode() ,"COMMISSION_PERCENT",homeData.getSourceType() );
 						commissionPercent = StringUtils.isNotBlank(commission) ? Double.valueOf(commission ) : 0D;
@@ -1773,7 +1779,7 @@ public class CalculatorEngineService implements CalculatorEngine {
  					 // Double commissionPercent = v.getCommissionPercentage().doubleValue();
  					
  					// Premia Broker , Agent Condition
- 					 if(StringUtils.isNotBlank(homeData.getSourceType()) && homeData.getSourceType().contains("Premia") ) {
+ 					 if(directSourceAvailable == true) {
  						//commissionPercent=12.5;
  						String  commission = getListItem (homeData.getCompanyId() , homeData.getBranchCode() ,"COMMISSION_PERCENT",homeData.getSourceType() );
  						commissionPercent = StringUtils.isNotBlank(commission) ? Double.valueOf(commission ) : 0D;
@@ -1938,22 +1944,30 @@ public class CalculatorEngineService implements CalculatorEngine {
  				List<CommonDataDetails> motors = commonRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
 
  				for (CommonDataDetails v : motors) {
- 					String loginId = "b2c".equalsIgnoreCase(v.getSourceType()) ? "guest" : v.getLoginId() ;
-					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
-							v.getProductId().toString(), loginId, v.getBrokerCode(),"99999");
-					 Double commissionPercent =v.getCommissionPercentage().doubleValue();
-						if(policylist.size()>0 && policylist!=null) {
-						
-							if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
-								commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
-							} else {
-								commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
-										: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
-							}
-						}
-						else {
-							commissionPercent=12.5;
-						}
+ 					 Double commissionPercent = 0.0;
+   					String loginId = "b2c".equalsIgnoreCase(v.getSourceType()) ? "guest" : v.getLoginId() ;
+  					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
+  							v.getProductId().toString(), loginId, v.getBrokerCode(),"99999");
+  					 // Double commissionPercent = v.getCommissionPercentage().doubleValue();
+  					
+  					// Premia Broker , Agent Condition
+  					 if(directSourceAvailable == true) {
+  						//commissionPercent=12.5;
+  						String  commission = getListItem (homeData.getCompanyId() , homeData.getBranchCode() ,"COMMISSION_PERCENT",homeData.getSourceType() );
+  						commissionPercent = StringUtils.isNotBlank(commission) ? Double.valueOf(commission ) : 0D;
+  						
+  					} else if(policylist.size()>0 && policylist!=null) {
+  						
+  						if(StringUtils.isNotBlank(homeData.getCommissionModifyYn() ) && "Y".equalsIgnoreCase(homeData.getCommissionModifyYn()) ) {
+  							commissionPercent  =  homeData.getCommissionPercentage()==null ? 0D : Double.valueOf(homeData.getCommissionPercentage().toPlainString()) ;
+  						} else {
+  							commissionPercent =   policylist.get(0).getCommissionPercentage().toString() == null ? 0
+  									: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+  						}
+  					}
+  					else {
+  						commissionPercent=0D;
+  					}
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = String.valueOf( v.getOverallPremiumFc().subtract( v.getActualPremiumFc()));
 

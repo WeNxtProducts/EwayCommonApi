@@ -248,6 +248,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("23", "Occupation", "Please Select Occupation"));
 				}
 
+				if(req.getOccupation().equalsIgnoreCase("99999")){
+					if (StringUtils.isBlank(req.getOtherOccupation()) ) {
+						errorList.add(new Error("47", "Other Occupation", "Please Enter Other Occupation"));
+					}else if (req.getOtherOccupation().length() > 100){
+						errorList.add(new Error("47","Other Occupation", "Please Enter Other Occupation within 100 Characters")); 
+				}}
 				
 				if (StringUtils.isBlank(req.getMobileNo1())) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
@@ -788,6 +794,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					
 				}
 			}
+			
+			
 			/*
 			if (StringUtils.isBlank(req.getMobileNo1())) {
 				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1"));
@@ -919,7 +927,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
 				saveData.setBusinessTypeDesc(businessType);
 			}
-			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
+ 			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
 			
 //			if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId()) ) {
 //				saveData.setTitleDesc(null);
@@ -962,6 +970,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setTitleDesc(title);
 			saveData.setLanguageDesc(language);
 			saveData.setOccupationDesc(occupationDesc);
+			saveData.setOtherOccupation(req.getOtherOccupation());
 			saveData.setPolicyHolderTypeDesc(policyHolderType);
 			saveData.setPolicyHolderTypeIdDesc(policyHolderTypeId);
 			saveData.setIdType(req.getPolicyHolderTypeid());
@@ -980,6 +989,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setCityCode(StringUtils.isBlank(req.getCityCode())?null :Integer.valueOf(req.getCityCode()));
 			saveData.setCityName(req.getCityName());
 			saveData.setRegionCode(req.getRegionCode());
+			
 			
 			
 			
@@ -1012,10 +1022,14 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setAge(age);
 				savePersonalInfo.setBranchCode(req.getBranchCode());
 				savePersonalInfo.setBusinessType(req.getBusinessType());
+				savePersonalInfo.setOtherOccupation(req.getOtherOccupation());
 				if (StringUtils.isNotBlank(req.getBusinessType())) {
 					String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
 					savePersonalInfo.setBusinessTypeDesc(businessType);
+						
 				}
+				
+				
 				savePersonalInfo.setRegionCode(req.getRegionCode());
 				savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
 				savePersonalInfo.setCityCode(req.getCityCode());
@@ -1026,8 +1040,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setCompanyId(req.getCompanyId());
 				savePersonalInfo.setCreatedBy(req.getCreatedBy());
 				savePersonalInfo.setCustomerReferenceNo(req.getCustomerReferenceNo());
-				savePersonalInfo.setDobOrRegDate(dob);
-				savePersonalInfo.setEmail1(req.getEmail1());
+ 				savePersonalInfo.setDobOrRegDate(dob);
+  				savePersonalInfo.setEmail1(req.getEmail1());
 				savePersonalInfo.setEmail2(req.getEmail2());
 				savePersonalInfo.setEmail3(req.getEmail3());
 				savePersonalInfo.setEndorsementDate(req.getEndorsementDate());
@@ -1050,6 +1064,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setLanguageDesc(language);
 				savePersonalInfo.setOccupationDesc(occupationDesc);
 				
+						
 				// Induvidual / Corporate
 				savePersonalInfo.setPolicyHolderType(req.getPolicyHolderType());
 				savePersonalInfo.setPolicyHolderTypeDesc(policyHolderType);
@@ -1068,7 +1083,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setMobileNo3(req.getMobileNo3());
 				savePersonalInfo.setWhatsappCode(req.getWhatsappCode());
 				if (StringUtils.isNotBlank(req.getMobileCode1())) {
-					ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode1(),req.getCompanyId());
+ 					ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode1(),req.getCompanyId());
 					savePersonalInfo.setMobileCodeDesc1(mobiledesc1.getItemValue());
 
 				}

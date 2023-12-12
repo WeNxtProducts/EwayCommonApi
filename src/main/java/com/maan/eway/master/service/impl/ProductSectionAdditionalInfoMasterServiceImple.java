@@ -71,7 +71,6 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 	
 	@Autowired
 	private SectionMasterRepository smRepo;
-	
 
 	@Value("${file.directoryPath}")
 	private String directoryPath;
@@ -240,7 +239,7 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 			Date entryDate = null;
 			String createdBy ="";
 			
-			List<ProductSectionAdditionalInfoMaster> old = repo.findByProductIdAndSectionIdAndCompanyId(Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getCompanyId());
+			List<ProductSectionAdditionalInfoMaster> old = repo.findByProductIdAndSectionIdAndCompanyIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getCompanyId());
 					
 			
 			if(old.size()<=0 ) {   //Insert
@@ -321,6 +320,10 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 			}
 			
 			mapper.map(req, saveData);
+			if(old.size()>0) {
+				saveData.setJsonPath(old.get(0).getJsonPath()==null?"":old.get(0).getJsonPath());
+				saveData.setFileName(old.get(0).getFileName()==null?"":old.get(0).getFileName());				
+			}
 			
 			List<SectionMaster> sm = smRepo.findBySectionId(req.getSectionId());
 			if(sm.size()>0)
@@ -448,8 +451,8 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 			newfilename1= random.nextInt(100) + timestamp1.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D") +"."+FilenameUtils.getExtension(file.getOriginalFilename());
 			Files.copy(file.getInputStream(),destination1.resolve(newfilename1));
 		
-		//	String path = (directoryPath+newfilename);
-			String path = (directoryPath+req.getFileName());
+			String path = (directoryPath+newfilename);
+			//String path = (directoryPath+req.getFileName());
 			
 			// path save in table
 			List<ProductSectionAdditionalInfoMaster> list = repo.findByProductIdAndSectionIdAndCompanyIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()), Integer.valueOf(req.getSectionId()), req.getCompanyId());

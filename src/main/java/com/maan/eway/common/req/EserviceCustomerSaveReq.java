@@ -225,5 +225,8 @@ public class EserviceCustomerSaveReq {
 	
 	@JsonProperty("Type") 
 	private String type;
+	
+	@JsonProperty("OtherOccupation")
+	private String otherOccupation;
 
 }

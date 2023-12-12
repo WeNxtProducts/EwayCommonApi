@@ -185,7 +185,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
 		<fieldDescription><![CDATA[companyName]]></fieldDescription>
 	</field>
-	<field name="customerCode" class="java.lang.Integer">
+	<field name="customerCode" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="customerCode"/>
 		<fieldDescription><![CDATA[customerCode]]></fieldDescription>
 	</field>
@@ -199,6 +199,9 @@
 	</field>
 	<field name="vatRegNo" class="java.lang.String">
 		<fieldDescription><![CDATA[vatRegNo]]></fieldDescription>
+	</field>
+	<field name="premAndVatName" class="java.lang.String">
+		<fieldDescription><![CDATA[premAndVatName]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -1168,7 +1171,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Commission - "+$F{productName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premAndVatName}+" - "+$F{productName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="150" y="90" width="120" height="15" uuid="616a5601-e257-4740-b16f-aca473d44242">
@@ -1178,7 +1181,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat Output (Commission) - "+$F{vatPercent}+"%"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Vat Output ("+$F{premAndVatName}+") - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="480" y="60" width="75" height="15" uuid="ddb0d666-dc7f-485f-b27a-aa426061cad0">

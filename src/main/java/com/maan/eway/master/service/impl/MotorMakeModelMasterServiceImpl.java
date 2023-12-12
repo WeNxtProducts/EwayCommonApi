@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.MotorMakeMaster;
 import com.maan.eway.bean.MotorMakeModelMaster;
 import com.maan.eway.bean.MotorMakeModelMaster;
 import com.maan.eway.bean.OccupationMaster;
@@ -474,6 +475,7 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 	        saveData.setRemarks(req.getRemarks());
 	        saveData.setBaserate(req.getBaseRate()==null?0:Integer.valueOf(req.getBaseRate()));
 	        saveData.setCoreBOdyId(req.getCoreBodyId()==null?"":req.getCoreBodyId());
+	        saveData.setMakeNameEn(getMakeName(req.getInsuranceId(), req.getBranchCode() , req.getMakeId() )); // Make Name Query
 	        repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			
@@ -485,6 +487,77 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 		}
 		return res;
 		}
+	
+	public String getMakeName(String companyId , String branchCode , String makeId ) {
+		String makeName = "" ;
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 1);;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MotorMakeMaster> query=  cb.createQuery(MotorMakeMaster.class);
+			// Find All
+			Root<MotorMakeMaster> c = query.from(MotorMakeMaster.class);
+			//Select
+			query.select(c);
+			
+			List<MotorMakeMaster> list = new ArrayList<MotorMakeMaster>();
+				
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<MotorMakeMaster> ocpm1 = effectiveDate.from(MotorMakeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("makeId"),ocpm1.get("makeId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			effectiveDate.where(a1,a2,a5,a6);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<MotorMakeMaster> ocpm2 = effectiveDate2.from(MotorMakeMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("makeId"),ocpm2.get("makeId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			effectiveDate2.where(a3,a4,a7,a8);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n8 = cb.equal(c.get("status"),"R");
+			Predicate n9 = cb.or(n1,n8);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("branchCode"), branchCode);
+			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n7 = cb.or(n5,n6);
+			Predicate n10 = cb.equal(c.get("makeId"),makeId);
+			query.where(n9,n2,n3,n4,n7,n10).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			makeName = list.size() > 0 ? list.get(0).getMakeNameEn() : ""; 
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		return null;
+	}
+	return makeName;
+	}
 
 	@Override
 	public MotorMakeModelGetRes getMotorMakeModel(MotorMakeModelGetReq req) {

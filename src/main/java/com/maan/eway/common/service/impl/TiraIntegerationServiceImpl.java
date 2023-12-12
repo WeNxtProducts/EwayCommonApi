@@ -16,6 +16,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -88,7 +89,7 @@ public class TiraIntegerationServiceImpl {
 				
 				res.setResponse("Success");
 				
-			} else {
+			} else if( StringUtils.isBlank(data.getTiraCoverNoteNo())) {
 				Object tiraFramedReq = TiraReqFrame(tiraReq, token);
 				res.setResponse("Success");
 				// Tira Integ Push
@@ -112,6 +113,7 @@ public class TiraIntegerationServiceImpl {
 				  premiaIds.add( "3" ); premiaIds.add( "4" ); premiaIds.add( "5" );
 				  premiaIds.add( "6" ); premiaIds.add( "7" ); premiaIds.add( "8" );
 				 premiaIds.add( "9" ); premiaIds.add( "10" ); premiaIds.add( "11" );
+				 premiaIds.add( "12" );
 				  premiaReq.setPremiaIds(premiaIds);
 				  
 				 service.pushPremiaIntegration(premiaReq);

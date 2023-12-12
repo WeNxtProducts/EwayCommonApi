@@ -90,6 +90,9 @@ public class CreditNoteRes {
 	@JsonProperty("VatRegNo")
 	private String vatRegNo;
 	
+	@JsonProperty("PremAndVatName")
+	private String premAndVatName;
+	
 	@JsonProperty("SectionDescList")
 	private List<CreditDataSetOne> sectionDescList;
 
