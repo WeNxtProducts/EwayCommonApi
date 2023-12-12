@@ -2081,11 +2081,11 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentSaveReq.setPaymentType("1");
 				paymentSaveReq.setLoginId(data.getLoginId());
 				paymentSaveReq.setPremium(req.getPremium().toString());
-				paymentSaveReq.setChequeNo("");
-				paymentSaveReq.setChequeDate(null);
-				paymentSaveReq.setAccountNo("");
-				paymentSaveReq.setIbanNumber("");
-				paymentSaveReq.setMicrNo("");
+				paymentSaveReq.setChequeNo(req.getChequeNo()==null?"":req.getChequeNo());
+				paymentSaveReq.setChequeDate(req.getChequeDate()==null?null:req.getChequeDate().toString());
+				paymentSaveReq.setAccountNo(req.getAccountNumber()==null?"":req.getAccountNumber());	
+				paymentSaveReq.setIbanNumber(req.getIbanNumber()==null?null:req.getIbanNumber());
+				paymentSaveReq.setMicrNo(req.getMicrNo()==null?"":req.getMicrNo());
 				paymentSaveReq.setPayeeName(req.getPayeeName());
 				paymentSaveReq.setReferenceNo(refno);
 				paymentSaveReq.setDepositNo("");
