@@ -451,8 +451,8 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 			newfilename1= random.nextInt(100) + timestamp1.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D") +"."+FilenameUtils.getExtension(file.getOriginalFilename());
 			Files.copy(file.getInputStream(),destination1.resolve(newfilename1));
 		
-		//	String path = (directoryPath+newfilename);
-			String path = (directoryPath+req.getFileName());
+			String path = (directoryPath+newfilename);
+			//String path = (directoryPath+req.getFileName());
 			
 			// path save in table
 			List<ProductSectionAdditionalInfoMaster> list = repo.findByProductIdAndSectionIdAndCompanyIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()), Integer.valueOf(req.getSectionId()), req.getCompanyId());
