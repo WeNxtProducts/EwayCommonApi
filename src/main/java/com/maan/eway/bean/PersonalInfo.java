@@ -300,6 +300,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PIN_CODE", length=20)
     private String     pinCode ;
+    
+    @Column(name="OTHER_OCCUPATION")
+    private String otherOccupation;
 
 }
 
