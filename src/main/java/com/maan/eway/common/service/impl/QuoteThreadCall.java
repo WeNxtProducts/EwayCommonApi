@@ -360,6 +360,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 				commonData.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());	
 				eserCommonData.setEndtPremium(commonData.getEndtPremium());
 				eserCommonData.setEndtVatPremium(commonData.getEndtVatPremium());
+				commonData.setActualPremiumFc(BigDecimal.ZERO);
+				commonData.setActualPremiumLc(BigDecimal.ZERO);
+				commonData.setOverallPremiumFc(BigDecimal.ZERO);
+				commonData.setOverallPremiumLc(BigDecimal.ZERO);
+				commonData.setVatPremium(BigDecimal.ZERO);
+				eserCommonData.setVatPremium(BigDecimal.ZERO);
+				eserCommonData.setActualPremiumFc(BigDecimal.ZERO);
+				eserCommonData.setActualPremiumLc(BigDecimal.ZERO);
+				eserCommonData.setOverallPremiumFc(BigDecimal.ZERO);
+				eserCommonData.setOverallPremiumLc(BigDecimal.ZERO);
 				
 			}
 			eserCommonRepo.saveAndFlush(eserCommonData);
@@ -1313,6 +1323,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 					bulildDetails.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());	
 					eserBuild.setEndtPremium(bulildDetails.getEndtPremium());
 					eserBuild.setEndtVatPremium(bulildDetails.getEndtVatPremium());
+					bulildDetails.setActualPremiumFc(BigDecimal.ZERO);
+					bulildDetails.setActualPremiumLc(BigDecimal.ZERO);
+					bulildDetails.setOverallPremiumFc(BigDecimal.ZERO);
+					bulildDetails.setOverallPremiumLc(BigDecimal.ZERO);
+					bulildDetails.setVatPremium(BigDecimal.ZERO);
+					eserBuild.setVatPremium(BigDecimal.ZERO);
+					eserBuild.setActualPremiumFc(BigDecimal.ZERO);
+					eserBuild.setActualPremiumLc(BigDecimal.ZERO);
+					eserBuild.setOverallPremiumFc(BigDecimal.ZERO);
+					eserBuild.setOverallPremiumLc(BigDecimal.ZERO);
 				}
 			
 				buildRepo.saveAndFlush(bulildDetails);
@@ -1988,12 +2008,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 						motorData.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue() >0 ? -endtRes.getEndtPremium().doubleValue() : endtRes.getEndtPremium().doubleValue() );
 						motorData.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());	
 						
-						motorData.setActualPremiumFc(endtRes.getEndtPremium()!=null ? endtRes.getEndtPremium().doubleValue() : null);
-						motorData.setActualPremiumLc(endtRes.getEndtPremium()!=null ? endtRes.getEndtPremium().doubleValue() : null );
-						motorData.setOverallPremiumFc(endtRes.getEndtPremium()!=null && endtRes.getEndtVatPremium()!=null ?  endtRes.getEndtPremium().add(endtRes.getEndtVatPremium()).doubleValue() : null);
-						motorData.setOverallPremiumLc(endtRes.getEndtPremium()!=null && endtRes.getEndtVatPremium()!=null ?   endtRes.getEndtPremium().add(endtRes.getEndtVatPremium()).doubleValue() :null);
 						ref.setEndtPremium(motorData.getEndtPremium());
 						ref.setEndtVatPremium(motorData.getEndtVatPremium());
+						motorData.setActualPremiumFc(0D);
+						motorData.setActualPremiumLc(0D);
+						motorData.setOverallPremiumFc(0D);
+						motorData.setOverallPremiumLc(0D);
+						motorData.setVatPremium(BigDecimal.ZERO);
+						ref.setVatPremium(BigDecimal.ZERO);
 						ref.setActualPremiumFc(BigDecimal.ZERO);
 						ref.setActualPremiumLc(BigDecimal.ZERO);
 						ref.setOverallPremiumFc(BigDecimal.ZERO);
