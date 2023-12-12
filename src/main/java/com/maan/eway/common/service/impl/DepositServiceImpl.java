@@ -450,6 +450,7 @@ public class DepositServiceImpl implements DepositService {
 			String depositbal=getDepositBalance(req.getPremium(),cbcNo,req.getProductId(),req.getBrokerId());
 			if(StringUtils.isNotBlank(depositbal)) {
 				DepositDetail des=new DepositDetail();
+				des.setDepositNo(DepositMax());
 				des.setCbcNo(cbcNo);
 				des.setProductId(req.getProductId());
 				des.setQuoteNo(req.getQuoteNo()); 
@@ -460,8 +461,8 @@ public class DepositServiceImpl implements DepositService {
 				des.setBrokerId(Long.parseLong(req.getBrokerId()));
 				des.setBrokerName(getBrokerNameById(req.getBrokerId()));
 				des.setPremium(Double.valueOf(req.getPremium()));
-				des.setPolicyInsuranceFee(Double.valueOf(req.getPolicyfee()));
-				des.setVatAmount(Double.valueOf(req.getVattaxamt()));
+				des.setPolicyInsuranceFee(req.getPolicyfee()==null?0d:Double.valueOf(req.getPolicyfee()));
+				des.setVatAmount(req.getVattaxamt()==null?0d:Double.valueOf(req.getVattaxamt()));
 				des.setChargableType(Double.parseDouble(req.getPremium())<0?"R":"C");
 				depositdetailRepo.save(des);
 				result="Y";

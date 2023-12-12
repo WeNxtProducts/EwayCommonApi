@@ -488,9 +488,7 @@ private static final long serialVersionUID = 1L;
    @Column(name="VAT_PREMIUM")
    private BigDecimal vatPremium;
    
-   @Column(name="ENDT_VAT_PREMIUM")
-   private BigDecimal endVatPremium;
-   
+
    @Column(name="WIND_SCREEN_SUM_INSURED_LC")
    private BigDecimal     windScreenSumInsuredLc ;
 
@@ -554,6 +552,10 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="SOURCE_TYPE_ID")
    private String sourceTypeId;
+   
+
+   @Column(name="ENDT_VAT_PREMIUM")
+   private BigDecimal endtVatPremium;
 }
 
 

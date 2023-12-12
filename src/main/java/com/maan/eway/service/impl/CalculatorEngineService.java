@@ -1310,18 +1310,19 @@ public class CalculatorEngineService implements CalculatorEngine {
 					
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = v.getVatPremium()==null  ?"0" : v.getVatPremium().toPlainString();
-
+				
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						vatPremiumFc = v.getEndVatPremium()==null  ?"0" :  v.getEndVatPremium().toPlainString();
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
+						
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
 							.divide(BigDecimal.valueOf(100D))
 							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
 					//totalcommission = totalcommission.add(commission);
-
-			
+					
+					
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
 
 					// Setup
@@ -1361,6 +1362,18 @@ public class CalculatorEngineService implements CalculatorEngine {
 							subset.put("CHARGE_CODE_VALUE", commissionPercent);
 							bsubsets.add(subset);
 						}
+						{// Broker Commmission Vat
+							String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
+							BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
+									.divide(BigDecimal.valueOf(100D))
+									.setScale(new MathContext(0, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);;
+									
+							Map<String, Object> subset = new HashMap<String, Object>();
+							subset.put("CHARGE_CODE", "1012");
+							subset.put("CHARGE_CODE_DESC", "BrokerCommissionVat");
+							subset.put("CHARGE_CODE_VALUE", brokerVatAmount);
+							bsubsets.add(subset);
+						}
 						setup.put("<BROKER>", bsubsets);
 						crnumber =  genNo.generateCreditNo(branchCode.get(0).getCoreAppCode());
 					}
@@ -1383,7 +1396,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 					
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus()) || ( v.getEndtPremium()!=null && v.getEndtPremium() <0 ) ){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {
@@ -1471,7 +1484,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
@@ -1517,6 +1530,18 @@ public class CalculatorEngineService implements CalculatorEngine {
 							subset.put("CHARGE_CODE_VALUE", commissionPercent);
 							bsubsets.add(subset);
 						}
+						{// Broker Commmission Vat
+							String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
+							BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
+									.divide(BigDecimal.valueOf(100D))
+									.setScale(new MathContext(0, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);;
+									
+							Map<String, Object> subset = new HashMap<String, Object>();
+							subset.put("CHARGE_CODE", "1012");
+							subset.put("CHARGE_CODE_DESC", "BrokerCommissionVat");
+							subset.put("CHARGE_CODE_VALUE", brokerVatAmount);
+							bsubsets.add(subset);
+						}
 						setup.put("<BROKER>", bsubsets);
 						crnumber = genNo.generateCreditNo(branchCode.get(0).getCoreAppCode());
 					}
@@ -1539,7 +1564,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 					
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus())|| ( v.getEndtPremium()!=null && v.getEndtPremium() <0)){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {
@@ -1635,12 +1660,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						if( Double.valueOf(premiumFc) > 0 ) {
-							BigDecimal vatPremiumPercent = v1.getQuoteDetails().getEndtPremium().divide(new BigDecimal(premiumFc) );
-							vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : (v1.getQuoteDetails().getEndtPremiumTax().divide(vatPremiumPercent).setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP)).toPlainString();
-						//	vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
-
-						}
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
@@ -1688,6 +1708,18 @@ public class CalculatorEngineService implements CalculatorEngine {
 							subset.put("CHARGE_CODE_VALUE", commissionPercent);
 							bsubsets.add(subset);
 						}
+						{// Broker Commmission Vat
+							String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
+							BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
+									.divide(BigDecimal.valueOf(100D))
+									.setScale(new MathContext(0, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);;
+									
+							Map<String, Object> subset = new HashMap<String, Object>();
+							subset.put("CHARGE_CODE", "1012");
+							subset.put("CHARGE_CODE_DESC", "BrokerCommissionVat");
+							subset.put("CHARGE_CODE_VALUE", brokerVatAmount);
+							bsubsets.add(subset);
+						}
 						setup.put("<BROKER>", bsubsets);
 						 crnumber = genNo.generateCreditNo(branchCode.get(0).getCoreAppCode());
 					}
@@ -1710,7 +1742,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus())|| ( v.getEndtPremium()!=null && v.getEndtPremium() <0)){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {
@@ -1801,12 +1833,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						if( Double.valueOf(premiumFc) > 0 ) {
-							BigDecimal vatPremiumPercent = v1.getQuoteDetails().getEndtPremium().divide(new BigDecimal(premiumFc) );
-							vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : (v1.getQuoteDetails().getEndtPremiumTax().divide(vatPremiumPercent).setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP)).toPlainString();
-						//	vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
-
-						}
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 
 					}
 
@@ -1855,6 +1882,18 @@ public class CalculatorEngineService implements CalculatorEngine {
 							subset.put("CHARGE_CODE_VALUE", commissionPercent);
 							bsubsets.add(subset);
 						}
+						{// Broker Commmission Vat
+							String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
+							BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
+									.divide(BigDecimal.valueOf(100D))
+									.setScale(new MathContext(0, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);;
+									
+							Map<String, Object> subset = new HashMap<String, Object>();
+							subset.put("CHARGE_CODE", "1012");
+							subset.put("CHARGE_CODE_DESC", "BrokerCommissionVat");
+							subset.put("CHARGE_CODE_VALUE", brokerVatAmount);
+							bsubsets.add(subset);
+						}
 						setup.put("<BROKER>", bsubsets);
 						crnumber =  genNo.generateCreditNo(branchCode.get(0).getCoreAppCode());
 					}
@@ -1877,7 +1916,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus())|| ( v.getEndtPremium()!=null && v.getEndtPremium() <0)){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {
@@ -1973,12 +2012,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						if( Double.valueOf(premiumFc) > 0 ) {
-							BigDecimal vatPremiumPercent = v1.getQuoteDetails().getEndtPremium().divide(new BigDecimal(premiumFc) );
-							vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : (v1.getQuoteDetails().getEndtPremiumTax().divide(vatPremiumPercent).setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP)).toPlainString();
-						//	vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
-
-						}
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 
 					}
 
@@ -2027,6 +2061,18 @@ public class CalculatorEngineService implements CalculatorEngine {
 							subset.put("CHARGE_CODE_VALUE", commissionPercent);
 							bsubsets.add(subset);
 						}
+						{// Broker Commmission Vat
+							String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
+							BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
+									.divide(BigDecimal.valueOf(100D))
+									.setScale(new MathContext(0, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);;
+									
+							Map<String, Object> subset = new HashMap<String, Object>();
+							subset.put("CHARGE_CODE", "1012");
+							subset.put("CHARGE_CODE_DESC", "BrokerCommissionVat");
+							subset.put("CHARGE_CODE_VALUE", brokerVatAmount);
+							bsubsets.add(subset);
+						}
 						setup.put("<BROKER>", bsubsets);
 						crnumber =  genNo.generateCreditNo(branchCode.get(0).getCoreAppCode());
 					}
@@ -2049,7 +2095,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
 
-					if("D".equals(v.getStatus())){
+					if("D".equals(v.getStatus())|| ( v.getEndtPremium()!=null && v.getEndtPremium() <0)){
 						rule1.put("DEBIT", "<BROKER>");
 						rule1.put("CREDIT", "<CUSTOMER>");
 					}else {

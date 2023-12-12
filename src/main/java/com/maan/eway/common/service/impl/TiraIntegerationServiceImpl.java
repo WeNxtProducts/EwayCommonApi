@@ -89,7 +89,7 @@ public class TiraIntegerationServiceImpl {
 				
 				res.setResponse("Success");
 				
-			} else if( StringUtils.isBlank(data.getTiraCoverNoteNo())) {
+			} else if( StringUtils.isBlank(data.getCoverNoteReferenceNo())) {
 				Object tiraFramedReq = TiraReqFrame(tiraReq, token);
 				res.setResponse("Success");
 				// Tira Integ Push

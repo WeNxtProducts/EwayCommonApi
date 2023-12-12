@@ -811,4 +811,12 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="EMI_PREMIUM")
 	      private BigDecimal     emiPremium ;
 	      
+	      
+	      @Column(name="VAT_PREMIUM")
+	      private BigDecimal vatPremium;
+	      
+	      @Column(name="ENDT_VAT_PREMIUM")
+	      private BigDecimal endtVatPremium;
+	      
+	      
 }
