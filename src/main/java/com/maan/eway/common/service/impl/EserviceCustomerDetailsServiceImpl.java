@@ -248,7 +248,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("23", "Occupation", "Please Select Occupation"));
 				}
 
-				if(req.getOccupation().equalsIgnoreCase("76")){
+				if(req.getOccupation().equalsIgnoreCase("99999")){
 					if (StringUtils.isBlank(req.getOtherOccupation()) ) {
 						errorList.add(new Error("47", "Other Occupation", "Please Enter Other Occupation"));
 					}else if (req.getOtherOccupation().length() > 100){
