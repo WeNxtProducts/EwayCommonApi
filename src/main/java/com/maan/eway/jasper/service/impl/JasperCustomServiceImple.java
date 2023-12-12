@@ -247,6 +247,10 @@ public class JasperCustomServiceImple {
 	public TaxInvoiceRes getTaxInvoiceRes(String policyNo) {
 		log.info("Enter into getTaxInvoiceRes.\nArgument ==> PolicyNo :"+policyNo);
 		TaxInvoiceRes response = new TaxInvoiceRes();
+		Double premium=0.0;
+		Double vatPercent=0.0;
+		Double vatPremium=0.0;
+		Double OverAllPremium=0.0;
 	try {
 		List<TaxDataSetOneRes> dataset1Res = new ArrayList<TaxDataSetOneRes>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -319,12 +323,12 @@ public class JasperCustomServiceImple {
 				hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("currency").alias("currency"),hpmRoot.get("debitNoteNo").alias("debitNoteNo"),
 				vrnNumber.alias("vrnNumber"),tinNumber.alias("tinNumber"),cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
 					.otherwise(brokerName).alias("brokerName"),
-				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("premiumLc")).otherwise(hpmRoot.get("premiumFc")))
-					.otherwise(hpmRoot.get("endtPremium")).alias("premium"),
-				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")))
-					.otherwise(cb.quot(cb.prod(hpmRoot.get("endtPremium"), hpmRoot.get("vatPercent")), 100)).alias("vatPremium"),
-				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")))
-					.otherwise(cb.sum(hpmRoot.get("endtPremium"),cb.quot(cb.prod(hpmRoot.get("endtPremium"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremium"),
+//				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("premiumLc")).otherwise(hpmRoot.get("premiumFc")))
+//					.otherwise(hpmRoot.get("endtPremium")).alias("premium"),
+//				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")))
+//					.otherwise(cb.quot(cb.prod(hpmRoot.get("endtPremium"), hpmRoot.get("vatPercent")), 100)).alias("vatPremium"),
+//				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")))
+//					.otherwise(cb.sum(hpmRoot.get("endtPremium"),cb.quot(cb.prod(hpmRoot.get("endtPremium"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremium"),
 				hpmRoot.get("vatPercent").alias("vatPercent"),pdRoot.get("bankName").alias("bankName"),pdRoot.get("accountNumber").alias("accountNumber"),
 				sumInsured.alias("totSumInsured"),hpmRoot.get("companyId").alias("companyId"),companyName.alias("companyName"),imageURL.alias("companyLogo"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
@@ -368,7 +372,21 @@ public class JasperCustomServiceImple {
 					response.setBankswiftCode(entry.get("SWIFT CODE")==null?"":entry.get("SWIFT CODE").toString());
 			}
 			
-			BigDecimal amtInWordValue = map.get("overAllPremium")==null?null:new BigDecimal(Double.valueOf(map.get("overAllPremium").toString()));
+			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
+			if(!drcrDetails.isEmpty()) {
+				drcrDetails = drcrDetails.stream().filter(f -> f.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+				if(drcrDetails.get(0).getDocType().equalsIgnoreCase("C")) {
+					premium = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1001))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
+					
+				}else {
+					premium = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1005))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
+				}
+				vatPercent = map.get("vatPercent")==null?0.0:Double.parseDouble(map.get("vatPercent").toString());
+				vatPremium = premium*vatPercent/100;
+				OverAllPremium = premium+vatPremium;
+			}
+			
+			BigDecimal amtInWordValue = new BigDecimal(OverAllPremium);
 			String amtInWords="";
 			if(amtInWordValue!=null) {
 				amtInWords = motorRepo.getAmountByWords(amtInWordValue);
@@ -391,10 +409,10 @@ public class JasperCustomServiceImple {
 			response.setVrnNumber(map.get("vrnNumber")==null?"":map.get("vrnNumber").toString());
 			response.setTinNumber(map.get("tinNumber")==null?"":map.get("tinNumber").toString());
 			response.setBrokerName(map.get("brokerName")==null?"":map.get("brokerName").toString());
-			response.setPremium(map.get("premium")==null?"":new BigDecimal(Double.valueOf(map.get("premium").toString())).toString());
-			response.setVatPremium(map.get("vatPremium")==null?"":new BigDecimal(Double.valueOf(map.get("vatPremium").toString())).toString());
-			response.setVatPercent(map.get("vatPercent")==null?"":map.get("vatPercent").toString());
-			response.setOverAllPremium(map.get("overAllPremium")==null?"":new BigDecimal(Double.valueOf(map.get("overAllPremium").toString())).toString());
+			response.setPremium(new BigDecimal(premium).toPlainString());
+			response.setVatPremium(new BigDecimal(vatPremium).toPlainString());
+			response.setVatPercent(new BigDecimal(vatPercent).toPlainString());
+			response.setOverAllPremium(new BigDecimal(OverAllPremium).toPlainString());
 			response.setTotSumInsured(map.get("totSumInsured")==null?"":new BigDecimal(Double.valueOf(map.get("totSumInsured").toString())).toString());
 			response.setIntermediaryRefNo(map.get("intermediaryRefNo")==null?"":map.get("intermediaryRefNo").toString());
 			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
@@ -414,9 +432,10 @@ public class JasperCustomServiceImple {
 	public CreditNoteRes getCreditNoteRes(String policyNo) {
 		log.info("Enter into getCreditNoteRes.\nArgument ==> PolicyNo :"+policyNo);
 		CreditNoteRes response = new CreditNoteRes();
-		Double commAmt=0.0;
-		Double commPer=0.0;
-		Double commOverAll=0.0;
+		Double premium=0.0;
+		Double vatPercent=0.0;
+		Double vatPremium=0.0;
+		Double OverAllPremium=0.0;
 	try {
 		List<CreditDataSetOne> DataSetOneRes = new ArrayList<CreditDataSetOne>();
 		List<CreditDataSetTwo> DataSetTwoRes = new ArrayList<CreditDataSetTwo>();
@@ -524,14 +543,15 @@ public class JasperCustomServiceImple {
 				drcrDetails = drcrDetails.stream().filter(f -> f.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
 				if(drcrDetails.get(0).getDocType().equalsIgnoreCase("B")) {
 					response.setPremAndVatName("Commission");
-					commAmt = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1005))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
-					commPer = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1007))).findFirst().map(k -> k.getAmountLc()).map(BigDecimal::doubleValue).get(); //1007 - commissionPercent
+					premium = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1005))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
+					
 				}else {
 					response.setPremAndVatName("Premium");
-					commAmt = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1001))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1001 - Premium
-					commPer = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1012))).findFirst().map(k -> k.getAmountLc()).map(BigDecimal::doubleValue).get(); //1012 - VatPremium
+					premium = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1001))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
 				}
-				commOverAll = commAmt*commPer/100;
+				vatPercent = map.get("vatPercent")==null?0.0:Double.parseDouble(map.get("vatPercent").toString());
+				vatPremium = premium*vatPercent/100;
+				OverAllPremium = premium+vatPremium;
 			}
 			
 			response.setBrokerName(map.get("brokerName")==null?"":map.get("brokerName").toString());
@@ -552,10 +572,10 @@ public class JasperCustomServiceImple {
 			response.setAgencyCode(map.get("agencyCode")==null?"":map.get("agencyCode").toString());
 			response.setCustomerId(map.get("customerId")==null?"":map.get("customerId").toString());
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
-			response.setPremium(new BigDecimal(commAmt).toPlainString());
-			response.setVatPremiumFc(new BigDecimal(commPer).toPlainString());
-			response.setOverAllPremiumFc(new BigDecimal(commOverAll).toPlainString());
-			response.setVatPercent(map.get("vatPercent")==null?"":map.get("vatPercent").toString());
+			response.setPremium(new BigDecimal(premium).toPlainString());
+			response.setVatPremiumFc(new BigDecimal(vatPremium).toPlainString());
+			response.setOverAllPremiumFc(new BigDecimal(OverAllPremium).toPlainString());
+			response.setVatPercent(new BigDecimal(vatPercent).toPlainString());
 			response.setQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			response.setCompanyLogo(map.get("companyLogo")==null?"":map.get("companyLogo").toString());
 			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());

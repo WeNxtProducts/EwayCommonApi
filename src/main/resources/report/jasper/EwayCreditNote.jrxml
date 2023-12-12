@@ -81,7 +81,6 @@
 			<fieldDescription><![CDATA[coreAppCode]]></fieldDescription>
 		</field>
 	</subDataset>
-	<parameter name="pvImagePath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[]]>
 	</queryString>
@@ -185,7 +184,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
 		<fieldDescription><![CDATA[companyName]]></fieldDescription>
 	</field>
-	<field name="customerCode" class="java.lang.String">
+	<field name="customerCode" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="customerCode"/>
 		<fieldDescription><![CDATA[customerCode]]></fieldDescription>
 	</field>
@@ -1171,7 +1170,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{premAndVatName}+" - "+$F{productName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premAndVatName}+"- "+$F{productName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="150" y="90" width="120" height="15" uuid="616a5601-e257-4740-b16f-aca473d44242">
@@ -1289,7 +1288,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{overAllPremiumFc}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField textAdjust="StretchHeight">
 				<reportElement x="1" y="35" width="554" height="15" uuid="07a30e35-999b-4ad7-ba40-6c64f104c8cd">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
