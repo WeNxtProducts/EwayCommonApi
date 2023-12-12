@@ -54,6 +54,7 @@ import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.PolicyDrcrDetail;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.ProductGroupMaster;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -81,6 +82,7 @@ import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
+import com.maan.eway.repository.PolicyDrcrDetailRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 
 @Component
@@ -114,6 +116,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private GroupMedicalDetailsRepository groupMedicalDetRepo;
+	
+	@Autowired
+	private PolicyDrcrDetailRepository drcrdetail;
 		
 	private String RenewalDate(String Input) {
 		DateTimeFormatter inputformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -409,6 +414,9 @@ public class JasperCustomServiceImple {
 	public CreditNoteRes getCreditNoteRes(String policyNo) {
 		log.info("Enter into getCreditNoteRes.\nArgument ==> PolicyNo :"+policyNo);
 		CreditNoteRes response = new CreditNoteRes();
+		Double commAmt=0.0;
+		Double commPer=0.0;
+		Double commOverAll=0.0;
 	try {
 		List<CreditDataSetOne> DataSetOneRes = new ArrayList<CreditDataSetOne>();
 		List<CreditDataSetTwo> DataSetTwoRes = new ArrayList<CreditDataSetTwo>();
@@ -463,11 +471,11 @@ public class JasperCustomServiceImple {
 			cb.selectCase().when(cb.isNotNull(hpmRoot.get("originalPolicyNo")), hpmRoot.get("policyNo")).alias("endorsementNo"),hpmRoot.get("endtTypeId").alias("endtTypeId"),
 			hpmRoot.get("endtTypeDesc").alias("endtTypeDesc"),hpmRoot.get("endorsementRemarks").alias("endorsementRemarks"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
 			hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("agencyCode").alias("agencyCode"),hpmRoot.get("customerId").alias("customerId"),hpmRoot.get("approvedBy").alias("approvedBy"),
-			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), hpmRoot.get("commission")).when(cb.isNotNull(hpmRoot.get("creditNo")), hpmRoot.get("commission")).alias("premium"),
-			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)).when(cb.isNotNull(hpmRoot.get("creditNo")), 
-					cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)).alias("vatPremiumFc"),
-			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)))
-				.when(cb.isNotNull(hpmRoot.get("creditNo")), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremiumFc"),
+//			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), hpmRoot.get("commission")).when(cb.isNotNull(hpmRoot.get("creditNo")), hpmRoot.get("commission")).alias("premium"),
+//			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)).when(cb.isNotNull(hpmRoot.get("creditNo")), 
+//					cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)).alias("vatPremiumFc"),
+//			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)))
+//				.when(cb.isNotNull(hpmRoot.get("creditNo")), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremiumFc"),
 			hpmRoot.get("vatPercent").alias("vatPercent"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("customerCode").alias("customerCode"),companyName.alias("companyName"),imageURL.alias("companyLogo"),
 			piRoot.get("vrTinNo").alias("vatRegNo"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),
@@ -511,6 +519,21 @@ public class JasperCustomServiceImple {
 					.build();
 				DataSetTwoRes.add(q);
 			});
+			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
+			if(!drcrDetails.isEmpty()) {
+				drcrDetails = drcrDetails.stream().filter(f -> f.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
+				if(drcrDetails.get(0).getDocType().equalsIgnoreCase("B")) {
+					response.setPremAndVatName("Commission");
+					commAmt = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1005))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
+					commPer = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1007))).findFirst().map(k -> k.getAmountLc()).map(BigDecimal::doubleValue).get(); //1007 - commissionPercent
+				}else {
+					response.setPremAndVatName("Premium");
+					commAmt = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1001))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1001 - Premium
+					commPer = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1012))).findFirst().map(k -> k.getAmountLc()).map(BigDecimal::doubleValue).get(); //1012 - VatPremium
+				}
+				commOverAll = commAmt*commPer/100;
+			}
+			
 			response.setBrokerName(map.get("brokerName")==null?"":map.get("brokerName").toString());
 			response.setCustomerName(map.get("customerName")==null?"":map.get("customerName").toString());
 			response.setAddress(map.get("address")==null?"":map.get("address").toString());
@@ -529,9 +552,9 @@ public class JasperCustomServiceImple {
 			response.setAgencyCode(map.get("agencyCode")==null?"":map.get("agencyCode").toString());
 			response.setCustomerId(map.get("customerId")==null?"":map.get("customerId").toString());
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
-			response.setPremium(map.get("premium")==null?"":map.get("premium").toString());
-			response.setVatPremiumFc(map.get("vatPremiumFc")==null?"":map.get("vatPremiumFc").toString());
-			response.setOverAllPremiumFc(map.get("overAllPremiumFc")==null?"":map.get("overAllPremiumFc").toString());
+			response.setPremium(new BigDecimal(commAmt).toPlainString());
+			response.setVatPremiumFc(new BigDecimal(commPer).toPlainString());
+			response.setOverAllPremiumFc(new BigDecimal(commOverAll).toPlainString());
 			response.setVatPercent(map.get("vatPercent")==null?"":map.get("vatPercent").toString());
 			response.setQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			response.setCompanyLogo(map.get("companyLogo")==null?"":map.get("companyLogo").toString());
