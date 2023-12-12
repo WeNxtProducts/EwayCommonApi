@@ -2336,9 +2336,10 @@ public class PaymentServiceImpl implements PaymentService {
 			 
 			 
 			// Commision
-			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
-						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
-						).collect(Collectors.toList())	;
+//			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") &&
+//					 (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
+//						).collect(Collectors.toList())	;
+			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o ->(o.getChargeCode().equals(new BigDecimal(1005)) )).collect(Collectors.toList())	;
 			 for ( DebitAndCredit o : commissionList) {
 				 commission= commission.add(o.getAmountFc());
 				 
@@ -2346,20 +2347,22 @@ public class PaymentServiceImpl implements PaymentService {
 //			 commission= policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
 //						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
 //					 	).collect(Collectors.toList()).get(0).getAmountFc();
-			 commissionPercent=	policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
-						&& (o.getChargeCode().equals(new BigDecimal(1007))
-								||
-								o.getChargeCode().equals(new BigDecimal(1012))
-								)
-						).collect(Collectors.toList()).get(0).getAmountFc();
+//			 commissionPercent=	policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+//						&& (o.getChargeCode().equals(new BigDecimal(1007))
+//								||
+//								o.getChargeCode().equals(new BigDecimal(1012))
+//								)
+//						).collect(Collectors.toList()).get(0).getAmountFc();
+			 commissionPercent=	policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).get(0).getAmountFc();
+			 
 			}
 			
-			List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
-					&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
+//			List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+//					&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
 			BigDecimal commissionVat = BigDecimal.ZERO;
-			if (filtercommissionVat.size()>0 ) {
-				commissionVat =  filtercommissionVat.get(0).getAmountFc();
-			}
+//			if (filtercommissionVat.size()>0 ) {
+//				commissionVat =  filtercommissionVat.get(0).getAmountFc();
+//			}
 
 
 			// Update Home Posion Master

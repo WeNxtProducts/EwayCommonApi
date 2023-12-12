@@ -1313,7 +1313,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						vatPremiumFc = v.getEndVatPremium()==null  ?"0" :  v.getEndVatPremium().toPlainString();
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
@@ -1471,7 +1471,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
@@ -1635,12 +1635,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						if( Double.valueOf(premiumFc) > 0 ) {
-							BigDecimal vatPremiumPercent = v1.getQuoteDetails().getEndtPremium().divide(new BigDecimal(premiumFc) );
-							vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : (v1.getQuoteDetails().getEndtPremiumTax().divide(vatPremiumPercent).setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP)).toPlainString();
-						//	vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
-
-						}
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
@@ -1801,12 +1796,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						if( Double.valueOf(premiumFc) > 0 ) {
-							BigDecimal vatPremiumPercent = v1.getQuoteDetails().getEndtPremium().divide(new BigDecimal(premiumFc) );
-							vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : (v1.getQuoteDetails().getEndtPremiumTax().divide(vatPremiumPercent).setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP)).toPlainString();
-						//	vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
-
-						}
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 
 					}
 
@@ -1973,12 +1963,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						if( Double.valueOf(premiumFc) > 0 ) {
-							BigDecimal vatPremiumPercent = v1.getQuoteDetails().getEndtPremium().divide(new BigDecimal(premiumFc) );
-							vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : (v1.getQuoteDetails().getEndtPremiumTax().divide(vatPremiumPercent).setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP)).toPlainString();
-						//	vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
-
-						}
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 
 					}
 

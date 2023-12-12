@@ -344,6 +344,8 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="SOURCE_TYPE_ID")
     private String sourceTypeId;
+
+    
     @Column(name="EMI_YN", length=20)
     private String     emiYn;
 
@@ -355,6 +357,15 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="EMI_PREMIUM")
     private BigDecimal     emiPremium ;
+
+    
+    
+    @Column(name="VAT_PREMIUM")
+    private BigDecimal vatPremium;
+    
+    @Column(name="ENDT_VAT_PREMIUM")
+    private BigDecimal endtVatPremium;
+
     
 }
 
