@@ -20,6 +20,8 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 		this.filterBy = filterBy;
 		this.effectiveDate=effectiveDate;
 		this.policyEndDate=policyEndDate;
+		this.policyEndDate.setHours(23);
+		this.policyEndDate.setMinutes(59);
 	}
 
 

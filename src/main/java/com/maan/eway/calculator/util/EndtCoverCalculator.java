@@ -340,9 +340,9 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 		 }
 					 		 
 							// Temp Prev Premium
-					 		
-							 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
-							 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
+					 		 endorsement.setProRataYn("Y");
+							// endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
+							// endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
 							 endorsement.setExchangeRate(exchangeRate);
 							 if(!"A".equals(t.getCalcType())) {
 								 endorsement.setEndorsementsumInsuredLc(t.getSumInsuredLc().subtract(endorsement.getEndorsementsumInsuredLc()));//.multiply(exchangeRate,MathContext.DECIMAL64));
@@ -352,20 +352,28 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 								 endorsement.setEndorsementsumInsured(BigDecimal.ZERO);
 							 }
 							 
-							 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
-							 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
-							 endorsement.setProRataYn("Y");
+							endorsement.setPremiumBeforeDiscount(t.getPremiumBeforeDiscount().subtract(endorsement.getPremiumBeforeDiscount()).multiply(t.getProRata(),MathContext.DECIMAL64));
+							endorsement.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscountLC().subtract(endorsement.getPremiumBeforeDiscountLC()).multiply(t.getProRata(),MathContext.DECIMAL64));
+								
+							endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().subtract(endorsement.getPremiumAfterDiscountLC()).multiply(t.getProRata(),MathContext.DECIMAL64));
+							endorsement.setPremiumAfterDiscount(t.getPremiumAfterDiscount().subtract(endorsement.getPremiumAfterDiscount()).multiply(t.getProRata(),MathContext.DECIMAL64));
+							
+							endorsement.setPremiumExcluedTax(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()).multiply(t.getProRata(),MathContext.DECIMAL64));				 
+							endorsement.setPremiumExcluedTaxLC(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()).multiply(t.getProRata(),MathContext.DECIMAL64));
+					   	
+							/*domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
+							
 							 if(domath.compareTo(BigDecimal.ZERO)<0)
-								 dontGo=true;
+								 dontGo=true;*/
 							/* else if(endorsement.getPremiumAfterDiscountLC().compareTo(endorsement.getPremiumExcluedTaxLC())>0)
 							 	dontGo=false;
 							 */
-							 endorsement.setPremiumBeforeDiscount(domath.multiply(endorsement.getProRata()));
+							 /*endorsement.setPremiumBeforeDiscount(domath.multiply(endorsement.getProRata()));
 							 endorsement.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumBeforeDiscount().multiply(endorsement.getExchangeRate()))));
 							 							 
 							 endorsement.setPremiumExcluedTax(endorsement.getPremiumBeforeDiscount());				 
 							 endorsement.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumExcluedTax().multiply(endorsement.getExchangeRate())))); 						 
-							 
+							 */
 							 //endorsement.setProRata(t.getProRata());
 
 					 	}
