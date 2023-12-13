@@ -61,17 +61,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         }
            
     
-
+    private static final String[] NOAUTH_MATCHER = {"/authentication/login","/api/changepassword","/api/forgotpassword","/authentication/byipaddress",
+    		"/basicauth/**","/embedded/create/**","post/notification/ack/mail","/authentication/doauth"};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
                 authorizeRequests()
-                .antMatchers("/post/integration/**","/login/CheckChangePassword","/login/LoginChangePassword","/login/getForgotPassword","/JasperFiles/*","/JasperFiles/**","/login/getBranchDetail","/login/verify/policy","/authentication/doauth","/embedded/create/**","/post/notification/ack/mail").permitAll()
+            //    .antMatchers("/post/integration/**","/login/CheckChangePassword","/login/LoginChangePassword","/login/getForgotPassword","/JasperFiles/*","/JasperFiles/**","/login/getBranchDetail","/login/verify/policy","/authentication/doauth","/embedded/create/**","/post/notification/ack/mail").permitAll()
+                .antMatchers(NOAUTH_MATCHER).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/admin/region/list").loginPage("/authentication/login").permitAll()
-                .and()
+               // .formLogin().loginPage("/authentication/**").permitAll()
+               // .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 /*.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry());*/
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

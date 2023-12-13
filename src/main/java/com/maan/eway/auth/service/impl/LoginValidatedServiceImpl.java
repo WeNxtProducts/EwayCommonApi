@@ -24,15 +24,18 @@ import org.springframework.util.CollectionUtils;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.ForgetPasswordReq;
+import com.maan.eway.auth.dto.IpAddressAuthenticationRequest;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.service.LoginCriteriaQueryService;
 import com.maan.eway.auth.service.LoginValidatedService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.SessionMasterRepository;
 
 
@@ -45,6 +48,9 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	private LoginMasterRepository loginRepo;
 	@Autowired
 	private SessionMasterRepository sessionRep;
+	
+	@Autowired
+	private LoginUserInfoRepository loginUserRepo ;
 
 	@Autowired
 	private NotifTransactionDetailsRepository notifRepo;
@@ -502,23 +508,29 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			list.add(new Error("","Login Id", "Please Enter Login Id"));
 		}
 		else {
-			LoginMaster model = loginRepo.findByLoginIdAndStatus(req.getLoginId() , "Y");
-			if(model == null ) {
+			LoginMaster model =  loginRepo.findByLoginId(req.getLoginId());
+			if(model ==null ) {
+				list.add(new Error("", "ForgotPassword", "You are not authorized user..!"));
+				 	
+			} else if( ! model.getStatus().equalsIgnoreCase("Y") ) {
 				list.add(new Error("", "ForgotPassword", " Login Id is Deactive"));
-			} else {
-				model = loginRepo.findByLoginId(req.getLoginId());
-				if(model ==null ) {
-					
-					list.add(new Error("", "ForgotPassword", "You are not authorized user..!"));
-				} 	
-			}
+				
+			} else if(StringUtils.isBlank(req.getEmailId())) {
+				list.add(new Error("", "EmailId", "Please Enter Email Id"));
+			}  else  {
+				LoginUserInfo userInfo =  loginUserRepo.findByLoginId(req.getLoginId());
+				if(userInfo!=null && userInfo.getUserMail()!=null && ! userInfo.getUserMail().equalsIgnoreCase(req.getEmailId()) ) {
+					list.add(new Error("","Login Id", "Requested Mail Id Not Matching with User Mail Id"));
+				}
+				
+			}  
 			 
 			
 		}
 		return list;
 	}
 
-	@Override
+	@Override 
 	public List<Error> validateTinyUrlId(String object,String tinyGroupId) {
 		try {
 			
@@ -546,6 +558,35 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 		notifRepo.updateOtherActiveTinyUrl(tinyGroupId,object);
 		
 	}
+
+	@Override
+	public CommonLoginRes loginIpAddressValidation(IpAddressAuthenticationRequest req) {
+		CommonLoginRes commonRes = new CommonLoginRes();
+		List<Error> list = new ArrayList<Error>(); 
+		try {
+			if(StringUtils.isBlank(req.getIpAddress())) {
+				list.add(new Error("","Ip Address", "Please Enter Ip Address"));
+			}
+			if(StringUtils.isBlank(req.getUserType())) {
+				list.add(new Error("","UserType", "Please Enter UserType"));
+			} else 	if(StringUtils.isNotBlank(req.getUserType()) && ! req.getUserType().equalsIgnoreCase("B2C") ) {
+				list.add(new Error("","UserType", "Please Enter Valid UserType"));
+			}
+		} catch (Exception e ) {
+			e.printStackTrace();
+			list.add(new Error("","Common Error", "Please Enter Ip Address"));
+		}
+		if(list!=null && list.size()>0  ) {
+			commonRes.setErrorMessage(list);
+			commonRes.setChangePasswordYn("N");
+			commonRes.setCommonResponse(null);
+			commonRes.setIsError(true);
+			commonRes.setMessage("Failed");
+		}
+		return commonRes;
+	}
+
+
 
 		
 

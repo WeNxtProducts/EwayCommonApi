@@ -886,6 +886,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					.notifcationPushDate(new Date())
 					.notifcationEndDate(calend.getTime())
 					.notifDescription(tempPassword)
+					.notifNo(Instant.now().toEpochMilli())
 					//.notifNo(null)
 					.notifPriority(1)
 					.notifPushedStatus("P")

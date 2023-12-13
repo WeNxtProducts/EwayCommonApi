@@ -10,4 +10,7 @@ public class ForgetPasswordReq {
 
 	@JsonProperty("LoginId")
 	private String loginId;
+	
+	@JsonProperty("EmailId")
+	private String emailId;
 }
