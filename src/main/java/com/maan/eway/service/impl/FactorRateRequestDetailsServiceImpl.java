@@ -1533,7 +1533,10 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setInsuranceId(acc.getCompanyId());
 						res.setSectionId(sec.getSectionId());
 						res.setVehicleId(acc.getRiskId().toString());
-						res.setSectionName(sec.getSectionName()  + "~" + ( StringUtils.isNotBlank(acc.getOccupationDesc()) ? acc.getOccupationDesc() : acc.getPersonalLiabilityOccupation() ) );
+						if(sec.getSectionId().equalsIgnoreCase("54"))
+							res.setSectionName(sec.getSectionName() );
+						else
+							res.setSectionName(sec.getSectionName()  + "~" + ( StringUtils.isNotBlank(acc.getOccupationDesc()) ? acc.getOccupationDesc() : acc.getPersonalLiabilityOccupation() ) );
 						
 						res.setGroupId(acc.getRiskId()==null?null:acc.getRiskId());
 						res.setOverallPremiumFc(acc.getOverallPremiumFc()==null?"0": acc.getOverallPremiumFc().toPlainString());
