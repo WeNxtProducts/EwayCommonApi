@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -2340,6 +2341,25 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 									List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> i.getCoverId()== covReq.getCoverId()).collect(Collectors.toList()) ;
 									BigDecimal totalSumInsured=coverData.stream().map(x -> x.getSumInsured()).reduce(BigDecimal.ZERO,BigDecimal::add);
 									updateEndt.setSumInsuredLc(totalSumInsured);
+									
+									coverData.sort(new Comparator<PolicyCoverDataEndt>() {
+
+										@Override
+										public int compare(PolicyCoverDataEndt o1, PolicyCoverDataEndt o2) {
+											// TODO Auto-generated method stub
+											return (o1.getEndtCount().compareTo(o2.getEndtCount()));
+										}
+									}.reversed());
+									
+									updateEndt.setPremiumAfterDiscountFc(coverData.get(0).getPremiumAfterDiscountFc());
+									updateEndt.setPremiumAfterDiscountLc(coverData.get(0).getPremiumAfterDiscountLc());
+									updateEndt.setPremiumBeforeDiscountFc(coverData.get(0).getPremiumBeforeDiscountFc());
+									updateEndt.setPremiumBeforeDiscountLc(coverData.get(0).getPremiumBeforeDiscountLc());
+									updateEndt.setPremiumExcludedTaxFc(coverData.get(0).getPremiumExcludedTaxFc());
+									updateEndt.setPremiumExcludedTaxLc(coverData.get(0).getPremiumExcludedTaxLc());
+									updateEndt.setPremiumIncludedTaxFc(coverData.get(0).getPremiumIncludedTaxFc());
+									updateEndt.setPremiumIncludedTaxLc(coverData.get(0).getPremiumIncludedTaxLc()); 
+									
 									updateCoverList.add(updateEndt);
 								}
 							}
@@ -2402,11 +2422,34 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					// Endt
 					if( covReq.getEndorsements()!=null && covReq.getEndorsements().size() > 0 ) {
 						for ( Endorsement endt : covReq.getEndorsements() ) {
-							List<FactorRateRequestDetails> filterEndt = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(Integer.valueOf(endt.getEndorsementId())) && 
+							List<FactorRateRequestDetails> filterEndt = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())
+									&&  o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(Integer.valueOf(endt.getEndorsementId())) && 
 									o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
 							if(filterEndt.size()>0 ) {
 								FactorRateRequestDetails  updateEndt = filterEndt.get(0);
 								updateEndt.setRate( new BigDecimal(endt.getEndorsementRate()) );
+								List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> (i.getCoverId()== covReq.getCoverId()
+											&& Integer.parseInt(covReq.getSubCoverId())==i.getSubCoverId()
+										)
+										)
+										.collect(Collectors.toList()) ;
+								coverData.sort(new Comparator<PolicyCoverDataEndt>() {
+
+									@Override
+									public int compare(PolicyCoverDataEndt o1, PolicyCoverDataEndt o2) {
+										// TODO Auto-generated method stub
+										return (o1.getEndtCount().compareTo(o2.getEndtCount()));
+									}
+								}.reversed());
+								
+								updateEndt.setPremiumAfterDiscountFc(coverData.get(0).getPremiumAfterDiscountFc());
+								updateEndt.setPremiumAfterDiscountLc(coverData.get(0).getPremiumAfterDiscountLc());
+								updateEndt.setPremiumBeforeDiscountFc(coverData.get(0).getPremiumBeforeDiscountFc());
+								updateEndt.setPremiumBeforeDiscountLc(coverData.get(0).getPremiumBeforeDiscountLc());
+								updateEndt.setPremiumExcludedTaxFc(coverData.get(0).getPremiumExcludedTaxFc());
+								updateEndt.setPremiumExcludedTaxLc(coverData.get(0).getPremiumExcludedTaxLc());
+								updateEndt.setPremiumIncludedTaxFc(coverData.get(0).getPremiumIncludedTaxFc());
+								updateEndt.setPremiumIncludedTaxLc(coverData.get(0).getPremiumIncludedTaxLc());
 								updateCoverList.add(updateEndt);
 							}
 						}
@@ -2435,6 +2478,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				
 				//	synchronized (engine) {
 						calcEngine.loadOnetimetable(engine);
+						 
 					resp=calcEngine.endorsementCalculator(engine,endtCount,endtTypdId,isPolicyDateEndt);
 				//}
 				
