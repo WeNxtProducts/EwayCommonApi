@@ -450,6 +450,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENDT_VAT_PREMIUM")
     private BigDecimal endtVatPremium;
     
+    @Column(name="OTHER_OCCUPATION")
+    private String otherOccupation;
+    
 }
 
 
