@@ -247,14 +247,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				if (StringUtils.isBlank(req.getOccupation()) ) {
 					errorList.add(new Error("23", "Occupation", "Please Select Occupation"));
-				}
-
-				if(req.getOccupation().equalsIgnoreCase("99999")){
+				} else if(req.getOccupation().equalsIgnoreCase("99999")){
 					if (StringUtils.isBlank(req.getOtherOccupation()) ) {
 						errorList.add(new Error("47", "Other Occupation", "Please Enter Other Occupation"));
 					}else if (req.getOtherOccupation().length() > 100){
 						errorList.add(new Error("47","Other Occupation", "Please Enter Other Occupation within 100 Characters")); 
-				}}
+					}
+				}
 				
 				if (StringUtils.isBlank(req.getMobileNo1())) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
