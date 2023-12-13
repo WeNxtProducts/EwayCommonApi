@@ -225,5 +225,8 @@ public class CustomerDetailsGetRes {
 	    @JsonProperty("PinCode") 
 	    private String     pinCode; 
 	    
+	    @JsonProperty("OtherOccupation")
+	    private String otherOccupation;
+	    
 
 }
