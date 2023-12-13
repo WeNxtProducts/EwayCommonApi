@@ -360,7 +360,9 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							
 							endorsement.setPremiumExcluedTax(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()).multiply(t.getProRata(),MathContext.DECIMAL64));				 
 							endorsement.setPremiumExcluedTaxLC(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()).multiply(t.getProRata(),MathContext.DECIMAL64));
-					   	
+							
+							if(endorsement.getPremiumExcluedTaxLC().compareTo(BigDecimal.ZERO)<0)
+								 dontGo=true;
 							/*domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
 							
 							 if(domath.compareTo(BigDecimal.ZERO)<0)
