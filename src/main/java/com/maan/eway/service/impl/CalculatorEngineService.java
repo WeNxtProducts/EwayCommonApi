@@ -89,6 +89,7 @@ import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PolicyCoverDataEndtRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
@@ -153,6 +154,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 	@Autowired
 	private ReferalServiceImpl referal;
 
+	@Autowired
+	private LoginUserInfoRepository loginUserRepo ;
+	
 	@Autowired
 	private QuoteService quoteservice;
 
@@ -1363,7 +1367,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 							bsubsets.add(subset);
 						}
 						{// Broker Commmission Vat
-							String brokerVatYn = policylist.size() > 0 ? policylist.get(0).getCommissionVatYn() :"Y"; 
+							String brokerLoginId = policylist.size() > 0 ? policylist.get(0).getLoginId() : "";
+							LoginUserInfo loginuser = loginUserRepo.findByLoginId(brokerLoginId);
+							String brokerVatYn = loginuser !=null && loginuser.getTaxExemptedYn()!=null && loginuser.getTaxExemptedYn().equalsIgnoreCase("Y") ? "N" : "Y" ;
 							if(brokerVatYn!=null && brokerVatYn.equalsIgnoreCase("Y") ) {
 								String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
 								BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
@@ -1535,7 +1541,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 							bsubsets.add(subset);
 						}
 						{// Broker Commmission Vat
-							String brokerVatYn = policylist.size() > 0 ? policylist.get(0).getCommissionVatYn() :"Y"; 
+							String brokerLoginId = policylist.size() > 0 ? policylist.get(0).getLoginId() : "";
+							LoginUserInfo loginuser = loginUserRepo.findByLoginId(brokerLoginId);
+							String brokerVatYn = loginuser !=null && loginuser.getTaxExemptedYn()!=null && loginuser.getTaxExemptedYn().equalsIgnoreCase("Y") ? "N" : "Y" ;
+							 
 							if(brokerVatYn!=null && brokerVatYn.equalsIgnoreCase("Y") ) {
 								String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
 								BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
@@ -1717,7 +1726,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 							bsubsets.add(subset);
 						}
 						{// Broker Commmission Vat
-							String brokerVatYn = policylist.size() > 0 ? policylist.get(0).getCommissionVatYn() :"Y"; 
+							String brokerLoginId = policylist.size() > 0 ? policylist.get(0).getLoginId() : "";
+							LoginUserInfo loginuser = loginUserRepo.findByLoginId(brokerLoginId);
+							String brokerVatYn = loginuser !=null && loginuser.getTaxExemptedYn()!=null && loginuser.getTaxExemptedYn().equalsIgnoreCase("Y") ? "N" : "Y" ;
+							
 							if(brokerVatYn!=null && brokerVatYn.equalsIgnoreCase("Y") ) {
 								String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
 								BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
@@ -1894,7 +1906,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 							bsubsets.add(subset);
 						}
 						{// Broker Commmission Vat
-							String brokerVatYn = policylist.size() > 0 ? policylist.get(0).getCommissionVatYn() :"Y"; 
+							String brokerLoginId = policylist.size() > 0 ? policylist.get(0).getLoginId() : "";
+							LoginUserInfo loginuser = loginUserRepo.findByLoginId(brokerLoginId);
+							String brokerVatYn = loginuser !=null && loginuser.getTaxExemptedYn()!=null && loginuser.getTaxExemptedYn().equalsIgnoreCase("Y") ? "N" : "Y" ;
+							 
 							if(brokerVatYn!=null && brokerVatYn.equalsIgnoreCase("Y") ) {
 								String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
 								BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
@@ -2076,7 +2091,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 							bsubsets.add(subset);
 						}
 						{// Broker Commmission Vat
-							String brokerVatYn = policylist.size() > 0 ? policylist.get(0).getCommissionVatYn() :"Y"; 
+							String brokerLoginId = policylist.size() > 0 ? policylist.get(0).getLoginId() : "";
+							LoginUserInfo loginuser = loginUserRepo.findByLoginId(brokerLoginId);
+							String brokerVatYn = loginuser !=null && loginuser.getTaxExemptedYn()!=null && loginuser.getTaxExemptedYn().equalsIgnoreCase("Y") ? "N" : "Y" ;
+							
 							if(brokerVatYn!=null && brokerVatYn.equalsIgnoreCase("Y") ) {
 								String brokerVatPercent = homeData.getVatPercent()==null ? "0" : homeData.getVatPercent().toPlainString();
 								BigDecimal brokerVatAmount =  commission.multiply(new BigDecimal(brokerVatPercent))
