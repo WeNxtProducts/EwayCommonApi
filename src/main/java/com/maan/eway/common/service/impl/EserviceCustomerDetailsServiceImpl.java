@@ -112,9 +112,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getClientName().length() > 250) {
 					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 250 Characters"));
 				} 
-//				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
-//					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
-//				}
+				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
+					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
+				}
 				
 				
 				if (StringUtils.isBlank(req.getAddress1())) {
@@ -153,9 +153,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber"));
 				} else if (req.getIdNumber().length() > 100) {
 					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber within 100 Characters"));
-				} else if (! req.getIdNumber().matches("[A-Za-z0-9]+") ) {
-					errorList.add(new Error("11", "IdNumber", "Please Enter Valid IdNumber "));
-				}
+				} 
+//				else if (! req.getIdNumber().matches("[A-Za-z0-9]+") ) {
+//					errorList.add(new Error("11", "IdNumber", "Please Enter Valid IdNumber "));
+//				}
 				
 				
 //				if (StringUtils.isBlank(req.getPreferredNotification())) {
@@ -595,12 +596,21 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //			if (StringUtils.isBlank(req.getStateName())) {
 //				errorList.add(new Error("43", "StateName", "Please Select StateName"));
 //			}
-				
-				if (StringUtils.isBlank(req.getCityName())) {
-					errorList.add(new Error("43", "District", "Please Select District "));
-				} else if (req.getCityName().length() > 100) {
-					errorList.add(new Error("43", "District", "Please Enter District within 100 Characters"));
+				if (req.getCompanyId().equalsIgnoreCase("100004") ) {
+					if(   StringUtils.isBlank(req.getCityName())) {
+						errorList.add(new Error("11", "CityName", "Please Enter District"));
+					} else if (req.getCityName().length() > 100) {
+						errorList.add(new Error("11", "CityName", "Please Enter District within 100 Characters"));
+					}
+				} else {
+					if (StringUtils.isBlank(req.getCityName())) {
+						errorList.add(new Error("43", "District", "Please Select District "));
+					} else if (req.getCityName().length() > 100) {
+						errorList.add(new Error("43", "District", "Please Enter District within 100 Characters"));
+					}
 				}
+					
+				 
 
 				/*if (StringUtils.isBlank(req.getStreet())) {
 					errorList.add(new Error("44", "Street", "Please Enter Street "));
