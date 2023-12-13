@@ -564,6 +564,7 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 					res.setSectionId(data1.getSectionId()==null?0:data1.getSectionId());
 					res.setSectionName(data1.getSectionName()==null?"":data1.getSectionName());
 					res.setAddDetailYn("N");
+					resList.add(res);
 				}
 				
 			}	
@@ -578,6 +579,6 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 		return resList;
 	
 	}
-
 	
+
 }
