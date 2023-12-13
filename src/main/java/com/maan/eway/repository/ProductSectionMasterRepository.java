@@ -12,15 +12,13 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.ProductSectionMasterId;
-import com.maan.eway.bean.SectionMaster;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.SectionMasterId;
 /**
  * <h2>SectionMasterRepository</h2>
  *
@@ -40,5 +38,8 @@ public interface ProductSectionMasterRepository  extends JpaRepository<ProductSe
 
 	List<ProductSectionMaster> findByProductIdAndCompanyIdAndSectionIdAndStatusOrderByAmendIdDesc(Integer productId,
 			String companyId, Integer sectionId, String string);
+
+	List<ProductSectionMaster> findByProductIdAndSectionIdAndCompanyIdOrderByAmendIdDesc(Integer valueOf,
+			Integer valueOf2, String companyId);
 
 }

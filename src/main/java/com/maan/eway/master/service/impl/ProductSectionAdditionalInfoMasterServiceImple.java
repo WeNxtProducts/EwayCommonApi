@@ -38,7 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.gson.Gson;
 import com.maan.eway.bean.ProductSectionAdditionalInfoMaster;
 import com.maan.eway.bean.ProductSectionMaster;
-import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.GetAllSectionAdditionalDetailsReq;
@@ -50,6 +49,7 @@ import com.maan.eway.master.res.GetOptedSectionAdditionalInfoRes;
 import com.maan.eway.master.res.GetSectionAdditionalDetailsRes;
 import com.maan.eway.master.service.ProductSectionAdditionalInfoMasterService;
 import com.maan.eway.repository.ProductSectionAdditionalInfoMasterRepo;
+import com.maan.eway.repository.ProductSectionMasterRepository;
 import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.res.SuccessRes;
 
@@ -71,6 +71,9 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 	
 	@Autowired
 	private SectionMasterRepository smRepo;
+	
+	@Autowired
+	private ProductSectionMasterRepository psmRepo;
 
 	@Value("${file.directoryPath}")
 	private String directoryPath;
@@ -325,7 +328,8 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 				saveData.setFileName(old.get(0).getFileName()==null?"":old.get(0).getFileName());				
 			}
 			
-			List<SectionMaster> sm = smRepo.findBySectionId(req.getSectionId());
+			List<ProductSectionMaster> sm = psmRepo.findByProductIdAndSectionIdAndCompanyIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()), 
+					Integer.valueOf(req.getSectionId()), req.getCompanyId());
 			if(sm.size()>0)
 				saveData.setSectionName(sm.get(0).getSectionName());
 			
