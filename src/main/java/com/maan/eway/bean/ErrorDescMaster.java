@@ -38,15 +38,34 @@ public class ErrorDescMaster implements Serializable{
 	@Column(name="ERROR_CODE")
 	private String errorCode;
 	
-	@Column(name="ERROR_FIELD")
-	private String errorField;
-
-	@Column(name="ERROR_DESC")
-	private String errorDesc;
+	@Id
+	@Column(name="COMPANY_ID")
+	private String companyId;
+	
+	@Id
+	@Column(name="BRANCH_CODE")
+	private String branchCode;
+	
+	@Id
+	@Column(name="PRODUCT_ID")
+	private Integer productId;
+	
+	@Id
+	@Column(name="MODULE_ID")
+	private Integer moduleId;
+	
+	@Column(name="MODULE_NAME")
+	private String moduleName;
 	
 	@Id
 	@Column(name="AMEND_ID")
 	private Integer amendId;
+	
+	@Column(name="ERROR_FIELD")
+	private String errorField;
+	
+	@Column(name="ERROR_DESC")
+	private String errorDesc;
 	
 	@Column(name="EFFECTIVE_DATE_END")
 	private Date effectiveDateEnd;
@@ -63,9 +82,7 @@ public class ErrorDescMaster implements Serializable{
 	@Column(name="ENTRY_DATE")
 	private Date entryDate;
 	
-	@Id
-	@Column(name="PRODUCT_ID")
-	private String productId;
+
 	
 	@Column(name="CREATED_BY")
 	private String createdBy;

@@ -30,6 +30,18 @@ public class ErrorDescMasterRes implements Serializable{
 
 	@JsonProperty("ErrorCode")
 	private String errorCode;
+	
+	@JsonProperty("ErrorField")
+	private String errorField;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
+	@JsonProperty("ModuleId")
+	private String moduleId;
 
 	@JsonProperty("Status")
 	private String status;

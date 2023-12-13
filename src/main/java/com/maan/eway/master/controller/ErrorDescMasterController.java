@@ -18,16 +18,19 @@ import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
 import com.maan.eway.master.req.ErrorDescMasterGetReq;
 import com.maan.eway.master.req.ErrorDescMasterSaveReq;
+import com.maan.eway.master.req.ErrorMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
 import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.ErrorDescMasterRes;
 import com.maan.eway.master.service.ErrorDescMasterService;
 import com.maan.eway.res.SuccessRes;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/errormodules")
+@RequestMapping("/master")
+@Api(tags = "MASTER : Error Desc Master ", description = "API's")
 public class ErrorDescMasterController {
 	
 	@Autowired
@@ -72,7 +75,7 @@ public class ErrorDescMasterController {
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallerrordetails")
 	@ApiOperation("This method is getall error Details")
-	public ResponseEntity<CommonRes> getallCityDetails(@RequestBody ErrorDescMasterGetReq req)
+	public ResponseEntity<CommonRes> getallCityDetails(@RequestBody ErrorMasterGetAllReq req)
 	{
 		CommonRes data = new CommonRes();
 		

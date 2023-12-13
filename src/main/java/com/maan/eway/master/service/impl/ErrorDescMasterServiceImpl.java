@@ -3,8 +3,10 @@ package com.maan.eway.master.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,10 +31,12 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.ErrorDescMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ErrorDescMasterGetReq;
 import com.maan.eway.master.req.ErrorDescMasterSaveReq;
+import com.maan.eway.master.req.ErrorMasterGetAllReq;
 import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.ErrorDescMasterRes;
 import com.maan.eway.master.service.ErrorDescMasterService;
@@ -56,7 +60,7 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 	@Override
 	public List<Error> validateErrorDesc(ErrorDescMasterSaveReq req) {
 		List<Error> errorList = new ArrayList<Error>();
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	//	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		
 		try
 		{
@@ -65,11 +69,37 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 //			}
 			
 			if (StringUtils.isBlank(req.getErrorDesc()) ) {
-				errorList.add(new Error("01", "Error Desc", "Please Select Error Desc"));
+				errorList.add(new Error("01", "Error Desc", "Please Enter Error Desc"));
+			} else if (req.getErrorDesc().length() > 200 ) {
+				errorList.add(new Error("01", "Error Desc", "Error Desc Must be under 200 Charecters Allowed"));
 			}
 			
+			if (StringUtils.isBlank(req.getCreatedBy()) ) {
+				errorList.add(new Error("01", "CreatedBy", "Please Enter CreatedBy"));
+			}
+			
+			// Date Validation
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null) {
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList
+						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			}
+						
 			if (StringUtils.isBlank(req.getProductId()) ) {
 				errorList.add(new Error("01", "Product Id", "Please Select Product Id"));
+			}
+			
+			if (StringUtils.isBlank(req.getInsuranceId()) ) {
+				errorList.add(new Error("01", "Insurance Id", "Please Select Insurance Id"));
 			}
 		}
 		catch(Exception e)
@@ -104,14 +134,14 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			Date endDate = sdformat.parse(end);
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
-			Date entryDate = null ;
-			String createdBy = "" ;
+			Date entryDate = new Date() ;
+			String createdBy = req.getCreatedBy() ;
 			
 			String errorCode = "";
 			
 			if(StringUtils.isBlank(req.getErrorCode()))
 			{
-				errorCode = seqNo.generateRefNo();
+				errorCode = seqNo.generateErrorCode();
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(errorCode);
 			}
@@ -126,11 +156,16 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 				
 				query.select(b);
 				
-				Predicate n1 = cb.equal(b.get("status"), "Y");
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("amendId")));
+				
 				Predicate n3 = cb.equal(b.get("errorCode"), req.getErrorCode());
 				Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
-				
-				query.where(n1, n3, n4);
+				Predicate n6 = cb.equal(b.get("companyId"), req.getInsuranceId());
+				Predicate n7 = cb.equal(b.get("moduleId"), req.getModuleId());
+				Predicate n8 = cb.equal(b.get("branchCode"), StringUtils.isBlank(req.getBranchCode()) ? "99999" : req.getBranchCode());
+				query.where( n3, n4,n6,n7,n8).orderBy(orderList);
 				
 				TypedQuery<ErrorDescMaster> result = em.createQuery(query);
 				int limit = 0 , offset = 2 ;
@@ -171,16 +206,20 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			dozerMapper.map(req, errordesc);
 			errordesc.setErrorCode(errorCode);
 			errordesc.setEntryDate(entryDate);
+			errordesc.setCompanyId(req.getInsuranceId());
+			errordesc.setBranchCode(StringUtils.isBlank(req.getBranchCode()) ? "99999" : req.getBranchCode());
 			errordesc.setEffectiveDateStart(startDate);
 			errordesc.setEffectiveDateEnd(endDate);
 			errordesc.setStatus(req.getStatus());
 			errordesc.setRemarks(req.getRemarks());
-			errordesc.setProductId(req.getProductId());
+			errordesc.setProductId(Integer.valueOf(req.getProductId()));
 			errordesc.setErrorDesc(req.getErrorDesc());
 			errordesc.setAmendId(amendId);
-			errordesc.setCreatedBy(req.getCreatedBy());
-			errordesc.setUpdatedBy(req.getUpdatedBy());
+			errordesc.setCreatedBy(createdBy);
+			errordesc.setUpdatedBy(req.getCreatedBy());
 			errordesc.setUpdatedDate(new Date());
+			String moduleName =  getListItem (req.getInsuranceId() , "99999" ,"ERROR_MODULES",req.getModuleId() );  
+			errordesc.setModuleName(moduleName);
 			repo.saveAndFlush(errordesc);
 		
 		}
@@ -192,8 +231,81 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 		return res;
 	}
 
+	public synchronized String getListItem(String insuranceId , String branchCode, String itemType, String itemCode) {
+		String itemDesc = "" ;
+		List<ListItemValue> list = new ArrayList<ListItemValue>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+			Predicate b3 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate b4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,b3,b4);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+			Predicate b1 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			Predicate b2 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4,b1,b2);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n12 = cb.equal(c.get("status"),"R");
+			Predicate n13 = cb.or(n1,n12);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n8 = cb.or(n4,n5);
+			Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType );
+			Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
+			
+			query.where(n13,n2,n3,n9,n10,n8,n11).orderBy(orderList);
+			
+		
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			itemDesc = list.size() > 0 ? list.get(0).getItemValue() : "" ; 
+		} catch (Exception e) {
+			e.printStackTrace();
+			//log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return itemDesc ;
+	}
+	
 	@Override
-	public List<ErrorDescMasterRes> getallErrorDetails(ErrorDescMasterGetReq req) {
+	public List<ErrorDescMasterRes> getallErrorDetails(ErrorMasterGetAllReq req) {
 		
 		
 		List<ErrorDescMasterRes> resList = new ArrayList<ErrorDescMasterRes>();
@@ -214,18 +326,22 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			Root<ErrorDescMaster> ocpm1 = amendId.from(ErrorDescMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("errorCode"), b.get("errorCode"));
-
-			amendId.where(a1);
+			Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+			Predicate a5 = cb.equal(ocpm1.get("moduleId"), b.get("moduleId"));
+			Predicate a6 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			amendId.where(a1,a3,a4,a5,a6);
 
 			
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("errorCode")));
-
+			orderList.add(cb.desc(b.get("amendId")));
 			
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			
-
-			query.where(n1).orderBy(orderList);
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n5 = cb.equal(b.get("moduleId"), req.getModuleId());
+			Predicate n6 = cb.equal(b.get("branchCode"), StringUtils.isBlank(req.getBranchCode()) ? "99999" : req.getBranchCode());
+			query.where(n1,n3,n4,n5,n6).orderBy(orderList);
 
 			TypedQuery<ErrorDescMaster> result = em.createQuery(query);
 			list = result.getResultList();
@@ -279,19 +395,24 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			Root<ErrorDescMaster> ocpm1 = amendId.from(ErrorDescMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("errorCode"), b.get("errorCode"));
-
-			amendId.where(a1);
+			Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+			Predicate a5 = cb.equal(ocpm1.get("moduleId"), b.get("moduleId"));
+			Predicate a6 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			amendId.where(a1,a3,a4,a5,a6);
 
 			
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("errorCode")));
-
+			orderList.add(cb.desc(b.get("amendId")));
 			
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("errorCode"), req.getErrorCode());
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n5 = cb.equal(b.get("moduleId"), req.getModuleId());
+			Predicate n6 = cb.equal(b.get("branchCode"), StringUtils.isBlank(req.getBranchCode()) ? "99999" : req.getBranchCode());
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
-
-			query.where(n1).orderBy(orderList);
-
 			TypedQuery<ErrorDescMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			
@@ -303,7 +424,7 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-			
+			res.setInsuranceId(list.get(0).getCompanyId());
 
 		} catch (Exception e) {
 			e.printStackTrace();

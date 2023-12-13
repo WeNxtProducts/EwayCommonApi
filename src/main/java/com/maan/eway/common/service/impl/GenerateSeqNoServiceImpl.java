@@ -11,12 +11,14 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.SeqCreditno;
 import com.maan.eway.bean.SeqDebitnote;
+import com.maan.eway.bean.SeqErrorCode;
 import com.maan.eway.bean.SeqPolicyno;
 import com.maan.eway.bean.SeqProductbenefit;
 import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.bean.SeqTinyrefno;
 import com.maan.eway.repository.SeqCreditnoRepository;
 import com.maan.eway.repository.SeqDebitnoteRepository;
+import com.maan.eway.repository.SeqErrorCodeRepository;
 import com.maan.eway.repository.SeqPolicynoRepository;
 import com.maan.eway.repository.SeqProductbenefitRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
@@ -44,6 +46,9 @@ public class GenerateSeqNoServiceImpl {
 	
 	@Autowired
 	private SeqProductbenefitRepository benefitRepo ;
+	
+	@Autowired
+	private SeqErrorCodeRepository errorCodeRepo ;
 
 	 public synchronized String generateRefNo() {
 	       try {
@@ -132,5 +137,18 @@ public class GenerateSeqNoServiceImpl {
 	        }
 	       
 	 
+	 }
+	 
+	 public synchronized String generateErrorCode() {
+	       try {
+	    	   SeqErrorCode entity;
+	            entity = errorCodeRepo.save(new SeqErrorCode());          
+	            return String.format("%04d",entity.getErrorCode()) ;
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       
 	 }
 }

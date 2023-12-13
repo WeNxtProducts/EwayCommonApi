@@ -7,6 +7,7 @@ import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterSaveReq;
 import com.maan.eway.master.req.ErrorDescMasterGetReq;
 import com.maan.eway.master.req.ErrorDescMasterSaveReq;
+import com.maan.eway.master.req.ErrorMasterGetAllReq;
 import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.ErrorDescMasterRes;
 import com.maan.eway.res.SuccessRes;
@@ -17,7 +18,7 @@ public interface ErrorDescMasterService {
 	
 	SuccessRes inserterrordesc(ErrorDescMasterSaveReq req);
 	
-	List<ErrorDescMasterRes> getallErrorDetails(ErrorDescMasterGetReq  req);
+	List<ErrorDescMasterRes> getallErrorDetails(ErrorMasterGetAllReq  req);
 	
 	ErrorDescMasterRes getbyerrorcodeDetails(ErrorDescMasterGetReq req);
 	

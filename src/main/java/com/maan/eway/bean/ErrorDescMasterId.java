@@ -2,6 +2,9 @@ package com.maan.eway.bean;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+
 import io.swagger.models.parameters.SerializableParameter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +27,13 @@ public class ErrorDescMasterId implements Serializable{
 	
 	private Integer amendId;
 	
-	private String productId;
+	private Integer productId;
+	
+	private String companyId;
+	
+	private String branchCode;
+	
+	private Integer moduleId;
+	
 
 }
