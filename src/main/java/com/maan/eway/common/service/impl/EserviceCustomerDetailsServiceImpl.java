@@ -252,8 +252,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						errorList.add(new Error("47", "Other Occupation", "Please Enter Other Occupation"));
 					}else if (req.getOtherOccupation().length() > 100){
 						errorList.add(new Error("47","Other Occupation", "Please Enter Other Occupation within 100 Characters")); 
+					}else if(!req.getOtherOccupation().matches("[a-zA-Z\\s]+")){
+						errorList.add(new Error("47","Other Occupation", "Please Enter Valid Other Occupation"));
 					}
-				}
+					}
 				
 				if (StringUtils.isBlank(req.getMobileNo1())) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
