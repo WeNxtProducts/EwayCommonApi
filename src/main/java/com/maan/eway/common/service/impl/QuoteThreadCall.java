@@ -2158,6 +2158,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 							endtData.setTravelEndDate(oldEndDate);
 							endtData.setStatus("D");
 							endtData.setTravelCoverDuration(Integer.valueOf(diff));
+							//EndtUpdatePremiumRes endtRes = updateEndtPremium2(request.getQuoteNo(),effDate,ref.getEndtPrevQuoteNo(),ref.getRiskId() ,Endtcovers,Integer.valueOf(motorData.getProductId()) , Integer.valueOf(motorData.getSectionId()));
+							endtData.setEndtPremium(endtData.getActualPremiumFc()==null ? null : endtData.getActualPremiumFc().doubleValue() >0 ? -endtData.getActualPremiumFc().doubleValue() : endtData.getActualPremiumFc().doubleValue() );
+							endtData.setEndtVatPremium(endtData.getVatPremium()==null ? null :  endtData.getVatPremium().doubleValue() >0 ? new BigDecimal(-endtData.getVatPremium().doubleValue()) : endtData.getVatPremium());	
 							saveEndtDatas.add(endtData);
 						}
 						traPassRepo.saveAllAndFlush(saveEndtDatas)	;
@@ -2767,6 +2770,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setCommissionPercentage(previousData!=null ? previousData.getCommissionPercentage() : home.getCommissionPercentage());
 			
 			}
+			home.setPolicyNo( previousData.getPolicyNo());
 			
 			String loginId = "" ;
 			if(! "1".equalsIgnoreCase(home.getApplicationId()  )) {
