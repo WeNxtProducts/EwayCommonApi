@@ -2380,6 +2380,7 @@ public class QuoteServiceImpl implements QuoteService {
 				mot.setAdminLoginId(req.getAdminLoginId());
 				mot.setAdminRemarks(req.getAdminRemarks());
 				mot.setRejectReason(req.getRejectReason());
+				mot.setCommissionPercentage(StringUtils.isBlank(req.getCommissionPercent())?BigDecimal.ZERO :new BigDecimal( req.getCommissionPercent())) ;
 				mot.setUpdatedDate(new Date());
 				eserMotRepo.saveAndFlush(mot);
 				
@@ -2477,6 +2478,7 @@ public class QuoteServiceImpl implements QuoteService {
 				com.setAdminRemarks(req.getAdminRemarks());
 				com.setRejectReason(req.getRejectReason());
 				com.setUpdatedDate(new Date());
+				com.setCommissionPercentage(StringUtils.isBlank(req.getCommissionPercent())?BigDecimal.ZERO :new BigDecimal( req.getCommissionPercent())) ;
 				eserCommonRepo.saveAndFlush(com);
 				
 			}
@@ -2572,6 +2574,7 @@ public class QuoteServiceImpl implements QuoteService {
 			travelData.setAdminRemarks(req.getAdminRemarks());
 			travelData.setRejectReason(req.getRejectReason());
 			travelData.setUpdatedDate(new Date());
+			travelData.setCommissionPercentage(StringUtils.isBlank(req.getCommissionPercent())?BigDecimal.ZERO :new BigDecimal( req.getCommissionPercent())) ;
 			eserTraRepo.saveAndFlush(travelData);
 			
 		} catch ( Exception e) {
@@ -2696,6 +2699,7 @@ public class QuoteServiceImpl implements QuoteService {
 				build.setAdminRemarks(req.getAdminRemarks());
 				build.setRejectReason(req.getRejectReason());
 				build.setUpdatedDate(new Date());
+				build.setCommissionPercentage(StringUtils.isBlank(req.getCommissionPercent())?BigDecimal.ZERO :new BigDecimal( req.getCommissionPercent())) ;
 				eserBuildRepo.saveAndFlush(build);
 				
 			}
