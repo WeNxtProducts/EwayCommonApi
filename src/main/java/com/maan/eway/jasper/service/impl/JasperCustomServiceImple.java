@@ -78,6 +78,7 @@ import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
@@ -119,6 +120,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private PolicyDrcrDetailRepository drcrdetail;
+	
+	@Autowired
+	private InsuranceCompanyMasterRepository insuranceComMasRepo;
 		
 	private String RenewalDate(String Input) {
 		DateTimeFormatter inputformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -296,7 +300,7 @@ public class JasperCustomServiceImple {
 		sumInsured.select(cb.sum(SubSi.get("sumInsured"))).where(cb.equal(SubSi.get("quoteNo"), hpmRoot.get("quoteNo")),
 				cb.equal(SubSi.get("discLoadId"), "0"),cb.equal(SubSi.get("taxId"), "0"),cb.equal(SubSi.get("dependentCoverYn"), "N"));
 		
-		Subquery<String> companyName = cq.subquery(String.class);
+		/*Subquery<String> companyName = cq.subquery(String.class);
 		Root<InsuranceCompanyMaster> companyNameRoot = companyName.from(InsuranceCompanyMaster.class);
 		//AMD MAX
 		Subquery<Integer> companyNameAmd = cq.subquery(Integer.class);
@@ -312,7 +316,7 @@ public class JasperCustomServiceImple {
 		Root<InsuranceCompanyMaster> imageURLAmdRoot = imageURLAmd.from(InsuranceCompanyMaster.class);
 		imageURLAmd.select(cb.max(imageURLAmdRoot.get("amendId"))).where(cb.equal(imageURLAmdRoot.get("companyId"), imageURLRoot.get("companyId")));
 		imageURL.select(imageURLRoot.get("companyLogo")).where(cb.equal(imageURLRoot.get("companyId"), hpmRoot.get("companyId")),
-				cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
+				cb.equal(imageURLRoot.get("amendId"), imageURLAmd));*/
 		
 		cq.multiselect(luiRoot.get("userName").alias("userName"),hpmRoot.get("approvedBy").alias("approvedBy"),hpmRoot.get("agencyCode").alias("agencyCode"),
 				cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),cb.concat(piRoot.get("address1"), cb.concat(",",
@@ -330,7 +334,7 @@ public class JasperCustomServiceImple {
 //				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")))
 //					.otherwise(cb.sum(hpmRoot.get("endtPremium"),cb.quot(cb.prod(hpmRoot.get("endtPremium"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremium"),
 				hpmRoot.get("vatPercent").alias("vatPercent"),pdRoot.get("bankName").alias("bankName"),pdRoot.get("accountNumber").alias("accountNumber"),
-				sumInsured.alias("totSumInsured"),hpmRoot.get("companyId").alias("companyId"),companyName.alias("companyName"),imageURL.alias("companyLogo"))
+				sumInsured.alias("totSumInsured"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("branchCode").alias("branchCode"),hpmRoot.get("branchName").alias("branchName"))//,companyName.alias("companyName"),imageURL.alias("companyLogo"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
 				cb.equal(pdRoot.get("quoteNo"), hpmRoot.get("quoteNo")),
 				cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
@@ -343,7 +347,8 @@ public class JasperCustomServiceImple {
 			CriteriaQuery<Tuple> cq1 = cb1.createQuery(Tuple.class);
 			Root<MotorDataDetails> mddRoot = cq1.from(MotorDataDetails.class);
 			cq1.multiselect(mddRoot.get("registrationNumber").alias("registrationNumber"),
-					mddRoot.get("motorCategoryDesc").alias("motorCategoryDesc")).where(cb.equal(mddRoot.get("quoteNo"), map.get("quoteNo")));
+					mddRoot.get("motorCategoryDesc").alias("motorCategoryDesc"),mddRoot.get("policyTypeDesc").alias("policyTypeDesc"))
+						.where(cb.equal(mddRoot.get("quoteNo"), map.get("quoteNo")));
 			List<Tuple> dataset1 = em.createQuery(cq1).getResultList();
 			dataset1.forEach(k -> {
 				TaxDataSetOneRes p = TaxDataSetOneRes.builder()
@@ -392,6 +397,17 @@ public class JasperCustomServiceImple {
 				amtInWords = motorRepo.getAmountByWords(amtInWordValue);
 			}
 			
+			List<Map<String,Object>> companyDetails = insuranceComMasRepo.getCompanyDetailsById(map.get("companyId")==null?"":map.get("companyId").toString());
+			if(!companyDetails.isEmpty()) {
+				response.setCompanyName(companyDetails.get(0).get("COMPANY_NAME")==null?"":companyDetails.get(0).get("COMPANY_NAME").toString());
+				response.setCompanyLogo(companyDetails.get(0).get("COMPANY_LOGO")==null?"":companyDetails.get(0).get("COMPANY_LOGO").toString());
+				response.setCompanyWebsite(companyDetails.get(0).get("COMPANY_WEBSITE")==null?"":companyDetails.get(0).get("COMPANY_WEBSITE").toString());
+				response.setCompanyMail(companyDetails.get(0).get("COMPANY_EMAIL")==null?"":companyDetails.get(0).get("COMPANY_EMAIL").toString());
+				response.setCompanyPhone(companyDetails.get(0).get("COMPANY_PHONE")==null?"":companyDetails.get(0).get("COMPANY_PHONE").toString());
+				response.setCompanyAddress(companyDetails.get(0).get("COMPANY_ADDRESS")==null?"":companyDetails.get(0).get("COMPANY_ADDRESS").toString());
+				response.setCompanyPoBox(companyDetails.get(0).get("PO_BOX")==null?"":companyDetails.get(0).get("PO_BOX").toString());
+			}
+			
 			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
 			response.setAgencyCode(map.get("agencyCode")==null?"":map.get("agencyCode").toString());
@@ -415,8 +431,9 @@ public class JasperCustomServiceImple {
 			response.setOverAllPremium(new BigDecimal(OverAllPremium).toPlainString());
 			response.setTotSumInsured(map.get("totSumInsured")==null?"":new BigDecimal(Double.valueOf(map.get("totSumInsured").toString())).toString());
 			response.setIntermediaryRefNo(map.get("intermediaryRefNo")==null?"":map.get("intermediaryRefNo").toString());
-			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
-			response.setCompanyLogo(map.get("companyLogo")==null?"":map.get("companyLogo").toString());
+			response.setBranchCode(map.get("branchCode")==null?"":map.get("branchCode").toString());
+			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
+			response.setPolicyType(dataset1.get(0).get("policyTypeDesc")==null?"":dataset1.get(0).get("policyTypeDesc").toString());
 			response.setAmountInWords(amtInWords);
 			response.setDataset1List(dataset1Res);
 		}

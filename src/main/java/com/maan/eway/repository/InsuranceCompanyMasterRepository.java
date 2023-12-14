@@ -12,13 +12,15 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import com.maan.eway.bean.InsuranceCompanyMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.InsuranceCompanyMasterId;
 /**
  * <h2>InsuranceCompanyMasterRepository</h2>
@@ -45,6 +47,9 @@ public interface InsuranceCompanyMasterRepository  extends JpaRepository<Insuran
 
 	List<InsuranceCompanyMaster> findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(
 			String companyId, String string, Date date, Date date2);
+
+	@Query(value = "SELECT * FROM eway_insurance_company_master ew WHERE company_id = ?1 AND amend_id = (SELECT MAX(amend_id) FROM eway_insurance_company_master WHERE company_id = ew.company_id)", nativeQuery=true)
+	List<Map<String,Object>> getCompanyDetailsById(String companyId);
 
 
 

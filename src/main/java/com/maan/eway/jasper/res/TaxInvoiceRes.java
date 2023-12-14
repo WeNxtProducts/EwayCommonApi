@@ -96,8 +96,32 @@ public class TaxInvoiceRes {
 	@JsonProperty("CompanyLogo")
 	private String companyLogo;
 	
+	@JsonProperty("CompanyWebsite")
+	private String companyWebsite;
+	
+	@JsonProperty("CompanyMail")
+	private String companyMail;
+	
+	@JsonProperty("CompanyPhone")
+	private String companyPhone;
+	
+	@JsonProperty("CompanyAddress")
+	private String companyAddress;
+	
+	@JsonProperty("CompanyPoBox")
+	private String companyPoBox;
+	
 	@JsonProperty("AmountInWords")
 	private String amountInWords;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
+	@JsonProperty("BranchName")
+	private String branchName;
+	
+	@JsonProperty("PolicyType")
+	private String policyType;
 	
 	@JsonProperty("Dataset1List")
 	private List<TaxDataSetOneRes> dataset1List;

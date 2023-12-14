@@ -433,7 +433,13 @@ public class JasperServiceImpl implements JasperService {
 				TaxInvoiceRes taxRes = jasperCustomeImple.getTaxInvoiceRes(homeData.getPolicyNo());
 				String JsonString = gson.toJson(taxRes);
 				String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-				res = getCommonJasperPdfFileByJson("/report/jasper/EwayTaxInvoice.jrxml", jasperSaveLocation, JsonString, map, "- TaxInvoice.json");
+				String jasperName="";
+				if(homeData.getCompanyId().equalsIgnoreCase("100004")) {
+					jasperName = "/report/jasper/EwayMadisonTaxInvoice.jrxml";
+				}else {
+					jasperName = "/report/jasper/EwayTaxInvoice.jrxml";
+				}
+				res = getCommonJasperPdfFileByJson(jasperName, jasperSaveLocation, JsonString, map, "- TaxInvoice.json");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
