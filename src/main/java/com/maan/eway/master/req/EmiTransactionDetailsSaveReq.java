@@ -48,15 +48,8 @@ public class EmiTransactionDetailsSaveReq implements Serializable {
 	@JsonProperty("PolicyType")
 	private String policyType;
 
-//	@JsonProperty("InterestPercent")
-//	private String interestPercent;
-//
-//	@JsonProperty("AdvancePercent")
-//	private String advancePercent;
-
-//	@JsonProperty("PaymentStatus")
-//	private String paymentStatus;
-	
+	@JsonProperty("EmiYn")
+	private String emiYn;
 	
 	@JsonProperty("EndtCategDesc")
     private String     endtCategDesc ;

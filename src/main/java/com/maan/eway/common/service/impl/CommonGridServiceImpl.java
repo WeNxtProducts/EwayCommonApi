@@ -1561,6 +1561,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setEndtPrevQuoteNo(null);
 						savedata.setEndtStatus(null);
 						savedata.setFinalizeYn("N");
+						savedata.setEmiYn("N");
+						savedata.setEmiPremium(null);
+						savedata.setInstallmentPeriod(null);
+						savedata.setNoOfInstallment(null);
 						repo.saveAndFlush(savedata);
 					}
 //					res.setResponse("Successfully Updated");

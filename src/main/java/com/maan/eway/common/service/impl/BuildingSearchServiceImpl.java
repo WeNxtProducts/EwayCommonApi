@@ -348,7 +348,12 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 					cb.max(c.get("indemityPeriodDesc")).alias("indemityPeriodDesc"),
 					cb.max(c.get("makutiYn")).alias("makutiYn"),
 					cb.max(c.get("plateGlassType")).alias("plateGlassType"),
-					cb.max(c.get("plateGlassDesc")).alias("plateGlassDesc"));
+					cb.max(c.get("plateGlassDesc")).alias("plateGlassDesc"),
+					cb.max(c.get("emiYn")).alias("emiYn"),
+					cb.max(c.get("installmentPeriod")).alias("installmentPeriod"),
+					cb.max(c.get("noOfInstallment")).alias("noOfInstallment"),
+					cb.max(c.get("emiPremium")).alias("emiPremium"));
+			
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

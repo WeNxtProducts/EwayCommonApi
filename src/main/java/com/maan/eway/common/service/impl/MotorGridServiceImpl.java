@@ -1728,6 +1728,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEndtPrevQuoteNo(null);
 						savedata.setEndtStatus(null);
 						savedata.setFinalizeYn("N");
+						savedata.setEmiYn("N");
+						savedata.setEmiPremium(null);
+						savedata.setInstallmentPeriod(null);
+						savedata.setNoOfInstallment(null);
 						repo.saveAndFlush(savedata);
 					}
 
@@ -3155,8 +3159,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
 				endtCount.select(cb.max(ocpm1.get("endtCount")));
 				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
-				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
-				endtCount.where(a1,a2);
+				//Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
+				endtCount.where(a1);
 				
 
 				
@@ -3569,17 +3573,17 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
 				endtCount.select(cb.max(ocpm1.get("endtCount")));
 				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
-				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
-				endtCount.where(a1,a2);
+//				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
+				endtCount.where(a1);
 				
 				 
 				// Where
 				Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
 				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
-				Predicate n4 = cb.equal(m.get("status"), "P");  //policy
-				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
-				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
+//				Predicate n4 = cb.equal(m.get("status"), "P");  //policy
+//				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
+//				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
 				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
 				Predicate n12 = cb.equal(m.get("endtTypeId"), endtId); // 842 Desc: cancellation policy
 		
@@ -3606,7 +3610,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				
 					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 				}
-				query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10,n12,n13).orderBy(orderList);
+				query.where(n1,n2, n3, n5, n6,n10,n12,n13).orderBy(orderList);
 
 				
 				TypedQuery<PortfolioGridCriteriaRes> result = em.createQuery(query);

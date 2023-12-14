@@ -36,4 +36,7 @@ public interface EserviceLifeDetailsRepository  extends JpaRepository<EserviceLi
 
 	List<EserviceLifeDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 
+
+	List<EserviceLifeDetails> findByQuoteNo(String quoteNo);
+
 }

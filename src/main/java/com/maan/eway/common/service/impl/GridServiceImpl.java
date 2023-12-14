@@ -4763,7 +4763,7 @@ public class GridServiceImpl implements GridService {
 
 				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				// Predicate n2 = cb.isNotNull(m.get("applicationId"));
-				Predicate n3 = cb.equal(m.get("status"), "P");
+				Predicate n3 = cb.equal(m.get("status"), "D");
 				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
 				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
 				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -4823,15 +4823,15 @@ public class GridServiceImpl implements GridService {
 						m.get("sourceType").alias("type"));
 				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				Predicate n2 = cb.isNotNull(m.get("applicationId"));
-				Predicate n3 = cb.equal(m.get("status"), "P");
+				Predicate n3 = cb.equal(m.get("status"), "D");
 				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
 				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
 				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
-				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
-				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
+//				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
+//				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
 				Predicate n9 = cb.equal(m.get("endtTypeId"), "842");
 				Predicate n10 = cb.isNotNull(m.get("bdmCode"));
-				query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10);
+				query.where(n1, n2, n3, n4, n5, n6, n9, n10);
 
 				TypedQuery<Tuple> typedQuery = em.createQuery(query);
 				list = typedQuery.getResultList();
@@ -4860,15 +4860,15 @@ public class GridServiceImpl implements GridService {
 
 				Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
 				Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
-				Predicate n3 = cb1.equal(m1.get("status"), "P");
+				Predicate n3 = cb1.equal(m1.get("status"), "D");
 				Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
 				Predicate n5 = cb1.equal(m1.get("companyId"), req.getCompanyId());
 				Predicate n6 = cb1.equal(m1.get("branchCode"), req.getBranchCode());
-				Predicate n7 = cb1.greaterThanOrEqualTo(m1.get("expiryDate"), today);
-				Predicate n8 = cb1.lessThanOrEqualTo(m1.get("entryDate"), today);
+//				Predicate n7 = cb1.greaterThanOrEqualTo(m1.get("expiryDate"), today);
+//				Predicate n8 = cb1.lessThanOrEqualTo(m1.get("entryDate"), today);
 				Predicate n9 = cb1.equal(m1.get("endtTypeId"), "842");
 				Predicate n10 = cb1.isNull(m1.get("bdmCode"));
-				query1.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10);
+				query1.where(n1, n2, n3, n4, n5, n6, n9, n10);
 
 				TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 				list1 = typedQuery1.getResultList();

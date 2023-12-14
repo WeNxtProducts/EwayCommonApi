@@ -200,11 +200,11 @@ public class EmiTransactionDetailsController {
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/emiendtcalc")
 		@ApiOperation("This method is  Endorsement Emi Calculation s")
-		public ResponseEntity<CommonRes> getEndorsementEmiDetails(@RequestBody EmiEndtDetailsReq req) {
+		public ResponseEntity<CommonRes> getEndorsementEmiDetails(@RequestBody EmiTransactionDetailsSaveReq req) {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 
-			List<EmiTransactionDetailsRes> res = service.getEndorsementEmiDetails(req);
+			SuccessRes res = service.getEndorsementEmiDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

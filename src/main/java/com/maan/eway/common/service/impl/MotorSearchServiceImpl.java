@@ -261,7 +261,11 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 					cb.max(c.get("exchangeRate")).alias("exchangeRate"),
 					cb.max(c.get("gpsTrackingInstalled")).alias("gpsTrackingInstalled"),
 					cb.max(c.get("windScreenCoverRequired")).alias("windScreenCoverRequired"),
-					cb.max(c.get("productName")).alias("productName")
+					cb.max(c.get("productName")).alias("productName"),
+					cb.max(c.get("emiYn")).alias("emiYn"),
+					cb.max(c.get("installmentPeriod")).alias("installmentPeriod"),
+					cb.max(c.get("noOfInstallment")).alias("noOfInstallment"),
+					cb.max(c.get("emiPremium")).alias("emiPremium")
 //					cb.max(c.get("rejectReason")).alias("rejectReason"),)
 //                  cb.max(c.get("riskId")).alias("riskId"),
 //					cb.max(c.get("insuranceType")).alias("insuranceType")

@@ -1222,6 +1222,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata.setEndtPrevQuoteNo(null);
 					savedata.setEndtStatus(null);
 					savedata.setFinalizeYn("N");
+					savedata.setEmiYn("N");
+					savedata.setEmiPremium(null);
+					savedata.setInstallmentPeriod(null);
+					savedata.setNoOfInstallment(null);
 				repo.saveAndFlush(savedata);
 				}
 				// Save Section
@@ -2230,7 +2234,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 			*/
-			List<EserviceTravelGroupDetails> traData = groupRepo.findByQuoteNo(prevQuoteNo);
+			List<EserviceTravelGroupDetails> traData = groupRepo.findByQuoteNoAndStatusNot(prevQuoteNo,"D");
 			if (traData.size()>0) { 
 				for(EserviceTravelGroupDetails data:traData) {
 					savedata = dozerMapper.map(data, EserviceTravelGroupDetails.class);
@@ -2277,7 +2281,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 			*/
-			List<TravelPassengerDetails> traData = traPassDetailsRepo.findByQuoteNo(prevQuoteNo);
+			List<TravelPassengerDetails> traData = traPassDetailsRepo.findByQuoteNoAndStatusNot(prevQuoteNo,"D");
 			if (traData.size()>0) { 
 				for(TravelPassengerDetails data:traData) {
 					savedata = dozerMapper.map(data, TravelPassengerDetails.class);
@@ -2329,7 +2333,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 									req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 									Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 
-					List<EserviceSectionDetails> eserSec = eserSecRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+					List<EserviceSectionDetails> eserSec = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
 					if (eserSec != null && eserSec.size()>0 ) {
 						for (EserviceSectionDetails data : eserSec) {
 							savedata = dozerMapper.map(data, EserviceSectionDetails.class);
@@ -2740,8 +2744,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 					homePosistionRepo.saveAndFlush(savedata);
 				
-					homePosistionRepo.saveAndFlush(savedata);
-					
 					System.out.println("*************HomePositionMaster************");
 					System.out.println("QUOTE NO:"+quoteNo);
 					System.out.println("Customer Id:"+customerId);

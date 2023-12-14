@@ -38,6 +38,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,11 +55,21 @@ import com.maan.eway.master.res.EmiDisplayListRes;
 import com.maan.eway.master.res.EmiDisplayRes;
 import com.maan.eway.master.res.EmiInfoListRes;
 import com.maan.eway.master.service.EmiTransactionDetailsService;
+import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
+import com.maan.eway.repository.EserviceLifeDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.ExchangeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.bean.EmiTransactionDetails;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceLifeDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.HomePositionMaster;
@@ -80,6 +91,9 @@ import com.maan.eway.res.calc.Loading;
 @Transactional
 public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsService {
 
+	@Value(value = "${travel.productId}")
+	private String travelProductId;
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -91,10 +105,24 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	
 	@Autowired
 	private HomePositionMasterRepository homerepo;
-	
 
 	@Autowired
 	private PaymentDetailRepository paymentdetailrepo;
+	
+	@Autowired
+	private EServiceMotorDetailsRepository motorRepo;
+
+	@Autowired
+	private EserviceTravelDetailsRepository travelRepo;
+
+	@Autowired
+	private EserviceBuildingDetailsRepository buildingRepo;
+	
+	@Autowired
+	private EserviceCommonDetailsRepository commonRepo;
+	
+	@Autowired
+	private EserviceLifeDetailsRepository lifeRepo;
 	
 	Gson json = new Gson();
 
@@ -110,12 +138,14 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 		try {
 
+			if(StringUtils.isBlank(req.getEndtTypeId())) {
 			if (StringUtils.isBlank(req.getPremiumWithTax())) {
 				errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
 			} 
-
+			
 			if (StringUtils.isBlank(req.getInstallmentPeriod())) {
 				errorList.add(new Error("02", "NoOfMonth", "Please Enter NoOfMonth"));
+			}
 			}
 
 			if (StringUtils.isBlank(req.getQuoteNo())) {
@@ -175,6 +205,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		SuccessRes res = new SuccessRes();
 		DecimalFormat df = new DecimalFormat("0.00");
 		EmiTransactionDetails saveData = new EmiTransactionDetails();
+
 		try {
 			BigDecimal adv=new BigDecimal(0);
 		if("N".equalsIgnoreCase(req.getStatus())) {
@@ -185,6 +216,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			}
 			res.setSuccessId(req.getQuoteNo());
 			res.setResponse("Saved Successful");
+		}else if("Y".equalsIgnoreCase(req.getEmiYn()) && StringUtils.isNotBlank(req.getEndtTypeId()) && "Y".equalsIgnoreCase(req.getStatus())) {
+			res= getEndorsementEmiDetails(req);
 		}else {
 		
 			String quoteNo = req.getQuoteNo();
@@ -267,28 +300,14 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				saveData.setUpdatedBy(createdBy);
 				saveData.setDueDate(dueDate);
 				saveData.setRemarks(req.getRemarks());
-				// Endorsement Changes
-				if(!(req.getEndtTypeId()==null || req.getEndtTypeId().equalsIgnoreCase("0")))
-				 {
-					 saveData.setOriginalPolicyNo(req.getOriginalPolicyNo());
-					 saveData.setEndtDate(req.getEndtDate());
-					 saveData.setEndorsementRemarks(req.getEndorsementRemarks());
-					 saveData.setEndorsementEffdate(req.getEndorsementEffdate());
-					 saveData.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
-					 saveData.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
-					 saveData.setEndtCount(req.getEndtCount());
-					 saveData.setEndtStatus(req.getEndtStatus());
-					 saveData.setIsFinacialEndt(req.getIsFinacialEndt());
-					 saveData.setEndtCategDesc(req.getEndtCategDesc());
-					 saveData.setEndtTypeId(req.getEndtTypeId());
-					 saveData.setEndtTypeDesc(req.getEndtTypeDesc()); 
-				 }
+			
+				
 				repo.saveAndFlush(saveData);
 			}
 			res.setSuccessId(quoteNo);
 			res.setResponse("Saved Successful");
 		}
-	
+		CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),req.getProductId().toString());
 			//Update Home Position Master
 			if("Y".equalsIgnoreCase(req.getStatus())) {
 				HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
@@ -297,6 +316,18 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				homeData.setNoOfInstallment("0");
 				homeData.setEmiPremium(adv);
 				homerepo.save(homeData);
+				if (product.getMotorYn().equalsIgnoreCase("M")) {
+					EserviceMotorDetails motor= saveMotor("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"0");	
+				}else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+					EserviceTravelDetails travel= saveTravel("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"0");	
+				}else if (product.getMotorYn().equalsIgnoreCase("A")) {
+					EserviceBuildingDetails motor= saveBuilding("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"0");	
+				}else if (product.getMotorYn().equalsIgnoreCase("L")) {
+					EserviceLifeDetails motor= saveLife("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"0");	
+				}else {
+					EserviceCommonDetails motor= saveCommon("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"0");	
+				}
+				
 			}else {
 				HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
 				homeData.setInstallmentPeriod("");
@@ -304,6 +335,17 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				homeData.setNoOfInstallment(null);
 				homeData.setEmiPremium(null);
 				homerepo.save(homeData);
+				if (product.getMotorYn().equalsIgnoreCase("M")) {
+					EserviceMotorDetails motor= saveMotor("N",null,req.getQuoteNo(),"",null);	
+				}else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+					EserviceTravelDetails travel= saveTravel("N",null,req.getQuoteNo(),"",null);	
+				}else if (product.getMotorYn().equalsIgnoreCase("A")) {
+					EserviceBuildingDetails building= saveBuilding("N",null,req.getQuoteNo(),"",null);	
+				}else if (product.getMotorYn().equalsIgnoreCase("L")) {
+					EserviceLifeDetails life= saveLife("N",null,req.getQuoteNo(),"",null);	
+				}else {
+					EserviceCommonDetails common= saveCommon("N",null,req.getQuoteNo(),"",null);	
+				}
 			}
 			
 		
@@ -316,6 +358,200 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		return res;
 	}
 	
+	public EserviceMotorDetails saveMotor(String status,BigDecimal adv,String quoteNo,String installmentPeriod,String noOFIns) {
+		EserviceMotorDetails save=new EserviceMotorDetails();
+		DozerBeanMapper dozermapper = new DozerBeanMapper ();
+		try {
+		
+			List<EserviceMotorDetails> list=motorRepo.findByQuoteNoOrderByRiskIdAsc(quoteNo);
+			if(list!=null && list.size()>0) {
+			
+				for(EserviceMotorDetails data:list) {
+					save=dozermapper.map(data, EserviceMotorDetails.class);
+					save.setEmiYn("Y");
+					save.setInstallmentPeriod(Integer.valueOf(installmentPeriod));
+					save.setNoOfInstallment(Integer.valueOf(noOFIns));
+					save.setEmiPremium(adv);
+					motorRepo.save(save);
+				}
+			}
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+
+		return save;
+	}
+	
+	public EserviceTravelDetails saveTravel(String status,BigDecimal adv,String quoteNo,String installmentPeriod,String noOFIns) {
+		EserviceTravelDetails save=new EserviceTravelDetails();
+		DozerBeanMapper dozermapper = new DozerBeanMapper ();
+		try {
+		
+			EserviceTravelDetails data=travelRepo.findByQuoteNo(quoteNo);
+			if (data != null) {
+				save = dozermapper.map(data, EserviceTravelDetails.class);
+				save.setEmiYn("Y");
+				save.setInstallmentPeriod(Integer.valueOf(installmentPeriod));
+				save.setNoOfInstallment(Integer.valueOf(noOFIns));
+				save.setEmiPremium(adv);
+				travelRepo.save(save);
+				}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+
+		return save;
+	}
+	public EserviceBuildingDetails saveBuilding(String status,BigDecimal adv,String quoteNo,String installmentPeriod,String noOFIns) {
+		EserviceBuildingDetails save=new EserviceBuildingDetails();
+		DozerBeanMapper dozermapper = new DozerBeanMapper ();
+		try {
+		
+			List<EserviceBuildingDetails> list=buildingRepo.findByQuoteNoOrderByRiskIdAsc(quoteNo);
+			if(list!=null && list.size()>0) {
+				
+				for(EserviceBuildingDetails data:list) {
+				save = dozermapper.map(data, EserviceBuildingDetails.class);
+				save.setEmiYn("Y");
+				save.setInstallmentPeriod(Integer.valueOf(installmentPeriod));
+				save.setNoOfInstallment(Integer.valueOf(noOFIns));
+				save.setEmiPremium(adv);
+				buildingRepo.save(save);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+
+		return save;
+	}
+	
+	public EserviceCommonDetails saveCommon(String status,BigDecimal adv,String quoteNo,String installmentPeriod,String noOFIns) {
+		EserviceCommonDetails save=new EserviceCommonDetails();
+		DozerBeanMapper dozermapper = new DozerBeanMapper ();
+		try {
+		
+			List<EserviceCommonDetails> list=commonRepo.findByQuoteNo(quoteNo);
+			if(list!=null && list.size()>0) {
+				
+				for(EserviceCommonDetails data:list) {
+				save = dozermapper.map(data, EserviceCommonDetails.class);
+				save.setEmiYn("Y");
+				save.setInstallmentPeriod(Integer.valueOf(installmentPeriod));
+				save.setNoOfInstallment(Integer.valueOf(noOFIns));
+				save.setEmiPremium(adv);
+				commonRepo.save(save);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+
+		return save;
+	}
+	
+	public EserviceLifeDetails saveLife(String status,BigDecimal adv,String quoteNo,String installmentPeriod,String noOFIns) {
+		EserviceLifeDetails save=new EserviceLifeDetails();
+		DozerBeanMapper dozermapper = new DozerBeanMapper ();
+		try {
+		
+			List<EserviceLifeDetails> list=lifeRepo.findByQuoteNo(quoteNo);
+			if(list!=null && list.size()>0) {
+				
+				for(EserviceLifeDetails data:list) {
+				save = dozermapper.map(data, EserviceLifeDetails.class);
+				save.setEmiYn("Y");
+				save.setInstallmentPeriod(Integer.valueOf(installmentPeriod));
+				save.setNoOfInstallment(Integer.valueOf(noOFIns));
+				save.setEmiPremium(adv);
+				lifeRepo.save(save);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+
+		return save;
+	}
+	public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return product;
+	}
+
+
 	public List<EmiMaster> getEmiMasterDataByInsPeriod( String companyId, String productId,String policyType,String insPeriod) {
 		List<EmiMaster> list = new ArrayList<EmiMaster>();
 		
@@ -472,7 +708,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			
+			String productId ="";
+			String companyId ="";
 			List<EmiTransactionDetails> list1 = repo.findByQuoteNoAndSelectYn(reqList.get(0).getQuoteNo(),"Y");
 			if (list1.size() > 0) {
 				for(EmiTransactionDetails req:list1) {
@@ -488,7 +725,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			
 			
 			// Update
-			String productId = req.getProductId();
+			productId = req.getProductId();
+			companyId =req.getCompanyId();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<EmiTransactionDetails> query = cb.createQuery(EmiTransactionDetails.class);
 			// Find all
@@ -556,6 +794,18 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			homeData.setNoOfInstallment(list2.get(0).getInstalment());
 			homeData.setEmiPremium(adv);
 			homerepo.save(homeData);
+			CompanyProductMaster product = getCompanyProductMasterDropdown(companyId,productId);
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				EserviceMotorDetails motor= saveMotor("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
+			}else if (product.getMotorYn().equalsIgnoreCase("H")&& productId.equalsIgnoreCase(travelProductId)) {
+				EserviceTravelDetails travel= saveTravel("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
+			}else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				EserviceBuildingDetails motor= saveBuilding("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
+			}else if (product.getMotorYn().equalsIgnoreCase("L")) {
+				EserviceLifeDetails motor= saveLife("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
+			}else {
+				EserviceCommonDetails motor= saveCommon("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -908,21 +1158,129 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	}
 
 	@Override
-	public List<EmiTransactionDetailsRes> getEndorsementEmiDetails(EmiEndtDetailsReq req) {
-		List<EmiTransactionDetailsRes> resList=new ArrayList<EmiTransactionDetailsRes>();
+	public SuccessRes getEndorsementEmiDetails(EmiTransactionDetailsSaveReq req) {
+		EmiTransactionDetails saveData = new EmiTransactionDetails();
+		SuccessRes res = new SuccessRes();
+		DecimalFormat df = new DecimalFormat("0.00");
 		try {
-			if("Y".equalsIgnoreCase(req.getEmiYn()) && StringUtils.isNotBlank(req.getEndtId())) {
-				HomePositionMaster homedata=homerepo.findByQuoteNo(req.getPrevPolicyNo());
-				List<EmiTransactionDetails> emiList=repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(), req.getCompanyId(), req.getProductId());
-				Long noOfMonth =  emiList.stream().filter(e -> e.getPaymentStatus().equalsIgnoreCase("Pending")).mapToLong(i->Long.valueOf(i.getInstalment())).count();
-				Double pendingamt = emiList.stream().filter(e -> e.getPaymentStatus().equalsIgnoreCase("Pending")).mapToDouble(i->i.getDueAmount().doubleValue()).sum();
-				Double diffAmt =Math.abs(Double.valueOf(homedata.getPremiumLc().toString())- Double.valueOf(req.getPremium()));
-				Double premium= null;
-				if(Double.valueOf(homedata.getOverallPremiumLc().toString())> Double.valueOf(req.getPremium())) {
-					premium=Math.abs(pendingamt+diffAmt);
-				}else if(Double.valueOf(homedata.getOverallPremiumLc().toString())< Double.valueOf(req.getPremium())) {
-					premium=Math.abs(pendingamt-diffAmt);
+			if("Y".equalsIgnoreCase(req.getEmiYn()) && StringUtils.isNotBlank(req.getEndtTypeId())) {
+				// Finding Old Record
+				List<EmiTransactionDetails> list = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
+						req.getCompanyId(), req.getProductId());
+				if (list.size() > 0 && StringUtils.isNotBlank(req.getQuoteNo())) {
+					if(StringUtils.isNotBlank(list.get(0).getEndtTypeId()) && (!list.get(0).getEndtTypeId().equals(req.getEndtTypeId())) ) {
+						repo.deleteAll(list);
+					}else {
+						repo.deleteAll(list);
+					}
 				}
+				
+				
+				//Prevous Policy No
+				HomePositionMaster homedata=homerepo.findByPolicyNo(req.getEndtPrevPolicyNo());
+				
+				//Endt Policy No
+				HomePositionMaster endthomedata=homerepo.findByQuoteNo(req.getQuoteNo());
+				
+				//Emi 
+				List<EmiTransactionDetails> emiList=repo.findByQuoteNoAndCompanyIdAndProductId(homedata.getQuoteNo(), req.getCompanyId(), req.getProductId());
+				Long pendingMonth =  emiList.stream().filter(e -> e.getPaymentStatus().equalsIgnoreCase("Pending")).mapToLong(i->Long.valueOf(i.getInstalment())).count();
+				Double pendingAmt = emiList.stream().filter(e -> e.getPaymentStatus().equalsIgnoreCase("Pending")).mapToDouble(i->i.getDueAmount().doubleValue()).sum();
+				Double paidAmt = emiList.stream().filter(e -> e.getPaymentStatus().equalsIgnoreCase("Paid")).mapToDouble(i->i.getDueAmount().doubleValue()).sum();
+//				Double diffAmt =Math.abs(paidAmt- Double.valueOf(endthomedata.getOverallPremiumLc().toString()));
+				Double diffAmt =Double.valueOf( endthomedata.getEndtPremiumLc().toString());
+				List<EmiTransactionDetails> emiList2= repo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateAsc(homedata.getQuoteNo(), "Pending");
+				Integer pendingIns=Integer.valueOf(emiList2.get(0).getInstalment());
+				Double premium= null;
+				
+				if(diffAmt>0) {
+					premium=Math.abs(pendingAmt+diffAmt);
+				}else if(diffAmt<0) {
+					premium=Math.abs(pendingAmt-diffAmt);
+				}
+				
+				String quoteNo = req.getQuoteNo();
+				String insDesc = "";
+				Date entryDate = new Date();
+				String createdBy = req.getCreatedBy();
+				Integer i = 0;
+				Double temp = 0d, premiumWithTax, interestPercent, interestAmount, totalLoanAmount,
+						 balanceAmount = null, installment = 0d;
+
+				Integer noOfMonth = Integer.valueOf(homedata.getInstallmentPeriod().toString());
+
+				
+				
+		
+				//Getting Record from Emi Master
+				List<EmiMaster> emiMasterData = getEmiMasterDataByInsPeriod(req.getCompanyId(), req.getProductId(),
+						req.getPolicyType(),	homedata.getInstallmentPeriod());
+				interestPercent = Double.valueOf(emiMasterData.get(0).getInterestPercent().toString());
+
+				// Calculation
+				for (i = pendingIns; i <= pendingMonth; i++) {
+					Calendar cal = Calendar.getInstance();
+					cal.add(Calendar.MONTH, i);
+					Date dueDate = cal.getTime();
+
+					premiumWithTax = Double.valueOf(premium);
+					interestAmount = premiumWithTax * interestPercent / 100;
+					interestAmount=interestAmount/12;
+					interestAmount=interestAmount*noOfMonth;
+					totalLoanAmount = premiumWithTax + interestAmount;
+					
+			
+					installment = totalLoanAmount / pendingMonth;
+					balanceAmount=totalLoanAmount-installment;
+					temp = balanceAmount;
+					temp -= installment;
+					balanceAmount = temp;
+					// Save
+					saveData.setPremiumWithTax(premiumWithTax);
+					saveData.setInstallmentPeriod(noOfMonth.toString());
+					saveData.setInterest(interestPercent);
+					saveData.setInterestAmount((Double.valueOf(Math.round(interestAmount))));
+					saveData.setDueAmount((Double.valueOf(Math.round(installment))));
+					insDesc="Installment Amount";
+					saveData.setStatus("Y");
+					saveData.setPaymentDetails(null);
+					saveData.setPaymentDate(null);
+					saveData.setPaymentStatus("Pending");
+					saveData.setQuoteNo(quoteNo);
+					saveData.setProductId(req.getProductId());
+					saveData.setCompanyId(req.getCompanyId());
+					saveData.setBalanceAmount(Double.valueOf(Math.round(balanceAmount)));
+					saveData.setTotalLoanAmount(Double.valueOf(Math.round(totalLoanAmount)));
+					saveData.setInstallmentDesc(insDesc);
+					saveData.setInstalment(i.toString());
+					saveData.setEntryDate(entryDate);
+					saveData.setCreatedBy(req.getCreatedBy());
+					saveData.setUpdatedDate(new Date());
+					saveData.setUpdatedBy(createdBy);
+					saveData.setDueDate(dueDate);
+					
+					// Endorsement Changes
+					if(!(req.getEndtTypeId()==null || req.getEndtTypeId().equalsIgnoreCase("0")))
+					 {
+						 saveData.setOriginalPolicyNo(req.getOriginalPolicyNo());
+						 saveData.setEndtDate(req.getEndtDate());
+						 saveData.setEndorsementRemarks(req.getEndorsementRemarks());
+						 saveData.setEndorsementEffdate(req.getEndorsementEffdate());
+						 saveData.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
+						 saveData.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+						 saveData.setEndtCount(req.getEndtCount());
+						 saveData.setEndtStatus(req.getEndtStatus());
+						 saveData.setIsFinacialEndt(req.getIsFinacialEndt());
+						 saveData.setEndtCategDesc(req.getEndtCategDesc());
+						 saveData.setEndtTypeId(req.getEndtTypeId());
+						 saveData.setEndtTypeDesc(req.getEndtTypeDesc()); 
+						 saveData.setEndtPremium(new BigDecimal(req.getEndtPremium()));
+						 saveData.setEndtPremiumLc(new BigDecimal(req.getEndtPremium())); 
+					 }
+					repo.saveAndFlush(saveData);
+				}
+				res.setSuccessId(quoteNo);
+				res.setResponse("Saved Successful");
 				
 			}
 					
@@ -932,7 +1290,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			return null;
 		}
 
-		return resList;
+		return res;
 	}
 
 	

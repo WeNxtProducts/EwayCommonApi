@@ -36,6 +36,6 @@ public interface EmiTransactionDetailsService  {
 
 	List<EmiTransactionDetailsRes> getNextEmiDetails(EmiTransactionDetailsNextReq req);
 
-	List<EmiTransactionDetailsRes> getEndorsementEmiDetails(EmiEndtDetailsReq req);
+	SuccessRes getEndorsementEmiDetails(EmiTransactionDetailsSaveReq req);
 
 }

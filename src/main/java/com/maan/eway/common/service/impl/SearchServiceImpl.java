@@ -386,7 +386,11 @@ public class SearchServiceImpl implements SearchService {
 				res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
 				res.setStatus(data.get("status") == null ? null :data.get("status").toString());
 				res.setWindScreenCoverRequired(data.get("windScreenCoverRequired") == null ? null :data.get("windScreenCoverRequired").toString());
-				res.setProductName(data.get("productName")==null?null:data.get("productName").toString());		
+				res.setProductName(data.get("productName")==null?null:data.get("productName").toString());	
+				res.setEmiYn(data.get("emiYn")==null?null:data.get("emiYn").toString());
+				res.setEmiPremium(data.get("emiPremium")==null?null:data.get("emiPremium").toString());
+				res.setInstallmentPeriod(data.get("installmentPeriod")==null?null:data.get("installmentPeriod").toString());
+				res.setNoOfInstallment(data.get("noOfInstallment")==null?null:data.get("noOfInstallment").toString());
 				// res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString());
 				}	
 				else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId)) {
@@ -412,7 +416,11 @@ public class SearchServiceImpl implements SearchService {
 					res.setQuoteNo(data.get("quoteNo") == null ? null :data.get("quoteNo").toString());
 					res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
 					res.setStatus(data.get("status") == null ? null :data.get("status").toString());
-					res.setProductName(data.get("productName")==null?null:data.get("productName").toString());		
+					res.setProductName(data.get("productName")==null?null:data.get("productName").toString());	
+					res.setEmiYn(data.get("emiYn")==null?null:data.get("emiYn").toString());
+					res.setEmiPremium(data.get("emiPremium")==null?null:data.get("emiPremium").toString());
+					res.setInstallmentPeriod(data.get("installmentPeriod")==null?null:data.get("installmentPeriod").toString());
+					res.setNoOfInstallment(data.get("noOfInstallment")==null?null:data.get("noOfInstallment").toString());
 
 					
 				}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
@@ -439,7 +447,10 @@ public class SearchServiceImpl implements SearchService {
 					res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
 					res.setStatus(data.get("status") == null ? null :data.get("status").toString());
 					res.setProductName(data.get("productDesc")==null?null:data.get("productDesc").toString());		
-
+					res.setEmiYn(data.get("emiYn")==null?null:data.get("emiYn").toString());
+					res.setEmiPremium(data.get("emiPremium")==null?null:data.get("emiPremium").toString());
+					res.setInstallmentPeriod(data.get("installmentPeriod")==null?null:data.get("installmentPeriod").toString());
+					res.setNoOfInstallment(data.get("noOfInstallment")==null?null:data.get("noOfInstallment").toString());
 
 				}else {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
@@ -465,7 +476,10 @@ public class SearchServiceImpl implements SearchService {
 					res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
 					res.setStatus(data.get("status") == null ? null :data.get("status").toString());
 					res.setProductName(data.get("productDesc")==null?null:data.get("productDesc").toString());
-
+					res.setEmiYn(data.get("emiYn")==null?null:data.get("emiYn").toString());
+					res.setEmiPremium(data.get("emiPremium")==null?null:data.get("emiPremium").toString());
+					res.setInstallmentPeriod(data.get("installmentPeriod")==null?null:data.get("installmentPeriod").toString());
+					res.setNoOfInstallment(data.get("noOfInstallment")==null?null:data.get("noOfInstallment").toString());
 				}
 				
 				reslist.add(res);
