@@ -184,7 +184,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
 		<fieldDescription><![CDATA[companyName]]></fieldDescription>
 	</field>
-	<field name="customerCode" class="java.lang.Integer">
+	<field name="customerCode" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="customerCode"/>
 		<fieldDescription><![CDATA[customerCode]]></fieldDescription>
 	</field>
@@ -201,6 +201,9 @@
 	</field>
 	<field name="premAndVatName" class="java.lang.String">
 		<fieldDescription><![CDATA[premAndVatName]]></fieldDescription>
+	</field>
+	<field name="companyId" class="java.lang.String">
+		<fieldDescription><![CDATA[companyId]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -1180,7 +1183,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat Output ("+$F{premAndVatName}+") - "+$F{vatPercent}+"%"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{companyId}.equalsIgnoreCase("100004")?"Premium Tax - "+$F{vatPercent}:"Vat Output ("+$F{premAndVatName}+") - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="480" y="60" width="75" height="15" uuid="ddb0d666-dc7f-485f-b27a-aa426061cad0">

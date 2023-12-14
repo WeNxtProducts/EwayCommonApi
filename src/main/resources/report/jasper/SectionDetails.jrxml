@@ -148,7 +148,7 @@
 							<box>
 								<pen lineWidth="0.5"/>
 							</box>
-							<textField isBlankWhenNull="true">
+							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="110" height="20" uuid="95008358-052f-4c06-9c25-78be8ed756b7"/>
 								<box leftPadding="2">
 									<pen lineWidth="0.0"/>

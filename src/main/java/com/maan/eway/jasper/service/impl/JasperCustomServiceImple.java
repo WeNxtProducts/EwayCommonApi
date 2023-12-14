@@ -334,7 +334,8 @@ public class JasperCustomServiceImple {
 //				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")))
 //					.otherwise(cb.sum(hpmRoot.get("endtPremium"),cb.quot(cb.prod(hpmRoot.get("endtPremium"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremium"),
 				hpmRoot.get("vatPercent").alias("vatPercent"),pdRoot.get("bankName").alias("bankName"),pdRoot.get("accountNumber").alias("accountNumber"),
-				sumInsured.alias("totSumInsured"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("branchCode").alias("branchCode"),hpmRoot.get("branchName").alias("branchName"))//,companyName.alias("companyName"),imageURL.alias("companyLogo"))
+				sumInsured.alias("totSumInsured"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("branchCode").alias("branchCode"),
+				hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("companyId").alias("companyId"))//,companyName.alias("companyName"),imageURL.alias("companyLogo"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
 				cb.equal(pdRoot.get("quoteNo"), hpmRoot.get("quoteNo")),
 				cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
@@ -434,6 +435,7 @@ public class JasperCustomServiceImple {
 			response.setBranchCode(map.get("branchCode")==null?"":map.get("branchCode").toString());
 			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
 			response.setPolicyType(dataset1.get(0).get("policyTypeDesc")==null?"":dataset1.get(0).get("policyTypeDesc").toString());
+			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
 			response.setAmountInWords(amtInWords);
 			response.setDataset1List(dataset1Res);
 		}
@@ -512,9 +514,9 @@ public class JasperCustomServiceImple {
 //					cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)).alias("vatPremiumFc"),
 //			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)))
 //				.when(cb.isNotNull(hpmRoot.get("creditNo")), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremiumFc"),
-			hpmRoot.get("vatPercent").alias("vatPercent"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("customerCode").alias("customerCode"),companyName.alias("companyName"),imageURL.alias("companyLogo"),
-			piRoot.get("vrTinNo").alias("vatRegNo"))
-		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),
+			hpmRoot.get("vatPercent").alias("vatPercent"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("customerCode").alias("customerCode"),companyName.alias("companyName"),
+			imageURL.alias("companyLogo"),piRoot.get("vrTinNo").alias("vatRegNo"))
+		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
 				cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(icmRoot.get("amendId"), icmAmd),cb.in(hpmRoot.get("status")).value(Arrays.asList("P","D")),cb.equal(hpmRoot.get("policyNo"), policyNo))
 		.orderBy(cb.desc(hpmRoot.get("entryDate")));
@@ -571,6 +573,7 @@ public class JasperCustomServiceImple {
 				OverAllPremium = premium+vatPremium;
 			}
 			
+			response.setPremAndVatName(map.get("customerId")==null?"":map.get("customerId").toString().equalsIgnoreCase("100004")?"Premium":response.getPremAndVatName());
 			response.setBrokerName(map.get("brokerName")==null?"":map.get("brokerName").toString());
 			response.setCustomerName(map.get("customerName")==null?"":map.get("customerName").toString());
 			response.setAddress(map.get("address")==null?"":map.get("address").toString());
@@ -598,6 +601,7 @@ public class JasperCustomServiceImple {
 			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
 			response.setCustomerCode(map.get("customerCode")==null?"":map.get("customerCode").toString());
 			response.setVatRegNo(map.get("vatRegNo")==null?"":map.get("vatRegNo").toString());
+			response.setCompanyId(map.get("customerId")==null?"":map.get("customerId").toString());
 			response.setSectionDescList(DataSetOneRes);
 			response.setRiskCodeList(DataSetTwoRes);
 		}
@@ -1341,7 +1345,7 @@ public class JasperCustomServiceImple {
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("premiumLc")).otherwise(hpmRoot.get("premiumFc")).alias("premium"),
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),
-					icmRoot.get("signature").alias("signature"),lbmRoot.get("branchName").alias("place"),companyName.alias("companyName"),imageURL.alias("companylogo"))
+					icmRoot.get("signature").alias("signature"),lbmRoot.get("branchName").alias("place"),companyName.alias("companyName"),imageURL.alias("companylogo"),hpmRoot.get("companyId").alias("companyId"))
 			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("agencyCode"), luiRoot.get("agencyCode")),cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
 					cb.equal(hpmRoot.get("loginId"), lbmRoot.get("loginId")),cb.equal(hpmRoot.get("companyId"), lbmRoot.get("companyId")),cb.equal(hpmRoot.get("branchCode"), lbmRoot.get("branchCode")),cb.equal(lbmRoot.get("status"), "Y"),
 					cb.equal(icmRoot.get("status"), "Y"),cb.between(cb.literal(new Date()), icmRoot.get("effectiveDateStart"), icmRoot.get("effectiveDateEnd")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("quoteNo"), QuoteNo));
@@ -1541,6 +1545,7 @@ public class JasperCustomServiceImple {
 			result.put("place", map.get("place")==null?"":map.get("place").toString());
 			result.put("companyName", map.get("companyName")==null?"":map.get("companyName").toString());
 			result.put("companylogo", map.get("companylogo")==null?"":map.get("companylogo").toString());
+			result.put("taxName", map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":"Vat");
 			result.put("sectionDetails", sectionList);
 			result.put("locationDetails", locationDetails);
 			result.put("coverageDetails", coverageDetails);
@@ -1572,7 +1577,7 @@ public class JasperCustomServiceImple {
 			if(i == 1) {
 				Subquery<Tuple> CquoteIn = cq2.subquery(Tuple.class);
 				Root<TermsAndCondition> StacRoot = CquoteIn.from(TermsAndCondition.class);
-				CquoteIn.select(StacRoot.get("quoteNo")).where(cb.equal(StacRoot.get("quoteNo"), QuoteNo));
+				CquoteIn.select(StacRoot.get("quoteNo")).where(cb.equal(StacRoot.get("quoteNo"), QuoteNo),cb.equal(StacRoot.get("id"), "6"));
 				
 				Root<ClausesMaster> cmRoot2 = cq2.from(ClausesMaster.class);
 				if(StringUtils.isNotBlank(sectionId)) {
@@ -1601,10 +1606,10 @@ public class JasperCustomServiceImple {
 				cq2.multiselect(tacRoot2.get("subIdDesc").alias("conditionTerms"));
 				predicates.add(cb.equal(tacRoot2.get("companyId"), hpmRoot2.get("companyId")));
 				predicates.add(cb.equal(tacRoot2.get("productId"), hpmRoot2.get("productId")));
-				
 				predicates.add(cb.in(hpmRoot2.get("quoteNo")).value(tacRoot2.get("quoteNo")));
 				predicates.add(cb.equal(tacRoot2.get("status"), "Y"));
 				predicates.add(cb.or(cb.equal(tacRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(tacRoot2.get("branchCode"), "99999")));
+				predicates.add(cb.equal(tacRoot2.get("id"), "6"));
 			}
 				Predicate [] predicatArray = new Predicate[predicates.size()];
 				predicates.toArray(predicatArray);
@@ -1642,7 +1647,7 @@ public class JasperCustomServiceImple {
 					
 					Subquery<Tuple> EquoteIn = cq3.subquery(Tuple.class);
 					Root<TermsAndCondition> SEtacRoot = EquoteIn.from(TermsAndCondition.class);
-					EquoteIn.select(SEtacRoot.get("quoteNo")).where(cb.equal(SEtacRoot.get("quoteNo"), QuoteNo));
+					EquoteIn.select(SEtacRoot.get("quoteNo")).where(cb.equal(SEtacRoot.get("quoteNo"), QuoteNo),cb.equal(SEtacRoot.get("id"), "7"));
 					
 					Root<ExclusionMaster> emRoot3 = cq3.from(ExclusionMaster.class);
 					if(StringUtils.isNotBlank(sectionId)) {
@@ -1665,7 +1670,6 @@ public class JasperCustomServiceImple {
 				}else {
 					Root<TermsAndCondition> tacRoot3 = cq3.from(TermsAndCondition.class);
 					if(StringUtils.isNotBlank(sectionId)) {
-						predicates.add(cb.equal(tacRoot3.get("sectionId"), sectionId));
 						predicates.add(cb.or(cb.equal(tacRoot3.get("sectionId"), sectionId), cb.equal(tacRoot3.get("sectionId"), "99999")));
 					}else {
 						Root<SectionDataDetails> sddRoot3 = cq3.from(SectionDataDetails.class);
@@ -1680,6 +1684,7 @@ public class JasperCustomServiceImple {
 					predicates.add(cb.in(hpmRoot3.get("quoteNo")).value(tacRoot3.get("quoteNo")));
 					predicates.add(cb.equal(tacRoot3.get("status"), "Y"));
 					predicates.add(cb.or(cb.equal(tacRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(tacRoot3.get("branchCode"), "99999")));
+					predicates.add(cb.equal(tacRoot3.get("id"), "7"));
 					Predicate [] predicatArray = new Predicate[predicates.size()];
 					predicates.toArray(predicatArray);
 					exclusionRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
@@ -1716,7 +1721,7 @@ public class JasperCustomServiceImple {
 					
 					Subquery<Tuple> EquoteIn = cq3.subquery(Tuple.class);
 					Root<TermsAndCondition> SEtacRoot = EquoteIn.from(TermsAndCondition.class);
-					EquoteIn.select(SEtacRoot.get("quoteNo")).where(cb.equal(SEtacRoot.get("quoteNo"), QuoteNo));
+					EquoteIn.select(SEtacRoot.get("quoteNo")).where(cb.equal(SEtacRoot.get("quoteNo"), QuoteNo),cb.equal(SEtacRoot.get("id"), "4"));
 					Root<WarrantyMaster> wmRoot3 = cq3.from(WarrantyMaster.class);
 					cq3.multiselect(wmRoot3.get("warrantyDescription").alias("warrantyTerms"));
 					predicates.add(cb.equal(wmRoot3.get("companyId"), hpmRoot3.get("companyId")));
@@ -1738,6 +1743,7 @@ public class JasperCustomServiceImple {
 					predicates.add(cb.in(hpmRoot3.get("quoteNo")).value(tacRoot3.get("quoteNo")));
 					predicates.add(cb.equal(tacRoot3.get("status"), "Y"));
 					predicates.add(cb.or(cb.equal(tacRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(tacRoot3.get("branchCode"), "99999")));
+					predicates.add(cb.equal(tacRoot3.get("id"), "4"));
 					Predicate [] predicatArray = new Predicate[predicates.size()];
 					predicates.toArray(predicatArray);
 					warrantyRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());

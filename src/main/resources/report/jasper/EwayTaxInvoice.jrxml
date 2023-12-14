@@ -180,6 +180,9 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="dataset1List"/>
 		<fieldDescription><![CDATA[dataset1List]]></fieldDescription>
 	</field>
+	<field name="companyId" class="java.lang.String">
+		<fieldDescription><![CDATA[companyId]]></fieldDescription>
+	</field>
 	<background>
 		<band height="685" splitType="Stretch">
 			<textField>
@@ -761,7 +764,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{companyId}.equalsIgnoreCase("100004")?"Premium Tax -"+$F{vatPercent}+"%":"Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="374" y="65" width="60" height="15" uuid="41d174b8-63b2-48f5-9dd0-460af41f1fb9"/>
@@ -930,7 +933,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat Total ("+$F{currency}+")"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{companyId}.equalsIgnoreCase("100004")?"Premium Tax ("+$F{currency}+")":"Vat Total ("+$F{currency}+")"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="95" y="47" width="80" height="12" uuid="48852c9f-0667-4a1d-879a-38e980d72657"/>
@@ -978,7 +981,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["VAT Process Dt :"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{companyId}.equalsIgnoreCase("100004")?"Premium Tax Process Dt :":"VAT Process Dt :"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="1">

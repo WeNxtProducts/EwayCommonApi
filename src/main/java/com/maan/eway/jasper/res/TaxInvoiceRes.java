@@ -120,6 +120,9 @@ public class TaxInvoiceRes {
 	@JsonProperty("BranchName")
 	private String branchName;
 	
+	@JsonProperty("CompanyId")
+	private String companyId;
+	
 	@JsonProperty("PolicyType")
 	private String policyType;
 	

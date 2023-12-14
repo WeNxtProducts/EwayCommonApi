@@ -32,11 +32,11 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="address"/>
 		<fieldDescription><![CDATA[address]]></fieldDescription>
 	</field>
-	<field name="vrTinNo" class="java.lang.Integer">
+	<field name="vrTinNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="vrTinNo"/>
 		<fieldDescription><![CDATA[vrTinNo]]></fieldDescription>
 	</field>
-	<field name="identificationNo" class="java.lang.Integer">
+	<field name="identificationNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="identificationNo"/>
 		<fieldDescription><![CDATA[identificationNo]]></fieldDescription>
 	</field>
@@ -248,13 +248,13 @@
 			</textField>
 		</band>
 		<band height="15">
-			<textField textAdjust="StretchHeight">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement style="common" stretchType="RelativeToBandHeight" x="80" y="0" width="10" height="15" uuid="3ef30117-df79-4742-ab4e-4b91bbdd3de4"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyType}==null || $F{policyType}.equalsIgnoreCase("")?"":":"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement style="common" stretchType="RelativeToBandHeight" x="410" y="0" width="10" height="15" uuid="d8af9fc7-3292-4138-9712-7bd2c16176a0"/>
@@ -278,7 +278,7 @@
 				</box>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="80" height="15" uuid="c79a5412-bd7e-4b3d-8a66-6cdbfbd74bb5">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -286,7 +286,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Policy Type"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyType}==null || $F{policyType}.equalsIgnoreCase ("")?"":"Policy Type"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="321" y="0" width="89" height="15" uuid="f883c521-78e8-4afc-8eed-28deb4d8310c">

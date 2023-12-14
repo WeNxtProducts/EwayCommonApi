@@ -194,6 +194,9 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="coreAppBrokerCode"/>
 		<fieldDescription><![CDATA[coreAppBrokerCode]]></fieldDescription>
 	</field>
+	<field name="taxName" class="java.lang.String">
+		<fieldDescription><![CDATA[taxName]]></fieldDescription>
+	</field>
 	<background>
 		<band height="802">
 			<frame>
@@ -748,7 +751,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat : ("+($F{vatPercent})+" % )"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{taxName}+" : ("+($F{vatPercent})+" % )"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.0" isBlankWhenNull="true">
 				<reportElement x="90" y="0" width="187" height="15" uuid="7956a972-8582-49be-819b-ab77a811438b">
