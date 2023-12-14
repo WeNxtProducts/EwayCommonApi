@@ -38,7 +38,6 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -114,7 +113,6 @@ import com.maan.eway.service.impl.referal.ReferalServiceImpl;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.JoinCriteria;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
-import com.sun.xml.bind.marshaller.MinimumEscapeHandler;
 
 @Service
 public class CalculatorEngineService implements CalculatorEngine {
@@ -540,7 +538,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			try {
 				String endtTypeId = vehicles.get(0).get("endtTypeId") == null ? "" :  vehicles.get(0).get("endtTypeId").toString() ;
 				if (StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
-					// referalCalculator = referalCalculator(engine);
+					// referalCalculator = referalCalculator(engine);					
 					return endorsementCalculator(engine, endtCount,endtTypeId,isPolicyPeriod);
 
 				}

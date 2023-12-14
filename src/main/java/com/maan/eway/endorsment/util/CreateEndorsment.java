@@ -3,6 +3,7 @@ package com.maan.eway.endorsment.util;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,9 +34,18 @@ public class CreateEndorsment {
 		// CurrentEndorsement
 
 		String endtTypeId=String.valueOf(endtmaster.getEndtTypeId());
+		coverData.sort(new Comparator<PolicyCoverDataEndt>() {
+
+			@Override
+			public int compare(PolicyCoverDataEndt o1, PolicyCoverDataEndt o2) {
+				// TODO Auto-generated method stub
+				return (o1.getEndtCount().compareTo(o2.getEndtCount()));
+			}
+		}.reversed());
 		PolicyCoverDataEndt d = coverData.get(0);
 		
 		BigDecimal totalSumInsured=coverData.stream().map(x -> x.getSumInsured()).reduce(BigDecimal.ZERO,BigDecimal::add);
+		
 		//totalSumInsured=currentData.getSumInsured().subtract(totalSumInsured, MathContext.DECIMAL32);
   		Endorsement currentEndt = Endorsement.builder()
 				.endorsementDesc(d.getCoverDesc() + " " + endtmaster.getEndtTypeDesc())
@@ -77,7 +87,7 @@ public class CreateEndorsment {
 				.referalDescription(d.getReferralDescription())
 				.regulatoryCode(d.getRegulatoryCode())
 				.tiraSumInsured(d.getRegulatorySuminsured())
-				.tiraRate(d.getRegulatoryRate().doubleValue())
+				.tiraRate(d.getRegulatoryRate()==null?0D:d.getRegulatoryRate().doubleValue())
 				.coverBasedOn(d.getCoverBasedOn())
 				.insuranceId(d.getCompanyId())
 				.productId(String.valueOf(d.getProductId()))
