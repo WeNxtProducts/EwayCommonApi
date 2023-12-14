@@ -18,6 +18,9 @@ public class LoginRequest {
 	@JsonProperty("ReLoginKey")
 	private String reLoginKey;
 	
+	@JsonProperty("IpAddress")
+	private String ipAddress;
+	
 /*	@JsonProperty("UserType")
 	private String userType;
 	

@@ -253,6 +253,7 @@ public class LoginController {
 		mslogin.setLoginId(guestloginId);
 		mslogin.setPassword(guestpassword);
 		mslogin.setReLoginKey("Y");
+		mslogin.setIpAddress(req.getIpAddress());
 		
 		res =loginValidationComponent.loginInputValidation(mslogin); 
 		if(res.getErrorMessage()!=null &&  res.getErrorMessage().size()>0 ) {

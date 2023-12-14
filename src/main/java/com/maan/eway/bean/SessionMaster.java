@@ -103,6 +103,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
+    
+    @Column(name="IP_ADDRESS", length=100)
+    private String     ipAddress ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

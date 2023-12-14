@@ -185,6 +185,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				Date today = new Date(); 
 				session.setEntryDate(today);
 				session.setStartTime(today);
+				session.setIpAddress(mslogin.getIpAddress());
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.MINUTE, 50);
 				Date endTime = cal.getTime();
@@ -1324,6 +1325,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		cal.add(Calendar.MINUTE, 20);
 		Date endTime = cal.getTime();
 		session.setEndTime(endTime );
+		session.setIpAddress(req.getIpAddress());
 		session =sessionRep.save(session);
 		
 		res.setToken(temptoken);

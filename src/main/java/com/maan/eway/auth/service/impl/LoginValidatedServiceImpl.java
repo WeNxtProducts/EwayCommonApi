@@ -29,11 +29,13 @@ import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.service.LoginCriteriaQueryService;
 import com.maan.eway.auth.service.LoginValidatedService;
 import com.maan.eway.auth.token.passwordEnc;
+import com.maan.eway.bean.BlockingIpAddress;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
+import com.maan.eway.repository.BlockingIpAddressRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.SessionMasterRepository;
@@ -51,6 +53,9 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	
 	@Autowired
 	private LoginUserInfoRepository loginUserRepo ;
+	
+	@Autowired
+	private BlockingIpAddressRepository blockIpRepo ;
 
 	@Autowired
 	private NotifTransactionDetailsRepository notifRepo;
@@ -147,6 +152,14 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 						
 					}
 				} 
+				
+				if(StringUtils.isNotBlank(req.getIpAddress())) {
+					List<BlockingIpAddress> blockList =   blockIpRepo.findByIpAddressAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndStatus(req.getIpAddress(),new Date(),new Date() ,"Y");
+					if(blockList.size()>0 ) {
+						list.add(new Error("1001", "Error", "Cannot Continue Browsing.Try after some time"));
+					}
+				
+				}
 				
 				if(req.getReLoginKey()!=null && req.getReLoginKey().equalsIgnoreCase("Y") &&  sessionlist.size()>0 ) {
 					SessionMaster updatelogout = sessionlist.get(0);
