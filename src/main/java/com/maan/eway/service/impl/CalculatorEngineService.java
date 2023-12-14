@@ -1502,15 +1502,17 @@ public class CalculatorEngineService implements CalculatorEngine {
 						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
 					}
 
-					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
-							.divide(BigDecimal.valueOf(100D))
-							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
-					v1.getQuoteDetails().getVatPercent();
+					
+					
 				//	String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
 
 					// Setup
 					if(StringUtils.isNotBlank(premiumFc) ) {
+						BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
+								.divide(BigDecimal.valueOf(100D))
+								.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
+						
 						Map<String, Object> setup = new HashMap<String, Object>();
 
 						List<Map<String, Object>> csubsets = new ArrayList<Map<String, Object>>();
