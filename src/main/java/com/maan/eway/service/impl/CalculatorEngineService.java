@@ -1498,8 +1498,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						
 					}
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId()) && v.getStatus().equalsIgnoreCase("D") ) {
-						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
-						vatPremiumFc = v.getEndtVatPremium()==null  ?"0" :  v.getEndtVatPremium().toPlainString();
+						premiumFc = v.getEndtPremium() ==null ? "" : v.getEndtPremium().toString();
+						vatPremiumFc = v.getEndtVatPremium()==null  ?"" :  v.getEndtVatPremium().toPlainString();
 					}
 
 					
@@ -1640,7 +1640,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 										res.setStatus("Y");
 										res.setQuoteInfo(v1);
 										res.setSectionId(v.getSectionId().toString());
-										res.setRiskId(v.getTravelId().toString());
+										res.setRiskId(v.getPassengerId().toString());
 										resList.add(res);
 									}
 								}
