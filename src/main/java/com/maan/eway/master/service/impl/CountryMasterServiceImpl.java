@@ -175,6 +175,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			saveData.setUpdatedDate(new Date());
 			saveData.setTiraCode(req.getRegulatoryCode());
 			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setNationality(req.getNationality());
 			repo.saveAndFlush(saveData);
 
 			log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -279,6 +280,12 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 				errorList.add(new Error("08", "Remarks", "Please Enter Remarks"));
 			}else if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("11", "Remarks", "Please Enter Remarks within 100 Characters"));
+			}
+			
+			if (StringUtils.isBlank(req.getNationality())) {
+				errorList.add(new Error("01", "Nationality", "Please Enter Nationality"));
+			}else if (req.getNationality().length() > 100){
+				errorList.add(new Error("01","Nationality", "Please Enter Nationality within 100 Characters")); 
 			}
 
 		} catch (Exception e) {
@@ -413,6 +420,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 
 				res = dozerMapper.map(data, CountryMasterRes.class);
 				res.setCountryId(data.getCountryId().toString());
+				res.setNationality(data.getNationality()==null?"":data.getNationality());
 				resList.add(res);
 			}
 
@@ -483,6 +491,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			res.setNationality(list.get(0).getNationality()==null?"":list.get(0).getNationality());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -612,6 +621,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 
 				res = dozerMapper.map(data, CountryMasterRes.class);
 				res.setCountryId(data.getCountryId().toString());
+				res.setNationality(data.getNationality()==null?"":data.getNationality());
 				resList.add(res);
 			}
 

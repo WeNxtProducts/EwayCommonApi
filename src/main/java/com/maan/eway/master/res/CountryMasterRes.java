@@ -60,4 +60,7 @@ public class CountryMasterRes implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
+	
+	@JsonProperty("Nationality")
+	private String nationality;
 }
