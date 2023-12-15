@@ -648,7 +648,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					StringUtils.isNotBlank(veh.getSectionId())		&& o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) ).collect(Collectors.toList());	
 					
 					boolean alreadyOpt2 = false ; 
-					if(alreadyOptVeh.size() >0) {
+					if(alreadyOptVeh.size() >0 && alreadyOptVeh.get(0).getIsReferral() !=null && alreadyOptVeh.get(0).getIsReferral().equalsIgnoreCase("Y") ) {
 						alreadyOpt2 = true ;
 					}
 					
