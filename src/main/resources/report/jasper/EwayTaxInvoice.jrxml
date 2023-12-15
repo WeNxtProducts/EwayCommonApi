@@ -128,15 +128,15 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
 		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="vatPremium" class="java.lang.Integer">
+	<field name="vatPremium" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="vatPremium"/>
 		<fieldDescription><![CDATA[vatPremium]]></fieldDescription>
 	</field>
-	<field name="overAllPremium" class="java.lang.Integer">
+	<field name="overAllPremium" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="overAllPremium"/>
 		<fieldDescription><![CDATA[overAllPremium]]></fieldDescription>
 	</field>
-	<field name="totSumInsured" class="java.lang.Integer">
+	<field name="totSumInsured" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="totSumInsured"/>
 		<fieldDescription><![CDATA[totSumInsured]]></fieldDescription>
 	</field>
