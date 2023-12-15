@@ -131,7 +131,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="BankName"/>
 			<fieldDescription><![CDATA[BankName]]></fieldDescription>
 		</field>
-		<field name="AccountNumber" class="java.lang.Long">
+		<field name="AccountNumber" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="AccountNumber"/>
 			<fieldDescription><![CDATA[AccountNumber]]></fieldDescription>
 		</field>

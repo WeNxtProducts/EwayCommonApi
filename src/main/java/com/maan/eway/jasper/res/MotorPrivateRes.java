@@ -99,6 +99,9 @@ public class MotorPrivateRes {
 	@JsonProperty("CompanyName")
 	private String companyName;
 	
+	@JsonProperty("TearmsAndConditions")
+	private List<TearmsAndCondition	> tearmsAndConditions;
+	
 	@JsonProperty("CoverNoteReferenceNo")
 	private String coverNoteReferenceNo;
 	

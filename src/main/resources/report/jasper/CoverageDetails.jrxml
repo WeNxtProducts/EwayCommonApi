@@ -252,7 +252,7 @@
 							</textField>
 						</jr:tableHeader>
 						<jr:detailCell style="Table_TD" height="20">
-							<textField>
+							<textField textAdjust="StretchHeight">
 								<reportElement x="0" y="0" width="160" height="20" uuid="08f3e048-e91c-47ed-b2c1-f3d70e25208d"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -275,7 +275,7 @@
 							</textField>
 						</jr:tableHeader>
 						<jr:detailCell style="Table_TD" height="20">
-							<textField pattern="#,##0.##" isBlankWhenNull="true">
+							<textField pattern="#,##0.00" isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="95" height="20" uuid="8167f086-edc9-43d5-bb1f-7ce3c6b87619"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -362,7 +362,7 @@
 							</textField>
 						</jr:tableHeader>
 						<jr:detailCell style="Table_TD" height="20">
-							<textField>
+							<textField textAdjust="StretchHeight">
 								<reportElement x="0" y="0" width="180" height="20" uuid="6de046dc-bc80-4cc8-8168-bd29fb997d2c"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -385,7 +385,7 @@
 							</textField>
 						</jr:tableHeader>
 						<jr:detailCell style="Table_TD" height="20">
-							<textField pattern="#,##0.##" isBlankWhenNull="true">
+							<textField pattern="#,##0.00" isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="95" height="20" uuid="ad30fc38-ff16-4091-a521-7f5357799f59"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">

@@ -72,6 +72,7 @@ import com.maan.eway.jasper.res.MotorPrivateRes;
 import com.maan.eway.jasper.res.MotorPrivateVehicleDetails;
 import com.maan.eway.jasper.res.TaxDataSetOneRes;
 import com.maan.eway.jasper.res.TaxInvoiceRes;
+import com.maan.eway.jasper.res.TearmsAndCondition;
 import com.maan.eway.jasper.res.TravelDataSetOneRes;
 import com.maan.eway.jasper.res.TravelDataSetTwoRes;
 import com.maan.eway.jasper.res.TravelReportRes;
@@ -619,7 +620,8 @@ public class JasperCustomServiceImple {
 		List<MotorPrivateVehicleDetails> vehicleDetailsRes = new ArrayList<>();
 		List<MotorPrivateDriverDetails> driverDetailsRes = new ArrayList<>();
 		List<MotorPrivateAccessoriesDetails> accessoriesDetailsRes = new ArrayList<>();
-		CriteriaBuilder cb = em.getCriteriaBuilder();
+		List<TearmsAndCondition> tearmsAndConditionRes = new ArrayList<>();
+		CriteriaBuilder cb = em.getCriteriaBuilder();	
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
 		Root<LoginUserInfo> luiRoot = cq.from(LoginUserInfo.class);
@@ -725,6 +727,59 @@ public class JasperCustomServiceImple {
 			
 			List<MotorDataDetails> collateralDetails = vehicleDetails.stream().filter(f -> "Y".equalsIgnoreCase(Objects.requireNonNullElse(f.getCollateralYn(),""))).collect(Collectors.toList());
 			
+			CriteriaQuery<Tuple> cq1 = cb.createQuery(Tuple.class);
+			Root<PolicyCoverData> pcdRoot = cq1.from(PolicyCoverData.class);
+			Root<SectionDataDetails> sddRoot = cq1.from(SectionDataDetails.class);
+			
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")));
+			predicate.add(cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")));
+			predicate.add(cb.equal(pcdRoot.get("sectionId"), sddRoot.get("sectionId")));
+			predicate.add(cb.equal(pcdRoot.get("taxId"),"0"));
+			predicate.add(cb.equal(pcdRoot.get("discLoadId"), "0"));
+			predicate.add(cb.equal(pcdRoot.get("subCoverId"), "0"));
+			Predicate [] predicateArray = new Predicate[predicate.size()];
+			predicate.toArray(predicateArray);
+			
+			Subquery<String> occDesc = cq1.subquery(String.class);
+			Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
+			occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), ecdRoot.get("sectionId")),
+					cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")),
+					cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
+			
+			cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
+					pcdRoot.get("coverId").alias("coverId"),pcdRoot.get("coverageType").alias("coverageType"),
+					 pcdRoot.get("sumInsured").alias("sumInsured"),pcdRoot.get("rate").alias("rate"),pcdRoot.get("premiumIncludedTaxLc").alias("premiumIncludedTaxLc"),
+					 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"),occDesc.alias("occupationDesc"),
+					 pcdRoot.get("premiumExcludedTaxLc").alias("premiumExcludedTaxLc"),pcdRoot.get("premiumExcludedTaxFc").alias("premiumExcludedTaxFc"))
+			.where(predicateArray).orderBy(cb.asc(sddRoot.get("sectionId")));
+					
+		List<Tuple> Slist = em.createQuery(cq1).getResultList();
+		
+		List<Object> sectionIds = Slist.stream().map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
+		for(int i=0;i<sectionIds.size();i++) {
+			String sectionId = sectionIds.get(i).toString();
+			// CONDITIONS
+			List<Map<String,Object>> conditionList = getConditionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
+
+			// EXCLUSION
+			List<Map<String,Object>> exclusionRes = getExclusionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
+			List<Map<String,Object>> exclusionList = exclusionRes.stream().map(k -> {
+				Map<String,Object> eMap = new HashMap<String,Object>();
+				eMap.put("conditionTerms", k.get("exclusioTerms"));
+				return eMap;
+			}).collect(Collectors.toList());
+			
+			//WARRANTY
+			List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
+			
+			List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).collect(Collectors.toList());
+			termsAndconditions.stream().distinct().collect(Collectors.toList()).forEach(g ->{
+				TearmsAndCondition tearms = new TearmsAndCondition();
+				tearms.setAllConditions(g.get("conditionTerms")==null?"":g.get("conditionTerms").toString());
+				tearmsAndConditionRes.add(tearms);
+			});
+		}
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
 			response.setEffectiveDateStart(map.get("effectiveDateStart")==null?"":map.get("effectiveDateStart").toString());
 			response.setEffectiveDateEnd(map.get("effectiveDateEnd")==null?"":map.get("effectiveDateEnd").toString());
@@ -756,6 +811,7 @@ public class JasperCustomServiceImple {
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
+			response.setTearmsAndConditions(tearmsAndConditionRes);
 		}
 	}catch(Exception e) {
 		log.info("Error in getMotorPrivate ==>"+e.getMessage());
@@ -1482,7 +1538,7 @@ public class JasperCustomServiceImple {
 						empMap.put("employeeId", e.getEmployeeId());
 						empMap.put("employeeName", e.getEmployeeName());
 						empMap.put("occupationDesc", e.getOccupationDesc());
-						empMap.put("salary", e.getSalary());
+						empMap.put("salary", new BigDecimal(Double.parseDouble(e.getSalary().toString())).toString());
 						return empMap;
 					}).collect(Collectors.toList());
 				
@@ -1538,9 +1594,9 @@ public class JasperCustomServiceImple {
 			result.put("coreAppBrokerCode", map.get("coreAppBrokerCode")==null?"":map.get("coreAppBrokerCode").toString());
 			result.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 			result.put("vatPercent", map.get("vatPercent")==null?"":Double.parseDouble(map.get("vatPercent").toString()));
-			result.put("premium", map.get("premium")==null?"":map.get("premium").toString());
+			result.put("premium", map.get("premium")==null?"":new BigDecimal(Double.parseDouble(map.get("premium").toString())).toString());
 			result.put("vatPremium", map.get("vatPremium")==null?"":Double.parseDouble(map.get("vatPremium").toString()));
-			result.put("totalPremium", map.get("totalPremium")==null?"":map.get("totalPremium").toString());
+			result.put("totalPremium", map.get("totalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("totalPremium").toString())).toString());
 			result.put("signature", map.get("signature")==null?"":map.get("signature").toString());
 			result.put("place", map.get("place")==null?"":map.get("place").toString());
 			result.put("companyName", map.get("companyName")==null?"":map.get("companyName").toString());
