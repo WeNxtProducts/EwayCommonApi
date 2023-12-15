@@ -334,8 +334,7 @@ public class JasperCustomServiceImple {
 //				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")))
 //					.otherwise(cb.sum(hpmRoot.get("endtPremium"),cb.quot(cb.prod(hpmRoot.get("endtPremium"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremium"),
 				hpmRoot.get("vatPercent").alias("vatPercent"),pdRoot.get("bankName").alias("bankName"),pdRoot.get("accountNumber").alias("accountNumber"),
-				sumInsured.alias("totSumInsured"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("branchCode").alias("branchCode"),
-				hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("companyId").alias("companyId"))//,companyName.alias("companyName"),imageURL.alias("companyLogo"))
+				sumInsured.alias("totSumInsured"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("branchCode").alias("branchCode"),hpmRoot.get("branchName").alias("branchName"))//,companyName.alias("companyName"),imageURL.alias("companyLogo"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
 				cb.equal(pdRoot.get("quoteNo"), hpmRoot.get("quoteNo")),
 				cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
@@ -434,7 +433,7 @@ public class JasperCustomServiceImple {
 			response.setIntermediaryRefNo(map.get("intermediaryRefNo")==null?"":map.get("intermediaryRefNo").toString());
 			response.setBranchCode(map.get("branchCode")==null?"":map.get("branchCode").toString());
 			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
-			response.setPolicyType(dataset1.get(0).get("policyTypeDesc")==null?"":dataset1.get(0).get("policyTypeDesc").toString());
+			response.setPolicyType(!dataset1.isEmpty()?dataset1.get(0).get("policyTypeDesc")==null?"":dataset1.get(0).get("policyTypeDesc").toString():"");
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
 			response.setAmountInWords(amtInWords);
 			response.setDataset1List(dataset1Res);
@@ -680,7 +679,8 @@ public class JasperCustomServiceImple {
 		List<Tuple> list = em.createQuery(cq).getResultList();
 		if(!CollectionUtils.isEmpty(list)) {
 			Tuple map = list.get(0);
-			List<MotorDataDetails> vehicleDetails = motorRepo.findByQuoteNoOrderByVehicleIdAsc(map.get("quoteNo").toString());
+			List<MotorDataDetails> vehicleDetails = motorRepo.findByQuoteNoOrderByVehicleIdAsc(map.get("quoteNo").toString())
+						.stream().filter(f -> !f.getStatus().equalsIgnoreCase("D")).collect(Collectors.toList());
 			vehicleDetails.forEach(k -> {
 				MotorPrivateVehicleDetails t = MotorPrivateVehicleDetails.builder()
 					.vehicleId(k.getVehicleId()==null?"":k.getVehicleId().toString())
