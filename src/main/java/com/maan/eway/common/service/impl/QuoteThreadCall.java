@@ -1761,7 +1761,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
 						if(filterOldCover.size() > 0 ) {
 							PolicyCoverData oldCoverData = filterOldCover.get(0) ;
-							periodStart = oldCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldCoverData.getCoverPeriodFrom();
+							periodStart =  effDate ;//oldCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldCoverData.getCoverPeriodFrom();
 							//periodEnd   = oldCoverData.getCoverPeriodTo().before(request.getPolicyEndDate()) ? oldCoverData.getCoverPeriodTo() : request.getPolicyEndDate()  ;
 							SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy"); 
 							String end1 = oldCoverData.getCoverPeriodTo() !=null ? sdf2.format(oldCoverData.getCoverPeriodTo()) : "";
@@ -1775,7 +1775,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 							
 							
 						} else {
-							periodStart = effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
+							periodStart = effDate;// effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
 							//periodEnd   = cov.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : cov.getCoverPeriodTo();
 						}
 					
@@ -1785,7 +1785,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
         				if(filterOldSubCover.size() > 0 ) {
         					PolicyCoverData oldSubCoverData = filterOldSubCover.get(0) ;
-							periodStart = oldSubCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldSubCoverData.getCoverPeriodFrom();
+							periodStart = effDate ;//oldSubCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldSubCoverData.getCoverPeriodFrom();
 							//periodEnd   = oldSubCoverData.getCoverPeriodTo().before(request.getPolicyEndDate()) ? oldSubCoverData.getCoverPeriodTo() : request.getPolicyEndDate()  ;
 							SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy"); 
 							String end1 = oldSubCoverData.getCoverPeriodTo() !=null ? sdf2.format(oldSubCoverData.getCoverPeriodTo()) : "";
@@ -1798,7 +1798,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 							}
 							
 						} else {
-							periodStart = effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
+							periodStart = effDate ;// effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
 							//periodEnd   = cov.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : cov.getCoverPeriodTo();
 						}
 						

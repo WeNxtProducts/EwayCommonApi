@@ -150,9 +150,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 
 				if (StringUtils.isBlank(req.getIdNumber())) {
-					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber"));
+					errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
 				} else if (req.getIdNumber().length() > 100) {
-					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber within 100 Characters"));
+					errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
+				}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
+					errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
 				} 
 //				else if (! req.getIdNumber().matches("[A-Za-z0-9]+") ) {
 //					errorList.add(new Error("11", "IdNumber", "Please Enter Valid IdNumber "));
@@ -260,10 +262,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getMobileNo1())) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
 				} else if (req.getMobileNo1().length() > 10||req.getMobileNo1().length() < 8) {
-					errorList.add(new Error("24", "MobileNo", "Please Enter Valid MobileNo"));
-				} else if (!req.getMobileNo1().matches("\\d+")) {
-					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo only in numbers"));
-				}
+					errorList.add(new Error("24", "MobileNo", "Please Enter Valid Mobile No"));
+				} else if (!req.getMobileNo1().matches("[0-9]+") ) {
+					errorList.add(new Error("24", "MobileNo", "Please Enter Mobile No only in numbers"));
+				} else if (req.getMobileNo1().matches("[0-9]+") && Double.valueOf(req.getMobileNo1()) <=0 ) {
+					errorList.add(new Error("11", "MobileNo", "Please Enter Valid Mobile No "));
+				} 
 
 				
 				
