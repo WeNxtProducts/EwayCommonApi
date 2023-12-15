@@ -228,7 +228,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 
 							if(prorata !=null && prorata.size()>0) {
 								BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
-								BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
+								//BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
+								BigDecimal p=percenat.divide(new BigDecimal("100"));
 								t.setProRata(p);
 								endorsement.setProRata(p);
 							}else if("D".equals(t.getProRataYn())){
@@ -299,6 +300,16 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 										}
 
 					 		 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt()))*/{
+					 			 
+					 			if(!"A".equals(t.getCalcType())) {
+						 			 endorsement.setEndorsementsumInsuredLc(t.getSumInsuredLc().subtract(endorsement.getEndorsementsumInsuredLc()));//.multiply(exchangeRate,MathContext.DECIMAL64));
+						 			 endorsement.setEndorsementsumInsured((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getEndorsementsumInsuredLc().divide(exchangeRate,MathContext.DECIMAL64))));
+						 		 }else {
+						 			 endorsement.setEndorsementsumInsuredLc(BigDecimal.ZERO);
+						 			 endorsement.setEndorsementsumInsured(BigDecimal.ZERO);
+						 		 }
+					 			
+					 			 
 					 			 // Date Differents
 					 			 Date periodStart =  effectiveDate;
 					 			 Date periodEnd = t.getPolicyEndDate() ;
@@ -318,7 +329,12 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 
 					 			 if(prorata !=null && prorata.size()>0) {
 					 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
-					 				 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
+					 				BigDecimal p=percenat.divide(new BigDecimal("100"),MathContext.DECIMAL32);					 				
+					 				if(endorsement.getEndorsementsumInsured().compareTo(BigDecimal.ZERO)<0) {
+					 					p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"),MathContext.DECIMAL32);
+					 				}
+					 				
+					 				 
 					 				 t.setProRata(p);
 					 				 endorsement.setProRata(p);
 					 			 }else if("D".equals(t.getProRataYn())){
@@ -344,13 +360,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 		 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
 					 		 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
 					 		 endorsement.setExchangeRate(exchangeRate);
-					 		 if(!"A".equals(t.getCalcType())) {
-					 			 endorsement.setEndorsementsumInsuredLc(t.getSumInsuredLc().subtract(endorsement.getEndorsementsumInsuredLc()));//.multiply(exchangeRate,MathContext.DECIMAL64));
-					 			 endorsement.setEndorsementsumInsured((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getEndorsementsumInsuredLc().divide(exchangeRate,MathContext.DECIMAL64))));
-					 		 }else {
-					 			 endorsement.setEndorsementsumInsuredLc(BigDecimal.ZERO);
-					 			 endorsement.setEndorsementsumInsured(BigDecimal.ZERO);
-					 		 }
+					 		 
 
 					 		 if("Y".equals(endorsement.getMinimumPremiumYn())) { // if previous endorsment is minimum Premium dont calculation only subtract ... 14/12/2023 lalit sir told 
 					 			domath = t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax());
