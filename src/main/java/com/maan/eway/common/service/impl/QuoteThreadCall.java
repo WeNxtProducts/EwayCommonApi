@@ -1383,6 +1383,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Update Eservice Travel
 			EserviceTravelDetails eserTravel = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo() );
 			eserTravel.setQuoteNo(request.getQuoteNo());
+			eserTravel.setPolicyNo(eserTravel.getPolicyNo());
 			eserTraRepo.saveAndFlush(eserTravel);
 			
 			EserviceTravelGroupDetails groupData = eserGroupRepo.findByRequestReferenceNoAndGroupId(request.getRequestReferenceNo() , request.getGroupId());
