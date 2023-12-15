@@ -1856,6 +1856,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
 					coverData.setIndividualId(request.getVehicleId());
+					coverData.setCoverPeriodFrom(effDate);
 					
 					saveCovers.add(coverData);	
 				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
