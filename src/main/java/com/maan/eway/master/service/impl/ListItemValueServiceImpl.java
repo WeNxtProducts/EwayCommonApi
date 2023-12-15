@@ -542,12 +542,12 @@ this.repository = repo;
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(b.get("companyId"), "99999");
 			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			//Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n6 = cb.or(n2,n3);
-			Predicate n7 = cb.or(n4,n5);
+			//Predicate n7 = cb.or(n4,n5);
 			Predicate n8 = cb.equal(b.get("itemType"), req.getItemType());
 			
-			query.where(n1,n6,n7,n8).orderBy(orderList);
+			query.where(n1,n6,n4,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);

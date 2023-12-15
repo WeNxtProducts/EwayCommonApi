@@ -469,9 +469,9 @@ public List<MotorVehicleUsageMasterGetRes> getallMotorVehicleDetails(MotorVehicl
 		Predicate n1 = cb.equal(c.get("amendId"), amendId);
 		Predicate n2 = cb.equal(c.get("companyId"), req.getInsuranceId());
 		Predicate n3 = cb.equal(c.get("branchCode"), req.getBranchCode());
-		Predicate n5 = cb.equal(c.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n3, n5);
-		query.where(n1, n2, n6).orderBy(orderList);
+	//	Predicate n5 = cb.equal(c.get("branchCode"), "99999");
+	//	Predicate n6 = cb.or(n3, n5);
+		query.where(n1, n2, n3).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);

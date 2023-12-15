@@ -454,9 +454,9 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n5 = cb.or(n3,n4);
-			query.where(n1,n2,n5).orderBy(orderList);
+			//Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			//Predicate n5 = cb.or(n3,n4);
+			query.where(n1,n2,n3).orderBy(orderList);
 			
 		//	query.where(n1).orderBy(orderList);
 

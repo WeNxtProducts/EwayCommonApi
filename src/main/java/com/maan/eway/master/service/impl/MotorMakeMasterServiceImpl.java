@@ -455,9 +455,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate n6 = cb.equal(b.get("amendId"), amendId);
 			Predicate n1 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n2 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n5 = cb.or(n2,n4);
-			query.where(n1,n5,n6).orderBy(orderList);
+		//	Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		//	Predicate n5 = cb.or(n2,n4);
+			query.where(n1,n2,n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
@@ -521,9 +521,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			Predicate n4 = cb.equal(b.get("status"), "Y");
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.or(n3,n5);
-			query.where(n1,n2,n4,n6).orderBy(orderList);
+			//Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			//Predicate n6 = cb.or(n3,n5);
+			query.where(n1,n2,n4,n3).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
