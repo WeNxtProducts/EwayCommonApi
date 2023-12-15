@@ -3248,8 +3248,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
 				endtCount.select(cb.max(ocpm1.get("endtCount")));
 				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
-				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
-				endtCount.where(a1,a2);
+			//	Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
+				endtCount.where(a1);
 				
 				// Where
 				Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
@@ -3649,15 +3649,15 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
 				endtCount.select(cb.max(ocpm1.get("endtCount")));
 				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
-				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
-				endtCount.where(a1,a2);
+				//Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
+				endtCount.where(a1);
 				
 				 
 				// Where
 				Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
 				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
-				Predicate n4 = cb.equal(m.get("status"), "P");  //policy
+				Predicate n4 = cb.equal(m.get("status"), "D");  //policy
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
 				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
