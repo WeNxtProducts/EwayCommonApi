@@ -352,9 +352,13 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 			 endorsement.setEndorsementsumInsured(BigDecimal.ZERO);
 					 		 }
 
-					 		 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
-					 		 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
-					 		 endorsement.setProRataYn("Y");
+					 		 if("Y".equals(endorsement.getMinimumPremiumYn())) { // if previous endorsment is minimum Premium dont calculation only subtract ... 14/12/2023 lalit sir told 
+					 			domath = t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax());
+					 		 }else {
+						 		 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
+						 		 
+					 		 }
+					 		endorsement.setProRataYn("Y");
 					 		 if(domath.compareTo(BigDecimal.ZERO)<0)
 					 			 dontGo=true;
 					 		 /* else if(endorsement.getPremiumAfterDiscountLC().compareTo(endorsement.getPremiumExcluedTaxLC())>0)
