@@ -2075,7 +2075,7 @@ public class PaymentServiceImpl implements PaymentService {
 				List<DepositcbcMaster> cbcData=depositcbcRepo.findByBrokerId(data.getAgencyCode().toString());
 				if(cbcData!=null && cbcData.size()>0) {
 				//Framing Request  Save Payment Details
-				SavePaymentDepositReq paymentSaveReq= new SavePaymentDepositReq();
+				/*SavePaymentDepositReq paymentSaveReq= new SavePaymentDepositReq();
 				paymentSaveReq.setCbcNo(cbcData.get(0).getCbcNo());
 				paymentSaveReq.setQuoteNo(req.getQuoteNo());
 				paymentSaveReq.setPaymentType("1");
@@ -2090,7 +2090,7 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentSaveReq.setReferenceNo(refno);
 				paymentSaveReq.setDepositNo("");
 				paymentSaveReq.setCompanyId(data.getCompanyId());
-				depoService.savePaymentDeposit(paymentSaveReq);
+				depoService.savePaymentDeposit(paymentSaveReq);*/
 				
 				SavePremiumDepositReq savDepositePayment =new SavePremiumDepositReq();
 				savDepositePayment.setBrokerId(data.getAgencyCode().toString());
@@ -2099,6 +2099,7 @@ public class PaymentServiceImpl implements PaymentService {
 				savDepositePayment.setPremium(req.getPremium().toString());
 				savDepositePayment.setProductId(data.getProductId().toString());
 				savDepositePayment.setQuoteNo(req.getQuoteNo());
+				savDepositePayment.setPayeeName(req.getPayeeName());
 				depores=depoService.savePremiumDeposit(savDepositePayment);
 				depores.getCommonResponse();
 				res.setResponse(depores.getCommonResponse().toString());

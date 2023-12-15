@@ -36,4 +36,7 @@ public class SavePremiumDepositReq {
 	@JsonProperty("PolicyTypeId")
 	private String policyTypeId;
 	
+	@JsonProperty("PayeeName")
+	private String payeeName;
+	
 }

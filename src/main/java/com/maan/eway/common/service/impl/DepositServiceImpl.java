@@ -11,18 +11,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.DepositDetail;
@@ -69,7 +72,8 @@ public class DepositServiceImpl implements DepositService {
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 	private Logger log = LogManager.getLogger(DepositServiceImpl.class);
-	
+	String pattern ="#####0.0";
+	DecimalFormat df = new DecimalFormat(pattern);
 	@Override
 	public CommonRes saveDepositeMaster(SaveDepositeMasterReq req) {
 		CommonRes res = new CommonRes();
@@ -114,17 +118,19 @@ public class DepositServiceImpl implements DepositService {
 				depDetail.setEntryDate(new Date());  
 				depDetail.setQuoteNo(req.getQuoteNo());
 			}
-				//depDetail.setProductId(req.getProductId());
+				depDetail.setProductId("");
+				depDetail.setQuoteNo("");
 				depDetail.setBrokerId(Long.valueOf(req.getBrokerId()));
 				depDetail.setCustomerId(StringUtils.isBlank(req.getCustomerid())?"99999":req.getCustomerid());
-				//depDetail.setPremiumAmount(Double.valueOf(req.getPremiumAmount()));  
+				depDetail.setPremiumAmount(Double.valueOf(req.getDepositAmount()));  
 				//depDetail.setBalanceAmount(Double.valueOf(req.getBalanceAmount()));
-				//depDetail.setPremium(Double.valueOf(req.getPremium()));
+				depDetail.setPremium(Double.valueOf(req.getDepositAmount()));
 				//depDetail.setPolicyInsuranceFee(Double.valueOf(req.getPolicyInsuranceFee()));
 				//depDetail.setVatAmount(Double.valueOf(req.getVatAmount()));
 				//depDetail.setChargableType(req.getChargableType());
+				depDetail.setChargableType(Double.parseDouble(req.getDepositAmount())<0?"R":"C");
 				depDetail.setBrokerName(brokerName);
-				depDetail.setDepositType("C");
+				depDetail.setDepositType("Deposit");
 				
 				
 				if(depDetail.getDepositNo()==null) {
@@ -136,6 +142,16 @@ public class DepositServiceImpl implements DepositService {
 				if(!optDetail.isPresent()) {
 					depositcbcRepo.save(cbcMaster);
 				}
+				PaymentDeposit paymentdep = PaymentDeposit.builder()
+					.cbcNo(cbcMaster.getCbcNo())
+					.quoteNo(StringUtils.isBlank(req.getQuoteNo())?"":req.getQuoteNo())
+					.depositNo(depositNo)
+					.paymentType("1")
+					.paymentTypeDesc(getPaymentTypeDesc("1",req.getCompanyId()))
+					.premium(req.getDepositAmount()==""?0.0:Double.valueOf(req.getDepositAmount()))
+					.entryDate(new Date())
+					.build();
+					paymentDepositRepo.save(paymentdep);
 				count = 1;
 				if(count == 1) {
 					response.setStatus(true);
@@ -305,16 +321,13 @@ public class DepositServiceImpl implements DepositService {
 	}
 
 	
-
 	public String getDepositDetails(SavePremiumDepositReq req, String type) {
 		String result="",customerOption="",cbcNo="",totalAmount="";
 		List<DepositcbcMaster>list=null;
-		String pattern ="#####0.0";
-		DecimalFormat df = new DecimalFormat(pattern);
 		Long depNo = null;
 		try {
 			int cunt=depositcbcRepo.countByBrokerId(req.getBrokerId());
-			int count=depositdetailRepo.countByProductIdAndQuoteNoAndPremiumAmountAndStatus(req.getProductId(),req.getQuoteNo(),Double.valueOf(req.getPremium()),"Y");
+			int count=depositdetailRepo.countByQuoteNoAndPremiumAmountAndStatus(req.getQuoteNo(),Double.valueOf(req.getPremium()),"Y");
 			if(count==0) {
 				if(cunt==0) {
 					result="DEPOSIT IS NOT AVAILABLE FOR THIS BROKER";
@@ -351,8 +364,10 @@ public class DepositServiceImpl implements DepositService {
 					
 					if(Double.parseDouble(totalAmount)>=Double.parseDouble(req.getPremium())) {
 						if("update".equals(type)) {
+							
 						updateDepositCBCUtilized(req.getPremium(),cbcNo,req.getProductId(),req.getBrokerId());
-						String depositbal=getDepositBalance(req.getPremium(),cbcNo,req.getProductId(),req.getBrokerId());
+						String depositbal=String.valueOf(Double.parseDouble(totalAmount)-Double.parseDouble(req.getPremium()));
+								//getDepositBalance(req.getPremium(),cbcNo,req.getProductId(),req.getBrokerId());
 						if(StringUtils.isNotBlank(depositbal)) {
 							DepositDetail des=new DepositDetail();
 							des.setDepositNo(depNo = DepositMax());
@@ -370,6 +385,18 @@ public class DepositServiceImpl implements DepositService {
 							des.setChargableType(Double.parseDouble(req.getPremium())<0?"R":"C");
 							depositdetailRepo.save(des);
 							result="Y";
+							
+							PaymentDeposit paymentdep = PaymentDeposit.builder()
+								.cbcNo(cbcNo)
+								.quoteNo(StringUtils.isBlank(req.getQuoteNo())?"":req.getQuoteNo())
+								.depositNo(depNo)
+								.paymentType("1")
+								.paymentTypeDesc(getPaymentTypeDesc("1",req.getCompanyId()))
+								.premium(req.getPremium()==""?0.0:Double.valueOf(req.getPremium()))
+								.payeeName(req.getPayeeName())
+								.entryDate(new Date())
+								.build();
+								paymentDepositRepo.save(paymentdep);
 							
 						}else {
 							result="COMBINATION NOT AVAILABLE";
@@ -390,20 +417,23 @@ public class DepositServiceImpl implements DepositService {
 		return result;
 	}
 
+	@Transactional
 	private void updateDepositCBCUtilized(String premium, String cbcNo, String productId, String brokerId) {
 			try {
 			EntityManager em1 = emfactory.createEntityManager();
 //			String qutext = "Update eway_deposit_cbc_master Set Deposit_Utilised=NVL(Deposit_Utilised,0)+TO_NUMBER(NVL(round(?,2),0)) Where product_Id =? and Cbc_no=? and broker_id=? and Status='Y'";
-			String qutext = "Update eway_deposit_cbc_master Set Deposit_Utilised=COALESCE(Deposit_Utilised,0)+(COALESCE(round(?,2),0)) Where product_Id =? and Cbc_no=? and broker_id=? and Status='Y'";
+			String qutext = "Update eway_deposit_cbc_master Set Deposit_Utilised=COALESCE(Deposit_Utilised,0)+(COALESCE(round(?,2),0)) Where  Cbc_no=? and broker_id=? and Status='Y'";
 			Query query = em1.createNativeQuery(qutext);
 			query.setParameter(1, premium);
-			query.setParameter(2, productId);
-			query.setParameter(3, cbcNo);
-			query.setParameter(4, brokerId);
+			//query.setParameter(2, productId);
+			query.setParameter(2, cbcNo);
+			query.setParameter(3, brokerId);
 			em1.getTransaction().begin();
 			int rowsUpdated = query.executeUpdate();
 			em1.getTransaction().commit();
+			em1.clear();
 			em1.close();
+			
 			log.info("entities Updated: " + rowsUpdated);
 		} catch (Exception e) {
 			log.info(e);
@@ -433,21 +463,23 @@ public class DepositServiceImpl implements DepositService {
 	}
 
 	public String getCancelDepositDetails(SavePremiumDepositReq req) {
-		String result="",cbcNo="";
+		String result="",cbcNo="",totalAmount="";
 		List<DepositcbcMaster>list=null;
 		try {
 		int cunt=depositcbcRepo.countByBrokerId(req.getBrokerId());
 		if(cunt!=0) {
-			if("3".equals(req.getProductId())) {
-				list=depositcbcRepo.findByBrokerIdAndProductIdLike(req.getBrokerId(),req.getProductId());
-			}else {
-				list=depositcbcRepo.findByBrokerId(req.getBrokerId());
-			}	
+			
+			list=depositcbcRepo.findByBrokerId(req.getBrokerId());
 			if(list!=null && list.size()>0) {
 				cbcNo=list.get(0).getCbcNo()==null?"0":list.get(0).getCbcNo().toString();
+				String depositAMount=list.get(0).getDepositAmount()==null?"0":(df.format(list.get(0).getDepositAmount())).toString();
+				String utilizedAmt=list.get(0).getDepositUtilized()==null?"0":(df.format(list.get(0).getDepositUtilized())).toString();
+				String refundAmt=list.get(0).getRefundAmount()==null?"0":(df.format(list.get(0).getRefundAmount())).toString();
+				totalAmount=String.valueOf(Double.valueOf(depositAMount)-Double.valueOf(utilizedAmt)+Double.valueOf(refundAmt));
 			}
 			updateCancelDepositCBCUtilized(req.getPremium(),cbcNo,req.getBrokerId());
-			String depositbal=getDepositBalance(req.getPremium(),cbcNo,req.getProductId(),req.getBrokerId());
+			String depositbal=String.valueOf(Double.parseDouble(totalAmount)+Double.parseDouble(req.getPremium()));
+					//getDepositBalance(req.getPremium(),cbcNo,req.getProductId(),req.getBrokerId());
 			if(StringUtils.isNotBlank(depositbal)) {
 				DepositDetail des=new DepositDetail();
 				des.setDepositNo(DepositMax());
@@ -475,12 +507,12 @@ public class DepositServiceImpl implements DepositService {
 	}
 	return result;
 	}
-
+	@Modifying(clearAutomatically = true)
 	private String getDepositBalance(String premium, String cbcNo, String productId, String brokerId) {
 		String totalAmount = "";
 		try {
-			List<DepositcbcMaster> list = depositcbcRepo.findByCbcNoAndBrokerIdAndProductIdAndStatus(cbcNo,
-					brokerId, productId, "Y");
+		
+			List<DepositcbcMaster> list=depositcbcRepo.findByCbcNoAndBrokerIdAndStatus(cbcNo,brokerId, "Y");
 			if (!CollectionUtils.isEmpty(list)) {
 				String depositAMount = list.get(0).getDepositAmount() == null ? "0": list.get(0).getDepositAmount().toString();
 				String utilizedAmt = list.get(0).getDepositUtilized() == null ? "0": list.get(0).getDepositUtilized().toString();
@@ -566,8 +598,8 @@ public class DepositServiceImpl implements DepositService {
 					//NewcbcMaster.setDepositAmount(Double.valueOf(req.getDepositAmount()));
 					NewcbcMaster.setDepositAmount(NewcbcMaster.getDepositAmount() + Double.valueOf(req.getPremium()));
 				}else if("R".equalsIgnoreCase(req.getDepositType())) {
-					//NewcbcMaster.setDepositUtilized(NewcbcMaster.getDepositUtilized() - Double.valueOf(req.getPremium()));
-					NewcbcMaster.setPolicyrefundamount(NewcbcMaster.getPolicyrefundamount()==null?0.0:NewcbcMaster.getPolicyrefundamount() + Double.parseDouble(req.getPremium()));
+					NewcbcMaster.setDepositAmount(NewcbcMaster.getDepositAmount() - Double.valueOf(req.getPremium()));
+					//NewcbcMaster.setPolicyrefundamount(NewcbcMaster.getPolicyrefundamount()==null?0.0:NewcbcMaster.getPolicyrefundamount() + Double.parseDouble(req.getPremium()));
 				}
 				depositcbcRepo.save(NewcbcMaster);
 
@@ -583,7 +615,7 @@ public class DepositServiceImpl implements DepositService {
 				//	.premiumAmount(Double.valueOf(req.getPremium()))
 					.premiumAmount(Double.valueOf(req.getPremium()))
 					.entryDate(new Date())
-					.status(req.getStatus())
+					.status("D")
 					.cbcNo(req.getCbcNo())
 					.depositNo(k.getDepositNo()==null?depNo:k.getDepositNo())
 					.balanceAmount(StringUtils.isBlank(req.getBalanceAmount())?null:Double.parseDouble(req.getBalanceAmount()))
@@ -835,7 +867,7 @@ public class DepositServiceImpl implements DepositService {
 				GetDepositDetailRes m = GetDepositDetailRes.builder()
 						.quoteNo(k.getQuoteNo())
 						.productId(k.getProductId())
-						.premiumAmt(k.getPremiumAmount()==null?"":k.getPremiumAmount().toString())
+						.premiumAmt(k.getPremiumAmount()==null?"":df.format(k.getPremiumAmount()).toString())
 						.entryDate(k.getEntryDate()==null?"":sdf.format(k.getEntryDate()))
 						.status(k.getStatus())
 						.cbcNo(k.getCbcNo())
@@ -843,7 +875,7 @@ public class DepositServiceImpl implements DepositService {
 						.balanceAmt(k.getBalanceAmount()==null?"":k.getBalanceAmount().toString())
 						.receiptNo(k.getReceiptNo())
 						.brokerId(k.getBrokerId()==null?"":k.getBrokerId().toString())
-						.premium(k.getPremium()==null?"":k.getPremium().toString())
+						.premium(k.getPremium()==null?"":df.format(k.getPremium()).toString())
 						.policyInsuranceFee(k.getPolicyInsuranceFee()==null?"":k.getPolicyInsuranceFee().toString())
 						.vatAmount(k.getVatAmount()==null?"":k.getVatAmount().toString())
 						.chargableType(k.getChargableType())
@@ -863,6 +895,8 @@ public class DepositServiceImpl implements DepositService {
 
 	@Override
 	public CommonRes GetDepositPayment(GetDepositPaymentReq req) {
+		String pattern ="#####0.0";
+		DecimalFormat df = new DecimalFormat(pattern);
 		CommonRes res = new CommonRes();
 		List<GetDepositPaymentRes> response = new ArrayList<>();
 		if(StringUtils.isNotBlank(req.getCbcNo())) {
@@ -874,7 +908,7 @@ public class DepositServiceImpl implements DepositService {
 						.quoteNo(k.getQuoteNo())
 						.paymentType(k.getPaymentType())
 						.paymentTypeDesc(k.getPaymentTypeDesc())
-						.premium(k.getPremium()==null?"":k.getPremium().toString())
+						.premium(k.getPremium()==null?"":df.format(k.getPremium()).toString())
 						.entryDate(k.getEntryDate()==null?"":sdf.format(k.getEntryDate()))
 						.createdBy(k.getCreatedBy())
 						.chequeNo(k.getChequeNo())
@@ -904,7 +938,7 @@ public class DepositServiceImpl implements DepositService {
 						.quoteNo(PaymentByDep.getQuoteNo())
 						.paymentType(PaymentByDep.getPaymentType())
 						.paymentTypeDesc(PaymentByDep.getPaymentTypeDesc())
-						.premium(PaymentByDep.getPremium()==null?"":PaymentByDep.getPremium().toString())
+						.premium(PaymentByDep.getPremium()==null?"":df.format(PaymentByDep.getPremium()).toString())
 						.entryDate(PaymentByDep.getEntryDate()==null?"":sdf.format(PaymentByDep.getEntryDate()))
 						.createdBy(PaymentByDep.getCreatedBy())
 						.chequeNo(PaymentByDep.getChequeNo())
