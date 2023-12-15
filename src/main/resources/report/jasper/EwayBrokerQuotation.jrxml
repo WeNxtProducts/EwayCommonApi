@@ -94,7 +94,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="quoteNo"/>
 		<fieldDescription><![CDATA[quoteNo]]></fieldDescription>
 	</field>
-	<field name="vrTinNo" class="java.lang.Integer">
+	<field name="vrTinNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="vrTinNo"/>
 		<fieldDescription><![CDATA[vrTinNo]]></fieldDescription>
 	</field>
@@ -162,7 +162,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="inceptionDate"/>
 		<fieldDescription><![CDATA[inceptionDate]]></fieldDescription>
 	</field>
-	<field name="mobileNo1" class="java.lang.Integer">
+	<field name="mobileNo1" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="mobileNo1"/>
 		<fieldDescription><![CDATA[mobileNo1]]></fieldDescription>
 	</field>
@@ -939,6 +939,9 @@
 				</textElement>
 				<textFieldExpression><![CDATA["For, Alliance Insurance Tanzania Limited"]]></textFieldExpression>
 			</textField>
+			<break>
+				<reportElement x="0" y="95" width="100" height="1" uuid="ba7b4cdd-73d7-4291-8435-267c39b6d3a7"/>
+			</break>
 		</band>
 		<band height="18">
 			<textField>
