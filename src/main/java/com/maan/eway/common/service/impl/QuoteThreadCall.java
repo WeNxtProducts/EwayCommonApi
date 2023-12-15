@@ -2770,7 +2770,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setCommissionPercentage(previousData!=null ? previousData.getCommissionPercentage() : home.getCommissionPercentage());
 			
 			}
-			home.setPolicyNo( previousData.getPolicyNo());
+			
 			
 			String loginId = "" ;
 			if(! "1".equalsIgnoreCase(home.getApplicationId()  )) {
