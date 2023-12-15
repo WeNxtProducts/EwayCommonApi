@@ -555,11 +555,13 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 1);;
-			cal.set(Calendar.MINUTE, 1);
+//			cal.set(Calendar.HOUR_OF_DAY, 1);;
+//			cal.set(Calendar.MINUTE, 1);
+//			today = cal.getTime();
+//			cal.set(Calendar.HOUR_OF_DAY, 23);
+//			cal.set(Calendar.MINUTE, 59);
+//			Date todayEnd = cal.getTime();
 			today = cal.getTime();
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 59);
 			Date todayEnd = cal.getTime();
 			
 			List<String> induvidualIds = new ArrayList<String>();  
@@ -603,6 +605,40 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				Predicate a12 = cb.equal(c.get("modelId"),ocpm2.get("modelId"));
 				effectiveDate2.where(a3,a4,a7,a8,a10,a12);
 				
+				// Make EffectiveDate condition
+				// Effective Date Start Max Filter
+				Subquery<Long> makeId = query.subquery(Long.class);
+				Root<MotorMakeMaster> m = makeId.from(MotorMakeMaster.class);
+				
+				Subquery<Long> effectiveDate3 = makeId.subquery(Long.class);
+				Root<MotorMakeMaster> ocpm3 = effectiveDate3.from(MotorMakeMaster.class);
+				effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+				Predicate a13 = cb.equal(m.get("makeId"),ocpm3.get("makeId"));
+				Predicate a14 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+				Predicate a15 = cb.equal(m.get("companyId"),ocpm3.get("companyId"));
+				Predicate a16 = cb.equal(m.get("branchCode"),ocpm3.get("branchCode"));
+				effectiveDate3.where(a13,a14,a15,a16);
+				// Effective Date End Max Filter
+				Subquery<Long> effectiveDate4 = makeId.subquery(Long.class);
+				Root<MotorMakeMaster> ocpm4 = effectiveDate4.from(MotorMakeMaster.class);
+				effectiveDate4.select(cb.max(ocpm4.get("effectiveDateEnd")));
+				Predicate a17 = cb.equal(m.get("makeId"),ocpm4.get("makeId"));
+				Predicate a18 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
+				Predicate a19 = cb.equal(m.get("companyId"),ocpm4.get("companyId"));
+				Predicate a20 = cb.equal(m.get("branchCode"),ocpm4.get("branchCode"));
+				effectiveDate4.where(a17,a18,a19,a20);
+				
+				makeId.select(cb.max(m.get("makeId")));
+				Predicate m1 = cb.equal(m.get("effectiveDateStart"),effectiveDate3);
+				Predicate m2 = cb.equal(m.get("effectiveDateEnd"),effectiveDate4);
+				Predicate m3 = cb.equal(m.get("makeId"),c.get("makeId"));
+				Predicate m4 = cb.equal(m.get("companyId"),c.get("companyId"));
+				Predicate m5 = cb.equal(m.get("branchCode"),c.get("branchCode"));
+				Predicate m6 = cb.equal(m.get("status"),"Y");
+				Predicate m7 = cb.equal(m.get("status"),"R");
+				Predicate m8 = cb.or(m6,m7);
+				makeId.where(m1,m2,m3,m4,m5,m8);
+				
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.asc(c.get("makeNameEn")));
@@ -618,7 +654,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 				Predicate n7 = cb.or(n5,n6);
 				Predicate n10 = cb.equal(c.get("bodyId"), req.getBodyId());
-				query.where(n9,n2,n3,n4,n7,n10).orderBy(orderList);
+				Predicate n11 = cb.equal(c.get("makeId"),makeId);
+				
+				query.where(n9,n2,n3,n4,n7,n10,n11).orderBy(orderList);
 				
 				// Get Result
 				TypedQuery<MotorMakeModelMaster> result = em.createQuery(query);
@@ -680,7 +718,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 				Predicate n7 = cb.or(n5,n6);
 				query.where(n9,n2,n3,n4,n7).orderBy(orderList);
-				
+					
 				// Get Result
 				TypedQuery<MotorMakeMaster> result = em.createQuery(query);
 				list = result.getResultList();
@@ -694,7 +732,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 					resList.add(res);
 				}
 			}
-			
+				
 			
 			
 		}
