@@ -163,9 +163,9 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					//new premium-old prem
 					endorsement = t.getEndorsements().get(0);
 					boolean dontGo=false;
+					endorsement.setMinimumPremiumYn(t.getMinimumPremiumYn());
 
-
-
+					
 					if("Y".equals(engine.getCoverModification())) {
 
 						if(("Y".equals(t.getProRataYn()) || "D".equals(t.getProRataYn())) && "Y".equals(t.getUserOpt())) {
