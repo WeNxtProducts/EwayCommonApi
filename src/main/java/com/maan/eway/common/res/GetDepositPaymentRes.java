@@ -56,4 +56,7 @@ public class GetDepositPaymentRes {
 	@JsonProperty("DepositNo")
 	private String depositNo;
 	
+	@JsonProperty("DepositType")
+	private String depositType;
+	
 }

@@ -38,6 +38,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.PaymentDeposit;
 import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.common.req.GetDepositPaymentReq;
 import com.maan.eway.common.req.SaveDepositeMasterReq;
 import com.maan.eway.common.req.SavePaymentDepositReq;
@@ -946,6 +947,8 @@ public class DepositServiceImpl implements DepositService {
 			List<PaymentDeposit> list = paymentDepositRepo.findByDepositNoInOrderByEntryDateAsc(depositNos);
 			if(!CollectionUtils.isEmpty(list)) {
 				list.forEach(k -> {
+					DepositDetail depo=depositdetailRepo.findByDepositNo(k.getDepositNo());
+					String depositType=depo.getDepositType();
 					GetDepositPaymentRes m = GetDepositPaymentRes.builder()
 						.cbcNo(k.getCbcNo())
 						.quoteNo(k.getQuoteNo())
@@ -962,7 +965,9 @@ public class DepositServiceImpl implements DepositService {
 						.payeeName(k.getPayeeName())
 						.depositNo(k.getDepositNo()==null?"":k.getDepositNo().toString())
 						.referenceNo(k.getReferenceNo())
+						.depositType(depositType==null?"":depositType)
 						.build();
+					
 					response.add(m);
 				});
 				res.setCommonResponse(response);

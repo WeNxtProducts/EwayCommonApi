@@ -23,4 +23,6 @@ public interface DepositDetailRepository extends JpaRepository<DepositDetail, Lo
 
 	List<DepositDetail> findByCbcNoAndStatusOrderByEntryDateAsc(String cbcNo, String string);
 
+	DepositDetail findByDepositNo(Long depositNo);
+
 }
