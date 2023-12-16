@@ -299,8 +299,11 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 											 endorsement.setProRata(p);
 										}
 
-					 		 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt()))*/{
-					 			 
+					 		 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt()))*/
+						BigDecimal totalSumInsuredendt=t.getSumInsuredLc().add(endorsement.getEndorsementsumInsuredLc());
+								{
+					 			
+					 			
 					 			if(!"A".equals(t.getCalcType())) {
 						 			 endorsement.setEndorsementsumInsuredLc(t.getSumInsuredLc().subtract(endorsement.getEndorsementsumInsuredLc()));//.multiply(exchangeRate,MathContext.DECIMAL64));
 						 			 endorsement.setEndorsementsumInsured((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getEndorsementsumInsuredLc().divide(exchangeRate,MathContext.DECIMAL64))));
@@ -364,6 +367,10 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 
 					 		 if("Y".equals(endorsement.getMinimumPremiumYn())) { // if previous endorsment is minimum Premium dont calculation only subtract ... 14/12/2023 lalit sir told 
 					 			domath = t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax());
+					 		 }else if("Y".equals(t.getMinimumPremiumYn()) && !"A".equals(t.getCalcType())){
+					 			 BigDecimal actualSumInsured = t.getMinimumPremium().divide(new BigDecimal(endorsement.getEndorsementRate()),MathContext.DECIMAL32).multiply(new BigDecimal("365"),MathContext.DECIMAL32);
+					 			BigDecimal derivedSumInsred = totalSumInsuredendt.subtract(actualSumInsured);
+					 			domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), derivedSumInsred,endorsement.getExchangeRate());
 					 		 }else {
 						 		 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
 						 		 
