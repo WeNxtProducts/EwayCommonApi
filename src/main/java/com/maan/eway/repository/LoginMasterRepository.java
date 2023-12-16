@@ -14,6 +14,7 @@ package com.maan.eway.repository;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import com.maan.eway.bean.LoginMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,6 +47,8 @@ public interface LoginMasterRepository  extends JpaRepository<LoginMaster,LoginM
 	LoginMaster findByLoginIdAndEffectiveDateStartLessThanEqual(String loginId, Date date);
 
 	Integer countByCompanyIdAndLoginId(String companyId, String mobileNo);
+
+	List<LoginMaster> findByOaCode(Integer oaCode);
 
 
 }
