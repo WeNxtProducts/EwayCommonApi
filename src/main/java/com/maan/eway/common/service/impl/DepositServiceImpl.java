@@ -893,10 +893,10 @@ public class DepositServiceImpl implements DepositService {
 	}
 
 	@Override
-	public CommonRes GetDepositDetailById(String cbcNo,String status) {
+	public CommonRes GetDepositDetailById(String cbcNo) {
 		CommonRes res = new CommonRes();
 		List<GetDepositDetailRes> response = new ArrayList<>();
-		List<DepositDetail> list = depositdetailRepo.findByCbcNoAndStatus(cbcNo,status);
+		List<DepositDetail> list = depositdetailRepo.findByCbcNoAndStatus(cbcNo,"Y");
 		if(!CollectionUtils.isEmpty(list)) {
 			list.forEach(k -> {
 				GetDepositDetailRes m = GetDepositDetailRes.builder()

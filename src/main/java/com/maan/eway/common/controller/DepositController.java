@@ -63,8 +63,8 @@ public class DepositController {
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@GetMapping("get/depositDetailById")
-	public CommonRes GetDepositDetailById(@RequestParam ("cbcNo") String cbcNo,String status) {
-		return service.GetDepositDetailById(cbcNo,status);
+	public CommonRes GetDepositDetailById(@RequestParam ("cbcNo") String cbcNo) {
+		return service.GetDepositDetailById(cbcNo);
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
