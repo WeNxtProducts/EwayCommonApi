@@ -24,4 +24,7 @@ public class JasperDocumentReq {
 	@JsonProperty("EndorsementType")
 	private String endorsementType;
 	
+	@JsonProperty("BrokerQuoteYn")
+	private String brokerQuoteYn;
+	
 }

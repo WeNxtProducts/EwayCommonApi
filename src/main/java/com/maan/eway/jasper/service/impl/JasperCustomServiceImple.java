@@ -613,8 +613,8 @@ public class JasperCustomServiceImple {
 		return response;
 	}
 
-	public MotorPrivateRes getMotorPrivate(String policyNo) {
-		log.info("Enter into getMotorPrivate.\nArgument ==> PolicyNo :"+policyNo);
+	public MotorPrivateRes getMotorPrivate(String policyNo,String quoteNo) {
+		log.info("Enter into getMotorPrivate.\nArgument ==> PolicyNo :"+policyNo+" || \t QuoteNo :"+quoteNo);
 		MotorPrivateRes response = new MotorPrivateRes();
 	try {
 		List<MotorPrivateVehicleDetails> vehicleDetailsRes = new ArrayList<>();
@@ -674,9 +674,11 @@ public class JasperCustomServiceImple {
 			.otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("approvedBy").alias("approvedBy"),
 			cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), hpmRoot.get("customerName"))
 			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"))
-		.where(cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
+		.where(StringUtils.isBlank(policyNo)?cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")):cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),
+				cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(cpmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cpmRoot.get("status"), "Y"),cb.equal(hpmRoot.get("productId"), cpmRoot.get("productId")),
-				cb.between(cb.literal(new Date()), cpmRoot.get("effectiveDateStart"), cpmRoot.get("effectiveDateEnd")),cb.equal(hpmRoot.get("policyNo"), policyNo)).distinct(true);
+				cb.between(cb.literal(new Date()), cpmRoot.get("effectiveDateStart"), cpmRoot.get("effectiveDateEnd")),
+				StringUtils.isBlank(policyNo)?cb.equal(hpmRoot.get("quoteNo"), quoteNo):cb.equal(hpmRoot.get("policyNo"), policyNo)).distinct(true);
 		
 		List<Tuple> list = em.createQuery(cq).getResultList();
 		if(!CollectionUtils.isEmpty(list)) {

@@ -123,10 +123,17 @@ public class JasperServiceImpl implements JasperService {
 					theDir.mkdirs();
 				}
 				if(StringUtils.isBlank(homeData.getPolicyNo()) && homeData.getProductId()==5) {
-					Map<String,Object> brokerQuotation = jasperCustomeImple.getMotorBrokerQuotation(homeData.getQuoteNo());
-					String jsonString = gson.toJson(brokerQuotation);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, input, "- BrokerQuotation.json");
+					if("Y".equalsIgnoreCase(req.getBrokerQuoteYn())) {
+						Map<String,Object> brokerQuotation = jasperCustomeImple.getMotorBrokerQuotation(homeData.getQuoteNo());
+						String jsonString = gson.toJson(brokerQuotation);
+						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+						res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, input, "- BrokerQuotation.json");
+					}else {
+						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo(),homeData.getQuoteNo());
+						String JsonString = gson.toJson(motPrivateRes);
+						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+						res = getCommonJasperPdfFileByJson("/report/jasper/MotorPrivate.jrxml", jasperSaveLocation, JsonString, input, "- MotorPrivate.json");
+					}
 				}else if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
 						Map<String, Object> input2 = new HashMap<String, Object>();
 						input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
@@ -146,7 +153,7 @@ public class JasperServiceImpl implements JasperService {
 						String jsonString = gson.toJson(MotorEndorsementScheduleRes);
 						res = getCommonJasperPdfFileByJson("/report/jasper/MotorEndorsementSchedule.jrxml", jasperSaveLocation, jsonString, input, "- MotorEndorsementSchedule.json");
 					}else {
-						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo());
+						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo(),"");
 						String JsonString = gson.toJson(motPrivateRes);
 						res = getCommonJasperPdfFileByJson("/report/jasper/MotorPrivate.jrxml", jasperSaveLocation, JsonString, input, "- MotorPrivate.json");
 					}

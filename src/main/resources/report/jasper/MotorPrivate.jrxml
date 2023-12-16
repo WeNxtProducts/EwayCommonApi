@@ -340,8 +340,22 @@
 	<field name="tearmsAndConditions" class="java.lang.String">
 		<fieldDescription><![CDATA[tearmsAndConditions]]></fieldDescription>
 	</field>
+	<field name="motorWaterMark" class="java.lang.String">
+		<fieldDescription><![CDATA[motorWaterMark]]></fieldDescription>
+	</field>
 	<background>
-		<band splitType="Stretch"/>
+		<band height="802" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="802" forecolor="#FC4542" uuid="2339c939-35a0-4f11-86af-284e37f03d1d">
+					<printWhenExpression><![CDATA[$F{policyNo} == null || $F{policyNo} == ""]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font size="40"/>
+				</textElement>
+				<text><![CDATA[DRAFT]]></text>
+			</staticText>
+		</band>
 	</background>
 	<pageHeader>
 		<band height="64">
@@ -871,10 +885,10 @@
 		</band>
 		<band height="95">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{noOfVehicle} == 1 || $F{noOfVehicle} == 0]]></printWhenExpression>
 			<textField>
 				<reportElement x="0" y="0" width="555" height="16" uuid="f06ac2d9-f957-4e9b-b39a-14ed63db5a36">
-					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1 || $F{noOfVehicle} == 0]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
@@ -886,7 +900,7 @@
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="0" y="16" width="19" height="14" backcolor="#B3B3B3" uuid="365784f3-9f17-476a-b7ec-8d9f9624a9b1">
-					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1 || $F{noOfVehicle} == 0]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
@@ -897,7 +911,7 @@
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="19" y="16" width="41" height="14" backcolor="#B3B3B3" uuid="bbc46c51-d90e-4ae5-ba7b-8da39b004718">
-					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1 || $F{noOfVehicle} == 0]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
@@ -913,7 +927,7 @@
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
-					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1 || $F{noOfVehicle} == 0]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="TableDataSet 1" uuid="f44f403e-fc10-49e3-aa76-8abdb011d7da">
@@ -1202,7 +1216,7 @@
 			</componentElement>
 			<textField>
 				<reportElement mode="Opaque" x="60" y="16" width="495" height="14" backcolor="#B3B3B3" uuid="c8e92bbb-ccf9-41e6-b6be-096f94c06e52">
-					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1 || $F{noOfVehicle} == 0]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<topPen lineWidth="0.5"/>
@@ -1731,7 +1745,7 @@
 			<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 			<textField>
 				<reportElement x="0" y="21" width="555" height="16" uuid="976d1b85-e853-4ef3-937a-15cfd06701d9">
-					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1 && $F{noOfVehicle} != 0]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
@@ -1755,10 +1769,10 @@
 			</textField>
 		</band>
 		<band height="76">
-			<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{noOfVehicle} != 1 && $F{noOfVehicle} != 0]]></printWhenExpression>
 			<textField>
 				<reportElement mode="Opaque" x="0" y="0" width="19" height="14" backcolor="#B3B3B3" uuid="99c356c1-8bbe-4e74-bc1d-14cf670692ec">
-					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1 || $F{noOfVehicle} != 0]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
@@ -1773,7 +1787,7 @@
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
-					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1 && $F{noOfVehicle} != 0]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="TableDataSet 1" uuid="3491b284-f55d-4861-8f95-01d7f65f797b">
@@ -2062,7 +2076,7 @@
 			</componentElement>
 			<textField>
 				<reportElement mode="Opaque" x="60" y="0" width="495" height="14" backcolor="#B3B3B3" uuid="aac2498c-d1e1-44ee-aa6e-c21e41a8dca8">
-					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1 || $F{noOfVehicle} != 0]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<topPen lineWidth="0.5"/>
@@ -2077,7 +2091,7 @@
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="19" y="0" width="41" height="14" backcolor="#B3B3B3" uuid="8100d787-2fca-43d5-828c-626bd7ad2372">
-					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1 || $F{noOfVehicle} != 0]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
