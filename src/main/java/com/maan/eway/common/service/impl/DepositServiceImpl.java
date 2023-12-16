@@ -686,9 +686,7 @@ public class DepositServiceImpl implements DepositService {
 //				error.add(new Error("500","ProductId","Please Enter ProductId"));
 //			}
 //		}
-		if(StringUtils.isBlank(req.getPaymentType())) {
-			error.add(new Error("500","PaymentType","Please Enter PaymentType"));
-		}
+	
 		if("R".equalsIgnoreCase(req.getDepositType())) {
 			Double totalAmount=0.0;
 			Optional<DepositcbcMaster> depositcbc = depositcbcRepo.findById(req.getCbcNo());
@@ -718,9 +716,7 @@ public class DepositServiceImpl implements DepositService {
 			if(StringUtils.isBlank(req.getPaymentType())) {
 				error.add(new Error("500","PaymentType","Please Enter PaymentType"));
 			}
-			if(StringUtils.isBlank(req.getPayeeName())) {
-				error.add(new Error("500","PayeeName","Please Enter PayeeName"));
-			}
+		
 		}
 //		}
 		if(StringUtils.isBlank(req.getPremium())) {
@@ -779,6 +775,10 @@ public class DepositServiceImpl implements DepositService {
 			}
 			if(StringUtils.isBlank(req.getReferenceNo())) {
 				error.add(new Error("500","ReferenceNo","Please Enter ReferenceNo"));
+			}
+		}else if("1".equalsIgnoreCase(req.getPaymentType())) {
+			if(StringUtils.isBlank(req.getPayeeName())) {
+				error.add(new Error("500","PayeeName","Please Enter PayeeName"));
 			}
 		}
 		
