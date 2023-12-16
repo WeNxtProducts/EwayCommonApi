@@ -3,9 +3,12 @@ package com.maan.eway.common.service.impl;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -569,6 +572,12 @@ public class DepositServiceImpl implements DepositService {
 				}else {
 					cbcNo = req.getCbcNo();
 				}*/
+				Date entryDate=null;
+				if("R".equalsIgnoreCase(req.getDepositType())) {
+					entryDate=req.getRefundDate();
+				}else {
+					entryDate=new Date();
+				}
 					PaymentDeposit paymentdep = PaymentDeposit.builder()
 						.cbcNo(req.getCbcNo())
 						.quoteNo(StringUtils.isBlank(req.getQuoteNo())?"":req.getQuoteNo())
@@ -584,7 +593,7 @@ public class DepositServiceImpl implements DepositService {
 						.micrno(req.getMicrNo())
 						.payeeName(req.getPayeeName())
 						.referenceNo(req.getReferenceNo())
-						.entryDate(new Date())
+						.entryDate(entryDate)
 						.build();
 					paymentDepositRepo.save(paymentdep);
 				
@@ -614,7 +623,7 @@ public class DepositServiceImpl implements DepositService {
 					// .productName(getProductNameById(req.getProductId()))
 				//	.premiumAmount(Double.valueOf(req.getPremium()))
 					.premiumAmount(Double.valueOf(req.getPremium()))
-					.entryDate(new Date())
+					.entryDate(entryDate)
 					.status("D")
 					.cbcNo(req.getCbcNo())
 					.depositNo(k.getDepositNo()==null?depNo:k.getDepositNo())
@@ -691,11 +700,31 @@ public class DepositServiceImpl implements DepositService {
 			if(Double.parseDouble(req.getPremium())>totalAmount) {
 				error.add(new Error("500","Premium","Refund Amount not greater than Balance Amount"));
 			}
+			
+			// Date Validation
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getRefundDate() == null) {
+				error.add(new Error("02", "RefundDate", "Please Enter Refund Date "));
+
+			} else if (req.getRefundDate().before(today)) {
+				error.add(new Error("02", "RefundDate", "Please Enter Refund Date Future Date"));
+			}
+			
 		}
 //		}
 		if(StringUtils.isBlank(req.getPremium())) {
-			error.add(new Error("500","Premium","Please Enter Premium"));
-		}
+			error.add(new Error("500","Amount","Please Enter Amount"));
+		}else if(Double.valueOf(req.getPremium())<0.0){
+			error.add(new Error("500","Amount","Please Enter Valid Amount"));
+		}else if (!req.getPremium().matches("[0-9.]+")) {
+			error.add(new Error("500", "Amount", "Please Enter Valid Amount"));
+		} 
 //		if(StringUtils.isBlank(req.getPayeeName())) {
 //			error.add(new Error("500","PayeeName","Please Enter PayeeName"));
 //		}
@@ -724,16 +753,22 @@ public class DepositServiceImpl implements DepositService {
 		if("2".equalsIgnoreCase(req.getPaymentType())) {
 			if(StringUtils.isBlank(req.getChequeNo())) {
 				error.add(new Error("500","ChequeNo","Please Enter ChequeNo"));
+			}else if(req.getChequeNo().length()<6 || req.getChequeNo().length()>8) {
+				error.add(new Error("500","ChequeNo","Please Enter valid ChequeNo"));
+			}else if(Long.valueOf(req.getChequeNo())<0) {
+				error.add(new Error("500","ChequeNo","Please Enter Valid ChequeNo"));
+			}	else if (!req.getChequeNo().matches("[0-9]+")) {
+				error.add(new Error("500", "ChequeNo", "Please Enter Valid ChequeNo"));
 			}
 			if(StringUtils.isBlank(req.getChequeDate())) {
 				error.add(new Error("500","ChequeDate","Please Enter ChequeDate"));
 			}
-			if(StringUtils.isBlank(req.getAccountNo())) {
-				error.add(new Error("500","AccountNo","Please Enter AccountNo"));
-			}
-			if(StringUtils.isBlank(req.getIbanNumber())) {
-				error.add(new Error("500","IbanNumber","Please Enter IbanNumber"));
-			}
+//			if(StringUtils.isBlank(req.getAccountNo())) {
+//				error.add(new Error("500","AccountNo","Please Enter AccountNo"));
+//			}
+//			if(StringUtils.isBlank(req.getIbanNumber())) {
+//				error.add(new Error("500","IbanNumber","Please Enter IbanNumber"));
+//			}
 			if(StringUtils.isBlank(req.getMicrNo())) {
 				error.add(new Error("500","MicrNo","Please Enter MicrNo"));
 			}
@@ -858,10 +893,10 @@ public class DepositServiceImpl implements DepositService {
 	}
 
 	@Override
-	public CommonRes GetDepositDetailById(String cbcNo) {
+	public CommonRes GetDepositDetailById(String cbcNo,String status) {
 		CommonRes res = new CommonRes();
 		List<GetDepositDetailRes> response = new ArrayList<>();
-		List<DepositDetail> list = depositdetailRepo.findByCbcNo(cbcNo);
+		List<DepositDetail> list = depositdetailRepo.findByCbcNoAndStatus(cbcNo,status);
 		if(!CollectionUtils.isEmpty(list)) {
 			list.forEach(k -> {
 				GetDepositDetailRes m = GetDepositDetailRes.builder()
@@ -880,6 +915,7 @@ public class DepositServiceImpl implements DepositService {
 						.vatAmount(k.getVatAmount()==null?"":k.getVatAmount().toString())
 						.chargableType(k.getChargableType())
 						.brokerName(k.getBrokerName())
+						.depositType(k.getDepositType())
 						.build();
 					response.add(m);
 				});
@@ -900,7 +936,9 @@ public class DepositServiceImpl implements DepositService {
 		CommonRes res = new CommonRes();
 		List<GetDepositPaymentRes> response = new ArrayList<>();
 		if(StringUtils.isNotBlank(req.getCbcNo())) {
-			List<PaymentDeposit> list = paymentDepositRepo.findByCbcNo(req.getCbcNo());
+			List<DepositDetail> depolist=depositdetailRepo.findByCbcNoAndStatus(req.getCbcNo(), "D");
+			List<Long> depositNos=depolist.stream().map(DepositDetail :: getDepositNo ).collect(Collectors.toList())  ;
+			List<PaymentDeposit> list = paymentDepositRepo.findByDepositNoIn(depositNos);
 			if(!CollectionUtils.isEmpty(list)) {
 				list.forEach(k -> {
 					GetDepositPaymentRes m = GetDepositPaymentRes.builder()

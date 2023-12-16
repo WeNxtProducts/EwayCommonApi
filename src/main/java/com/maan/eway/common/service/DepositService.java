@@ -21,7 +21,7 @@ public interface DepositService {
 
 	CommonRes GetDepositDetail();
 
-	CommonRes GetDepositDetailById(String cbcNo);
+	CommonRes GetDepositDetailById(String cbcNo,String status);
 
 	CommonRes GetDepositPayment(GetDepositPaymentReq req);
 

@@ -17,4 +17,6 @@ public interface DepositDetailRepository extends JpaRepository<DepositDetail, Lo
 
 	int countByQuoteNoAndPremiumAmountAndStatus(String quoteNo, Double valueOf, String string);
 
+	List<DepositDetail> findByCbcNoAndStatus(String cbcNo, String status);
+
 }

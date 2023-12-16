@@ -10,4 +10,6 @@ public interface PaymentDepositRepository extends JpaRepository<PaymentDeposit, 
 
 	List<PaymentDeposit> findByCbcNo(String cbcNo);
 
+	List<PaymentDeposit> findByDepositNoIn(List<Long> depositNos);
+
 }
