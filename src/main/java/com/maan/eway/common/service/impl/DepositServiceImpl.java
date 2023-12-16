@@ -896,7 +896,8 @@ public class DepositServiceImpl implements DepositService {
 	public CommonRes GetDepositDetailById(String cbcNo) {
 		CommonRes res = new CommonRes();
 		List<GetDepositDetailRes> response = new ArrayList<>();
-		List<DepositDetail> list = depositdetailRepo.findByCbcNoAndStatus(cbcNo,"Y");
+//		List<DepositDetail> list = depositdetailRepo.findByCbcNoAndStatus(cbcNo,"Y");
+		List<DepositDetail> list = depositdetailRepo.findByCbcNo(cbcNo);
 		if(!CollectionUtils.isEmpty(list)) {
 			list.forEach(k -> {
 				GetDepositDetailRes m = GetDepositDetailRes.builder()
