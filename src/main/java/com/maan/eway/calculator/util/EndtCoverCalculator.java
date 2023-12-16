@@ -370,6 +370,11 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 		 }else if("Y".equals(t.getMinimumPremiumYn()) && !"A".equals(t.getCalcType())){
 					 			 BigDecimal actualSumInsured = t.getMinimumPremium().divide(new BigDecimal(endorsement.getEndorsementRate()/100),MathContext.DECIMAL32);
 					 			 BigDecimal derivedSumInsred = totalSumInsuredendt.subtract(actualSumInsured);
+					 			if(endorsement.getEndorsementsumInsured().compareTo(BigDecimal.ZERO)<0)
+					 				derivedSumInsred=derivedSumInsred.multiply(new BigDecimal("-1"));
+					 			/*else
+					 				derivedSumInsred=derivedSumInsred.multiply(new BigDecimal("1"));*/
+					 				
 					 			 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), derivedSumInsred,endorsement.getExchangeRate());
 					 		 }else {
 						 		 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate()); 	 
