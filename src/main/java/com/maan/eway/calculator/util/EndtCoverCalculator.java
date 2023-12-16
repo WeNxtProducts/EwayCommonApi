@@ -368,12 +368,11 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 		 if("Y".equals(endorsement.getMinimumPremiumYn())) { // if previous endorsment is minimum Premium dont calculation only subtract ... 14/12/2023 lalit sir told 
 					 			domath = t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax());
 					 		 }else if("Y".equals(t.getMinimumPremiumYn()) && !"A".equals(t.getCalcType())){
-					 			 BigDecimal actualSumInsured = t.getMinimumPremium().divide(new BigDecimal(endorsement.getEndorsementRate()),MathContext.DECIMAL32).multiply(new BigDecimal("365"),MathContext.DECIMAL32);
-					 			BigDecimal derivedSumInsred = totalSumInsuredendt.subtract(actualSumInsured);
-					 			domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), derivedSumInsred,endorsement.getExchangeRate());
+					 			 BigDecimal actualSumInsured = t.getMinimumPremium().divide(new BigDecimal(endorsement.getEndorsementRate()/100),MathContext.DECIMAL32).multiply(new BigDecimal("365"),MathContext.DECIMAL32);
+					 			 BigDecimal derivedSumInsred = totalSumInsuredendt.subtract(actualSumInsured);
+					 			 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), derivedSumInsred,endorsement.getExchangeRate());
 					 		 }else {
-						 		 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
-						 		 
+						 		 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate()); 	 
 					 		 }
 					 		endorsement.setMinimumPremiumYn(t.getMinimumPremiumYn());
 					 		endorsement.setProRataYn("Y");
