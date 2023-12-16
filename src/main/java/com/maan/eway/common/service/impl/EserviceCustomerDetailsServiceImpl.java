@@ -1864,6 +1864,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			
 			if (loginData.getUserType().equalsIgnoreCase("Broker") || loginData.getUserType().equalsIgnoreCase("User")) {
 				
+				n4 = cb.equal(  h.get("brokerBranchCode"), req.getBrokerBranchCode());
 				if ("Broker".equalsIgnoreCase(loginData.getUserType())) {
 					Subquery<Long> loginId = query.subquery(Long.class);
 					Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
