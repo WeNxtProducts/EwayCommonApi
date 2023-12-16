@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +35,7 @@ import com.maan.eway.document.req.DocGetReq;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.req.DocTypeReq;
 import com.maan.eway.document.req.DocumentDeleteReq;
+import com.maan.eway.document.req.DocumentUploadOCRReq;
 import com.maan.eway.document.req.DocumentUploadReq;
 import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
@@ -115,7 +117,15 @@ public class DocumentController {
 		
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/uploadOcr")
+	@ApiOperation(value = "This method is to Upload Document")
+	public ResponseEntity<CommonRes> uploadFileForOCR(@RequestBody DocumentUploadOCRReq req) {
+			log.info(req);
+			CommonRes res = documentservice.fileuploadOCR(req);
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		
+	}
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/termsdocupload")
 	@ApiOperation(value = "This method is to Upload Terms & Condition Document")

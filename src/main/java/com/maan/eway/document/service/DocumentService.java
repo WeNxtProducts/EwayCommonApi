@@ -14,6 +14,7 @@ import com.maan.eway.document.req.DocGetReq;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.req.DocTypeReq;
 import com.maan.eway.document.req.DocumentDeleteReq;
+import com.maan.eway.document.req.DocumentUploadOCRReq;
 import com.maan.eway.document.req.DocumentUploadReq;
 import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
@@ -62,5 +63,7 @@ public interface DocumentService {
 	TermsDocRes getTermsFilePath(DocGetReq req);
 
 	DocumentListRes getEmiDoc(GetEmiDocReq req);
+
+	CommonRes fileuploadOCR(DocumentUploadOCRReq req);
 
 }
