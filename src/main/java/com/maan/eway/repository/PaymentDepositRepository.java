@@ -12,4 +12,6 @@ public interface PaymentDepositRepository extends JpaRepository<PaymentDeposit, 
 
 	List<PaymentDeposit> findByDepositNoIn(List<Long> depositNos);
 
+	List<PaymentDeposit> findByDepositNoInOrderByEntryDateAsc(List<Long> depositNos);
+
 }

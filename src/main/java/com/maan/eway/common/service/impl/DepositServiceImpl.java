@@ -701,21 +701,25 @@ public class DepositServiceImpl implements DepositService {
 				error.add(new Error("500","Premium","Refund Amount not greater than Balance Amount"));
 			}
 			
-			// Date Validation
-			Calendar cal = new GregorianCalendar();
-			Date today = new Date();
-			cal.setTime(today);
-			cal.add(Calendar.DAY_OF_MONTH, -1);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 50);
-			today = cal.getTime();
 			if (req.getRefundDate() == null) {
-				error.add(new Error("02", "RefundDate", "Please Enter Refund Date "));
+				error.add(new Error("500", "RefundDate", "Please Enter Refund Date "));
 
-			} else if (req.getRefundDate().before(today)) {
-				error.add(new Error("02", "RefundDate", "Please Enter Refund Date Future Date"));
+			}
+			if(StringUtils.isBlank(req.getPremium())) {
+				error.add(new Error("500","Amount","Please Enter Amount"));
+			}else if(Double.valueOf(req.getPremium())<0.0){
+				error.add(new Error("500","Amount","Please Enter Valid Amount"));
+			}else if (!req.getPremium().matches("[0-9.]+")) {
+				error.add(new Error("500", "Amount", "Please Enter Valid Amount"));
 			}
 			
+		}else if("C".equalsIgnoreCase(req.getDepositType())) {
+			if(StringUtils.isBlank(req.getPaymentType())) {
+				error.add(new Error("500","PaymentType","Please Enter PaymentType"));
+			}
+			if(StringUtils.isBlank(req.getPayeeName())) {
+				error.add(new Error("500","PayeeName","Please Enter PayeeName"));
+			}
 		}
 //		}
 		if(StringUtils.isBlank(req.getPremium())) {
@@ -897,7 +901,7 @@ public class DepositServiceImpl implements DepositService {
 		CommonRes res = new CommonRes();
 		List<GetDepositDetailRes> response = new ArrayList<>();
 //		List<DepositDetail> list = depositdetailRepo.findByCbcNoAndStatus(cbcNo,"Y");
-		List<DepositDetail> list = depositdetailRepo.findByCbcNo(cbcNo);
+		List<DepositDetail> list = depositdetailRepo.findByCbcNoOrderByEntryDateAsc(cbcNo);
 		if(!CollectionUtils.isEmpty(list)) {
 			list.forEach(k -> {
 				GetDepositDetailRes m = GetDepositDetailRes.builder()
@@ -939,7 +943,7 @@ public class DepositServiceImpl implements DepositService {
 		if(StringUtils.isNotBlank(req.getCbcNo())) {
 			List<DepositDetail> depolist=depositdetailRepo.findByCbcNoAndStatus(req.getCbcNo(), "D");
 			List<Long> depositNos=depolist.stream().map(DepositDetail :: getDepositNo ).collect(Collectors.toList())  ;
-			List<PaymentDeposit> list = paymentDepositRepo.findByDepositNoIn(depositNos);
+			List<PaymentDeposit> list = paymentDepositRepo.findByDepositNoInOrderByEntryDateAsc(depositNos);
 			if(!CollectionUtils.isEmpty(list)) {
 				list.forEach(k -> {
 					GetDepositPaymentRes m = GetDepositPaymentRes.builder()
