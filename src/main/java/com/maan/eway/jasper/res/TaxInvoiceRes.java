@@ -126,6 +126,9 @@ public class TaxInvoiceRes {
 	@JsonProperty("PolicyType")
 	private String policyType;
 	
+	@JsonProperty("PremAndVatName")
+	private String premAndVatName;
+	
 	@JsonProperty("Dataset1List")
 	private List<TaxDataSetOneRes> dataset1List;
 	

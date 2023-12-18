@@ -383,9 +383,11 @@ public class JasperCustomServiceImple {
 				drcrDetails = drcrDetails.stream().filter(f -> f.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
 				if(drcrDetails.get(0).getDocType().equalsIgnoreCase("C")) {
 					premium = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1001))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
+					response.setPremAndVatName("Premium");
 					
 				}else {
 					premium = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1005))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
+					response.setPremAndVatName("Commission");
 				}
 				vatPercent = map.get("vatPercent")==null?0.0:Double.parseDouble(map.get("vatPercent").toString());
 				vatPremium = premium*vatPercent/100;
@@ -409,6 +411,7 @@ public class JasperCustomServiceImple {
 				response.setCompanyPoBox(companyDetails.get(0).get("PO_BOX")==null?"":companyDetails.get(0).get("PO_BOX").toString());
 			}
 			
+			response.setPremAndVatName(map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":response.getPremAndVatName());
 			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
 			response.setAgencyCode(map.get("agencyCode")==null?"":map.get("agencyCode").toString());
@@ -515,7 +518,7 @@ public class JasperCustomServiceImple {
 //			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100)))
 //				.when(cb.isNotNull(hpmRoot.get("creditNo")), cb.sum(hpmRoot.get("commission"), cb.quot(cb.prod(hpmRoot.get("commission"), hpmRoot.get("vatPercent")), 100))).alias("overAllPremiumFc"),
 			hpmRoot.get("vatPercent").alias("vatPercent"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("customerCode").alias("customerCode"),companyName.alias("companyName"),
-			imageURL.alias("companyLogo"),piRoot.get("vrTinNo").alias("vatRegNo"))
+			imageURL.alias("companyLogo"),piRoot.get("vrTinNo").alias("vatRegNo"),hpmRoot.get("companyId").alias("companyId"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
 				cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(icmRoot.get("amendId"), icmAmd),cb.in(hpmRoot.get("status")).value(Arrays.asList("P","D")),cb.equal(hpmRoot.get("policyNo"), policyNo))
@@ -573,7 +576,7 @@ public class JasperCustomServiceImple {
 				OverAllPremium = premium+vatPremium;
 			}
 			
-			response.setPremAndVatName(map.get("customerId")==null?"":map.get("customerId").toString().equalsIgnoreCase("100004")?"Premium":response.getPremAndVatName());
+			response.setPremAndVatName(map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":response.getPremAndVatName());
 			response.setBrokerName(map.get("brokerName")==null?"":map.get("brokerName").toString());
 			response.setCustomerName(map.get("customerName")==null?"":map.get("customerName").toString());
 			response.setAddress(map.get("address")==null?"":map.get("address").toString());
