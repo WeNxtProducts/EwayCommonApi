@@ -154,7 +154,20 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
-
+	
+	
+	@Value(value = "${ocr.tesseract.path}")
+	private String tesseractPath;
+	
+	@Value(value = "${ocr.imageMagic.path}")
+	private String magickPath;
+	
+	@Value(value = "${ocr.image.path}")
+	private String blackWhiteImgPath;
+	
+	@Value(value = "${ocr.output.path}")
+	private String outputImagePath;
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -1646,14 +1659,12 @@ public class DocumentServiceImpl implements DocumentService {
 
 		try {
 
-			String tesseractPath = "E:\\Softwares\\Tesseract-5.3\\tesseract";
-			String magickPath = "E:\\Softwares\\ImageMagick-7.1.1-Q16-HDRI\\magick";
 			String inputImagePath = req.getFilePath();
 
 			log.info("ImagePath  -> -------- " + inputImagePath);
 
-			String outputText = "E:\\Softwares\\OCR\\OcrResponse" + System.currentTimeMillis();
-			String blackAndWhite = "E:\\Softwares\\OCR\\OcrInputImage" + System.currentTimeMillis() + ".jpeg";
+			String outputText = outputImagePath + System.currentTimeMillis();
+			String blackAndWhite = blackWhiteImgPath + System.currentTimeMillis() + ".jpeg";
 
 			String[] command = { "cmd", };
 
