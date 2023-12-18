@@ -25,6 +25,7 @@ import com.maan.eway.master.req.PremiaConfigMasterDropDownReq;
 import com.maan.eway.master.req.PremiaConfigMasterGetAllReq;
 import com.maan.eway.master.req.PremiaConfigMasterGetReq;
 import com.maan.eway.master.req.PremiaConfigMasterSaveReq;
+import com.maan.eway.master.req.PremiaTableColumnDropDownReq;
 import com.maan.eway.master.res.PremiaConfigMasterRes;
 import com.maan.eway.master.service.PremiaConfigMasterService;
 import com.maan.eway.res.DropDownRes;
@@ -190,5 +191,28 @@ public class PremiaConfigMasterController {
 		}
 
 	}
+	//Premia Table Column
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@PostMapping(value="/dropdown/premiacolumn",produces = "application/json")
+		@ApiOperation(value = "This method is get Premia Table Column Drop Down")
+
+		public ResponseEntity<DropdownCommonRes> getPremiaTableDropdown(@RequestBody PremiaTableColumnDropDownReq req) {
+
+			DropdownCommonRes data = new DropdownCommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getPremiaTableDropdown(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 
 }

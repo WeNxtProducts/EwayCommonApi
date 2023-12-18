@@ -12,13 +12,16 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -34,6 +37,7 @@ import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
@@ -52,6 +56,7 @@ import com.maan.eway.master.req.PremiaConfigMasterDropDownReq;
 import com.maan.eway.master.req.PremiaConfigMasterGetAllReq;
 import com.maan.eway.master.req.PremiaConfigMasterGetReq;
 import com.maan.eway.master.req.PremiaConfigMasterSaveReq;
+import com.maan.eway.master.req.PremiaTableColumnDropDownReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.res.PremiaConfigMasterRes;
 import com.maan.eway.master.service.BankMasterService;
@@ -67,6 +72,10 @@ import com.maan.eway.service.impl.BasicValidationService;
 @Service
 @Transactional
 public class PremiaConfigMasterServiceImpl implements PremiaConfigMasterService {
+
+
+
+private  Query query =null;
 
 @PersistenceContext
 private EntityManager em;
@@ -886,6 +895,58 @@ public List<DropDownRes> getPremiaConfigMasterDropdown(PremiaConfigMasterDropDow
 			return null;
 			}
 		return resList;
+}
+
+
+
+
+@Override
+public List<DropDownRes> getPremiaTableDropdown(PremiaTableColumnDropDownReq req) {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		
+		List<String> object=getPremiaXlColumns(req);
+		if(object!=null) {
+	
+		for (String data : object) {
+			// Response 
+			DropDownRes res = new DropDownRes();
+			res.setCode(data);
+			res.setCodeDesc(data);
+			resList.add(res);
+		}
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		return null;
+	}
+	return resList;
+}
+
+
+
+
+@SuppressWarnings("unchecked")
+public List<String> getPremiaXlColumns(PremiaTableColumnDropDownReq req) {
+	List<String> display_columns = new ArrayList<String>();
+	try {
+		query =em.createQuery("SELECT p FROM PremiaConfigDataMaster p where"
+				+ " p.companyId=:companyId and p.productId=:productId and p.premiaId=:premiaId");
+		query.setParameter("companyId", req.getCompanyId());
+		query.setParameter("productId", req.getProductId());
+		query.setParameter("premiaId",req.getPremiaId() );
+		List<PremiaConfigDataMaster> premiaList=query.getResultList(); 
+		if(!CollectionUtils.isEmpty(premiaList)) {
+				for (PremiaConfigDataMaster fac :premiaList) {
+						display_columns.add(fac.getColumnName());
+					}
+		}
+	}catch (Exception e) {
+		log.error(e);
+		e.printStackTrace();
+	}
+	return display_columns;
 }
 
 
