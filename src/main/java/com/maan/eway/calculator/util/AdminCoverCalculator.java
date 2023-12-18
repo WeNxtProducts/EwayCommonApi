@@ -118,7 +118,7 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 				 
 				 }
 				 
-				 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)));				 
+				 t.setPremiumIncludedTax((BigDecimal) decimalFormat.parse(decimalFormat.format( t.getPremiumExcluedTax().add(new BigDecimal(totaltax)))));				 
 				 t.setPremiumIncludedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumIncludedTax().multiply(t.getExchangeRate()))));
 			 }
 			 
