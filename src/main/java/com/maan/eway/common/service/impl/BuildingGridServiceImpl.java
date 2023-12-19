@@ -1662,6 +1662,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setBrokerCode(null);
 						savedata.setCustomerCode(null);
 						savedata.setCustomerName(null);
+						savedata.setPolicyNo(null);
+						savedata.setVatPremium(null);
+						savedata.setCdRefno(null);
+						savedata.setMsRefno(null);
+						savedata.setVdRefNo(null);
+						savedata.setSourceTypeId(null);
 						repo.saveAndFlush(savedata);
 					}
 				
@@ -1708,6 +1714,20 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata2.setEndtPrevQuoteNo(null);
 					savedata2.setEndtStatus(null);
 					savedata2.setFinalizeYn("N");
+					savedata.setApplicationId(null);
+					savedata.setLoginId(null);
+					savedata.setSubUserType(null);
+					savedata.setBdmCode(null);
+					savedata.setAgencyCode(null);
+					savedata.setBrokerCode(null);
+					savedata.setCustomerCode(null);
+					savedata.setCustomerName(null);
+					savedata.setPolicyNo(null);
+					savedata.setVatPremium(null);
+					savedata.setCdRefno(null);
+					savedata.setMsRefno(null);
+					savedata.setVdRefNo(null);
+					savedata.setSourceTypeId(null);
 					eserCommonRepo.saveAndFlush(savedata2);
 				}
 				
@@ -1737,6 +1757,20 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata3.setEndtPrevPolicyNo(null);
 						savedata3.setEndtPrevQuoteNo(null);
 						savedata3.setEndtStatus(null);
+						savedata.setApplicationId(null);
+						savedata.setLoginId(null);
+						savedata.setSubUserType(null);
+						savedata.setBdmCode(null);
+						savedata.setAgencyCode(null);
+						savedata.setBrokerCode(null);
+						savedata.setCustomerCode(null);
+						savedata.setCustomerName(null);
+						savedata.setPolicyNo(null);
+						savedata.setVatPremium(null);
+						savedata.setCdRefno(null);
+						savedata.setMsRefno(null);
+						savedata.setVdRefNo(null);
+						savedata.setSourceTypeId(null);
 						eserSecRepo.saveAndFlush(savedata3);
 					}
 
@@ -2182,7 +2216,6 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 //					branchCode = req.getBranchCode();
 //					savedata.setBranchCode(branchCode);
 //				}
-				savedata.setApplicationId(data.getApplicationId());
 				savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 				
 				savedata.setActualPremiumFc(BigDecimal.ZERO);
@@ -2209,6 +2242,9 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 				savedata.setStatus("E");
 				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+				savedata.setApplicationId(req.getApplicationId());
+				savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+				savedata.setSubUserType(req.getSubUserType());
 				repo.saveAndFlush(savedata);
 			}
 
@@ -2337,6 +2373,9 @@ private CopyQuoteSuccessRes buildingRiskDetailsCopyQuote(CopyQuoteReq req, Strin
 				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 				savedata.setStatus("E");
 				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+				savedata.setApplicationId(req.getApplicationId());
+				savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+				savedata.setSubUserType(req.getSubUserType());
 				buildRiskRepo.saveAndFlush(savedata);
 			}
 		}
@@ -2485,6 +2524,9 @@ private CopyQuoteSuccessRes commonDataDetailsEndoCopyquote(CopyQuoteReq req, Str
 				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 				savedata.setStatus("E");
 				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+				savedata.setApplicationId(req.getApplicationId());
+				savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+				savedata.setSubUserType(req.getSubUserType());
 				commonDataRepo.saveAndFlush(savedata);
 			}
 		}
@@ -2627,6 +2669,9 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 							savedata.setStatus("E");
 							savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+							savedata.setApplicationId(req.getApplicationId());
+							savedata.setLoginId(req.getLoginId()==null?commData1.getLoginId():(req.getLoginId()));
+							savedata.setSubUserType(req.getSubUserType());
 							eserCommonRepo.saveAndFlush(savedata);
 				
 						}
@@ -2845,7 +2890,9 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					savedata.setEndtTypeDesc(entMaster.getEndtTypeDesc());
 					savedata.setStatus("E");
 					savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
-
+					savedata.setApplicationId(req.getApplicationId());
+					savedata.setLoginId(req.getLoginId()==null?homeData.getLoginId():(req.getLoginId()));
+					savedata.setSubUserType(req.getSubUserType());
 					homePosistionRepo.saveAndFlush(savedata);
 				
 					System.out.println("QUOTE NO:"+quoteNo);

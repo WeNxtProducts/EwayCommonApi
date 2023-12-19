@@ -231,6 +231,9 @@ public class CopyCommonRaw {
 			newObject.setStatus("E");
 			newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
 			newObject.setQuoteNo(null);
+			newObject.setApplicationId(ent.getApplicationId());
+			newObject.setLoginId(ent.getLoginId()==null?m.getLoginId():(ent.getLoginId()));
+			newObject.setSubUserType(ent.getSubUserType());
 			newCommonList.add(newObject);
 			}
 			eCommonRepo.saveAllAndFlush(newCommonList);
@@ -242,6 +245,7 @@ public class CopyCommonRaw {
 			
 			List<EserviceCommonDetails> prevDatas = eCommonRepo.findByPolicyNo(prevPolicyNo);
 			res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
+			
 			
 			return res;
 		}catch (Exception e) {

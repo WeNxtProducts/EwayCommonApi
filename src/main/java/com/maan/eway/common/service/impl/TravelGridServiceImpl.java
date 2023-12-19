@@ -1234,6 +1234,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata.setBrokerCode(null);
 					savedata.setCustomerCode(null);
 					savedata.setCustomerName(null);
+					savedata.setPolicyNo(null);
+					savedata.setVatPremium(null);
+					savedata.setCdRefno(null);
+					savedata.setMsRefno(null);
+					savedata.setVdRefNo(null);
+					savedata.setSourceTypeId(null);
 				repo.saveAndFlush(savedata);
 				}
 				// Save Section
@@ -1262,6 +1268,20 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata3.setEndtPrevPolicyNo(null);
 						savedata3.setEndtPrevQuoteNo(null);
 						savedata3.setEndtStatus(null);
+						savedata.setApplicationId(null);
+						savedata.setLoginId(null);
+						savedata.setSubUserType(null);
+						savedata.setBdmCode(null);
+						savedata.setAgencyCode(null);
+						savedata.setBrokerCode(null);
+						savedata.setCustomerCode(null);
+						savedata.setCustomerName(null);
+						savedata.setPolicyNo(null);
+						savedata.setVatPremium(null);
+						savedata.setCdRefno(null);
+						savedata.setMsRefno(null);
+						savedata.setVdRefNo(null);
+						savedata.setSourceTypeId(null);
 						eserSecRepo.saveAndFlush(savedata3);
 					}
 
@@ -1281,6 +1301,20 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata4.setRequestReferenceNo(refNo);
 						savedata4.setQuoteNo("");
 						savedata4.setStatus("Y");
+						savedata.setApplicationId(null);
+						savedata.setLoginId(null);
+						savedata.setSubUserType(null);
+						savedata.setBdmCode(null);
+						savedata.setAgencyCode(null);
+						savedata.setBrokerCode(null);
+						savedata.setCustomerCode(null);
+						savedata.setCustomerName(null);
+						savedata.setPolicyNo(null);
+						savedata.setVatPremium(null);
+						savedata.setCdRefno(null);
+						savedata.setMsRefno(null);
+						savedata.setVdRefNo(null);
+						savedata.setSourceTypeId(null);
 						groupRepo.saveAndFlush(savedata4);
 					}
 
@@ -2064,7 +2098,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 //						branchCode = req.getBranchCode();
 //						savedata.setBranchCode(branchCode);
 //					}
-					savedata.setApplicationId(data.getApplicationId());
+					savedata.setApplicationId(req.getApplicationId());
+					savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+					savedata.setSubUserType(req.getSubUserType());
 					savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 					savedata.setActualPremiumFc(BigDecimal.ZERO);
 					savedata.setActualPremiumLc(BigDecimal.ZERO);
@@ -2324,6 +2360,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 					savedata.setStatus("E");
 					savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+					savedata.setApplicationId(req.getApplicationId());
+					savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+					savedata.setSubUserType(req.getSubUserType());
 					traPassDetailsRepo.saveAndFlush(savedata);
 				}
 			}
@@ -2758,6 +2797,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata.setEndtTypeDesc(entMaster.getEndtTypeDesc());
 					savedata.setStatus("E");
 					savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
+					savedata.setApplicationId(req.getApplicationId());
+					savedata.setLoginId(req.getLoginId()==null?homeData.getLoginId():(req.getLoginId()));
+					savedata.setSubUserType(req.getSubUserType());
 
 					homePosistionRepo.saveAndFlush(savedata);
 				

@@ -231,6 +231,9 @@ public class CopyBuildingRaw {
 				newObject.setStatus("E");
 				newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
 				newObject.setQuoteNo(null);
+				newObject.setApplicationId(ent.getApplicationId());
+				newObject.setLoginId(ent.getLoginId()==null?m.getLoginId():(ent.getLoginId()));
+				newObject.setSubUserType(ent.getSubUserType());
 				newBuildingList.add(newObject);
 			}
 			eBuildingRepo.saveAllAndFlush(newBuildingList);
@@ -249,7 +252,9 @@ public class CopyBuildingRaw {
 			res.setIsFinanceYn(newBuildingList.get(0).getIsFinaceYn());
 			res.setEndtCategoryDesc(newBuildingList.get(0).getEndtCategDesc());
 			res.setEndTypeDesc(newBuildingList.get(0).getEndorsementTypeDesc());
-			
+			res.setApplicationId(newBuildingList.get(0).getApplicationId());
+			res.setLoginId(newBuildingList.get(0).getLoginId());
+			res.setSubUserType(newBuildingList.get(0).getSubUserType());
 			return res;
 		}catch(ObjectOptimisticLockingFailureException ex ) {
 			return copyBuildingRiskTable(ent);
@@ -337,6 +342,9 @@ public class CopyBuildingRaw {
 								accdata.setStatus("E");
 								accdata.setPolicyNo(buildingData.getPolicyNo());
 								accdata.setQuoteNo(null);
+								accdata.setApplicationId(request.getApplicationId());
+								accdata.setLoginId(request.getLoginId()==null?buildingData.getLoginId():(request.getLoginId()));
+								accdata.setSubUserType(request.getSubUserType());
 								humanList.add(accdata);							
 						}
 							eserCommonRepo.saveAll(humanList);

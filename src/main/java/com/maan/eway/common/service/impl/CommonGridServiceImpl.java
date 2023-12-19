@@ -1583,6 +1583,13 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setBrokerCode(null);
 						savedata.setCustomerCode(null);
 						savedata.setCustomerName(null);
+						savedata.setPolicyNo(null);
+						savedata.setVatPremium(null);
+						savedata.setCdRefno(null);
+						savedata.setMsRefno(null);
+						savedata.setVdRefNo(null);
+						savedata.setSumInsuredLc(null);
+						savedata.setSourceTypeId(null);
 						repo.saveAndFlush(savedata);
 					}
 //					res.setResponse("Successfully Updated");
@@ -2233,7 +2240,6 @@ public class CommonGridServiceImpl implements CommonGridService {
 //							branchCode = req.getBranchCode();
 //							savedata.setBranchCode(branchCode);
 //						}
-						savedata.setApplicationId(data.getApplicationId());
 						savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 						savedata.setActualPremiumFc(BigDecimal.ZERO);
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
@@ -2259,6 +2265,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
 						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
+						savedata.setApplicationId(req.getApplicationId());
+						savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+						savedata.setSubUserType(req.getSubUserType());
 						repo.saveAndFlush(savedata);
 					}
 		
@@ -2519,7 +2528,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 			savedata.setEndtTypeDesc(entMaster.getEndtTypeDesc());
 			savedata.setStatus("E");
 			savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
-
+			savedata.setApplicationId(req.getApplicationId());
+			savedata.setLoginId(req.getLoginId()==null?homeData.getLoginId():(req.getLoginId()));
+			savedata.setSubUserType(req.getSubUserType());
 			homePosistionRepo.saveAndFlush(savedata);
 		
 			System.out.println("QUOTE NO:"+quoteNo);
@@ -2889,6 +2900,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
 						savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						savedata.setApplicationId(req.getApplicationId());
+						savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+						savedata.setSubUserType(req.getSubUserType());
 						commonDataRepo.saveAndFlush(savedata);
 					}
 				}
@@ -3079,6 +3093,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
 						savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						savedata.setApplicationId(req.getApplicationId());
+						savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+						savedata.setSubUserType(req.getSubUserType());
 						eseBuildingRepo.saveAndFlush(savedata);
 					}
 				}
