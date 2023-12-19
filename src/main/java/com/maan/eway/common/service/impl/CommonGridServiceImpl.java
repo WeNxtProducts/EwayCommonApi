@@ -1442,7 +1442,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Predicate n2 = cb.equal(c.get("companyId"), companyId);
 
 				if ("issuer".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("applicationId"), loginId);
+//					n3 = cb.equal(c.get("applicationId"), loginId);
 					Expression<String> e0 = c.get("branchCode");
 					n4 = e0.in(branches);
 				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
@@ -1463,12 +1463,22 @@ public class CommonGridServiceImpl implements CommonGridService {
 					}
 				}
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+				if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
 				query.where(n1,n2,n3,n4,n5)
 				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
 				
 				.orderBy(orderList);
+				}else {
+					query.where(n1,n2,n4,n5)
+					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
+					
+					.orderBy(orderList);
+				}
+				
 				if (searchKey.equalsIgnoreCase("ClientName")) {
 					query.where(n1, n2,n4,n5)
 					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),

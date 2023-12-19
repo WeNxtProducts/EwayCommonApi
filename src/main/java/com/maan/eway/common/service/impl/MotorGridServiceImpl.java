@@ -1618,7 +1618,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				}
 				if (searchKey.equalsIgnoreCase("ClientName")) {
 					if ("issuer".equalsIgnoreCase(userType)) {
-
+//
 						Expression<String> e0 = cus.get("branchCode");
 						n4 = e0.in(branches);
 					} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
@@ -1629,12 +1629,21 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				}
 				n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
 			//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
+				if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
 				query.where(n1,n2,n4,n5)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 							c.get("rejectReason")/*,c.get("riskId"),c.get("insuranceType")*/)
 				.orderBy(orderList);
+				}else {
+					query.where(n1,n2,n4,n5)
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+							c.get("rejectReason")/*,c.get("riskId"),c.get("insuranceType")*/)
+				.orderBy(orderList);
+				}
 				if (searchKey.equalsIgnoreCase("ClientName")) {
 					query.where(n1, n2,n3,n4,n5)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
