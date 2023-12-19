@@ -15,10 +15,12 @@ public class OCRRecogisation {
 
 	@JsonProperty("Accuracy")
 	private Double percentage;
+	
 	@JsonProperty("Value")
 	private String value;
-	@JsonProperty("Result")
-	private Boolean result;
-	@JsonProperty("Text")
-	private String text;
+	
+	@JsonProperty("Id")
+	private String id;
+
+	
 }

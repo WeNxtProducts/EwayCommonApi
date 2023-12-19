@@ -64,12 +64,11 @@ public class DocumentController {
 
 	@Autowired
 	private DocumentService documentservice;
-	
+
 	@Autowired
 	private PrintReqService reqPrinter;
 
-
-	//DropDown
+	// DropDown
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getlocationwisesrisk")
 	@ApiOperation(value = "This method is to Get Location Wise Risk")
@@ -84,98 +83,113 @@ public class DocumentController {
 		return new ResponseEntity<CommonDocumentRes>(data, HttpStatus.CREATED);
 
 	}
-	
-	
-	
+
 	private Logger log = LogManager.getLogger(DocumentController.class);
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/upload")
 	@ApiOperation(value = "This method is to Upload Document")
-	public ResponseEntity<CommonRes> uploadFile(@RequestParam("File") MultipartFile file, @RequestParam("Req") String jsonString) throws CommonValidationException, JsonMappingException, JsonProcessingException{
-		
+	public ResponseEntity<CommonRes> uploadFile(@RequestParam("File") MultipartFile file,
+			@RequestParam("Req") String jsonString)
+			throws CommonValidationException, JsonMappingException, JsonProcessingException {
+
 		log.info(jsonString);
-		
-		DocumentUploadReq req =  new ObjectMapper().readValue(jsonString, DocumentUploadReq.class); 
-		
-    	List<Error> error = new ArrayList<Error>();
-		error = documentservice.docvalidation(req,file);
+
+		DocumentUploadReq req = new ObjectMapper().readValue(jsonString, DocumentUploadReq.class);
+
+		List<Error> error = new ArrayList<Error>();
+		error = documentservice.docvalidation(req, file);
 		if (error != null && error.size() > 0) {
-			
+
 			CommonRes res = new CommonRes();
 			res.setCommonResponse(null);
 			res.setIsError(true);
 			res.setErrorMessage(error);
 			res.setMessage("Success");
-			
+
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(res);
-			
-		}else {
-			CommonRes res = documentservice.fileupload(req,file);
+
+		} else {
+			CommonRes res = documentservice.fileupload(req, file);
 			return ResponseEntity.status(HttpStatus.OK).body(res);
 		}
-		
+
 	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/uploadOcr")
-	@ApiOperation(value = "This method is to Upload Document")
+	@ApiOperation(value = "This method is to Upload Document for OCR")
 	public ResponseEntity<CommonRes> uploadFileForOCR(@RequestBody DocumentUploadOCRReq req) {
-			log.info(req);
-			CommonRes res = documentservice.fileuploadOCR(req);
-			return ResponseEntity.status(HttpStatus.OK).body(res);
+		log.info(req);
+
+		List<Error> errorList = documentservice.ocrFileValidation(req);
 		
+		if(errorList.size() != 0 || !errorList.isEmpty()) {
+			
+			CommonRes res = new CommonRes();
+			res.setMessage("Failed");
+			res.setIsError(true);
+			res.setCommonResponse(null);
+			res.setErrorMessage(errorList);
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(res);
+		}
+
+		CommonRes res = documentservice.fileuploadOCR(req);
+		return ResponseEntity.status(HttpStatus.OK).body(res);
+
 	}
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/termsdocupload")
 	@ApiOperation(value = "This method is to Upload Terms & Condition Document")
-	public ResponseEntity<CommonRes> termsDocUploadFile(@RequestParam("File") MultipartFile file, @RequestParam("Req") String jsonString) throws CommonValidationException, JsonMappingException, JsonProcessingException{
-		
+	public ResponseEntity<CommonRes> termsDocUploadFile(@RequestParam("File") MultipartFile file,
+			@RequestParam("Req") String jsonString)
+			throws CommonValidationException, JsonMappingException, JsonProcessingException {
+
 		log.info(jsonString);
-		
-		TermsDocUploadReq req =  new ObjectMapper().readValue(jsonString, TermsDocUploadReq.class); 
-		
-    	List<Error> error = new ArrayList<Error>();
-		error = documentservice.doctermsvalidation(req,file);
+
+		TermsDocUploadReq req = new ObjectMapper().readValue(jsonString, TermsDocUploadReq.class);
+
+		List<Error> error = new ArrayList<Error>();
+		error = documentservice.doctermsvalidation(req, file);
 		if (error != null && error.size() > 0) {
-			
+
 			CommonRes res = new CommonRes();
 			res.setCommonResponse(null);
 			res.setIsError(true);
 			res.setErrorMessage(error);
 			res.setMessage("Success");
-			
+
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(res);
-			
-		}else {
-			CommonRes res = documentservice.termsfileupload(req,file);
+
+		} else {
+			CommonRes res = documentservice.termsfileupload(req, file);
 			return ResponseEntity.status(HttpStatus.OK).body(res);
 		}
-		
+
 	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
-	@PostMapping("/gettermsdoc" )	 
-	@ApiOperation(value="This method is to Get Upload Terms & Condition Image File")
-	public ResponseEntity<CommonRes>  getTermsFilePath(@RequestBody DocGetReq req) {
+	@PostMapping("/gettermsdoc")
+	@ApiOperation(value = "This method is to Get Upload Terms & Condition Image File")
+	public ResponseEntity<CommonRes> getTermsFilePath(@RequestBody DocGetReq req) {
 		reqPrinter.reqPrint(req);
-		CommonRes data = new CommonRes()  ; 
-		
+		CommonRes data = new CommonRes();
+
 		TermsDocRes res = documentservice.getTermsFilePath(req);
-		data .setCommonResponse(res);
+		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
 		data.setMessage("Success");
 
 		if (res != null) {
-		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-		
+
 	}
-	
-	
+
 //	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 //	@PostMapping("/uploadwithoutfile")
 //	@ApiOperation(value = "This method is to Upload Document")
@@ -203,18 +217,18 @@ public class DocumentController {
 //		}
 //		
 //	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/delete")
 	@ApiOperation(value = "This method is to Remove Document")
-	public ResponseEntity<CommonRes> deleteFile(@RequestBody DocumentDeleteReq req)  {
+	public ResponseEntity<CommonRes> deleteFile(@RequestBody DocumentDeleteReq req) {
 
 		CommonRes res = documentservice.deleteFile(req);
 		return ResponseEntity.status(HttpStatus.OK).body(res);
-		
+
 	}
-	
-	//DropDown
+
+	// DropDown
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/dropdown/doctypes")
 	@ApiOperation(value = "This method is to Get Doc Types")
@@ -229,9 +243,8 @@ public class DocumentController {
 		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
 	}
-	
-	
-	//Get Doc List
+
+	// Get Doc List
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getdoclist")
 	@ApiOperation(value = "This method is to Get Document List")
@@ -256,31 +269,32 @@ public class DocumentController {
 
 	}
 
-	//Get EMI  Doc List
-		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
-		@PostMapping("/getemidoc")
-		@ApiOperation(value = "This method is to Get Document List")
-		public ResponseEntity<CommonRes> getEmiDoc(@RequestBody GetEmiDocReq req) {
+	// Get EMI Doc List
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/getemidoc")
+	@ApiOperation(value = "This method is to Get Document List")
+	public ResponseEntity<CommonRes> getEmiDoc(@RequestBody GetEmiDocReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
-			// Total Doc List
-			DocumentListRes res = documentservice.getEmiDoc(req);
+		// Total Doc List
+		DocumentListRes res = documentservice.getEmiDoc(req);
 
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	//Get Original Image
+
+	}
+
+	// Get Original Image
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@RequestMapping(path = "/download", method = RequestMethod.POST)
 	public ResponseEntity<Resource> download(@RequestParam("FilePath") String param) throws IOException {
@@ -289,83 +303,75 @@ public class DocumentController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
 
-	    InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+		InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
-	    return ResponseEntity.ok()
-	            .headers(headers)
-	            .contentLength(file.length())
-	            .contentType(MediaType.APPLICATION_OCTET_STREAM)
-	            .body(resource);
+		return ResponseEntity.ok().headers(headers).contentLength(file.length())
+				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@RequestMapping(path = "/downloadbase64", method = RequestMethod.POST)
 	public ResponseEntity<CommonRes> downloadBase64(@RequestParam("FilePath") String param) throws Exception {
-		CommonRes data = new CommonRes()  ; 
+		CommonRes data = new CommonRes();
 		FilePathRes fileRes = new FilePathRes();
 		fileRes.setFilepathname(param);
 		if (StringUtils.isNotBlank(fileRes.getFilepathname()) && new File(fileRes.getFilepathname()).exists()) {
 			fileRes.setImgurl(new GetFileFromPath(fileRes.getFilepathname()).call().getImgUrl());
 		} else
 			System.out.println("File is Not found!!" + fileRes.getFilepathname());
-		data .setCommonResponse(fileRes);
+		data.setCommonResponse(fileRes);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
 		data.setMessage("Success");
 
 		if (fileRes != null) {
-		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-		
+
 	}
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
-	@PostMapping("/getoriginalimage" )	 
-	@ApiOperation(value="This method is to Get Image File ")
-	public ResponseEntity<CommonRes>  getFilePath(@RequestBody FilePathReq req) {
+	@PostMapping("/getoriginalimage")
+	@ApiOperation(value = "This method is to Get Image File ")
+	public ResponseEntity<CommonRes> getFilePath(@RequestBody FilePathReq req) {
 		reqPrinter.reqPrint(req);
-		CommonRes data = new CommonRes()  ; 
-		
+		CommonRes data = new CommonRes();
+
 		FilePathRes res = documentservice.getFilePath(req);
-		data .setCommonResponse(res);
+		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
 		data.setMessage("Success");
 
 		if (res != null) {
-		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-		
+
 	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
-	@PostMapping("/getcompressedimage" )	 
-	@ApiOperation(value="This method is to Get Compressed Image File ")
-	public ResponseEntity<CommonRes>  getCompressedImages(@RequestBody FilePathReq req) {
+	@PostMapping("/getcompressedimage")
+	@ApiOperation(value = "This method is to Get Compressed Image File ")
+	public ResponseEntity<CommonRes> getCompressedImages(@RequestBody FilePathReq req) {
 		reqPrinter.reqPrint(req);
-		CommonRes data = new CommonRes()  ; 
-		
+		CommonRes data = new CommonRes();
+
 		FilePathRes res = documentservice.getCompressedImages(req);
-		data .setCommonResponse(res);
+		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
 		data.setMessage("Success");
 
 		if (res != null) {
-		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-		
+
 	}
-	
 
 }
-	
-	
-	
-

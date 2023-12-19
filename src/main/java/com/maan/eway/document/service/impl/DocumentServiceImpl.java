@@ -20,9 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -1664,7 +1662,7 @@ public class DocumentServiceImpl implements DocumentService {
 			log.info("ImagePath  -> -------- " + inputImagePath);
 
 			String outputText = outputImagePath + System.currentTimeMillis();
-			String blackAndWhite = blackWhiteImgPath + System.currentTimeMillis() + ".jpeg";
+			String blackAndWhite = blackWhiteImgPath + System.currentTimeMillis() + ".png";
 
 			String[] command = { "cmd", };
 
@@ -1698,8 +1696,13 @@ public class DocumentServiceImpl implements DocumentService {
 				System.out.println();
 
 				OCRRecogisation response = recognisation(outputText+".txt", req.getValue());
-
-				if (response.getResult().equals(true)) {
+				
+				Double percent = response.getPercentage() == null ? 0d : response.getPercentage();
+				
+				String id = req.getValue() == null ? "":req.getValue();
+				response.setId(id);
+				
+				if (percent >= 80 && percent <=100) {
 
 					res.setMessage("Success");
 					res.setIsError(false);
@@ -1720,6 +1723,22 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		return res;
 	}
+	
+	public static boolean isPDF(String filePath) {
+        // Get the file extension
+        String extension = getFileExtension(filePath);
+
+        // Check if the extension is "pdf" (case-insensitive)
+        return extension != null && extension.equalsIgnoreCase("pdf");
+    }
+
+    public static String getFileExtension(String filePath) {
+        int lastDotIndex = filePath.lastIndexOf('.');
+        if (lastDotIndex > 0 && lastDotIndex < filePath.length() - 1) {
+            return filePath.substring(lastDotIndex + 1);
+        }
+        return null; // No extension found
+    }
 
 	public static OCRRecogisation recognisation(String filePath, String expectedString) {
 
@@ -1764,15 +1783,11 @@ public class DocumentServiceImpl implements DocumentService {
 			result = similarWordPercentMap.keySet().stream()
 					.max(Double :: compare)
 					.orElseThrow(() -> new IllegalStateException("RecognisationMap is Null"));
-
-			
-			if(result >=75 && result <= 100)  recognisation.setResult(true);
-			else		recognisation.setResult(false);
 			
 			System.out.println("MAP   ----------------------> "+similarWordPercentMap);
 			recognisation.setPercentage(result);
 			recognisation.setValue(similarWordPercentMap.get(result));
-			recognisation.setText(text);
+			
 			System.out.println("Recognisation Parameters ------------> " + recognisation);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1780,8 +1795,19 @@ public class DocumentServiceImpl implements DocumentService {
 
 		return recognisation;
 	}
-	
-	
-	
 
+	@Override
+	public List<Error> ocrFileValidation(DocumentUploadOCRReq req) {
+		
+		List<Error> errorList = new ArrayList<>();
+		
+		String filePath = req.getFilePath() == null? "":req.getFilePath();
+		
+		if(isPDF(filePath)){
+			
+			errorList.add(new Error("01", "PDF file", "Uploaded File Should Not be a PDF"));
+		}
+		return errorList;
+	}
+	
 }

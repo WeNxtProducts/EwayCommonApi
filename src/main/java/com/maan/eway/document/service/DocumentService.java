@@ -20,7 +20,6 @@ import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
 import com.maan.eway.document.req.GetEmiDocReq;
 import com.maan.eway.document.req.TermsDocUploadReq;
-import com.maan.eway.document.res.ClientDocListRes;
 import com.maan.eway.document.res.DocTypeRes;
 import com.maan.eway.document.res.DocumentListRes;
 import com.maan.eway.document.res.DocumentTypeDetails;
@@ -65,5 +64,8 @@ public interface DocumentService {
 	DocumentListRes getEmiDoc(GetEmiDocReq req);
 
 	CommonRes fileuploadOCR(DocumentUploadOCRReq req);
+	
+	List<Error> ocrFileValidation(DocumentUploadOCRReq req);
+
 
 }
