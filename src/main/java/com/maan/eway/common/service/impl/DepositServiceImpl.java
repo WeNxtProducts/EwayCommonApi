@@ -740,9 +740,10 @@ public class DepositServiceImpl implements DepositService {
 //		if(StringUtils.isBlank(req.getVatAmount())) {
 //			error.add(new Error("500","VatAmount","Please Enter VatAmount"));
 //		}
-//		if(StringUtils.isBlank(req.getDepositType())) {
-//			error.add(new Error("500","DepositType","Please Enter DepositType"));
-//		}else if("C".equalsIgnoreCase(req.getDepositType())) {
+		if(StringUtils.isBlank(req.getDepositType())) {
+			error.add(new Error("500","DepositType","Please Enter DepositType"));
+		}
+//		else if("C".equalsIgnoreCase(req.getDepositType())) {
 //			if(StringUtils.isBlank(req.getDepositAmount())) {
 //				error.add(new Error("500","DepositAmount","Please Enter DepositAmount"));
 //			}
