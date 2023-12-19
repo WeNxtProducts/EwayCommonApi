@@ -776,16 +776,16 @@ this.repository = repo;
 			 */
 			
 			//Framing Request  Update Deposit Cbc Master
-			String cbcNo=loginReq.getCbcNo();
-			
-			SaveDepositeMasterReq depoReq=new SaveDepositeMasterReq();
-			depoReq.setBrokerId(loginReq.getAgencyCode());
-			depoReq.setCbcNo(cbcNo);
-			depoReq.setDepositAmount(personalReq.getCreditLimit());
-			depoReq.setCustomerid(personalReq.getCustomerCode());
-			depoReq.setCompanyId(loginReq.getCompanyId());
-			depoReq.setLoginId(loginReq.getLoginId());
-			depoService.saveDepositeMaster(depoReq);
+//			String cbcNo=loginReq.getCbcNo();
+//			
+//			SaveDepositeMasterReq depoReq=new SaveDepositeMasterReq();
+//			depoReq.setBrokerId(loginReq.getAgencyCode());
+//			depoReq.setCbcNo(cbcNo);
+//			depoReq.setDepositAmount(personalReq.getCreditLimit());
+//			depoReq.setCustomerid(personalReq.getCustomerCode());
+//			depoReq.setCompanyId(loginReq.getCompanyId());
+//			depoReq.setLoginId(loginReq.getLoginId());
+//			depoService.saveDepositeMaster(depoReq);
 		
 			
 		} catch (Exception e) {
