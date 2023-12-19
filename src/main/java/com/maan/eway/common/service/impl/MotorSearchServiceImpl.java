@@ -311,7 +311,7 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);
 
 			if ("issuer".equalsIgnoreCase(userType)) {
-				n3 = cb.equal(c.get("applicationId"), req.getApplicationId());
+//				n3 = cb.equal(c.get("applicationId"), req.getApplicationId());
 				Expression<String> e0 = c.get("branchCode");
 				n4 = e0.in(branches);
 			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
@@ -332,12 +332,21 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			}
 			n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
 		//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
+			 if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
 			query.where(n1,n2,n3,n4,n5)
 			.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
 					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 					c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 					c.get("rejectReason"))
 			.orderBy(orderList);
+			 }else {
+				 query.where(n1,n2,n4,n5)
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
+							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+							c.get("rejectReason"))
+					.orderBy(orderList);
+			 }
 			if (searchKey.equalsIgnoreCase("CustomerName")) {
 				query.where(n1, n2,n4,n5)
 				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
