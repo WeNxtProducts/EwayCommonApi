@@ -590,7 +590,7 @@ public class DepositServiceImpl implements DepositService {
 						.chequeNo(req.getChequeNo())
 						.chequeDate(StringUtils.isBlank(req.getChequeDate())?null:sdf.parse(req.getChequeDate()))
 						.AccountNo(req.getAccountNo())
-						.ibanNumber(req.getIbanNumber())
+						.ibanNumber(req.getIbanNumber()==null?null:req.getIbanNumber())
 						.micrno(req.getMicrNo())
 						.payeeName(req.getPayeeName())
 						.referenceNo(req.getReferenceNo())
@@ -688,6 +688,7 @@ public class DepositServiceImpl implements DepositService {
 //		}
 	
 		if("R".equalsIgnoreCase(req.getDepositType())) {
+			if(StringUtils.isNotBlank(req.getPremium())) {
 			Double totalAmount=0.0;
 			Optional<DepositcbcMaster> depositcbc = depositcbcRepo.findById(req.getCbcNo());
 			if (depositcbc.isPresent()) {
@@ -698,6 +699,7 @@ public class DepositServiceImpl implements DepositService {
 			}
 			if(Double.parseDouble(req.getPremium())>totalAmount) {
 				error.add(new Error("500","Premium","Refund Amount not greater than Balance Amount"));
+			}
 			}
 			
 			if (req.getRefundDate() == null) {
@@ -719,13 +721,7 @@ public class DepositServiceImpl implements DepositService {
 		
 		}
 //		}
-		if(StringUtils.isBlank(req.getPremium())) {
-			error.add(new Error("500","Amount","Please Enter Amount"));
-		}else if(Double.valueOf(req.getPremium())<0.0){
-			error.add(new Error("500","Amount","Please Enter Valid Amount"));
-		}else if (!req.getPremium().matches("[0-9.]+")) {
-			error.add(new Error("500", "Amount", "Please Enter Valid Amount"));
-		} 
+		
 //		if(StringUtils.isBlank(req.getPayeeName())) {
 //			error.add(new Error("500","PayeeName","Please Enter PayeeName"));
 //		}
@@ -744,9 +740,10 @@ public class DepositServiceImpl implements DepositService {
 //		if(StringUtils.isBlank(req.getVatAmount())) {
 //			error.add(new Error("500","VatAmount","Please Enter VatAmount"));
 //		}
-//		if(StringUtils.isBlank(req.getDepositType())) {
-//			error.add(new Error("500","DepositType","Please Enter DepositType"));
-//		}else if("C".equalsIgnoreCase(req.getDepositType())) {
+		if(StringUtils.isBlank(req.getDepositType())) {
+			error.add(new Error("500","DepositType","Please Enter DepositType"));
+		}
+//		else if("C".equalsIgnoreCase(req.getDepositType())) {
 //			if(StringUtils.isBlank(req.getDepositAmount())) {
 //				error.add(new Error("500","DepositAmount","Please Enter DepositAmount"));
 //			}
@@ -774,12 +771,26 @@ public class DepositServiceImpl implements DepositService {
 				error.add(new Error("500","MicrNo","Please Enter MicrNo"));
 			}
 			if(StringUtils.isBlank(req.getReferenceNo())) {
-				error.add(new Error("500","ReferenceNo","Please Enter ReferenceNo"));
+				error.add(new Error("500","RecepitNo","Please Enter RecepitNo"));
 			}
+			if(StringUtils.isBlank(req.getPremium())) {
+				error.add(new Error("500","Amount","Please Enter Amount"));
+			}else if(Double.valueOf(req.getPremium())<0.0){
+				error.add(new Error("500","Amount","Please Enter Valid Amount"));
+			}else if (!req.getPremium().matches("[0-9.]+")) {
+				error.add(new Error("500", "Amount", "Please Enter Valid Amount"));
+			} 
 		}else if("1".equalsIgnoreCase(req.getPaymentType())) {
 			if(StringUtils.isBlank(req.getPayeeName())) {
 				error.add(new Error("500","PayeeName","Please Enter PayeeName"));
 			}
+			if(StringUtils.isBlank(req.getPremium())) {
+				error.add(new Error("500","Amount","Please Enter Amount"));
+			}else if(Double.valueOf(req.getPremium())<0.0){
+				error.add(new Error("500","Amount","Please Enter Valid Amount"));
+			}else if (!req.getPremium().matches("[0-9.]+")) {
+				error.add(new Error("500", "Amount", "Please Enter Valid Amount"));
+			} 
 		}
 		
 		return error;
@@ -803,10 +814,10 @@ public class DepositServiceImpl implements DepositService {
 					.brokerId(k.getBrokerId())
 					.productId(k.getProductId())
 					.status(k.getStatus())
-					.depositAmount(k.getDepositAmount()==null?"":(df.format(k.getDepositAmount())).toString())
-					.depositUtilised(k.getDepositUtilized()==null?"":(df.format(k.getDepositUtilized())).toString())
-					.refundAmt(k.getRefundAmount()==null?"":k.getRefundAmount().toString())
-					.policyRefundAmt(k.getPolicyrefundamount()==null?"":(df.format(k.getPolicyrefundamount())).toString())
+					.depositAmount(k.getDepositAmount()==null?"0":(df.format(k.getDepositAmount())).toString())
+					.depositUtilised(k.getDepositUtilized()==null?"0":(df.format(k.getDepositUtilized())).toString())
+					.refundAmt(k.getRefundAmount()==null?"0":k.getRefundAmount().toString())
+					.policyRefundAmt(k.getPolicyrefundamount()==null?"0":(df.format(k.getPolicyrefundamount())).toString())
 					.brokerName(k.getBrokerName())
 					.updatedBy(k.getUpdatedBy())
 					.build();
