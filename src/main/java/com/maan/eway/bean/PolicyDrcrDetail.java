@@ -114,8 +114,19 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="STATUS", length=5)
     private String     status ;
-
    
+    @Column(name="CHARGE_ACCOUNT_DESC", length=5)
+    private String     chargeAccountDesc ;
+    
+    @Column(name="NARRATION", length=5)
+    private String     narration ;
+    
+    @Column(name="DISPLAY_ORDER", length=5)
+    private Integer     displayOrder ; 
+
+    @Column(name="RISK_DESC", length=5)
+    private String     riskDesc;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
