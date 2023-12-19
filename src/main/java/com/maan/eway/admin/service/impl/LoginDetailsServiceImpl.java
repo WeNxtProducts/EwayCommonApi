@@ -557,21 +557,23 @@ this.repository = repo;
 			
 			res = saveLogin.getAgencyCode() ;
 			
-			//Framing Request  Save Deposit Cbc Master
-			String cbcNo=null;
-			if(StringUtils.isBlank(cbcNo)||"".equalsIgnoreCase(cbcNo)) {
-				cbcNo=loginReq.getCbcNo();
-			}else {
-				cbcNo=null;
+			// Framing Request Save Deposit Cbc Master
+			if (StringUtils.isBlank(loginReq.getCbcNo()) || loginReq.getCbcNo() == null || loginReq.getCbcNo() == "") {
+				String cbcNo = null;
+//			if(StringUtils.isBlank(cbcNo)||"".equalsIgnoreCase(cbcNo)) {
+//				cbcNo=loginReq.getCbcNo();
+//			}else {
+//				cbcNo=null;
+//			}
+				SaveDepositeMasterReq depoReq = new SaveDepositeMasterReq();
+				depoReq.setBrokerId(countId.toString());
+				depoReq.setCbcNo(cbcNo);
+				depoReq.setDepositAmount(personalReq.getCreditLimit());
+				depoReq.setCustomerid(personalReq.getCustomerCode());
+				depoReq.setCompanyId(loginReq.getCompanyId());
+				depoReq.setLoginId(loginReq.getLoginId());
+				depoService.saveDepositeMaster(depoReq);
 			}
-			SaveDepositeMasterReq depoReq=new SaveDepositeMasterReq();
-			depoReq.setBrokerId(countId.toString());
-			depoReq.setCbcNo(cbcNo);
-			depoReq.setDepositAmount(personalReq.getCreditLimit());
-			depoReq.setCustomerid(personalReq.getCustomerCode());
-			depoReq.setCompanyId(loginReq.getCompanyId());
-			depoReq.setLoginId(loginReq.getLoginId());
-			depoService.saveDepositeMaster(depoReq);
 		
 			// Branch Id
 		} catch (Exception e) {
@@ -775,17 +777,19 @@ this.repository = repo;
 			 
 			 */
 			
-			//Framing Request  Update Deposit Cbc Master
-//			String cbcNo=loginReq.getCbcNo();
-//			
-//			SaveDepositeMasterReq depoReq=new SaveDepositeMasterReq();
-//			depoReq.setBrokerId(loginReq.getAgencyCode());
-//			depoReq.setCbcNo(cbcNo);
-//			depoReq.setDepositAmount(personalReq.getCreditLimit());
-//			depoReq.setCustomerid(personalReq.getCustomerCode());
-//			depoReq.setCompanyId(loginReq.getCompanyId());
-//			depoReq.setLoginId(loginReq.getLoginId());
-//			depoService.saveDepositeMaster(depoReq);
+			// Framing Request Update Deposit Cbc Master
+			if (StringUtils.isBlank(loginReq.getCbcNo()) || loginReq.getCbcNo() == null || loginReq.getCbcNo() == "") {
+				String cbcNo = null;
+
+				SaveDepositeMasterReq depoReq = new SaveDepositeMasterReq();
+				depoReq.setBrokerId(loginReq.getAgencyCode());
+				depoReq.setCbcNo(cbcNo);
+				depoReq.setDepositAmount(personalReq.getCreditLimit());
+				depoReq.setCustomerid(personalReq.getCustomerCode());
+				depoReq.setCompanyId(loginReq.getCompanyId());
+				depoReq.setLoginId(loginReq.getLoginId());
+				depoService.saveDepositeMaster(depoReq);
+			}
 		
 			
 		} catch (Exception e) {
