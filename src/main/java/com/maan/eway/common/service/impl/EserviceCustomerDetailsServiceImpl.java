@@ -1899,7 +1899,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			if (loginData.getUserType().equalsIgnoreCase("Broker")|| loginData.getUserType().equalsIgnoreCase("User")) {
 				List<LoginMaster> loginlist = loginRepo.findByOaCode(loginData.getOaCode());
 				List<String> loginIds=loginlist.stream().map(LoginMaster :: getLoginId ).collect(Collectors.toList())  ;
-				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedByIn(paging,req.getComapanyId(), req.getBrokerBranchCode(),loginIds);
+				datas = repository.findByCompanyIdAndBrokerBranchCodeAndStatusAndCreatedByIn(paging,req.getComapanyId(), req.getBrokerBranchCode(),"Y",loginIds);
 			} else {
 				datas = repository.findByCompanyIdAndBranchCodeAndCreatedByAndStatus(paging,
 						req.getComapanyId(), req.getBranchCode(),
