@@ -1575,14 +1575,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setEmiPremium(null);
 						savedata.setInstallmentPeriod(null);
 						savedata.setNoOfInstallment(null);
-						savedata.setApplicationId(null);
-						savedata.setLoginId(null);
-						savedata.setSubUserType(null);
-						savedata.setBdmCode(null);
-//						savedata.setAgencyCode(null);
-						savedata.setBrokerCode(null);
-						savedata.setCustomerCode(null);
-						savedata.setCustomerName(null);
+						savedata.setApplicationId(req.getApplicationId());
+						if (StringUtils.isNotBlank(req.getLoginId())) {
+							savedata.setLoginId(req.getLoginId());
+						}
+						savedata.setSubUserType(req.getSubUserType());
 						savedata.setPolicyNo(null);
 						savedata.setVatPremium(null);
 						savedata.setCdRefno(null);

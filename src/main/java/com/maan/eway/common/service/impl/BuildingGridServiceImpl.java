@@ -1654,14 +1654,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEmiPremium(null);
 						savedata.setInstallmentPeriod(null);
 						savedata.setNoOfInstallment(null);
-						savedata.setApplicationId(null);
-						savedata.setLoginId(null);
-						savedata.setSubUserType(null);
-						savedata.setBdmCode(null);
-//						savedata.setAgencyCode(null);
-						savedata.setBrokerCode(null);
-						savedata.setCustomerCode(null);
-						savedata.setCustomerName(null);
+						savedata.setApplicationId(req.getApplicationId());
+						if (StringUtils.isNotBlank(req.getLoginId())) {
+							savedata.setLoginId(req.getLoginId());
+						}
+						savedata.setSubUserType(req.getSubUserType());
 						savedata.setPolicyNo(null);
 						savedata.setVatPremium(null);
 						savedata.setCdRefno(null);
@@ -1714,14 +1711,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata2.setEndtPrevQuoteNo(null);
 					savedata2.setEndtStatus(null);
 					savedata2.setFinalizeYn("N");
-					savedata2.setApplicationId(null);
-					savedata2.setLoginId(null);
-					savedata2.setSubUserType(null);
-					savedata2.setBdmCode(null);
-//					savedata2.setAgencyCode(null);
-					savedata2.setBrokerCode(null);
-					savedata2.setCustomerCode(null);
-					savedata2.setCustomerName(null);
+					savedata2.setApplicationId(req.getApplicationId());
+					if(StringUtils.isNotBlank(req.getLoginId())) {
+						savedata2.setLoginId(req.getLoginId());
+						}
+						savedata2.setSubUserType(req.getSubUserType());
 					savedata2.setPolicyNo(null);
 					savedata2.setVatPremium(null);
 					savedata2.setCdRefno(null);
@@ -1757,20 +1751,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata3.setEndtPrevPolicyNo(null);
 						savedata3.setEndtPrevQuoteNo(null);
 						savedata3.setEndtStatus(null);
-						savedata.setApplicationId(null);
-						savedata.setLoginId(null);
-						savedata.setSubUserType(null);
-						savedata.setBdmCode(null);
-						savedata.setAgencyCode(null);
-						savedata.setBrokerCode(null);
-						savedata.setCustomerCode(null);
-						savedata.setCustomerName(null);
-						savedata.setPolicyNo(null);
-						savedata.setVatPremium(null);
-						savedata.setCdRefno(null);
-						savedata.setMsRefno(null);
-						savedata.setVdRefNo(null);
-						savedata.setSourceTypeId(null);
+						savedata3.setPolicyNo(null);
 						eserSecRepo.saveAndFlush(savedata3);
 					}
 
