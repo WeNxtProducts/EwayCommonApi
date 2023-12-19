@@ -792,12 +792,14 @@ public class EndorsementService {
 				CopyQuoteReq c = new CopyQuoteReq();
 				c.setRequestReferenceNo(hp.getRequestReferenceNo());
 				c.setLoginId(hp.getLoginId());
-				c.setApplicationId(hp.getApplicationId());
-				c.setInsuranceId(hp.getCompanyId());
-				c.setBranchCode(hp.getBranchCode());
+				c.setApplicationId(request.getApplicationId());
+				c.setInsuranceId(request.getCompanyId());
+				c.setBranchCode(request.getBranchCode());
 				c.setProductId(String.valueOf(hp.getProductId()));
-				c.setUserType("Broker");
+				c.setUserType(request.getUserType());
+				c.setSubUserType(request.getSubUserType());
 				c.setEndtTypeId(request.getEndtType());
+				c.setLoginId(request.getLoginId()==null?hp.getLoginId():request.getLoginId());
 				c.setTypeId("Endt");
 				c.setQuoteNo(hp.getQuoteNo());
 				c.setPolicyNo(request.getPolicyNo());

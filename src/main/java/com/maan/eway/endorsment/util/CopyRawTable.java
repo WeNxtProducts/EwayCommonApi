@@ -223,6 +223,9 @@ public class CopyRawTable  {
 			newObject.setStatus("E");
 			newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
 			newObject.setQuoteNo(null);
+			newObject.setApplicationId(ent.getApplicationId());
+			newObject.setLoginId(ent.getLoginId()==null?m.getLoginId():(ent.getLoginId()));
+			newObject.setSubUserType(ent.getSubUserType());
 			newMotors.add(newObject);
 			
 			List<UwQuestionsDetails> olduwquestion = uwquestionRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(ent.getCompanyId(),ent.getProductId().intValue(),prevRequestRefNo,newObject.getRiskId());

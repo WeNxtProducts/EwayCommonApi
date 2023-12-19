@@ -1732,6 +1732,14 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEmiPremium(null);
 						savedata.setInstallmentPeriod(null);
 						savedata.setNoOfInstallment(null);
+						savedata.setApplicationId(null);
+						savedata.setLoginId(null);
+						savedata.setSubUserType(null);
+						savedata.setBdmCode(null);
+						savedata.setAgencyCode(null);
+						savedata.setBrokerCode(null);
+						savedata.setCustomerCode(null);
+						savedata.setCustomerName(null);
 						repo.saveAndFlush(savedata);
 					}
 
@@ -2050,7 +2058,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 //							branchCode = req.getBranchCode();
 //							savedata.setBranchCode(branchCode);
 //						}
-						savedata.setApplicationId(data.getApplicationId());
+						savedata.setApplicationId(req.getApplicationId());
+						savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+						savedata.setSubUserType(req.getSubUserType());
 						savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 						savedata.setActualPremiumFc(BigDecimal.ZERO);
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
@@ -2347,7 +2357,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			savedata.setCreditNo(null);
 			savedata.setCreditTo(null);
 			savedata.setCreditToId(null);
-
+			savedata.setApplicationId(req.getApplicationId());
+			savedata.setLoginId(req.getLoginId()==null?homeData.getLoginId():(req.getLoginId()));
+			savedata.setSubUserType(req.getSubUserType());
 			homePosistionRepo.saveAndFlush(savedata);
 		
 			System.out.println("*************HomePositionMaster************");
@@ -2400,6 +2412,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				savedata.setUpdatedDate(new Date());
 				
 				//Endo
+				
 				savedata.setOriginalPolicyNo(req.getPolicyNo());
 				savedata.setEndorsementDate(new Date());
 				savedata.setEndorsementRemarks(req.getEndtRemarks());
@@ -2649,6 +2662,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				if (motorData.size() > 0) {
 					for (MotorDataDetails data : motorData) {
 						savedata = dozerMapper.map(data, MotorDataDetails.class);
+						
 						savedata.setRequestReferenceNo(refNo);
 						savedata.setCustomerId(customerId);
 						savedata.setQuoteNo(quoteNo);
@@ -2671,6 +2685,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
 						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
+						savedata.setApplicationId(req.getApplicationId());
+						savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+						savedata.setSubUserType(req.getSubUserType());
 						motorDataDetepo.saveAndFlush(savedata);
 					}
 				}
@@ -2722,6 +2739,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
+						
 						//savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
 						motordrivDetepo.saveAndFlush(savedata);
 					}

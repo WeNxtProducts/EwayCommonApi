@@ -31,6 +31,9 @@ public class CopyQuoteReq {
 
 	@JsonProperty("UserType")
 	private String userType;
+	
+	@JsonProperty("SubUserType")
+	private String subUserType;
 
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
@@ -60,6 +63,6 @@ public class CopyQuoteReq {
 	@JsonProperty("EndtEffectiveDate")
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private Date endtEffectiveDate;
-
+	
 	
 }
