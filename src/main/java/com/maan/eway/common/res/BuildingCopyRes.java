@@ -68,4 +68,14 @@ public class BuildingCopyRes {
 	@JsonProperty("OriginalPolicyNo")
 	private String originalPolicyNo;
 	
+	
+	@JsonProperty("ApplicationId")
+	private String applicationId;
+	
+	@JsonProperty("LoginId")
+	private String loginId;
+	
+	@JsonProperty("SubUserType")
+	private String subUserType;
+	
 }

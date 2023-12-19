@@ -30,6 +30,8 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					 "T".equalsIgnoreCase(t.getCoverageType()) ) &&  filterBy.equalsIgnoreCase(t.getSubCoverYn())) {
 				 String subc=t.getSubCoverYn()==null?"N":t.getSubCoverYn();
 				 
+				 t.getCoverPeriodTo().setHours(23);
+				 t.getCoverPeriodTo().setMinutes(59);
 				 // Referral 
 				 String referal=t.getIsReferral();
 				 Cover c = Cover.builder()						 

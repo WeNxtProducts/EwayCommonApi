@@ -182,6 +182,9 @@ public class CopyTravelRaw {
 				newObject.setStatus("E");
 				newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
 				newObject.setQuoteNo(null);
+				newObject.setApplicationId(ent.getApplicationId());
+				newObject.setLoginId(ent.getLoginId()==null?m.getLoginId():ent.getLoginId());
+				newObject.setSubUserType(ent.getSubUserType());
 				newtravelList.add(newObject);
 			}
 			etravelRepo.saveAllAndFlush(newtravelList);

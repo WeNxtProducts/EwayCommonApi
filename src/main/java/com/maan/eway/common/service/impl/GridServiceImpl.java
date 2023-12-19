@@ -4854,8 +4854,9 @@ public class GridServiceImpl implements GridService {
 				CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
 
 				Root<HomePositionMaster> m1 = query1.from(HomePositionMaster.class);
-
-				query1.multiselect(m1.get("brokerCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+				Root<LoginUserInfo> us = query1.from(LoginUserInfo.class);
+				
+				query1.multiselect(m1.get("loginId").alias("code"),us.get("userName").alias("codeDesc"),
 						m1.get("sourceType").alias("type"));
 
 				Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
@@ -4868,7 +4869,8 @@ public class GridServiceImpl implements GridService {
 //				Predicate n8 = cb1.lessThanOrEqualTo(m1.get("entryDate"), today);
 				Predicate n9 = cb1.equal(m1.get("endtTypeId"), "842");
 				Predicate n10 = cb1.isNull(m1.get("bdmCode"));
-				query1.where(n1, n2, n3, n4, n5, n6, n9, n10);
+				Predicate us1 = cb1.equal(us.get("loginId"),m1.get("loginId"));
+				query1.where(n1, n2, n3, n4, n5, n6, n9, n10,us1);
 
 				TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 				list1 = typedQuery1.getResultList();

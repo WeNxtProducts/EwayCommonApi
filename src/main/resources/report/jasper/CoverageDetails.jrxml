@@ -59,7 +59,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="contentRiskDesc"/>
 			<fieldDescription><![CDATA[contentRiskDesc]]></fieldDescription>
 		</field>
-		<field name="sumInsured" class="java.lang.Integer">
+		<field name="sumInsured" class="java.math.BigDecimal">
 			<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
 			<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
 		</field>

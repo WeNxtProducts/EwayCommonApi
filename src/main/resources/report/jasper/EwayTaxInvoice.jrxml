@@ -64,7 +64,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="approvedBy"/>
 		<fieldDescription><![CDATA[approvedBy]]></fieldDescription>
 	</field>
-	<field name="agencyCode" class="java.lang.Integer">
+	<field name="agencyCode" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="agencyCode"/>
 		<fieldDescription><![CDATA[agencyCode]]></fieldDescription>
 	</field>
@@ -116,7 +116,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vrnNumber"/>
 		<fieldDescription><![CDATA[vrnNumber]]></fieldDescription>
 	</field>
-	<field name="tinNumber" class="java.lang.Integer">
+	<field name="tinNumber" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="tinNumber"/>
 		<fieldDescription><![CDATA[tinNumber]]></fieldDescription>
 	</field>
@@ -144,7 +144,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vatPercent"/>
 		<fieldDescription><![CDATA[vatPercent]]></fieldDescription>
 	</field>
-	<field name="intermediaryRefNo" class="java.lang.Integer">
+	<field name="intermediaryRefNo" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="intermediaryRefNo"/>
 		<fieldDescription><![CDATA[intermediaryRefNo]]></fieldDescription>
 	</field>
@@ -182,6 +182,9 @@
 	</field>
 	<field name="companyId" class="java.lang.String">
 		<fieldDescription><![CDATA[companyId]]></fieldDescription>
+	</field>
+	<field name="premAndVatName" class="java.lang.String">
+		<fieldDescription><![CDATA[premAndVatName]]></fieldDescription>
 	</field>
 	<background>
 		<band height="685" splitType="Stretch">
@@ -751,20 +754,20 @@
 				<textFieldExpression><![CDATA[$F{overAllPremium}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="374" y="30" width="60" height="15" uuid="aaee1e7c-6aef-4bd3-907f-87fb868cdbf3"/>
+				<reportElement x="290" y="30" width="144" height="15" uuid="aaee1e7c-6aef-4bd3-907f-87fb868cdbf3"/>
 				<box leftPadding="0" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Premium Total"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premAndVatName}+" Total"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="320" y="45" width="114" height="20" uuid="30d8f78c-1014-4be5-8654-1322ce0b7651"/>
+				<reportElement x="290" y="45" width="144" height="20" uuid="30d8f78c-1014-4be5-8654-1322ce0b7651"/>
 				<box leftPadding="0" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{companyId}.equalsIgnoreCase("100004")?"Premium Tax -"+$F{vatPercent}+"%":"Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{companyId}.equalsIgnoreCase("100004")?$F{premAndVatName}+" Tax -"+$F{vatPercent}+"%":"Vat Output ("+$F{premAndVatName}+") - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="374" y="65" width="60" height="15" uuid="41d174b8-63b2-48f5-9dd0-460af41f1fb9"/>
@@ -933,7 +936,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{companyId}.equalsIgnoreCase("100004")?"Premium Tax ("+$F{currency}+")":"Vat Total ("+$F{currency}+")"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{companyId}.equalsIgnoreCase("100004")?$F{premAndVatName}+" Tax ("+$F{currency}+")":"Vat Total ("+$F{currency}+")"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="95" y="47" width="80" height="12" uuid="48852c9f-0667-4a1d-879a-38e980d72657"/>

@@ -1608,7 +1608,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n2 = cb.equal(c.get("companyId"), companyId);
 
 				if ("issuer".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("applicationId"), loginId);
+				//	n3 = cb.equal(c.get("applicationId"), loginId);
 					Expression<String> e0 = c.get("branchCode");
 					n4 = e0.in(branches);
 				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
@@ -1618,7 +1618,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				}
 				if (searchKey.equalsIgnoreCase("ClientName")) {
 					if ("issuer".equalsIgnoreCase(userType)) {
-
+//
 						Expression<String> e0 = cus.get("branchCode");
 						n4 = e0.in(branches);
 					} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
@@ -1629,14 +1629,23 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				}
 				n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
 			//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
-				query.where(n1,n2,n3,n4,n5)
+				if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+				query.where(n1,n2,n4,n5)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 							c.get("rejectReason")/*,c.get("riskId"),c.get("insuranceType")*/)
 				.orderBy(orderList);
+				}else {
+					query.where(n1,n2,n4,n5)
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+							c.get("rejectReason")/*,c.get("riskId"),c.get("insuranceType")*/)
+				.orderBy(orderList);
+				}
 				if (searchKey.equalsIgnoreCase("ClientName")) {
-					query.where(n1, n2,n4,n5)
+					query.where(n1, n2,n3,n4,n5)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
@@ -1732,6 +1741,21 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEmiPremium(null);
 						savedata.setInstallmentPeriod(null);
 						savedata.setNoOfInstallment(null);
+						savedata.setApplicationId(null);
+						savedata.setLoginId(null);
+						savedata.setSubUserType(null);
+						savedata.setBdmCode(null);
+//						savedata.setAgencyCode(null);
+						savedata.setBrokerCode(null);
+						savedata.setCustomerCode(null);
+						savedata.setCustomerName(null);
+						savedata.setPolicyNo(null);
+						savedata.setVatPremium(null);
+						savedata.setCdRefno(null);
+						savedata.setMsRefno(null);
+						savedata.setVdRefNo(null);
+						savedata.setSumInsuredLc(null);
+						savedata.setSourceTypeId(null);
 						repo.saveAndFlush(savedata);
 					}
 
@@ -2050,7 +2074,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 //							branchCode = req.getBranchCode();
 //							savedata.setBranchCode(branchCode);
 //						}
-						savedata.setApplicationId(data.getApplicationId());
+						savedata.setApplicationId(req.getApplicationId());
+						savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+						savedata.setSubUserType(req.getSubUserType());
 						savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 						savedata.setActualPremiumFc(BigDecimal.ZERO);
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
@@ -2347,7 +2373,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			savedata.setCreditNo(null);
 			savedata.setCreditTo(null);
 			savedata.setCreditToId(null);
-
+			savedata.setApplicationId(req.getApplicationId());
+			savedata.setLoginId(req.getLoginId()==null?homeData.getLoginId():(req.getLoginId()));
+			savedata.setSubUserType(req.getSubUserType());
 			homePosistionRepo.saveAndFlush(savedata);
 		
 			System.out.println("*************HomePositionMaster************");
@@ -2400,6 +2428,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				savedata.setUpdatedDate(new Date());
 				
 				//Endo
+				
 				savedata.setOriginalPolicyNo(req.getPolicyNo());
 				savedata.setEndorsementDate(new Date());
 				savedata.setEndorsementRemarks(req.getEndtRemarks());
@@ -2649,6 +2678,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				if (motorData.size() > 0) {
 					for (MotorDataDetails data : motorData) {
 						savedata = dozerMapper.map(data, MotorDataDetails.class);
+						
 						savedata.setRequestReferenceNo(refNo);
 						savedata.setCustomerId(customerId);
 						savedata.setQuoteNo(quoteNo);
@@ -2671,6 +2701,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
 						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
+						savedata.setApplicationId(req.getApplicationId());
+						savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+						savedata.setSubUserType(req.getSubUserType());
 						motorDataDetepo.saveAndFlush(savedata);
 					}
 				}
@@ -2722,6 +2755,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
+						
 						//savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
 						motordrivDetepo.saveAndFlush(savedata);
 					}

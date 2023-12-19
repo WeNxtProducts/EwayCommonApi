@@ -15,6 +15,7 @@ import com.maan.eway.master.req.PremiaConfigMasterDropDownReq;
 import com.maan.eway.master.req.PremiaConfigMasterGetAllReq;
 import com.maan.eway.master.req.PremiaConfigMasterGetReq;
 import com.maan.eway.master.req.PremiaConfigMasterSaveReq;
+import com.maan.eway.master.req.PremiaTableColumnDropDownReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.res.PremiaConfigMasterRes;
 import com.maan.eway.error.Error;
@@ -40,6 +41,8 @@ public interface PremiaConfigMasterService  {
 	SuccessRes changeStatusPremiaConfig(PremiaConfigMasterChangeStatusReq req);
 
 	List<DropDownRes> getPremiaConfigMasterDropdown(PremiaConfigMasterDropDownReq req);
+
+	List<DropDownRes> getPremiaTableDropdown(PremiaTableColumnDropDownReq req);
 
 
 

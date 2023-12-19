@@ -51,5 +51,14 @@ public class Endorsment {
 	
 	@JsonProperty("LoginId")
 	private String loginId;
+	
+	@JsonProperty("ApplicationId")
+	private String applicationId;
+	
+	@JsonProperty("UserType")
+	private String userType;
+	
+	@JsonProperty("SubUserType")
+	private String subUserType;
 
 }
