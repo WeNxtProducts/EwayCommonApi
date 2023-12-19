@@ -1579,7 +1579,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setLoginId(null);
 						savedata.setSubUserType(null);
 						savedata.setBdmCode(null);
-						savedata.setAgencyCode(null);
+//						savedata.setAgencyCode(null);
 						savedata.setBrokerCode(null);
 						savedata.setCustomerCode(null);
 						savedata.setCustomerName(null);

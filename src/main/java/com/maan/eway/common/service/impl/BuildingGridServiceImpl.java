@@ -1658,7 +1658,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setLoginId(null);
 						savedata.setSubUserType(null);
 						savedata.setBdmCode(null);
-						savedata.setAgencyCode(null);
+//						savedata.setAgencyCode(null);
 						savedata.setBrokerCode(null);
 						savedata.setCustomerCode(null);
 						savedata.setCustomerName(null);
@@ -1714,20 +1714,20 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata2.setEndtPrevQuoteNo(null);
 					savedata2.setEndtStatus(null);
 					savedata2.setFinalizeYn("N");
-					savedata.setApplicationId(null);
-					savedata.setLoginId(null);
-					savedata.setSubUserType(null);
-					savedata.setBdmCode(null);
-					savedata.setAgencyCode(null);
-					savedata.setBrokerCode(null);
-					savedata.setCustomerCode(null);
-					savedata.setCustomerName(null);
-					savedata.setPolicyNo(null);
-					savedata.setVatPremium(null);
-					savedata.setCdRefno(null);
+					savedata2.setApplicationId(null);
+					savedata2.setLoginId(null);
+					savedata2.setSubUserType(null);
+					savedata2.setBdmCode(null);
+//					savedata2.setAgencyCode(null);
+					savedata2.setBrokerCode(null);
+					savedata2.setCustomerCode(null);
+					savedata2.setCustomerName(null);
+					savedata2.setPolicyNo(null);
+					savedata2.setVatPremium(null);
+					savedata2.setCdRefno(null);
 					savedata.setMsRefno(null);
-					savedata.setVdRefNo(null);
-					savedata.setSourceTypeId(null);
+					savedata2.setVdRefNo(null);
+					savedata2.setSourceTypeId(null);
 					eserCommonRepo.saveAndFlush(savedata2);
 				}
 				
