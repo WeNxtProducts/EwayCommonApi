@@ -68,6 +68,9 @@ public interface EserviceCustomerDetailsRepository  extends JpaRepository<Eservi
 	Page<EserviceCustomerDetails> findByCompanyIdAndBrokerBranchCodeAndStatusAndCreatedByIn(Pageable paging,
 			String comapanyId, String brokerBranchCode, String string, List<String> loginIds);
 
+	Page<EserviceCustomerDetails> findByCompanyIdAndBrokerBranchCodeAndCreatedByIn(Pageable paging, String comapanyId,
+			String brokerBranchCode, List<String> loginIds);
+
 
 	
 
