@@ -1746,6 +1746,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setLoginId(req.getLoginId());
 						}
 						savedata.setSubUserType(req.getSubUserType());
+						if("broker".equalsIgnoreCase(req.getUserType())){
+							savedata.setSourceType(req.getUserType());
+						}
 						savedata.setPolicyNo(null);
 						savedata.setVatPremium(null);
 						savedata.setCdRefno(null);
@@ -3620,28 +3623,35 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 		
 				
 				Predicate n5 = null;
+				Predicate n6 = null;
 				Predicate n13 = null;
 				
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
-					n13 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//					n13 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					n6 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
+					query.where(n1,n2, n3, n5, n6,n10,n12).orderBy(orderList);
 				} else {
 					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
 					if(StringUtils.isNotBlank(req.getBdmCode())){
 						n13 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+						n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+						query.where(n1,n2, n3, n5, n6,n10,n12,n13).orderBy(orderList);
 					}else {
 						n13 = cb.equal(m.get("loginId"), req.getLoginId());
+						n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+						query.where(n1,n2, n3, n5, n6,n10,n12,n13).orderBy(orderList);
 					}
 				}
-				Predicate n6 = null;
-				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 				
-					n6 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
-				} else {
-				
-					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
-				}
-				query.where(n1,n2, n3, n5, n6,n10,n12,n13).orderBy(orderList);
+//				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+//				
+//					n6 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
+//				} else {
+//				
+//					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+//				}
+//				query.where(n1,n2, n3, n5, n6,n10,n12,n13).orderBy(orderList);
 
 				
 				TypedQuery<PortfolioGridCriteriaRes> result = em.createQuery(query);

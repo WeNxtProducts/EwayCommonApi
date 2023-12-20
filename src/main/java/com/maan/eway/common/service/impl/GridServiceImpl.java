@@ -4762,14 +4762,14 @@ public class GridServiceImpl implements GridService {
 				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
 				agencyCode.where(a1);
 
-				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
-				// Predicate n2 = cb.isNotNull(m.get("applicationId"));
+//				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//				Predicate n1 = cb.equal(m.get("loginId"), req.getLoginId());
 				Predicate n3 = cb.equal(m.get("status"), "D");
 				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
 				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
 				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
-				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
-				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
+//				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
+//				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
 				Predicate n9 = cb.equal(m.get("endtTypeId"), "842");
 				Predicate n12 = null;
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
@@ -4779,7 +4779,7 @@ public class GridServiceImpl implements GridService {
 				}
 				Predicate n13 = cb.isNotNull(m.get("sourceType"));
 				Predicate n14 = cb.isNotNull(m.get("loginId"));
-				query.where(n1, n3, n4, n5, n6, n7, n8, n9, n12, n13, n14);
+				query.where( n3, n4, n5, n6, n9, n12, n13, n14);
 
 				TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
 				list = typedQuery1.getResultList();
