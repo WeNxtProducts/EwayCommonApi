@@ -146,7 +146,7 @@ public class FetchErrorDescServiceImpl {
 //					&&  o.getModuleId().equals(StringUtils.isNotBlank(req.getModuleId())?Integer.valueOf(req.getModuleId()):99999)   
 //					&& (o.getBranchCode().equalsIgnoreCase(req.getBranchCode()) || o.getBranchCode().equalsIgnoreCase("99999") ) ).collect(Collectors.toList());
 			
-			errorDescriptionList = resList ;
+			this.errorDescriptionList = resList ;
 		} catch (Exception e) {
 			e.printStackTrace();
 			e.getMessage();

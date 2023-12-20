@@ -119,13 +119,15 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			
 			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
 				if (StringUtils.isBlank(req.getClientName())) {
-					//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
-					errorList.add(new Error("01", "ClientName", errorDescService.getErrorDesc("1001",comErrDescReq)));
+					errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+					//errorList.add(new Error("01", "ClientName", errorDescService.getErrorDesc("1001",comErrDescReq)));
 				} else if (req.getClientName().length() > 250) {
-					errorList.add(new Error("01", "ClientName", errorDescService.getErrorDesc("1002",comErrDescReq)));
+					//errorList.add(new Error("01", "ClientName", errorDescService.getErrorDesc("1002",comErrDescReq)));
+					errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
 				} 
 				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
-					errorList.add(new Error("01", "ClientName", errorDescService.getErrorDesc("1003",comErrDescReq)));						
+					//errorList.add(new Error("01", "ClientName", errorDescService.getErrorDesc("1003",comErrDescReq)));		
+					errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
 				}
 				
 				

@@ -78,6 +78,7 @@ import com.maan.eway.calculator.util.SubCoverCreationUtil;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.ViewQuoteReq;
+import com.maan.eway.common.res.EndtUpdatePremiumRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
@@ -87,6 +88,7 @@ import com.maan.eway.endorsment.util.DiscountFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
+import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
@@ -127,6 +129,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 	@Autowired
 	private RatingFactorsUtil ratingutil;
+	
+	
+	@Autowired
+	private CoverDetailsRepository coverRepo ;
 	/*
 	 * @Autowired private CoverCalculator calc;
 	 */
@@ -1333,9 +1339,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 				String vatPremiumFc = v.getVatPremiumFc()==null  ?"0" : v.getVatPremiumFc().toPlainString();
 			
 				if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
-					vatPremiumFc = v.getEndtPremiumTax()==null  ?"0" :  v.getEndtPremiumTax().toPlainString();
-					premiumFc = v.getEndtPremium() ==null ? "0" : 
-					String.valueOf(Double.valueOf(v.getEndtPremium().toString()) -  Double.valueOf(v.getEndtPremiumTax()==null  ?"0":v.getEndtPremiumTax().toString() ));
+//					vatPremiumFc = v.getEndtPremiumTax()==null  ?"0" :  v.getEndtPremiumTax().toPlainString();
+//					premiumFc = v.getEndtPremium() ==null ? "0" : 
+//					String.valueOf(Double.valueOf(v.getEndtPremium().toString()) -  Double.valueOf(v.getEndtPremiumTax()==null  ?"0":v.getEndtPremiumTax().toString() ));
+					// Get Premium from Policy cover data
+					List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(v.getQuoteNo() ,0, 0);
+					EndtUpdatePremiumRes endtRes = updateEndtPremium2(v.getQuoteNo(),v.getEndorsementEffdate(),v.getEndtPrevQuoteNo() , 0 ,Endtcovers,v.getProductId() ,0 , v.getEndtTypeId());				
+					premiumFc = endtRes.getEndtPremium()==null ? "0" : String.valueOf(endtRes.getEndtPremium().toPlainString());
+					vatPremiumFc  = endtRes.getEndtVatPremium()==null ? "0" : String.valueOf(endtRes.getEndtVatPremium().toPlainString()) ;
 					
 				}
 
@@ -1512,6 +1523,83 @@ public class CalculatorEngineService implements CalculatorEngine {
 			return null;
 		}
 		return resList ;
+	}
+	
+	private EndtUpdatePremiumRes updateEndtPremium2(String quoteNo,Date effDate,String prevQuoteNo,Integer riskId, List<PolicyCoverData> covers, Integer productId , Integer sectionId , String endtType ) {
+		EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes();  
+		try {
+			List<PolicyCoverData> newCovers=null;
+			List<PolicyCoverData>  totalcovers =null;
+			 List<PolicyCoverData>  oldcovers =null; 
+			 
+			 if(riskId.intValue()==0) {
+				 newCovers=covers;
+				 totalcovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(quoteNo);
+				 oldcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(prevQuoteNo ,0, 0 ,"D");
+			 }else {
+				 newCovers=covers.stream().filter(i -> i.getVehicleId().doubleValue()==riskId.doubleValue()).collect(Collectors.toList());
+				 totalcovers = coverRepo.findByQuoteNoAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(quoteNo,riskId,productId,sectionId);
+				 oldcovers = coverRepo.findByQuoteNoAndVehicleIdAndDiscLoadIdAndTaxIdAndStatusNotAndProductIdAndSectionIdOrderByVehicleIdAsc(prevQuoteNo ,riskId,0, 0 ,"D",productId,sectionId);
+			 }
+			 
+			 List<PolicyCoverData>  oldcoversf=oldcovers;
+			
+			// Premium With Tax 
+//			Double removedCoverPremium =  (totalcovers.stream().filter( o ->   o.getPremiumIncludedTaxFc()!=null 
+//					 && "D".equals(o.getStatus())   && "E".equals(o.getCoverageType())  ) .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum());			 
+//			 
+//			Double endtChangePremium=totalcovers.stream().filter( o ->  o.getPremiumIncludedTaxFc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())  )
+//			 .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
+//			 
+//			 newCovers.removeIf(p-> {
+//				 return oldcoversf.stream().anyMatch(x-> (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
+//			 });
+//			 Double addedCoverPremium =newCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
+//					 o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null 
+//					 && !"D".equals(o.getStatus())
+//					 && effDate.compareTo(o.getCoverPeriodFrom())>=0  ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
+//				BigDecimal endtPremium= new  BigDecimal(removedCoverPremium+addedCoverPremium+endtChangePremium);
+//				
+				
+			// Premium Without Tax 
+			Double removedCoverPremiumWithoutTax =  (totalcovers.stream().filter( o ->   o.getPremiumExcludedTaxFc()!=null 
+					 && "D".equals(o.getStatus())   && "E".equals(o.getCoverageType())  ) .mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum());			 
+			
+			Double endtChangePremiumWithoutTax=totalcovers.stream().filter( o ->  o.getPremiumExcludedTaxFc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())  )
+			 .mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
+			 
+			 newCovers.removeIf(p-> {
+				 return oldcoversf.stream().anyMatch(x-> (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
+			 });
+			 Double addedCoverPremiumWithoutTax =newCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
+					 o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null 
+					 && !"D".equals(o.getStatus())
+					 && effDate.compareTo(o.getCoverPeriodFrom())>=0  ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
+				BigDecimal endtPremiumWithoutTax = new  BigDecimal(removedCoverPremiumWithoutTax+addedCoverPremiumWithoutTax+endtChangePremiumWithoutTax);
+					
+			// Tax Amount 
+			List<PolicyCoverData>  endtTaxCovers  = totalcovers.stream().filter( o -> o.getCoverageType().equalsIgnoreCase("T") && 
+					o.getDiscLoadId().equals(Integer.valueOf(endtType)) ).collect(Collectors.toList());
+			 Double endtVatPremium = endtTaxCovers.stream().filter( o -> !o.getDiscLoadId().equals(0)  &&  
+					 !o.getTaxId().equals(0) && o.getTaxAmount()!=null && o.getCoverageType().equalsIgnoreCase("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()   ).sum();
+			 
+			String endtChargeOrRefund="REFUND";
+			if(endtPremiumWithoutTax.doubleValue()>=0) {
+				endtChargeOrRefund="CHARGE";
+			} else if (endtPremiumWithoutTax.doubleValue()<0 && endtVatPremium >=0 ) {
+				endtVatPremium = - endtVatPremium;
+			}
+			
+			endtRes.setChargeOrRefund(endtChargeOrRefund);
+			endtRes.setEndtPremium(endtPremiumWithoutTax);
+			endtRes.setEndtVatPremium(new  BigDecimal(endtVatPremium));
+			
+			
+			return endtRes;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return endtRes;
 	}
 	
 //	public List<DebitAndCredit> getRiskWisecommissionCalc(CalcCommission request ) {
