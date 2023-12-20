@@ -1338,11 +1338,21 @@ public class CalculatorEngineService implements CalculatorEngine {
 				String premiumFc = v.getPremiumFc().toString();
 				String vatPremiumFc = v.getVatPremiumFc()==null  ?"0" : v.getVatPremiumFc().toPlainString();
 			
-				if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
+				if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId()) && v1.getQuoteDetails().getEndtTypeId().equalsIgnoreCase("842") ) {
 //					vatPremiumFc = v.getEndtPremiumTax()==null  ?"0" :  v.getEndtPremiumTax().toPlainString();
 //					premiumFc = v.getEndtPremium() ==null ? "0" : 
 //					String.valueOf(Double.valueOf(v.getEndtPremium().toString()) -  Double.valueOf(v.getEndtPremiumTax()==null  ?"0":v.getEndtPremiumTax().toString() ));
 					// Get Premium from Policy cover data
+					List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(v.getQuoteNo() ,0, 0);
+					EndtUpdatePremiumRes endtRes = updateEndtPremium2(v.getQuoteNo(),v.getEndorsementEffdate(),v.getEndtPrevQuoteNo() , 0 ,Endtcovers,v.getProductId() ,0 , v.getEndtTypeId());				
+					premiumFc = String.valueOf(endtRes.getEndtPremium()==null ? 0 : endtRes.getEndtPremium().doubleValue() >0 ? -endtRes.getEndtPremium().doubleValue() : endtRes.getEndtPremium().doubleValue() );
+					vatPremiumFc  =String.valueOf( endtRes.getEndtVatPremium()==null ? 0 :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());
+							
+					//motorData.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue() >0 ? -endtRes.getEndtPremium().doubleValue() : endtRes.getEndtPremium().doubleValue() );
+					//motorData.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());	
+					
+					
+				} else if(StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())  ) {
 					List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(v.getQuoteNo() ,0, 0);
 					EndtUpdatePremiumRes endtRes = updateEndtPremium2(v.getQuoteNo(),v.getEndorsementEffdate(),v.getEndtPrevQuoteNo() , 0 ,Endtcovers,v.getProductId() ,0 , v.getEndtTypeId());				
 					premiumFc = endtRes.getEndtPremium()==null ? "0" : String.valueOf(endtRes.getEndtPremium().toPlainString());
