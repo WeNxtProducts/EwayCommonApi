@@ -1371,7 +1371,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					ChartOfAccount filteredCharge =   filterChargeCode.size() > 0 ? filterChargeCode.get(0):null ; 
 					subset.put("CHARGE_CODE", "1009");
 					subset.put("CHARGE_CODE_DESC", filteredCharge!=null ? filteredCharge.getChartAccountDesc() :  "VAT");
-					subset.put("NARATION", filteredCharge!=null ? filteredCharge.getNaration()+ " (" +  homeData.getVatPercent() +"%)" :  "VAT");
+					subset.put("NARATION", filteredCharge!=null ? filteredCharge.getNaration()+ " " + Double.valueOf(homeData.getVatPercent()==null?"0":homeData.getVatPercent().toPlainString()) +"%" :  "VAT");
 					subset.put("CHARGE_CODE_VALUE", vatPremiumFc);
 					subset.put("DISPLAY_ORDER",  filteredCharge!=null ? filteredCharge.getDisplayOrder() :  "2");
 					csubsets.add(subset);
@@ -1382,11 +1382,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 					List<Map<String, Object>> bsubsets = new ArrayList<Map<String, Object>>();
 					{
 						Map<String, Object> subset = new HashMap<String, Object>();
-						List<ChartOfAccount>  filterChargeCode = getChartList.stream().filter( o -> o.getChartAccountCode().equals(1005)	 ).collect(Collectors.toList());
+						String chargeCode = Double.valueOf(premiumFc)<0 ? "1006" : "1005" ;
+						List<ChartOfAccount>  filterChargeCode = getChartList.stream().filter( o -> o.getChartAccountCode().equals(Integer.valueOf(chargeCode))	 ).collect(Collectors.toList());
 						ChartOfAccount filteredCharge =   filterChargeCode.size() > 0 ? filterChargeCode.get(0):null ; 
-						subset.put("CHARGE_CODE", "1005");
+						subset.put("CHARGE_CODE", chargeCode);
 						subset.put("CHARGE_CODE_DESC",  filteredCharge!=null ? filteredCharge.getChartAccountDesc() :  "Commission");
-						subset.put("NARATION", filteredCharge!=null ? filteredCharge.getNaration()+ " (" + commissionPercent +"%)" : "Commission"+ " (" + commissionPercent +"%)");
+						subset.put("NARATION", filteredCharge!=null ? filteredCharge.getNaration()  : "Commission");
 						subset.put("CHARGE_CODE_VALUE", commission);
 						subset.put("DISPLAY_ORDER",  filteredCharge!=null ? filteredCharge.getDisplayOrder() :  "3");
 						bsubsets.add(subset);
@@ -1394,7 +1395,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					{
 						Map<String, Object> subset = new HashMap<String, Object>();
-						String chargeCode = Double.valueOf(premiumFc)<0 ? "1006" : "1007" ;
+						String chargeCode =  "1007" ;
 						List<ChartOfAccount>  filterChargeCode = getChartList.stream().filter( o -> o.getChartAccountCode().equals(Integer.valueOf(chargeCode))	 ).collect(Collectors.toList());
 						ChartOfAccount filteredCharge =   filterChargeCode.size() > 0 ? filterChargeCode.get(0):null ; 
 						subset.put("CHARGE_CODE", chargeCode);
@@ -1419,7 +1420,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							ChartOfAccount filteredCharge =   filterChargeCode.size() > 0 ? filterChargeCode.get(0):null ; 
 							subset.put("CHARGE_CODE", "1009");
 							subset.put("CHARGE_CODE_DESC", filteredCharge!=null ? filteredCharge.getChartAccountDesc() : "BrokerCommissionVat");
-							subset.put("NARATION", filteredCharge!=null ? filteredCharge.getNaration()+ " (" + brokerVatPercent +"%)" : "BrokerCommissionVat"+ " (" + brokerVatPercent +"%)");
+							subset.put("NARATION", filteredCharge!=null ? filteredCharge.getNaration()+ " " + Double.valueOf(brokerVatPercent) +"%)" : "Vat");
 							subset.put("CHARGE_CODE_VALUE", brokerVatAmount);
 							subset.put("DISPLAY_ORDER",  filteredCharge!=null ? filteredCharge.getDisplayOrder() :  "5");
 							bsubsets.add(subset);
