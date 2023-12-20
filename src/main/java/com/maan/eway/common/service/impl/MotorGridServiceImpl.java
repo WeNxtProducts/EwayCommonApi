@@ -1746,6 +1746,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setLoginId(req.getLoginId());
 						}
 						savedata.setSubUserType(req.getSubUserType());
+						savedata.setSourceType(req.getUserType());
 						savedata.setPolicyNo(null);
 						savedata.setVatPremium(null);
 						savedata.setCdRefno(null);
@@ -2072,8 +2073,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 //							savedata.setBranchCode(branchCode);
 //						}
 						savedata.setApplicationId(req.getApplicationId());
-						savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+						savedata.setLoginId(req.getLoginId()==""?data.getLoginId():(req.getLoginId()));
 						savedata.setSubUserType(req.getSubUserType());
+						savedata.setSourceType(req.getUserType());
 						savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 						savedata.setActualPremiumFc(BigDecimal.ZERO);
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
@@ -2371,8 +2373,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			savedata.setCreditTo(null);
 			savedata.setCreditToId(null);
 			savedata.setApplicationId(req.getApplicationId());
-			savedata.setLoginId(req.getLoginId()==null?homeData.getLoginId():(req.getLoginId()));
+			savedata.setLoginId(req.getLoginId()==""?homeData.getLoginId():(req.getLoginId()));
 			savedata.setSubUserType(req.getSubUserType());
+			savedata.setSourceType(req.getUserType());
 			homePosistionRepo.saveAndFlush(savedata);
 		
 			System.out.println("*************HomePositionMaster************");
@@ -2699,8 +2702,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setStatus("E");
 						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 						savedata.setApplicationId(req.getApplicationId());
-						savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+						savedata.setLoginId(req.getLoginId()==""?data.getLoginId():(req.getLoginId()));
 						savedata.setSubUserType(req.getSubUserType());
+						savedata.setSourceType(req.getUserType());
 						motorDataDetepo.saveAndFlush(savedata);
 					}
 				}
