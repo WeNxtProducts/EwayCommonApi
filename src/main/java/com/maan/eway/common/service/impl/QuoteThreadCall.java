@@ -2612,7 +2612,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 									diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 								}
 								
-								
+								Calendar cal = new GregorianCalendar(); 
+								cal.setTime(oldEndDate);
+								cal.set(Calendar.HOUR_OF_DAY, 23);
+								cal.set(Calendar.MINUTE, 59);
+								oldEndDate = cal.getTime();
 								fc.setCoverPeriodTo(oldEndDate)  ;
 								fc.setStatus("D");
 								fc.setNoOfDays(new BigDecimal( diff));
