@@ -50,6 +50,7 @@ import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.StateMaster;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
@@ -94,7 +95,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Autowired
 	private PersonalInfoRepository personalInforepo;
 	
-
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -106,14 +109,23 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		try {
 			Calendar cal = Calendar.getInstance();
 
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("1");
+			comErrDescReq.setModuleName("CUSTOMER CREATION");
+			
+			
 			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
 				if (StringUtils.isBlank(req.getClientName())) {
-					errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+					//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+					errorList.add(new Error("01", "ClientName", errorDescService.getErrorDesc("1001",comErrDescReq)));
 				} else if (req.getClientName().length() > 250) {
-					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 250 Characters"));
+					errorList.add(new Error("01", "ClientName", errorDescService.getErrorDesc("1002",comErrDescReq)));
 				} 
 				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
-					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
+					errorList.add(new Error("01", "ClientName", errorDescService.getErrorDesc("1003",comErrDescReq)));						
 				}
 				
 				

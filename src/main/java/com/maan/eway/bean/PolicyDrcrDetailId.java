@@ -39,12 +39,8 @@ public class PolicyDrcrDetailId implements Serializable {
     private String     companyId ;
     
     private String     productId ;
-    
-    private String     sectionId ;
-    
+  
     private String     branchCode ;
-    
-    private String     riskId ;
     
      
 }

@@ -27,8 +27,8 @@ public class DebitAndCredit {
     private String     companyId    ;
 	@JsonProperty("Productid")
     private String     productId    ;
-	@JsonProperty("Sectionid")
-    private String     sectionId    ;
+//	@JsonProperty("Sectionid")
+//    private String     sectionId    ;
 	@JsonProperty("Branchcode")
     private String     branchCode   ;
     
@@ -38,6 +38,11 @@ public class DebitAndCredit {
     private String     docNo        ;
 	@JsonProperty("Doctype")
     private String     docType      ;
+	
+//	@JsonProperty("RiskDesc")
+//    private String     riskDesc ;
+	
+	
 	@JsonProperty("Docid")
     private String     docId        ;
 	@JsonProperty("AmountLC")
@@ -53,8 +58,17 @@ public class DebitAndCredit {
 	@JsonProperty("Status")
     private String status;
 	
-	@JsonProperty("RiskId")
-    private String riskId;
+//	@JsonProperty("RiskId")
+//    private String riskId;
+	
+	@JsonProperty("ChargeAccountDesc")
+    private String chargeAccountDesc;
+	
+	@JsonProperty("Narration")
+    private String narration;
+	
+	@JsonProperty("DisplayOrder")
+    private String displayOrder;
 	
 	/*@JsonProperty("TotalCommission")
     private BigDecimal totalCommission      ;*/

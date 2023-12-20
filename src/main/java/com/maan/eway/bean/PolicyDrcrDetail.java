@@ -73,15 +73,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_ID", nullable=false, length=10)
     private String     productId ;
 
-    @Id
-    @Column(name="SECTION_ID",  nullable=false,length=10)
-    private String     sectionId ;
-    
-    @Id
-    @Column(name="RISK_ID", nullable=false,length=2)
-    private String     riskId ;
-    
-
+   
     @Id
     @Column(name="BRANCH_CODE", nullable=false, length=10)
     private String     branchCode ;
@@ -123,9 +115,6 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="DISPLAY_ORDER", length=5)
     private Integer     displayOrder ; 
-
-    @Column(name="RISK_DESC", length=5)
-    private String     riskDesc;
     
     //--- ENTITY LINKS ( RELATIONSHIP )
 
