@@ -1420,7 +1420,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							ChartOfAccount filteredCharge =   filterChargeCode.size() > 0 ? filterChargeCode.get(0):null ; 
 							subset.put("CHARGE_CODE", "1009");
 							subset.put("CHARGE_CODE_DESC", filteredCharge!=null ? filteredCharge.getChartAccountDesc() : "BrokerCommissionVat");
-							subset.put("NARATION", filteredCharge!=null ? filteredCharge.getNaration()+ " " + Double.valueOf(brokerVatPercent) +"%)" : "Vat");
+							subset.put("NARATION", filteredCharge!=null ? filteredCharge.getNaration()+ " " + Double.valueOf(brokerVatPercent) +"%" : "Vat");
 							subset.put("CHARGE_CODE_VALUE", brokerVatAmount);
 							subset.put("DISPLAY_ORDER",  filteredCharge!=null ? filteredCharge.getDisplayOrder() :  "5");
 							bsubsets.add(subset);
