@@ -1708,6 +1708,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
 					coverData.setIndividualId(request.getVehicleId());
 					coverData.setOriginalPolicyNo(request.getOriginalPolicyNo());
+					// Period End Condition
+					Calendar cal = new GregorianCalendar(); 
+					cal.setTime(cov.getCoverPeriodTo());
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 59);
+					Date endDate = cal.getTime();
+					coverData.setCoverPeriodTo(endDate);
 					saveCovers.add(coverData);
 					
 				}
@@ -1814,6 +1821,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 					System.out.println( "Policy Opted Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
 					
 					coverData.setCoverPeriodFrom(periodStart);
+					
+					// Period End Condition
+					Calendar cal = new GregorianCalendar(); 
+					cal.setTime(periodEnd);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 59);
+					periodEnd = cal.getTime();
 					coverData.setCoverPeriodTo(periodEnd);
 					coverData.setNoOfDays(new BigDecimal(diff));
 					coverData.setStatus("Y");
@@ -2612,6 +2626,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 									diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 								}
 								
+								// Period End Condition
 								Calendar cal = new GregorianCalendar(); 
 								cal.setTime(oldEndDate);
 								cal.set(Calendar.HOUR_OF_DAY, 23);
