@@ -4548,7 +4548,8 @@ public class GridServiceImpl implements GridService {
 				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
 				agencyCode.where(a1);
 
-				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//				Predicate n1 = cb.equal(m.get("loginId"), req.getLoginId());
 				// Predicate n2 = cb.isNotNull(m.get("applicationId"));
 				Predicate n3 = cb.equal(m.get("status"), "P");
 				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
@@ -4569,7 +4570,7 @@ public class GridServiceImpl implements GridService {
 				Predicate n14 = cb.isNotNull(m.get("loginId"));
 				Predicate us1 = cb.equal(us.get("loginId"), m.get("loginId"));
 
-				query.where(n1, n3, n4, n5, n6, n7, n8, n11, n12, n13, n14,us1);
+				query.where(n3, n4, n5, n6, n7, n8, n11, n12, n13, n14,us1);
 				
 				
 				TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
