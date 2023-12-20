@@ -356,8 +356,10 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setEndtPrevQuoteNo(homeData.getEndtPrevQuoteNo()==null?null:homeData.getEndtPrevQuoteNo());
 			if(homeData.getEndtPrevQuoteNo()!=null) {
 				List<PaymentDetail> paymentDetails=paymentRepo.findByQuoteNo(homeData.getEndtPrevQuoteNo());
+				if(paymentDetails.size()>0 && paymentDetails!=null) {
 				quoteRes.setPrevPaymentType(paymentDetails.get(0).getPaymentType());
 				quoteRes.setPrevPaymentTypeDesc(paymentDetails.get(0).getPaymentTypedesc());
+				}
 			}
 			quoteRes.setEndtCount(homeData.getEndtCount()==null?0:homeData.getEndtCount().intValue());
 			quoteRes.setIsChargeOrRefund(homeData.getIsChargRefund()==null?"":homeData.getIsChargRefund());

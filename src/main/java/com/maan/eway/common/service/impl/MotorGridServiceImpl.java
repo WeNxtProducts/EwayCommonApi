@@ -1746,7 +1746,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setLoginId(req.getLoginId());
 						}
 						savedata.setSubUserType(req.getSubUserType());
-						savedata.setSourceType(req.getUserType());
 						savedata.setPolicyNo(null);
 						savedata.setVatPremium(null);
 						savedata.setCdRefno(null);
@@ -2075,7 +2074,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setApplicationId(req.getApplicationId());
 						savedata.setLoginId(req.getLoginId()==""?data.getLoginId():(req.getLoginId()));
 						savedata.setSubUserType(req.getSubUserType());
-						savedata.setSourceType(req.getUserType());
 						savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 						savedata.setActualPremiumFc(BigDecimal.ZERO);
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
@@ -2375,7 +2373,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			savedata.setApplicationId(req.getApplicationId());
 			savedata.setLoginId(req.getLoginId()==""?homeData.getLoginId():(req.getLoginId()));
 			savedata.setSubUserType(req.getSubUserType());
-			savedata.setSourceType(req.getUserType());
 			homePosistionRepo.saveAndFlush(savedata);
 		
 			System.out.println("*************HomePositionMaster************");
@@ -2704,7 +2701,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setApplicationId(req.getApplicationId());
 						savedata.setLoginId(req.getLoginId()==""?data.getLoginId():(req.getLoginId()));
 						savedata.setSubUserType(req.getSubUserType());
-						savedata.setSourceType(req.getUserType());
 						motorDataDetepo.saveAndFlush(savedata);
 					}
 				}
