@@ -1474,10 +1474,15 @@ public class CalculatorEngineService implements CalculatorEngine {
 								String doctype = m.getValue().equals("<CUSTOMER>") ? "C" : "B";
 
 								res.setAmountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
-								//res.setAmountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
-								String pattern =  "#####0" ;
-								DecimalFormat df = new DecimalFormat(pattern);
-								res.setAmountLc( new BigDecimal(df.format(res.getAmountFc().multiply(v.getExchangeRate()))) );
+								if(s.get("CHARGE_CODE").toString().equalsIgnoreCase("1007")  ) {
+									res.setAmountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
+								} else {
+									String pattern =  "#####0" ;
+									DecimalFormat df = new DecimalFormat(pattern);
+									res.setAmountLc( new BigDecimal(df.format(res.getAmountFc().multiply(v.getExchangeRate()))) );
+									
+								}
+							
 								res.setChargeCode(new BigDecimal(s.get("CHARGE_CODE").toString()));
 								res.setChargeAccountDesc(s.get("CHARGE_CODE_DESC").toString());
 								res.setNarration(s.get("NARATION").toString());
