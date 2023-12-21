@@ -2341,7 +2341,8 @@ public class PaymentServiceImpl implements PaymentService {
 //			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") &&
 //					 (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
 //						).collect(Collectors.toList())	;
-			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o ->(o.getChargeCode().equals(new BigDecimal(1005)) )).collect(Collectors.toList())	;
+		//	String chargeCode = Double.valueOf(premiumFc)<0 ? "1006" : "1005" ;
+			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o ->(o.getChargeCode().equals(new BigDecimal(1005))||o.getChargeCode().equals(new BigDecimal(1006)) )).collect(Collectors.toList())	;
 			 for ( DebitAndCredit o : commissionList) {
 				 commission= commission.add(o.getAmountFc());
 				 
@@ -2349,7 +2350,7 @@ public class PaymentServiceImpl implements PaymentService {
 			 // Commission Vat
 			 String brokerDrFlag = commission.compareTo(new BigDecimal("0") ) < 0 ? "DR" :"CR"  ;
 			List<DebitAndCredit> commissionVatList = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase(brokerDrFlag) &&
-			 (o.getChargeCode().equals(new BigDecimal(1012)) )).collect(Collectors.toList())	;
+			 (o.getChargeCode().equals(new BigDecimal(1009)) )).collect(Collectors.toList())	;
 			
 			for ( DebitAndCredit o : commissionVatList) {
 				commissionVat= commissionVat.add(o.getAmountFc());
@@ -2364,7 +2365,8 @@ public class PaymentServiceImpl implements PaymentService {
 //								o.getChargeCode().equals(new BigDecimal(1012))
 //								)
 //						).collect(Collectors.toList()).get(0).getAmountFc();
-			 commissionPercent=	policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).get(0).getAmountFc();
+			 commissionPercent=policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).size() 
+					 >0 ?	policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).get(0).getAmountFc() : new BigDecimal(0);
 			 
 			}
 			
@@ -2413,7 +2415,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			// Update ProductWise
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
-			String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn()); 
+			String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn(),commissionPercent); 
   
 			return policyDetails;
 		}catch (Exception e) {
@@ -2591,7 +2593,7 @@ public class PaymentServiceImpl implements PaymentService {
 		return itemDesc ;
 	}
 	
-	 public  String updateProductWisePolicyNo(String productId , String policyNo , String quoteNo,String endttypeId, String motorYn ) {
+	 public  String updateProductWisePolicyNo(String productId , String policyNo , String quoteNo,String endttypeId, String motorYn ,BigDecimal commissionPercent ) {
 		 String res = "" ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		 try {
@@ -2605,6 +2607,8 @@ public class PaymentServiceImpl implements PaymentService {
 	    				   o.setPolicyNo(policyNo);
 	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
+	    				   o.setCommissionPercentage(commissionPercent);
+	    				   
 	    			   });
 					} else {
 					   motorList.forEach( o -> {
@@ -2612,8 +2616,10 @@ public class PaymentServiceImpl implements PaymentService {
 							   o.setPolicyNo(policyNo);
 							  // o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
 			    			   o.setStatus("P");
+			    			  
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+			    			   o.setCommissionPercentage(commissionPercent);
 			    		    
 		    		   });
 					}
@@ -2645,6 +2651,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    				   o.setPolicyNo(policyNo);
 	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
+	    				   o.setCommissionPercentage(commissionPercent);
 	    			   });
 					} else {
 						passengerList.forEach( o -> {
@@ -2654,6 +2661,7 @@ public class PaymentServiceImpl implements PaymentService {
 			    			   o.setStatus("P");
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+			    			   o.setCommissionPercentage(commissionPercent);
 			    		    
 		    		   });
 					}
@@ -2664,6 +2672,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    		  eserTravel.setPolicyNo(policyNo);
 	    		  eserTravel.setStatus(StringUtils.isNotBlank(endttypeId) && "842".equalsIgnoreCase(endttypeId) ? "D" : "P");
 	    		  eserTravel.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+	    		  eserTravel.setCommissionPercentage(commissionPercent);
 	    		  eserTraRepo.saveAndFlush(eserTravel);
 	    		  
 	    	   } else  if(motorYn.equalsIgnoreCase("A") ) {
@@ -2682,8 +2691,10 @@ public class PaymentServiceImpl implements PaymentService {
 							   o.setPolicyNo(policyNo);
 							//   o.setOriginalPolicyNo(StringUtils.isNotBlank(endttypeId) ? o.getOriginalPolicyNo() : policyNo );
 			    			   o.setStatus("P");
+			    			   
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+			    			   o.setCommissionPercentage(commissionPercent);
 			    		    
 		    		   });
 					}
@@ -2715,6 +2726,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    				   o.setPolicyNo(policyNo);
 	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
+	    				   o.setCommissionPercentage(commissionPercent);
 	    			   });
 					} else {
 						humanList.forEach( o -> {
@@ -2724,7 +2736,7 @@ public class PaymentServiceImpl implements PaymentService {
 			    			   o.setStatus("P");
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    		
+			    			   o.setCommissionPercentage(commissionPercent);
 		    			    
 		    		   });
 					}
@@ -2759,6 +2771,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    				   o.setPolicyNo(policyNo);
 	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
+	    				   o.setCommissionPercentage(commissionPercent);
 	    			   });
 					} else {
 						humanList.forEach( o -> {
@@ -2767,6 +2780,7 @@ public class PaymentServiceImpl implements PaymentService {
 			    			   o.setStatus("P");
 						   }   
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+			    			   o.setCommissionPercentage(commissionPercent);
 			    		   
 		    			    
 		    		   });
