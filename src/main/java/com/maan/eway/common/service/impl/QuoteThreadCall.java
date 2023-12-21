@@ -3034,8 +3034,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setVatPercent(TaxPercent);
 			home.setPremiumLc(new BigDecimal(df.format(premiumLc)));
 			home.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
-			BigDecimal exRate = home.getProductId()==4 ?  new BigDecimal("1") : home.getExchangeRate() ;
-			home.setVatPremiumLc(  home.getVatPremiumFc().multiply(exRate,MathContext.DECIMAL32));
+			home.setVatPremiumLc(  home.getVatPremiumFc().multiply(home.getExchangeRate(),MathContext.DECIMAL32));
 			home.setFinalizeYn("N");
 			home.setTax1(new BigDecimal(df.format(tax1)));
 			home.setTax2(new BigDecimal(df.format(tax2)));
@@ -3058,7 +3057,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}
 				
 				home.setEndtPremium(endtValues.getEndtPremium());
-				home.setEndtPremiumLc(home.getEndtPremium().multiply(exRate,MathContext.DECIMAL32));
+				home.setEndtPremiumLc(home.getEndtPremium().multiply(home.getExchangeRate(),MathContext.DECIMAL32));
 				home.setEndtPremiumTax(endtValues.getEndtVatPremium());
 				home.setIsChargRefund(endtChargeOrRefund);
 			}
