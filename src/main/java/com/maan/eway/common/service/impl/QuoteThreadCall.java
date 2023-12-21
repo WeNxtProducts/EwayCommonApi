@@ -470,21 +470,21 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 List<PolicyCoverData>  oldcoversf=oldcovers;
 			
 			// Premium With Tax 
-//			Double removedCoverPremium =  (totalcovers.stream().filter( o ->   o.getPremiumIncludedTaxFc()!=null 
-//					 && "D".equals(o.getStatus())   && "E".equals(o.getCoverageType())  ) .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum());			 
-//			 
-//			Double endtChangePremium=totalcovers.stream().filter( o ->  o.getPremiumIncludedTaxFc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())  )
-//			 .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
-//			 
-//			 newCovers.removeIf(p-> {
-//				 return oldcoversf.stream().anyMatch(x-> (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
-//			 });
-//			 Double addedCoverPremium =newCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
-//					 o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null 
-//					 && !"D".equals(o.getStatus())
-//					 && effDate.compareTo(o.getCoverPeriodFrom())>=0  ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
-//				BigDecimal endtPremium= new  BigDecimal(removedCoverPremium+addedCoverPremium+endtChangePremium);
-//				
+			Double removedCoverPremium =  (totalcovers.stream().filter( o ->   o.getPremiumIncludedTaxFc()!=null 
+					 && "D".equals(o.getStatus())   && "E".equals(o.getCoverageType())  ) .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum());			 
+			 
+			Double endtChangePremium=totalcovers.stream().filter( o ->  o.getPremiumIncludedTaxFc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())  )
+			 .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
+			 
+			 newCovers.removeIf(p-> {
+				 return oldcoversf.stream().anyMatch(x-> (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
+			 });
+			 Double addedCoverPremium =newCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
+					 o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null 
+					 && !"D".equals(o.getStatus())
+					 && effDate.compareTo(o.getCoverPeriodFrom())>=0  ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
+				BigDecimal endtPremium= new  BigDecimal(removedCoverPremium+addedCoverPremium+endtChangePremium);
+				
 				
 			// Premium Without Tax 
 			Double removedCoverPremiumWithoutTax =  (totalcovers.stream().filter( o ->   o.getPremiumExcludedTaxFc()!=null 
@@ -499,20 +499,48 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 Double addedCoverPremiumWithoutTax =newCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
 					 o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null 
 					 && !"D".equals(o.getStatus())
-					 && effDate.compareTo(o.getCoverPeriodFrom())>=0  ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
+					 && effDate.compareTo(o.getCoverPeriodFrom())>=0  ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
 				BigDecimal endtPremiumWithoutTax = new  BigDecimal(removedCoverPremiumWithoutTax+addedCoverPremiumWithoutTax+endtChangePremiumWithoutTax);
 					
-			// Tax Amount 
-			List<PolicyCoverData>  endtTaxCovers  = totalcovers.stream().filter( o -> o.getCoverageType().equalsIgnoreCase("T") && 
-					o.getDiscLoadId().equals(Integer.valueOf(request.getEndtType())) ).collect(Collectors.toList());
+			
+			
+			// Premium Condition 
+			String endtChargeOrRefund="REFUND";
+		    if (endtPremium.doubleValue()<0 && endtPremiumWithoutTax.doubleValue() >0 ) {
+		    	endtPremiumWithoutTax = new BigDecimal(- endtPremiumWithoutTax.doubleValue());
+			} else if (endtPremium.doubleValue()==0  ) {
+				endtPremiumWithoutTax = new BigDecimal("0");
+			}
+		 // Tax Amount 
+		    List<PolicyCoverData>  endt0Covers  = totalcovers.stream().filter( o ->  o.getCoverageType().equalsIgnoreCase("E") && 
+		    		(o.getPremiumIncludedTaxFc()==null || o.getPremiumIncludedTaxFc().compareTo(new BigDecimal(0)) == 0 ) ).collect(Collectors.toList());
+		    List<PolicyCoverData>  endtTaxCovers  =  totalcovers.stream().filter( o -> o.getCoverageType().equalsIgnoreCase("T") && 
+					o.getDiscLoadId().equals(Integer.valueOf(request.getEndtType()))  ).collect(Collectors.toList());
+		    // old cover taxes
+		     endtTaxCovers.removeIf(p-> {
+		    	return endt0Covers.stream().anyMatch(x->  (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
+		    });
+		    // new cover taxes
+		     List<PolicyCoverData>  newCoverTax  =  totalcovers.stream().filter( o -> o.getCoverageType().equalsIgnoreCase("T") && 
+						o.getDiscLoadId().equals(0) && !o.getTaxId().equals(0) ).collect(Collectors.toList());
+		     newCoverTax.removeIf(p-> {
+			    	return oldcoversf.stream().anyMatch(x->  (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
+			  });
+		    
+		    
+//					endt0Covers.stream().filter( o -> o.getCoverageType().equalsIgnoreCase("T") && 
+//					o.getDiscLoadId().equals(Integer.valueOf(request.getEndtType())) ).collect(Collectors.toList());
 			 Double endtVatPremium = endtTaxCovers.stream().filter( o -> !o.getDiscLoadId().equals(0)  &&  
 					 !o.getTaxId().equals(0) && o.getTaxAmount()!=null && o.getCoverageType().equalsIgnoreCase("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()   ).sum();
-			 
-			String endtChargeOrRefund="REFUND";
-			if(endtPremiumWithoutTax.doubleValue()>=0) {
+			 endtVatPremium = endtVatPremium + (newCoverTax.size() >0 ? newCoverTax.stream().mapToDouble( o ->   o.getTaxAmount().doubleValue()   ).sum() :0D  ) ;
+	
+			// Vat Condition
+			if(endtPremiumWithoutTax.doubleValue()>0 ) {
 				endtChargeOrRefund="CHARGE";
-			} else if (endtPremiumWithoutTax.doubleValue()<0 && endtVatPremium >=0 ) {
+			} else if (endtPremiumWithoutTax.doubleValue()<0 && endtVatPremium >0 ) {
 				endtVatPremium = - endtVatPremium;
+			} else if (endtPremiumWithoutTax.doubleValue()==0  ) {
+				endtVatPremium = 0D;
 			}
 			
 			endtRes.setChargeOrRefund(endtChargeOrRefund);
@@ -2957,9 +2985,34 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double overAllPremiumFc = premiumCovers.stream().filter( o ->  o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
 			Double premiumLc = premiumCovers.stream().filter( o ->  o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()   ).sum();					
 			Double overAllPremiumLc = premiumCovers.stream().filter( o ->  o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
-			Double vatPremiumFc = overAllPremiumFc - premiumFc ;  
-			Double vatPercent = vatPremiumFc<=0D ?0 : (vatPremiumFc*100) / premiumFc ;
-			Double vatPremiumLc = overAllPremiumLc - premiumLc ;  
+			List<PolicyCoverData>  covers2 = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(request.getQuoteNo() ,"D");
+			List<PolicyCoverData>  taxCovers =  covers2.stream().filter( o ->  o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).collect(Collectors.toList());
+		//	Double taxPremium = taxCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
+			// tax Percent 
+			BigDecimal totalTaxPercent = new BigDecimal(0) ;
+			Double totalTaxAmount = 0D ;
+			boolean taxCondtion =  StringUtils.isNotBlank(request.getEndtType()) && request.getEndtType().equalsIgnoreCase("842") ? false : true ; 
+			if(taxCondtion==true ) {
+				for(PolicyCoverData o : taxCovers ) {
+					if(o.getTaxAmount()!=null && o.getTaxAmount().compareTo(new BigDecimal(0)) > 0 && taxCondtion==true  ) {
+						totalTaxAmount =totalTaxAmount + ( o.getTaxAmount()==null ? 0D : o.getTaxAmount().doubleValue());
+						totalTaxPercent = totalTaxPercent.add( o.getTaxRate()==null ?  new BigDecimal(0) : o.getTaxRate());
+					} 
+				}	
+			} else if(taxCondtion == false) {
+				totalTaxAmount = overAllPremiumFc - premiumFc ;  
+				totalTaxPercent = new BigDecimal( totalTaxAmount<=0D ?0 : (totalTaxAmount*100) / premiumFc );
+			}
+			
+			
+			List<PolicyCoverData>  taxCoversFilter =  covers2.stream().filter(  distinctByKey(o -> Arrays.asList(o.getVehicleId() ,o.getSectionId(),o.getCoverId() )) ).collect(Collectors.toList());
+			//BigDecimal withCoverCount = new BigDecimal(taxCount.doubleValue()/taxCoversFilter.size() ) ;
+			BigDecimal TaxPercent = totalTaxPercent.divide(new BigDecimal(taxCoversFilter.size()<=0?1:taxCoversFilter.size())).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP)  ;
+			// commPercentage.divide(commCount).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP)
+			
+//			Double vatPremiumFc = overAllPremiumFc - premiumFc ;  
+//			Double vatPercent = vatPremiumFc<=0D ?0 : (vatPremiumFc*100) / premiumFc ;
+//			Double vatPremiumLc = overAllPremiumLc - premiumLc ;  
 			System.out.println("Home Position PremiumFc --> "  + premiumFc );
 			System.out.println("Home Position OverAllPremiumFc --> "  + overAllPremiumFc );
 			System.out.println("Home Position PremiumLc --> "  + premiumLc );
@@ -2977,11 +3030,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			home.setPremiumFc(new BigDecimal(df.format(premiumFc)) );
 			home.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
-			home.setVatPremiumFc(new BigDecimal(df.format(vatPremiumFc)));
-			home.setVatPercent(new BigDecimal(df.format(vatPercent)));
-			home.setPremiumLc(new BigDecimal(df.format(premiumLc)) );
+			home.setVatPremiumFc(new BigDecimal(df.format(totalTaxAmount)));
+			home.setVatPercent(TaxPercent);
+			home.setPremiumLc(new BigDecimal(df.format(premiumLc)));
 			home.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
-			home.setVatPremiumLc(new BigDecimal(df.format(vatPremiumLc)));
+			BigDecimal exRate = home.getProductId()==4 ?  new BigDecimal("1") : home.getExchangeRate() ;
+			home.setVatPremiumLc(  home.getVatPremiumFc().multiply(exRate,MathContext.DECIMAL32));
 			home.setFinalizeYn("N");
 			home.setTax1(new BigDecimal(df.format(tax1)));
 			home.setTax2(new BigDecimal(df.format(tax2)));
@@ -3004,7 +3058,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}
 				
 				home.setEndtPremium(endtValues.getEndtPremium());
-				home.setEndtPremiumLc(home.getEndtPremium().multiply(home.getExchangeRate(),MathContext.DECIMAL32));
+				home.setEndtPremiumLc(home.getEndtPremium().multiply(exRate,MathContext.DECIMAL32));
 				home.setEndtPremiumTax(endtValues.getEndtVatPremium());
 				home.setIsChargRefund(endtChargeOrRefund);
 			}
