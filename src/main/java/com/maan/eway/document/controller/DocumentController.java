@@ -124,7 +124,7 @@ public class DocumentController {
 
 		List<Error> errorList = documentservice.ocrFileValidation(req);
 		
-		if(errorList.size() != 0 || !errorList.isEmpty()) {
+		if(errorList != null) {
 			
 			CommonRes res = new CommonRes();
 			res.setMessage("Failed");

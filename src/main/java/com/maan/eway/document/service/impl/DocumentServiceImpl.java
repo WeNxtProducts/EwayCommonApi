@@ -1,5 +1,6 @@
 package com.maan.eway.document.service.impl;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,13 +18,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -38,6 +40,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -152,25 +157,23 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
-	
-	
+
 	@Value(value = "${ocr.tesseract.path}")
 	private String tesseractPath;
-	
+
 	@Value(value = "${ocr.imageMagic.path}")
 	private String magickPath;
-	
+
 	@Value(value = "${ocr.image.path}")
-	private String blackWhiteImgPath;
-	
-	@Value(value = "${ocr.output.path}")
-	private String outputImagePath;
-	
+	private String ocrFolder;
+
 	@PersistenceContext
 	private EntityManager em;
 
 	@Autowired
 	private ProductEmployeesDetailsRepository paccRepo;
+	
+	Map<Double, String> similarWordPercentMap = new LinkedHashMap<>();
 
 //	@Autowired
 //	private CoverDocumentUploadDetailsRepository  documentuploaddetailsrepository;
@@ -1658,28 +1661,89 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public CommonRes fileuploadOCR(DocumentUploadOCRReq req) {
 		CommonRes res = new CommonRes();
+		OCRRecogisation ocrResponse = new OCRRecogisation();
 
-		try {
+		log.info("Input Image Path ----------------------------->" + req.getFilePath());
 
-			String inputImagePath = req.getFilePath();
-
-			log.info("ImagePath  -> -------- " + inputImagePath);
-
-			String outputText = outputImagePath + System.currentTimeMillis();
-			String blackAndWhite = blackWhiteImgPath + System.currentTimeMillis() + ".png";
-
-			String[] command = { "cmd", };
-
-			Process p;
+		if (isPDF(req.getFilePath())) {
 			try {
 
-				p = Runtime.getRuntime().exec(command);
-				new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
-				new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
-				PrintWriter stdin = new PrintWriter(p.getOutputStream());
+				// Set the color management system (Option 2 from above)
+				System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
 
+				ocrResponse = convertPdfToImages(req, ocrFolder);
+
+				System.out.println("PDF converted to image successfully.");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			
+			String folderPath = ocrFolder + "\\"+System.currentTimeMillis();
+			
+			File file = new File(folderPath);
+			
+			if(!file.exists()) {
+				file.mkdirs();
+			}
+			
+			String imagePath = file.getAbsolutePath()+"\\"+1;
+			String textPath = file.getAbsolutePath()+"\\"+2;
+			
+			ocrResponse = commandLineArgsForTesseract(req, imagePath, textPath);
+		}
+
+		if (ocrResponse != null) {
+
+			Double accuracy = ocrResponse.getPercentage() == null ? 0d : ocrResponse.getPercentage();
+
+			if (accuracy >= 80 && accuracy <= 100) {
+				res.setCommonResponse(ocrResponse);
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErroCode(0);
+			} else {
+				res.setCommonResponse(ocrResponse);
+				res.setMessage("Failure");
+				res.setIsError(true);
+				res.setErroCode(0);
+			}
+		}
+
+		return res;
+	}
+
+	public OCRRecogisation commandLineArgsForTesseract(DocumentUploadOCRReq req, String imagePath, String outputText) {
+
+		OCRRecogisation response = new OCRRecogisation();
+		
+
+		String[] command = { "cmd", };
+
+		Process p;
+		try {
+
+			p = Runtime.getRuntime().exec(command);
+			new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
+			new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
+			PrintWriter stdin = new PrintWriter(p.getOutputStream());
+
+			if (isPDF(req.getFilePath())) {
+
+				stdin.println("\"" + magickPath + "\" mogrify -density 600 -units PixelsPerInch \"" + imagePath + "\"");
+				// Extracting Text In an Image
+				stdin.println("\"" + tesseractPath + "\" \"" + imagePath + "\" \"" + outputText + "\"");
+
+			} else {
+
+				String blackAndWhite = imagePath+".jpeg";
+				
+				imagePath = req.getFilePath();
+				
+				
+				
 				// Sharpen the Edges Of image
-				stdin.println("\"" + magickPath + "\" convert \"" + inputImagePath
+				stdin.println("\"" + magickPath + "\" convert \"" + imagePath
 						+ "\" -resize 2000x1200 -sharpen 0x2 -contrast-stretch 0x10% -colorspace Gray -normalize  \""
 						+ blackAndWhite + "\"");
 
@@ -1692,68 +1756,87 @@ public class DocumentServiceImpl implements DocumentService {
 				// Extracting Text In an Image
 				stdin.println("\"" + tesseractPath + "\" \"" + blackAndWhite + "\" \"" + outputText
 						+ "\" -l eng+ara  --oem 3 --psm 3 \"");
-				stdin.close();
-				p.waitFor();
-				System.out.println();
-				System.out.println();
-				System.out.println();
-				System.out.println();
 
-				OCRRecogisation response = recognisation(outputText+".txt", req.getValue());
-				
-				Double percent = response.getPercentage() == null ? 0d : response.getPercentage();
-				
-				String id = req.getValue() == null ? "":req.getValue();
-				response.setId(id);
-				
-				if (percent >= 80 && percent <=100) {
-
-					res.setMessage("Success");
-					res.setIsError(false);
-					res.setCommonResponse(response);
-
-				} else {
-
-					res.setMessage("Failed");
-					res.setIsError(true);
-					res.setCommonResponse(response);
-
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+			stdin.close();
+			p.waitFor();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+
+			response = recognisation(outputText + ".txt", req.getValue());
+
+			System.out.println();
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
-		return res;
+		return response;
 	}
-	
-	public static boolean isPDF(String filePath) {
-        // Get the file extension
-        String extension = getFileExtension(filePath);
 
-        // Check if the extension is "pdf" (case-insensitive)
-        return extension != null && extension.equalsIgnoreCase("pdf");
-    }
+	public boolean isPDF(String filePath) {
+		// Get the file extension
+		String extension = getFileExtension(filePath);
 
-    public static String getFileExtension(String filePath) {
-        int lastDotIndex = filePath.lastIndexOf('.');
-        if (lastDotIndex > 0 && lastDotIndex < filePath.length() - 1) {
-            return filePath.substring(lastDotIndex + 1);
-        }
-        return null; // No extension found
-    }
+		// Check if the extension is "pdf" (case-insensitive)
+		return extension != null && extension.equalsIgnoreCase("pdf");
+	}
 
-	public static OCRRecogisation recognisation(String filePath, String expectedString) {
+	public OCRRecogisation convertPdfToImages(DocumentUploadOCRReq req, String outputFolder) throws IOException {
+		
+		OCRRecogisation res = new OCRRecogisation();
+		
+		String filePath = req.getFilePath();
+		
+		try (PDDocument document = PDDocument.load(new File(filePath))) {
+			PDFRenderer pdfRenderer = new PDFRenderer(document);
+
+			// Create a folder for the images
+
+			String folderPath = ocrFolder+"\\"+System.currentTimeMillis();
+			File folder = new File(folderPath);
+
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+
+			for (int pageIndex = 0; pageIndex < document.getNumberOfPages(); pageIndex++) {
+				BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 600, ImageType.RGB);
+
+				// Save the image to a file inside the folder
+				String imagePath = folderPath + "/page_" + (pageIndex + 1) + ".png";
+				File outputFile = new File(imagePath);
+
+				ImageIO.write(image, "png", outputFile);
+
+				System.out.println("File Path---------------------------->" + outputFile.getAbsolutePath());
+
+				// Assuming this method is used to process each image
+				res = commandLineArgsForTesseract(req, imagePath, folderPath + "/text_" + (pageIndex + 1));
+			}
+
+			return res;
+		}
+	}
+
+	public  String getFileExtension(String filePath) {
+		int lastDotIndex = filePath.lastIndexOf('.');
+		if (lastDotIndex > 0 && lastDotIndex < filePath.length() - 1) {
+			return filePath.substring(lastDotIndex + 1);
+		}
+		return null; // No extension found
+	}
+
+	public  OCRRecogisation recognisation(String filePath, String expectedString) {
 
 		OCRRecogisation recognisation = new OCRRecogisation();
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-			String line,text="" ;
+			String line, text = "";
 			Double result = 0d;
-			Map<Double, String> similarWordPercentMap = new HashMap<>();
-			// Read each line from the file until the end of the file is reached
 			
+			// Read each line from the file until the end of the file is reached
+
 			Double detper = 0.0;
 			while ((line = reader.readLine()) != null) {
 				text += line;
@@ -1772,8 +1855,8 @@ public class DocumentServiceImpl implements DocumentService {
 					Double detectperc2d = (double) StringUtils.getLevenshteinDistance(expectedString, word.trim());
 
 					detper = 100 - ((detectperc2d / expectedString.length()) * 100);
-					
-					if(result <= detper) {
+
+					if (result <= detper) {
 						result = detper;
 						similarWordPercentMap.put(result, word);
 					}
@@ -1781,17 +1864,17 @@ public class DocumentServiceImpl implements DocumentService {
 				}
 				// Add your logic here to process the content of each line
 				// For example, you can perform text analysis, manipulation, etc.
-							
+
 			}
-			
-			result = similarWordPercentMap.keySet().stream()
-					.max(Double :: compare)
+
+			result = similarWordPercentMap.keySet().stream().max(Double::compare)
 					.orElseThrow(() -> new IllegalStateException("RecognisationMap is Null"));
-			
-			System.out.println("MAP   ----------------------> "+similarWordPercentMap);
+
+			System.out.println("MAP   ----------------------> " + similarWordPercentMap);
 			recognisation.setPercentage(result);
 			recognisation.setValue(similarWordPercentMap.get(result));
-			
+			recognisation.setId(expectedString);
+
 			System.out.println("Recognisation Parameters ------------> " + recognisation);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1802,16 +1885,10 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Override
 	public List<Error> ocrFileValidation(DocumentUploadOCRReq req) {
-		
+
 		List<Error> errorList = new ArrayList<>();
-		
-		String filePath = req.getFilePath() == null? "":req.getFilePath();
-		
-		if(isPDF(filePath)){
-			
-			errorList.add(new Error("01", "PDF file", "Uploaded File Should Not be a PDF"));
-		}
-		return errorList;
+
+		return null;
 	}
-	
+
 }
