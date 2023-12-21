@@ -241,11 +241,16 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		List<ClausesMaster> list = new ArrayList<ClausesMaster>();
 
 		try {
-			Date today = new Date();
-			Calendar cal = new GregorianCalendar();
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
-			today = cal.getTime();
-			Date todayEnd = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
 
 			
 			// Find Latest Record
@@ -325,13 +330,16 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 
 		try {
-			Date today = new Date();
-			Calendar cal = new GregorianCalendar();
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
-			today = cal.getTime();
-			Date todayEnd = cal.getTime();
-
-			
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
 			
 			// Find Latest Record
 			CriteriaBuilder cb1 = em.getCriteriaBuilder();
@@ -407,11 +415,16 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 	public List<WarrantyMaster> getWarrantiesMaster(TermsAndConditionReq req) {
 		List<WarrantyMaster> list3 = new ArrayList<WarrantyMaster>();
 		try {
-			Date today = new Date();
-			Calendar cal = new GregorianCalendar();
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
-			today = cal.getTime();
-			Date todayEnd = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
 
 			// Find Latest Record
 			CriteriaBuilder cb3 = em.getCriteriaBuilder();

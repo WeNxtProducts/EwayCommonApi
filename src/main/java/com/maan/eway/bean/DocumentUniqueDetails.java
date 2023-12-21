@@ -134,6 +134,10 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "NO_OF_INSTALLMENT")
 	private String noOfInstallment;
+	
+
+	@Column(name = "VERIFIED_YN", length = 2)
+	private String verifiedYn;
 
 }
 

@@ -82,15 +82,17 @@ public class DocumentUploadReq {
 
     @JsonProperty("EndorsementTypeDesc") // EndorsementTypeDesc
     private String     endorsementTypeDesc ;
-    
-    
-	 @JsonProperty("EmiYn")
+
+	@JsonProperty("EmiYn")
 	private String emiYn;
 
-	 @JsonProperty("InstallmentPeriod")
+	@JsonProperty("InstallmentPeriod")
 	private String installmentPeriod;
 
-	 @JsonProperty("NoOfInstallment")
+	@JsonProperty("NoOfInstallment")
 	private String noOfInstallment;
+
+	@JsonProperty("VerifiedYn")
+	private String verifiedYn;
 
 }

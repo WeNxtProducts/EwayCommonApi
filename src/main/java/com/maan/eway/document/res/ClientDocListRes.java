@@ -146,4 +146,9 @@ public class ClientDocListRes {
 
 	 @JsonProperty("NoOfInstallment")
 	private String noOfInstallment;
+	 
+		@JsonProperty("VerifiedYn")
+		private String verifiedYn;
+		
+		
 }

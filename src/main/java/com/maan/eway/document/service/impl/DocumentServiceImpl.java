@@ -966,6 +966,8 @@ public class DocumentServiceImpl implements DocumentService {
 				uniqDoc.setId(req.getId());
 				uniqDoc.setIdType(req.getIdType());
 				uniqDoc.setProductType(secData == null ? product.getMotorYn() : secData.getMotorYn());
+				uniqDoc.setVerifiedYn(StringUtils.isBlank(req.getVerifiedYn())?"N":req.getVerifiedYn());
+				
 				if ("Y".equalsIgnoreCase(req.getEmiYn())) {
 					uniqDoc.setEmiYn(req.getEmiYn() == null ? null : req.getEmiYn());
 					uniqDoc.setInstallmentPeriod(
@@ -1232,6 +1234,8 @@ public class DocumentServiceImpl implements DocumentService {
 					res.setStatus(unique.getStatus());
 					res.setUploadedBy(unique.getUploadedBy());
 					res.setUploadedTime(unique.getUploadedTime());
+					res.setVerifiedYn(unique.getVerifiedYn()==null?"N":unique.getVerifiedYn());
+					
 				}
 
 				// Endorsement Related
