@@ -962,7 +962,7 @@ public class EndorsementService {
 					hpmrepo.saveAndFlush(data);
 					// Update ProductWise
 					paymentServiceImpl.updateProductWisePolicyNo(req.getProductId().toString(), data.getPolicyNo(),
-						req.getQuoteNo(), data.getEndtTypeId(),product.getMotorYn());
+						req.getQuoteNo(), data.getEndtTypeId(),product.getMotorYn() , new BigDecimal(0));
 			}
 			Object res = null ;
 			if (product.getMotorYn().equalsIgnoreCase("M") ) {
