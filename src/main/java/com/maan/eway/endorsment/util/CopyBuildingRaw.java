@@ -414,6 +414,14 @@ public class CopyBuildingRaw {
 				Predicate pm8 = cb.equal(h3.get("productId"), m.get("productId"));
 				Predicate pm9   = cb.equal(h3.get("policyNo"), m.get("policyNo"));
 				creditNo.where(pm7,pm8,pm9);
+				
+				Subquery<Long> endtPreTax = query.subquery(Long.class);
+				Root<HomePositionMaster> h4 = endtPreTax.from(HomePositionMaster.class);
+				endtPreTax.select(cb.sum(h4.get("endtPremiumTax") ) ) ;
+				Predicate pm10 = cb.equal(h4.get("companyId"), m.get("companyId"));
+				Predicate pm11 = cb.equal(h4.get("productId"), m.get("productId"));
+				Predicate pm12   = cb.equal(h4.get("policyNo"), m.get("policyNo"));
+				endtPreTax.where(pm10,pm11,pm12);
 		
 				
 				// Select
@@ -439,7 +447,7 @@ public class CopyBuildingRaw {
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
 						//Home Position Master
 						cb.sum(overAllPremiumLc).alias("overallPremiumLc"), cb.sum(overAllPremiumFc).alias("overallPremiumFc"),
-						endtPre.alias("endtPremium"),cb.max( m.get("currency")).alias("currency"),
+						cb.sum(endtPre,endtPreTax).alias("endtPremium"),cb.max( m.get("currency")).alias("currency"),
 						debitNoteNo.alias("debitNoteNo") ,creditNo.alias("creditNo")
 						
 						);

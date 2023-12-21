@@ -527,6 +527,75 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return endtRes;
 	}
 
+	private EndtUpdatePremiumRes mainTableEndtPremium(QuoteThreadReq  request) {
+		EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes();  
+		try {
+			Double endtPremiumWithoutTax = 0D ;
+			Double endtVatPremium = 0D ;
+			if (request.getMotorYn().equalsIgnoreCase("M")) {
+				List<MotorDataDetails> motors = motorRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteNo());
+				for (MotorDataDetails mot : motors) {
+					if (StringUtils.isNotBlank(request.getEndtType())) {
+						endtPremiumWithoutTax = endtPremiumWithoutTax + (  mot.getEndtPremium() ==null ? 0D : mot.getEndtPremium().doubleValue()) ;
+						endtVatPremium =  endtVatPremium + (  mot.getEndtVatPremium() ==null ? 0D : mot.getEndtVatPremium().doubleValue()) ;
+					}
+				}
+				
+			// Travel Product
+			} else if (request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
+					//List<EserviceTravelGetRes> motors = (List<EserviceTravelGetRes>) v1.getRiskDetails();
+				EserviceTravelDetails tra = eserTraRepo.findByRequestReferenceNo(request.getQuoteNo() );
+				if (StringUtils.isNotBlank(request.getEndtType())) {
+					endtPremiumWithoutTax = endtPremiumWithoutTax + (  tra.getEndtPremium() ==null ? 0D : tra.getEndtPremium().doubleValue()) ;
+					endtVatPremium =  endtVatPremium + (  tra.getEndtVatPremium() ==null ? 0D : tra.getEndtVatPremium().doubleValue()) ;
+				}
+				
+			} else if (request.getMotorYn().equalsIgnoreCase("A")) {
+				List<BuildingRiskDetails> BuildingRisk = buildRepo.findByQuoteNoAndSectionIdNotOrderByRiskIdAsc(request.getQuoteNo() ,"0");
+	
+					// Asset
+					for (BuildingRiskDetails build : BuildingRisk) {
+						endtPremiumWithoutTax = endtPremiumWithoutTax + (  build.getEndtPremium() ==null ? 0D : build.getEndtPremium().doubleValue()) ;
+						endtVatPremium =  endtVatPremium + (  build.getEndtVatPremium() ==null ? 0D : build.getEndtVatPremium().doubleValue()) ;
+					
+					}
+					
+					// Human Included
+					List<CommonDataDetails> humans = commonDataRepo.findByQuoteNo(request.getQuoteNo());
+	
+					for (CommonDataDetails hum : humans) {
+						endtPremiumWithoutTax = endtPremiumWithoutTax + (  hum.getEndtPremium() ==null ? 0D : hum.getEndtPremium().doubleValue()) ;
+						endtVatPremium =  endtVatPremium + (  hum.getEndtVatPremium() ==null ? 0D : hum.getEndtVatPremium().doubleValue()) ;
+					}
+					
+			  // Human Products		
+			} else {
+				List<CommonDataDetails> humans = commonDataRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteNo());
+	
+					for (CommonDataDetails hum : humans) {
+						endtPremiumWithoutTax = endtPremiumWithoutTax + (  hum.getEndtPremium() ==null ? 0D : hum.getEndtPremium().doubleValue()) ;
+						endtVatPremium =  endtVatPremium + (  hum.getEndtVatPremium() ==null ? 0D : hum.getEndtVatPremium().doubleValue()) ;
+					}
+				
+			}
+			
+			String endtChargeOrRefund="REFUND";
+			if(endtPremiumWithoutTax.doubleValue()>=0) {
+				endtChargeOrRefund="CHARGE";
+			}
+			
+			endtRes.setChargeOrRefund(endtChargeOrRefund);
+			endtRes.setEndtPremium(new  BigDecimal(endtPremiumWithoutTax));
+			endtRes.setEndtVatPremium(new  BigDecimal(endtVatPremium));
+			
+			
+			return endtRes;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return endtRes;
+	}
+	
 	private synchronized Map<String,Object> call_CustomerSave(QuoteThreadReq request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -2927,20 +2996,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 			//Overall Endt Premium
 			if(StringUtils.isNotBlank(home.getEndtTypeId())) {
 				 
-				BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),home.getEndorsementEffdate(),home.getEndtPrevQuoteNo(),0,covers,null,null);
-					
+			//	BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),home.getEndorsementEffdate(),home.getEndtPrevQuoteNo(),0,covers,null,null);
+				EndtUpdatePremiumRes endtValues = mainTableEndtPremium(request);	
 				endtChargeOrRefund="REFUND";
-				if(endtPremium.doubleValue()>=0) {
+				if(endtValues.getEndtPremium().doubleValue()>=0) {
 					endtChargeOrRefund="CHARGE";
 				}
 				
-				BigDecimal endtPremiumTax = endtPremium.multiply(new BigDecimal(df.format(vatPercent)).divide(new BigDecimal("100"),MathContext.DECIMAL32) ,MathContext.DECIMAL32);
-				home.setEndtPremiumTax(endtPremiumTax);
-				home.setEndtPremium(endtPremium);
-				home.setEndtPremiumLc(endtPremium.multiply(home.getExchangeRate(),MathContext.DECIMAL32));
+				home.setEndtPremium(endtValues.getEndtPremium());
+				home.setEndtPremiumLc(home.getEndtPremium().multiply(home.getExchangeRate(),MathContext.DECIMAL32));
+				home.setEndtPremiumTax(endtValues.getEndtVatPremium());
 				home.setIsChargRefund(endtChargeOrRefund);
-	
-			
 			}
 			
 			homeRepo.saveAndFlush(home);

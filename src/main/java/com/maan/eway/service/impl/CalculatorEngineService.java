@@ -43,6 +43,7 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.ErrorDescMaster;
+import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -77,6 +78,7 @@ import com.maan.eway.calculator.util.SplitSubCoverUtil;
 import com.maan.eway.calculator.util.SubCoverCreationUtil;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
+import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.EndtUpdatePremiumRes;
 import com.maan.eway.common.res.ViewQuoteRes;
@@ -1338,23 +1340,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 				String premiumFc = v.getPremiumFc().toString();
 				String vatPremiumFc = v.getVatPremiumFc()==null  ?"0" : v.getVatPremiumFc().toPlainString();
 			
-				if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId()) && v1.getQuoteDetails().getEndtTypeId().equalsIgnoreCase("842") ) {
-//					vatPremiumFc = v.getEndtPremiumTax()==null  ?"0" :  v.getEndtPremiumTax().toPlainString();
-//					premiumFc = v.getEndtPremium() ==null ? "0" : 
-//					String.valueOf(Double.valueOf(v.getEndtPremium().toString()) -  Double.valueOf(v.getEndtPremiumTax()==null  ?"0":v.getEndtPremiumTax().toString() ));
-					// Get Premium from Policy cover data
-					List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(v.getQuoteNo() ,0, 0);
-					EndtUpdatePremiumRes endtRes = updateEndtPremium2(v.getQuoteNo(),v.getEndorsementEffdate(),v.getEndtPrevQuoteNo() , 0 ,Endtcovers,v.getProductId() ,0 , v.getEndtTypeId());				
-					premiumFc = String.valueOf(endtRes.getEndtPremium()==null ? 0 : endtRes.getEndtPremium().doubleValue() >0 ? -endtRes.getEndtPremium().doubleValue() : endtRes.getEndtPremium().doubleValue() );
-					vatPremiumFc  =String.valueOf( endtRes.getEndtVatPremium()==null ? 0 :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());
-							
-					//motorData.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue() >0 ? -endtRes.getEndtPremium().doubleValue() : endtRes.getEndtPremium().doubleValue() );
-					//motorData.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());	
 					
-					
-				} else if(StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())  ) {
-					List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(v.getQuoteNo() ,0, 0);
-					EndtUpdatePremiumRes endtRes = updateEndtPremium2(v.getQuoteNo(),v.getEndorsementEffdate(),v.getEndtPrevQuoteNo() , 0 ,Endtcovers,v.getProductId() ,0 , v.getEndtTypeId());				
+				if(StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())  ) {
+					EndtUpdatePremiumRes endtRes = mainTableEndtPremium(v.getQuoteNo() , product.getProductId().toString() , product.getMotorYn() );				
 					premiumFc = endtRes.getEndtPremium()==null ? "0" : String.valueOf(endtRes.getEndtPremium().toPlainString());
 					vatPremiumFc  = endtRes.getEndtVatPremium()==null ? "0" : String.valueOf(endtRes.getEndtVatPremium().toPlainString()) ;
 					
@@ -1602,6 +1590,74 @@ public class CalculatorEngineService implements CalculatorEngine {
 			
 			endtRes.setChargeOrRefund(endtChargeOrRefund);
 			endtRes.setEndtPremium(endtPremiumWithoutTax);
+			endtRes.setEndtVatPremium(new  BigDecimal(endtVatPremium));
+			
+			
+			return endtRes;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return endtRes;
+	}
+	
+	private EndtUpdatePremiumRes mainTableEndtPremium(String quoteNo ,String productId , String productType) {
+		EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes();  
+		try {
+			Double endtPremiumWithoutTax = 0D ;
+			Double endtVatPremium = 0D ;
+			if (productType.equalsIgnoreCase("M")) {
+				List<MotorDataDetails> motors = motorRepo.findByQuoteNoOrderByVehicleIdAsc(quoteNo);
+				for (MotorDataDetails mot : motors) {
+					endtPremiumWithoutTax = endtPremiumWithoutTax + (  mot.getEndtPremium() ==null ? 0D : mot.getEndtPremium().doubleValue()) ;
+					endtVatPremium =  endtVatPremium + (  mot.getEndtVatPremium() ==null ? 0D : mot.getEndtVatPremium().doubleValue()) ;
+					
+				}
+				
+			// Travel Product
+			} else if (productType.equalsIgnoreCase("H") && productId.equalsIgnoreCase(travelProductId)) {
+					//List<EserviceTravelGetRes> motors = (List<EserviceTravelGetRes>) v1.getRiskDetails();
+					//EserviceTravelDetails tra = eserTraRepo.findByRequestReferenceNo(request.getQuoteNo() );
+				    HomePositionMaster homeData = homeRepo.findByQuoteNo(quoteNo) ;
+					endtPremiumWithoutTax = endtPremiumWithoutTax + (  homeData.getEndtPremium() ==null ? 0D : homeData.getEndtPremium().doubleValue()) ;
+					endtVatPremium =  endtVatPremium + (  homeData.getEndtPremiumTax() ==null ? 0D : homeData.getEndtPremiumTax().doubleValue()) ;
+				
+				
+			} else if (productType.equalsIgnoreCase("A")) {
+				List<BuildingRiskDetails> BuildingRisk = buildingRepo.findByQuoteNoAndSectionIdNotOrderByRiskIdAsc(quoteNo ,"0");
+	
+					// Asset
+					for (BuildingRiskDetails build : BuildingRisk) {
+						endtPremiumWithoutTax = endtPremiumWithoutTax + (  build.getEndtPremium() ==null ? 0D : build.getEndtPremium().doubleValue()) ;
+						endtVatPremium =  endtVatPremium + (  build.getEndtVatPremium() ==null ? 0D : build.getEndtVatPremium().doubleValue()) ;
+					
+					}
+					
+					// Human Included
+					List<CommonDataDetails> humans = commonRepo.findByQuoteNo(quoteNo);
+	
+					for (CommonDataDetails hum : humans) {
+						endtPremiumWithoutTax = endtPremiumWithoutTax + (  hum.getEndtPremium() ==null ? 0D : hum.getEndtPremium().doubleValue()) ;
+						endtVatPremium =  endtVatPremium + (  hum.getEndtVatPremium() ==null ? 0D : hum.getEndtVatPremium().doubleValue()) ;
+					}
+					
+			  // Human Products		
+			} else {
+				List<CommonDataDetails> humans = commonRepo.findByQuoteNoOrderByRiskIdAsc(quoteNo);
+	
+					for (CommonDataDetails hum : humans) {
+						endtPremiumWithoutTax = endtPremiumWithoutTax + (  hum.getEndtPremium() ==null ? 0D : hum.getEndtPremium().doubleValue()) ;
+						endtVatPremium =  endtVatPremium + (  hum.getEndtVatPremium() ==null ? 0D : hum.getEndtVatPremium().doubleValue()) ;
+					}
+				
+			}
+			
+			String endtChargeOrRefund="REFUND";
+			if(endtPremiumWithoutTax.doubleValue()>=0) {
+				endtChargeOrRefund="CHARGE";
+			}
+			
+			endtRes.setChargeOrRefund(endtChargeOrRefund);
+			endtRes.setEndtPremium(new  BigDecimal(endtPremiumWithoutTax));
 			endtRes.setEndtVatPremium(new  BigDecimal(endtVatPremium));
 			
 			

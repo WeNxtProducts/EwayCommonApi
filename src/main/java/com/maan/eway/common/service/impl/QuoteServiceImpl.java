@@ -366,9 +366,9 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setPolicyNo(homeData.getPolicyNo()==null?"":homeData.getPolicyNo());
 			quoteRes.setOriginalPolicyNo(homeData.getOriginalPolicyNo()==null?"":homeData.getOriginalPolicyNo());
 			quoteRes.setEndtPremium(homeData.getEndtPremium()==null?BigDecimal.ZERO:homeData.getEndtPremium());
-			req.setEndtTypeId(homeData.getEndtTypeId()==null?null:homeData.getEndtTypeId());
+			quoteRes.setEndtTypeId(homeData.getEndtTypeId()==null?null:homeData.getEndtTypeId());
 			quoteRes.setEndtPremiumTax(homeData.getEndtPremiumTax()==null?BigDecimal.ZERO:homeData.getEndtPremiumTax());
-			quoteRes.setTotalEndtPremium(quoteRes.getEndtPremium());//.add(quoteRes.getEndtPremiumTax()));
+			quoteRes.setTotalEndtPremium(quoteRes.getEndtPremium().add(quoteRes.getEndtPremiumTax()));
 			// Emi Details 
 			quoteRes.setEmiYn(homeData.getEmiYn()==null?"N":homeData.getEmiYn());
 			quoteRes.setInstallmentPeriod(homeData.getInstallmentPeriod()==null?"":homeData.getInstallmentPeriod());

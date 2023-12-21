@@ -353,7 +353,13 @@ public class CopyCommonRaw {
 				Predicate pm9   = cb.equal(h3.get("policyNo"), m.get("policyNo"));
 				creditNo.where(pm7,pm8,pm9);
 		
-		
+				Subquery<Long> endtPreTax = query.subquery(Long.class);
+				Root<HomePositionMaster> h4 = endtPreTax.from(HomePositionMaster.class);
+				endtPreTax.select(cb.sum(h4.get("endtPremiumTax") ) ) ;
+				Predicate pm10 = cb.equal(h4.get("companyId"), m.get("companyId"));
+				Predicate pm11 = cb.equal(h4.get("productId"), m.get("productId"));
+				Predicate pm12   = cb.equal(h4.get("policyNo"), m.get("policyNo"));
+				endtPreTax.where(pm10,pm11,pm12);
 				
 						// Select
 				query.multiselect(// cb.literal(Long.parseLong("1")).alias("idsCount"),
@@ -381,7 +387,7 @@ public class CopyCommonRaw {
 						// Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"),
 						cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						endtPre.alias("endtPremium"), cb.max(m.get("currency")).alias("currency"),
+						cb.sum(endtPre,endtPreTax).alias("endtPremium"), cb.max(m.get("currency")).alias("currency"),
 						debitNoteNo.alias("debitNoteNo") ,creditNo.alias("creditNo")
 
 				);
