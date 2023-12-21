@@ -371,6 +371,20 @@ public class QuoteThreadCall implements Callable<Object>  {
 				eserCommonData.setOverallPremiumFc(BigDecimal.ZERO);
 				eserCommonData.setOverallPremiumLc(BigDecimal.ZERO);
 				
+				CommonDataDetails oldRisk = commonDataRepo.findByQuoteNoAndRiskIdAndSectionId(request.getEndtPrevQuoteNo() ,1 ,request.getSectionId());
+				if(oldRisk!=null ) {
+					eserCommonData.setVatPremium(oldRisk.getVatPremium());
+					eserCommonData.setActualPremiumFc(oldRisk.getActualPremiumFc());
+					eserCommonData.setActualPremiumLc(oldRisk.getActualPremiumLc() );
+					eserCommonData.setOverallPremiumFc(oldRisk.getOverallPremiumFc());
+					eserCommonData.setOverallPremiumLc(oldRisk.getOverallPremiumLc());
+					commonData.setVatPremium(oldRisk.getVatPremium());
+					commonData.setActualPremiumFc(oldRisk.getActualPremiumFc());
+					commonData.setActualPremiumLc(oldRisk.getActualPremiumLc() );
+					commonData.setOverallPremiumFc(oldRisk.getOverallPremiumFc());
+					commonData.setOverallPremiumLc(oldRisk.getOverallPremiumLc());
+				}
+				
 			}
 			eserCommonRepo.saveAndFlush(eserCommonData);
 			commonDataRepo.saveAndFlush(commonData);
@@ -1420,16 +1434,23 @@ public class QuoteThreadCall implements Callable<Object>  {
 					bulildDetails.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());	
 					eserBuild.setEndtPremium(bulildDetails.getEndtPremium());
 					eserBuild.setEndtVatPremium(bulildDetails.getEndtVatPremium());
-					bulildDetails.setActualPremiumFc(BigDecimal.ZERO);
-					bulildDetails.setActualPremiumLc(BigDecimal.ZERO);
-					bulildDetails.setOverallPremiumFc(BigDecimal.ZERO);
-					bulildDetails.setOverallPremiumLc(BigDecimal.ZERO);
-					bulildDetails.setVatPremium(BigDecimal.ZERO);
-					eserBuild.setVatPremium(BigDecimal.ZERO);
-					eserBuild.setActualPremiumFc(BigDecimal.ZERO);
-					eserBuild.setActualPremiumLc(BigDecimal.ZERO);
-					eserBuild.setOverallPremiumFc(BigDecimal.ZERO);
-					eserBuild.setOverallPremiumLc(BigDecimal.ZERO);
+					BuildingRiskDetails oldRisk = buildRepo.findByQuoteNoAndRiskIdAndSectionId(request.getEndtPrevQuoteNo() ,1 ,request.getSectionId());
+					if(oldRisk!=null ) {
+						bulildDetails.setVatPremium(oldRisk.getVatPremium());
+						bulildDetails.setActualPremiumFc(oldRisk.getActualPremiumFc());
+						bulildDetails.setActualPremiumLc(oldRisk.getActualPremiumLc() );
+						bulildDetails.setOverallPremiumFc(oldRisk.getOverallPremiumFc());
+						bulildDetails.setOverallPremiumLc(oldRisk.getOverallPremiumLc());
+					} else {
+						bulildDetails.setActualPremiumFc(BigDecimal.ZERO);
+						bulildDetails.setActualPremiumLc(BigDecimal.ZERO);
+						bulildDetails.setOverallPremiumFc(BigDecimal.ZERO);
+						bulildDetails.setOverallPremiumLc(BigDecimal.ZERO);
+						bulildDetails.setVatPremium(BigDecimal.ZERO);
+						
+					}
+					
+					
 				}
 			
 				buildRepo.saveAndFlush(bulildDetails);
