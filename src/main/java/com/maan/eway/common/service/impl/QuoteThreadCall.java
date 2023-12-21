@@ -2123,16 +2123,21 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
 						ref.setEndtPremium(motorData.getEndtPremium());
 						ref.setEndtVatPremium(motorData.getEndtVatPremium());
-						motorData.setActualPremiumFc(0D);
-						motorData.setActualPremiumLc(0D);
-						motorData.setOverallPremiumFc(0D);
-						motorData.setOverallPremiumLc(0D);
-						motorData.setVatPremium(BigDecimal.ZERO);
-						ref.setVatPremium(BigDecimal.ZERO);
-						ref.setActualPremiumFc(BigDecimal.ZERO);
-						ref.setActualPremiumLc(BigDecimal.ZERO);
-						ref.setOverallPremiumFc(BigDecimal.ZERO);
-						ref.setOverallPremiumLc(BigDecimal.ZERO);
+						motorData.setActualPremiumFc(old.getActualPremiumFc()!=null  ? old.getActualPremiumFc() : 0D);
+						motorData.setActualPremiumLc(old.getActualPremiumLc()!=null  ?old.getActualPremiumLc(): 0D);
+						motorData.setOverallPremiumFc(old.getOverallPremiumFc()!=null  ?old.getOverallPremiumFc(): 0D);
+						motorData.setOverallPremiumLc(old.getOverallPremiumLc()!=null  ?old.getOverallPremiumLc(): 0D);
+						motorData.setVatPremium(old.getVatPremium()!=null  ? old.getVatPremium():  new BigDecimal(0));
+//						ref.setVatPremium(BigDecimal.ZERO);
+//						ref.setActualPremiumFc(BigDecimal.ZERO);
+//						ref.setActualPremiumLc(BigDecimal.ZERO);
+//						ref.setOverallPremiumFc(BigDecimal.ZERO);
+//						ref.setOverallPremiumLc(BigDecimal.ZERO);
+						ref.setVatPremium(motorData.getVatPremium()!=null  ? motorData.getVatPremium() : new BigDecimal(0) );
+						ref.setActualPremiumFc(motorData.getActualPremiumFc()!=null  ? new BigDecimal(motorData.getActualPremiumFc()) : new BigDecimal(0) );
+						ref.setActualPremiumLc(motorData.getActualPremiumLc()!=null  ? new BigDecimal(motorData.getActualPremiumLc()) : new BigDecimal(0) );
+						ref.setOverallPremiumFc(motorData.getOverallPremiumFc()!=null? new BigDecimal( motorData.getOverallPremiumFc()) : new BigDecimal(0) );
+						ref.setOverallPremiumLc(motorData.getOverallPremiumLc()!=null ? new BigDecimal(motorData.getOverallPremiumLc()) : new BigDecimal(0) );
 						motorDatas.add(motorData);
 						
 					}) ;
