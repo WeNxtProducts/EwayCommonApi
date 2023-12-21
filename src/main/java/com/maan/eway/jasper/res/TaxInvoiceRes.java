@@ -60,20 +60,11 @@ public class TaxInvoiceRes {
 	@JsonProperty("BrokerName")
 	private String brokerName;
 	
-	@JsonProperty("Premium")
-	private String premium;
-	
-	@JsonProperty("VatPremium")
-	private String vatPremium;
-	
 	@JsonProperty("OverAllPremium")
 	private String overAllPremium;
 	
 	@JsonProperty("TotSumInsured")
 	private String totSumInsured;
-	
-	@JsonProperty("VatPercent")
-	private String vatPercent;
 	
 	@JsonProperty("IntermediaryRefNo")
 	private String intermediaryRefNo;
@@ -126,8 +117,8 @@ public class TaxInvoiceRes {
 	@JsonProperty("PolicyType")
 	private String policyType;
 	
-	@JsonProperty("PremAndVatName")
-	private String premAndVatName;
+	@JsonProperty("PremiumDetails")
+	private List<TaxInvoicePremiumDetails> premiumDetails;
 	
 	@JsonProperty("Dataset1List")
 	private List<TaxDataSetOneRes> dataset1List;

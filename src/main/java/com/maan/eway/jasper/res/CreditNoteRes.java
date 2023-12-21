@@ -63,17 +63,8 @@ public class CreditNoteRes {
 	@JsonProperty("ApprovedBy")
 	private String approvedBy;
 	
-	@JsonProperty("Premium")
-	private String premium;
-	
-	@JsonProperty("VatPremiumFc")
-	private String vatPremiumFc;
-	
 	@JsonProperty("OverAllPremiumFc")
 	private String overAllPremiumFc;
-	
-	@JsonProperty("VatPercent")
-	private String vatPercent;
 	
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
@@ -90,9 +81,6 @@ public class CreditNoteRes {
 	@JsonProperty("VatRegNo")
 	private String vatRegNo;
 	
-	@JsonProperty("PremAndVatName")
-	private String premAndVatName;
-	
 	@JsonProperty("CompanyId")
 	private String companyId;
 	
@@ -101,5 +89,8 @@ public class CreditNoteRes {
 
 	@JsonProperty("RiskCodeList")
 	private List<CreditDataSetTwo> riskCodeList;
+	
+	@JsonProperty("PremiumDetails")
+	private List<TaxInvoicePremiumDetails> premiumDetails;
 	
 }
