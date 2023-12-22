@@ -2592,7 +2592,7 @@ public class GridServiceImpl implements GridService {
 							brokerRes.setBrokerName(data.getCustomerName());
 						} else {
 							brokerRes.setBrokerCode(data.getOaCode() == null ? "0" : data.getOaCode().toString());
-							
+							brokerRes.setBrokerName(data.getBrokerName());
 						}
 						brokerRes.setBrokerLoginId(data.getLoginId());
 						brokerRes.setSubUserType(data.getSubUserType());
@@ -6230,12 +6230,11 @@ public class GridServiceImpl implements GridService {
 			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
-
 			// Select
 			query.multiselect(cb.count(h).alias("count"), cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
 					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"), h.get("productId").alias("productId"),
 					h.get("productName").alias("productName"), cb.max(l.get("agencyCode")).as(Integer.class).alias("oaCode"),
-				/*	cb.max(u.get("userName")).alias("brokerName"),*/cb.max( l.get("userType")).alias("userType"),
+					cb.max(u.get("userName")).alias("brokerName"),cb.max( l.get("userType")).alias("userType"),
 					cb.max(l.get("subUserType")).alias("subUserType"), cb.max(l.get("loginId")).alias("loginId"),
 					cb.max(h.get("customerCode")).alias("customerCode"),cb.max(h.get("customerName")).alias("customerName"),
 					cb.max(h.get("sourceType")).alias("sourceType"),cb.max(h.get("bdmCode")).alias("bdmCode"));
@@ -6252,6 +6251,7 @@ public class GridServiceImpl implements GridService {
 			predicate.add(cb.equal(h.get("subUserType"), "b2c"));
 			predicate.add(cb.equal(h.get("sourceType"), "b2c"));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
 			// Business Type Condition)
 			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
 
@@ -6296,5 +6296,228 @@ public class GridServiceImpl implements GridService {
 		}
 		return list;
 	}
+
+	@Override
+	public List<PortfolioGridRes> getAllPolicyB2cGrid(PortFolioGridReq req) {
+		List<PortfolioGridRes> resList = new ArrayList<PortfolioGridRes>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		DecimalFormat df = new DecimalFormat("0.##");
+		try {
+
+			// Fetch Data
+			List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
+			String bsType = StringUtils.isNotBlank(req.getBusinessType()) ? req.getBusinessType() : "N";
+
+			if ("NB2C".equalsIgnoreCase(bsType)) {
+				list = getPortFolioB2cGrid(req);
+			}/* else {
+				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
+						req.getProductId());
+				String productType = StringUtils.isNotBlank(product.getMotorYn()) ? product.getMotorYn() : "M";
+
+				if ("H".equalsIgnoreCase(productType) && "4".equalsIgnoreCase(req.getProductId())) {
+					list = getPortFolioTravelGrid(req);
+
+				} else if ("M".equalsIgnoreCase(productType)) {
+					list = getPortFolioMotorGrid(req);
+
+				} else if ("A".equalsIgnoreCase(productType)) {
+					list = getPortFolioBuildingGrid(req);
+
+				} else if ("H".equalsIgnoreCase(productType)) {
+					list = getPortFolioHumanGrid(req);
+				}
+			}*/
+
+			// Sort By Broker Name
+//			list.sort(Comparator.comparing(PortfolioAdminGridRes :: getBrokerName  ) 
+//					 .thenComparing(PortfolioAdminGridRes :: getUpdatedDate  ).reversed());
+
+			// Sort By Updated Date
+			list.sort(Comparator.comparing(PortfolioAdminGridRes::getUpdatedDate).reversed());
+
+			// Map Broker List
+			for (PortfolioAdminGridRes data : list) {
+				PortfolioGridRes res = new PortfolioGridRes();
+
+				res.setApplicationId(data.getApplicationId() == null ? "" : data.getApplicationId().toString());
+				res.setBrokerCode(data.getOaCode() == null ? "" : data.getOaCode().toString());
+				res.setBrokerLoginId(data.getLoginId());
+				res.setBrokerName(data.getBrokerName());
+				res.setBranchCode(data.getBranchCode());
+				res.setBranchName(data.getBranchName());
+				res.setBrokerBranchCode(data.getBrokerBranchCode());
+				res.setBrokerBranchName(data.getBrokerBranchName());
+				res.setCount(data.getCount());
+				res.setCurrencyCode(data.getCurrencyCode());
+				res.setCustomerName(data.getCustomerName());
+				res.setExchangeRate(data.getExchangeRate() == null ? "" : data.getExchangeRate().toPlainString());
+				res.setOriginalPolicyNo(StringUtils.isNotBlank(data.getOriginalPolicyNo()) ? data.getOriginalPolicyNo()
+						: data.getPolicyNo());
+				res.setOverallPremiumFc(data.getOverallPremiumFc() == null ? "0"
+						: df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
+				res.setOverallPremiumLc(data.getOverallPremiumLc() == null ? "0"
+						: df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
+				res.setPolicyStartDate(data.getPolicyStartDate() == null ? "" : sdf.format(data.getPolicyStartDate()));
+				res.setPolicyEndDate(data.getPolicyEndDate() == null ? "" : sdf.format(data.getPolicyEndDate()));
+				res.setPolicyNo(data.getPolicyNo());
+				res.setQuoteNo(data.getQuoteNo());
+				res.setRequestReferenceNo(data.getRequestReferenceNo());
+				res.setSubUserType(data.getSubUserType());
+				res.setUserType(data.getUserType());
+				res.setProductId(data.getProductId() == null ? "" : data.getProductId().toString());
+				res.setProductName(data.getProductName());
+				res.setAdminRemarks(data.getAdminRemarks());
+				res.setReferralRemarks(data.getReferralRemarks());
+				res.setAdminLoginId(data.getAdminLoginId());
+				res.setStatus(data.getStatus());
+				res.setEndtSatus(data.getEndtStatus());
+				res.setUpdatedDate(data.getUpdatedDate() == null ? "" : sdf.format(data.getUpdatedDate()));
+				res.setEndorsementRemarks(data.getEndorsementRemarks());
+				String statusDesc = StringUtils.isBlank(data.getStatus()) ? ""
+						: "Y".equalsIgnoreCase(data.getStatus()) ? "Existing Quote"
+								: "R".equalsIgnoreCase(data.getStatus()) ? "Quote Rejected"
+										: "N".equalsIgnoreCase(data.getStatus()) ? "Quote Deactivated"
+												: "D".equalsIgnoreCase(data.getStatus()) ? "Quote Deleted"
+														: "RP".equalsIgnoreCase(data.getStatus()) ? "Refferral Pending"
+																: "RA".equalsIgnoreCase(data.getStatus())
+																		? "Refferral Approved"
+																		: "RR".equalsIgnoreCase(data.getStatus())
+																				? "Refferral Rejected"
+																				: "RA".equalsIgnoreCase(
+																						data.getStatus())
+																								? "Refferral Request"
+																								: "P".equalsIgnoreCase(
+																										data.getStatus())
+																												? "Policy Converted"
+																												: "E".equalsIgnoreCase(
+																														data.getStatus())
+																																? "Endorsement"
+																																: "";
+
+				String endtStatusDesc = StringUtils.isBlank(data.getEndtStatus()) ? ""
+						: "P".equalsIgnoreCase(data.getEndtStatus()) ? "Pending"
+								: "C".equalsIgnoreCase(data.getEndtStatus()) ? "Completed" : "";
+
+				res.setStatusDesc(statusDesc);
+				res.setEndtStatusDesc(endtStatusDesc);
+				
+				res.setCreditNo(data.getCreditNo() )	;
+				res.setDebitNo(data.getDebitNoteNo()) ;			
+				
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	public List<PortfolioAdminGridRes> getPortFolioB2cGrid(PortFolioGridReq req) {
+		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+
+			Date startDate = req.getStartDate();
+			cal.setTime(startDate);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			startDate = cal.getTime();
+
+			Date endDate = req.getEndDate();
+			cal.setTime(endDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			endDate = cal.getTime();
+
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
+
+			// Find All
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+
+			// Select
+			query.multiselect(
+					 h.get("creditNo").alias("creditNo"),
+					 h.get("debitNoteNo").alias("debitNoteNo"),
+					h.get("applicationId").alias("applicationId"),
+					h.get("noOfVehicles").as(Long.class).alias("count"),
+					h.get("overallPremiumLc").alias("overallPremiumLc"),
+					h.get("overallPremiumFc").alias("overallPremiumFc"), h.get("currency").alias("currencyCode"),
+					h.get("exchangeRate").alias("exchangeRate"),
+					h.get("requestReferenceNo").alias("requestReferenceNo"), h.get("quoteNo").alias("quoteNo"),
+					h.get("policyNo").alias("policyNo"), h.get("originalPolicyNo").alias("originalPolicyNo"),
+					h.get("productId").alias("productId"), h.get("productName").alias("productName"),
+					h.get("agencyCode").alias("oaCode"), h.get("loginId").alias("loginId"),
+					h.get("referralDescription").alias("referralRemarks"), h.get("adminRemarks").alias("adminRemarks"),
+					h.get("adminLoginId").alias("adminLoginId"), h.get("status").alias("status"),
+					h.get("endtStatus").alias("endtStatus"), h.get("customerName").alias("customerName"),
+					h.get("inceptionDate").alias("policyStartDate"), h.get("expiryDate").alias("policyEndDate"),
+					h.get("branchCode").alias("branchCode"), h.get("branchName").alias("branchName"),
+					h.get("brokerBranchCode").alias("brokerBranchCode"),
+					h.get("brokerBranchName").alias("brokerBranchName"), u.get("userName").alias("brokerName"),
+					l.get("userType").alias("userType"), l.get("subUserType").alias("subUserType"),
+					h.get("effectiveDate").alias("updatedDate"),
+					h.get("endorsementRemarks").alias("endorsementRemarks"));
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(h.get("effectiveDate")));
+
+			// Where
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(h.get("productId"), req.getProductId()));
+			predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
+
+			// Business Type Condition
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+
+			if ("NB2C".equalsIgnoreCase(businessType)) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				Predicate n1 = cb.isNull(h.get("endtStatus"));
+				Predicate n2 = cb.equal(h.get("endtStatus"), "");
+				predicate.add(cb.or(n1, n2));
+
+			}/* else if ("E".equalsIgnoreCase(businessType)) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+				predicate.add(cb.notEqual(h.get("endtTypeId"), "842"));
+
+			} else if ("C".equalsIgnoreCase(businessType)) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+				predicate.add(cb.equal(h.get("endtTypeId"), "842"));
+			}*/
+
+			// Branch Condition
+			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
+				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
+
+			query.where(predicate.toArray(new Predicate[0])).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+
+		}
+		return list;
+	}
+
 }
 

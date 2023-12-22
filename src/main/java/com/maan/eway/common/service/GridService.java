@@ -149,4 +149,6 @@ public interface GridService {
 
 	List<PortFolioDashBoardRes> getB2cAdminPortfolio(PortFolioDashBoardReq req);
 
+	List<PortfolioGridRes> getAllPolicyB2cGrid(PortFolioGridReq req);
+
 }

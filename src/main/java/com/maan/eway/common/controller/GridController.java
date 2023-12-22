@@ -527,6 +527,23 @@ public class GridController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/admin/portfoliob2cgrid")
+	public ResponseEntity<CommonRes> getAllPolicyB2cGrid(@RequestBody PortFolioGridReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<PortfolioGridRes> res = entityService.getAllPolicyB2cGrid(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
 	@PostMapping("/getapproverlist")
