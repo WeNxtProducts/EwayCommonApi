@@ -1,10 +1,13 @@
 package com.maan.eway.common.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,7 +29,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,10 +36,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.integration.req.PremiaRequest;
-import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.service.IntegrationService;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.repository.HomePositionMasterRepository;
@@ -59,6 +59,9 @@ public class TiraIntegerationServiceImpl {
 	
 	@Value(value="${collectDataFromTiraPost}")
 	private String collectDataFromTiraPost;
+	
+	@Value(value = "${PremiaPushLink}")
+	private String premiaPushLink;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -104,20 +107,37 @@ public class TiraIntegerationServiceImpl {
 				}
 			}
 			
+			// Background Call
+			ExecutorService service2 = Executors.newFixedThreadPool(4);
+		    service2.submit(new Runnable() {
+		        public void run() {
+		        	try {
+		        		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+		    			System.out.println("Premia Integration Started... Quote No ---> " + tiraReq.getQuoteNo() + " . Time : " + sdf.format(new Date()) );
+		        		
+		        		 // Call Integeration 
+		        		if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
+		    				PremiaRequest premiaReq = new PremiaRequest();
+		    				  premiaReq.setQuoteNo(tiraReq.getQuoteNo()); List<String> premiaIds = new
+		    				  ArrayList<String>(); premiaIds.add( "1" ); premiaIds.add( "2" );
+		    				  premiaIds.add( "3" ); premiaIds.add( "4" ); premiaIds.add( "5" );
+		    				  premiaIds.add( "6" ); premiaIds.add( "7" ); premiaIds.add( "8" );
+		    				 premiaIds.add( "9" ); premiaIds.add( "10" ); premiaIds.add( "11" );
+		    				 premiaIds.add( "12" );
+		    				  premiaReq.setPremiaIds(premiaIds);
+		    				  
+		    				// service.pushPremiaIntegration(premiaReq);
+		    				  pushPremiaIntegration(premiaReq , token);
+		    			}
+		        		System.out.println("Premia Integration Ended... Quote No ---> " + tiraReq.getQuoteNo() + " . Time : " + sdf.format(new Date()) );
+					
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
+		        }
+		    });
 			
-			  // Call Integeration 
-			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
-				PremiaRequest premiaReq = new PremiaRequest();
-				  premiaReq.setQuoteNo(tiraReq.getQuoteNo()); List<String> premiaIds = new
-				  ArrayList<String>(); premiaIds.add( "1" ); premiaIds.add( "2" );
-				  premiaIds.add( "3" ); premiaIds.add( "4" ); premiaIds.add( "5" );
-				  premiaIds.add( "6" ); premiaIds.add( "7" ); premiaIds.add( "8" );
-				 premiaIds.add( "9" ); premiaIds.add( "10" ); premiaIds.add( "11" );
-				 premiaIds.add( "12" );
-				  premiaReq.setPremiaIds(premiaIds);
-				  
-				 service.pushPremiaIntegration(premiaReq);
-			}
 			
 	//}
 			
@@ -130,6 +150,36 @@ public class TiraIntegerationServiceImpl {
 			return null;
 		}
 		return res;
+	}
+	
+	 public Object pushPremiaIntegration(PremiaRequest premiaReq , String token ) {
+		 	Object PremiaRes = null;
+		try {
+			// Frame Tira Req
+
+			RestTemplate temp = new RestTemplate();
+			HttpHeaders header = new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			// header.setCharset("UTF-8");
+			header.setBearerAuth(token);
+			String url = premiaPushLink ;
+			HttpEntity<?> requestent = new HttpEntity<>(premiaReq, header);
+
+			System.out.println(new Date() + " Start " + url);
+			ResponseEntity<Object> postEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}) ;
+			
+			//if(PremiaRes.getStatusCode()==HttpStatus.ACCEPTED) {
+			PremiaRes = postEntity.getBody() ;
+			//}		
+				System.out.println("Premia Response --> "+PremiaRes);
+			System.out.println(new Date() + " End " + url);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return PremiaRes;
 	}
 	
 	
