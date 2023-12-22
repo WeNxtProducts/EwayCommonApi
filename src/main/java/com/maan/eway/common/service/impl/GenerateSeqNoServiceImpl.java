@@ -13,12 +13,14 @@ import com.maan.eway.bean.SeqCreditno;
 import com.maan.eway.bean.SeqDebitnote;
 import com.maan.eway.bean.SeqErrorCode;
 import com.maan.eway.bean.SeqPolicyno;
+import com.maan.eway.bean.SeqPolicynoMadison;
 import com.maan.eway.bean.SeqProductbenefit;
 import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.bean.SeqTinyrefno;
 import com.maan.eway.repository.SeqCreditnoRepository;
 import com.maan.eway.repository.SeqDebitnoteRepository;
 import com.maan.eway.repository.SeqErrorCodeRepository;
+import com.maan.eway.repository.SeqPolicynoMadisonRepository;
 import com.maan.eway.repository.SeqPolicynoRepository;
 import com.maan.eway.repository.SeqProductbenefitRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
@@ -34,6 +36,9 @@ public class GenerateSeqNoServiceImpl {
 	
 	@Autowired
 	private SeqPolicynoRepository polNoRepo;
+	
+	@Autowired
+	private SeqPolicynoMadisonRepository polNoMadisonRepo;
 	
 	@Autowired
 	private SeqDebitnoteRepository debitRepo;
@@ -63,25 +68,57 @@ public class GenerateSeqNoServiceImpl {
 	       
 	 }
 	 
+	
+	 
 
-	 public synchronized String generatePolicyNo(String productCode,String branchcode) {
+	 public synchronized String generatePolicyNo(String productCode,String branchcode, String companyId, String vehUsageCoreappcode, String productId ) { //madison
 		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy"); 
+		 String policyNo = "";
 	       try {
-	    	    SeqPolicyno entity;
-	            entity = polNoRepo.save(new SeqPolicyno());    
+	    	   SeqPolicynoMadison entity;
+	            entity = polNoMadisonRepo.save(new SeqPolicynoMadison());    
 	            Date currentDate = Calendar.getInstance().getTime();
 	            String year =  sdf.format(new Date()) ;
-	            //P11/2021/100/1002/10/020459
+	       
+	            	 //---> P/01/4013/001377/2023/B,  P/01/4013/001377/2023/E
+		            //----> 'P'||'/'||LvBranchCd||'/'||LvVeh_Usage||'/'||Lpad(MOTOR_POLICY_NO.Nextval,'6','0')||'/'||TO_CHAR(SYSDATE,'YYYY') //others productid
+	            	
+	            	if(productId.equalsIgnoreCase("5"))
+	            		policyNo = "P/" + branchcode + "/"  + vehUsageCoreappcode + "/" + String.format("%06d",entity.getPolicyno()) +  "/" + year ;
+	            	else
+	            		policyNo = "P/" + branchcode + "/"  + productCode + "/" + String.format("%06d",entity.getPolicyno()) +  "/" + year ;
+	            	
+	    
 	            
-	            return "P11/"+year+"/"+branchcode+"/"+productCode+"/10/"+String.format("%07d",entity.getPolicyno()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
 	            return null;
 	        }
-	       
+	       return policyNo;
 	 
 	 }
+	 
+	 public synchronized String generatePolicyNo(String productCode,String branchcode) {
+		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy"); 
+		 String policyNo = "";
+	       try {
+	    	    SeqPolicyno entity;
+	            entity = polNoRepo.save(new SeqPolicyno());    
+	            Date currentDate = Calendar.getInstance().getTime();
+	            String year =  sdf.format(new Date()) ;
+	        
+	            	policyNo =  "P11/"+year+"/"+branchcode+"/"+productCode+"/10/"+String.format("%07d",entity.getPolicyno()) ;
+	        
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       return policyNo;
+	 
+	 }
+	 
 	 
 	 public synchronized String generateDebitNo(String branchCode) {
 	       try {

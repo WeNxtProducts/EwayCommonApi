@@ -12,15 +12,10 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import com.maan.eway.bean.MotorVehicleInfo;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.MotorVehicleInfoId;
 /**
  * <h2>MotorVehicleInfoRepository</h2>
@@ -36,7 +31,7 @@ public interface MotorVehicleInfoRepository  extends JpaRepository<MotorVehicleI
 
 
 
-	MotorVehicleInfo findTop1ByResChassisNumberOrderByEntryDateDesc(String reqChassisNumber);
+	MotorVehicleInfo findTop1ByResChassisNumberAndCompanyIdOrderByEntryDateDesc(String reqChassisNumber, String companyId);
 
 
 

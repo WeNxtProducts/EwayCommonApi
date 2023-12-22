@@ -57,6 +57,7 @@ import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsLifeDetails;
 import com.maan.eway.bean.MsVehicleDetails;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataEndt;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -96,6 +97,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataEndtRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
@@ -194,6 +196,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 	
 	@Autowired
 	private HomePositionMasterRepository homeRepo ;
+	
+	@Autowired
+	private PersonalInfoRepository piRepo ;
 	
 	private Boolean isPolicyPeriod=Boolean.FALSE;
 	
@@ -1263,7 +1268,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 	@Override
 	public List<DebitAndCredit> commissionCalc(CalcCommission request) {
 		List<DebitAndCredit> resList = new ArrayList<DebitAndCredit>();
-
+		String policyNo = "";
 		try {
 			
 			resList = getOverAllcommissionCalc(request );
@@ -1286,12 +1291,33 @@ public class CalculatorEngineService implements CalculatorEngine {
 			String emiYn=v1.getQuoteDetails().getEmiYn();
 			String instalment=v1.getQuoteDetails().getInstallmentMonth();
 			 List<BranchMaster> branchCode=ratingutil.collectBranchMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getBranchCode());
+			 
+			 //Not endt
 			if (StringUtils.isBlank(endttypeid)&& ( emiYn.equalsIgnoreCase("N") || instalment.equalsIgnoreCase("0"))) {			 
 				List<SectionDataDetails> sections = sectionRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
 		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),sections.get(0).getSectionId());
-		 	String policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
+		 
+		 	List<MotorDataDetails> list = motorRepo.findByQuoteNo(request.getQuoteno());
+		 	HomePositionMaster hpm = homeRepo.findByQuoteNo(request.getQuoteno())	 ;	
+		 	PersonalInfo pi = piRepo.findByCustomerId(hpm.getCustomerId()) 	;
+			String vehUsageCoreappcode = "";
+			String policyNo ="";
+			
+			
+		 	if(request.getProductId().equalsIgnoreCase("5"))		 	
+		 		vehUsageCoreappcode = getListItemvalue(request.getInsuranceId() , request.getBranchCode(), "MADISON_MOTOR", list.get(0).getMotorUsage(), pi.getPolicyHolderType());	 	
+		 	
+		 	  if(request.getInsuranceId().equalsIgnoreCase("100004")) {
+		 		  
+		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode(), request.getInsuranceId(), vehUsageCoreappcode, request.getProductId());
+		 		 
+		 	  }else {
+		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
+		 	  }
+		 	
 				request.setPolicyNo(policyNo);
-			} else {
+			} else { //endt
+				
 				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
 			}
 			
@@ -2760,6 +2786,80 @@ public class CalculatorEngineService implements CalculatorEngine {
 //			return null;
 //		}
 //	}
+
+		public synchronized String getListItemvalue(String insuranceId , String branchCode, String itemType, String vehUsageId, String cusTypeId) {
+			String coreappcode = "" ;
+			List<ListItemValue> list = new ArrayList<ListItemValue>();
+			try {
+				Date today  = new Date();
+				Calendar cal = new GregorianCalendar(); 
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today   = cal.getTime();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				Date todayEnd   = cal.getTime();
+				
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+				// Find All
+				Root<ListItemValue> c = query.from(ListItemValue.class);
+				
+				//Select
+				query.select(c);
+			
+				
+				// Effective Date Start Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+				Predicate b3 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+				Predicate b4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				effectiveDate.where(a1,a2,b3,b4);
+				// Effective Date End Max Filter
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+				Predicate b1 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+				Predicate b2 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				effectiveDate2.where(a3,a4,b1,b2);
+							
+				// Where
+				Predicate n1 = cb.equal(c.get("status"),"Y");
+				Predicate n12 = cb.equal(c.get("status"),"R");
+				Predicate n13 = cb.or(n1,n12);
+				Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+				Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+				Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+				Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+				Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+				Predicate n9 = cb.or(n6,n7);
+				Predicate n10 = cb.equal(c.get("itemType"),itemType );
+				Predicate n11 = cb.equal(c.get("itemCode"), vehUsageId);  //Veh USAGE Id  (private, commercial, special)
+				Predicate n14 = cb.equal(c.get("param1"), cusTypeId); //Customer TYPE Id (corporate/Indidual)
+				
+				query.where(n13,n2,n3,n4,n9,n10,n11, n14);
+				
+			
+				// Get Result
+				TypedQuery<ListItemValue> result = em.createQuery(query);
+				list = result.getResultList();
+				
+				coreappcode = list.size() > 0 ? list.get(0).getCoreAppCode() : "" ; 
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+			return coreappcode ;
+	
+	}
 
 	private List<BrokerCommissionDetails> getPolicyName(String companyId, String productId, String loginId,
 			String agencyCode, String policyType) {

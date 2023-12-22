@@ -13,17 +13,27 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
-
-import java.util.Date;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -59,7 +69,12 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="REQ_CHASSIS_NUMBER", nullable=false, length=20)
     private String     reqChassisNumber ;
+    
+    @Id
+    @Column(name="COMPANY_ID", nullable=false, length=20)
+    private String     companyId;
 
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="REQ_REQUEST_ID", length=20)
     private String     reqRequestId ;
@@ -95,7 +110,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RES_STATUS_CODE", length=20)
     private String     resStatusCode ;
 
-    @Column(name="RES_STATUS_DESC", length=50)
+    @Column(name="RES_STATUS_DESC", length=100)
     private String     resStatusDesc ;
 
     @Column(name="RES_MOTOR_CATEGORY")
@@ -169,6 +184,20 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="FIRST_REGDATE")
+    private Date       firstRegdate ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="CURRENT_LICENSEEXP_DT")
+    private Date       currentLicenseexpDt ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ROAD_WORTHEXP_DT")
+    private Date       roadWorthexpDt ;
+    
+    
+ 
 }
 
 
