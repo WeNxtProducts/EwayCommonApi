@@ -404,7 +404,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Policy Number:"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo} == ""?"Quote No :":"Policy Number :"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="100" y="0" width="180" height="14" uuid="b35629f0-5b11-4fe6-ba50-9adba484feff"/>
@@ -415,7 +415,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{policyNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo} ==""?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="280" y="0" width="140" height="14" uuid="669fb9af-ad6b-4120-b380-7675fb09586b"/>
@@ -1742,11 +1742,9 @@
 			</textField>
 		</band>
 		<band height="37">
-			<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{noOfVehicle} != 1 && $F{noOfVehicle} != 0]]></printWhenExpression>
 			<textField>
-				<reportElement x="0" y="21" width="555" height="16" uuid="976d1b85-e853-4ef3-937a-15cfd06701d9">
-					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1 && $F{noOfVehicle} != 0]]></printWhenExpression>
-				</reportElement>
+				<reportElement x="0" y="21" width="555" height="16" uuid="976d1b85-e853-4ef3-937a-15cfd06701d9"/>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 				</box>
@@ -1765,7 +1763,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA["SCHEDULE FORMING PART AND ATTACHED TO POLICY NO  : "+$F{policyNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""?"SCHEDULE FORMING PART AND ATTACHED TO  QUOTE NO : "+$F{quoteNo}:"SCHEDULE FORMING PART AND ATTACHED TO POLICY NO  : "+$F{policyNo}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="76">
@@ -2116,7 +2114,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Attached to and Forming Part of Motor Insurance Policy No :"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""?"Attached to and Forming Part of Motor Insurance Quote No :":"Attached to and Forming Part of Motor Insurance Policy No : "]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="224" y="0" width="331" height="12" uuid="e5ff8f4e-4017-43d6-beda-aabe4991d890"/>
@@ -2128,7 +2126,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{policyNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="12">
