@@ -2224,7 +2224,11 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 				savedata.setStatus("E");
 				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
 				savedata.setApplicationId(req.getApplicationId());
-				savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+				if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
+					savedata.setLoginId(data.getLoginId());
+				}else {
+					savedata.setLoginId(req.getLoginId());
+				}
 				savedata.setSubUserType(req.getSubUserType());
 				repo.saveAndFlush(savedata);
 			}
@@ -2355,7 +2359,11 @@ private CopyQuoteSuccessRes buildingRiskDetailsCopyQuote(CopyQuoteReq req, Strin
 				savedata.setStatus("E");
 				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
 				savedata.setApplicationId(req.getApplicationId());
-				savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+				if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
+					savedata.setLoginId(data.getLoginId());
+				}else {
+					savedata.setLoginId(req.getLoginId());
+				}
 				savedata.setSubUserType(req.getSubUserType());
 				buildRiskRepo.saveAndFlush(savedata);
 			}
@@ -2506,7 +2514,11 @@ private CopyQuoteSuccessRes commonDataDetailsEndoCopyquote(CopyQuoteReq req, Str
 				savedata.setStatus("E");
 				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
 				savedata.setApplicationId(req.getApplicationId());
-				savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+				if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
+					savedata.setLoginId(data.getLoginId());
+				}else {
+					savedata.setLoginId(req.getLoginId());
+				}
 				savedata.setSubUserType(req.getSubUserType());
 				commonDataRepo.saveAndFlush(savedata);
 			}
@@ -2872,7 +2884,11 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					savedata.setStatus("E");
 					savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 					savedata.setApplicationId(req.getApplicationId());
-					savedata.setLoginId(req.getLoginId()==null?homeData.getLoginId():(req.getLoginId()));
+					if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
+						savedata.setLoginId(homeData.getLoginId());
+					}else {
+						savedata.setLoginId(req.getLoginId());
+					}
 					savedata.setSubUserType(req.getSubUserType());
 					homePosistionRepo.saveAndFlush(savedata);
 				

@@ -147,4 +147,6 @@ public interface GridService {
 
 	GetPaymentStatusRes getPaymentSucessStatus(GetPaymentStatusReq req);
 
+	List<PortFolioDashBoardRes> getB2cAdminPortfolio(PortFolioDashBoardReq req);
+
 }

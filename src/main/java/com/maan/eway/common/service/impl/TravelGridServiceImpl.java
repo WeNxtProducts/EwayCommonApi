@@ -2070,7 +2070,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 //						savedata.setBranchCode(branchCode);
 //					}
 					savedata.setApplicationId(req.getApplicationId());
-					savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+					if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
+						savedata.setLoginId(data.getLoginId());
+					}else {
+						savedata.setLoginId(req.getLoginId());
+					}
 					savedata.setSubUserType(req.getSubUserType());
 					savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 					savedata.setActualPremiumFc(BigDecimal.ZERO);
@@ -2332,7 +2336,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata.setStatus("E");
 					savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
 					savedata.setApplicationId(req.getApplicationId());
-					savedata.setLoginId(req.getLoginId()==null?data.getLoginId():(req.getLoginId()));
+					if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
+						savedata.setLoginId(data.getLoginId());
+					}else {
+						savedata.setLoginId(req.getLoginId());
+					}d()));
 					savedata.setSubUserType(req.getSubUserType());
 					traPassDetailsRepo.saveAndFlush(savedata);
 				}
@@ -2769,7 +2777,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata.setStatus("E");
 					savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 					savedata.setApplicationId(req.getApplicationId());
-					savedata.setLoginId(req.getLoginId()==null?homeData.getLoginId():(req.getLoginId()));
+					if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
+						savedata.setLoginId(data.getLoginId());
+					}else {
+						savedata.setLoginId(req.getLoginId());
+					}
 					savedata.setSubUserType(req.getSubUserType());
 
 					homePosistionRepo.saveAndFlush(savedata);

@@ -18,6 +18,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -183,7 +184,11 @@ public class CopyTravelRaw {
 				newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
 				newObject.setQuoteNo(null);
 				newObject.setApplicationId(ent.getApplicationId());
-				newObject.setLoginId(ent.getLoginId()==null?m.getLoginId():ent.getLoginId());
+				if(ent.getLoginId()==null || StringUtils.isBlank(ent.getLoginId())) {
+					newObject.setLoginId(m.getLoginId());
+				}else {
+					newObject.setLoginId(ent.getLoginId());
+				}
 				newObject.setSubUserType(ent.getSubUserType());
 				newtravelList.add(newObject);
 			}
