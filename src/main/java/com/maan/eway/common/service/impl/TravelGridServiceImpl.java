@@ -2340,7 +2340,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setLoginId(data.getLoginId());
 					}else {
 						savedata.setLoginId(req.getLoginId());
-					}d()));
+					};
 					savedata.setSubUserType(req.getSubUserType());
 					traPassDetailsRepo.saveAndFlush(savedata);
 				}
@@ -2778,7 +2778,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 					savedata.setApplicationId(req.getApplicationId());
 					if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
-						savedata.setLoginId(data.getLoginId());
+						savedata.setLoginId(homeData.getLoginId());
 					}else {
 						savedata.setLoginId(req.getLoginId());
 					}

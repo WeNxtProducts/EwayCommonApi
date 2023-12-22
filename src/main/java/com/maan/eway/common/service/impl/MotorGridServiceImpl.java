@@ -2379,7 +2379,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			savedata.setCreditToId(null);
 			savedata.setApplicationId(req.getApplicationId());
 			if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
-				savedata.setLoginId(data.getLoginId());
+				savedata.setLoginId(homeData.getLoginId());
 			}else {
 				savedata.setLoginId(req.getLoginId());
 			}

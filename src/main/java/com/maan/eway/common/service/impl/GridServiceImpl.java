@@ -2592,7 +2592,7 @@ public class GridServiceImpl implements GridService {
 							brokerRes.setBrokerName(data.getCustomerName());
 						} else {
 							brokerRes.setBrokerCode(data.getOaCode() == null ? "0" : data.getOaCode().toString());
-							brokerRes.setBrokerName(data.getBrokerName());
+							
 						}
 						brokerRes.setBrokerLoginId(data.getLoginId());
 						brokerRes.setSubUserType(data.getSubUserType());
