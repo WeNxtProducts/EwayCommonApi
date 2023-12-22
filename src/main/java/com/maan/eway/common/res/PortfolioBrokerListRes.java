@@ -33,4 +33,7 @@ public class PortfolioBrokerListRes {
 	   
 	   @JsonProperty("SourceType")
 	   private String     sourceType;
+	   
+	   @JsonProperty("BdmCode")
+	   private String     bdmCode;
 }

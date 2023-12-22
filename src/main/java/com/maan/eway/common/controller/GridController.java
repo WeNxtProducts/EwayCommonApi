@@ -475,6 +475,24 @@ public class GridController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	// Reports grid
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+		@PostMapping("/admin/portfoliob2cdashboard")
+		public ResponseEntity<CommonRes> getB2cAdminPortfolio(@RequestBody PortFolioDashBoardReq req) {
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+			List<PortFolioDashBoardRes> res = entityService.getB2cAdminPortfolio(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
 
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 	@PostMapping("/admin/portfoliopendings")

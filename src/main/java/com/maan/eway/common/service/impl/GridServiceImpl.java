@@ -2603,6 +2603,7 @@ public class GridServiceImpl implements GridService {
 								: df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
 						brokerRes.setUserType(data.getUserType());
 						brokerRes.setSourceType(data.getSourceType());
+						brokerRes.setBdmCode(data.getBdmCode());
 						brokerResList.add(brokerRes);
 					}
 					brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes::getTotalCount).reversed());
@@ -2656,7 +2657,7 @@ public class GridServiceImpl implements GridService {
 					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"), h.get("productId").alias("productId"),
 					h.get("productName").alias("productName"), l.get("agencyCode").as(Integer.class).alias("oaCode"),
 					u.get("userName").alias("brokerName"), l.get("userType").alias("userType"),
-					l.get("subUserType").alias("subUserType"), l.get("loginId").alias("loginId"),
+					l.get("subUserType").alias("subUserType"), h.get("loginId").alias("loginId"),
 					h.get("customerCode").alias("customerCode"),h.get("customerName").alias("customerName"),
 					h.get("sourceType").alias("sourceType"),cb.max(h.get("bdmCode")).alias("bdmCode"));
 			// Order By
@@ -2714,7 +2715,7 @@ public class GridServiceImpl implements GridService {
 
 			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId"), h.get("productName"),
 					l.get("agencyCode"), u.get("userName"), l.get("userType"), l.get("subUserType"),
-					l.get("loginId"),h.get("customerCode"),h.get("customerName"),h.get("sourceType"))
+					h.get("loginId"),h.get("customerCode"),h.get("customerName"),h.get("sourceType"))
 					.orderBy(orderList);
 
 			// Get Result
@@ -6143,5 +6144,157 @@ public class GridServiceImpl implements GridService {
 		return count;
 	}
 
+	@Override
+	public List<PortFolioDashBoardRes> getB2cAdminPortfolio(PortFolioDashBoardReq req) {
+		List<PortFolioDashBoardRes> resList = new ArrayList<PortFolioDashBoardRes>();
+		DecimalFormat df = new DecimalFormat("0.##");
+		try {
+			List<CompanyProductMaster> productList = getCompanyProductList(req.getInsuranceId());
+			List<PortFolioAdminTupleRes> list = getPortFolioB2cDashBoard(req);
+
+			// Group By Product Id
+			// Map<Integer ,List<PortFolioAdminTupleRes>> groupByProductId =
+			// list.stream().collect(Collectors.groupingBy(PortFolioAdminTupleRes ::
+			// getProductId )) ;
+			for (CompanyProductMaster product : productList) {
+
+				if (StringUtils.isBlank(req.getProductId()) || "99999".equalsIgnoreCase(req.getProductId())
+						|| product.getProductId().equals(Integer.valueOf(req.getProductId()))) {
+
+					List<PortFolioAdminTupleRes> filterProduct = list.stream()
+							.filter(o -> o.getProductId() != null && o.getProductId().equals(product.getProductId()))
+							.collect(Collectors.toList());
+
+					// Map Broker List
+					List<PortfolioBrokerListRes> brokerResList = new ArrayList<PortfolioBrokerListRes>();
+					for (PortFolioAdminTupleRes data : filterProduct) {
+						PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
+
+						if(StringUtils.isBlank(data.getBdmCode()) && "b2c".equalsIgnoreCase(data.getSourceType())){
+							brokerRes.setBrokerCode(data.getCustomerCode() == null ? "0" : data.getCustomerCode().toString());
+							brokerRes.setBrokerName(data.getCustomerName());
+						} 
+						brokerRes.setBrokerLoginId(data.getLoginId());
+						brokerRes.setSubUserType(data.getSubUserType());
+						brokerRes.setTotalCount(data.getCount() == null ? 0 : data.getCount());
+						brokerRes.setTotalPremiumLc(data.getOverallPremiumLc() == null ? "0"
+								: df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
+						brokerRes.setTotalPremiumFc(data.getOverallPremiumFc() == null ? "0"
+								: df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
+						brokerRes.setUserType(data.getUserType());
+						brokerRes.setSourceType(data.getSourceType());
+						brokerRes.setBdmCode(data.getBdmCode());
+						brokerResList.add(brokerRes);
+					}
+					brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes::getTotalCount).reversed());
+
+					// Response
+					PortFolioDashBoardRes res = new PortFolioDashBoardRes();
+					res.setBrokerList(brokerResList);
+					res.setProductId(product.getProductId().toString());
+					res.setProductName(product.getProductName());
+					res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0);
+					resList.add(res);
+				}
+
+			}
+			resList.sort(Comparator.comparing(PortFolioDashBoardRes::getBrokerCount).reversed());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	public List<PortFolioAdminTupleRes> getPortFolioB2cDashBoard(PortFolioDashBoardReq req) {
+		List<PortFolioAdminTupleRes> list = new ArrayList<PortFolioAdminTupleRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+
+			Date startDate = req.getStartDate();
+			cal.setTime(startDate);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			startDate = cal.getTime();
+
+			Date endDate = req.getEndDate();
+			cal.setTime(endDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			endDate = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PortFolioAdminTupleRes> query = cb.createQuery(PortFolioAdminTupleRes.class);
+
+			// Find All
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+
+			// Select
+			query.multiselect(cb.count(h).alias("count"), cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"), h.get("productId").alias("productId"),
+					h.get("productName").alias("productName"), cb.max(l.get("agencyCode")).as(Integer.class).alias("oaCode"),
+				/*	cb.max(u.get("userName")).alias("brokerName"),*/cb.max( l.get("userType")).alias("userType"),
+					cb.max(l.get("subUserType")).alias("subUserType"), cb.max(l.get("loginId")).alias("loginId"),
+					cb.max(h.get("customerCode")).alias("customerCode"),cb.max(h.get("customerName")).alias("customerName"),
+					cb.max(h.get("sourceType")).alias("sourceType"),cb.max(h.get("bdmCode")).alias("bdmCode"));
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(h.get("productName")));
+
+
+			// Where
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.greaterThanOrEqualTo(h.get("entryDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("entryDate"), endDate));
+			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(h.get("subUserType"), "b2c"));
+			predicate.add(cb.equal(h.get("sourceType"), "b2c"));
+			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
+			// Business Type Condition)
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+
+			if ("NB2C".equalsIgnoreCase(businessType)) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				Predicate n1 = cb.isNull(h.get("endtStatus"));
+				Predicate n2 = cb.equal(h.get("endtStatus"), "");
+				predicate.add(cb.or(n1, n2));
+
+			} 
+//			else if ("E".equalsIgnoreCase(businessType)) {
+//				predicate.add(cb.equal(h.get("status"), "P"));
+//				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+//				predicate.add(cb.notEqual(h.get("endtTypeId"), "842"));
+//
+//			} else if ("C".equalsIgnoreCase(businessType)) {
+//				predicate.add(cb.equal(h.get("status"), "P"));
+//				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+//				predicate.add(cb.equal(h.get("endtTypeId"), "842"));
+//			}
+
+			// Product & Branch Condition
+			if (StringUtils.isNotBlank(req.getProductId()))
+				predicate.add(cb.equal(h.get("productId"), req.getProductId()));
+			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
+				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
+
+			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId"),
+					h.get("productName"),
+//					h.get("sourceType"),
+					h.get("loginId"))
+					.orderBy(orderList);
+
+			// Get Result
+			TypedQuery<PortFolioAdminTupleRes> result = em.createQuery(query);
+			list = result.getResultList();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+
+		}
+		return list;
+	}
 }
 
