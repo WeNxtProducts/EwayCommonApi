@@ -1327,20 +1327,20 @@ public class JasperCustomServiceImple {
 				result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
 				result.put("companyName", map.get("companyName")==null?"":map.get("companyName").toString());
 				result.put("currency", map.get("currency")==null?"":map.get("currency").toString());
-				result.put("vatPercent", map.get("vatPercent")==null?"":map.get("vatPercent").toString());
+				result.put("vatPercent", map.get("vatPercent")==null?null:map.get("vatPercent").toString());
 				result.put("premium", map.get("premium")==null?"":map.get("premium").toString());
-				result.put("vatPremium", map.get("vatPremium")==null?"":map.get("vatPremium").toString());
+				result.put("vatPremium", map.get("vatPremium")==null?null:map.get("vatPremium").toString());
 				result.put("overAllPremium", map.get("overAllPremium")==null?"":map.get("overAllPremium").toString());
-				result.put("commissionPercentage", map.get("commissionPercentage")==null?"":map.get("commissionPercentage").toString());
-				result.put("commission", map.get("commission")==null?"":map.get("commission").toString());
-				result.put("branchName", map.get("branchName")==null?"":map.get("branchName").toString());
-				result.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
+				result.put("commissionPercentage", map.get("commissionPercentage")==null?null:map.get("commissionPercentage").toString());
+				result.put("commission", map.get("commission")==null?null:map.get("commission").toString());
+				result.put("branchName", map.get("branchName")==null?null:map.get("branchName").toString());
+				result.put("inceptionDate", map.get("inceptionDate")==null?null:map.get("inceptionDate").toString());
 				result.put("address", map.get("address")==null?"":map.get("address").toString());
 				result.put("email1", map.get("email1")==null?"":map.get("email1").toString());
-				result.put("mobileNo1", map.get("mobileNo1")==null?"":map.get("mobileNo1").toString());
+				result.put("mobileNo1", map.get("mobileNo1")==null?null:map.get("mobileNo1").toString());
 				result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
-				result.put("vrTinNo", map.get("vrTinNo")==null?"":map.get("vrTinNo").toString());
-				result.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
+				result.put("vrTinNo", map.get("vrTinNo")==null?null:map.get("vrTinNo").toString());
+				result.put("expiryDate", map.get("expiryDate")==null?null:map.get("expiryDate").toString());
 				result.put("vehicleList", vehicleList);
 			}
 				
