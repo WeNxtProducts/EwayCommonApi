@@ -10,6 +10,9 @@ public class ErrorDescListRes {
 	@JsonProperty("ErrorCode")
 	private String errorCode;
 	
+	@JsonProperty("ErrorField")
+	private String errorField;
+	
 	@JsonProperty("ErrorDesc")
 	private String errorDesc;
 	

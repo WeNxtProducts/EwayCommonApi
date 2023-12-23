@@ -12,7 +12,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface EserviceCustomerDetailsService {
 
-	List<Error> validateCustomerDetails(EserviceCustomerSaveReq req);
+	List<String> validateCustomerDetails(EserviceCustomerSaveReq req);
 
 	SuccessRes saveCustomerDetails(EserviceCustomerSaveReq req);
 

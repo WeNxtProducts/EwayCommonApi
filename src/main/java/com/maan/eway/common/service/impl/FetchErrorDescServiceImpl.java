@@ -38,7 +38,7 @@ import com.maan.eway.bean.ErrorDescMaster;
 import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.ErrorDescListRes;
 import com.maan.eway.common.res.ErrorGroupRes;
-
+import com.maan.eway.error.Error;
 
 @Configuration
 @EnableScheduling
@@ -54,10 +54,8 @@ public class FetchErrorDescServiceImpl {
 	
 	List<ErrorGroupRes> errorDescriptionList = new ArrayList<ErrorGroupRes>();
 	
-	
-
-	public String getErrorDesc(String errorCode , CommonErrorModuleReq req ) {
-		String errorDesc = "";
+	public List<Error> getErrorDesc(List<String> errorCodes , CommonErrorModuleReq req ) {
+		List<Error> errors = new ArrayList<Error>();
 		try {
 			List<ErrorGroupRes> errorDescList = errorGroupRes ;// loadErrorModule();
 			
@@ -71,19 +69,29 @@ public class FetchErrorDescServiceImpl {
 			if( filterErrorList.size() > 0 && filterErrorList.get(0).getErrorDescList()!=null && filterErrorList.get(0).getErrorDescList().size() > 0   ) {
 				filterErrorCodeList = filterErrorList.get(0).getErrorDescList() ;
 			}
-			List<ErrorDescListRes> filterErrorCode = filterErrorCodeList.stream().filter( o -> o.getErrorCode().equalsIgnoreCase(errorCode) 
-					&& (o.getBranchCode().equalsIgnoreCase(req.getBranchCode()) || o.getBranchCode().equalsIgnoreCase("99999") )	).collect(Collectors.toList());
 			
-			// Response 
-			errorDesc = filterErrorCode.size() > 0 ? filterErrorCode.get(0).getErrorDesc() : "No Error Description Available" ;
+			for(String errorCode : errorCodes ) {
+				List<ErrorDescListRes> filterErrorCode = filterErrorCodeList.stream().filter( o -> o.getErrorCode().equalsIgnoreCase(errorCode) 
+						&& (o.getBranchCode().equalsIgnoreCase(req.getBranchCode()) || o.getBranchCode().equalsIgnoreCase("99999") )	).collect(Collectors.toList());
+				// Response 
+				if(filterErrorCode.size() > 0 ) {
+					ErrorDescListRes res = filterErrorCode.get(0) ;
+					errors.add(new Error(errorCode ,res.getErrorField() ,res.getErrorDesc()));
+				} else {
+					errors.add(new Error(errorCode ,"" ,"No Error Description Available"));
+				}
+				
+			}
+			
+			
 			
 			 
 		} catch (Exception e) {
 			e.printStackTrace();
 			e.getMessage();
-			errorDesc = "No Error Description Available" ;
+			//errorDesc = "No Error Description Available" ;
 		}
-		return errorDesc ;
+		return errors ;
 	}
 	
 	@Bean
@@ -132,6 +140,7 @@ public class FetchErrorDescServiceImpl {
 								ErrorDescListRes errorDescRes = new ErrorDescListRes();
 								errorDescRes.setBranchCode(data.getBranchCode());
 								errorDescRes.setErrorCode(data.getErrorCode());
+								errorDescRes.setErrorField(data.getErrorField());
 								errorDescRes.setErrorDesc(data.getErrorDesc());
 								errorDescResList.add(errorDescRes);
 								
