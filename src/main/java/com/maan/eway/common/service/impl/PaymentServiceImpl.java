@@ -3011,7 +3011,7 @@ public class PaymentServiceImpl implements PaymentService {
 			log.info("gettinyurl--> URL: " + url);
 			String encryptedURL = url + encrData;
 			log.info("gettinyurl--> EncryptedURL: " + encryptedURL);
-			tinyURL = getShorternURL(encryptedURL);
+			tinyURL = "";// getShorternURL(encryptedURL);
 		} catch (Exception e) {
 			log.error(e);
 		}
