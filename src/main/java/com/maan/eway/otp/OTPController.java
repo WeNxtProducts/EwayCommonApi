@@ -52,4 +52,15 @@ public class OTPController {
 		}
 	} 
 	
+	
+	@PostMapping("/createLogin")
+	@ApiOperation("This Method is to get by id")
+	public ResponseEntity<Object> createLogin(@RequestBody ValidateOtp otp){
+		OtpConfirm data=service.createUser(otp);
+		if (data != null) {
+			return new ResponseEntity<Object>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+	} 
 }

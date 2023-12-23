@@ -33,4 +33,10 @@ public class ValidateOtp {
 	//@JsonProperty("AgencyCode")
 	private String createdAgencyCode;
 	
+	// online watsapp.
+	 @JsonProperty("UserMobileNo")
+	 private String mobileNo;
+	 @JsonProperty("UserMobileCode")
+	 private String mobileCode;	
+	
 }

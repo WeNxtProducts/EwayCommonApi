@@ -413,7 +413,66 @@ public class OTPService {
 	
 	}
 	
-
+  public OtpConfirm createUser(ValidateOtp otp) {
+		
+		 
+	  	List<Error> errorlist=new ArrayList<Error>();
+	  	OtpDataDetail otpData=new OtpDataDetail();
+	  	otpData.setMobileCode(otp.getMobileCode());
+	  	otpData.setMobileNo(otp.getMobileNo());
+	  	otpData.setCompanyId(otp.getCompanyId());
+	  	otpData.setCustomerId(otp.getCustomerId());
+	  	otpData.setLoginId("guest");
+	  	
+		 errorlist = createUserLogin(otpData,otp);
+		if((errorlist==null || errorlist.size()==0) && StringUtils.isNotBlank(otp.getCustomerId()) &&  StringUtils.isNotBlank(otp.getReferenceNo())) {
+			List<ProductSectionMaster> prodctSects = productSectionRepo.findByProductIdAndCompanyId(Integer.parseInt(otp.getProductId()),otp.getCompanyId());
+			List<ProductSectionMaster> collect = prodctSects.stream().filter(distinctByKey(ProductSectionMaster::getMotorYn)).collect(Collectors.toList());
+			String loginId = otpData.getMobileCode().concat(otpData.getMobileNo());
+			for (ProductSectionMaster productSectionMaster : collect) {
+				String motorYn = productSectionMaster.getMotorYn();
+				if(motorYn.equals("M")) {
+					List<EserviceMotorDetails> referenceNos = eserviceMotorRepo.findByRequestReferenceNo(otp.getReferenceNo());
+					
+					eserviceMotorRepo.deleteAll(referenceNos);
+					referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
+					referenceNos.forEach(m->m.setLoginId(loginId ));
+					referenceNos.forEach(m->m.setAgencyCode(otp.getCreatedAgencyCode() ));
+					eserviceMotorRepo.saveAll(referenceNos);
+				}else if(motorYn.equals("H") &&  "4".equalsIgnoreCase(otp.getProductId() )) {
+					EserviceTravelDetails referenceNos = eserviceTravelRepo.findByRequestReferenceNo(otp.getReferenceNo());
+					eserviceTravelRepo.delete(referenceNos);
+					referenceNos.setCustomerReferenceNo(otp.getCustomerId());
+					referenceNos.setLoginId(loginId);
+					referenceNos.setAgencyCode(otp.getCreatedAgencyCode());
+					eserviceTravelRepo.save(referenceNos);
+				}else if(motorYn.equals("A")) {
+					List<EserviceBuildingDetails> referenceNos = eservicebuildRepo.findByRequestReferenceNo(otp.getReferenceNo());
+					eservicebuildRepo.deleteAll(referenceNos);
+					referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
+					referenceNos.forEach(m->m.setLoginId(loginId ));
+					referenceNos.forEach(m->m.setAgencyCode(otp.getCreatedAgencyCode() ));
+					eservicebuildRepo.saveAll(referenceNos);
+				}else {
+					List<EserviceCommonDetails> referenceNos = eservicecommonRepo.findByRequestReferenceNo(otp.getReferenceNo());
+					eservicecommonRepo.deleteAll(referenceNos);
+					referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
+					referenceNos.forEach(m->m.setLoginId(loginId ));
+					referenceNos.forEach(m->m.setAgencyCode(otp.getCreatedAgencyCode() ));
+					eservicecommonRepo.saveAll(referenceNos);
+				}
+			}
+			
+			
+		}
+		OtpConfirm c=OtpConfirm.builder()
+				.isError((errorlist !=null && errorlist.size()>0)?true:false)
+				.errorlist(errorlist)
+				.otpToken(otp.getOtpToken())
+				.build();
+		return c;
+	
+  }
 	
 	
 }
