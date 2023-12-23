@@ -148,8 +148,10 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 						orderDict.addProperty("billing.postcode_or_pobox" ,StringUtils.isBlank(payment.getReqBillToAddrPostalCode())?"99999":payment.getReqBillToAddrPostalCode());  
 						orderDict.addProperty("billing.country" , payment.getReqBillToCountry());  
 						orderDict.addProperty("billing.phone" , payment.getReqBillToPhone());
-						/*orderDict.addProperty("shipping.firstname" ,  payment.getReqBillToForename());
-						orderDict.addProperty("shipping.lastname" ,  payment.getReqBillToSurname());*/
+						/*
+						 orderDict.addProperty("shipping.firstname" ,  payment.getReqBillToForename());
+						 orderDict.addProperty("shipping.lastname" ,  payment.getReqBillToSurname());
+						 */
 						//orderDict.addProperty("shipping.address_1" , payment.getReqBillToAddressLine1());
 						orderDict.addProperty("shipping.address_2" , payment.getReqBillToAddressLine2());
 						orderDict.addProperty("shipping.city" , payment.getReqBillToAddressCity());

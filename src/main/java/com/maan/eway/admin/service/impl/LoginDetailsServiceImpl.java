@@ -522,8 +522,8 @@ this.repository = repo;
 			
 			//userInfo.setCityCode(Integer.valueOf(personalReq.getCityCode()));
 			userInfo.setCityName(personalReq.getCityName());
-			userInfo.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
-			userInfo.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
+			userInfo.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : personalReq.getMobileCode()); // mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
+			userInfo.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : personalReq.getWhatsappCode());// mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				userInfo.setOaCode(saveLogin.getOaCode().toString());
