@@ -20,6 +20,17 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +39,9 @@ import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.ErrorDescListRes;
 import com.maan.eway.common.res.ErrorGroupRes;
 
-@Component
+
+@Configuration
+@EnableScheduling
 public class FetchErrorDescServiceImpl {
 	
 	private Logger log=LogManager.getLogger(FetchErrorDescServiceImpl.class);
@@ -36,12 +49,17 @@ public class FetchErrorDescServiceImpl {
 	@PersistenceContext
 	private EntityManager em;
 	
+	
+	private List<ErrorGroupRes> errorGroupRes = new ArrayList<ErrorGroupRes>();
+	
 	List<ErrorGroupRes> errorDescriptionList = new ArrayList<ErrorGroupRes>();
+	
+	
 
 	public String getErrorDesc(String errorCode , CommonErrorModuleReq req ) {
 		String errorDesc = "";
 		try {
-			List<ErrorGroupRes> errorDescList =  loadErrorModule(req );
+			List<ErrorGroupRes> errorDescList = errorGroupRes ;// loadErrorModule();
 			
 			// Filter By Primary Key
 			List<ErrorGroupRes> filterErrorList = errorDescList.stream().filter( o-> o.getCompanyId().equalsIgnoreCase(req.getInsuranceId())   
@@ -68,9 +86,13 @@ public class FetchErrorDescServiceImpl {
 		return errorDesc ;
 	}
 	
-	//@Cacheable("ErrorModules")
-	@Scheduled(fixedRateString = "5000")//5 second
-	public List<ErrorGroupRes> loadErrorModule(CommonErrorModuleReq req ) {
+	@Bean
+	public void loadModule() {
+		loadErrorModule();
+	}
+	
+	@Scheduled(fixedRateString = "60000")//1min
+	public List<ErrorGroupRes> loadErrorModule() {
 		List<ErrorGroupRes>  resList = new ArrayList<ErrorGroupRes>();
 		try {
 			
@@ -124,47 +146,16 @@ public class FetchErrorDescServiceImpl {
 				
 			}
 			
-			// Group By Some Condition
-//			Function<ErrorDescMaster, ErrorGroupRes > compositeKey = errorRecord ->
-//			Arrays.asList(errorRecord.getCompanyId(), errorRecord.getProductId() ,errorRecord.getModuleId() , errorRecord.getModuleName()));
+			errorGroupRes  = resList ;
 			
-//			Object [] value = {req.getInsuranceId() ,Integer.valueOf(req.getProductId()) , req.getModuleId() ,req.getModuleName()  };
-//			
-//			
-//			Function<ErrorDescMaster, List<Object>> compositeKey = errorRecord -> 
-//			Arrays.<Object>asList(errorRecord.getCompanyId(), errorRecord.getProductId() ,errorRecord.getModuleId() , errorRecord.getModuleName());
-////			
-//			
-//			
-//			Map<Object, List<ErrorDescMaster>> map = errorDescList.stream().collect(Collectors.groupingBy(compositeKey, Collectors.toList()));
-//			filterErrorList = (List<ErrorDescMaster>) map.get(value) ;
-//			
 			
-			// Filter Error Desc
-//			filterErrorList = errorDescList.stream().filter( o-> o.getCompanyId().equalsIgnoreCase(req.getInsuranceId())   
-//					&& o.getProductId().equals(StringUtils.isNotBlank(req.getProductId())?Integer.valueOf(req.getProductId()):99999)
-//					&&  o.getModuleId().equals(StringUtils.isNotBlank(req.getModuleId())?Integer.valueOf(req.getModuleId()):99999)   
-//					&& (o.getBranchCode().equalsIgnoreCase(req.getBranchCode()) || o.getBranchCode().equalsIgnoreCase("99999") ) ).collect(Collectors.toList());
-			
-			//this.errorDescriptionList = resList ;
 		} catch (Exception e) {
 			e.printStackTrace();
 			e.getMessage();
 		}
 		return resList ;
 	}
-	
-	
-//  @Scheduled(fixedRateString = "36,00,000")//1hour
-//	@Scheduled(fixedRateString = "60000")//1min
-//	@Scheduled(fixedRateString = "30000")//30Second
-//	@Scheduled(fixedRateString = "5000")//5 Second
-//	@CacheEvict(value = "ErrorModules", allEntries = true)
-//	@Scheduled(fixedRateString = "5000")
-//	public void emptyErrorModuleCache() {
-//		log.info("emptying Error Modules cache");
-//	}
-	
+
 	public List<ErrorDescMaster> getErrorList() {
 		List<ErrorDescMaster>  list = new ArrayList<ErrorDescMaster>();
 		try {
