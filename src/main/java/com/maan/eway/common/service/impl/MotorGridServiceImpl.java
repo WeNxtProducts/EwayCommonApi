@@ -1759,7 +1759,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setMsRefno(null);
 						savedata.setVdRefNo(null);
 						savedata.setSumInsuredLc(null);
-						savedata.setSourceTypeId(null);
 						repo.saveAndFlush(savedata);
 					}
 

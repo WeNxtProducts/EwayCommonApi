@@ -1236,7 +1236,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					savedata.setCdRefno(null);
 					savedata.setMsRefno(null);
 					savedata.setVdRefNo(null);
-					savedata.setSourceTypeId(null);
 				repo.saveAndFlush(savedata);
 				}
 				// Save Section

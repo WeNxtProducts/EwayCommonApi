@@ -1586,7 +1586,6 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setMsRefno(null);
 						savedata.setVdRefNo(null);
 						savedata.setSumInsuredLc(null);
-						savedata.setSourceTypeId(null);
 						repo.saveAndFlush(savedata);
 					}
 //					res.setResponse("Successfully Updated");
