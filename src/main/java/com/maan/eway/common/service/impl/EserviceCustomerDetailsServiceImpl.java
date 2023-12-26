@@ -2016,8 +2016,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	}
 
 	@Override
-	public List<Error> validateCustomer(EserviceCustomerSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateCustomer(EserviceCustomerSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 		try {
@@ -2025,55 +2025,55 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
 				if (StringUtils.isBlank(req.getClientName())) {
-					errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+					errorList.add("1001");
 				} else if (req.getClientName().length() > 250) {
-					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 250 Characters"));
+					errorList.add("1002");
 				} 
 //				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+")) {
 //					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
 //				}
 				 
 				if (StringUtils.isBlank(req.getTitle())) {
-					errorList.add(new Error("04", "Title", "Please Select Title"));
+					errorList.add("1047");
 				}
 				if (StringUtils.isBlank(req.getClientStatus())) {
-					errorList.add(new Error("05", "Client Status", "Please Select Client Status"));
+					errorList.add("1010");
 				}
 
 				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
 
 					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
 						if (StringUtils.isBlank(req.getBusinessType())) {
-							errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+							errorList.add("1192");
 						}
 					}
 				}
 //	 
 
 				if (StringUtils.isBlank(req.getIdNumber())) {
-					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber"));
+					errorList.add("1013");
 				} else if (req.getIdNumber().length() > 100) {
-					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber within 100 Characters"));
+					errorList.add("1014");
 				}
 				      
 
 				if (StringUtils.isBlank(req.getMobileNo1())) {
-					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
+					errorList.add("1026");
 				} else if (req.getMobileNo1().length() > 20) {
-					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo within 20 Characters"));
+					errorList.add("1030");
 				} else if (!req.getMobileNo1().matches("\\d+")) {
-					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo only in numbers"));
+					errorList.add("1028");
 				}
 
 				if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
-					errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 within 20 Characters"));
+					errorList.add("1029");
 				} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo2().matches("\\d+")) {
-					errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 only in numbers"));
+					//errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 only in numbers"));
 				}
 				if (StringUtils.isNotBlank(req.getMobileNo3()) && req.getMobileNo3().length() > 20) {
-					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 within 20 Characters"));
+					errorList.add("1030");
 				} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo3().matches("\\d+")) {
-					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 only in numbers"));
+					errorList.add("1031");
 				}
 			/*	if (StringUtils.isBlank(req.getEmail1())) {
 					errorList.add(new Error("27", "Email1", "Please Enter Email"));
@@ -2089,17 +2089,17 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				 
 				// Status Validation
 				if (StringUtils.isBlank(req.getStatus())) {
-					errorList.add(new Error("34", "Status", "Please Enter Status"));
+					errorList.add("1058");
 				} else if (req.getStatus().length() > 1) {
-					errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
+					errorList.add("1059");
 				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())
 						|| "P".equals(req.getStatus()))) {
-					errorList.add(new Error("34", "Status", "Plese Enter Status"));
+					errorList.add("1060");
 				}
 				if (StringUtils.isBlank(req.getCreatedBy())) {
-					errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy "));
+					errorList.add("1063");
 				} else if (req.getCreatedBy().length() > 100) {
-					errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+					errorList.add("1064");
 				}
 
 				 
@@ -2107,26 +2107,26 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				 
 
 				if (StringUtils.isBlank(req.getBranchCode())) {
-					errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode "));
+					errorList.add("1074");
 				} else if (req.getBranchCode().length() > 20) {
-					errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode within 20 Characters"));
+					errorList.add("1075");
 				}
 				if (StringUtils.isBlank(req.getProductId())) {
-					errorList.add(new Error("40", "ProductId", "Please Enter ProductId "));
+					errorList.add("1076");
 				} else if (req.getProductId().length() > 20) {
-					errorList.add(new Error("40", "ProductId", "Please Enter ProductId within 20 Characters"));
+					errorList.add("1077");
 				}
 				if (StringUtils.isBlank(req.getCompanyId())) {
-					errorList.add(new Error("41", "CompanyId", "Please Enter CompanyId "));
+					errorList.add("1078");
 				} else if (req.getCompanyId().length() > 20) {
-					errorList.add(new Error("41", "CompanyId", "Please Enter CompanyId within 20 Characters"));
+					errorList.add("1079");
 				}
 				
 				if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
 					if (StringUtils.isBlank(req.getVrTinNo())) {
-						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo"));
+						errorList.add("1051");
 					} else if (req.getVrTinNo().length() > 20) {
-						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo within 20 Characters"));
+						errorList.add("1052");
 					}
 					
 				}
@@ -2135,11 +2135,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				 
   
 				if (StringUtils.isBlank(req.getMobileCode1())) {
-					errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
+					errorList.add("1062");
 				}
 				
 				if (StringUtils.isBlank(req.getWhatsappCode())) {
-					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
+					errorList.add("1193");
 				}
 				
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
@@ -2241,8 +2241,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
 					list = result.getResultList();
 					if (list.size() > 0) {
-						errorList.add(new Error("42", "Already have data for customerReferenceNo",
-								list.get(0).getCustomerReferenceNo()));
+					//	errorList.add(new Error("42", "Already have data for customerReferenceNo",
+								//list.get(0).getCustomerReferenceNo()));
+						errorList.add("1001");
 
 					}
 				}
@@ -2250,12 +2251,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 			else if (req.getSaveOrSubmit().equalsIgnoreCase("Save")) {
 				if (StringUtils.isBlank(req.getClientName())) {
-					errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+					errorList.add("1001");
 				} else if (req.getClientName().length() > 100) {
-					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
+					errorList.add("1002");
 				}
 				if (StringUtils.isBlank(req.getPolicyHolderType())) {
-					errorList.add(new Error("02", "PolicyHolderType", "Please Select PolicyHolderType "));
+					errorList.add("1086");
 				}
 /*				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
 
@@ -2281,7 +2282,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 							
 						
 						if (req.getDobOrRegDate().after(today)) {
-							errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+							errorList.add("1088");
 
 						} 
 						LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
@@ -2290,11 +2291,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 						Integer years = Period.between(localDate1, localDate2).getYears();
 						if (years > 100) {
-							errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+							errorList.add("1089");
 
 						}
 						}catch (Exception e) {
-							errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+							errorList.add("1073");
 						}
 
 					}/*else {
@@ -2310,7 +2311,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						try {
 
 							if (req.getDobOrRegDate().after(today)) {
-								errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+								errorList.add("1088");
 
 							}
 							LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
@@ -2319,13 +2320,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 							Integer years = Period.between(localDate1, localDate2).getYears();
 							if (years > 100) {
-								errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+								errorList.add("1089");
 
 							}
 
 
 						}catch (Exception e) {
-							errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+							errorList.add("1073");
 						}
 					} /*else {
 						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
@@ -2356,7 +2357,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
-			errorList.add(new Error("01", "Common Error", e.getMessage()));
+			errorList.add("1194");
 		}
 		return errorList;
 

@@ -88,12 +88,23 @@ public class EserviceCustomerDetailsController {
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/customer")
-	public ResponseEntity<CommonRes> saveCustomerLess(@RequestBody  EserviceCustomerSaveReq req) {
+	public ResponseEntity<CommonRes> saveCustomerLess(@RequestBody  EserviceCustomerSaveReq req){
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = entityService.validateCustomer(req);
-		//// validation
+		List<String> validationCodes = entityService.validateCustomerDetails(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("1");
+			comErrDescReq.setModuleName("CUSTOMER CREATION");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
 			data.setIsError(true);
@@ -101,7 +112,8 @@ public class EserviceCustomerDetailsController {
 			data.setMessage("Failed");
 			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-		} else {
+		} 
+		else {
 			/////// save
 			//req.setDobOrRegDate(new Date());
 			req.setOccupation("12");

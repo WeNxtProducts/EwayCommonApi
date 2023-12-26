@@ -24,6 +24,6 @@ public interface EserviceCustomerDetailsService {
 
 	List<CustomerDetailsGetRes> getActiveCustomerDetails(GetAllCustomerDetailsReq req);
 
-	List<Error> validateCustomer(EserviceCustomerSaveReq req);
+	List<String> validateCustomer(EserviceCustomerSaveReq req);
 
 }
