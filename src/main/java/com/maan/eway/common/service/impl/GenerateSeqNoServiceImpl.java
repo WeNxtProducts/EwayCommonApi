@@ -71,7 +71,7 @@ public class GenerateSeqNoServiceImpl {
 	
 	 
 
-	 public synchronized String generatePolicyNo(String productCode,String branchcode, String companyId, String vehUsageCoreappcode, String productId ) { //madison
+	 public synchronized String generatePolicyNo(String productCode,String branchcode, String companyId, String vehUsageCoreappcode, String productId, String itemvalue ) { //madison 100004
 		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy"); 
 		 String policyNo = "";
 	       try {
@@ -82,11 +82,12 @@ public class GenerateSeqNoServiceImpl {
 	       
 	            	 //---> P/01/4013/001377/2023/B,  P/01/4013/001377/2023/E
 		            //----> 'P'||'/'||LvBranchCd||'/'||LvVeh_Usage||'/'||Lpad(MOTOR_POLICY_NO.Nextval,'6','0')||'/'||TO_CHAR(SYSDATE,'YYYY') //others productid
+	            	//end local, uat-->/T, live-->/B
 	            	
 	            	if(productId.equalsIgnoreCase("5"))
-	            		policyNo = "P/" + branchcode + "/"  + vehUsageCoreappcode + "/" + String.format("%06d",entity.getPolicyno()) +  "/" + year ;
+	            		policyNo = "P/" + branchcode + "/"  + vehUsageCoreappcode + "/" + String.format("%06d",entity.getPolicyno()) +  "/" + year + itemvalue;
 	            	else
-	            		policyNo = "P/" + branchcode + "/"  + productCode + "/" + String.format("%06d",entity.getPolicyno()) +  "/" + year ;
+	            		policyNo = "P/" + branchcode + "/"  + productCode + "/" + String.format("%06d",entity.getPolicyno()) +  "/" + year + itemvalue;
 	            	
 	    
 	            

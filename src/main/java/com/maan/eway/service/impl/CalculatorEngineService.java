@@ -1309,7 +1309,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 		 	
 		 	  if(request.getInsuranceId().equalsIgnoreCase("100004")) {
 		 		  
-		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode(), request.getInsuranceId(), vehUsageCoreappcode, request.getProductId());
+		 		 String itemvalue = getListItemvalue(request.getInsuranceId() , request.getBranchCode(), "POLICY_NO");
+		 		  
+		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode(), request.getInsuranceId(), vehUsageCoreappcode, request.getProductId(), itemvalue);
 		 		 
 		 	  }else {
 		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
@@ -2786,6 +2788,79 @@ public class CalculatorEngineService implements CalculatorEngine {
 //			return null;
 //		}
 //	}
+	 public synchronized String getListItemvalue(String insuranceId , String branchCode, String itemType) {
+			String itemvalue = "" ;
+			List<ListItemValue> list = new ArrayList<ListItemValue>();
+			try {
+				Date today  = new Date();
+				Calendar cal = new GregorianCalendar(); 
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today   = cal.getTime();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				Date todayEnd   = cal.getTime();
+				
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+				// Find All
+				Root<ListItemValue> c = query.from(ListItemValue.class);
+				
+				//Select
+				query.select(c);
+			
+				
+				// Effective Date Start Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+				Predicate b3 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+				Predicate b4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				effectiveDate.where(a1,a2,b3,b4);
+				// Effective Date End Max Filter
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+				Predicate b1 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+				Predicate b2 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				effectiveDate2.where(a3,a4,b1,b2);
+							
+				// Where
+				Predicate n1 = cb.equal(c.get("status"),"Y");
+				Predicate n12 = cb.equal(c.get("status"),"R");
+				Predicate n13 = cb.or(n1,n12);
+				Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+				Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+				Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+				Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+				Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+				Predicate n9 = cb.or(n6,n7);
+				Predicate n10 = cb.equal(c.get("itemType"),itemType );
+				
+				query.where(n13,n2,n3,n4,n9,n10);
+				
+			
+				// Get Result
+				TypedQuery<ListItemValue> result = em.createQuery(query);
+				list = result.getResultList();
+				
+				itemvalue = list.size() > 0 ? list.get(0).getItemValue() : "" ; 
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+			return itemvalue ;
+	
+	}
+
+	 
 
 		public synchronized String getListItemvalue(String insuranceId , String branchCode, String itemType, String vehUsageId, String cusTypeId) {
 			String coreappcode = "" ;
@@ -2860,7 +2935,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			return coreappcode ;
 	
 	}
-
+		
 	private List<BrokerCommissionDetails> getPolicyName(String companyId, String productId, String loginId,
 			String agencyCode, String policyType) {
 		// TODO Auto-generated method stub
