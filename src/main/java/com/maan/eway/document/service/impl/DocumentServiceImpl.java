@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -173,7 +174,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Autowired
 	private ProductEmployeesDetailsRepository paccRepo;
 	
-	Map<Double, String> similarWordPercentMap = new LinkedHashMap<>();
+	
 
 //	@Autowired
 //	private CoverDocumentUploadDetailsRepository  documentuploaddetailsrepository;
@@ -1782,6 +1783,18 @@ public class DocumentServiceImpl implements DocumentService {
 		return extension != null && extension.equalsIgnoreCase("pdf");
 	}
 
+	public boolean isValidFileExtension(String filePath) {
+		
+		String fileExtension = getFileExtension(filePath);
+		
+		String[] validfileExtensions = {"jpeg","jpg","png","pdf"};
+		
+		for(String validExtensions : validfileExtensions) {
+			if(fileExtension.equalsIgnoreCase(validExtensions))
+				return true;
+		}
+		return false;
+	}
 	public OCRRecogisation convertPdfToImages(DocumentUploadOCRReq req, String outputFolder) throws IOException {
 		
 		OCRRecogisation res = new OCRRecogisation();
@@ -1820,9 +1833,14 @@ public class DocumentServiceImpl implements DocumentService {
 	}
 
 	public  String getFileExtension(String filePath) {
-		int lastDotIndex = filePath.lastIndexOf('.');
-		if (lastDotIndex > 0 && lastDotIndex < filePath.length() - 1) {
-			return filePath.substring(lastDotIndex + 1);
+		
+		Path path = FileSystems.getDefault().getPath(filePath);
+		String fileName = path.getFileName().toString();
+		
+		int dotIndex = fileName.lastIndexOf('.');
+		
+		if (dotIndex > 0 && dotIndex < filePath.length() - 1) {
+			return fileName.substring(dotIndex + 1);
 		}
 		return null; // No extension found
 	}
@@ -1837,6 +1855,8 @@ public class DocumentServiceImpl implements DocumentService {
 			
 			// Read each line from the file until the end of the file is reached
 
+			Map<Double, String> similarWordPercentMap = new LinkedHashMap<>();
+			
 			Double detper = 0.0;
 			while ((line = reader.readLine()) != null) {
 				text += line;
@@ -1887,8 +1907,15 @@ public class DocumentServiceImpl implements DocumentService {
 	public List<Error> ocrFileValidation(DocumentUploadOCRReq req) {
 
 		List<Error> errorList = new ArrayList<>();
-
-		return null;
+		
+		String filePath = req.getFilePath();
+		
+		if(!isValidFileExtension(filePath)) {
+			
+			errorList.add(new Error("01", "File", "."+getFileExtension(filePath)+" is Invalid .please Upload jpeg,jpg,png,pdf File Formats"));
+			
+		}
+		return errorList;
 	}
 
 }
