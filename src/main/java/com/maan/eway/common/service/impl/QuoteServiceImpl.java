@@ -173,7 +173,7 @@ public class QuoteServiceImpl implements QuoteService {
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 
-	
+	 
 	@PersistenceContext
 	private EntityManager em;
 
@@ -4295,6 +4295,41 @@ public class QuoteServiceImpl implements QuoteService {
 			if(StringUtils.isBlank(req.getProductId() ) ){
 				error.add(new Error("01", "ProductId", "Please Enter Product Id"));
 			}
+
+			if(StringUtils.isNotBlank(req.getRequestReferenceNo() ) && StringUtils.isNotBlank(req.getProductId() )  ) {
+				List<EserviceMotorDetails>    motorDatas = eserMotRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
+				EserviceTravelDetails    travelDatas = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+				List<EserviceCommonDetails> findDatas = eserCommonRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
+				
+				String companyId = motorDatas.size() > 0 ? motorDatas.get(0).getCompanyId() :	 travelDatas!=null ? travelDatas.getCompanyId()  
+						 :  buildDatas.size() > 0 ? buildDatas.get(0).getCompanyId() :  findDatas.size() > 0 ? findDatas.get(0).getCompanyId() : "" ;
+				CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , req.getProductId().toString());
+				String  custRefno = "" ;
+				 if(product.getMotorYn().equalsIgnoreCase("M")) {
+					List<EserviceMotorDetails> list = eserMotRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+					custRefno = list.size() > 0 ? list.get(0).getCustomerReferenceNo() :"";
+					
+				} else  if(product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equals("4") ) {
+					EserviceTravelDetails list = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+					custRefno = list!=null ? list.getCustomerReferenceNo() :"";
+					
+				} else  if(product.getMotorYn().equalsIgnoreCase("A") ) {
+					List<EserviceBuildingDetails> list = eserBuildRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+					custRefno = list.size() > 0 ? list.get(0).getCustomerReferenceNo() :"";
+				} else {
+					List<EserviceCommonDetails> list = eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+					custRefno = list.size() > 0 ? list.get(0).getCustomerReferenceNo() :"";
+					
+				}
+				 
+				EserviceCustomerDetails custData =  customerDetailsRepo.findByCustomerReferenceNo(custRefno);
+				if( custData==null || custData.getStatus()==null || !"Y".equalsIgnoreCase(custData.getStatus())) {
+					error.add(new Error("01", "Customer", "Customer Is Not Active"));
+				}
+				
+			}
+			
 			
 			if(StringUtils.isNotBlank(req.getRequestReferenceNo() )  &&  StringUtils.isNotBlank(req.getProductId() ) ) {
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
