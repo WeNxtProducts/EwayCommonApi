@@ -31,4 +31,6 @@ public interface DocumentUniqueDetailsRepository  extends JpaRepository<Document
 
 	List<DocumentUniqueDetails> findByIdTypeAndIdInOrderByEntryDateDesc(String idType, List<String> ids);
 
+	List<DocumentUniqueDetails> findByUniqueIdAndIdAndDocumentId(Integer valueOf, String id, Integer valueOf2);
+
 }

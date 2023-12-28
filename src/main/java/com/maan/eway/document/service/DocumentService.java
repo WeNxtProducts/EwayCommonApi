@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.maan.eway.common.res.CommonRes;
+
 import com.maan.eway.document.req.DocGetReq;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.req.DocTypeReq;
@@ -20,12 +21,14 @@ import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
 import com.maan.eway.document.req.GetEmiDocReq;
 import com.maan.eway.document.req.TermsDocUploadReq;
+import com.maan.eway.document.req.UpdateVerifiedYnReq;
 import com.maan.eway.document.res.DocTypeRes;
 import com.maan.eway.document.res.DocumentListRes;
 import com.maan.eway.document.res.DocumentTypeDetails;
 import com.maan.eway.document.res.FilePathRes;
 import com.maan.eway.document.res.TermsDocRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.res.SuccessRes;
 
 /**
  * <h2>SessionDetailsServiceimpl</h2>
@@ -66,6 +69,8 @@ public interface DocumentService {
 	CommonRes fileuploadOCR(DocumentUploadOCRReq req);
 	
 	List<Error> ocrFileValidation(DocumentUploadOCRReq req);
+
+	SuccessRes updateVerifiedYn(UpdateVerifiedYnReq req);
 
 
 }

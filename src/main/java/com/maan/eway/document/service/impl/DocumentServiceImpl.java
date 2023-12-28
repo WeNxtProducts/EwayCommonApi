@@ -77,6 +77,7 @@ import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
 import com.maan.eway.document.req.GetEmiDocReq;
 import com.maan.eway.document.req.TermsDocUploadReq;
+import com.maan.eway.document.req.UpdateVerifiedYnReq;
 import com.maan.eway.document.res.ClientDocListRes;
 import com.maan.eway.document.res.CommonDoumentRes;
 import com.maan.eway.document.res.DocTypeRes;
@@ -1916,6 +1917,29 @@ public class DocumentServiceImpl implements DocumentService {
 			
 		}
 		return errorList;
+	}
+
+	@Override
+	public SuccessRes updateVerifiedYn(UpdateVerifiedYnReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			DocumentUniqueDetails save = new DocumentUniqueDetails();
+			List<DocumentUniqueDetails> docUniqueList = docUniqueRepo.findByUniqueIdAndIdAndDocumentId(Integer.valueOf(req.getUniqueId()), req.getId(), Integer.valueOf(req.getDocumentId()));		
+			if(docUniqueList.size()>0) {
+				save = docUniqueList.get(0);
+				save.setVerifiedYn(req.getVerifiedYN());
+				docUniqueRepo.saveAndFlush(save);				
+			}			
+			
+			res.setResponse("VerifiedYN Updated Successfully");	
+			res.setSuccessId(req.getUniqueId() + ": " + req.getVerifiedYN());	
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+		}
+		return res;
 	}
 
 }

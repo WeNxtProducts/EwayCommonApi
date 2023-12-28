@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.common.res.CommonRes;
+
 import com.maan.eway.document.req.DocGetReq;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.req.DocTypeReq;
@@ -41,7 +41,7 @@ import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
 import com.maan.eway.document.req.GetEmiDocReq;
 import com.maan.eway.document.req.TermsDocUploadReq;
-import com.maan.eway.document.res.ClientDocListRes;
+import com.maan.eway.document.req.UpdateVerifiedYnReq;
 import com.maan.eway.document.res.CommonDocumentRes;
 import com.maan.eway.document.res.DocTypeRes;
 import com.maan.eway.document.res.DocumentListRes;
@@ -52,6 +52,7 @@ import com.maan.eway.document.service.DocumentService;
 import com.maan.eway.document.service.impl.GetFileFromPath;
 import com.maan.eway.error.CommonValidationException;
 import com.maan.eway.error.Error;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -373,5 +374,28 @@ public class DocumentController {
 		}
 
 	}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/updateverifiedyn")
+	@ApiOperation(value = "This method is to Get Upload Terms & Condition Image File")
+	public ResponseEntity<CommonRes> updateVerifiedYn(@RequestBody UpdateVerifiedYnReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		SuccessRes res = documentservice.updateVerifiedYn(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
 
 }
