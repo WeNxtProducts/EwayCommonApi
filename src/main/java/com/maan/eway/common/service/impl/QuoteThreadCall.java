@@ -3216,7 +3216,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 		//	home.setEffectiveDate(motorData.getPolicyStartDate());
 			home.setExpiryDate(motorData.getPolicyEndDate());
 			home.setAdminRemarks(motorData.getAdminRemarks());
-			home.setAdminReferralStatus(motorData.getStatus());			
+			if(motorData.getStatus().equalsIgnoreCase("RP") || motorData.getStatus().equalsIgnoreCase("RA") ||motorData.getStatus().equalsIgnoreCase("RR") ||
+					motorData.getStatus().equalsIgnoreCase("RE") ||motorData.getStatus().equalsIgnoreCase("REV") )		
+				home.setAdminReferralStatus(motorData.getStatus());	
+		
 			home.setReferralDescription(motorData.getReferalRemarks());
 			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
 			home.setStatus(motorData.getStatus());
@@ -3335,7 +3338,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 		//	home.setEffectiveDate(travelData.getTravelStartDate());
 			home.setExpiryDate(travelData.getTravelEndDate());
 			home.setAdminRemarks(travelData.getAdminRemarks());
-			home.setAdminReferralStatus(travelData.getStatus());			
+			if(travelData.getStatus().equalsIgnoreCase("RP") || travelData.getStatus().equalsIgnoreCase("RA") ||travelData.getStatus().equalsIgnoreCase("RR") ||
+					travelData.getStatus().equalsIgnoreCase("RE") ||travelData.getStatus().equalsIgnoreCase("REV") )		
+				home.setAdminReferralStatus(travelData.getStatus());	
 			home.setReferralDescription(travelData.getReferalRemarks());
 			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? travelData.getAdminLoginId() : request.getAdminLoginId() );
 			home.setStatus(travelData.getStatus());
@@ -3419,7 +3424,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 		//	home.setEffectiveDate(buildingData.getPolicyStartDate());
 			home.setExpiryDate(buildingData.getPolicyEndDate());
 			home.setAdminRemarks(buildingData.getAdminRemarks());
-			home.setAdminReferralStatus(buildingData.getStatus());			
+			if(buildingData.getStatus().equalsIgnoreCase("RP") || buildingData.getStatus().equalsIgnoreCase("RA") ||buildingData.getStatus().equalsIgnoreCase("RR") ||
+					buildingData.getStatus().equalsIgnoreCase("RE") ||buildingData.getStatus().equalsIgnoreCase("REV") )		
+				home.setAdminReferralStatus(buildingData.getStatus());			
 			home.setReferralDescription(buildingData.getReferalRemarks());
 			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? buildingData.getAdminLoginId() : request.getAdminLoginId() );
 			home.setStatus(buildingData.getStatus());
@@ -3504,7 +3511,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 		//	home.setEffectiveDate(eserCommonData.getPolicyStartDate());
 			home.setExpiryDate(eserCommonData.getPolicyEndDate());
 			home.setAdminRemarks(eserCommonData.getAdminRemarks());
-			home.setAdminReferralStatus(eserCommonData.getStatus());			
+			if(eserCommonData.getStatus().equalsIgnoreCase("RP") || eserCommonData.getStatus().equalsIgnoreCase("RA") ||eserCommonData.getStatus().equalsIgnoreCase("RR") ||
+					eserCommonData.getStatus().equalsIgnoreCase("RE") ||eserCommonData.getStatus().equalsIgnoreCase("REV") )		
+				home.setAdminReferralStatus(eserCommonData.getStatus());			
 			home.setReferralDescription(eserCommonData.getReferalRemarks());
 			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? eserCommonData.getAdminLoginId() : request.getAdminLoginId() );
 			home.setStatus(eserCommonData.getStatus());

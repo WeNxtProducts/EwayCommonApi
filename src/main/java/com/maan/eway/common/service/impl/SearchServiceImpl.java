@@ -1561,6 +1561,19 @@ public class SearchServiceImpl implements SearchService {
 					res.setPaymentStatus(home.getPaymentStatus()==null?"":home.getPaymentStatus());
 					res.setPremiaIntegrationStatus(home.getIntegrationStatus()==null?"": home.getIntegrationStatus());	
 					res.setTirraIntegrationStatus(home.getResponseStatusDesc()==null?"": home.getResponseStatusDesc());
+					if(StringUtils.isBlank(home.getAdminReferralStatus()))
+							res.setAdminReferralStatus("N");
+					else if (home.getAdminReferralStatus().equalsIgnoreCase("RP"))
+						res.setAdminReferralStatus("Pending");
+					else if (home.getAdminReferralStatus().equalsIgnoreCase("RA"))
+						res.setAdminReferralStatus("Approved");
+					else if (home.getAdminReferralStatus().equalsIgnoreCase("RR"))
+						res.setAdminReferralStatus("Rejected");
+					else if (home.getAdminReferralStatus().equalsIgnoreCase("RE"))
+						res.setAdminReferralStatus("Re-quote");
+					else if (home.getAdminReferralStatus().equalsIgnoreCase("REV"))
+						res.setAdminReferralStatus("Reverted");
+					
 					
 					String customerId=homeData.get(0).getCustomerId();
 					
