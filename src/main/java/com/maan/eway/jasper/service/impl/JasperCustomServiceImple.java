@@ -1307,7 +1307,7 @@ public class JasperCustomServiceImple {
 					LinkedHashMap<String,Object> m = new LinkedHashMap<String,Object>();
 					m.put("policyTypeDesc", k.getPolicyTypeDesc()==null?"":StringUtils.capitalize(k.getPolicyTypeDesc()));
 					m.put("registrationNumber", k.getRegistrationNumber()==null?"":k.getRegistrationNumber());
-					m.put("vehicleMakeDesc", k.getVehicleMakeDesc()==null?"":StringUtils.capitalize(k.getVehicleMakeDesc()));
+					m.put("vehicleMakeDesc", k.getVehicleMake()==null?"":StringUtils.capitalize(k.getVehicleMake()));
 					m.put("vehicleTypeDesc", k.getVehicleTypeDesc()==null?"":StringUtils.capitalize(k.getVehicleTypeDesc()));
 					m.put("chassisNumber", k.getChassisNumber()==null?"":k.getChassisNumber());
 					m.put("colorDesc", k.getColorDesc()==null?"":StringUtils.capitalize(k.getColorDesc()));
