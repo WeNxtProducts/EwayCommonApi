@@ -22,6 +22,7 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -1852,13 +1853,12 @@ public class DocumentServiceImpl implements DocumentService {
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
 			String line, text = "";
-			Double result = 0d;
-			
+			Double result = 0d;			
 			// Read each line from the file until the end of the file is reached
 
 			Map<Double, String> similarWordPercentMap = new LinkedHashMap<>();
 			
-			Double detper = 0.0;
+			Double detper = 0d;
 			while ((line = reader.readLine()) != null) {
 				text += line;
 				// Perform your operation on each line
@@ -1877,9 +1877,11 @@ public class DocumentServiceImpl implements DocumentService {
 
 					detper = 100 - ((detectperc2d / expectedString.length()) * 100);
 
-					if (result <= detper) {
-						result = detper;
-						similarWordPercentMap.put(result, word);
+
+					if (result < detper) {
+					    // Use Double.compare for robust comparisons
+					    result = detper;
+					    similarWordPercentMap.put(result, word);
 					}
 
 				}
@@ -1888,14 +1890,21 @@ public class DocumentServiceImpl implements DocumentService {
 
 			}
 
-			result = similarWordPercentMap.keySet().stream().max(Double::compare)
-					.orElseThrow(() -> new IllegalStateException("RecognisationMap is Null"));
+			 Optional<Double> map = similarWordPercentMap.keySet().stream().max(Double::compare);
+			 
+			 if(map.isPresent()) {
+					recognisation.setPercentage(result);
+					recognisation.setValue(similarWordPercentMap.get(result));
+					recognisation.setId(expectedString);
+				} else {
+					recognisation.setPercentage(result);
+					recognisation.setValue(similarWordPercentMap.get(result));
+					recognisation.setId(expectedString);
+				}
 
 			System.out.println("MAP   ----------------------> " + similarWordPercentMap);
-			recognisation.setPercentage(result);
-			recognisation.setValue(similarWordPercentMap.get(result));
-			recognisation.setId(expectedString);
-
+			
+			
 			System.out.println("Recognisation Parameters ------------> " + recognisation);
 		} catch (IOException e) {
 			e.printStackTrace();
