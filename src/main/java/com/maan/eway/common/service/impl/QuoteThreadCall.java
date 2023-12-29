@@ -3031,9 +3031,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}
 			
 			
-			List<PolicyCoverData>  taxCoversFilter =  covers2.stream().filter(  distinctByKey(o -> Arrays.asList(o.getVehicleId() ,o.getSectionId(),o.getCoverId() )) ).collect(Collectors.toList());
+			//List<PolicyCoverData>  taxCoversFilter =  covers2.stream().filter(  distinctByKey(o -> Arrays.asList(o.getVehicleId() ,o.getSectionId(),o.getCoverId() )) ).collect(Collectors.toList());
 			//BigDecimal withCoverCount = new BigDecimal(taxCount.doubleValue()/taxCoversFilter.size() ) ;
-			BigDecimal TaxPercent = totalTaxPercent.divide(new BigDecimal(taxCoversFilter.size()<=0?1:taxCoversFilter.size())).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP)  ;
+			BigDecimal TaxPercent = totalTaxPercent.divide(new BigDecimal(taxCovers.size()<=0?1:taxCovers.size())).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP)  ;
 			// commPercentage.divide(commCount).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP)
 			
 //			Double vatPremiumFc = overAllPremiumFc - premiumFc ;  
