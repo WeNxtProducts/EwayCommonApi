@@ -117,9 +117,9 @@ public class EserviceCustomerDetailsController {
 			/////// save
 			//req.setDobOrRegDate(new Date());
 			req.setOccupation("12");
-			req.setStateCode(null);
-			req.setCityCode(null);
-			req.setRegionCode(null);
+//			req.setStateCode(null);
+//			req.setCityCode(null);
+//			req.setRegionCode(null);
 			
 			SuccessRes res = entityService.saveCustomerDetails(req);
 			data.setCommonResponse(res);
