@@ -286,9 +286,9 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
 				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("MobileNumber")) {
-				n1 = cb.equal(cb.lower(cus.get("mobileNo1")), searchValue);
+				n1 = cb.equal(cus.get("mobileNo1"), searchValue);
 			} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
-				n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
+				n1 = cb.equal(c.get("quoteNo"), searchValue);
 			} else if (searchKey.equalsIgnoreCase("PolicyNumber")) {
 				n1 = cb.equal(cb.lower(c.get("policyNo")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("ChassisNumber")) {
@@ -355,14 +355,14 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 						c.get("rejectReason"))
 				.orderBy(orderList);
 			}
-			if (searchKey.equalsIgnoreCase("MobileNumber")) {
-				query.where(n1,n2,n3,n4)
-				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
-						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-						c.get("rejectReason"))
-				.orderBy(orderList);
-			}
+//			if (searchKey.equalsIgnoreCase("MobileNumber")) {
+//				query.where(n1,n2,n3,n4)
+//				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
+//						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+//						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+//						c.get("rejectReason"))
+//				.orderBy(orderList);
+//			}
 
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
