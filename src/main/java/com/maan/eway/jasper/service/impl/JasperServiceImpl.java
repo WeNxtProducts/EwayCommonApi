@@ -239,7 +239,7 @@ public class JasperServiceImpl implements JasperService {
 		InputStream inputStream=null;
 		try {
 			
-			File file = new File("d:\\"+jsonFile);
+			File file = new File(policyReportPath.replaceAll("PolicyReport", "IllustrationFile")+jsonFile);
 			
 			JsonDataSource ds=new JsonDataSource(file);
 			inputStream = this.getClass().getResourceAsStream(jasperPath);
