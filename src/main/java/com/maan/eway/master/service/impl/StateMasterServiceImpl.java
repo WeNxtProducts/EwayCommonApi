@@ -261,6 +261,8 @@ public class StateMasterServiceImpl implements StateMasterService {
 				errorList.add(new Error("10", "StateShortCode", "Please Enter StateShortCode"));
 			}else if (req.getStateShortCode().length() > 20) {
 				errorList.add(new Error("10", "StateShortCode", "Please Enter StateShortCode within 20 Characters"));
+			}else if (! req.getStateShortCode().matches("[0-9]+") ) {
+				errorList.add(new Error("10", "StateShortCode", "Please Enter Valid number in StateShortCode"));
 			}
 
 			
