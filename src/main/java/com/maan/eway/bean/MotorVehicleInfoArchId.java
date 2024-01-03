@@ -35,5 +35,5 @@ public class MotorVehicleInfoArchId implements Serializable {
     
     private String     reqChassisNumber ;
     
-     
+    private String     companyId;
 }
