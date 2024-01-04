@@ -759,9 +759,9 @@ this.repository = repo;
 			
 						
 			// Where
-			Predicate n1 = cb.equal(c.get("status"),"Y");
-			Predicate n11 = cb.equal(c.get("status"),"R");
-			Predicate n12 = cb.or(n1,n11);
+//			Predicate n1 = cb.equal(c.get("status"),"Y");
+//			Predicate n11 = cb.equal(c.get("status"),"R");
+//			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
@@ -771,7 +771,7 @@ this.repository = repo;
 			Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
-			query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
+			query.where(n2,n3,n8,n9,n10).orderBy(orderList);
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
 			list = result.getResultList();
