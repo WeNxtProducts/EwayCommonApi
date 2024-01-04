@@ -783,7 +783,7 @@ this.repository = repo;
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.get("itemId").toString());
 				res.setCodeDesc(data.get("itemType").toString());
-				res.setStatus(data.get("status").toString());
+				res.setStatus(data.get("status")==null?"":data.get("status").toString());
 				resList.add(res);
 			}
 			
