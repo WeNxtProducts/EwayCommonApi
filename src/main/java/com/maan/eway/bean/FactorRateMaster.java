@@ -206,9 +206,54 @@ private static final long serialVersionUID = 1L;
     @Column(name="API_URL", length=20)
     private String     apiUrl;
     
-
+    @Column(name="PARAM_13", length=100)
+    private String     param13 ;
     
- 
+    @Column(name="PARAM_14", length=100)
+    private String     param14 ;
+    
+    @Column(name="PARAM_15", length=100)
+    private String     param15 ;
+    
+    @Column(name="PARAM_16", length=100)
+    private String     param16 ;
+    
+    @Column(name="PARAM_17", length=100)
+    private String     param17 ;
+    
+    @Column(name="PARAM_18", length=100)
+    private String     param18 ;
+    
+    @Column(name="PARAM_19", length=100)
+    private String     param19 ;
+    
+    @Column(name="PARAM_20", length=100)
+    private String     param20 ;
+    
+    @Column(name="PARAM_21")
+    private BigDecimal     param21 ;
+    
+    @Column(name="PARAM_22")
+    private BigDecimal     param22 ;
+    
+    @Column(name="PARAM_23")
+    private BigDecimal     param23 ;
+    
+    @Column(name="PARAM_24")
+    private BigDecimal     param24 ;
+    
+    @Column(name="PARAM_25")
+    private BigDecimal     param25 ;
+    
+    @Column(name="PARAM_26")
+    private BigDecimal     param26 ;
+    
+    @Column(name="PARAM_27")
+    private BigDecimal     param27;
+   
+    @Column(name="PARAM_28")
+    private BigDecimal     param28;
+   
 }
 
 
