@@ -605,7 +605,13 @@ private static final long serialVersionUID = 1L;
      
      @Column(name="ENDT_VAT_PREMIUM")
      private BigDecimal endtVatPremium;
+
+
+     @Column(name="MANUFACTURE_COUNTRY")
+     private String manufactureCountry;
      
+     @Column(name="CUSTOMER_TYPE")
+     private String customerType;
 }
 
 

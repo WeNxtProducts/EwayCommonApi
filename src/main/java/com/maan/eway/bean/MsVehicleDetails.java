@@ -231,6 +231,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="NON_ELEC_ACCESSORIES_SI_LC")
     private Double nonElecAccessoriesSiLc;
+
+    @Column(name="MANUFACTURE_COUNTRY")
+    private String manufactureCountry;
+    
+    @Column(name="CUSTOMER_TYPE")
+    private String customerType;
 }
 
 
