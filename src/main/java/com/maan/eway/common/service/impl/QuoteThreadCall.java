@@ -586,11 +586,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Travel Product
 			} else if (request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
 					//List<EserviceTravelGetRes> motors = (List<EserviceTravelGetRes>) v1.getRiskDetails();
-				EserviceTravelDetails tra = eserTraRepo.findByQuoteNo(request.getQuoteNo() );
-				if (StringUtils.isNotBlank(request.getEndtType())) {
-					endtPremiumWithoutTax = endtPremiumWithoutTax + (  tra.getEndtPremium() ==null ? 0D : tra.getEndtPremium().doubleValue()) ;
-					endtVatPremium =  endtVatPremium + (  tra.getEndtVatPremium() ==null ? 0D : tra.getEndtVatPremium().doubleValue()) ;
+				List<TravelPassengerDetails> tras = traPassRepo.findByQuoteNo(request.getQuoteNo() );
+				for (TravelPassengerDetails tra : tras) {
+					if (StringUtils.isNotBlank(request.getEndtType())) {
+						endtPremiumWithoutTax = endtPremiumWithoutTax + (  tra.getEndtPremium() ==null ? 0D : tra.getEndtPremium().doubleValue()) ;
+						endtVatPremium =  endtVatPremium + (  tra.getEndtVatPremium() ==null ? 0D : tra.getEndtVatPremium().doubleValue()) ;
+					}
 				}
+				
 				
 			} else if (request.getMotorYn().equalsIgnoreCase("A")) {
 				List<BuildingRiskDetails> BuildingRisk = buildRepo.findByQuoteNoAndSectionIdNotOrderByRiskIdAsc(request.getQuoteNo() ,"0");
