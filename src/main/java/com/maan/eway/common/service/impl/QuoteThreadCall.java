@@ -569,7 +569,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return endtRes;
 	}
 
-	private EndtUpdatePremiumRes mainTableEndtPremium(QuoteThreadReq  request) {
+	private EndtUpdatePremiumRes mainTableEndtPremium(QuoteThreadReq  request , String companyId , String currency ) {
 		EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes();  
 		try {
 			Double endtPremiumWithoutTax = 0D ;
@@ -629,9 +629,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 				endtChargeOrRefund="CHARGE";
 			}
 			
+			String decimalDigits = currencyDecimalFormat(companyId , currency ).toString();
+			String stringFormat = "%0"+decimalDigits+"d" ;
+			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+			DecimalFormat df = new DecimalFormat(pattern);
+			
+			// Update Eservice Motor
 			endtRes.setChargeOrRefund(endtChargeOrRefund);
-			endtRes.setEndtPremium(new  BigDecimal(endtPremiumWithoutTax));
-			endtRes.setEndtVatPremium(new  BigDecimal(endtVatPremium));
+			endtRes.setEndtPremium(new  BigDecimal(df.format(endtPremiumWithoutTax.doubleValue())));
+			endtRes.setEndtVatPremium(new  BigDecimal(df.format(endtVatPremium.doubleValue())));
 			
 			
 			return endtRes;
@@ -3079,7 +3086,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(StringUtils.isNotBlank(home.getEndtTypeId())) {
 				 
 			//	BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),home.getEndorsementEffdate(),home.getEndtPrevQuoteNo(),0,covers,null,null);
-				EndtUpdatePremiumRes endtValues = mainTableEndtPremium(request);	
+				EndtUpdatePremiumRes endtValues = mainTableEndtPremium(request ,home.getCompanyId() , home.getCurrency() );	
 				endtChargeOrRefund="REFUND";
 				if(endtValues.getEndtPremium().doubleValue()>=0) {
 					endtChargeOrRefund="CHARGE";
