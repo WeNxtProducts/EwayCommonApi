@@ -637,8 +637,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			// Update Eservice Motor
 			endtRes.setChargeOrRefund(endtChargeOrRefund);
-			endtRes.setEndtPremium(new  BigDecimal(df.format(endtPremiumWithoutTax.doubleValue())));
-			endtRes.setEndtVatPremium(new  BigDecimal(df.format(endtVatPremium.doubleValue())));
+			endtRes.setEndtPremium(new  BigDecimal(df.format(endtPremiumWithoutTax)));
+			endtRes.setEndtVatPremium(new  BigDecimal(df.format(endtVatPremium)));
 			
 			
 			return endtRes;
