@@ -2977,6 +2977,11 @@ List<Error> errorList = new ArrayList<Error>();
 			
 			for (BrokerCompanyListProductReq req : reqList) {
 				LoginMaster login = loginRepo.findByLoginId(req.getLoginId());
+				
+				// Save Broker Commission Details
+				res = saveBrokerCommission1(req, login);
+				
+				
 				LoginProductMaster saveData = new LoginProductMaster();
 				String productName =   getCompanyProductMasterDropdown(req.getCompanyId() , req.getProductId().toString()); //productRepo.findByProductIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()));
 				List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
@@ -2988,6 +2993,7 @@ List<Error> errorList = new ArrayList<Error>();
 				Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 				String financeId = "";
 				String nonFinanceId = "";
+				String status = req.getStatus();
 
 				String productId = "";
 				Date entryDate = null;
@@ -3055,14 +3061,20 @@ List<Error> errorList = new ArrayList<Error>();
 
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(productId);
-
-			//	dozerMapper.map(req, saveData);
+				
+				
+				if(productId.equalsIgnoreCase("5")){
+					//Check Broker Commission Details for motor policy type issue
+					status = checkpolicyTypeStatus(req);
+				}
+				
+				saveData.setStatus(status);
 				saveData.setProductId(Integer.valueOf(productId));
 				saveData.setProductName(productName);
 				saveData.setEffectiveDateStart(startDate);
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setCreatedBy(createdBy);
-				saveData.setStatus(req.getStatus());
+			
 				saveData.setEntryDate(new Date());
 				saveData.setCompanyId(req.getCompanyId());
 				saveData.setEntryDate(entryDate);
@@ -3090,14 +3102,9 @@ List<Error> errorList = new ArrayList<Error>();
 
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 
-				// Save Broker Commission Details
-				res = saveBrokerCommission1(req, login);
+			
 				
-//				//Save Deposit cbc Master Based on Credit Y and product
-//				
-//				saveDepositCbcMaster(req,login,productName);	
-				
-				
+
 
 			}
 			List<Integer> productIds =  reqList.stream().map( BrokerCompanyListProductReq :: getProductId ) .collect(Collectors.toList());
@@ -3106,20 +3113,7 @@ List<Error> errorList = new ArrayList<Error>();
 			pro.add(productIds.get(i).toString());
 			}
 			
-//			List<BrokerCommissionDetails>   oldCommList1 = commissionRepo.findByProductIdNotInAndLoginId(pro, reqList.get(0).getLoginId() ) ;
-//
-//			oldCommList1.forEach ( o -> { 
-//				Date startDate1=null;
-//				Date date1 = new Date();
-//				Calendar cal = new GregorianCalendar();
-//				cal.setTime(date1);
-//				cal.add(Calendar.DATE, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
-//				startDate1 = cal.getTime();
-//				o.setEffectiveDateEnd(startDate1);  }   );
-//			commissionRepo.saveAll(oldCommList1);
-			
-		
-			
+
 			
 
 		} catch (Exception e) {
@@ -3130,6 +3124,81 @@ List<Error> errorList = new ArrayList<Error>();
 		return res;
 	}
 	
+	private String checkpolicyTypeStatus(BrokerCompanyListProductReq req) {
+		String status = "";
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			List<BrokerCommissionDetails> brokerComlist = new ArrayList<BrokerCommissionDetails>();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+	
+			// Find All
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			Predicate a7 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			effectiveDate.where(a1,a2,a3,a7);
+	
+			// Effective Date End
+			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm5 = effectiveDate5.from(BrokerCommissionDetails.class);
+			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
+			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
+			Predicate a8 = cb.equal(ocpm5.get("loginId"), b.get("loginId"));
+			effectiveDate5.where(a4,a5,a6,a8);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("productId")));
+			
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
+			Predicate n3 = cb.equal(b.get("status"), "Y");
+			Predicate n4 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n5 = cb.equal(b.get("loginId"),req.getLoginId());
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+			brokerComlist = result.getResultList();
+			
+			if(brokerComlist.size()>0)
+				status = "Y";
+			else
+				status = "N";
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->"+e.getMessage());
+			return null;
+			}
+		return status;
+	}
+
+
+
 	public String getCompanyProductMasterDropdown(String companyId , String productId) {
 		String productName = "";
 		try {
