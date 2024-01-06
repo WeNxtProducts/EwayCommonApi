@@ -9,11 +9,13 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,10 +29,14 @@ import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.integration.req.InsertCreditLimitDetailReq;
 import com.maan.eway.integration.req.InsertYiPolicyApprovalReq;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.maan.eway.bean.CreditLimitDetail;
+import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.MotCommDiscountDetail;
 import com.maan.eway.bean.MotDriverDetail;
 import com.maan.eway.bean.PgithPolRiskAddlInfo;
+import com.maan.eway.bean.PtIntgFlexTran;
 import com.maan.eway.bean.YiChargeDetail;
 import com.maan.eway.bean.YiCoverDetail;
 import com.maan.eway.bean.YiPolicyApproval;
@@ -38,6 +44,8 @@ import com.maan.eway.bean.YiPolicyDetail;
 import com.maan.eway.bean.YiPremCal;
 import com.maan.eway.bean.YiSectionDetail;
 import com.maan.eway.bean.YiVatDetail;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.PremiaCommonRes;
 import com.maan.eway.integration.req.InsertCreditLimitDetailReq;
 import com.maan.eway.integration.req.InsertYiPolicyApprovalReq;
 import com.maan.eway.integration.req.InsertYiPremCalReq;
@@ -46,14 +54,17 @@ import com.maan.eway.integration.req.InsertYiVatDetailReq;
 import com.maan.eway.integration.req.MotDriverDetailReq;
 import com.maan.eway.integration.req.MotcommDiscountDetailReq;
 import com.maan.eway.integration.req.PgitPolRiskAddlInfoReq;
+import com.maan.eway.integration.req.PtIntgFlexTranReq;
 import com.maan.eway.integration.req.YiChargeDetailReq;
 import com.maan.eway.integration.req.YiCoverDetailReq;
 import com.maan.eway.integration.req.YiPolicyDetailReq;
+import com.maan.eway.integration.res.IntegrationSaveRes;
 import com.maan.eway.integration.service.FrameReqService;
 import com.maan.eway.repository.CreditLimitDetailRepository;
 import com.maan.eway.repository.MotDriverDetailRepository;
 import com.maan.eway.repository.MotcommDiscountDetailRepository;
 import com.maan.eway.repository.PgitPolRiskAddlInfoRepository;
+import com.maan.eway.repository.PtintgFlexTransRepository;
 import com.maan.eway.repository.YiChargeDetailRepository;
 import com.maan.eway.repository.YiCoverDetailRepository;
 import com.maan.eway.repository.YiPolicyApprovalRepository;
@@ -77,8 +88,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 	private MotcommDiscountDetailRepository motComRepo;
 	@Autowired
 	private YiPolicyDetailRepository yiPolicyReo;
-	
-	
 	@Autowired
 	private CreditLimitDetailRepository creditRepo;
 	
@@ -94,6 +103,8 @@ public class FrameReqServiceImpl implements FrameReqService {
 	@Autowired
 	private YiVatDetailRepository yivatRepo;
 	
+	@Autowired
+	private PtintgFlexTransRepository ptintgFlexTransRepo;
 
 	@Value(value = "${BasicAuthPass}")
 	private String BasicAuthPass;
@@ -134,6 +145,10 @@ public class FrameReqServiceImpl implements FrameReqService {
 	@Value(value = "${YiVatDetail}")
 	private String YiVatDetailCall;
 	
+	@Value(value = "${PtIntgFlexTran}")
+	private String PtIntgFlexTranCall;
+	
+	
 	SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-dd-MM");
 	private Logger log = LogManager.getLogger(FrameReqServiceImpl.class);
@@ -148,7 +163,7 @@ public class FrameReqServiceImpl implements FrameReqService {
         String authHeader = "Basic " + new String( encodedAuth );
         List<MotcommDiscountDetailReq> reqlist = new ArrayList<MotcommDiscountDetailReq>();
 		List<MotCommDiscountDetail> list = motComRepo.findByQuotationPolicyNo(policyNo);
-	
+		MotCommDiscountDetail saveData=new MotCommDiscountDetail();
 		if (list != null && list.size() > 0) {
 			for(MotCommDiscountDetail  reqData:list) {
 				MotcommDiscountDetailReq req = new MotcommDiscountDetailReq();
@@ -163,10 +178,34 @@ public class FrameReqServiceImpl implements FrameReqService {
 		 headers.set("Authorization",authHeader);
 		HttpEntity<List<MotcommDiscountDetailReq>> entityReq = new HttpEntity<List<MotcommDiscountDetailReq>>(reqlist, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
-
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(MotCommDiscountDetail data1:list) {
+				saveData=dozerMapper.map(data1, MotCommDiscountDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+			}
+			motComRepo.saveAndFlush(saveData);
+		}else {
+			for(MotCommDiscountDetail data1:list) {
+				saveData=dozerMapper.map(data1, MotCommDiscountDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+			}
+			motComRepo.saveAndFlush(saveData);
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
 		return response;
 	}
 	@Override
@@ -177,7 +216,7 @@ public class FrameReqServiceImpl implements FrameReqService {
         String authHeader = "Basic " + new String( encodedAuth );
         List<MotDriverDetailReq> reqlist = new ArrayList<MotDriverDetailReq>();
 		List<MotDriverDetail> list = motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
-	
+		MotDriverDetail saveData = new MotDriverDetail();
 		if (list != null && list.size() > 0) {
 			
 			for(MotDriverDetail data:list) {
@@ -193,10 +232,34 @@ public class FrameReqServiceImpl implements FrameReqService {
 		 headers.set("Authorization",authHeader);
 		HttpEntity<List<MotDriverDetailReq>> entityReq = new HttpEntity<List<MotDriverDetailReq>>(reqlist, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
-
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(MotDriverDetail data1:list) {
+				saveData=dozerMapper.map(data1, MotDriverDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+			}
+			motDrivDetailsRepo.saveAndFlush(saveData);
+		}else {
+			for(MotDriverDetail data1:list) {
+				saveData=dozerMapper.map(data1, MotDriverDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+			}
+			motDrivDetailsRepo.saveAndFlush(saveData);
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
 		return response;
 	}
 
@@ -208,7 +271,7 @@ public class FrameReqServiceImpl implements FrameReqService {
         String authHeader = "Basic " + new String( encodedAuth );
         List<YiCoverDetailReq> reqlist = new ArrayList<YiCoverDetailReq>();
 		List<YiCoverDetail> list = yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
-	
+		YiCoverDetail saveData=new YiCoverDetail();
 		if (list != null && list.size() > 0) {
 			for (YiCoverDetail data : list) {
 				YiCoverDetailReq req1 = new YiCoverDetailReq();
@@ -223,10 +286,34 @@ public class FrameReqServiceImpl implements FrameReqService {
 		 headers.set("Authorization",authHeader);
 		HttpEntity<List<YiCoverDetailReq>> entityReq = new HttpEntity<List<YiCoverDetailReq>>(reqlist, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
-
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(YiCoverDetail data1:list) {
+				saveData=dozerMapper.map(data1, YiCoverDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+			}
+			yiCoverDetailRepo.saveAndFlush(saveData);
+		}else {
+			for(YiCoverDetail data1:list) {
+				saveData=dozerMapper.map(data1, YiCoverDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+			}
+			yiCoverDetailRepo.saveAndFlush(saveData);
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
 		return response;
 	}
 	@Override
@@ -237,7 +324,7 @@ public class FrameReqServiceImpl implements FrameReqService {
         String authHeader = "Basic " + new String( encodedAuth );
         List<YiChargeDetailReq> reqlist = new ArrayList<YiChargeDetailReq>();
 		List<YiChargeDetail> list = yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
-	
+		YiChargeDetail saveData=new YiChargeDetail();
 		if (list != null && list.size() > 0) {
 			for (YiChargeDetail data : list) {
 				YiChargeDetailReq req1 = new YiChargeDetailReq();
@@ -252,21 +339,47 @@ public class FrameReqServiceImpl implements FrameReqService {
 		 headers.set("Authorization",authHeader);
 		HttpEntity<List<YiChargeDetailReq>> entityReq = new HttpEntity<List<YiChargeDetailReq>>(reqlist, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(YiChargeDetail data1:list) {
+				saveData=dozerMapper.map(data1, YiChargeDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+			}
+			yiChargeDetailRepo.saveAndFlush(saveData);
+		}else {
+			for(YiChargeDetail data1:list) {
+				saveData=dozerMapper.map(data1, YiChargeDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+				list.add(saveData);
+			}
+			yiChargeDetailRepo.saveAllAndFlush(list);
+		}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
 		return response;
 	}
 	@Override
 	public Object pushYiPolicyDetail(String policyNo) {
+		
 		String url = YiPolicyDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
         List<YiPolicyDetailReq> reqlist = new ArrayList<YiPolicyDetailReq>();
 		List<YiPolicyDetail> list = yiPolicyReo.findByQuotationPolicyNo(policyNo);
-	
+		YiPolicyDetail saveData=new YiPolicyDetail();
 		if (list != null && list.size() > 0) {
 			YiPolicyDetailReq req1 = new YiPolicyDetailReq();
 			for (YiPolicyDetail data : list) {
@@ -281,16 +394,40 @@ public class FrameReqServiceImpl implements FrameReqService {
 		 headers.set("Authorization",authHeader);
 		HttpEntity<List<YiPolicyDetailReq>> entityReq = new HttpEntity<List<YiPolicyDetailReq>>(reqlist, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
-
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("Success".equalsIgnoreCase(res1.getResponse())){
+			for(YiPolicyDetail data:list) {
+				saveData=dozerMapper.map(data, YiPolicyDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");			
+//				list.add(saveData);
+			}
+			yiPolicyReo.saveAndFlush(saveData);
+		}else {
+			for(YiPolicyDetail data:list) {
+				saveData=dozerMapper.map(data, YiPolicyDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+				}
+				yiPolicyReo.saveAndFlush(saveData);
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
 		return response;
 	}
 	////////////////////////////////////////////////////////////////
 	@Override
 	public Object pushCreditLimitDetail(String reqRefNo) {
-		try {
+		
 		String url = CreditLimitDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
@@ -298,7 +435,7 @@ public class FrameReqServiceImpl implements FrameReqService {
         List<InsertCreditLimitDetailReq> reqList = new ArrayList<InsertCreditLimitDetailReq>();
       
 		List<CreditLimitDetail> list =creditRepo.findByRequestreferenceno(reqRefNo); 
-		
+		CreditLimitDetail saveData=new CreditLimitDetail();
 		if (list != null && list.size() > 0) {
 			for(CreditLimitDetail data : list) {
 				  InsertCreditLimitDetailReq req1 = new InsertCreditLimitDetailReq();
@@ -313,26 +450,48 @@ public class FrameReqServiceImpl implements FrameReqService {
 		headers.set("Authorization",authHeader);
 		HttpEntity< List<InsertCreditLimitDetailReq>> entityReq = new HttpEntity< List<InsertCreditLimitDetailReq>>(reqList, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
-		return response;
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(CreditLimitDetail data1:list) {
+				saveData=dozerMapper.map(data1, CreditLimitDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+			}
+			creditRepo.saveAndFlush(saveData);
+		}else {
+			for(CreditLimitDetail data1:list) {
+				saveData=dozerMapper.map(data1, CreditLimitDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+			}
+			creditRepo.saveAndFlush(saveData);
+		}
+			
+		
 		}catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		
+		return response;
 		
 	}
 	@Override
 	public Object pushYiPolicyApproval(String policyNo) {
-		try {
+		
 		String url = YiPolicyApprovalCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
        
 		List<YiPolicyApproval> list =yipolicyRepo.findByQuotationPolicyNo(policyNo);
+		YiPolicyApproval saveData=new YiPolicyApproval();
 		List<InsertYiPolicyApprovalReq> reqList = new ArrayList<InsertYiPolicyApprovalReq>();
 		if (list != null && list.size() > 0) {
 			
@@ -349,26 +508,47 @@ public class FrameReqServiceImpl implements FrameReqService {
 		 headers.set("Authorization",authHeader);
 		HttpEntity<   List<InsertYiPolicyApprovalReq>> entityReq = new HttpEntity<   List<InsertYiPolicyApprovalReq>>(reqList, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(YiPolicyApproval data1:list) {
+				saveData=dozerMapper.map(data1, YiPolicyApproval.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+				}
+			yipolicyRepo.saveAndFlush(saveData);
+		}else {
+			for(YiPolicyApproval data1:list) {
+				saveData=dozerMapper.map(data1, YiPolicyApproval.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+			}
+		yipolicyRepo.saveAndFlush(saveData);
+		}
 
-		return response;
+	
 		}catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
+		return response;
 	}
 	@Override
 	public Object pushYiPremCal(String policyNo) {
-		try {
+		
 		String url = YiPremCalCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
        
 		List<YiPremCal> list =yipremRepo.findByQuotationPolicyNo(policyNo);
-	
+		YiPremCal saveData =new YiPremCal();
 		List<InsertYiPremCalReq> reqList = new ArrayList<InsertYiPremCalReq>();
 		if (list != null && list.size() > 0) {
 		
@@ -385,24 +565,45 @@ public class FrameReqServiceImpl implements FrameReqService {
 		 headers.set("Authorization",authHeader);
 		HttpEntity< List<InsertYiPremCalReq>> entityReq = new HttpEntity<List<InsertYiPremCalReq>>(reqList, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
-
-		return response;
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(YiPremCal data1:list) {
+				saveData=dozerMapper.map(data1, YiPremCal.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+			}
+		yipremRepo.saveAndFlush(saveData);
+		}else {
+			for(YiPremCal data1:list) {
+				saveData=dozerMapper.map(data1, YiPremCal.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+			}
+		yipremRepo.saveAndFlush(saveData);
+		}
+	
 		}catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
+		return response;
 	}
 	@Override
 	public Object pushYiVatDetail(String policyNo) {
-		try {
+		
 		String url = YiVatDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
 		List<YiVatDetail> list =yivatRepo.findByQuotationPolicyNo(policyNo);
+		YiVatDetail saveData=new YiVatDetail();
 		List<InsertYiVatDetailReq> reqList = new ArrayList<InsertYiVatDetailReq>();
 		if (list != null && list.size() > 0) {
 
@@ -420,25 +621,47 @@ public class FrameReqServiceImpl implements FrameReqService {
 		 headers.set("Authorization",authHeader);
 		HttpEntity< List<InsertYiVatDetailReq>> entityReq = new HttpEntity<List<InsertYiVatDetailReq>>(reqList, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(YiVatDetail data1:list) {
+				saveData=dozerMapper.map(data1, YiVatDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+			}
+		yivatRepo.saveAndFlush(saveData);
+		}else {
+			for(YiVatDetail data1:list) {
+				saveData=dozerMapper.map(data1, YiVatDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+			}
+		yivatRepo.saveAndFlush(saveData);
+		}
 
-		return response;
+	
 		}catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
+		return response;
 	}
 	@Override
 	public Object pushYiSectionDetail(String policyNo) {
-		try {
+		
 		String url = YiSectionDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
       
 		List<YiSectionDetail> list =yisecRepo.findByQuotationPolicyNo(policyNo);
+		YiSectionDetail saveData=new YiSectionDetail();
 		List<InsertYiSectionDetailReq> reqList = new ArrayList<InsertYiSectionDetailReq>();
 		if (list != null && list.size() > 0) {
 		
@@ -455,14 +678,35 @@ public class FrameReqServiceImpl implements FrameReqService {
 		headers.set("Authorization",authHeader);
 		HttpEntity<List<InsertYiSectionDetailReq>> entityReq = new HttpEntity<List<InsertYiSectionDetailReq>>(reqList, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
-		return response;
-	}catch (Exception e) {
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(YiSectionDetail data1:list) {
+				saveData=dozerMapper.map(data1, YiSectionDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+			}
+		yisecRepo.saveAndFlush(saveData);
+		}else {
+			for(YiSectionDetail data1:list) {
+				saveData=dozerMapper.map(data1, YiSectionDetail.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+			}
+		yisecRepo.saveAndFlush(saveData);
+		}
+
+	} catch (Exception e) {
 		e.printStackTrace();
 		return null;
 	}
+	return response;
 	}
 	
 	@Override
@@ -473,6 +717,7 @@ public class FrameReqServiceImpl implements FrameReqService {
         String authHeader = "Basic " + new String( encodedAuth );
      
 		List<PgithPolRiskAddlInfo> list = pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
+		PgithPolRiskAddlInfo saveData=new PgithPolRiskAddlInfo();
 		List<PgitPolRiskAddlInfoReq> reqList = new ArrayList<PgitPolRiskAddlInfoReq>();
 		
 		if (list != null && list.size() > 0) {
@@ -490,12 +735,91 @@ public class FrameReqServiceImpl implements FrameReqService {
 		 headers.set("Authorization",authHeader);
 		HttpEntity<List<PgitPolRiskAddlInfoReq>> entityReq = new HttpEntity<List<PgitPolRiskAddlInfoReq>>(reqList, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		System.out.println("Success");
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		try {
+		if("success".equalsIgnoreCase(res1.getResponse())) {
+			for(PgithPolRiskAddlInfo data1:list) {
+				saveData=dozerMapper.map(data1, PgithPolRiskAddlInfo.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError("");
+//				list.add(saveData);
+			}
+			pgitPolRiskRepo.saveAndFlush(saveData);
+		}else {
+			for(PgithPolRiskAddlInfo data1:list) {
+				saveData=dozerMapper.map(data1, PgithPolRiskAddlInfo.class);
+				saveData.setPWsResponseType(res1.getResponse());
+				saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+			}
+			pgitPolRiskRepo.saveAndFlush(saveData);
+		}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		return response;
 	}
+//Madison-------------------------------------------------------------------------------------------------------------------------------
+	@Override
+	public Object pushPtIntgFlexTran(String policyNo) {
+		
+		String url = PtIntgFlexTranCall;
+		String auth = BasicAuthName +":"+ BasicAuthPass;
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        String authHeader = "Basic " + new String( encodedAuth );
+        List<PtIntgFlexTranReq> reqlist = new ArrayList<PtIntgFlexTranReq>();
+		List<PtIntgFlexTran> list = ptintgFlexTransRepo.findByPiftPolicyNo(policyNo);
+		PtIntgFlexTran saveData=new PtIntgFlexTran();
+		if (list != null && list.size() > 0) {
+			PtIntgFlexTranReq req1 = new PtIntgFlexTranReq();
+			for (PtIntgFlexTran data : list) {
+				req1 = dozerMapper.map(data, PtIntgFlexTranReq.class);
+				reqlist.add(req1);
+			}
+		}
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		 headers.set("Authorization",authHeader);
+		HttpEntity<List<PtIntgFlexTranReq>> entityReq = new HttpEntity<List<PtIntgFlexTranReq>>(reqlist, headers);
 
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
+		System.out.println(response.getBody());
+		IntegrationSaveRes res1= new IntegrationSaveRes();
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+//		try {
+//		if("Success".equalsIgnoreCase(res1.getResponse())){
+//			for(PtIntgFlexTran data:list) {
+//				saveData=dozerMapper.map(data, PtIntgFlexTran.class);
+//				saveData.setPiftIntgStatus(res1.getResponse());
+//				saveData.setPiftErrorMessage("");
+//				ptintgFlexTransRepo.saveAndFlush(saveData);
+//			}
+//			
+//		}else {
+//			for(PtIntgFlexTran data:list) {
+//				saveData=dozerMapper.map(data, PtIntgFlexTran.class);
+//				saveData.setPiftIntgStatus(res1.getResponse());
+//				saveData.setPiftErrorMessage(res1.getErrorMessage());
+//				ptintgFlexTransRepo.saveAndFlush(saveData);
+//				}
+//			
+//		}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			log.info("Log Details" + e.getMessage());
+//			return null;
+//		}
+		return response;
+	}	
+	
 	
 }

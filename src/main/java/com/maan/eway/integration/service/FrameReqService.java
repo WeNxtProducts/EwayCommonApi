@@ -2,6 +2,8 @@ package com.maan.eway.integration.service;
 
 public interface FrameReqService {
 
+	//Tanzania
+	
 	Object pushMotCommDiscountDetail(String policyNo);
 
 	Object pushMotDriverDetail(String policyNo);
@@ -12,8 +14,6 @@ public interface FrameReqService {
 
 	Object pushYiPolicyDetail(String policyNo);
 
-
-	
 	Object pushCreditLimitDetail(String reqRefNo);
 
 	Object pushYiPolicyApproval(String policyNo);
@@ -25,5 +25,9 @@ public interface FrameReqService {
 	Object pushYiSectionDetail(String policyNo);
 	
 	Object pushPgitPolRiskAddlInfo(String policyNo);
+
+	//Madison
+
+	Object pushPtIntgFlexTran(String policyNo);
 
 }

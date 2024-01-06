@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PremiaConfigDataMaster;
@@ -191,74 +192,32 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 			}
 			
 			// Framing External Api
-			HomePositionMaster home = homeRepo.findByQuoteNo(quoteNo);
-
 			String policyNo = "";
 			String reqRefNo = "";
+			String companyId="";
+			String productId="";
+			HomePositionMaster home = homeRepo.findByQuoteNo(quoteNo);
 			if (home != null) {
 				policyNo = home.getPolicyNo();
 				reqRefNo = home.getRequestReferenceNo();
+				companyId= home.getCompanyId();
+				productId= home.getProductId().toString();
 			}
-			System.out.println("*********EXTERNAL API CALL STARTS*********");
-			System.out.println("*********PolicyNo " + policyNo);
-
-			if (configMas.getPremiaId() == 1) {
-				System.out.println("*********1.YiPolicyDetail: ");
-				Object list = frameReqService.pushYiPolicyDetail(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 2) {
-				System.out.println("*********2.YiSectionDetail:");
-				Object list = frameReqService.pushYiSectionDetail(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 3) {
-				System.out.println("*********3.PgitPolRiskAddlInfo:");
-				Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 4) {
-				System.out.println("*********4.MotDriverDetail: ");
-				Object list = frameReqService.pushMotDriverDetail(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 5) {
-				System.out.println("*********5.YiCoverDetail: ");
-				Object list = frameReqService.pushYiCoverDetail(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 6) {
-				System.out.println("*********6.MotCommDiscountDetai:");
-				Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 7) {
-				System.out.println("*********7.YiChargeDetail: ");
-				Object list = frameReqService.pushYiChargeDetail(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 8) {
-				System.out.println("*********8.YiVatDetail:");
-				Object list = frameReqService.pushYiVatDetail(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 9) {
-				System.out.println("*********9.YiPremCal:");
-				Object list = frameReqService.pushYiPremCal(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 10) {
-				System.out.println("*********10.YiPolicyApproval:");
-				Object list = frameReqService.pushYiPolicyApproval(policyNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
-			} else if (configMas.getPremiaId() == 11) {
-				System.out.println("*********11.CreditLimitDetail:");
-				Object list = frameReqService.pushCreditLimitDetail(reqRefNo);
-				System.out.println("List " + json.toJson(list));
-				System.out.println("_____________________________________________ ");
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId);
+		
+			
+			if("100002".equalsIgnoreCase(companyId)){
+				if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
+					ewayMotorPremiaPush(policyNo,reqRefNo,configMas);
+				}
+				
 			}
-
+//			else if("100004".equalsIgnoreCase(companyId)){
+//				if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
+//					madisonMotorPremiaPush(policyNo,reqRefNo,configMas);
+//				}
+//					
+//			}
 		}
 		
 		return true;
@@ -269,6 +228,85 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 	return false;
 }
 
+public void ewayMotorPremiaPush(String policyNo,String reqRefNo,PremiaConfigMaster configMas) {
+	try {
+		System.out.println("*********EXTERNAL API CALL STARTS*********");
+		System.out.println("*********PolicyNo " + policyNo);
+
+		if (configMas.getPremiaId() == 1) {
+			System.out.println("*********1.YiPolicyDetail: ");
+			Object list = frameReqService.pushYiPolicyDetail(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 2) {
+			System.out.println("*********2.YiSectionDetail:");
+			Object list = frameReqService.pushYiSectionDetail(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 3) {
+			System.out.println("*********3.PgitPolRiskAddlInfo:");
+			Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 4) {
+			System.out.println("*********4.MotDriverDetail: ");
+			Object list = frameReqService.pushMotDriverDetail(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 5) {
+			System.out.println("*********5.YiCoverDetail: ");
+			Object list = frameReqService.pushYiCoverDetail(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 6) {
+			System.out.println("*********6.MotCommDiscountDetai:");
+			Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 7) {
+			System.out.println("*********7.YiChargeDetail: ");
+			Object list = frameReqService.pushYiChargeDetail(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 8) {
+			System.out.println("*********8.YiVatDetail:");
+			Object list = frameReqService.pushYiVatDetail(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 9) {
+			System.out.println("*********9.YiPremCal:");
+			Object list = frameReqService.pushYiPremCal(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 10) {
+			System.out.println("*********10.YiPolicyApproval:");
+			Object list = frameReqService.pushYiPolicyApproval(policyNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		} else if (configMas.getPremiaId() == 11) {
+			System.out.println("*********11.CreditLimitDetail:");
+			Object list = frameReqService.pushCreditLimitDetail(reqRefNo);
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+		}
+
+	}catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+public void madisonMotorPremiaPush(String policyNo,String reqRefNo) {
+	try {
+		
+		System.out.println("*********EXTERNAL API CALL STARTS*********");
+		System.out.println("*********PolicyNo " + policyNo);
+		System.out.println("*********PtIntgFlexTran:");
+		Object list = frameReqService.pushPtIntgFlexTran(policyNo);
+		System.out.println("List " + json.toJson(list));
+		System.out.println("_____________________________________________ ");
+	}catch (Exception e) {
+		e.printStackTrace();
+	}
+}
 
 private String frameselectfromMap(Map<String, String> maps) {
 	String result = maps.entrySet().stream().map(map -> (map.getValue()+" "+map.getKey()))
@@ -310,7 +348,19 @@ private Map<String,String> fromListToMaps(List<String> arrays){
 public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 	PremiaResponse response = new PremiaResponse();
 	try {
+		String policyNo = "";
+		String reqRefNo = "";
+		String companyId="";
+		String productId="";
 		HomePositionMaster home = homeRepo.findByQuoteNo(request.getQuoteNo()); //get all tables names and details
+		if (home != null) {
+			policyNo = home.getPolicyNo();
+			reqRefNo = home.getRequestReferenceNo();
+			companyId= home.getCompanyId();
+			productId= home.getProductId().toString();
+		}
+		CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId);
+	
 		 List<PremiaConfigMaster> configMasterList =   getPremiaConfigMaster(home.getCompanyId() , home.getProductId() , request.getPremiaIds() );
 		
 		List<String> param=new ArrayList<String>();
@@ -320,10 +370,17 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			boolean push = push(configMas , param,request.getQuoteNo());
 			if(push ==true  ) {
 				response.setResponse("Success");	
+				
 			} else {
 				response.setResponse("Failed");
 			} 
 			
+		}
+		if ("100004".equalsIgnoreCase(companyId)) {
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				madisonMotorPremiaPush(policyNo, reqRefNo);
+			}
+
 		}
 	}catch(Exception e){
 		e.printStackTrace();
@@ -489,5 +546,66 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			return null;
 		}
 		return list ;
+	}
+	public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) :null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return product;
 	}
 }
