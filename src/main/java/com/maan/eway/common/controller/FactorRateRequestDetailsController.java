@@ -23,9 +23,13 @@ import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.UpdateFactorRateReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.FactorCoverRes;
+import com.maan.eway.common.res.FactorRateRequestCommonRes;
+import com.maan.eway.common.res.FactorRateRequestRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.req.FactorRateDetailsGetReq;
+import com.maan.eway.req.FactorRateRequestReq;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 import com.maan.eway.service.PrintReqService;
 
@@ -155,6 +159,7 @@ public class FactorRateRequestDetailsController {
 		}
 		
     }
+	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
     @GetMapping(value = "/factorraterequestdetails")
     public ResponseEntity<List<FactorRateRequestDetails>> getAllFactorRateRequestDetails() {
@@ -162,6 +167,21 @@ public class FactorRateRequestDetailsController {
 
         return new ResponseEntity<>(lst,HttpStatus.OK);
     }
+	
+	   @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	    @PostMapping("/getallfactorcoverdetails")
+	    public ResponseEntity<FactorCoverRes> getAllfactorraterequestdetails(@RequestBody FactorRateRequestReq req){
+	    	
+		   FactorCoverRes  data  = entityService.getAllfactorRateRequestNo(req);
+			if (data != null) {
+				return new ResponseEntity<FactorCoverRes>(data,HttpStatus.CREATED);
+				  } else {
+				return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+				 }
+	    }
+	
+	
+	
 /*
         @GetMapping(value = "/factorraterequestdetails/{id}")
     public ResponseEntity<FactorRateRequestDetails> getOneFactorRateRequestDetails(@PathVariable("id") long id) {

@@ -839,11 +839,9 @@ public class SearchServiceImpl implements SearchService {
 		    		fireperils.setMakutiYn(id.getMakutiYn());
 		    		res.setFirePerilsRisk(fireperils); 		
 		    	 }
-		  }
-	    
+		       }
 	    
 		}
-	
 	    
 	    for(EserviceCommonDetails ids : commondata)
 		{

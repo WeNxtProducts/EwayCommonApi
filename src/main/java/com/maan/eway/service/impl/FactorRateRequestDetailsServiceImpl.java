@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -78,6 +80,11 @@ import com.maan.eway.common.res.EndtTypeMasterDto;
 import com.maan.eway.common.res.EserviceCommonGetRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
+import com.maan.eway.common.res.FactorCoverRes;
+import com.maan.eway.common.res.FactorRateRequestCommonRes;
+import com.maan.eway.common.res.FactorRateRequestRes;
+import com.maan.eway.common.res.FactorTypeTaxRes;
+import com.maan.eway.common.res.FactorrateRequestLoadingRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BankChangeStatusReq;
@@ -98,6 +105,7 @@ import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
+import com.maan.eway.req.FactorRateRequestReq;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
@@ -2683,5 +2691,173 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			return null;
 			
 		}return res;
+	}
+
+
+	@Override
+	public FactorCoverRes getAllfactorRateRequestNo(FactorRateRequestReq req) {
+		
+		ModelMapper mapper = new ModelMapper();
+		
+		
+		
+		FactorCoverRes cover = new FactorCoverRes();
+		
+		Integer coverid = null;
+		
+		List<FactorRateRequestCommonRes> commonlist = new ArrayList<FactorRateRequestCommonRes>();
+		
+		List<FactorCoverRes> coverlist = new ArrayList<FactorCoverRes>();
+		
+		List<FactorRateRequestDetails> factor = repository.findByRequestReferenceNo(req.getRequestReferenceNo());
+		
+		if(factor.size() > 0)
+        {
+			
+			// List<Integer> coverId = new ArrayList<Integer>();
+			 
+	         for(FactorRateRequestDetails factors : factor)
+	         {
+	        	 
+	        	  FactorRateRequestCommonRes common = new FactorRateRequestCommonRes();
+	        	//coverId.add(factors.getCoverId());
+	        	 
+	        	 
+	        	
+	        	  
+	        	 List<FactorRateRequestDetails> factorsres = repository.findByRequestReferenceNoAndCoverIdOrderByVehicleIdAsc(factors.getRequestReferenceNo(),factors.getCoverId());
+	        	 
+	        	  if(coverid != factors.getCoverId())
+	        	  {
+	        		  List<FactorRateRequestRes> reslist = new ArrayList<FactorRateRequestRes>();
+	        		  
+	        		  List<FactorrateRequestLoadingRes> loadingList = new ArrayList<FactorrateRequestLoadingRes>();
+	        		  
+	        		  List<FactorTypeTaxRes> taxList = new ArrayList<FactorTypeTaxRes>();
+	        		  
+	        	     for(FactorRateRequestDetails factorsress : factorsres)
+		             {
+	        		     FactorRateRequestRes res =  new FactorRateRequestRes();
+	        		   
+	        		     FactorrateRequestLoadingRes loading = new FactorrateRequestLoadingRes();
+	        		   
+	        		     FactorTypeTaxRes tax = new FactorTypeTaxRes();
+	        		   
+	        		   
+	        		   
+	        		     coverid = factorsress.getCoverId();
+	        	         mapper.map(factorsress, res);
+	        	         common.setProductId(factorsress.getProductId());
+	        	         common.setVehicleId(factorsress.getVehicleId());	 
+	        	         common.setCompanyId(factorsress.getCompanyId());
+	        	         common.setVdRefNo(factorsress.getVdRefno());   
+	        	         common.setCoverDesc(factorsress.getCoverDesc());
+	        	         common.setSubCoverYn(factorsress.getSubCoverYn());	
+	        	         common.setCoverId(factorsress.getCoverId());
+			        	 common.setCdRefNo(factorsress.getCdRefno());
+			        	 common.setCoverName(factorsress.getCoverName());	
+			        	 common.setCurrency(factorsress.getCurrency());  
+			        	 common.setMsRefNo(factorsress.getMsRefno());
+			        	 common.setSubCoverName(factorsress.getSubCoverName());
+			        	 common.setSubCoverDesc(factorsress.getSubCoverDesc());
+			        	 common.setMinPrem(factorsress.getMinimumPremium() == null ? 0 : factorsress.getMinimumPremium().longValue());
+			        	 common.setPreBeforeDis(factorsress.getPremiumBeforeDiscountFc() == null ? 0 : factorsress.getPremiumBeforeDiscountFc().longValue());
+			        	 common.setExRate(factorsress.getExchangeRate() == null ? 0 : factorsress.getExchangeRate().longValue() );
+			        	 common.setCalcType(factorsress.getCalcType());
+			        	 common.setRate(factorsress.getRate().longValue());
+			        	 common.setSectionId(factorsress.getSectionId()) ;  
+			        	 common.setPreBeforeDisLc(factorsress.getPremiumAfterDiscountLc() == null ? 0 : factorsress.getPremiumAfterDiscountLc().longValue());	
+			        	 common.setPreAfterDis(factorsress.getPremiumAfterDiscountFc() == null ? 0 : factorsress.getPremiumAfterDiscountFc().longValue());
+			        	 common.setPreAfterDisLc(factorsress.getPremiumAfterDiscountLc() == null ? 0 : factorsress.getPremiumAfterDiscountLc().longValue());
+			        	 common.setPreExcludedDis(factorsress.getPremiumExcludedTaxFc() == null ? 0 : factorsress.getPremiumExcludedTaxFc().longValue());
+			        	 common.setPreExcludedDisLc(factorsress.getPremiumExcludedTaxLc() == null ? 0 : factorsress.getPremiumExcludedTaxLc().longValue());	        	 
+			        	 common.setPreIxcludedDis(factorsress.getPremiumIncludedTaxFc() == null ? 0 : factorsress.getPremiumIncludedTaxFc().longValue());
+			        	 common.setPreIxcludedDisLc(factorsress.getPremiumIncludedTaxLc() == null ? 0 : factorsress.getPremiumIncludedTaxLc().longValue());	
+			        	 common.setCoverBasedOn(factorsress.getCoverBasedOn());
+			        	 common.setStatus(factorsress.getStatus());
+			        	 common.setIsRefferal(factorsress.getIsReferral());
+			        	 common.setUserOtp(factorsress.getUserOpt());
+			        	 common.setIsSelected(factorsress.getIsSelected());
+			        	 common.setDepentCoverYn(factorsress.getDependentCoverYn());
+			        	 common.setCreatedBy(factorsress.getCreatedBy());
+			        	 common.setSumInsured(factorsress.getSumInsured() == null ? 0 : factorsress.getSumInsured().longValue());
+			        	 common.setSumInsuredFc(factorsress.getSumInsuredLc() == null ? 0 : factorsress.getSumInsuredLc().longValue());
+			        	 common.setPolicyEndDate(factorsress.getCoverPeriodTo());
+			        	 common.setMultiSelectYn(factorsress.getMultiSelectYn());
+			        	 common.setExcessAmount(factorsress.getExcessAmount() == null ? 0 : factorsress.getExcessAmount().longValue());
+			        	 common.setExcessPercent(factorsress.getExcessPercent() == null ? 0 : factorsress.getExcessPercent().longValue());
+			        	 common.setExcessDesc(factorsress.getExcessDesc());
+			        	 common.setMinimunPreYn(factorsress.getMinimumPremiumYn());
+			        	 common.setProRataYn(factorsress.getProRataYn());
+			        	 common.setProRataPercent(factorsress.getProRataPercent() == null ? 0 : factorsress.getProRataPercent().longValue());
+			        	 common.setEndtCount(factorsress.getEndtCount() == null ? 0 : factorsress.getEndtCount().longValue());
+			        	 common.setDiffPreIncludeFc(factorsress.getDiffPremiumIncludedTaxFc() == null ? 0 : factorsress.getDiffPremiumIncludedTaxFc().longValue());
+			        	 common.setDiffPreIncludeLc(factorsress.getDiffPremiumIncludedTaxLc() == null ? 0 : factorsress.getDiffPremiumIncludedTaxLc().longValue());
+			        	 common.setRegulatoryRate(factorsress.getRegulatoryRate() == null ? 0 : factorsress.getRegulatoryRate().longValue());
+			        	 common.setRegulatorySI(factorsress.getRegulatorySuminsured() == null ? 0 : factorsress.getRegulatorySuminsured().longValue());
+			        	 common.setCoverageLimit(factorsress.getCoverageLimit() == null ? 0 : factorsress.getCoverageLimit().longValue());
+			        	 common.setMinPreFc(factorsress.getMinimumPremiumFc() == null ? 0 : factorsress.getMinimumPremiumFc().longValue());
+			        	 
+			        	 
+			        	 if(factorsress.getCoverageType().equalsIgnoreCase("D"))
+			        	 {
+				        	 res.setSubCoverId(factorsress.getSubCoverId());
+				        	 res.setDiscLoadId(factorsress.getDiscLoadId());
+				        	 res.setCoverType(factorsress.getCoverageType());
+				        	 res.setEffectiveDate(factorsress.getEntryDate());
+				        	 res.setFactorTypeId(factorsress.getFactorTypeId() == null ? 0 : factorsress.getFactorTypeId().longValue());
+				        	 res.setPolicyEndDate(factorsress.getCoverPeriodTo());
+				        	 res.setEffectiveDate(factorsress.getEntryDate());
+				        	 res.setMaxLoadingAmount(factorsress.getMaxLodingAmount() == null ? 0 : factorsress.getMaxLodingAmount().longValue()); 
+				        	 res.setRegulatoryCode(factorsress.getRegulatoryCode());
+				        	 res.setDiscountCoverId(factorsress.getDiscountCoverId());
+				        	 reslist.add(res);	 
+			        	 }
+			        	 
+			        	 if(factorsress.getCoverageType().equalsIgnoreCase("L"))
+			        	 {
+				        	 loading.setSubCoverId(factorsress.getSubCoverId());
+				        	 loading.setEffectiveDate(factorsress.getEntryDate());
+				        	 loading.setPolicyEndDate(factorsress.getCoverPeriodTo());
+				        	 loading.setLoadingLoadId(factorsress.getDiscLoadId());
+				        	 loading.setCoverType(factorsress.getCoverageType());
+				        	 loading.setFactorTypeId(factorsress.getFactorTypeId() == null ? 0 : factorsress.getFactorTypeId().longValue());
+				        	 loading.setEffectiveDate(factorsress.getEntryDate());
+				        	 loading.setMaxLoadingAmount(factorsress.getMaxLodingAmount() == null ? 0 : factorsress.getMaxLodingAmount().longValue()); 
+				        	 loading.setRegulatoryCode(factorsress.getRegulatoryCode());
+				        	 loading.setLoadingCoverId(factorsress.getDiscountCoverId());	
+				        	 loadingList.add(loading);
+				        }	
+			        	 
+			        	 if(factorsress.getCoverageType().equalsIgnoreCase("T"))
+			        	 {
+			        	 
+				        	 tax.setTaxId(factorsress.getTaxId());
+				        	 tax.setTaxAmount(factorsress.getTaxAmount() == null ? 0 : factorsress.getTaxAmount().longValue());
+				        	 tax.setTaxRate(factorsress.getTaxRate() == null ? 0 : factorsress.getTaxRate().longValue());
+				        	 tax.setTaxDesc(factorsress.getTaxDesc());
+				        	 tax.setTaxCalcType(factorsress.getTaxCalcType());	 
+				        	 tax.setIsTax(factorsress.getIsTaxExtempted());
+				        	 tax.setTaxExemptType(factorsress.getTaxExemptType());
+				        	 tax.setTaxExemptCode(factorsress.getTaxExemptCode());
+				        	 tax.setEffectiveDate(factorsress.getEntryDate());
+				        	 tax.setTaxAmountLc(factorsress.getTaxAmountLc() == null ? 0 : factorsress.getTaxAmountLc().longValue());
+				        	 taxList.add(tax);
+				        }
+			        	        
+	                 }
+	        	    common.setCoverId(factors.getCoverId());
+    	           // common.setFactor(reslist);  
+	        	    common.setDiscounts(reslist);
+	        	    common.setLoading(loadingList);	    
+	        	    common.setTax(taxList);//commonlist.add(common);
+                   commonlist.add(common);
+	        	 }
+	        	
+		          cover.setCover(commonlist);
+		          coverlist.add(cover) ;
+	         }
+	        }
+		return cover;
 	}
 }

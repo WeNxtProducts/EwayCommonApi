@@ -72,12 +72,12 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			List<SessionMaster> sessionlist = new ArrayList<SessionMaster>();
 			List<LoginMaster> data  = new ArrayList<LoginMaster>();
 			
-			String loginId = "" ;
+			String loginId = "";
 			if (req.getLoginId() == null || StringUtils.isBlank(req.getLoginId())) {
 				list.add(new Error("", "UserId", "Please enter Login Id"));	
 				
 			} else {
-				loginId = req.getLoginId() ;
+				loginId = req.getLoginId();
 			}
 			
 			/*	else if (req.getCompanyId() == null || StringUtils.isBlank(req.getCompanyId())) {
@@ -526,7 +526,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 				list.add(new Error("", "ForgotPassword", "You are not authorized user..!"));
 				 	
 			} else if( ! model.getStatus().equalsIgnoreCase("Y") ) {
-				list.add(new Error("", "ForgotPassword", " Login Id is Deactive"));
+				list.add(new Error("", "ForgotPassword", "Login Id is Deactive"));
 				
 			} else if(StringUtils.isBlank(req.getEmailId())) {
 				list.add(new Error("", "EmailId", "Please Enter Email Id"));

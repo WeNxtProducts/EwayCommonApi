@@ -6,13 +6,18 @@
 package com.maan.eway.service;
 import java.util.List;
 
+
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.UpdateFactorRateReq;
+import com.maan.eway.common.res.FactorCoverRes;
+import com.maan.eway.common.res.FactorRateRequestCommonRes;
+import com.maan.eway.common.res.FactorRateRequestRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.req.FactorRateDetailsGetReq;
+import com.maan.eway.req.FactorRateRequestReq;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>FactorRateRequestDetailsServiceimpl</h2>
@@ -30,6 +35,8 @@ SuccessRes saveFactorRateRequestDetails(EserviceMotorDetailsSaveRes req);
 List<Error> validateFoctorPremiumDetails(UpdateFactorRateReq req);
 UpdateCoverRes updateFactorRatePremiumDetails(UpdateFactorRateReq req);
 List<Error> validateFactorIsSelectedDetails(UpdateFactorRateReq req);
-UpdateCoverRes updateFactorIsSelectedDetails(UpdateFactorRateReq req);
+UpdateCoverRes updateFactorIsSelectedDetails(UpdateFactorRateReq req); 
+
+FactorCoverRes getAllfactorRateRequestNo(FactorRateRequestReq req);
 
 }

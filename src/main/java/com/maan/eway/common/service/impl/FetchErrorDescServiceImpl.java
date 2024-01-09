@@ -44,7 +44,7 @@ import com.maan.eway.error.Error;
 @EnableScheduling
 public class FetchErrorDescServiceImpl {
 	
-	private Logger log=LogManager.getLogger(FetchErrorDescServiceImpl.class);
+	private Logger log=  LogManager.getLogger(FetchErrorDescServiceImpl.class);
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -111,7 +111,7 @@ public class FetchErrorDescServiceImpl {
 					&& o.getStatus().equalsIgnoreCase("Y") ).collect(Collectors.groupingBy(ErrorDescMaster :: getCompanyId));
 			
 			// Group By Company Id
-			for (String companyId : groupByCompanyId.keySet() ) {
+			for (String companyId : groupByCompanyId.keySet()) {
 				
 				List<ErrorDescMaster> filterCompanyList = groupByCompanyId.get(companyId);
 				Map<Integer, List<ErrorDescMaster>> groupByProductId =  filterCompanyList.stream().filter( o -> o.getProductId() !=null ).collect(Collectors.groupingBy(ErrorDescMaster :: getProductId));

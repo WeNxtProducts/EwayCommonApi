@@ -100,6 +100,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
 	@Autowired
 	private LoginMasterRepository loginRepo;
 	@Autowired
@@ -166,7 +167,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				 login =loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),epass);
 					
 				 if(login==null) {
-					 login =loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),mslogin.getPassword().trim());
+					 login = loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),mslogin.getPassword().trim());
 				 }
 			}
 			
@@ -189,7 +190,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.MINUTE, 50);
 				Date endTime = cal.getTime();
-				session.setEndTime(endTime );
+				session.setEndTime(endTime);
 				session =sessionRep.save(session);
 				ClaimLoginResponse loginRes = new ClaimLoginResponse(); 
 				
@@ -281,7 +282,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					branchRes.setInsuranceId(getBranch.getCompanyId() );
 					branchRes.setCompanyName(getBranch.getCompanyName() );
 			//		branchRes.setCompanyLogo(getBranch.getCompanyLogo() );
-					branchRes.setCurrencyId(getBranch.getCurrencyId() );;
+					branchRes.setCurrencyId(getBranch.getCurrencyId());;
 					branchRes.setSourceType(data.getSourceType());
 					branchRes.setDepartmentCode(data.getDepartmentCode());
 //					branchRes.setCustomerCode(data.getCustomerCode());
@@ -294,8 +295,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					branchRes.setAttachedBranchCode(data.getAttachedBranch());
 					if(filterAttachedBranch.size()>0 ) {
 						LoginBranchCriteriaRes getAttachedBranch = filterAttachedBranch.get(0);
-						branchRes.setAttachedBranchName(getAttachedBranch.getBranchName()  );
-						branchRes.setAttachedRegionCode(getAttachedBranch.getRegionCode() );
+						branchRes.setAttachedBranchName(getAttachedBranch.getBranchName());
+						branchRes.setAttachedRegionCode(getAttachedBranch.getRegionCode());
 				//		branchRes.setAttachedRegionName(getAttachedBranch.getRegionName() );
 						branchRes.setAttachedCompanyId(getAttachedBranch.getCompanyId() );
 						branchRes.setAttachedCompanyName(getAttachedBranch.getCompanyName() );
@@ -337,7 +338,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				Root<LoginProductMaster>    c = query.from(LoginProductMaster.class);		
 				
 				// Select
-				query.select(c );
+				query.select(c);
 				
 			
 				// Order By
@@ -440,7 +441,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			//  r.setMenuList(getMenuList( asList));
 		  }				
 			
-		}catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 		}
