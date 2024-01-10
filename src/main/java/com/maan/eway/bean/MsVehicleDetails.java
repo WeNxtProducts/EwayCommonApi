@@ -237,6 +237,15 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CUSTOMER_TYPE")
     private String customerType;
+    
+    @Column(name="VEHICLE_MAKE_ID")
+    private String vehicleMakeId;
+    
+    @Column(name="VEHICLE_MODEL_ID")
+    private String vehicleModelId ;
+    
+    @Column(name="FUEL_TYPE_ID")
+    private String fuelTypeId;
 }
 
 
