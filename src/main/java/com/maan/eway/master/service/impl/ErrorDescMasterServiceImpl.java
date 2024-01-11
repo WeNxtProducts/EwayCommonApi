@@ -63,7 +63,10 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 	//	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		
 		try
-		{		
+		{
+//			if (StringUtils.isBlank(req.getErrorCode()) ) {
+//				errorList.add(new Error("01", "Error Code", "Please Select Error Code "));
+//			}
 			
 			if (StringUtils.isBlank(req.getErrorDesc()) ) {
 				errorList.add(new Error("01", "Error Desc", "Please Enter Error Desc"));
@@ -126,7 +129,7 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 		
 		   Integer amendId = 0 ;
 		
-			Date startDate = req.getEffectiveDateStart();
+			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
 			Date endDate = sdformat.parse(end);
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
@@ -182,7 +185,7 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 							repo.saveAndFlush(lastRecord);
 						
 					} else {
-						amendId = errordescs.get(0).getAmendId();
+						amendId = errordescs.get(0).getAmendId() ;
 						entryDate = errordescs.get(0).getEntryDate() ;
 						createdBy = errordescs.get(0).getCreatedBy();
 						errordesc = errordescs.get(0) ;
@@ -309,7 +312,6 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		
 		try {
-			
 			List<ErrorDescMaster> list = new ArrayList<ErrorDescMaster>();
 
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -345,7 +347,7 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			list = result.getResultList();
 			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getErrorCode()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(ErrorDescMaster :: getErrorCode));
+			list.sort(Comparator.comparing(ErrorDescMaster :: getErrorCode ));
 	
 			for (ErrorDescMaster data : list) {
 				ErrorDescMasterRes res = new ErrorDescMasterRes();
@@ -359,6 +361,7 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			//log.info(e.getMessage());
 			return null;
 
 		}
@@ -370,22 +373,22 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 
-	
-	
 	@Override
 	public ErrorDescMasterRes getbyerrorcodeDetails(ErrorDescMasterGetReq req) {
+		//List<ErrorDescMasterRes> resList = new ArrayList<ErrorDescMasterRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		
 		ErrorDescMasterRes res = new ErrorDescMasterRes();
 		
 		try {
-			
 			List<ErrorDescMaster> list = new ArrayList<ErrorDescMaster>();
 
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ErrorDescMaster> query = cb.createQuery(ErrorDescMaster.class);
 			
 			Root<ErrorDescMaster> b = query.from(ErrorDescMaster.class);
+		
+			
 			query.select(b);
 		
 			Subquery<Long> amendId = query.subquery(Long.class);
@@ -425,7 +428,9 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			
 			return null;
+
 		}
 		return res;
 	}

@@ -217,18 +217,6 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRO_RATA_DESC")
     private String       proRataDesc;
-    
-    @Column(name="PAC_MAX_AGE_ON_MAT")
-    private Integer pacMaxAgeOnMat;
-    
-    @Column(name ="PAC_PERIOD")
-    private Integer pacPeriod;
-    
-    @Column(name="PAC_PREM_PAY_YRS")
-    private Integer pacPremPayYrs;
-    
-    @Column(name="PAC_COVER_CODE")
-    private String pacCoverCode;
 }
 
 

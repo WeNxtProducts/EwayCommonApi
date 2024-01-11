@@ -161,8 +161,6 @@ public class MotorMakeMasterController {
 			}
 
 		}
-	
-	
 		
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/motormake/changestatus")
