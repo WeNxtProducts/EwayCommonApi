@@ -1366,15 +1366,24 @@ public class EndorsementService {
 			if(request.getEndtEffectiveDate() ==null ) {
 				error.add(new Error("01", "EndtEffectiveDate", "Please Select Endoresment Effective Date"));
 				
-			}else if ( travelProductId.equalsIgnoreCase(request.getProductId().toPlainString())  ) {
+			}else if (request.getProductId()!=null && travelProductId.equalsIgnoreCase(request.getProductId().toPlainString())  ) {
 				HomePositionMaster homeData = homeRepo.findByPolicyNo(request.getPolicyNo() );	
 				if(homeData !=null ) {
 					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy") ;
 					Date effDate = request.getEndtEffectiveDate();
 					Date travelStartDate = homeData.getInceptionDate() ;
 					if (travelStartDate.before(effDate) ) {
-						error.add(new Error("01", "TravelStartDate", "Policy Start Date - " + sdf.format(homeData.getInceptionDate()) 
-								+ " is Less Than Effective Date -" + sdf.format(request.getEndtEffectiveDate())  + " Not Allowed . Future  Policy only we can cancel in travel" ));
+						error.add(new Error("01", "TravelStartDate",  "Future  Policy only we can modify in travel" ));
+								//"Policy Start Date - " + sdf.format(homeData.getInceptionDate()) 
+								//+ " is Less Than Effective Date -" + sdf.format(request.getEndtEffectiveDate())  + " Not Allowed . Future  Policy only we can cancel in travel" ));
+					} else  {
+						
+						String st = sdf.format(travelStartDate);
+						String today = sdf.format(new Date());
+						if(st.equals(today) ) {
+							error.add(new Error("01", "TravelStartDate",  "Future  Policy only we can modify in travel" ));
+						}
+						
 					}
 				}
 			}
