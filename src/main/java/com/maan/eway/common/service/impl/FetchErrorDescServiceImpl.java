@@ -49,7 +49,8 @@ public class FetchErrorDescServiceImpl {
 	@PersistenceContext
 	private EntityManager em;
 	
-	
+	String err=new String();
+	String concate="";
 	private List<ErrorGroupRes> errorGroupRes = new ArrayList<ErrorGroupRes>();
 	
 	List<ErrorGroupRes> errorDescriptionList = new ArrayList<ErrorGroupRes>();
@@ -58,6 +59,7 @@ public class FetchErrorDescServiceImpl {
 		List<Error> errors = new ArrayList<Error>();
 		try {
 			List<ErrorGroupRes> errorDescList = errorGroupRes ;// loadErrorModule();
+			
 			
 			// Filter By Primary Key
 			List<ErrorGroupRes> filterErrorList = errorDescList.stream().filter( o-> o.getCompanyId().equalsIgnoreCase(req.getInsuranceId())   
@@ -71,14 +73,26 @@ public class FetchErrorDescServiceImpl {
 			}
 			
 			for(String errorCode : errorCodes ) {
-				List<ErrorDescListRes> filterErrorCode = filterErrorCodeList.stream().filter( o -> o.getErrorCode().equalsIgnoreCase(errorCode) 
+				
+				List<String> errorCodeSplit=split(errorCode);
+				if(errorCodeSplit.size()>1 && errorCodeSplit!=null ) {
+					for(int i=0;i<errorCodeSplit.size();i++) {
+						System.out.println(errorCodeSplit.get(i));
+						err=errorCodeSplit.get(0);
+						concate=errorCodeSplit.get(1);
+					}
+				}else {
+					err=errorCode;
+					concate="";
+				}
+				List<ErrorDescListRes> filterErrorCode = filterErrorCodeList.stream().filter( o -> o.getErrorCode().equalsIgnoreCase(err) 
 						&& (o.getBranchCode().equalsIgnoreCase(req.getBranchCode()) || o.getBranchCode().equalsIgnoreCase("99999") )	).collect(Collectors.toList());
 				// Response 
 				if(filterErrorCode.size() > 0 ) {
 					ErrorDescListRes res = filterErrorCode.get(0) ;
-					errors.add(new Error(errorCode ,res.getErrorField() ,res.getErrorDesc()));
+					errors.add(new Error(err ,res.getErrorField() ,res.getErrorDesc()+" "+concate));
 				} else {
-					errors.add(new Error(errorCode ,"" ,"No Error Description Available"));
+					errors.add(new Error(err ,"" ,"No Error Description Available"));
 				}
 				
 			}
@@ -236,4 +250,15 @@ public class FetchErrorDescServiceImpl {
 		}
 		return list ;
 	}
+	
+	public List<String>  split(String error) {
+		List<String> s=new ArrayList<>();
+        String[] parts = error.split(",");
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = parts[i];
+            s.add(parts[i]);
+        }
+        return s;
+        
+    }
 }

@@ -176,6 +176,8 @@ import com.maan.eway.service.CalculatorEngine;
 public class PaymentServiceImpl implements PaymentService {
 
 	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	@Autowired
 	private PaymentDetailRepository paymentdetailrepo;
 	
 	@Autowired
@@ -314,33 +316,37 @@ public class PaymentServiceImpl implements PaymentService {
 	Gson json = new Gson();
 	@SuppressWarnings("unlikely-arg-type")
 	@Override
-	public List<Error> validatemakepayment(MakePaymentSaveReq req) {
-		List<Error> error = new ArrayList<Error>();
+	public List<String> validatemakepayment(MakePaymentSaveReq req) {
+		List<String> error = new ArrayList<String>();
 
 		try {
 			
-			
-			
 			if(StringUtils.isBlank(req.getQuoteNo())){
-				error.add(new Error("01","Quote No","Please Enter Quote No"));
+				error.add("1094");
+//				error.add(new Error("01","Quote No","Please Enter Quote No"));
 			}
 			if(StringUtils.isBlank(req.getEmiYn())) {
-				error.add(new Error("01","EmiYn","Please select Emi Yes/No"));
+				error.add("1095");
+//				error.add(new Error("01","Emi Yn","Please select Emi Yes/No"));
 			} else if(req.getEmiYn().equalsIgnoreCase("Y") ) {
 				
 				if(StringUtils.isBlank(req.getInstallmentMonth())) {
-					error.add(new Error("01","InstallmentMonth","Please Enter InstallmentMonth"));
+					error.add("1096");
+//					error.add(new Error("01","InstallmentMonth","Please Enter InstallmentMonth"));
 				}
 				if(StringUtils.isBlank(req.getInstallmentPeriod())) {
-					error.add(new Error("01","InstallmentPeriod","Please Enter InstallmentPeriod"));
+					error.add("1097");
+//					error.add(new Error("01","InstallmentPeriod","Please Enter InstallmentPeriod"));
 				}
 			}
 			
 			// Premium Validation
 			if(StringUtils.isBlank(req.getPremium())) {
-				error.add(new Error("01","Premium","Please Enter Premium"));
+				error.add("1098");
+//				error.add(new Error("01","Premium","Please Enter Premium"));
 			} else if (!req.getPremium().matches("^-?[0-9]\\d*(\\.\\d+)?$") )  {
-				error.add(new Error("01","Premium","Please Enter Valid Premium"));
+				error.add("1098");
+//				error.add(new Error("01","Premium","Please Enter Valid Premium"));
 				
 			} else if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
 					&& StringUtils.isNotBlank(req.getInstallmentPeriod())  )  {
@@ -363,7 +369,8 @@ public class PaymentServiceImpl implements PaymentService {
 			 	overall =  Double.valueOf (decimalFormat.format(emiDetails1.getDueAmount()));
 			 	}
 				if(! premium.equals(overall) ) {
-					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" + overall));
+					error.add("1106");
+//					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" + overall));
 				}
 			} else  {
 				HomePositionMaster  findQuote = homerepo.findByQuoteNo(req.getQuoteNo());
@@ -372,26 +379,32 @@ public class PaymentServiceImpl implements PaymentService {
 			 	Double premium =  Double.valueOf (decimalFormat.format( Double.valueOf (req.getPremium())));
 			 	Double overall =  Double.valueOf (decimalFormat.format(findQuote.getOverallPremiumLc()));
 			 	if(! premium.equals(overall) &&  StringUtils.isBlank(findQuote.getEndtTypeId())) {
-					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + premium + " Policy Premium :" +  overall));
+			 		error.add("1106");
+//			 		error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + premium + " Policy Premium :" +  overall));
 				}
 				
 			}
 			
 			
 			if(StringUtils.isBlank(req.getCreatedBy())) {
-				error.add(new Error("01","CreatedBy","Please Enter CreatedBy"));
+				error.add("1100");
+//				error.add(new Error("01","CreatedBy","Please Enter CreatedBy"));
 			}
 			if(StringUtils.isBlank(req.getUserType())) {
-				error.add(new Error("01","UserType","Please Enter UserType"));
+				error.add("1101	");
+//				error.add(new Error("01","UserType","Please Enter UserType"));
 			}
 			if(StringUtils.isBlank(req.getSubUserType())) {
-				error.add(new Error("01","SubUserType","Please Enter SubUserType"));
+				error.add("1102");
+//				error.add(new Error("01","SubUserType","Please Enter SubUserType"));
 			}
 			if(StringUtils.isBlank(req.getRemarks())) {
-				error.add(new Error("01","Remarks","Please Enter Remarks"));
+				error.add("1103");
+//				error.add(new Error("01","Remarks","Please Enter Remarks"));
 			}
 			if(StringUtils.isBlank(req.getInsuranceId())) {
-				error.add(new Error("01","InsuranceId","Please Enter InsuranceId"));
+				error.add("1104");
+//				error.add(new Error("01","InsuranceId","Please Enter InsuranceId"));
 			}
 			
 			List<PaymentInfo> datas = paymentinforepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
@@ -405,11 +418,13 @@ public class PaymentServiceImpl implements PaymentService {
 	  						o.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()) ).collect(Collectors.toList());
 					
 					if(filterEmi.size()>0 ) {
-						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+						error.add("1105");
+//						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 					}
 				
 				} else {
-					error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+					error.add("1105");
+//					error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 				}
 				
 				
@@ -490,10 +505,12 @@ public class PaymentServiceImpl implements PaymentService {
 						
 						if( ! list1.contains(coverDoc.getDocumentId()))	{
 							if(coverDoc.getSectionId()==99999)
-								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
+								error.add("1108");
+//								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
 					}}else {
 						if(coverDoc.getSectionId()==99999) {
-								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
+								error.add("1108");
+//								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
 						}
 						
 					}
@@ -541,12 +558,14 @@ public class PaymentServiceImpl implements PaymentService {
 							
 									if(!(uploadfilter.size()>0)) {
 										if((product.getMotorYn().equalsIgnoreCase("H") &&  productId.equals("4")) || product.getMotorYn().equalsIgnoreCase("M")){
-											error.add(new Error("01","Individual Doc", mandatorydoc.getDocumentName() + " is Mandatory In Individual Document" 
-											+ " for section: "+secName+", "+ doc.getIdType()+": "+doc.getId())); }
+											error.add("1107");
+//											error.add(new Error("01","Individual Doc", mandatorydoc.getDocumentName() + " is Mandatory In Individual Document" 
+//											+ " for section: "+secName+", "+ doc.getIdType()+": "+doc.getId())); 
+											}
 										else
-											
-											error.add(new Error("01","Individual Doc", mandatorydoc.getDocumentName() + " is Mandatory In Individual Document" 
-										+ " for Location: "+locName+", section: "+secName+", "+ doc.getIdType()+": "+doc.getId()));	
+											error.add("1107");
+//											error.add(new Error("01","Individual Doc", mandatorydoc.getDocumentName() + " is Mandatory In Individual Document" 
+//										+ " for Location: "+locName+", section: "+secName+", "+ doc.getIdType()+": "+doc.getId()));	
 									
 								}				
 								}
@@ -572,7 +591,8 @@ public class PaymentServiceImpl implements PaymentService {
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			error.add(new Error("01","Common Error",  e.getMessage()));
+			error.add("1112");
+//			error.add(new Error("01","Common Error",  e.getMessage()));
 		}
 		return error;
 	}
@@ -660,8 +680,8 @@ public class PaymentServiceImpl implements PaymentService {
 	
 
 
-	private List<Error> checkGroupValidation(String quoteNo  ) {
-		List<Error> errors = new ArrayList<Error>();
+	private List<String> checkGroupValidation(String quoteNo  ) {
+		List<String> errors = new ArrayList<String>();
 		try {
 			
 			List<EserviceTravelGroupDetails> groupDetails = groupRepo.findByQuoteNoOrderByGroupIdAsc(quoteNo);
@@ -672,9 +692,11 @@ public class PaymentServiceImpl implements PaymentService {
 					List<TravelPassengerDetails> filterList = passengerList.stream().filter( o -> o.getGroupId()!=null && Integer.valueOf(o.getGroupId()).equals(group.getGroupId())  )
 							.collect(Collectors.toList()) ;
 					if( group.getGrouppMembers() < filterList.size() ) {
-						errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Greater Than " + group.getGrouppMembers() + " Passengers Not Allowed" ));
+						errors.add("1109");
+//						errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Greater Than " + group.getGrouppMembers() + " Passengers Not Allowed" ));
 					} else if( group.getGrouppMembers() > filterList.size() ) {
-						errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Lesser Than  " + group.getGrouppMembers() + " Passengers Not Allowed" ));
+						errors.add("1110");
+//						errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Lesser Than  " + group.getGrouppMembers() + " Passengers Not Allowed" ));
 					}
 					
 				}
@@ -684,19 +706,22 @@ public class PaymentServiceImpl implements PaymentService {
 				List<TravelPassengerDetails> filterSelf2 =passengerList.stream().filter( o -> o.getRelationId()!=null && Integer.valueOf(o.getRelationId()).equals(10)  )
 						.collect(Collectors.toList()) ;
 				if(filterSelf1.size()<=0 && filterSelf2.size()<=0 ) {
-					errors.add(new Error("12", "SelfRelation", " Self Relation is missing in Passenger Details" ));
+					errors.add("1111");
+//					errors.add(new Error("12", "SelfRelation", " Self Relation is missing in Passenger Details" ));
 				}
 			}
 			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			errors.add(new Error("01","Common Error",  e.getMessage()));
+			errors.add("1112");
+			System.out.println("Common Error"+ e.getMessage());
+//			errors.add(new Error("01","Common Error",  e.getMessage()));
 		}
 		return errors;
 	}
-	private List<Error> employeeCountAndSIValid(String quoteNo , String sectionId ) {
-		List<Error> error = new ArrayList<Error>();
+	private List<String> employeeCountAndSIValid(String quoteNo , String sectionId ) {
+		List<String> error = new ArrayList<String>();
 		try {
 			int checkCount = 0;
 			int empCount = 0;
@@ -716,7 +741,8 @@ public class PaymentServiceImpl implements PaymentService {
 				commonDatas = commonRepo.findByQuoteNoAndSectionId(quoteNo,sectionId);
 				commonDatas = commonDatas.stream().filter( o ->  ! o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
 			}  else {
-				error.add(new Error("01", "QuoteNo", "Please Enter Atleat one Employee Details "));
+				error.add("1113");
+//				error.add(new Error("01", "QuoteNo", "Please Enter Atleat one Employee Details "));
 			}	
 			
 			
@@ -725,9 +751,11 @@ public class PaymentServiceImpl implements PaymentService {
 			//count
 			if(reqList.size()>empCount || reqList.size()<empCount) {
 				if(commonDatas.get(0).getProductId().equalsIgnoreCase("19"))
-					error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount+" for section "+ " '"+sectionname+"'"));
+					error.add("1114");
+//					error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount+" for section "+ " '"+sectionname+"'"));
 				else
-				error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount));
+					error.add("1114");
+//					error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount));
 			} 
 			
 			if(error.size()<1) {
@@ -746,17 +774,21 @@ public class PaymentServiceImpl implements PaymentService {
 				
 				if(indivcount!=checkCount) {
 					if(cdata.getProductId().equalsIgnoreCase("19"))
-						error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
+						error.add("1115");
+//						error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
 					else
-					error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"'"));
+						error.add("1115");
+//						error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"'"));
 					temp1 = false;
 				}
 				if(error.size()<1) {
 				if(totalSi!=empSi) {
 					if(cdata.getProductId().equalsIgnoreCase("19"))
-						error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"'"+" for section "+ " '"+sectionname+"'"));
+						error.add("1116");
+//						error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"'"+" for section "+ " '"+sectionname+"'"));
 					else
-					error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"'" ));
+						error.add("1116");
+//						error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"'" ));
 					temp1 = false;
 				}
 				}
@@ -769,7 +801,8 @@ public class PaymentServiceImpl implements PaymentService {
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			error.add(new Error("01","Common Error",  e.getMessage()));
+			error.add("1112");
+//			error.add(new Error("01","Common Error",  e.getMessage()));
 		}
 		return error;
 	}
@@ -1617,8 +1650,8 @@ public class PaymentServiceImpl implements PaymentService {
 
 
 	@Override
-	public List<Error> validatePaymentInsert(PaymentDetailsSaveReq req) {
-		List<Error> error = new ArrayList<Error>();
+	public List<String> validatePaymentInsert(PaymentDetailsSaveReq req) {
+		List<String> error = new ArrayList<String>();
 
 		try {
 			
@@ -1626,7 +1659,8 @@ public class PaymentServiceImpl implements PaymentService {
 			if(hp!=null) { 
 				
 				if (hp.getInceptionDate() == null) {
-					error.add(new Error("13", "PolicyStartDate", "Please Enter PolicyStartDate"));
+					error.add("1118");
+//					error.add(new Error("13", "PolicyStartDate", "Please Enter PolicyStartDate"));
 				} else if( ( hp.getEndtTypeId()==null || hp.getEndtTypeId().equalsIgnoreCase("0"))) {
 //						int before = getBackDays(hp.getCompanyId() , String.valueOf( hp.getProductId()) , req.getCreatedBy()) ;
 //						int days = before ==0 ? -1 : - before ;
@@ -1646,7 +1680,8 @@ public class PaymentServiceImpl implements PaymentService {
 					today = cal.getTime();
 					
 						if( hp.getInceptionDate().before(today) ) {
-							error.add(new Error("14", "PolicyStartDate", "Policy Start Date Back Days Not Allowed "));
+							error.add("1119");
+//							error.add(new Error("14", "PolicyStartDate", "Policy Start Date Back Days Not Allowed "));
 						} 
 //						else if( hp.getInceptionDate().after(after90) ) {
 //							error.add(new Error("14", "PolicyStartDate", "PolicyStartDate  even after 90 days Not Allowed"));
@@ -1657,34 +1692,42 @@ public class PaymentServiceImpl implements PaymentService {
 			}	
 			
 			if(StringUtils.isBlank(req.getQuoteNo())){
-				error.add(new Error("01","Quote No","Please Enter Quote No"));
+				error.add("1120");
+//				error.add(new Error("01","Quote No","Please Enter Quote No"));
 			}
 			
 			if(StringUtils.isBlank(req.getCreatedBy())) {
-				error.add(new Error("01","CreatedBy","Please Enter CreatedBy"));
+				error.add("1121");
+//				error.add(new Error("01","CreatedBy","Please Enter CreatedBy"));
 			}
 			if(StringUtils.isBlank(req.getUserType())) {
-				error.add(new Error("01","UserType","Please Enter UserType"));
+				error.add("1122");
+//				error.add(new Error("01","UserType","Please Enter UserType"));
 			}
 			if(StringUtils.isBlank(req.getSubUserType())) {
-				error.add(new Error("01","SubUserType","Please Enter SubUserType"));
+				error.add("1123");
+//				error.add(new Error("01","SubUserType","Please Enter SubUserType"));
 			}
 //			if(StringUtils.isBlank(req.getRemarks())) {
 //				error.add(new Error("01","Remarks","Please Enter Remarks"));
 //			}
 			if(StringUtils.isBlank(req.getInsuranceId())) {
-				error.add(new Error("01","InsuranceId","Please Enter InsuranceId"));
+				error.add("1124");
+//				error.add(new Error("01","InsuranceId","Please Enter InsuranceId"));
 			}
 			if(StringUtils.isBlank(req.getPaymentType())) {
-				error.add(new Error("01","PaymentType","Please Select PaymentType"));
+				error.add("1125");
+//				error.add(new Error("01","PaymentType","Please Select PaymentType"));
 			}
 			
 			if(StringUtils.isNotBlank(req.getPayments()) && req.getPayments().equalsIgnoreCase("Refund") ){
 				if(StringUtils.isBlank(req.getAccountNumber())) {
-					error.add(new Error("01","AccountNumber","Please Enter AccountNumber "));
+					error.add("1126");
+//					error.add(new Error("01","AccountNumber","Please Enter AccountNumber "));
 				}
 				if(StringUtils.isBlank(req.getIbanNumber())) {
-					error.add(new Error("01","IbanNumber","Please Enter IbanNumber"));
+					error.add("1127");
+//					error.add(new Error("01","IbanNumber","Please Enter IbanNumber"));
 				}
 			}
 			
@@ -1694,27 +1737,35 @@ public class PaymentServiceImpl implements PaymentService {
 				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
 				if(StringUtils.isBlank(req.getBankName())) {
-					error.add(new Error("01","BankName","Please Enter BankName"));
+					error.add("1128");
+//					error.add(new Error("01","BankName","Please Enter BankName"));
 				}
 				if (StringUtils.isBlank(req.getPayments())  || ( StringUtils.isNotBlank(req.getPayments()) && ! req.getPayments().equalsIgnoreCase("Refund") ) ){
 					if(StringUtils.isBlank(req.getChequeNo())) {
-						error.add(new Error("01","ChequeNo","Please Enter ChequeNo"));
+						error.add("1129");
+//						error.add(new Error("01","ChequeNo","Please Enter ChequeNo"));
 					}else if (! req.getChequeNo().matches("[0-9]+")) {
-						error.add(new Error("01","ChequeNo","Please Enter valid Number in ChequeNo"));
+						error.add("1130");
+//						error.add(new Error("01","ChequeNo","Please Enter valid Number in ChequeNo"));
 					}else if (req.getChequeNo().length() != 6 ) {
-						error.add(new Error("01","ChequeNo","ChequeNo Must Be 6 Digits only allowed "));
+						error.add("1131");
+//						error.add(new Error("01","ChequeNo","ChequeNo Must Be 6 Digits only allowed "));
 					}else if (req.getChequeDate() == null) {
-						error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate "));
+						error.add("1132");
+//						error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate "));
 					} else if (req.getChequeDate().before(today)) {
-						error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate as Future Date"));
+						error.add("1133");
+//						error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate as Future Date"));
 					}
 					
 					if(StringUtils.isBlank(req.getMicrNo())) {
-						error.add(new Error("01","MicrNo","Please Enter MicrNo"));
+						error.add("1134");
+//						error.add(new Error("01","MicrNo","Please Enter MicrNo"));
 //					}else if (! req.getMicrNo().matches("^[a-zA-Z0-9 ]+")) {
 //						error.add(new Error("01","MicrNo","Please Enter valid MicrNo"));
 					}else if ( req.getMicrNo().length() < 6 || req.getMicrNo().length() > 8 ) {
-						error.add(new Error("01","MicrNo","MicrNo  Must be Min 6 To Max 8 Charecter Only Allowed"));
+						error.add("1135");
+//						error.add(new Error("01","MicrNo","MicrNo  Must be Min 6 To Max 8 Charecter Only Allowed"));
 					}
 					
 				}
@@ -1723,9 +1774,11 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			}else if("1".equals(req.getPaymentType())) {
 				if(StringUtils.isBlank(req.getPayeeName())) {
-					error.add(new Error("01","PayeeName","Please Enter PayeeName"));
+					error.add("1136");
+//					error.add(new Error("01","PayeeName","Please Enter PayeeName"));
 				}else if(!req.getPayeeName().matches("[a-zA-Z ]*$") ) {
-					error.add(new Error("01","PayeeName","Please Enter Valid PayeeName"));
+					error.add("1137");
+//					error.add(new Error("01","PayeeName","Please Enter Valid PayeeName"));
 				}
 			}
 			if("3".equals(req.getPaymentType())) {
@@ -1734,11 +1787,13 @@ public class PaymentServiceImpl implements PaymentService {
 				
 				Long cbcDatacount=depositcbcRepo.countByBrokerIdAndStatus(homeData.getAgencyCode().toString(),"Y");
 				if(cbcDatacount==0){
-					error.add(new Error("01","Credit","Credit Option is not Activated For This Broker"));
+					error.add("1138");
+//					error.add(new Error("01","Credit","Credit Option is not Activated For This Broker"));
 				}else {
 				Long count=loginProductData(homeData.getLoginId(),homeData.getCompanyId(),homeData.getProductId());
 				if(count==0) {
-					error.add(new Error("01","Credit","Credit Option is not Available  For This Product"));
+					error.add("1139");
+//					error.add(new Error("01","Credit","Credit Option is not Available  For This Product"));
 				}
 				}
 				
@@ -1749,14 +1804,17 @@ public class PaymentServiceImpl implements PaymentService {
 				PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
 				if(paymentInfo!=null) {
 					if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Accepted") ) {
-						error.add(new Error("01","Accepted","This Payment Already Accepted "));
+						error.add("1140");
+//						error.add(new Error("01","Accepted","This Payment Already Accepted "));
 
 					} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Rejected") ) {
-						error.add(new Error("01","Rejected","This Payment Already Reject"
-								+ "ed "));
+						error.add("1141");
+//						error.add(new Error("01","Rejected","This Payment Already Reject"
+//								+ "ed "));
 
 					} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Cancelled") ) {
-						error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
+						error.add("1142");
+//						error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
 
 					} /*else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Pending") && StringUtils.isNotBlank(paymentInfo.getMerchantReference())  )  {
 						error.add(new Error("01","Cancelled","This Payment Already Pending"));
@@ -1784,11 +1842,13 @@ public class PaymentServiceImpl implements PaymentService {
 						List<PaymentInfo> filterEmi = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") && o.getInstallmentMonth().equalsIgnoreCase(paymentInfo.getInstallmentMonth()) && 
 								  						o.getInstallmentPeriod().equalsIgnoreCase(paymentInfo.getInstallmentPeriod()) ).collect(Collectors.toList());
 						if(filterEmi.size()>0 ) {
-							error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+							error.add("1143");
+//							error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 						}
 					
 					} else {
-						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+						error.add("1143");
+//						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 					}
 					
 					
@@ -1806,11 +1866,13 @@ public class PaymentServiceImpl implements PaymentService {
 						List<PaymentDetail> filterEmi = pays.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") && o.getInstallmentMonth().equalsIgnoreCase(paymentInfo.getInstallmentMonth()) && 
 								  						o.getInstallmentPeriod().equalsIgnoreCase(paymentInfo.getInstallmentPeriod()) ).collect(Collectors.toList());
 						if(filterEmi.size()>0 ) {
-							error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+							error.add("1143");
+//							error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 						}
 					
 					} else {
-						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+						error.add("1143");
+//						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 					}
 				}
 				
@@ -1822,15 +1884,18 @@ public class PaymentServiceImpl implements PaymentService {
 				HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
 				if ( StringUtils.isBlank(data.getEndtTypeId()) ) {
 					if( req.getPremium()==null ) {
-						error.add(new Error("01","Premium","Please Enter Premium "));
+						error.add("1144");
+//						error.add(new Error("01","Premium","Please Enter Premium "));
 					} else if ( req.getPremium().compareTo(new BigDecimal("0")) <= 0) {
-						error.add(new Error("01", "Premium", "Please Enter Premium Above Zero"));
+						error.add("1145");
+//						error.add(new Error("01", "Premium", "Please Enter Premium Above Zero"));
 					}
 					if (StringUtils.isNotBlank(req.getEmiYn())) {
 						if (!"Y".equalsIgnoreCase(req.getEmiYn())) {
 							if (data.getOverallPremiumFc().compareTo(req.getPremium()) > 0) {
-								error.add(new Error("01", "Premium",
-										"Required Premium Should Not be Lesser than " + data.getOverallPremiumFc()));
+								error.add("1146");
+//								error.add(new Error("01", "Premium",
+//										"Required Premium Should Not be Lesser than " + data.getOverallPremiumFc()));
 							}
 						}
 					}

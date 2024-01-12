@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.ChangeFinalyzereq;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.EmployeeCountGetReq;
 import com.maan.eway.common.req.NewQuoteReq;
@@ -26,7 +28,9 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.res.GetEmployeeCountRes;
 import com.maan.eway.res.GroupSuminsuredDetailsRes;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
@@ -45,6 +49,12 @@ public class QuoteController {
 	@Autowired
 	private  QuoteService entityService ;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
+	@Autowired
+	private FactorRateRequestDetailsRepository facRateRepo ;
+	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/buypolicy")
 	@ApiOperation(value = "This method is New Quote ")
@@ -52,7 +62,21 @@ public class QuoteController {
 
 		reqPrinter.reqPrint(req);
 		CommonRes res = new CommonRes();
-		List<Error> validation = entityService.validateNewQuoteDetails(req);
+		List<String> validationCodes = entityService.validateNewQuoteDetails(req);
+		
+		List<Error> validation =null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
+			String companyId = covers.size() > 0 ? covers.get(0).getCompanyId()  :"" ;
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(companyId);
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("3");
+			comErrDescReq.setModuleName("BUY POLICY");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			res.setCommonResponse(null);

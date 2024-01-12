@@ -4276,24 +4276,28 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 
 	@Override
-	public List<Error> validateNewQuoteDetails(NewQuoteReq req) {
-		List<Error> error = new ArrayList<Error>();
+	public List<String> validateNewQuoteDetails(NewQuoteReq req) {
+		List<String> error = new ArrayList<String>();
 
 		try {
 			if(StringUtils.isNotBlank(req.getManualReferralYn()) && req.getManualReferralYn().equalsIgnoreCase("Y")) {
 				if( StringUtils.isBlank(req.getReferralRemarks()) ) {
-					error.add(new Error("01", "ManualReferralRemarks", "Please Enter Manual Referral Remarks "));
+					error.add("1147");
+//					error.add(new Error("01", "ManualReferralRemarks", "Please Enter Manual Referral Remarks "));
 				} else if(req.getReferralRemarks().length() > 200 ) {
-					error.add(new Error("01", "ManualReferralRemarks", "Manual Referral Remarks Less Then 200 Charecter Only Allowed"));
+					error.add("1148");
+//					error.add(new Error("01", "ManualReferralRemarks", "Manual Referral Remarks Less Then 200 Charecter Only Allowed"));
 				}
 					
 			}	
 			
 			if(StringUtils.isBlank(req.getRequestReferenceNo() ) ){
-				error.add(new Error("01", "RequestReferenceNo", "Please Enter Request Reference No"));
+				error.add("1149");
+//				error.add(new Error("01", "RequestReferenceNo", "Please Enter Request Reference No"));
 			}
 			if(StringUtils.isBlank(req.getProductId() ) ){
-				error.add(new Error("01", "ProductId", "Please Enter Product Id"));
+				error.add("1150");
+//				error.add(new Error("01", "ProductId", "Please Enter Product Id"));
 			}
 
 			if(StringUtils.isNotBlank(req.getRequestReferenceNo() ) && StringUtils.isNotBlank(req.getProductId() )  ) {
@@ -4325,7 +4329,8 @@ public class QuoteServiceImpl implements QuoteService {
 				 
 				EserviceCustomerDetails custData =  customerDetailsRepo.findByCustomerReferenceNo(custRefno);
 				if( custData==null || custData.getStatus()==null || !"Y".equalsIgnoreCase(custData.getStatus())) {
-					error.add(new Error("01", "Customer", "Customer Is Not Active"));
+					error.add("1151");
+//					error.add(new Error("01", "Customer", "Customer Is Not Active"));
 				}
 				
 			}
@@ -4377,7 +4382,8 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			error.add(new Error("01", "CommonError", e.getMessage() ));
+			error.add("1152");
+//			error.add(new Error("01", "CommonError", e.getMessage() ));
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}

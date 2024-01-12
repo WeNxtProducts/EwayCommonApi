@@ -28,7 +28,7 @@ import com.maan.eway.res.calc.DebitAndCredit;
 
 public interface PaymentService {
 
-	List<Error> validatemakepayment(MakePaymentSaveReq req);
+	List<String> validatemakepayment(MakePaymentSaveReq req);
 
 	MakePaymentRes savemakepayment(MakePaymentSaveReq req);
 
@@ -42,7 +42,7 @@ public interface PaymentService {
 
 	List<PaymentInfoGetRes> viewPaymentInfo(PaymentInfoGetAllReq req);
 
-	List<Error> validatePaymentInsert(PaymentDetailsSaveReq req);
+	List<String> validatePaymentInsert(PaymentDetailsSaveReq req);
 
 	PaymentDetailsSaveRes savePaymentDetails(PaymentDetailsSaveReq req, String string);
 

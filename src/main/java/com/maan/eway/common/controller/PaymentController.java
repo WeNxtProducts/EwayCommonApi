@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.PaymentDetailsSaveReq;
@@ -26,6 +27,7 @@ import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.LoginEncryptResponse;
 import com.maan.eway.common.service.PaymentService;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.common.service.impl.TiraIntegerationServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.SuccessRes;
@@ -48,6 +50,8 @@ public class PaymentController {
 	@Autowired
 	private  TiraIntegerationServiceImpl tiraService;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 	// Payment Details Save
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/makepayment")
@@ -55,7 +59,18 @@ public class PaymentController {
 	public ResponseEntity<CommonRes> makepayment(@RequestBody  MakePaymentSaveReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation =  service.validatemakepayment(req);
+		List<String> validationCodes =  service.validatemakepayment(req);
+		List<Error> validation =null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("6");
+			comErrDescReq.setModuleName("MAKE PAYMENT");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 		//Validation
 		if(validation!=null && validation.size()!=0) {
 			data.setCommonResponse(null);
@@ -86,7 +101,18 @@ public class PaymentController {
 	public ResponseEntity<CommonRes> savePaymentDetails(@RequestBody  PaymentDetailsSaveReq req,@RequestHeader("Authorization") String tokens) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation =  service.validatePaymentInsert(req);
+		List<String> validationCodes =  service.validatePaymentInsert(req);
+		List<Error> validation =null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("22");
+			comErrDescReq.setModuleName("INSERT PAYMENT");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 		//Validation
 		if(validation!=null && validation.size()!=0) {
 			data.setCommonResponse(null);

@@ -81,6 +81,7 @@ import com.maan.eway.common.req.VehicleNeedToRemove;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.NewQuoteRes;
+import com.maan.eway.common.res.PortfolioAdminPendingRes;
 import com.maan.eway.common.res.ProductThreadRes;
 import com.maan.eway.common.res.QuoteThreadRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
@@ -1839,19 +1840,29 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	 public QuoteUpdateRes updateReferralStatus(NewQuoteReq req) {
 			QuoteUpdateRes updateRes = new QuoteUpdateRes();
 			try {
-			
+				// Thread Call Setup To Fetch List From 4 tables
+				List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+				MyTaskList taskList = new MyTaskList(queue);
 				if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
-					
 					//Mail Push Notification
-					updateRes= travelPushNotification(req);
+					NotificationThreadCall travel=new NotificationThreadCall("travelPushNotification",req,em,eserMotRepo,loginUserRepo,eserCustRepo,
+							calcEngine,notiService,eserTraRepo,eserBuildRepo,eserCommonRepo);
+					queue.add(travel);
+//					updateRes= travelPushNotification(req);
 					
 				} else  if( req.getMotorYn().equalsIgnoreCase("M") ) {
 					//Mail Push Notification
-					updateRes= motorPushNotification(req);
+					NotificationThreadCall motor=new NotificationThreadCall("motorPushNotification",req,em,eserMotRepo,loginUserRepo,eserCustRepo,
+							calcEngine,notiService,eserTraRepo,eserBuildRepo,eserCommonRepo);
+					queue.add(motor);
+//					updateRes= motorPushNotification(req);
 					
 				} else if( req.getMotorYn().equalsIgnoreCase("A") ) {
 					//Mail Push Notification
-					updateRes= buildingPushNotification(req);
+					NotificationThreadCall asset=new NotificationThreadCall("assetPushNotification",req,em,eserMotRepo,loginUserRepo,eserCustRepo,
+							calcEngine,notiService,eserTraRepo,eserBuildRepo,eserCommonRepo);
+					queue.add(asset);
+//					updateRes= buildingPushNotification(req);
 				}
 //				else if( req.getProductId().equalsIgnoreCase(personalAccidentProductId)) {
 //					//Mail Push Notification
@@ -1859,9 +1870,48 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 //				}
 				else  {
 					//Mail Push Notification
-					commonPushNotification(req);
+					NotificationThreadCall common=new NotificationThreadCall("commonPushNotification",req,em,eserMotRepo,loginUserRepo,eserCustRepo,
+							calcEngine,notiService,eserTraRepo,eserBuildRepo,eserCommonRepo);
+					queue.add(common);
+//					commonPushNotification(req);
 				}
-				
+				int threadCount = 1;
+				int success = 0;
+				ForkJoinPool forkjoin = new ForkJoinPool(threadCount);
+				ConcurrentLinkedQueue<Future<Object>> invoke = (ConcurrentLinkedQueue<Future<Object>>) forkjoin
+						.invoke(taskList);
+
+				List<QuoteUpdateRes> motorList = new ArrayList<QuoteUpdateRes>();
+				List<QuoteUpdateRes> travelList = new ArrayList<QuoteUpdateRes>();
+				List<QuoteUpdateRes> buildingList = new ArrayList<QuoteUpdateRes>();
+				List<QuoteUpdateRes> humanList = new ArrayList<QuoteUpdateRes>();
+
+				for (Future<Object> callable : invoke) {
+
+					log.info(callable.getClass() + "," + callable.isDone());
+
+					if (callable.isDone()) {
+						Map<String, Object> map = (Map<String, Object>) callable.get();
+
+						for (Entry<String, Object> future : map.entrySet()) {
+
+							if ("motorPushNotification".equalsIgnoreCase(future.getKey())) {
+								motorList = (List<QuoteUpdateRes>) future.getValue();
+
+							} else if ("travelPushNotification".equalsIgnoreCase(future.getKey())) {
+								travelList = (List<QuoteUpdateRes>) future.getValue();
+
+							} else if ("assetPushNotification".equalsIgnoreCase(future.getKey())) {
+								buildingList = (List<QuoteUpdateRes>) future.getValue();
+
+							} else if ("commonPushNotification".equalsIgnoreCase(future.getKey())) {
+								humanList = (List<QuoteUpdateRes>) future.getValue();
+							}
+						}
+
+						success++;
+					}
+				}
 				
 			
 			} catch ( Exception e) {

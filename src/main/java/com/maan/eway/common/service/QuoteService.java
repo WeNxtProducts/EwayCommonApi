@@ -40,7 +40,7 @@ public interface QuoteService {
 
 	QuoteUpdateRes updateQuoteStatus(UpdateQuoteStatusReq req);
 
-	List<Error> validateNewQuoteDetails(NewQuoteReq req);
+	List<String> validateNewQuoteDetails(NewQuoteReq req);
 
 	SuccessRes tracesRemoved(TracesRemovedReq req);
 
