@@ -14,4 +14,6 @@ public interface SelcomPaymentService {
 
 	JsonObject orderStatus(String orderId, String tokens);
 	JsonObject createOrderForPayment(PaymentDetail payment); 
+	
+	JsonObject createOrderMinimal(String merchantRefernceNo);
 }

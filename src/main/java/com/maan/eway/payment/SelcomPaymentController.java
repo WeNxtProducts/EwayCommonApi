@@ -65,4 +65,18 @@ public class SelcomPaymentController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PostMapping("/v1/checkout/create-order-minim/{merchantRefernceNo}")
+	@ApiOperation(value = "This method is to Payment Sava")
+	//@RequestBody
+	public ResponseEntity<JsonObject> createOrderMinimum(@PathVariable("merchantRefernceNo") String merchantRefernceNo) {
+		
+		JsonObject data =service.createOrderMinimal(merchantRefernceNo);
+		if (data != null) {
+			return new ResponseEntity<JsonObject>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}	
+	}
+	
 }
