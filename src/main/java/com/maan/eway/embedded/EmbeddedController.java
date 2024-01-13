@@ -79,4 +79,31 @@ public class EmbeddedController {
 	public InalipaDetailsRes getClaimDetails(@RequestBody ClaimDetailsReq req){
 		return embService.getClaimDetails(req);
 	}
+	
+	@GetMapping("/create/policy/schedule/{quoteNo}")
+	public ResponseEntity<Resource> download(@PathVariable("quoteNo") String quoteNo) throws IOException {
+      
+		byte [] byteArray =Base64.getDecoder().decode(quoteNo);
+		
+		String quote =new String(byteArray);
+		
+		String pdfFilepath= embService.getPolicySchedule(quote);
+		
+		HttpHeaders header = new HttpHeaders();
+	    header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=PolicyDocument.pdf");
+	    header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+	    header.add("Pragma", "no-cache");
+	    header.add("Expires", "0");
+		
+	    File file = new File(pdfFilepath);
+	    
+	    InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+	    return ResponseEntity.ok()
+	            .headers(header)
+	            .contentLength(file.length())
+	            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+	            .body(resource);
+	}
+	
 }

@@ -47,9 +47,11 @@ import com.maan.eway.embedded.request.Inalipa;
 import com.maan.eway.embedded.response.InalipaDetailsRes;
 import com.maan.eway.embedded.response.InalipaDetailsRes1;
 import com.maan.eway.embedded.response.ResponseForInalipa;
+import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.jasper.service.impl.JasperConfiguration;
+import com.maan.eway.jasper.service.impl.JasperServiceImpl;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
 
@@ -70,6 +72,9 @@ public class EmbeddedService {
 	@Autowired
 	private EmbeddedServiceValidator validator;
 	DecimalFormat decimalFormat =new DecimalFormat("#####0.###");
+	
+	@Autowired
+	private JasperServiceImpl jasperserImpl;
 	
 	
 	@Autowired
@@ -405,6 +410,18 @@ public class EmbeddedService {
 		}
 		
 		return null;
+	}
+	public String getPolicySchedule(String quote) {
+		String result="";
+		try {
+			JasperDocumentReq req = new JasperDocumentReq();
+			req.setQuoteNo(quote);
+			JasperDocumentRes documentRes = jasperserImpl.policyform(req);
+			result = documentRes.getPdfoutfilepath();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return StringUtils.isBlank(result)?null:result;
 	}
 
 }
