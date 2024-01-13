@@ -860,6 +860,7 @@ public class SearchServiceImpl implements SearchService {
 		    		dozerMapper.map(fidelityres, data);
 		    		fidelityres.setFidEmpCount(ids.getFidEmpCount());
 		    		fidelityres.setFidEmpSi(ids.getFidEmpSi());
+		    		fidelityres.setOccupationTypeDesc(ids.getOccupationDesc());
 		    		res.setFidelityRisk(fidelityres);		    		
 		    	 }
 		      }
@@ -911,6 +912,7 @@ public class SearchServiceImpl implements SearchService {
 				    		dozerMapper.map(empliability, data);
 				    		empliability.setEmpLiabilitySi(ids.getEmpLiabilitySi());
 				    		empliability.setTotalNoOfEmployees(ids.getTotalNoOfEmployees());	
+				    		empliability.setOccupationTypeDesc(ids.getOccupationDesc());
 				    		res.setEmpLiability(empliability);				    		
 				    	 }
 				  }
