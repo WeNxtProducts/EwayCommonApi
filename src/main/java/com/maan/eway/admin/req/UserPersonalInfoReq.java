@@ -105,4 +105,6 @@ public class UserPersonalInfoReq {
     @JsonProperty("CustomerName")
     private String     customerName;
     
+    @JsonProperty("RegulatoryCode")
+    private String    regulatoryCode;
 }

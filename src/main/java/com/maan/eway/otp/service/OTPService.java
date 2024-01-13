@@ -288,6 +288,7 @@ public class OTPService {
 			personalInformation.setUserName(custotmer.getClientName());
 			personalInformation.setWhatsappCode(custotmer.getWhatsappCode());
 			personalInformation.setWhatsappNo(custotmer.getWhatsappNo());
+			personalInformation.setRegulatoryCode("ICC110");
 			userCreation.setLoginInformation(loginInformation);
 			userCreation.setPersonalInformation(personalInformation);
 			
