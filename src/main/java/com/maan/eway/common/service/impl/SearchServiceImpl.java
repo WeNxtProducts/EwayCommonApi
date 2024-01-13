@@ -862,6 +862,7 @@ public class SearchServiceImpl implements SearchService {
 		    		fidelityres.setFidEmpSi(ids.getFidEmpSi());
 		    		res.setFidelityRisk(fidelityres);		    		
 		    	 }
+		      }
 		    	
 		        if(ids.getSectionId().equalsIgnoreCase("35")) 
 				 {
@@ -874,12 +875,28 @@ public class SearchServiceImpl implements SearchService {
 				    	    
 				    		dozerMapper.map(pares, data);
 				    		pares.setOccupationType(ids.getOccupationType());
-				    		pares.setSumInsured(ids.getPersonalLiabilitySi());	    		
+				    		pares.setSumInsured(ids.getSumInsuredLc ());	    		
 				    		res.setPersonalAccident(pares); 	
 				    		
 				    	 }
 				  }
-		        
+//		        personalLiability
+		        if(ids.getSectionId().equalsIgnoreCase("36")) 
+				 {
+				    	if(commondata.size() > 0) 
+				    	{
+				    		List<EserviceCommonDetails> data = new ArrayList<EserviceCommonDetails>();
+				    		
+				    		AdminViewQuotePersonalAccidentRes pares = new AdminViewQuotePersonalAccidentRes();	    		
+				    	    
+				    	    
+				    		dozerMapper.map(pares, data);
+				    		pares.setOccupationType(ids.getOccupationType());
+				    		pares.setSumInsured(ids.getEmpLiabilitySiLc());	    		
+				    		res.setPersonalLiability(pares);
+				    		
+				    	 }
+				  }
 		        if(ids.getSectionId().equalsIgnoreCase("45")) 
 				 {
 				    	if(commondata.size() > 0) 
@@ -914,7 +931,7 @@ public class SearchServiceImpl implements SearchService {
 				    		res.setPublicLiabilityRisk(publiability);	    		
 				    	 }
 				   }
-		       }
+		       
 		 
 		  }
 		  

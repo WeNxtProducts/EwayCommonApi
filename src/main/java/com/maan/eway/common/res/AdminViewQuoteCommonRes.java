@@ -42,6 +42,9 @@ public class AdminViewQuoteCommonRes {
 	@JsonProperty("PersonalAccident")
 	private AdminViewQuotePersonalAccidentRes personalAccident;
 	
+	@JsonProperty("PersonalLiability")
+	private AdminViewQuotePersonalAccidentRes personalLiability;
+	
 	@JsonProperty("EmpLiability")
 	private AdminViewQuoteEmpLiabilityRes empLiability;
 	
