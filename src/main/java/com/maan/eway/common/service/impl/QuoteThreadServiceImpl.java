@@ -18,6 +18,8 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -41,8 +43,15 @@ import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.BuildingRiskDetails;
@@ -89,6 +98,7 @@ import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
+import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
 import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.notification.req.Broker;
@@ -145,6 +155,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
+	
+	@Value(value = "${ReferralNotiPushLink}")
+	private String referralNotiPushLink;
+	
 	
 	Gson json = new Gson();
 	
@@ -274,7 +288,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private UWReferralHistoryRepository uwReferralHistRepo;
 	
-
+	@Autowired
+	private NotificationThreadServiceImpl notiThreadService;
 	
 	
 	@Override
@@ -309,8 +324,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			 }
 			 // Notification Trigger
 			req.setReferralRemarks(((ReferalResponse) commonRes.getCommonResponse()).getReferalRemarks());
-			 updateReferralStatus(req);
-			 //Tracking Details
+			// Background Call
+			NotificatinThread smwthread=new NotificatinThread(notiThreadService,req,"REFERRAL");
+			Thread th=new Thread(smwthread);
+			th.start();
+			//Tracking Details
 			 trackingDetailsBuyPolicy(req);
 			 return  commonRes ;
 		} else {
@@ -1837,82 +1855,66 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	       
 	 }
 	 
+	 public Object updateReferralStatus(NewQuoteReq NewQuoteReq , String token ) {
+		 	Object PremiaRes = null;
+		try {
+			// Frame Tira Req
+
+			RestTemplate temp = new RestTemplate();
+			HttpHeaders header = new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			// header.setCharset("UTF-8");
+			header.setBearerAuth(token);
+			String url = referralNotiPushLink ;
+			HttpEntity<?> requestent = new HttpEntity<>(NewQuoteReq, header);
+
+			System.out.println(new Date() + " Start " + url);
+			ResponseEntity<Object> postEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}) ;
+			
+			//if(PremiaRes.getStatusCode()==HttpStatus.ACCEPTED) {
+			PremiaRes = postEntity.getBody() ;
+			//}		
+				System.out.println("Premia Response --> "+PremiaRes);
+			System.out.println(new Date() + " End " + url);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return PremiaRes;
+	}
+	 
+	 
+	 
 	 public QuoteUpdateRes updateReferralStatus(NewQuoteReq req) {
 			QuoteUpdateRes updateRes = new QuoteUpdateRes();
 			try {
-				// Thread Call Setup To Fetch List From 4 tables
-				List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
-				MyTaskList taskList = new MyTaskList(queue);
+			
 				if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
 					//Mail Push Notification
-					NotificationThreadCall travel=new NotificationThreadCall("travelPushNotification",req,em,eserMotRepo,loginUserRepo,eserCustRepo,
-							calcEngine,notiService,eserTraRepo,eserBuildRepo,eserCommonRepo);
-					queue.add(travel);
+					
 //					updateRes= travelPushNotification(req);
 					
 				} else  if( req.getMotorYn().equalsIgnoreCase("M") ) {
 					//Mail Push Notification
-					NotificationThreadCall motor=new NotificationThreadCall("motorPushNotification",req,em,eserMotRepo,loginUserRepo,eserCustRepo,
-							calcEngine,notiService,eserTraRepo,eserBuildRepo,eserCommonRepo);
-					queue.add(motor);
+					
 //					updateRes= motorPushNotification(req);
 					
 				} else if( req.getMotorYn().equalsIgnoreCase("A") ) {
 					//Mail Push Notification
-					NotificationThreadCall asset=new NotificationThreadCall("assetPushNotification",req,em,eserMotRepo,loginUserRepo,eserCustRepo,
-							calcEngine,notiService,eserTraRepo,eserBuildRepo,eserCommonRepo);
-					queue.add(asset);
+					
 //					updateRes= buildingPushNotification(req);
 				}
 //				else if( req.getProductId().equalsIgnoreCase(personalAccidentProductId)) {
-//					//Mail Push Notification
-//					personalAccidentPushNotification(req);
+//					
 //				}
 				else  {
 					//Mail Push Notification
-					NotificationThreadCall common=new NotificationThreadCall("commonPushNotification",req,em,eserMotRepo,loginUserRepo,eserCustRepo,
-							calcEngine,notiService,eserTraRepo,eserBuildRepo,eserCommonRepo);
-					queue.add(common);
+					
 //					commonPushNotification(req);
 				}
-				int threadCount = 1;
-				int success = 0;
-				ForkJoinPool forkjoin = new ForkJoinPool(threadCount);
-				ConcurrentLinkedQueue<Future<Object>> invoke = (ConcurrentLinkedQueue<Future<Object>>) forkjoin
-						.invoke(taskList);
-
-				List<QuoteUpdateRes> motorList = new ArrayList<QuoteUpdateRes>();
-				List<QuoteUpdateRes> travelList = new ArrayList<QuoteUpdateRes>();
-				List<QuoteUpdateRes> buildingList = new ArrayList<QuoteUpdateRes>();
-				List<QuoteUpdateRes> humanList = new ArrayList<QuoteUpdateRes>();
-
-				for (Future<Object> callable : invoke) {
-
-					log.info(callable.getClass() + "," + callable.isDone());
-
-					if (callable.isDone()) {
-						Map<String, Object> map = (Map<String, Object>) callable.get();
-
-						for (Entry<String, Object> future : map.entrySet()) {
-
-							if ("motorPushNotification".equalsIgnoreCase(future.getKey())) {
-								motorList = (List<QuoteUpdateRes>) future.getValue();
-
-							} else if ("travelPushNotification".equalsIgnoreCase(future.getKey())) {
-								travelList = (List<QuoteUpdateRes>) future.getValue();
-
-							} else if ("assetPushNotification".equalsIgnoreCase(future.getKey())) {
-								buildingList = (List<QuoteUpdateRes>) future.getValue();
-
-							} else if ("commonPushNotification".equalsIgnoreCase(future.getKey())) {
-								humanList = (List<QuoteUpdateRes>) future.getValue();
-							}
-						}
-
-						success++;
-					}
-				}
-				
+			
 			
 			} catch ( Exception e) {
 				e.printStackTrace();
