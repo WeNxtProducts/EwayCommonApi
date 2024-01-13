@@ -12,6 +12,9 @@ public class AdminViewQuotePersonalAccidentRes {
 	@JsonProperty("OccupationType")
 	private String occupationType;
 	
+	@JsonProperty("OccupationTypeDesc")
+	private String occupationTypeDesc;
+	
 	@JsonProperty("SumInsured")
 	private BigDecimal sumInsured;
 	

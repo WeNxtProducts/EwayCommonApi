@@ -875,6 +875,7 @@ public class SearchServiceImpl implements SearchService {
 				    	    
 				    		dozerMapper.map(pares, data);
 				    		pares.setOccupationType(ids.getOccupationType());
+				    		pares.setOccupationTypeDesc(ids.getOccupationDesc());
 				    		pares.setSumInsured(ids.getSumInsuredLc ());	    		
 				    		res.setPersonalAccident(pares); 	
 				    		
@@ -892,6 +893,7 @@ public class SearchServiceImpl implements SearchService {
 				    	    
 				    		dozerMapper.map(pares, data);
 				    		pares.setOccupationType(ids.getOccupationType());
+				    		pares.setOccupationTypeDesc(ids.getOccupationDesc());
 				    		pares.setSumInsured(ids.getEmpLiabilitySiLc());	    		
 				    		res.setPersonalLiability(pares);
 				    		
