@@ -903,7 +903,7 @@ this.repository = repo;
 					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
 					u.get("userName").alias("userName")  ,
-					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")  ,  l.get("companyId").alias("companyId")    );
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")  ,  l.get("companyId").alias("companyId"),u.get("regulatoryCode").alias("regulatoryCode")  );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

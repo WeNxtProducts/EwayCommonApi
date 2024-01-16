@@ -57,6 +57,7 @@ public class LoginDetailsCriteriaRes {
 	
 	@JsonProperty("CompanyId")
 	private String companyId;
-
 	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 }
