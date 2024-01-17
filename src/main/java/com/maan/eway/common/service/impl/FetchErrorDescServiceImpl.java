@@ -41,7 +41,7 @@ import com.maan.eway.common.res.ErrorGroupRes;
 import com.maan.eway.error.Error;
 
 @Configuration
-@EnableScheduling
+//@EnableScheduling
 public class FetchErrorDescServiceImpl {
 	
 	private Logger log=LogManager.getLogger(FetchErrorDescServiceImpl.class);
@@ -108,12 +108,12 @@ public class FetchErrorDescServiceImpl {
 		return errors ;
 	}
 	
-	@Bean
+/*	@Bean
 	public void loadModule() {
 		loadErrorModule();
 	}
-	
-	@Scheduled(fixedRateString = "60000")//1min
+	*/
+	//@Scheduled(fixedRateString = "60000")//1min
 	public List<ErrorGroupRes> loadErrorModule() {
 		List<ErrorGroupRes>  resList = new ArrayList<ErrorGroupRes>();
 		try {
