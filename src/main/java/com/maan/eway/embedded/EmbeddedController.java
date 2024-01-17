@@ -1,10 +1,8 @@
 package com.maan.eway.embedded;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.embedded.request.ClaimDetailsReq;
 import com.maan.eway.embedded.request.Inalipa;
 import com.maan.eway.embedded.response.InalipaDetailsRes;
@@ -104,6 +103,12 @@ public class EmbeddedController {
 	            .contentLength(file.length())
 	            .contentType(MediaType.APPLICATION_OCTET_STREAM)
 	            .body(resource);
+	}
+	
+	
+	@GetMapping("/create/send/sms/{policyNo}")
+	public QuoteUpdateRes sendSms(@PathVariable("policyNo") String policyNo) {
+		return embService.sendSms(policyNo);
 	}
 	
 }

@@ -3,7 +3,6 @@ package com.maan.eway.embedded.service;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.sql.Connection;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -32,15 +31,20 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.bean.GroupMedicalDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.embedded.request.ClaimDetailsReq;
 import com.maan.eway.embedded.request.Inalipa;
@@ -50,21 +54,24 @@ import com.maan.eway.embedded.response.ResponseForInalipa;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
-import com.maan.eway.jasper.service.impl.JasperConfiguration;
 import com.maan.eway.jasper.service.impl.JasperServiceImpl;
+import com.maan.eway.notification.req.Broker;
+import com.maan.eway.notification.req.Customer;
+import com.maan.eway.notification.req.Notification;
+import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
 
 @Service
 public class EmbeddedService {
+	
+	
+	Logger log =LogManager.getLogger(EmbeddedService.class);
 
 	@Autowired
 	private GenerateSeqNoServiceImpl genNo;
 	@Autowired
 	private RatingFactorsUtil ratingutil;
-	@Autowired
-	private JasperConfiguration config;
-	
 	@Autowired
 	private GroupMedicalDetailsRepository gmdRepo;
 	protected SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
@@ -72,6 +79,11 @@ public class EmbeddedService {
 	@Autowired
 	private EmbeddedServiceValidator validator;
 	DecimalFormat decimalFormat =new DecimalFormat("#####0.###");
+	
+	@Autowired
+	private NotificationService notiService;
+	
+	
 	
 	@Autowired
 	private JasperServiceImpl jasperserImpl;
@@ -91,6 +103,12 @@ public class EmbeddedService {
 	
 	@Autowired
 	private GroupMedicalDetailsRepository groupMedicalRepo;
+	
+	@Autowired
+	private EmbeddedService embeddedService;
+	
+	
+	static Gson printReq = new Gson();
 	
 	public ResponseForInalipa createPolicy(String loginId, Inalipa request) {
 		try {
@@ -279,6 +297,13 @@ public class EmbeddedService {
 								.tax(totalTax)
 								.totalPremium(overallPremium)								
 								.build();
+						
+						Inalipa_Sms_Thread sms_Thread =new Inalipa_Sms_Thread("INALIPA-SMS",encodePolicyNo,embeddedService);
+						Thread thread = new Thread(sms_Thread);
+						thread.setName("INALIPA-SMS-THREAD");
+						thread.setPriority(Thread.MAX_PRIORITY);
+						thread.start();
+						
 						return response;
 					}else {
 
@@ -423,5 +448,83 @@ public class EmbeddedService {
 		}
 		return StringUtils.isBlank(result)?null:result;
 	}
+	
+	public QuoteUpdateRes sendSms(String policyNumber) {
+		QuoteUpdateRes updateRes = new QuoteUpdateRes();
+		try {
+		
+			String policyNo =new String(Base64.getDecoder().decode(policyNumber));
+			
+			log.info("Inlaipa || sendSms || PolicyNumber : "+policyNo+" ");
+			
+			Notification n = new Notification();
+			//Broker Info
+			GroupMedicalDetails groupDetails = groupMedicalRepo.findByPolicyNo(policyNo);
+			Broker brokerReq = new Broker();
+			if(groupDetails!=null) {
+			brokerReq.setBrokerCompanyName("Inalipa");
+			brokerReq.setBrokerMailId("");
+			brokerReq.setBrokerMessengerCode(Integer.valueOf(groupDetails.getMobileCode()));
+			brokerReq.setBrokerMessengerPhone(groupDetails.getMobileNo()==null? BigDecimal.ZERO: new BigDecimal(groupDetails.getMobileNo()));
+			brokerReq.setBrokerPhoneCode(groupDetails.getMobileCode()==null?null:Integer.valueOf((groupDetails.getMobileCode())));
+			brokerReq.setBrokerPhoneNo(groupDetails.getMobileNo()==null?BigDecimal.ZERO:new BigDecimal(groupDetails.getMobileNo()));
+			brokerReq.setBrokerName(groupDetails.getCustomerName());
+			}
+			// Customer Info
+			Customer cusReq = new Customer();
+			if(groupDetails!=null) {
+				cusReq.setCustomerMailid("");
+				cusReq.setCustomerName(groupDetails.getCustomerName());
+				cusReq.setCustomerPhoneCode(Integer.valueOf(groupDetails.getMobileCode()));
+				cusReq.setCustomerPhoneNo(new BigDecimal(groupDetails.getMobileNo()));
+				cusReq.setCustomerMessengerCode(Integer.valueOf(groupDetails.getMobileCode()));
+				cusReq.setCustomerMessengerPhone(new BigDecimal(groupDetails.getMobileNo()));
+			}
 
+			
+			
+			//Company Info
+			n.setCompanyid(groupDetails.getCompanyId());
+			n.setCompanyName("Inalipa");
+			
+			//Common Info
+			n.setBroker(brokerReq);
+			n.setCustomer(cusReq);
+			n.setNotifcationDate(new Date());
+			n.setNotifDescription("");
+			n.setNotifPriority(0);
+			n.setNotifPushedStatus(NotificationStatus.PENDING);
+			n.setNotifTemplatename("POLICY_DOC");
+			n.setPolicyNo(groupDetails.getPolicyNo());
+			n.setProductid(Integer.valueOf(groupDetails.getProductId()));
+			n.setProductName("Motor");
+			n.setQuoteNo(groupDetails.getClientTransactionNo());
+			//n.setSectionName(groupDetails.getSectionId());
+			n.setStatusMessage("");
+			n.setTinyUrl(groupDetails.getPdfPath());
+
+			
+			log.info("Inalipa send sms request || PolicyNo : "+policyNo+"|| "+printReq.toJson(n));
+			
+			// Calling pushNotification
+			CommonRes res=notiService.pushNotification(n);
+			if (res.getIsError()==null) {
+				updateRes.setResponse("Pushed Successfuly");
+				updateRes.setQuoteNo(groupDetails.getClientTransactionNo());
+				updateRes.setCustomerId(groupDetails.getLoginId());
+				updateRes.setRequestReferenceNo(groupDetails.getRequestReferenceNo());
+
+			}
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return updateRes;
+	}
+
+	
+	
 }
