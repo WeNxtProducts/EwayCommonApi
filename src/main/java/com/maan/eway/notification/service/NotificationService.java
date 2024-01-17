@@ -262,7 +262,7 @@ public class NotificationService {
 							.productName(n.getProductName())
 							.sectionName(n.getSectionName())
 							.statusMessage(n.getStatusMessage())
-							.tinyUrl(n.getTinyUrl())
+							.tinyUrl(StringUtils.isBlank(n.getTinyUrl())?"":n.getTinyUrl())
 							.notifPushedStatus(n.getNotifPushedStatus().toString())
 							.companyid(n.getCompanyid())
 							.productid(n.getProductid())
@@ -275,8 +275,8 @@ public class NotificationService {
 							.tinyUrlActive("Y")
 							.tinyGroupId(tinyGroupId)
 							.build();
-					
-					generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
+					if(StringUtils.isBlank(n.getTinyUrl()))
+						generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
 					uws.add(nt);
 				}
 				jobProcess(uws);
@@ -326,6 +326,7 @@ public class NotificationService {
 						.refno(n.getRefNo())
 						.tinyUrlActive("Y")
 						.tinyGroupId(tinyGroupId)
+						.tinyUrl(StringUtils.isBlank(n.getTinyUrl())?"":n.getTinyUrl())
 						.build();
 				if(n.getUnderwriters()!=null) {
 					nt.setUwMailid((n.getUnderwriters().size()>5)?n.getUnderwriters().subList(0, 5).stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")):
@@ -340,7 +341,8 @@ public class NotificationService {
 					nt.setUwSubuserType(n.getUnderwriters().get(0).getUwsubuserType());
 					
 				}
-				generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
+				if(StringUtils.isBlank(n.getTinyUrl()))
+					generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
 				
 				
 				List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
