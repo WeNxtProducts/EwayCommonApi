@@ -156,10 +156,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 	
-	@Value(value = "${ReferralNotiPushLink}")
-	private String referralNotiPushLink;
-	
-	
 	Gson json = new Gson();
 	
 	@PersistenceContext
@@ -1855,7 +1851,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	       
 	 }
 	 
-	 public Object updateReferralStatus(NewQuoteReq NewQuoteReq , String token ) {
+	/* public Object updateReferralStatus(NewQuoteReq NewQuoteReq , String token ) {
 		 	Object PremiaRes = null;
 		try {
 			// Frame Tira Req
@@ -1884,10 +1880,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		}
 		return PremiaRes;
 	}
+	 */
 	 
 	 
-	 
-	 public QuoteUpdateRes updateReferralStatus(NewQuoteReq req) {
+/*	 public QuoteUpdateRes updateReferralStatus(NewQuoteReq req) {
 			QuoteUpdateRes updateRes = new QuoteUpdateRes();
 			try {
 			
@@ -1923,6 +1919,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}
 			return updateRes;
 		}
+		*/
 	// --------------------------------------MOTOR UPDATE REFERRAL STATUS----------------------------------------------------------------------//	
 		private QuoteUpdateRes motorPushNotification(NewQuoteReq req) {
 			QuoteUpdateRes updateRes = new QuoteUpdateRes();
