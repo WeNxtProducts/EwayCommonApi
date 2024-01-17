@@ -449,7 +449,8 @@ public class EmbeddedService {
 		return StringUtils.isBlank(result)?null:result;
 	}
 	
-	public QuoteUpdateRes sendSms(String policyNumber) {
+	public CommonRes sendSms(String policyNumber) {
+		CommonRes res = new CommonRes();
 		QuoteUpdateRes updateRes = new QuoteUpdateRes();
 		try {
 		
@@ -463,7 +464,7 @@ public class EmbeddedService {
 			Broker brokerReq = new Broker();
 			if(groupDetails!=null) {
 			brokerReq.setBrokerCompanyName("Inalipa");
-			brokerReq.setBrokerMailId("");
+			brokerReq.setBrokerMailId("info@alliance.co.tz");
 			brokerReq.setBrokerMessengerCode(Integer.valueOf(groupDetails.getMobileCode()));
 			brokerReq.setBrokerMessengerPhone(groupDetails.getMobileNo()==null? BigDecimal.ZERO: new BigDecimal(groupDetails.getMobileNo()));
 			brokerReq.setBrokerPhoneCode(groupDetails.getMobileCode()==null?null:Integer.valueOf((groupDetails.getMobileCode())));
@@ -473,7 +474,7 @@ public class EmbeddedService {
 			// Customer Info
 			Customer cusReq = new Customer();
 			if(groupDetails!=null) {
-				cusReq.setCustomerMailid("");
+				cusReq.setCustomerMailid("info@alliance.co.tz");
 				cusReq.setCustomerName(groupDetails.getCustomerName());
 				cusReq.setCustomerPhoneCode(Integer.valueOf(groupDetails.getMobileCode()));
 				cusReq.setCustomerPhoneNo(new BigDecimal(groupDetails.getMobileNo()));
@@ -507,7 +508,7 @@ public class EmbeddedService {
 			log.info("Inalipa send sms request || PolicyNo : "+policyNo+"|| "+printReq.toJson(n));
 			
 			// Calling pushNotification
-			CommonRes res=notiService.pushNotification(n);
+			res=notiService.pushNotification(n);
 			if (res.getIsError()==null) {
 				updateRes.setResponse("Pushed Successfuly");
 				updateRes.setQuoteNo(groupDetails.getClientTransactionNo());
@@ -516,13 +517,13 @@ public class EmbeddedService {
 
 			}
 			
-			
+			log.info("Inalipa send sms response || PolicyNo : "+policyNo+"|| "+printReq.toJson(res));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		return updateRes;
+		return res;
 	}
 
 	

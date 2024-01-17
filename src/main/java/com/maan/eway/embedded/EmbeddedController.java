@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.common.res.QuoteUpdateRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.embedded.request.ClaimDetailsReq;
 import com.maan.eway.embedded.request.Inalipa;
 import com.maan.eway.embedded.response.InalipaDetailsRes;
@@ -107,7 +107,7 @@ public class EmbeddedController {
 	
 	
 	@GetMapping("/create/send/sms/{policyNo}")
-	public QuoteUpdateRes sendSms(@PathVariable("policyNo") String policyNo) {
+	public CommonRes sendSms(@PathVariable("policyNo") String policyNo) {
 		return embService.sendSms(policyNo);
 	}
 	

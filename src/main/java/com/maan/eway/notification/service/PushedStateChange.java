@@ -73,7 +73,9 @@ public class PushedStateChange implements  Function<NotifTransactionDetails,List
 							.notifNo(t.get("notifNo")==null?0L:Long.parseLong(t.get("notifNo").toString()))
 							.build();
 					a.add(s);
+					
 				}
+				 
 			}
 			if(master.getMailRequired().equals("Y") ) {
 
@@ -129,8 +131,9 @@ public class PushedStateChange implements  Function<NotifTransactionDetails,List
 							.build();
 					a.add(ml);
 				}
-				return a;
+				
 			}
+			return a;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
