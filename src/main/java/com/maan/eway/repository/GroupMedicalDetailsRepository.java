@@ -43,4 +43,7 @@ public interface GroupMedicalDetailsRepository  extends JpaRepository<GroupMedic
 
 	GroupMedicalDetails findByPolicyNo(String policyNo);
 	
+	@Query(nativeQuery=true,value ="SELECT item_value FROM eway_list_item_value WHERE item_code=?1 AND STATUS='Y'")
+	public String getPlanName(String planId);
+	
 }

@@ -501,7 +501,8 @@ public class EmbeddedService {
 			n.setProductName("Motor");
 			n.setQuoteNo(groupDetails.getClientTransactionNo());
 			//n.setSectionName(groupDetails.getSectionId());
-			n.setStatusMessage("");
+			n.setStatusMessage(DD_MM_YYYY.format(groupDetails.getExpiryDate()));
+			n.setSectionName(groupMedicalRepo.getPlanName(groupDetails.getPlanOpted()));
 			n.setTinyUrl(groupDetails.getPdfPath());
 
 			
@@ -514,7 +515,6 @@ public class EmbeddedService {
 				updateRes.setQuoteNo(groupDetails.getClientTransactionNo());
 				updateRes.setCustomerId(groupDetails.getLoginId());
 				updateRes.setRequestReferenceNo(groupDetails.getRequestReferenceNo());
-
 			}
 			
 			log.info("Inalipa send sms response || PolicyNo : "+policyNo+"|| "+printReq.toJson(res));
