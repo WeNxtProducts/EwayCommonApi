@@ -200,13 +200,13 @@ public class BasicLoginValidationService {
 			}
 			
 			
-//			if( StringUtils.isBlank(personalReq.getUserMail()) ) {
-//				errors.add(new Error("06", "User Mail", "Please Select User Mail"));
-//			} else if (personalReq.getUserMail().length() > 50  ) {
-//				errors.add(new Error("06", "User Mail", "Mail Under Must Be 50 Characters Only Allowed"));
-//			}  else if( isNotValidMail(personalReq.getUserMail()) ){
-//				errors.add(new Error("08", "User Mail", "Please Enter Valid User Mail"));
-//			}
+			if( StringUtils.isBlank(personalReq.getUserMail()) ) {
+				errors.add(new Error("06", "User Mail", "Please Select User Mail"));
+			} else if (personalReq.getUserMail().length() > 50  ) {
+				errors.add(new Error("06", "User Mail", "Mail Under Must Be 50 Characters Only Allowed"));
+			}  else if( isNotValidMail(personalReq.getUserMail()) ){
+				errors.add(new Error("08", "User Mail", "Please Enter Valid User Mail"));
+			}
 			
 			
 			if( StringUtils.isBlank(personalReq.getUserMobile()) ) {
@@ -416,11 +416,11 @@ public class BasicLoginValidationService {
 				errors.add(new Error("13", "ApprovedPreparedBy", "ApprovedPreparedBy Must Be Under 30 Character Only Allowed" ));
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getDesignation())  ) {
-				errors.add(new Error("17", "Designation", "Plese Enter Designation" ));
-			}else if(brokerReq.getDesignation().length()>100 ) {
-				errors.add(new Error("17", "Designation", "Designation Must Be Under 100 Character Only Allowed" ));
-			} 
+//			if(StringUtils.isBlank(brokerReq.getDesignation())  ) {
+//				errors.add(new Error("17", "Designation", "Plese Enter Designation" ));
+//			}else if(brokerReq.getDesignation().length()>100 ) {
+//				errors.add(new Error("17", "Designation", "Designation Must Be Under 100 Character Only Allowed" ));
+//			} 
 			
 			
 			if(StringUtils.isBlank(brokerReq.getFax())  ) {
