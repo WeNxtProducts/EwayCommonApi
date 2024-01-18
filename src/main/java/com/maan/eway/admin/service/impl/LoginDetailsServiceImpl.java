@@ -16,9 +16,11 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -101,6 +103,7 @@ import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.LoginUserInfoArch;
 import com.maan.eway.bean.MenuMaster;
+import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.SeqAgencycode;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.StateMaster;
@@ -110,6 +113,7 @@ import com.maan.eway.common.service.DepositService;
 import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.req.RegionMasterDropDownReq;
 import com.maan.eway.repository.DepositcbcMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
@@ -118,7 +122,9 @@ import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
+import com.maan.eway.repository.RegionMasterRepository;
 import com.maan.eway.repository.SeqAgencycodeRepository;
+import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -129,6 +135,10 @@ import com.maan.eway.res.SuccessRes;
 @Service
 @Transactional
 public class LoginDetailsServiceImpl implements LoginDetailsService {
+	@Autowired
+	private RegionMasterRepository regrepo;
+	@Autowired
+	private StateMasterRepository staterepo;
 
 	@Autowired
 	private LoginMasterRepository loginRepo;
@@ -544,10 +554,22 @@ this.repository = repo;
 			}
 			
 			if((req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")) && StringUtils.isNotBlank(personalReq.getStateCode()) ) {
-				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,personalReq.getStateCode());
-				
-			//	userInfo.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
-				userInfo.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
+				List<Tuple> stateCityNames = null;
+				List<Tuple> cityNames = null;
+				List<RegionMaster> city=null;
+				List<StateMaster> state=null;
+				if(StringUtils.isNotBlank(personalReq.getCountryCode()) && StringUtils.isNotBlank(personalReq.getCityName())) {
+					stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,personalReq.getCityName());
+					state=staterepo.findByStateId(Integer.valueOf(personalReq.getCityName()));
+				}
+				if(StringUtils.isNotBlank(personalReq.getCountryCode()) && StringUtils.isNotBlank(personalReq.getStateCode())) {
+					cityNames = 	getRegionName(personalReq.getCountryCode() ,personalReq.getStateCode());
+					city=regrepo.findByRegionCode(personalReq.getStateCode());
+				}
+//				userInfo.setCityName(cityNames.get(0).get("regionName") == null ? "" :  cityNames.get(0).get("regionName").toString());
+				userInfo.setCityName( city.get(0).getRegionName() == null ? "" :  city.get(0).getRegionName());
+				userInfo.setCityName( state.get(0).getStateName() == null ? "" : state.get(0).getStateName() );
+//				userInfo.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
 				//userInfo.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());
 			}
 			 
@@ -600,6 +622,61 @@ this.repository = repo;
 	        }
 	       
 	    }
+	 
+	 public List<Tuple> getRegionName( String countryId , String cityCode  ) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				Date todayEnd = cal.getTime();
+
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				// Find All
+				Root<RegionMaster> c = query.from(RegionMaster.class);
+
+				// Select
+				query.multiselect( c.get("regionName").alias("regionName")  );
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(c.get("regionName")));
+
+				// AmendId Max Filter
+				Subquery<Long> amendId = query.subquery(Long.class);
+				Root<RegionMaster> ocpm1 = amendId.from(RegionMaster.class);
+				amendId.select(cb.max(ocpm1.get("amendId")));
+				javax.persistence.criteria.Predicate a1 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode") );
+				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				amendId.where(a1,a3);
+			
+				
+			    // Where	
+			
+				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
+				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("regionCode"),cityCode) ;
+				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"),countryId) ;
+				query.where(n1 ,n2,n3).orderBy(orderList);
+				// Get Result
+				TypedQuery<Tuple> result = em.createQuery(query);
+				list = result.getResultList();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return list;
+		}
+
 	
 	 public List<Tuple> getStateAndCityName(String countryId , String stateId  ) {
 			List<Tuple> list = new ArrayList<Tuple>();
@@ -620,7 +697,7 @@ this.repository = repo;
 				
 				// Select
 				query.multiselect( s.get("stateName").alias("stateName")  );
-				Predicate s1 = cb.equal(s.get("stateId"), stateId);
+				Predicate s1 = cb.equal(s.get("regionCode"), stateId);
 				Predicate s2 = cb.equal(s.get("countryId"),countryId);
 				Predicate s4 = cb.equal(s.get("amendId"), amendId2);
 				

@@ -463,11 +463,11 @@ public class BasicLoginValidationService {
 //			}
 			
 			
-			if(StringUtils.isBlank(brokerReq.getPobox())  ) {
-				errors.add(new Error("25", "Post Box No", "Plese Enter Post Box No" ));
-			} else if(! brokerReq.getPobox().matches("[0-9]+")  ) {
-				errors.add(new Error("25", "Post Box No", "Plese Enter Valid Number In Post Box No" ));
-			}
+//			if(StringUtils.isBlank(brokerReq.getPobox())  ) {
+//				errors.add(new Error("25", "Post Box No", "Plese Enter Post Box No" ));
+//			} else if(! brokerReq.getPobox().matches("[0-9]+")  ) {
+//				errors.add(new Error("25", "Post Box No", "Plese Enter Valid Number In Post Box No" ));
+//			}
 			
 //			if(StringUtils.isBlank(brokerReq.getRemarks())  ) {
 //				errors.add(new Error("26", "Remarks", "Plese Enter Remarks" ));

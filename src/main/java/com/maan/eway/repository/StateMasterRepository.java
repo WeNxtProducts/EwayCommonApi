@@ -14,6 +14,7 @@ package com.maan.eway.repository;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -36,6 +37,9 @@ public interface StateMasterRepository  extends JpaRepository<StateMaster,StateM
 
 	Long countByStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer valueOf, String valueOf2,
 			String string, Date today);
+
+
+	List<StateMaster> findByStateId(Integer cityName);
 
 
 

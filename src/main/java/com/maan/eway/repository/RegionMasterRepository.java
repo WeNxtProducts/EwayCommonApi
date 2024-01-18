@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.RegionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,6 +30,10 @@ import com.maan.eway.bean.RegionMasterId;
  
  
 public interface RegionMasterRepository  extends JpaRepository<RegionMaster,RegionMasterId > , JpaSpecificationExecutor<RegionMaster> {
+
+
+
+	List<RegionMaster> findByRegionCode(String stateCode);
 
 
 
