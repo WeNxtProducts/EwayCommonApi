@@ -563,9 +563,9 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 			errors.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 		}
 		
-		if (StringUtils.isBlank(req.getRemarks())) {
-			errors.add(new Error("03", "Remarks", "Plese Enter Remarks"));
-		}
+//		if (StringUtils.isBlank(req.getRemarks())) {
+//			errors.add(new Error("03", "Remarks", "Plese Enter Remarks"));
+//		}
 		Calendar cal = new GregorianCalendar();
 		Date today = new Date();
 		cal.setTime(today);

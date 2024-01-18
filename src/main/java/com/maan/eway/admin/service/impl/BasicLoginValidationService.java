@@ -200,13 +200,13 @@ public class BasicLoginValidationService {
 			}
 			
 			
-			if( StringUtils.isBlank(personalReq.getUserMail()) ) {
-				errors.add(new Error("06", "User Mail", "Please Select User Mail"));
-			} else if (personalReq.getUserMail().length() > 50  ) {
-				errors.add(new Error("06", "User Mail", "Mail Under Must Be 50 Characters Only Allowed"));
-			}  else if( isNotValidMail(personalReq.getUserMail()) ){
-				errors.add(new Error("08", "User Mail", "Please Enter Valid User Mail"));
-			}
+//			if( StringUtils.isBlank(personalReq.getUserMail()) ) {
+//				errors.add(new Error("06", "User Mail", "Please Select User Mail"));
+//			} else if (personalReq.getUserMail().length() > 50  ) {
+//				errors.add(new Error("06", "User Mail", "Mail Under Must Be 50 Characters Only Allowed"));
+//			}  else if( isNotValidMail(personalReq.getUserMail()) ){
+//				errors.add(new Error("08", "User Mail", "Please Enter Valid User Mail"));
+//			}
 			
 			
 			if( StringUtils.isBlank(personalReq.getUserMobile()) ) {
@@ -226,10 +226,15 @@ public class BasicLoginValidationService {
 //				errors.add(new Error("08", "User Name ", "Please Enter Valid User Name"));
 //			} 
 			 
+//			if( StringUtils.isBlank(personalReq.getCityName()) ) {
+//				errors.add(new Error("09", "City Name", "Please Enter City Name"));
+//			} else if (personalReq.getCityName().length() > 100 ) {
+//				errors.add(new Error("09", "City Name ", "City Name Must Be Under 100 Characters Only Allowed"));
+//			}
 			if( StringUtils.isBlank(personalReq.getCityName()) ) {
-				errors.add(new Error("09", "City Name", "Please Enter City Name"));
+				errors.add(new Error("09", "District", "Please Enter District"));
 			} else if (personalReq.getCityName().length() > 100 ) {
-				errors.add(new Error("09", "City Name ", "City Name Must Be Under 100 Characters Only Allowed"));
+				errors.add(new Error("09", "District ", "District Must Be Under 100 Characters Only Allowed"));
 			}
 			
 			
@@ -387,23 +392,23 @@ public class BasicLoginValidationService {
 				errors.add(new Error("09", "Ac Excutive Id", "Plese Enter Valid Number AcExcutiveId" ));
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getAddress1())  ) {
-				errors.add(new Error("10", "Address1", "Plese Enter Address1" ));
-			} else if(brokerReq.getAddress1().length()>100 ) {
-				errors.add(new Error("10", "Address1", "Address1 Must Be Under 100 Character Only Allowed" ));
-			}
-			
-			if(StringUtils.isBlank(brokerReq.getAddress2())  ) {
-				errors.add(new Error("11", "Address2", "Plese Enter Address2" ));
-			} else if(brokerReq.getAddress2().length()>100 ) {
-				errors.add(new Error("11", "Address2", "Address2 Must Be Under 100 Character Only Allowed" ));
-			}
-			
-			if(StringUtils.isBlank(brokerReq.getAddress3())  ) {
-				errors.add(new Error("12", "Address3", "Plese Enter Address3" ));
-			} else if(brokerReq.getAddress3().length()>100 ) {
-				errors.add(new Error("12", "Address3", "Address3 Must Be Under 100 Character Only Allowed" ));
-			}
+//			if(StringUtils.isBlank(brokerReq.getAddress1())  ) {
+//				errors.add(new Error("10", "Address1", "Plese Enter Address1" ));
+//			} else if(brokerReq.getAddress1().length()>100 ) {
+//				errors.add(new Error("10", "Address1", "Address1 Must Be Under 100 Character Only Allowed" ));
+//			}
+//			
+//			if(StringUtils.isBlank(brokerReq.getAddress2())  ) {
+//				errors.add(new Error("11", "Address2", "Plese Enter Address2" ));
+//			} else if(brokerReq.getAddress2().length()>100 ) {
+//				errors.add(new Error("11", "Address2", "Address2 Must Be Under 100 Character Only Allowed" ));
+//			}
+//			
+//			if(StringUtils.isBlank(brokerReq.getAddress3())  ) {
+//				errors.add(new Error("12", "Address3", "Plese Enter Address3" ));
+//			} else if(brokerReq.getAddress3().length()>100 ) {
+//				errors.add(new Error("12", "Address3", "Address3 Must Be Under 100 Character Only Allowed" ));
+//			}
 			
 			if(StringUtils.isBlank(brokerReq.getApprovedPreparedBy())  ) {
 				errors.add(new Error("13", "ApprovedPreparedBy", "Plese Enter Approved Prepared By" ));
@@ -464,11 +469,11 @@ public class BasicLoginValidationService {
 				errors.add(new Error("25", "Post Box No", "Plese Enter Valid Number In Post Box No" ));
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getRemarks())  ) {
-				errors.add(new Error("26", "Remarks", "Plese Enter Remarks" ));
-			} else if(brokerReq.getRemarks().length()>100  ) {
-				errors.add(new Error("26", "Remarks", "Remarks Must Be Under 100 Characters Only Allowed" ));
-			}
+//			if(StringUtils.isBlank(brokerReq.getRemarks())  ) {
+//				errors.add(new Error("26", "Remarks", "Plese Enter Remarks" ));
+//			} else if(brokerReq.getRemarks().length()>100  ) {
+//				errors.add(new Error("26", "Remarks", "Remarks Must Be Under 100 Characters Only Allowed" ));
+//			}
 			
 			if(StringUtils.isBlank(brokerReq.getCoreAppBrokerCode())  ) {
 				errors.add(new Error("27", "CoreAppBrokerCode", "Plese Enter CoreAppBrokerCode" ));
@@ -542,31 +547,31 @@ public class BasicLoginValidationService {
 			} 
 			
 			
-			if(StringUtils.isBlank(brokerReq.getWhatsappCode())  ) {
-				errors.add(new Error("29", "WhatsappCode", "Plese Select WhatsappCode" ));
-			} 
+//			if(StringUtils.isBlank(brokerReq.getWhatsappCode())  ) {
+//				errors.add(new Error("29", "WhatsappCode", "Plese Select WhatsappCode" ));
+//			} 
+//			
+//			if(StringUtils.isBlank(brokerReq.getWhatsappNo())  ) {
+//				errors.add(new Error("29", "WhatsappNo", "Plese Enter WhatsappNo" ));
+//			} else if(! brokerReq.getWhatsappNo().matches("[0-9]+")  ) {
+//				errors.add(new Error("29", "WhatsappNo", "Plese Enter Valid Number in WhatsappNo" ));
+//			} else if(brokerReq.getWhatsappNo().length()>20  ) {
+//				errors.add(new Error("29", "WhatsappNo", "WhatsappNo Must Be Under 20 Characters Only Allowed" ));
+//			}
 			
-			if(StringUtils.isBlank(brokerReq.getWhatsappNo())  ) {
-				errors.add(new Error("29", "WhatsappNo", "Plese Enter WhatsappNo" ));
-			} else if(! brokerReq.getWhatsappNo().matches("[0-9]+")  ) {
-				errors.add(new Error("29", "WhatsappNo", "Plese Enter Valid Number in WhatsappNo" ));
-			} else if(brokerReq.getWhatsappNo().length()>20  ) {
-				errors.add(new Error("29", "WhatsappNo", "WhatsappNo Must Be Under 20 Characters Only Allowed" ));
-			}
 			
-			
-			if(StringUtils.isBlank(brokerReq.getCityName())  ) {
-				errors.add(new Error("30", "City Name", "Plese Enter City Name" ));
-			}
+//			if(StringUtils.isBlank(brokerReq.getCityName())  ) {
+//				errors.add(new Error("30", "City Name", "Plese Enter City Name" ));
+//			}
 			if(StringUtils.isBlank(brokerReq.getUserName())  ) {
 				errors.add(new Error("31", "Broker Name", "Plese Enter Broker Name" ));
 			}
 			else if(brokerReq.getUserName().length()>500)   {
 				errors.add(new Error("31", "Broker Name", "Plese Enter Broker Name within 50 Characters" ));
 			}
-			if(StringUtils.isBlank(brokerReq.getUserMail())  ) {
-				errors.add(new Error("32", "User Mail", "Plese Enter User Mail" ));
-			}
+//			if(StringUtils.isBlank(brokerReq.getUserMail())  ) {
+//				errors.add(new Error("32", "User Mail", "Plese Enter User Mail" ));
+//			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();

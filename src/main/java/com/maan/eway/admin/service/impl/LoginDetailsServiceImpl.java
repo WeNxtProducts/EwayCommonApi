@@ -519,12 +519,17 @@ this.repository = repo;
 			userInfo.setStateCode(StringUtils.isBlank(personalReq.getStateCode())?null:Integer.valueOf(personalReq.getStateCode()));
 			userInfo.setTaxExemptedYn(StringUtils.isBlank(personalReq.getTaxExemptedYn())?"N":personalReq.getTaxExemptedYn() );
 			userInfo.setCreditLimit(StringUtils.isBlank(personalReq.getCreditLimit())?BigDecimal.ZERO : new BigDecimal(personalReq.getCreditLimit()) );
-			
+			userInfo.setAddress1(StringUtils.isBlank(personalReq.getAddress1())?null:personalReq.getAddress1());
+			userInfo.setAddress2(StringUtils.isBlank(personalReq.getAddress2())?null:personalReq.getAddress2());
+			userInfo.setAddress3(StringUtils.isBlank(personalReq.getAddress3())?null:personalReq.getAddress3());
 			//userInfo.setCityCode(Integer.valueOf(personalReq.getCityCode()));
 			userInfo.setCityName(personalReq.getCityName());
 			userInfo.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : personalReq.getMobileCode()); // mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			userInfo.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : personalReq.getWhatsappCode());// mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
-			
+			userInfo.setWhatsappNo(StringUtils.isBlank(personalReq.getWhatsappNo()) ? "" :personalReq.getWhatsappNo());
+			userInfo.setContactPersonName(StringUtils.isBlank(personalReq.getContactPersonName()) ? "" :personalReq.getContactPersonName());
+			userInfo.setRemarks(StringUtils.isBlank(personalReq.getRemarks()) ? "" :personalReq.getRemarks());
+			userInfo.setUserMail(StringUtils.isBlank(personalReq.getUserMail()) ? "" :personalReq.getUserMail());
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				userInfo.setOaCode(saveLogin.getOaCode().toString());
 				userInfo.setAgencyCode(saveLogin.getAgencyCode());
