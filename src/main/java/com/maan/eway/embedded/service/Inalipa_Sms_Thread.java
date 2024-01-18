@@ -28,7 +28,7 @@ public class Inalipa_Sms_Thread implements Runnable{
 	@Override
 	public void run() {
 		
-		if("type".equalsIgnoreCase("INALIPA-SMS")) {
+		if(type.equalsIgnoreCase("INALIPA-SMS")) {
 			
 			log.info("Inalipa send sms block start : "+policyNo);
 			
