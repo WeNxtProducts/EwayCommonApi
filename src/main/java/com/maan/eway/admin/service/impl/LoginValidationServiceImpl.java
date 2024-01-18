@@ -6,6 +6,15 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +46,8 @@ import com.maan.eway.admin.req.IssuerPersonalInfoReq;
 import com.maan.eway.admin.req.LoginBranchesSaveReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.service.LoginValidationService;
+import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.error.Error;
@@ -56,6 +67,9 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 	
 	@Autowired
 	private LoginBranchMasterRepository  loginBranchRepo ;
+	
+	@PersistenceContext
+	private EntityManager em;
 	
 //*************************************** Login Creation Apis Validations**********************************************************//
 	
@@ -484,6 +498,18 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 		
 		if (StringUtils.isBlank(req.getBranchCode())) {
 			errors.add(new Error("03", "BranchCode", "Plese Enter BranchCode"));
+			
+		}  else if ( StringUtils.isBlank(req.getBrokerBranchCode()) && StringUtils.isNotBlank(req.getSalePointCode()) && StringUtils.isNotBlank(req.getLoginId()) ) {
+			List<LoginBranchMaster> list = getSalePointExistDetails(req.getSalePointCode() , req.getLoginId());
+			if (list.size()>0 ) {
+				errors.add(new Error("01", "SalePointCode", "This Company Sale Point Code Exist "));
+			}
+		} else if(  StringUtils.isNotBlank(req.getBrokerBranchCode())&& StringUtils.isNotBlank(req.getSalePointCode()) && StringUtils.isNotBlank(req.getLoginId()) ) {
+			List<LoginBranchMaster> list =  getSalePointExistDetails(req.getSalePointCode() ,req.getLoginId() );
+			if (list.size()>0 &&  (! req.getBrokerBranchCode().equalsIgnoreCase(list.get(0).getBrokerBranchCode().toString())) ) {
+				errors.add(new Error("01", "SalePointCode", "This Sale Point Code  Already Exist "));
+			}
+
 		}
 		
 		if (StringUtils.isBlank(req.getBranchType())) {
@@ -507,9 +533,23 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 //			errors.add(new Error("03", "BrokerBranchCode", "Plese Enter BrokerBranchCode"));
 //		}
 		
-//		if (StringUtils.isBlank(req.getBrokerBranchName())) {
-//			errors.add(new Error("03", "BrokerBranchName", "Plese Enter BrokerBranchName"));
-//		}
+		if (StringUtils.isBlank(req.getBrokerBranchName())) {
+			errors.add(new Error("03", "BranchName", "Plese Select Branch Name"));
+	
+		} else if (StringUtils.isBlank(req.getBrokerBranchCode()) &&  StringUtils.isNotBlank(req.getLoginId()) ) {
+			List<LoginBranchMaster> list = getBrokerBranchNameExistDetails(req.getBrokerBranchName() , req.getLoginId());
+			if (list.size()>0 ) {
+				errors.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+			}
+		} else if(  StringUtils.isNotBlank(req.getLoginId())) {
+			List<LoginBranchMaster> list =  getBrokerBranchNameExistDetails(req.getBrokerBranchName() ,req.getLoginId() );
+			if (list.size()>0 &&  (! req.getBrokerBranchCode().equalsIgnoreCase(list.get(0).getBrokerBranchCode().toString())) ) {
+				errors.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+			}
+
+		}
+		
+		
 //		if(StringUtils.isBlank(req.getAttachedCompany()) ) {
 //			errors.add(new Error("03", "AttachedComapany", "Plese Enter AttachedComapany" ));
 //		}
@@ -548,6 +588,90 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 	return errors;
 }
 
+public List<LoginBranchMaster> getBrokerBranchNameExistDetails(String brokerBranchName , String loginId ) {
+	List<LoginBranchMaster> list = new ArrayList<LoginBranchMaster>();
+	try {
+		Date today = new Date();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<LoginBranchMaster> query = cb.createQuery(LoginBranchMaster.class);
+
+		// Find All
+		Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
+
+		// Select
+		query.select(b);
+
+//		// Effective Date Max Filter
+//		Subquery<Long> amendId = query.subquery(Long.class);
+//		Root<LoginBranchMaster> ocpm1 = amendId.from(LoginBranchMaster.class);
+//		amendId.select(cb.max(ocpm1.get("amendId")));
+//		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+//		Predicate a2 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+//		Predicate a3 = cb.equal(ocpm1.get("brokerBranchCode"), b.get("brokerBranchCode"));
+//		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+//		Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+//		amendId.where(a1,a2,a3,a4,a5);
+
+	//	Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(cb.lower( b.get("brokerBranchName")), brokerBranchName.toLowerCase());
+		Predicate n3 = cb.equal(cb.lower( b.get("loginId")), loginId);
+		query.where(n2,n3);
+		
+		// Get Result
+		TypedQuery<LoginBranchMaster> result = em.createQuery(query);
+		list = result.getResultList();		
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return list;
+}
+
+
+public List<LoginBranchMaster> getSalePointExistDetails(String spCode , String loginId ) {
+	List<LoginBranchMaster> list = new ArrayList<LoginBranchMaster>();
+	try {
+		Date today = new Date();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<LoginBranchMaster> query = cb.createQuery(LoginBranchMaster.class);
+
+		// Find All
+		Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
+
+		// Select
+		query.select(b);
+
+//		// Effective Date Max Filter
+//		Subquery<Long> amendId = query.subquery(Long.class);
+//		Root<LoginBranchMaster> ocpm1 = amendId.from(LoginBranchMaster.class);
+//		amendId.select(cb.max(ocpm1.get("amendId")));
+//		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+//		Predicate a2 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+//		Predicate a3 = cb.equal(ocpm1.get("brokerBranchCode"), b.get("brokerBranchCode"));
+//		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+//		Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+//		amendId.where(a1,a2,a3,a4,a5);
+
+	//	Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n3 = cb.equal(b.get("salePointCode"),spCode );
+		Predicate n4 = cb.equal(cb.lower( b.get("loginId")), loginId);
+		query.where(n3,n4);
+		
+		// Get Result
+		TypedQuery<LoginBranchMaster> result = em.createQuery(query);
+		list = result.getResultList();		
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return list;
+}
 
 @Override
 public List<Error> validateLoginBranches(LoginBranchesSaveReq req) {

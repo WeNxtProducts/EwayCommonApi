@@ -108,11 +108,12 @@ public class FetchErrorDescServiceImpl {
 		return errors ;
 	}
 	
-/*	@Bean
+	@Bean
 	public void loadModule() {
 		loadErrorModule();
 	}
-	*/
+
+
 	//@Scheduled(fixedRateString = "60000")//1min
 	public List<ErrorGroupRes> loadErrorModule() {
 		List<ErrorGroupRes>  resList = new ArrayList<ErrorGroupRes>();
