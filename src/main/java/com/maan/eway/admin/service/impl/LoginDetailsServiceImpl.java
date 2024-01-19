@@ -1360,7 +1360,7 @@ this.repository = repo;
 			BrokerPersonalDetailsGetRes personalInfo = new BrokerPersonalDetailsGetRes();
 			personalInfo = dozerMapper.map(userData, BrokerPersonalDetailsGetRes.class);
 			personalInfo.setCreditLimit(userData.getCreditLimit()!=null ?  df.format(userData.getCreditLimit()) : "");
-			
+			personalInfo.setCityCode(userData.getCityCode()==null?"":userData.getCityCode().toString());
 			//Deposit Cbc Master
 			List<DepositcbcMaster> depoCbcList= depositcbcRepo.findByBrokerId(loginData.getAgencyCode());
 			List<BrokerDepositCbcDetailsGetRes> depoReslist =new ArrayList<BrokerDepositCbcDetailsGetRes>();
