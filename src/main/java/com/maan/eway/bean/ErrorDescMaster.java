@@ -93,4 +93,13 @@ public class ErrorDescMaster implements Serializable{
 	@Column(name="UPDATED_DATE")
 	private Date updatedDate;
 	
+	@Column(name="LOCAL_LANGUAGE_DESC")
+	private String localLanguageDesc;
+	
+	@Column(name="LANGUAGE")
+	private String language;
+	
+	@Column(name="LOCAL_LANG_ERROR_FIELD")
+	private String localLangErrorField;
+	
 }
