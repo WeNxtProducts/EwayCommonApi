@@ -526,6 +526,7 @@ this.repository = repo;
 			userInfo.setUpdatedBy(loginReq.getCreatedBy());
 			userInfo.setStatus(saveLogin.getStatus());
 			userInfo.setCountryCode(personalReq.getCountryCode());
+			userInfo.setCityCode(StringUtils.isBlank(personalReq.getCityName())?null:Integer.valueOf(personalReq.getCityName()));
 			userInfo.setStateCode(StringUtils.isBlank(personalReq.getStateCode())?null:Integer.valueOf(personalReq.getStateCode()));
 			userInfo.setTaxExemptedYn(StringUtils.isBlank(personalReq.getTaxExemptedYn())?"N":personalReq.getTaxExemptedYn() );
 			userInfo.setCreditLimit(StringUtils.isBlank(personalReq.getCreditLimit())?BigDecimal.ZERO : new BigDecimal(personalReq.getCreditLimit()) );
@@ -568,7 +569,7 @@ this.repository = repo;
 				}
 //				userInfo.setCityName(cityNames.get(0).get("regionName") == null ? "" :  cityNames.get(0).get("regionName").toString());
 				userInfo.setCityName( city.get(0).getRegionName() == null ? "" :  city.get(0).getRegionName());
-				userInfo.setCityName( state.get(0).getStateName() == null ? "" : state.get(0).getStateName() );
+				userInfo.setStateName( state.get(0).getStateName() == null ? "" : state.get(0).getStateName() );
 //				userInfo.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
 				//userInfo.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());
 			}
