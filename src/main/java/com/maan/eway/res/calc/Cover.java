@@ -198,6 +198,9 @@ public class Cover implements Serializable{
 				  
 				  @JsonProperty("PolicyPeriod")
 				  private BigDecimal policyPeriod;
+				  
+				  @JsonProperty("IsTaxExcempted")
+				  private String isTaxExcempted;
 }
 
 
