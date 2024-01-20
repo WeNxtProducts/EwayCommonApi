@@ -625,6 +625,8 @@ private static final long serialVersionUID = 1L;
      @Column(name="OWNER_CATEGORY_ID", length=20)
      private String     ownerCategoryId ;
 
+     @Column(name="OWNER_NAME", length=20)
+     private String     ownerName ;
 }
 
 
