@@ -10,6 +10,7 @@ import javax.persistence.Tuple;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.maan.eway.res.calc.CoverException;
 import com.maan.eway.res.calc.Discount;
 
 public class DiscountCalculator   implements Consumer<Discount> {
@@ -36,7 +37,22 @@ public class DiscountCalculator   implements Consumer<Discount> {
 		 t.setDiscountAmount(BigDecimal.ZERO);
 		 if("F".equals(t.getDiscountCalcType())) {
 			 List<Tuple> factors = calc.LoadFactorRates(calc.engine, t.getDiscountId(),t.getFactorTypeId(),calc.engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
-			 Tuple tuple = factors.get(0);
+			 
+			 Tuple tuple = null;
+			 try {
+				 tuple=factors.get(0);
+			 }catch (Exception e) {
+				// TODO: handle exception
+				
+				CoverException build = CoverException.builder().message("No factor found")
+				.isError(true).build();
+				 throw build;
+				 /*t.setIsReferral("Y");
+				 t.setReferalDescription("No factor found Referral for "+t.getCoverDesc());
+				 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
+				 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);*/
+			}
+			 tuple = factors.get(0);
 			 calctype=tuple.get("calcType").toString();
 			 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
 			 String minPremium=tuple.get("minPremium")==null?"0":tuple.get("minPremium").toString();
