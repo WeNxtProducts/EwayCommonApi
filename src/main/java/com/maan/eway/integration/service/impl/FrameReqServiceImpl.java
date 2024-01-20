@@ -189,17 +189,21 @@ public class FrameReqServiceImpl implements FrameReqService {
 				saveData=dozerMapper.map(data1, MotCommDiscountDetail.class);
 				saveData.setPWsResponseType(res1.getResponse());
 				saveData.setPWsError("");
+				saveData.setCommercialDiscount(data1.getCommercialDiscount()==null?"0":data1.getCommercialDiscount().toString());
 //				list.add(saveData);
 			}
 			motComRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(MotCommDiscountDetail data1:list) {
 				saveData=dozerMapper.map(data1, MotCommDiscountDetail.class);
 				saveData.setPWsResponseType(res1.getResponse());
 				saveData.setPWsError(res1.getErrorMessage());
+				saveData.setCommercialDiscount(data1.getCommercialDiscount()==null?"0":data1.getCommercialDiscount().toString());
 //				list.add(saveData);
 			}
 			motComRepo.saveAndFlush(saveData);
+		}
 		}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -247,6 +251,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 			motDrivDetailsRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(MotDriverDetail data1:list) {
 				saveData=dozerMapper.map(data1, MotDriverDetail.class);
 				saveData.setPWsResponseType(res1.getResponse());
@@ -254,6 +259,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 //				list.add(saveData);
 			}
 			motDrivDetailsRepo.saveAndFlush(saveData);
+		}
 		}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -301,6 +307,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 			yiCoverDetailRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(YiCoverDetail data1:list) {
 				saveData=dozerMapper.map(data1, YiCoverDetail.class);
 				saveData.setPWsResponseType(res1.getResponse());
@@ -308,6 +315,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 //				list.add(saveData);
 			}
 			yiCoverDetailRepo.saveAndFlush(saveData);
+		}
 		}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -354,15 +362,16 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 			yiChargeDetailRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(YiChargeDetail data1:list) {
 				saveData=dozerMapper.map(data1, YiChargeDetail.class);
 				saveData.setPWsResponseType(res1.getResponse());
 				saveData.setPWsError(res1.getErrorMessage());
-				list.add(saveData);
+//				list.add(saveData);
 			}
-			yiChargeDetailRepo.saveAllAndFlush(list);
+			yiChargeDetailRepo.saveAndFlush(saveData);
 		}
-
+		}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -409,6 +418,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 			yiPolicyReo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(YiPolicyDetail data:list) {
 				saveData=dozerMapper.map(data, YiPolicyDetail.class);
 				saveData.setPWsResponseType(res1.getResponse());
@@ -416,6 +426,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 //				list.add(saveData);
 				}
 				yiPolicyReo.saveAndFlush(saveData);
+		}
 		}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -465,6 +476,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 			creditRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(CreditLimitDetail data1:list) {
 				saveData=dozerMapper.map(data1, CreditLimitDetail.class);
 				saveData.setPWsResponseType(res1.getResponse());
@@ -472,6 +484,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 //				list.add(saveData);
 			}
 			creditRepo.saveAndFlush(saveData);
+		}
 		}
 			
 		
@@ -523,6 +536,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 				}
 			yipolicyRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(YiPolicyApproval data1:list) {
 				saveData=dozerMapper.map(data1, YiPolicyApproval.class);
 				saveData.setPWsResponseType(res1.getResponse());
@@ -530,6 +544,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 //				list.add(saveData);
 			}
 		yipolicyRepo.saveAndFlush(saveData);
+		}
 		}
 
 	
@@ -580,6 +595,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 		yipremRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(YiPremCal data1:list) {
 				saveData=dozerMapper.map(data1, YiPremCal.class);
 				saveData.setPWsResponseType(res1.getResponse());
@@ -588,7 +604,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 		yipremRepo.saveAndFlush(saveData);
 		}
-	
+		}
 		}catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -636,6 +652,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 		yivatRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(YiVatDetail data1:list) {
 				saveData=dozerMapper.map(data1, YiVatDetail.class);
 				saveData.setPWsResponseType(res1.getResponse());
@@ -644,7 +661,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 		yivatRepo.saveAndFlush(saveData);
 		}
-
+		}
 	
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -693,6 +710,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 		yisecRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(YiSectionDetail data1:list) {
 				saveData=dozerMapper.map(data1, YiSectionDetail.class);
 				saveData.setPWsResponseType(res1.getResponse());
@@ -701,7 +719,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 		yisecRepo.saveAndFlush(saveData);
 		}
-
+		}
 	} catch (Exception e) {
 		e.printStackTrace();
 		return null;
@@ -750,6 +768,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 			}
 			pgitPolRiskRepo.saveAndFlush(saveData);
 		}else {
+			if(list.size()>0 && list!=null) {
 			for(PgithPolRiskAddlInfo data1:list) {
 				saveData=dozerMapper.map(data1, PgithPolRiskAddlInfo.class);
 				saveData.setPWsResponseType(res1.getResponse());
@@ -757,6 +776,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 //				list.add(saveData);
 			}
 			pgitPolRiskRepo.saveAndFlush(saveData);
+		}
 		}
 
 		} catch (Exception e) {

@@ -31,17 +31,39 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CreditLimitDetail;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.MotCommDiscountDetail;
+import com.maan.eway.bean.MotDriverDetail;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.PgithPolRiskAddlInfo;
 import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.PremiaConfigMaster;
+import com.maan.eway.bean.YiChargeDetail;
+import com.maan.eway.bean.YiCoverDetail;
+import com.maan.eway.bean.YiPolicyApproval;
+import com.maan.eway.bean.YiPolicyDetail;
+import com.maan.eway.bean.YiPremCal;
+import com.maan.eway.bean.YiSectionDetail;
+import com.maan.eway.bean.YiVatDetail;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.service.FrameReqService;
 import com.maan.eway.integration.service.IntegrationService;
+import com.maan.eway.repository.CreditLimitDetailRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.MotDriverDetailRepository;
+import com.maan.eway.repository.MotcommDiscountDetailRepository;
+import com.maan.eway.repository.PgitPolRiskAddlInfoRepository;
 import com.maan.eway.repository.PremiaConfigDataMasterRepository;
 import com.maan.eway.repository.PremiaConfigMasterRepository;
+import com.maan.eway.repository.YiChargeDetailRepository;
+import com.maan.eway.repository.YiCoverDetailRepository;
+import com.maan.eway.repository.YiPolicyApprovalRepository;
+import com.maan.eway.repository.YiPolicyDetailRepository;
+import com.maan.eway.repository.YiPremCalRepository;
+import com.maan.eway.repository.YiSectionDetailRepository;
+import com.maan.eway.repository.YiVatDetailRepository;
 
 @Service
 public class IntegrationServiceImpl implements IntegrationService {
@@ -54,6 +76,35 @@ private PremiaConfigMasterRepository pcmasterrepo;
 
 @Autowired
 private HomePositionMasterRepository homeRepo;
+
+@Autowired
+private YiCoverDetailRepository yiCoverDetailRepo;
+@Autowired
+private PgitPolRiskAddlInfoRepository pgitPolRiskRepo;
+@Autowired
+private YiChargeDetailRepository yiChargeDetailRepo;
+@Autowired
+private MotDriverDetailRepository motDrivDetailsRepo;
+@Autowired
+private MotcommDiscountDetailRepository motComRepo;
+@Autowired
+private YiPolicyDetailRepository yiPolicyReo;
+@Autowired
+private CreditLimitDetailRepository creditRepo;
+
+@Autowired
+private YiPolicyApprovalRepository yipolicyRepo;
+
+@Autowired
+private YiPremCalRepository yipremRepo;
+
+@Autowired
+private YiSectionDetailRepository yisecRepo;
+
+@Autowired
+private YiVatDetailRepository yivatRepo;
+
+
 
 @Autowired
 private FrameReqService frameReqService;
@@ -179,13 +230,15 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 						colums.add(data.getColumnName());
 						values.add(value);
 					}
-					
+					Boolean result= delete(quoteNo,masterdata.getPremiaTableName());
+					if(result=true) {
 					if(!jmap.isEmpty()) {
 						
 						String insertQuery="INSERT INTO "+masterdata.getPremiaTableName()+" ("+StringUtils.join(colums,",")
 						+") VALUES ("+StringUtils.join(values,",")+")";
 						log.info("Insert Query::"+insertQuery);
 						oracle.insert(insertQuery);
+					}
 					}
 					
 				}
@@ -259,7 +312,7 @@ public void ewayMotorPremiaPush(String policyNo,String reqRefNo,PremiaConfigMast
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 		} else if (configMas.getPremiaId() == 6) {
-			System.out.println("*********6.MotCommDiscountDetai:");
+			System.out.println("*********6.MotCommDiscountDetail:");
 			Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
@@ -308,6 +361,94 @@ public void madisonMotorPremiaPush(String policyNo,String reqRefNo) {
 	}
 }
 
+
+public Boolean delete(String quoteNo,String tableName) {
+	Boolean result=true;
+	try {
+		String policyNo = "";
+		String reqRefNo = "";
+		String companyId="";
+		String productId="";
+		HomePositionMaster home = homeRepo.findByQuoteNo(quoteNo);
+		if (home != null) {
+			policyNo = home.getPolicyNo();
+			reqRefNo = home.getRequestReferenceNo();
+			companyId= home.getCompanyId();
+			productId= home.getProductId().toString();
+		}
+		if("Yi_Policy_Detail".equalsIgnoreCase(tableName)) {
+			List<YiPolicyDetail> list=yiPolicyReo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				yiPolicyReo.deleteAll(list);
+				result=true;
+			}
+		}else if("Yi_Section_Detail".equalsIgnoreCase(tableName)) {
+			List<YiSectionDetail> list=yisecRepo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				yisecRepo.deleteAll(list);
+				result=true;
+			}
+		}else if("PGIT_POL_RISK_ADDL_INFO_01".equalsIgnoreCase(tableName)) {
+			List<PgithPolRiskAddlInfo> list=pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				pgitPolRiskRepo.deleteAll(list);
+				result=true;
+			}
+		}else if("Mot_Driver_Detail".equalsIgnoreCase(tableName)) {
+			List<MotDriverDetail> list=motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				motDrivDetailsRepo.deleteAll(list);
+				result=true;
+			}
+		}else if("Yi_Cover_Detail".equalsIgnoreCase(tableName)) {
+			List<YiCoverDetail> list=yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				yiCoverDetailRepo.deleteAll(list);
+				result=true;
+			}
+		}else if("Mot_Comm_Discount_Detail".equalsIgnoreCase(tableName)) {
+			List<MotCommDiscountDetail> list=motComRepo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				motComRepo.deleteAll(list);
+				result=true;
+			}
+		}else if("Yi_Charge_Detail".equalsIgnoreCase(tableName)) {
+			List<YiChargeDetail> list=yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				yiChargeDetailRepo.deleteAll(list);
+				result=true;
+			}
+		}else if("Yi_Vat_Detail".equalsIgnoreCase(tableName)) {
+			List<YiVatDetail> list=yivatRepo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				yivatRepo.deleteAll(list);
+				result=true;
+			}
+		}
+		else if("Yi_Prem_Cal".equalsIgnoreCase(tableName)) {
+			List<YiPremCal> list=yipremRepo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				yipremRepo.deleteAll(list);
+				result=true;
+			}
+		}else if("Yi_Policy_Approval".equalsIgnoreCase(tableName)) {
+			List<YiPolicyApproval> list=yipolicyRepo.findByQuotationPolicyNo(policyNo);
+			if(list.size()>0 && list!=null) {
+				yipolicyRepo.deleteAll(list);
+				result=true;
+			}
+		}else if("Credit_Limit_Detail".equalsIgnoreCase(tableName)) {
+			List<CreditLimitDetail> list=creditRepo.findByRequestreferenceno(reqRefNo);
+			if(list.size()>0 && list!=null) {
+				creditRepo.deleteAll(list);
+				result=true;
+			}
+		}
+	}catch (Exception e) {
+		e.printStackTrace();
+	}
+	return result;
+}
 private String frameselectfromMap(Map<String, String> maps) {
 	String result = maps.entrySet().stream().map(map -> (map.getValue()+" "+map.getKey()))
     .collect(Collectors.joining(","));

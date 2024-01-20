@@ -77,7 +77,7 @@ private static final long serialVersionUID = 1L;
     
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="PRAIH_SYS_ID", nullable=false)
+    @Column(name="PRAIH_SYS_ID")
     private BigDecimal praihSysId ;
     
     @Column(name="PRAIH_POL_SYS_ID")
