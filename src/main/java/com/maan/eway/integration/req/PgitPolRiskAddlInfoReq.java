@@ -41,7 +41,7 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 	@JsonProperty("PraiCode24") // TIRA RISK CODE
 	private BigDecimal praiCode24;
 
-	@JsonProperty("PraiData01") // Chassis No.
+	@JsonProperty("PRAI_DATA_01") // Chassis No.
 	private String praiData01;
 
 	@JsonProperty("PraiData03") // ENGINE No.
