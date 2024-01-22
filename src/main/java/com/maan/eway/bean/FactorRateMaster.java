@@ -18,8 +18,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Table;
-
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -254,6 +252,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="PARAM_28")
     private BigDecimal     param28;
    
+    @Column(name="EXCESS_AMOUNT")
+    private BigDecimal     excessAmount ;
+    
+    @Column(name="EXCESS_PERCENT")
+    private BigDecimal     excessPercent ;
+    
+    @Column(name="EXCESS_DESC")
+    private String     excessDesc ;
 }
 
 
