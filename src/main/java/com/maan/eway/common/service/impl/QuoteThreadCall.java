@@ -3029,17 +3029,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double totalTaxAmount = 0D ;
 			boolean taxCondtion =  StringUtils.isNotBlank(request.getEndtType()) && request.getEndtType().equalsIgnoreCase("842") ? false : true ; 
 			if(taxCondtion==true ) {
-				//totalTaxAmount = overAllPremiumFc - premiumFc ;  
-				//totalTaxPercent = new BigDecimal( totalTaxAmount<=0D ?0 : (totalTaxAmount*100) / premiumFc );
-				for(PolicyCoverData o : taxCovers ) {
-					if(o.getTaxAmount()!=null && o.getTaxAmount().compareTo(new BigDecimal(0)) > 0 && taxCondtion==true  ) {
-						totalTaxAmount =totalTaxAmount + ( o.getTaxAmount()==null ? 0D : o.getTaxAmount().doubleValue());
-						if(o.getTaxCalcType()!=null && o.getTaxCalcType().equalsIgnoreCase("P") ) {
-							totalTaxPercent =   totalTaxPercent.add( o.getTaxRate()==null ?  new BigDecimal(0) : o.getTaxRate());
-						}
-						
-					} 
-				}	
+				totalTaxAmount = overAllPremiumFc - premiumFc ;  
+				totalTaxPercent = new BigDecimal( totalTaxAmount<=0D ?0 : (totalTaxAmount*100) / premiumFc );
+//				for(PolicyCoverData o : taxCovers ) {
+//					if(o.getTaxAmount()!=null && o.getTaxAmount().compareTo(new BigDecimal(0)) > 0 && taxCondtion==true  ) {
+//						totalTaxAmount =totalTaxAmount + ( o.getTaxAmount()==null ? 0D : o.getTaxAmount().doubleValue());
+//						if(o.getTaxCalcType()!=null && o.getTaxCalcType().equalsIgnoreCase("P") ) {
+//							totalTaxPercent =   totalTaxPercent.add( o.getTaxRate()==null ?  new BigDecimal(0) : o.getTaxRate());
+//						}
+//						
+//					} 
+//				}	
 			} else if(taxCondtion == false) {
 				totalTaxAmount = overAllPremiumFc - premiumFc ;  
 				totalTaxPercent = new BigDecimal( totalTaxAmount<=0D ?0 : (totalTaxAmount*100) / premiumFc );
@@ -3048,7 +3048,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			//List<PolicyCoverData>  taxCoversFilter =  covers2.stream().filter(  distinctByKey(o -> Arrays.asList(o.getVehicleId() ,o.getSectionId(),o.getCoverId() )) ).collect(Collectors.toList());
 			//BigDecimal withCoverCount = new BigDecimal(taxCount.doubleValue()/taxCoversFilter.size() ) ;
-			BigDecimal TaxPercent = totalTaxPercent.divide(new BigDecimal(home.getNoOfVehicles()) , 2, RoundingMode.HALF_UP); 
+			BigDecimal TaxPercent = totalTaxPercent.setScale(2, RoundingMode.HALF_UP); // totalTaxPercent.divide(new BigDecimal(home.getNoOfVehicles()) , 2, RoundingMode.HALF_UP); 
 //			BigDecimal TaxPercent = totalTaxPercent.divide(new BigDecimal(taxCovers.size()<=0?1:taxCovers.stream().filter(o -> o.getTaxCalcType()!=null && o.getTaxCalcType().equalsIgnoreCase("P"))
 //					.filter(distinctByKey(o -> Arrays.asList(o.getVehicleId()   ,o.getSectionId() ,  o.getCoverId()  ))) 
 //					.collect(Collectors.toList()).size() ) , 2, RoundingMode.HALF_UP);
