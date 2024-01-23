@@ -61,7 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         }
            
     
-    private static final String[] NOAUTH_MATCHER = {"/authentication/login","/api/changepassword","/api/forgotpassword","/authentication/byipaddress",
+    private static final String[] NOAUTH_MATCHER = {"/authentication/login","/authentication/tokenregenrate","/authentication/logout","/api/changepassword","/api/forgotpassword","/authentication/byipaddress",
     		"/basicauth/**","/embedded/create/**","post/notification/ack/mail","/authentication/doauth"};
 
     @Override
