@@ -45,14 +45,12 @@ public class ErrorDescMasterRes implements Serializable{
 
 	@JsonProperty("Status")
 	private String status;
-
 	
 	@JsonProperty("ErrorDesc")
 	private String errorDesc;
 	
 	@JsonProperty("Remarks")
 	private String remarks;
-	
 	
 	@JsonProperty("UpdatedBy")
 	private String updatedBy;
@@ -66,5 +64,14 @@ public class ErrorDescMasterRes implements Serializable{
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonProperty("Language")
+	private String language;
+	
+	@JsonProperty("LocalLangErrorField")
+	private String localLangErrorField;
+	
+	@JsonProperty("LocalLanguageDesc")
+	private String localLanguageDesc;
 
 }

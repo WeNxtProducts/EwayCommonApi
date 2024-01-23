@@ -52,8 +52,17 @@ public class ErrorDescMasterSaveReq implements Serializable{
 	
 //	@JsonProperty("UpdatedBy")
 //	private String updatedBy;
-//	
+
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("Language")
+	private String language;
+	
+	@JsonProperty("LocalLanguageErrField")
+	private String localLanguageErrField;
+
+	@JsonProperty("LocalLanguageErrDesc")
+	private String localLanguageErrDesc;
 
 }

@@ -101,8 +101,18 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			if (StringUtils.isBlank(req.getInsuranceId()) ) {
 				errorList.add(new Error("01", "Insurance Id", "Please Select Insurance Id"));
 			}
-		}
-		catch(Exception e)
+		
+			if (StringUtils.isNotBlank(req.getLanguage()) ) {
+				
+				if (StringUtils.isBlank(req.getLocalLanguageErrDesc()) ) {
+					errorList.add(new Error("01", "Local Language Error Desc", "Please Enter Local Language Error Description"));
+				}
+				if (StringUtils.isBlank(req.getLocalLanguageErrField()) ) {
+					errorList.add(new Error("01", "Local Language Error Field", "Please Enter Local Language Error Field"));
+				}
+			}	
+			
+		}catch(Exception e)
 		{
 			e.printStackTrace();
 			return null;
@@ -220,6 +230,11 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			errordesc.setUpdatedDate(new Date());
 			String moduleName =  getListItem (req.getInsuranceId() , "99999" ,"ERROR_MODULES",req.getModuleId() );  
 			errordesc.setModuleName(moduleName);
+			
+			errordesc.setLanguage(req.getLanguage()==null?"":req.getLanguage());
+			errordesc.setLocalLangErrorField(req.getLocalLanguageErrField()==null?"":req.getLocalLanguageErrField());
+			errordesc.setLocalLanguageDesc(req.getLocalLanguageErrDesc()==null?"":req.getLocalLanguageErrDesc());
+			
 			repo.saveAndFlush(errordesc);
 		
 		}
@@ -334,7 +349,7 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 
 			
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("amendId")));
+			orderList.add(cb.desc(b.get("errorCode")));
 			
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
