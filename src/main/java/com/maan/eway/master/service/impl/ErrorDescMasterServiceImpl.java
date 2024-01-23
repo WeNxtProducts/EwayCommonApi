@@ -362,7 +362,7 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			list = result.getResultList();
 			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getErrorCode()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(ErrorDescMaster :: getErrorCode ));
+		//	list.sort(Comparator.comparing(ErrorDescMaster :: getErrorCode ));
 	
 			for (ErrorDescMaster data : list) {
 				ErrorDescMasterRes res = new ErrorDescMasterRes();
