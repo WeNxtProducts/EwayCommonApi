@@ -24,6 +24,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -63,6 +64,7 @@ import com.maan.eway.bean.PolicyCoverDataEndt;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionDataDetails;
+import com.maan.eway.bean.TaxRemover;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.calculator.util.AdminCoverCalculator;
 import com.maan.eway.calculator.util.CoverCalculator;
@@ -225,55 +227,49 @@ public class CalculatorEngineService implements CalculatorEngine {
 	public List<Tuple> LoadCover(CalcEngine engine) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search1 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+			/*String search1 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
 					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode() + ";branchCode:"
 					+ engine.getBranchCode() + ";";
-
+			 */
 			String search2 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
 					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode()
 					+ ";branchCode:99999;";
-
+/*
 			String search3 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
 					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode()
-					+ ";branchCode:99999;";
+					+ ";branchCode:99999;";*/
 
 			String search4 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
 					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:99999;branchCode:99999;";
 
-			Map<Integer, String> hsmap = new TreeMap<Integer, String>();
-			hsmap.put(1, search1);
-			hsmap.put(2, search2);
-			hsmap.put(3, search3);
-			hsmap.put(4, search4);
-
-			SpecCriteria criteria = null;
-
-			for (int i = 1; i <= hsmap.size(); i++) {
-				String dataquery = hsmap.get(i);
-
-				criteria = crservice.createCriteria(SectionCoverMaster.class, dataquery, "coverId");
-
-				List<Long> count = crservice.getCount(criteria, 0, 50);
-				if (!count.isEmpty()) {
-					Long countrec = count.get(0);
-					if (countrec > 0)
-						break;
+			SpecCriteria commonCriteria = crservice.createCriteria(SectionCoverMaster.class, search4, "coverId");
+			List<Tuple> commonResult = crservice.getResult(commonCriteria, 0, 50);
+			
+			
+			SpecCriteria criteria = null;		
+			
+			criteria = crservice.createCriteria(SectionCoverMaster.class, search2, "coverId");
+			List<Long> count = crservice.getCount(criteria, 0, 50);
+			if (!count.isEmpty()) {
+				Long countrec = count.get(0);
+				if (countrec > 0) {
+					List<Tuple> specific = crservice.getResult(criteria, 0, 50);
+					for(Tuple t:specific) {
+						commonResult.removeIf(c-> c.get("coverId").toString().equals(t.get("coverId").toString()));
+						commonResult.add(t);
+					}
 				}
-
+					
 			}
 
-			if (criteria != null) {
-				List<Tuple> result = null;
-				result = crservice.getResult(criteria, 0, 50);
-				return result;
-			}
+			return commonResult;
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} 		 	
 		return null;
 	}
 
@@ -310,8 +306,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 			
 			String promocode=vehicles.get(0).get("promocode")==null?"":vehicles.get(0).get("promocode").toString();
 			List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
+			
 			TaxUtils tzx = new TaxUtils(endtCount,"");
-
+			List<Tuple> excludedTaxes = ratingutil.LoadExcludedTax(engine,NORMAL_TAX_LIST);
+			TaxRemover taxRemov=new TaxRemover(excludedTaxes,null);
+			
 			List<String> dependedcovers = new ArrayList<String>();
 			dependedcovers.add("N");
 			dependedcovers.add("Y");
@@ -451,7 +450,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 				} else if (nonSubcovers.isEmpty() && !subcovers.isEmpty()) {
 					totalcovers = subcovers.get("Y");
 				}
-
+				
+				
+				totalcovers.stream().forEach(taxRemov);
 				/*
 				 * if(StringUtils.isNotBlank(engine.getVdRefNo()) &&
 				 * StringUtils.isNotBlank(engine.getCdRefNo())) { //calc.setEngine(engine,
@@ -604,6 +605,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 				TaxUtils tzx = new TaxUtils(endtCount,"");
 				TaxUtils tzxEndt = new TaxUtils(endtCount,endtTypeId);
 				List<Tax> taxey = taxes.stream().map(tzx).filter(t -> t != null).collect(Collectors.toList());
+				
+				List<Tuple> excludedTaxes = ratingutil.LoadExcludedTax(engine,NORMAL_TAX_LIST);
+				TaxRemover taxRemov=new TaxRemover(excludedTaxes,null);
+
+				
+				
 				List<Tax> tzxeyEndt = taxes.stream().map(tzxEndt).filter(t -> t != null).collect(Collectors.toList());
 				
 				// CoverFromPolicy
@@ -653,7 +660,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 					covers.forEach(c -> c.setEndorsements(endorsements));// Existing Endorsement
 					covers.forEach(c -> c.setDiscounts(discounts));
 					covers.forEach(c -> c.setLoadings(loadings));
-
+					covers.stream().forEach(taxRemov);
+					
 					retc.stream().filter(r -> d.getCoverId() == Integer.parseInt(r.getCoverId())).forEach(item -> {
 						operatedList.add(item);
 						covers.stream().forEach( c -> {
@@ -690,6 +698,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 			// TaxFromFactor tzx=new TaxFromFactor();
 			List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
 			List<Tuple> taxesEndt = ratingutil.LoadTax(request,ENDT_TAX_LIST);
+			
+			List<Tuple> excludedTaxes = ratingutil.LoadExcludedTax(request,NORMAL_TAX_LIST);
+			List<Tuple> excludedTaxesEndt = ratingutil.LoadExcludedTax(request,ENDT_TAX_LIST);
+			
+			TaxRemover taxRemov=new TaxRemover(excludedTaxes,excludedTaxesEndt);
 			TaxUtils tzx = new TaxUtils(endtCount,"");
 			TaxUtils tzxsa = new TaxUtils(endtCount,endtTypeId);
 
@@ -885,6 +898,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					totalcovers = subcovers.get("Y");
 				}
 
+				totalcovers.stream().forEach(taxRemov);
 				EndtCoverCalculator calc = new EndtCoverCalculator(isPolicyPeriod);
 				
 				if ((commontbl == null || commontbl.size() == 0) || (vehicles == null || vehicles.size() == 0)

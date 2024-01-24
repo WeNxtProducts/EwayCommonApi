@@ -76,7 +76,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 t.setCalcType("P");
 				 }else if(t.getSumInsured().compareTo(t.getMinSumInsured())<0) {
 					    discountLoading=false;
-						CoverException build = CoverException.builder().message("Min SumInsured is:"+t.getMinSumInsured()+ " & SumInsured:"+t.getSumInsured())
+						CoverException build = CoverException.builder().message(t.getCoverName()+ "Min SumInsured is:"+t.getMinSumInsured()+ " & SumInsured:"+t.getSumInsured())
 						.isError(true).build();
 						t.setError(build);
 						t.setNotsutable(true);

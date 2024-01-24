@@ -46,6 +46,7 @@ import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.ProductTaxSetup;
 import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.bean.TaxExemptionSetup;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TinyurlRequestDetail;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
@@ -760,4 +761,17 @@ public class RatingFactorsUtil {
 		return null;
 	}
 
+	public List<Tuple> LoadExcludedTax(CalcEngine engine, List<String> taxFor) {
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date()); 
+			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:Y;branchCode:{99999,"+engine.getBranchCode()+"};"+todayInString+"~effectiveDateStart&effectiveDateEnd;taxFor:{"+StringUtils.join(taxFor,',')+"};";
+			List<Tuple> result=null;
+			SpecCriteria criteria = crservice.createCriteria(TaxExemptionSetup.class, search, "taxId");			
+			result=crservice.getResult(criteria, 0, 50);			
+			return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
