@@ -33,5 +33,7 @@ public class MotDriverDetailId implements Serializable {
     
     private Double     serialNo ;
     
+    private Integer    riskId ;
+    
      
 }

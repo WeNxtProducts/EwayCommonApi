@@ -80,6 +80,9 @@ public class MotcommDiscountDetailReq implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonProperty("DiscountAmount")
+    private Double discountAmount ;
+	
 	@JsonProperty("CoverDesc")
 	private String coverDesc;
 

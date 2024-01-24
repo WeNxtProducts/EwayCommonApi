@@ -33,5 +33,9 @@ public class MotCommDiscountDetailId implements Serializable {
     
     private String     requestreferenceno ;
     
+    private Integer     RiskId ;
+    
+    private Integer     cvrId ;
+    
      
 }

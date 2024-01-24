@@ -59,6 +59,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="REQUESTREFERENCENO", nullable=false, length=15)
     private String     requestreferenceno ;
+    
+    @Id
+    @Column(name="RISK_ID", length=40)
+    private String     riskId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="SERVICE_ID", length=40)
@@ -69,9 +73,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="ITERATION_NO", length=5)
     private String     iterationNo ;
-
-    @Column(name="RISK_ID", length=40)
-    private String     riskId ;
 
     @Column(name="SEC_CODE", length=40)
     private String     secCode ;

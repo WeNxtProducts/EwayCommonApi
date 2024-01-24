@@ -59,6 +59,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SERIAL_NO", nullable=false)
     private Double     serialNo ;
+    
+    @Id
+    @Column(name="RISK_ID")
+    private Integer    riskId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="SERVICE_ID", length=40)
@@ -129,8 +133,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="LICENSE_ISSUED_ON")
     private Date       licenseIssuedOn ;
     
-    @Column(name="RISK_ID")
-    private Integer    riskId ;
     
     //--- ENTITY LINKS ( RELATIONSHIP )
 

@@ -33,5 +33,7 @@ public class YiPremCalId implements Serializable {
     
     private String     requestreferenceno ;
     
+    private String     riskId ;
+    
      
 }

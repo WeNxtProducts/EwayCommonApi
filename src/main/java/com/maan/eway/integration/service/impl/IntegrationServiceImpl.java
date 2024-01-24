@@ -178,6 +178,7 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 //					 qdata = listFromQuery.get(0);
 //				}
 			}
+			Boolean result= delete(quoteNo,masterdata.getPremiaTableName());
 			
 			for (Map<String, Object> qdata  : listFromQuery ) {
 				if(configData!=null && !configData.isEmpty() && qdata!=null) {
@@ -230,7 +231,7 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 						colums.add(data.getColumnName());
 						values.add(value);
 					}
-					Boolean result= delete(quoteNo,masterdata.getPremiaTableName());
+					
 					if(result=true) {
 					if(!jmap.isEmpty()) {
 						
