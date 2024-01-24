@@ -125,6 +125,9 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 							 t.setReferalDescription(t.getCoverDesc() +" Referral" );
 							
 						 }
+						 t.setExcessAmount(tuple.get("excessAmount")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("excessAmount").toString()));
+						 t.setExcessDesc(tuple.get("excessDesc")==null?"":tuple.get("excessDesc").toString());
+						 t.setExcessPercent(tuple.get("excessPercent")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("excessPercent").toString()));
 					 }
 				 }else {
 					 t.setRate((t.getRate()*Double.parseDouble(rateFor)));
