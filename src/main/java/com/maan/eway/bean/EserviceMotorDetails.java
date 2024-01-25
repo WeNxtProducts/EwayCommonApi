@@ -627,6 +627,47 @@ private static final long serialVersionUID = 1L;
 
      @Column(name="OWNER_NAME", length=20)
      private String     ownerName ;
+     
+
+     @Column(name="OWN_DAMAGE", length=20)
+     private String     ownDamage ;
+     
+     @Column(name="THEFT", length=20)
+     private String     theft ;
+     
+     @Column(name="WINDSCREEN", length=20)
+     private String     windscreen ;
+     
+     @Column(name="FIRE", length=20)
+     private String     fire ;
+     
+     @Column(name="THIRD_PARTY", length=20)
+     private String     thirdParty ;
+     
+     @Column(name="VEHICLE_CLASS", length=20)
+     private String     vehicleClass ;
+     
+     @Temporal(TemporalType.DATE)
+     @Column(name="LICENSE_ISSUED_DATE", length=20)
+     private Date     licenseIssuedDate ;
+     
+     @Column(name="LICESENSE_DURATION", length=20)
+     private Integer     licesenseDuration ;
+     
+     @Column(name="CLAIM_NUM_12M_0M", length=20)
+     private Integer     claimNum12m0m ;
+     
+     @Column(name="CLAIM_NUM_24M_12M", length=20)
+     private Integer     claimNum24m12m ;
+     
+     @Column(name="CLAIM_NUM_36M_24M", length=20)
+     private Integer     claimNum36m24m ;
+     
+     @Column(name="POWER_KILO_WATTS", length=20)
+     private BigDecimal     powerKiloWatts ;
+     
+     @Column(name="POWER_WATTS", length=20)
+     private BigDecimal     powerWatts ;
 }
 
 
