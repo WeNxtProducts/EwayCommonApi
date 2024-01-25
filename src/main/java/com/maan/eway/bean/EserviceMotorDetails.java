@@ -668,6 +668,11 @@ private static final long serialVersionUID = 1L;
      
      @Column(name="POWER_WATTS", length=20)
      private BigDecimal     powerWatts ;
+     
+
+     @Column(name="VEHICLE_GROUP", length=20)
+     private String     vehicleGroup ;
+     
 }
 
 
