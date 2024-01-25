@@ -304,6 +304,19 @@ private static final long serialVersionUID = 1L;
     @Column(name="OTHER_OCCUPATION")
     private String otherOccupation;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="LICENSE_ISSUED_DATE")
+    private Date       licenseIssuedDate ;
+    
+    @Column(name="LICESENSE_DURATION", length=100)
+    private Integer licesenseDuration ;
+    
+    @Column(name="AREA_GROUP", length=100)
+    private String areaGroup ;
+   
+    @Column(name="AREA_CLARIFICATION", length=100)
+    private String areaClarification ;
+    
 }
 
 
