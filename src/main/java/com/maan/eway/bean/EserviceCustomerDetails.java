@@ -324,8 +324,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="AREA_GROUP", length=100)
     private String areaGroup ;
    
-    @Column(name="AREA_CLARIFICATION", length=100)
-    private String areaClarification ;
+    @Column(name="AREA_CLASIFICATION", length=100)
+    private String areaClasification ;
     
 }
 
