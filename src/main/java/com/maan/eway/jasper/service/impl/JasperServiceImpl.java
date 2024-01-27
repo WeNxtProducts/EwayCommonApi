@@ -590,6 +590,7 @@ public class JasperServiceImpl implements JasperService {
 					map.put("PolicyDesc", p.get("POLICY_TYPE_DESC")==null?"":p.get("POLICY_TYPE_DESC"));
 					map.put("CommisionAmt", p.get("COMMISSION_AMOUNT")==null?"":p.get("COMMISSION_AMOUNT"));
 					map.put("ProductName", p.get("PRODUCT_NAME")==null?"":p.get("PRODUCT_NAME"));
+					map.put("CreditLimit", p.get("CREDIT_LIMIT")==null?"":p.get("CREDIT_LIMIT"));
 					return map;
 				}).collect(Collectors.toList());
 				
