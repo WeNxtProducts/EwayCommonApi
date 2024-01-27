@@ -50,4 +50,10 @@ public class MotorPrivateVehicleDetails {
 	@JsonProperty("StickerNumber")
 	private String stickerNumber;
 	
+	@JsonProperty("GrossWeight")
+	private String grossWeight;
+	
+	@JsonProperty("InsTypeDesc")
+	private String insTypeDesc;
+	
 }

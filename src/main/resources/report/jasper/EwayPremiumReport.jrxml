@@ -114,7 +114,9 @@
       HPM.COMPANY_ID = COMPANY_ID
   ) THEN ROUND(HPM.OVERALL_PREMIUM_LC, 2) ELSE ROUND(HPM.OVERALL_PREMIUM_FC, 2) END AS PERMIUM, 
   ROUND(HPM.COMMISSION_PERCENTAGE, 1) AS COMMISSION_PERCENTAGE, 
-  ROUND(COMMISSION, 2) AS COMMISSION_AMOUNT 
+  ROUND(COMMISSION, 2) AS COMMISSION_AMOUNT,
+ (CASE WHEN UPPER(HPM.PAYMENT_TYPE)=UPPER('Credit') THEN( (SELECT (COALESCE(DEPOSIT_AMOUNT,0) - COALESCE(DEPOSIT_UTILISED,0) + COALESCE(REFUND_AMOUNT,0)) FROM EWAY_DEPOSIT_CBC_MASTER
+WHERE BROKER_ID = HPM.BROKER_CODE)) ELSE '' END) AS CREDIT_LIMIT  
 FROM 
   HOME_POSITION_MASTER HPM, 
   PERSONAL_INFO PIF 
@@ -190,8 +192,7 @@ WHERE
         LOGIN_ID = $P{pvLoginId}
     )
   )
-  ORDER BY HPM.EFFECTIVE_DATE DESC
-]]>
+  ORDER BY HPM.EFFECTIVE_DATE DESC]]>
 	</queryString>
 	<field name="LOGIN_ID" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="LOGIN_ID"/>
@@ -291,6 +292,7 @@ WHERE
 		<property name="com.jaspersoft.studio.field.name" value="COMMISSION_AMOUNT"/>
 		<property name="com.jaspersoft.studio.field.label" value="COMMISSION_AMOUNT"/>
 	</field>
+	<field name="CREDIT_LIMIT" class="java.lang.String"/>
 	<variable name="tot_premium_amt" class="java.math.BigDecimal" resetType="Group" resetGroup="BranchName" calculation="Sum">
 		<variableExpression><![CDATA[$F{PERMIUM}]]></variableExpression>
 	</variable>
@@ -333,7 +335,7 @@ WHERE
 					<textFieldExpression><![CDATA["S.No"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="100" y="20" width="80" height="30" backcolor="#B1B5DE" uuid="803ebbb1-6389-45fa-812b-be0360faaffa">
+					<reportElement mode="Opaque" x="80" y="20" width="70" height="30" backcolor="#B1B5DE" uuid="803ebbb1-6389-45fa-812b-be0360faaffa">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box leftPadding="2">
@@ -363,7 +365,7 @@ WHERE
 					<textFieldExpression><![CDATA["DN Number"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="180" y="20" width="50" height="30" backcolor="#B1B5DE" uuid="db755708-120b-47fe-95d6-6c15f6c71c46">
+					<reportElement mode="Opaque" x="150" y="20" width="50" height="30" backcolor="#B1B5DE" uuid="db755708-120b-47fe-95d6-6c15f6c71c46">
 						<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 						<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					</reportElement>
@@ -378,7 +380,7 @@ WHERE
 					<textFieldExpression><![CDATA["Policy Start Date"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="230" y="20" width="50" height="30" backcolor="#B1B5DE" uuid="167b0cb0-dd83-4699-afb0-284677dd5284"/>
+					<reportElement mode="Opaque" x="200" y="20" width="50" height="30" backcolor="#B1B5DE" uuid="167b0cb0-dd83-4699-afb0-284677dd5284"/>
 					<box>
 						<topPen lineWidth="0.25"/>
 						<leftPen lineWidth="0.25"/>
@@ -390,7 +392,7 @@ WHERE
 					<textFieldExpression><![CDATA["Policy End Date"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="280" y="20" width="40" height="30" backcolor="#B1B5DE" uuid="5e9abda1-7e73-42d6-9f1e-544f603d3750">
+					<reportElement mode="Opaque" x="250" y="20" width="40" height="30" backcolor="#B1B5DE" uuid="5e9abda1-7e73-42d6-9f1e-544f603d3750">
 						<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 						<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -406,7 +408,7 @@ WHERE
 					<textFieldExpression><![CDATA["Issue Date"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="320" y="20" width="38" height="30" backcolor="#B1B5DE" uuid="2d7fd850-81d2-42a4-b2e0-946c3c848175">
+					<reportElement mode="Opaque" x="290" y="20" width="38" height="30" backcolor="#B1B5DE" uuid="2d7fd850-81d2-42a4-b2e0-946c3c848175">
 						<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 						<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -422,7 +424,7 @@ WHERE
 					<textFieldExpression><![CDATA["Currency"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="500" y="20" width="55" height="30" backcolor="#B1B5DE" uuid="5b515430-6464-45f1-aefb-c6053a652f91">
+					<reportElement mode="Opaque" x="510" y="20" width="45" height="30" backcolor="#B1B5DE" uuid="5b515430-6464-45f1-aefb-c6053a652f91">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
@@ -496,7 +498,7 @@ WHERE
 					<textFieldExpression><![CDATA["Comm Amt"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="9" y="20" width="91" height="30" backcolor="#B1B5DE" uuid="ebc865aa-06b4-4b89-80ef-bebbac9cec1c"/>
+					<reportElement mode="Opaque" x="9" y="20" width="71" height="30" backcolor="#B1B5DE" uuid="ebc865aa-06b4-4b89-80ef-bebbac9cec1c"/>
 					<box leftPadding="2">
 						<topPen lineWidth="0.25"/>
 						<leftPen lineWidth="0.25"/>
@@ -508,7 +510,7 @@ WHERE
 					<textFieldExpression><![CDATA["Policy No"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="358" y="20" width="46" height="30" backcolor="#B1B5DE" uuid="656005e1-8181-4a01-ab45-c79205b03d7d">
+					<reportElement mode="Opaque" x="328" y="20" width="46" height="30" backcolor="#B1B5DE" uuid="656005e1-8181-4a01-ab45-c79205b03d7d">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
@@ -536,7 +538,7 @@ WHERE
 					<textFieldExpression><![CDATA["Broker Name : "+(($F{BROKER_NAME} )==null?"Not Available":$F{BROKER_NAME})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="455" y="20" width="45" height="30" backcolor="#B1B5DE" uuid="71574b32-ea22-47e8-8eb2-43c2cba803aa">
+					<reportElement mode="Opaque" x="465" y="20" width="45" height="30" backcolor="#B1B5DE" uuid="71574b32-ea22-47e8-8eb2-43c2cba803aa">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
@@ -549,7 +551,7 @@ WHERE
 					<textFieldExpression><![CDATA["Payment Id"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="404" y="20" width="51" height="30" backcolor="#B1B5DE" uuid="d941dce3-5cf6-4949-bb49-2c3a6936d7e8">
+					<reportElement mode="Opaque" x="420" y="20" width="45" height="30" backcolor="#B1B5DE" uuid="d941dce3-5cf6-4949-bb49-2c3a6936d7e8">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
@@ -560,6 +562,19 @@ WHERE
 						<font fontName="Arial" size="9" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA["Product Name"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement mode="Opaque" x="374" y="20" width="46" height="30" backcolor="#B1B5DE" uuid="729809a5-d148-490f-8299-ae1db0551947">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Credit Limit"]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -690,7 +705,7 @@ WHERE
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="9" y="0" width="91" height="30" uuid="f9391605-b786-4d71-99df-274efda29857">
+				<reportElement x="9" y="0" width="71" height="30" uuid="f9391605-b786-4d71-99df-274efda29857">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
@@ -704,7 +719,7 @@ WHERE
 				<textFieldExpression><![CDATA[$F{POLICY_NO}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="100" y="0" width="80" height="30" uuid="c02aada1-6ca6-4128-9507-b7d751f3cd34">
+				<reportElement x="80" y="0" width="70" height="30" uuid="c02aada1-6ca6-4128-9507-b7d751f3cd34">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -733,7 +748,7 @@ WHERE
 				<textFieldExpression><![CDATA[$F{DEBIT_NOTE_NO}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="180" y="0" width="50" height="30" uuid="e37ea879-2346-4a3f-bb69-eb5695da0be7">
+				<reportElement x="150" y="0" width="50" height="30" uuid="e37ea879-2346-4a3f-bb69-eb5695da0be7">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -748,7 +763,7 @@ WHERE
 				<textFieldExpression><![CDATA[$F{START_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="230" y="0" width="50" height="30" uuid="f961894e-b8aa-4229-8916-82869630cfdd">
+				<reportElement x="200" y="0" width="50" height="30" uuid="f961894e-b8aa-4229-8916-82869630cfdd">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
@@ -762,7 +777,7 @@ WHERE
 				<textFieldExpression><![CDATA[$F{END_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="280" y="0" width="40" height="30" uuid="290d3b52-6e93-4cb9-b2b8-c2f852defa09">
+				<reportElement x="250" y="0" width="40" height="30" uuid="290d3b52-6e93-4cb9-b2b8-c2f852defa09">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -778,7 +793,7 @@ WHERE
 				<textFieldExpression><![CDATA[$F{ISSUE_DATE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="320" y="0" width="38" height="30" uuid="a09a2836-e628-44d8-96c9-7a9dd2f25344">
+				<reportElement x="290" y="0" width="38" height="30" uuid="a09a2836-e628-44d8-96c9-7a9dd2f25344">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -793,7 +808,7 @@ WHERE
 				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="500" y="0" width="55" height="30" uuid="6fd3d726-673d-412c-a0dd-de599b52a8a9">
+				<reportElement x="510" y="0" width="45" height="30" uuid="6fd3d726-673d-412c-a0dd-de599b52a8a9">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -867,7 +882,7 @@ WHERE
 				<textFieldExpression><![CDATA[$F{COMMISSION_AMOUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="358" y="0" width="46" height="30" uuid="a4fbd1ef-971c-44c1-8292-3d6ed8c76bbe"/>
+				<reportElement x="328" y="0" width="46" height="30" uuid="a4fbd1ef-971c-44c1-8292-3d6ed8c76bbe"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -877,7 +892,7 @@ WHERE
 				<textFieldExpression><![CDATA[$F{PAYMENT_TYPE}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="455" y="0" width="45" height="30" uuid="aeffad81-1237-4a56-bc7e-7125dc438512"/>
+				<reportElement x="465" y="0" width="45" height="30" uuid="aeffad81-1237-4a56-bc7e-7125dc438512"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -887,7 +902,7 @@ WHERE
 				<textFieldExpression><![CDATA[$F{PAYMENT_ID}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="404" y="0" width="51" height="30" uuid="26661b25-8edb-404a-b5fd-4d90cbb785f7"/>
+				<reportElement x="420" y="0" width="45" height="30" uuid="26661b25-8edb-404a-b5fd-4d90cbb785f7"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -895,6 +910,16 @@ WHERE
 					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PRODUCT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="374" y="0" width="46" height="30" uuid="fec51300-37d3-4f52-a407-7ebf0c6a7d47"/>
+				<box>
+					<pen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CREDIT_LIMIT}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

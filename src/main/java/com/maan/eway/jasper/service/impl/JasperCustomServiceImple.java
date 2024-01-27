@@ -1,4 +1,4 @@
-package com.maan.eway.jasper.service.impl;
+ package com.maan.eway.jasper.service.impl;
 
 
 import java.math.BigDecimal;
@@ -705,6 +705,8 @@ public class JasperCustomServiceImple {
 					.windScreenSumInsuredLc(k.getWindScreenSumInsured()==null?null:new BigDecimal(Double.parseDouble(k.getWindScreenSumInsured().toString())).toString())
 					.sumInsured(k.getSumInsured()==null?"":new BigDecimal(Double.parseDouble(k.getSumInsured().toString())).toString())
 					.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
+					.grossWeight(k.getGrossWeight()==null?null:k.getGrossWeight().toString())
+					.insTypeDesc(k.getInsuranceTypeDesc()==null?"":k.getInsuranceTypeDesc())
 					.build();
 				vehicleDetailsRes.add(t);
 			});
