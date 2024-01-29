@@ -48,7 +48,7 @@ public class InsertYiVatDetailReq implements Serializable {
 	private Double vatAmount;
 
 	@JsonProperty("VatModifiedYn")
-	private Double vatModifiedYn;
+	private String vatModifiedYn;
 
 	@JsonProperty("ProdCode")
 	private String prodCode;
