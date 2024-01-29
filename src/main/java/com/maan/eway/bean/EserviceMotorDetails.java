@@ -93,6 +93,7 @@ private static final long serialVersionUID = 1L;
     private String     policyNo;
 
     
+    
     @Column(name="MOTOR_CATEGORY", length=1)
     private String     motorCategory ;
 
@@ -672,6 +673,11 @@ private static final long serialVersionUID = 1L;
 
      @Column(name="VEHICLE_GROUP", length=20)
      private String     vehicleGroup ;
+     
+     @Column(name="CAR_ALARM_YN", length=20)
+     private String     carAlarmYn ;
+     
+     
      
 }
 
