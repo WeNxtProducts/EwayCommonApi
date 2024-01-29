@@ -328,10 +328,6 @@ public class YiPolicyDetailReq implements Serializable {
     @JsonProperty("Promocode")
     private String     promocode ;
     
-    @JsonProperty("CustomerCode")
-    private String     customerCode ;
-    
-    @JsonProperty("IntegrationStatus")
-    private String     integrationStatus ;
+
 
 }
