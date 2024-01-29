@@ -87,7 +87,7 @@ private static final long serialVersionUID = 1L;
     private Double     vatAmount ;
 
     @Column(name="VAT_MODIFIED_YN")
-    private String     vatModifiedYn ;
+    private Double     vatModifiedYn ;
 
     @Column(name="PROD_CODE", length=12)
     private String     prodCode ;
