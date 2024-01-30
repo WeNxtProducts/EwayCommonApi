@@ -105,4 +105,25 @@ public class MotorPrivateRes {
 	@JsonProperty("CoverNoteReferenceNo")
 	private String coverNoteReferenceNo;
 	
+	@JsonProperty("CustomerId")
+	private String customerId;
+	
+	@JsonProperty("PremiumForUganda")
+	private String premiumForUganda;
+	
+	@JsonProperty("StrickerFeeForUganda")
+	private String strickerFeeForUganda;
+	
+	@JsonProperty("PremiumLevyForUganda")
+	private String premiumLevyForUganda;
+	
+	@JsonProperty("VatForUganda")
+	private String vatForUganda;
+	
+	@JsonProperty("StampDutyForUganda")
+	private String stampDutyForUganda;
+	
+	@JsonProperty("Business")
+	private String business;
+	
 }

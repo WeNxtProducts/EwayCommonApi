@@ -180,7 +180,7 @@
 				</box>
 				<imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
 new com.google.zxing.qrcode.QRCodeWriter().encode(
-$F{stickerNumber},
+$F{stickerNumber}==null || $F{stickerNumber}==""?"something wrong please contact administrator":$F{stickerNumber},
 com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 			</image>
 			<textField>

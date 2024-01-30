@@ -360,8 +360,8 @@
 	<pageHeader>
 		<band height="64">
 			<image>
-				<reportElement x="0" y="0" width="200" height="64" uuid="2e66645b-7b3e-40a7-a8d7-b0f7367a85c1"/>
-				<imageExpression><![CDATA[$F{companylogo}]]></imageExpression>
+				<reportElement x="0" y="0" width="555" height="64" uuid="2e66645b-7b3e-40a7-a8d7-b0f7367a85c1"/>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>

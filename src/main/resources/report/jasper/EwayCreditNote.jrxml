@@ -122,6 +122,7 @@
 			<fieldDescription><![CDATA[narration]]></fieldDescription>
 		</field>
 	</subDataset>
+	<parameter name="pvImagepath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[]]>
 	</queryString>
@@ -253,7 +254,7 @@
 		<band height="59" splitType="Stretch">
 			<image>
 				<reportElement x="0" y="0" width="555" height="59" uuid="1c6e2562-20fe-4909-8b38-657d46ec3b19"/>
-				<imageExpression><![CDATA[$F{companyLogo}]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{companyLogo}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>

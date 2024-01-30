@@ -27,4 +27,7 @@ public class JasperDocumentReq {
 	@JsonProperty("BrokerQuoteYn")
 	private String brokerQuoteYn;
 	
+	@JsonProperty("StrickerYn")
+	private String strickerYn;
+	
 }

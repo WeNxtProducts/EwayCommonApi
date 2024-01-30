@@ -12,12 +12,13 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import com.maan.eway.bean.PolicyDrcrDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+
+import com.maan.eway.bean.PolicyDrcrDetail;
 import com.maan.eway.bean.PolicyDrcrDetailId;
 /**
  * <h2>PolicyDrcrDetailRepository</h2>
@@ -34,5 +35,20 @@ public interface PolicyDrcrDetailRepository  extends JpaRepository<PolicyDrcrDet
 	Long countByQuoteNoAndStatus(String quoteno, String status);
 
 	List<PolicyDrcrDetail> findByQuoteNoAndStatus(String quoteno, String status);
+
+	@Query(value = "SELECT SUM(Premium) FROM(SELECT (CASE WHEN pcd.currency IN (cm.currency_id) THEN premium_excluded_tax_lc ELSE premium_excluded_tax_fc END) AS Premium FROM policy_cover_data pcd INNER JOIN eway_insurance_company_master cm  WHERE cover_id NOT IN ('118','119') AND  tax_id='0' AND coverage_type IN ('B','O') AND policy_no=?1 AND cm.company_id=pcd.company_id AND SYSDATE() BETWEEN effective_date_start AND effective_date_end)X",nativeQuery = true)
+	String getPremiumForUganda(String policyNo);
+
+	@Query(value = "SELECT SUM(tax_amount) AS LEVY FROM policy_cover_data pcd WHERE coverage_type='T' AND tax_id='10' AND policy_no=?1",nativeQuery=true)
+	String getPremiumLevyForUganda(String policyNo);
+
+	@Query(value = "SELECT SUM(Tax_amount) AS VAT_TAX FROM policy_cover_data pcd WHERE coverage_type='T' AND tax_id='9' AND policy_no=?1",nativeQuery=true)
+	String getVatForUganda(String pNumber);
+
+	@Query(value = "SELECT (CASE WHEN pcd.currency IN (cm.currency_id) THEN premium_excluded_tax_lc ELSE premium_excluded_tax_fc END) AS stamp_duty FROM policy_cover_data pcd INNER JOIN eway_insurance_company_master cm  WHERE cover_id='118' AND  coverage_type='O' AND policy_no=?1 AND cm.company_id=pcd.company_id AND SYSDATE() BETWEEN effective_date_start AND effective_date_end",nativeQuery=true)
+	String getStrickerforUganda(String pNumber);
+
+	@Query(value = "SELECT (CASE WHEN pcd.currency IN (cm.currency_id) THEN premium_excluded_tax_lc ELSE premium_excluded_tax_fc END) AS stamp_duty FROM policy_cover_data pcd INNER JOIN eway_insurance_company_master cm  WHERE cover_id='119' AND policy_no=?1 AND cm.company_id=pcd.company_id AND SYSDATE() BETWEEN effective_date_start AND effective_date_end",nativeQuery=true)
+	String getStampDutyforUganda(String pNumber);
 
 }

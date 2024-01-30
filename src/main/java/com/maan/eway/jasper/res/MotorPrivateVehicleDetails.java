@@ -56,4 +56,10 @@ public class MotorPrivateVehicleDetails {
 	@JsonProperty("InsTypeDesc")
 	private String insTypeDesc;
 	
+	@JsonProperty("EngineNumber")
+	private String engineNumber;
+	
+	@JsonProperty("ChassisNumber")
+	private String chassisNumber;
+	
 }
