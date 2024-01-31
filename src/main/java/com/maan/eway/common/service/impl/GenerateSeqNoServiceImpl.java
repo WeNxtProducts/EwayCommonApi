@@ -14,6 +14,7 @@ import com.maan.eway.bean.SeqDebitnote;
 import com.maan.eway.bean.SeqErrorCode;
 import com.maan.eway.bean.SeqPolicyno;
 import com.maan.eway.bean.SeqPolicynoMadison;
+import com.maan.eway.bean.SeqPolicynoUganda;
 import com.maan.eway.bean.SeqProductbenefit;
 import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.bean.SeqTinyrefno;
@@ -22,6 +23,7 @@ import com.maan.eway.repository.SeqDebitnoteRepository;
 import com.maan.eway.repository.SeqErrorCodeRepository;
 import com.maan.eway.repository.SeqPolicynoMadisonRepository;
 import com.maan.eway.repository.SeqPolicynoRepository;
+import com.maan.eway.repository.SeqPolicynoUgandaRepository;
 import com.maan.eway.repository.SeqProductbenefitRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.repository.SeqTinyrefnoRepository;
@@ -36,6 +38,9 @@ public class GenerateSeqNoServiceImpl {
 	
 	@Autowired
 	private SeqPolicynoRepository polNoRepo;
+	
+	@Autowired
+	private SeqPolicynoUgandaRepository polNoUgandaRepo;
 	
 	@Autowired
 	private SeqPolicynoMadisonRepository polNoMadisonRepo;
@@ -106,6 +111,26 @@ public class GenerateSeqNoServiceImpl {
 	       try {
 	    	    SeqPolicyno entity;
 	            entity = polNoRepo.save(new SeqPolicyno());    
+	            Date currentDate = Calendar.getInstance().getTime();
+	            String year =  sdf.format(new Date()) ;
+	        
+	            	policyNo =  "P11/"+year+"/"+branchcode+"/"+productCode+"/10/"+String.format("%07d",entity.getPolicyno()) ;
+	        
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       return policyNo;
+	 
+	 }
+	 
+	 public synchronized String generateUgandaPolicyNo(String productCode,String branchcode) {
+		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy"); 
+		 String policyNo = "";
+	       try {
+	    	   SeqPolicynoUganda entity;
+	            entity = polNoUgandaRepo.save(new SeqPolicynoUganda());    
 	            Date currentDate = Calendar.getInstance().getTime();
 	            String year =  sdf.format(new Date()) ;
 	        
