@@ -677,6 +677,10 @@ private static final long serialVersionUID = 1L;
      @Column(name="CAR_ALARM_YN", length=20)
      private String     carAlarmYn ;
      
+     @Column(name="PAYMENT_FREQUENCY", length=20)
+     private Integer     paymentFrequency ;
+     
+     
      
      
 }
