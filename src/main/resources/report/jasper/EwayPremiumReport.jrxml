@@ -141,14 +141,14 @@ WHERE
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('both') THEN '1' WHEN (
+      ) IN ('SuperAdmin') THEN '1' WHEN (
         SELECT 
           SUB_USER_TYPE 
         FROM 
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('low', 'high') THEN HPM.Application_id END
+      ) IN ('low', 'high','both') THEN HPM.Application_id END
     ) = (
       CASE WHEN (
         SELECT 
