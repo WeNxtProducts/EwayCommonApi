@@ -648,13 +648,6 @@ private static final long serialVersionUID = 1L;
      @Column(name="VEHICLE_CLASS", length=20)
      private String     vehicleClass ;
      
-     @Temporal(TemporalType.DATE)
-     @Column(name="LICENSE_ISSUED_DATE", length=20)
-     private Date     licenseIssuedDate ;
-     
-     @Column(name="LICESENSE_DURATION", length=20)
-     private Integer     licesenseDuration ;
-     
      @Column(name="CLAIM_NUM_12M_0M", length=20)
      private Integer     claimNum12m0m ;
      
