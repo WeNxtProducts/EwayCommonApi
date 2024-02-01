@@ -850,6 +850,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 		list = result.getResultList();
 		
 		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getVehicleUsageId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(MotorVehicleUsageMaster :: getVehicleUsageDesc ));
 		for (MotorVehicleUsageMaster data : list) {
 			// Response 
 			DropDownRes res = new DropDownRes();
