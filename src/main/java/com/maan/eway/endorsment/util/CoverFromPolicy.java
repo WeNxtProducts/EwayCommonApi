@@ -83,6 +83,7 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					.effectiveDate(t.getCoverPeriodFrom())
 					.policyEndDate(t.getCoverPeriodTo())
 					.minSumInsured(t.getMinCoverageLimit()==null?BigDecimal.ZERO:t.getMinCoverageLimit())
+					.isTaxExcempted(t.getIsTaxExtempted()==null?"N":t.getIsTaxExtempted())
 					.build();
 				return c;
 			 }			
