@@ -2920,8 +2920,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setCommissionModifyYn( request.getCommissionModifyYn()) ;
 				home.setCommissionPercentage(StringUtils.isNotBlank(request.getCommissionPercent()) ? new BigDecimal(request.getCommissionPercent())  : home.getCommissionPercentage()) ;
 			} else {
-				home.setCommissionModifyYn(previousData!=null ? previousData.getCommissionModifyYn() : "N") ;
-				home.setCommissionPercentage(previousData!=null ? previousData.getCommissionPercentage() : home.getCommissionPercentage());
+				home.setCommissionModifyYn(previousData!=null && previousData.getCommissionModifyYn()!=null? previousData.getCommissionModifyYn() : "N") ;
+				home.setCommissionPercentage(previousData!=null && previousData.getCommissionPercentage()!=null ? previousData.getCommissionPercentage() : home.getCommissionPercentage());
 			
 			}
 			
