@@ -719,6 +719,12 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 				res.setCode(online.getItemCode());
 				res.setCodeDesc(online.getItemValue());
 				resList.add(res);
+				
+				ListItemValue online2 = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("5") ).collect(Collectors.toList()).get(0) ;
+				PaymentMasterDropDownRes res2 = new PaymentMasterDropDownRes();
+				res2.setCode(online2.getItemCode());
+				res2.setCodeDesc(online2.getItemValue());
+				resList.add(res2);
 			}
 		}
 		
