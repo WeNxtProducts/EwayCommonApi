@@ -35,6 +35,8 @@ import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
+import com.maan.eway.common.req.SequenceGenerateReq;
+import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
@@ -88,6 +90,9 @@ public class CopyRawTable  {
 	private SectionDataDetailsRepository sectionDataRepo;
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo;
+	
+	@Autowired
+	private GenerateSeqNoServiceImpl genSeqNoService ; 
 
 	@PersistenceContext
 	private EntityManager em;
@@ -155,9 +160,16 @@ public class CopyRawTable  {
 				prevRequestRefNo=motor.get(0).getRequestReferenceNo();
 
 			}
-			if(pendingcount==0)
-				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
-			 
+			if(pendingcount==0) {
+			//	newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
+				// Generate Seq
+	 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+	 		 	generateSeqReq.setInsuranceId(ent.getCompanyId());  
+	 		 	generateSeqReq.setProductId(ent.getProductId().toString());
+	 		 	generateSeqReq.setType("2");
+	 		 	generateSeqReq.setTypeDesc("REQUEST_REFERENCE_NO");
+	 		 	newRequestNo =  genSeqNoService.generateSeqCall(generateSeqReq);
+			}
 			List<EserviceMotorDetails> save=savemotor(ent, entMaster, prevQuoteNo, count, newRequestNo, prevPolicyNo, prevRequestRefNo);
 			return save;
 		}catch(ObjectOptimisticLockingFailureException ex ) {

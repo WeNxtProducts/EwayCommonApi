@@ -2277,11 +2277,12 @@ public class PaymentServiceImpl implements PaymentService {
 			// Policy Convertion
 			if("Y".equalsIgnoreCase(req.getEmiYn())){
 				if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("Y") || paymentInfo.getInstallmentMonth().equalsIgnoreCase(installment) )  ) {
-					List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
+					//List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
+					List<PolicyDrcrDetail> policyDetails =  generatePolicyNew(paymentInfo,req,paymentDetail,token);
 					
 					String policyNo = policyDetails.get(0).getPolicyNo();
-					List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
-					List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
+					List<PolicyDrcrDetail> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+					List<PolicyDrcrDetail> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
 					// Debit
 					String debitNo = filterDebit.size() > 0 ? filterDebit.get(0).getDocNo() : "";
 					// Credit

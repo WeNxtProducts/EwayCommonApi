@@ -1,14 +1,25 @@
 package com.maan.eway.common.service.impl;
 
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.bean.SeqCreditno;
 import com.maan.eway.bean.SeqDebitnote;
 import com.maan.eway.bean.SeqErrorCode;
@@ -18,6 +29,9 @@ import com.maan.eway.bean.SeqPolicynoUganda;
 import com.maan.eway.bean.SeqProductbenefit;
 import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.bean.SeqTinyrefno;
+import com.maan.eway.common.req.SequenceGenerateReq;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.SequenceGenerateRes;
 import com.maan.eway.repository.SeqCreditnoRepository;
 import com.maan.eway.repository.SeqDebitnoteRepository;
 import com.maan.eway.repository.SeqErrorCodeRepository;
@@ -59,6 +73,15 @@ public class GenerateSeqNoServiceImpl {
 	
 	@Autowired
 	private SeqErrorCodeRepository errorCodeRepo ;
+	
+	@Value(value = "${EwayBasicAuthPass}")
+	private String EwayBasicAuthPass;
+	
+	@Value(value = "${EwayBasicAuthName}")
+	private String EwayBasicAuthName;
+	
+	@Value(value = "${SequenceGenerateUrl}")
+	private String SequenceGenerateUrl;
 
 	 public synchronized String generateRefNo() {
 	       try {
@@ -214,4 +237,34 @@ public class GenerateSeqNoServiceImpl {
 	        }
 	       
 	 }
+	 
+	 
+	 public synchronized String generateSeqCall(SequenceGenerateReq req ) {
+	       try {
+	    	String url = SequenceGenerateUrl;
+	   		String auth = EwayBasicAuthName +":"+ EwayBasicAuthPass;
+	         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+	         String authHeader = "Basic " + new String( encodedAuth );
+	      
+	   		RestTemplate restTemplate = new RestTemplate();
+	   		HttpHeaders headers = new HttpHeaders();
+	   		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+	   		headers.setContentType(MediaType.APPLICATION_JSON);
+	   		 headers.set("Authorization",authHeader);
+	   		HttpEntity<SequenceGenerateReq> entityReq = new HttpEntity<SequenceGenerateReq>(req, headers);
+
+	   		ResponseEntity<CommonRes> response = restTemplate.postForEntity(url, entityReq, CommonRes.class);
+	   		ObjectMapper mapper = new ObjectMapper();
+	   		SequenceGenerateRes res = mapper.convertValue(response.getBody().getCommonResponse() ,new TypeReference<SequenceGenerateRes>(){});
+	   		String seq = res.getGeneratedValue();
+	   		System.out.println("Generated Sequence --> " + seq );
+	   		
+	    	 return seq ;
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	 }
+	       
 }

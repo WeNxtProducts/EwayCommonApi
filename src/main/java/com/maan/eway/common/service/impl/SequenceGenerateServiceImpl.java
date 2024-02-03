@@ -1,0 +1,295 @@
+package com.maan.eway.common.service.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.maan.eway.bean.ProductSequenceCondition;
+import com.maan.eway.bean.ProductSequenceMaster;
+import com.maan.eway.common.req.SequenceGenerateReq;
+import com.maan.eway.common.res.SequenceGenerateRes;
+import com.maan.eway.common.service.SequenceGenerateService;
+import com.maan.eway.repository.ProductSequenceMasterRepository;
+
+@Service
+@Transactional
+public class SequenceGenerateServiceImpl implements SequenceGenerateService {
+ 
+	private Logger log = LogManager.getLogger(SequenceGenerateServiceImpl.class);
+
+	@Autowired
+	private ProductSequenceMasterRepository  prodSeqRepo ;
+	
+	@PersistenceContext
+	private EntityManager em;
+
+
+	@Override
+	public synchronized SequenceGenerateRes generateSequence(SequenceGenerateReq req) {
+		SequenceGenerateRes res = new SequenceGenerateRes();
+	try {
+		// Sequence Master 
+		ProductSequenceMaster seqMaster = getProductSequenceMaster(req);
+		
+		if(seqMaster !=null ) {
+			
+			String seqCharacter = seqMaster.getSequenceCharacter();
+			
+			String coniditionValue  ="";
+			if( "Y".equalsIgnoreCase(seqMaster.getQueryYn()) ) {
+				coniditionValue = frameQueryConditions(req , seqMaster) ;
+			}
+			//String.format("%07d",entity.getPolicyno());
+			String seqNo = String.format("%0"+ seqMaster.getCurrentSequenceNo().length() +"d", Long.valueOf(seqMaster.getCurrentSequenceNo())+1);  
+			seqMaster.setCurrentSequenceNo(seqNo);
+			
+			String generatedSequence = seqCharacter + coniditionValue + seqNo ;
+			seqMaster.setCurrentGeneratedSequence(generatedSequence);
+			prodSeqRepo.save(seqMaster);
+			res.setGeneratedValue(generatedSequence);			
+		}
+		
+		
+	} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			
+		}
+		return res;
+	}
+	
+	public  String frameQueryConditions(SequenceGenerateReq req , ProductSequenceMaster seqMaster ) {
+		String conditionsValue = "";
+	try {
+		// Sequence Conditions
+		List<ProductSequenceCondition> seqConditions =  getProductSequenceCondtions(req , seqMaster.getProductId()  ,seqMaster.getSequenceId() ) ;
+		
+		StringBuffer str = new StringBuffer(); 
+		for (ProductSequenceCondition seqCond : seqConditions ) {
+			
+			// Seq Conditions
+			if (StringUtils.isNotBlank(seqCond.getQuery() ) && seqCond.getQuery().contains("?") && req.getParams()!=null && req.getParams().size() > 0 ) {
+				List<Map<String, Object>> dataFromQuery = new ArrayList<Map<String, Object>>();
+				
+				try {
+					String query = seqCond.getQuery();
+					List<String> params = req.getParams();
+					dataFromQuery =  getListFromQueryWithoutKey(query, params);
+					
+					Map<String, Object> data =  dataFromQuery.get(0) ;
+					//String key = (String) data.values().iterator().next();
+					String value =String.valueOf((Object) data.values().iterator().next());
+					str.append(value==null ? ""  : value );
+					
+				} catch (Exception e ) {
+					e.printStackTrace();
+					log.info("Exception is ---> " + e.getMessage());
+				}
+				
+			} else {
+				//str.append(seqCond.getQuery()==null?"":seqCond.getQuery());
+			}
+			
+			// Join with
+			str.append(seqCond.getJoinWith()==null?"":seqCond.getJoinWith());
+			
+		}
+		conditionsValue = str.toString() ; 
+	
+		
+	} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			
+		}
+		return conditionsValue;
+	}
+	
+	public List<Map<String, Object>> getListFromQueryWithoutKey(String query, List<String> params) {
+		if(query!=null) {
+			 Query nativequery = em.createNativeQuery(query);		
+			for(int i=0;i<params.size();i++) {
+				nativequery.setParameter(i+1, params.get(i));
+			}			
+		 
+			nativequery.unwrap(NativeQueryImpl.class).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			List<Map<String,Object>> list = nativequery.getResultList();
+			return list;
+		}
+		return null;
+	}
+
+	
+	public ProductSequenceMaster getProductSequenceMaster(SequenceGenerateReq req) {
+		ProductSequenceMaster seqMaster = new ProductSequenceMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSequenceMaster> query = cb.createQuery(ProductSequenceMaster.class);
+			List<ProductSequenceMaster> list = new ArrayList<ProductSequenceMaster>();
+			// Find All
+			Root<ProductSequenceMaster> c = query.from(ProductSequenceMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productId")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSequenceMaster> ocpm1 = effectiveDate.from(ProductSequenceMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("sequenceId"), ocpm1.get("sequenceId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
+			Predicate a6 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			effectiveDate.where(a1, a2,a3,a4,a6);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductSequenceMaster> ocpm2 = effectiveDate2.from(ProductSequenceMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a7 = cb.equal(c.get("sequenceId"), ocpm2.get("sequenceId"));
+			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a10 = cb.equal(c.get("branchCode"), ocpm2.get("branchCode"));
+			Predicate a12 = cb.equal(c.get("productId"),  ocpm2.get("productId"));
+			effectiveDate2.where(a7,a8,a9,a10,a12);
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n5 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n6 = cb.equal(c.get("type"), req.getType() );
+			Predicate n7 = cb.equal(c.get("productId"), req.getProductId());
+			Predicate n8 = cb.equal(c.get("productId"), "99999");
+			Predicate n9 = cb.or(n7,n8) ;
+			
+			query.where(n1,n2,n3,n4,n5,n6,n9).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<ProductSequenceMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			seqMaster = list.get(0);
+			
+		} catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+				}
+			return seqMaster;
+		}
+	
+	public List<ProductSequenceCondition> getProductSequenceCondtions(SequenceGenerateReq req ,Integer productId , Integer sequenceId ) {
+		List<ProductSequenceCondition> seqConditions = new ArrayList<ProductSequenceCondition>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSequenceCondition> query = cb.createQuery(ProductSequenceCondition.class);
+			// Find All
+			Root<ProductSequenceCondition> c = query.from(ProductSequenceCondition.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("queryId")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSequenceCondition> ocpm1 = effectiveDate.from(ProductSequenceCondition.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("sequenceId"), ocpm1.get("sequenceId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
+			Predicate a6 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a13 = cb.equal(c.get("queryId"), ocpm1.get("queryId"));
+			effectiveDate.where(a1, a2,a3,a4,a6 , a13);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductSequenceCondition> ocpm2 = effectiveDate2.from(ProductSequenceCondition.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a7 = cb.equal(c.get("sequenceId"), ocpm2.get("sequenceId"));
+			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a10 = cb.equal(c.get("branchCode"), ocpm2.get("branchCode"));
+			Predicate a12 = cb.equal(c.get("productId"),  ocpm2.get("productId"));
+			Predicate a14 = cb.equal(c.get("queryId"),  ocpm2.get("queryId"));
+			effectiveDate2.where(a7,a8,a9,a10,a12,a14);
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n5 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n6 = cb.equal(c.get("productId"), productId);
+			Predicate n7 = cb.equal(c.get("sequenceId"), sequenceId);
+			
+			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<ProductSequenceCondition> result = em.createQuery(query);
+			seqConditions = result.getResultList();
+		
+			
+		} catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+				}
+			return seqConditions;
+		}
+
+}

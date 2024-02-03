@@ -83,6 +83,12 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("PreferredNotification")
 	private String preferredNotification;
 	
+	@JsonProperty("MaritalStatus")
+	private String maritalStatus;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("LicenseIssuedDate")
+	private Date licenseIssuedDate;
 
 	@JsonProperty("IdType")
 	private String idType;

@@ -84,6 +84,7 @@ import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.IndividualReferalReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.QuoteThreadReq;
+import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.VehicleNeedToAdd;
 import com.maan.eway.common.req.VehicleNeedToRemove;
@@ -287,6 +288,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private NotificationThreadServiceImpl notiThreadService;
 	
+	@Autowired
+	private GenerateSeqNoServiceImpl genSeqNoService ; 
 	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -1643,14 +1646,32 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			// Quote No Generate
 			if(StringUtils.isNotBlank( quoteNo) && (subUserType.equalsIgnoreCase("b2c")) ) {
-			 	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;
-	            quoteNo  = "Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
+				// Generate Seq
+	 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+	 		 	generateSeqReq.setInsuranceId(companyId);  
+	 		 	generateSeqReq.setProductId(req.getProductId());
+	 		 	generateSeqReq.setType("3");
+	 		 	generateSeqReq.setTypeDesc("CUSTOMER_ID");
+	 		 	customerId = genSeqNoService.generateSeqCall(generateSeqReq); // "C-" + generateCustId();// idf.format(new Date()) + random ;
+	 		 	
+			 	generateSeqReq.setType("4");
+	 		 	generateSeqReq.setTypeDesc("QUOTE_NO");
+	 		 	quoteNo  = genSeqNoService.generateSeqCall(generateSeqReq); //"Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
 	      //  } else
 			} else if (StringUtils.isBlank( quoteNo)  ) {
 	       // 	Random rand = new Random();
 	       //     int random=rand.nextInt(90)+10; 
-	        	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;
-	            quoteNo  = "Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
+				// Generate Seq
+	 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+	 		 	generateSeqReq.setInsuranceId(companyId);  
+	 		 	generateSeqReq.setProductId(req.getProductId());
+	 		 	generateSeqReq.setType("3");
+	 		 	generateSeqReq.setTypeDesc("CUSTOMER_ID");
+	 		 	customerId = genSeqNoService.generateSeqCall(generateSeqReq); // "C-" + generateCustId();// idf.format(new Date()) + random ;
+	 		 	
+			 	generateSeqReq.setType("4");
+	 		 	generateSeqReq.setTypeDesc("QUOTE_NO");
+	 		 	quoteNo  = genSeqNoService.generateSeqCall(generateSeqReq); //"Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
 	        } 
 
 			QuoteThreadReq request = new QuoteThreadReq();

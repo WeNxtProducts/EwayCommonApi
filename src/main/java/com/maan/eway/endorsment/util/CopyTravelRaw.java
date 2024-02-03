@@ -38,10 +38,12 @@ import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
+import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.res.EserviceSaveRes;
 import com.maan.eway.common.res.TravelCopyRes;
 import com.maan.eway.common.res.TravelGroupGetRes;
+import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.repository.BuildingDetailsRepository;
@@ -88,6 +90,9 @@ public class CopyTravelRaw {
 	
 	@Autowired
 	private EserviceTravelGroupDetailsRepository groupRepo ;
+	
+	@Autowired
+	private GenerateSeqNoServiceImpl genSeqNoService ; 
 
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
@@ -156,8 +161,16 @@ public class CopyTravelRaw {
 				prevPolicyNo=ent.getPolicyNo();
 				prevQuoteNo =travelDatas.get(0).getQuoteNo();
 			}
-			if(pendingcount==0)
-				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
+			if(pendingcount==0) {
+				//newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
+				// Generate Seq
+	 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+	 		 	generateSeqReq.setInsuranceId(ent.getCompanyId());  
+	 		 	generateSeqReq.setProductId(ent.getProductId().toString());
+	 		 	generateSeqReq.setType("2");
+	 		 	generateSeqReq.setTypeDesc("REQUEST_REFERENCE_NO");
+	 		 	newRequestNo =  genSeqNoService.generateSeqCall(generateSeqReq);
+			}
 			
 			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
 

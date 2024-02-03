@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyDrcrDetail;
+import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.repository.HomePositionMasterRepository;
@@ -59,9 +60,19 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 			List<ChartParentMaster> cpm =chatParentMasterRepo.findByChatParentIdCompanyIdAndStatusIgnoreCaseOrderByDisplayOrderAsc(companyId, "Y");
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 			
-			String crnumber =  genNo.generateCreditNo(hpm.getBrokerCode());
+			// Generate Policy Seq
+			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+		 	generateSeqReq.setInsuranceId(hpm.getCompanyId());  
+		 	generateSeqReq.setProductId(hpm.getProductId().toString());
+		 	List<String> params = new ArrayList<String>();
+		 	params.add(hpm.getQuoteNo());
+		 	generateSeqReq.setType("7");
+		 	generateSeqReq.setTypeDesc("CREDIT_NO");
+		 	String crnumber =  genNo.generateSeqCall(generateSeqReq);//genNo.generateCreditNo(hpm.getBrokerCode());
 			
-			String drnumber =  genNo.generateDebitNo(hpm.getBrokerCode());
+			generateSeqReq.setType("6");
+		 	generateSeqReq.setTypeDesc("DEBIT_NO");
+		 	String drnumber =  genNo.generateSeqCall(generateSeqReq);//genNo.generateDebitNo(hpm.getBrokerCode());
 			
 			int index =1;
 			

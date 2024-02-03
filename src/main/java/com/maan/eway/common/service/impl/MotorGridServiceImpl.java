@@ -73,6 +73,7 @@ import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
+import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
@@ -176,6 +177,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 	 
 	 private boolean isOracle;
 	 private boolean isMySQL;
+	 
+	@Autowired
+	private GenerateSeqNoServiceImpl genSeqNoService ; 
 	 
 	 
 	// Exiting Motor Details
@@ -1693,9 +1697,16 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						branches);
 				String refNo = req.getRequestReferenceNo();
 				if (list.size() > 0) {
-					String refShortCode = getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",
-							req.getProductId());
-					refNo = refShortCode +"-"+ seqNo.generateRefNo();
+//					String refShortCode = getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",
+//							req.getProductId());
+//					refNo = refShortCode +"-"+ seqNo.generateRefNo();
+					// Generate Seq
+		 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+		 		 	generateSeqReq.setInsuranceId(companyId);  
+		 		 	generateSeqReq.setProductId(req.getProductId());
+		 		 	generateSeqReq.setType("2");
+		 		 	generateSeqReq.setTypeDesc("REQUEST_REFERENCE_NO");
+		 		 	refNo =  genSeqNoService.generateSeqCall(generateSeqReq);
 					for (Tuple data : list) {
 
 						savedata = dozerMapper.map(data.get(0), EserviceMotorDetails.class);
@@ -1976,11 +1987,33 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			DozerBeanMapper mapper = new DozerBeanMapper();
 			try {
-				String refShortCode = getListItem(req.getInsuranceId() ,req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
-				String refNo=refShortCode +"-" +seqNo.generateRefNo();
-				String quoteNo  = "Q"+ generateQuoteNo();
-				String customerId = "C-" + generateCustId();
-				String custRefNo = "Cust-" +   generateCustRefNo() ; 
+				
+				// Generate Seq
+	 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+	 		 	generateSeqReq.setInsuranceId(req.getInsuranceId());  
+	 		 	generateSeqReq.setProductId(req.getProductId());
+	 		 	generateSeqReq.setType("1");
+	 		 	generateSeqReq.setTypeDesc("CUSTOMER_REFERENCE_NO");
+	 		 	String custRefNo = genSeqNoService.generateSeqCall(generateSeqReq);
+	 		 	
+	 		 	generateSeqReq.setType("2");
+	 		 	generateSeqReq.setTypeDesc("REQUEST_REFERENCE_NO");
+	 		 	String refNo= genSeqNoService.generateSeqCall(generateSeqReq);
+	 		 	
+	 		 	generateSeqReq.setType("3");
+	 		 	generateSeqReq.setTypeDesc("CUSTOMER_ID");
+	 		 	String customerId = genSeqNoService.generateSeqCall(generateSeqReq);
+	 		 	
+	 		 	generateSeqReq.setType("4");
+	 		 	generateSeqReq.setTypeDesc("QUOTE_NO");
+	 		 	String quoteNo  = genSeqNoService.generateSeqCall(generateSeqReq);
+				
+	 		 //String refShortCode = getListItem(req.getInsuranceId() ,req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
+				
+//				String refNo=refShortCode +"-" +seqNo.generateRefNo();
+//				String quoteNo  = "Q"+ generateQuoteNo();
+//				String customerId = "C-" + generateCustId();
+//				String custRefNo = "Cust-" +   generateCustRefNo() ; 
 	            //Copy Quote E service Motor Details
 				EserviceMotorDetails savedata=eserviceMotorCopyquote(req,refNo,branches,loginId,customerId,quoteNo,custRefNo);
 				res.setCommonResponse(savedata);

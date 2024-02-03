@@ -55,6 +55,7 @@ import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
+import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
@@ -97,6 +98,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	
 	@Autowired
 	private FetchErrorDescServiceImpl errorDescService ;
+	
+	@Autowired
+	private GenerateSeqNoServiceImpl genSeqNoService ; 
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -953,7 +957,14 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			//	Random rand = new Random();
 			//	int random = rand.nextInt(90) + 10;
 				productId=Integer.valueOf(req.getProductId());
-				custRefNo = "Cust-" +   generateCustRefNo() ; // idf.format(new Date()) + random ;
+				//custRefNo = "Cust-" +   generateCustRefNo() ; // idf.format(new Date()) + random ;
+				// Generate Seq
+	 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+	 		 	generateSeqReq.setInsuranceId(req.getCompanyId());  
+	 		 	generateSeqReq.setProductId(req.getProductId());
+	 		 	generateSeqReq.setType("1");
+	 		 	generateSeqReq.setTypeDesc("CUSTOMER_REFERENCE_NO");
+	 		 	custRefNo =  genSeqNoService.generateSeqCall(generateSeqReq);
 				res.setResponse("Saved Successfully");
 				res.setSuccessId(custRefNo);
 			} else {
@@ -1084,7 +1095,19 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setCityName(req.getCityName());
 			saveData.setRegionCode(req.getRegionCode());
 			
-			
+			// Kenya Rating Fields
+			saveData.setMaritalStatus(StringUtils.isBlank(req.getMaritalStatus()) ?"Single" : req.getMaritalStatus() );
+			if (req.getLicenseIssuedDate()!=null ) {
+				saveData.setLicenseIssuedDate(req.getLicenseIssuedDate());
+				Date licenceIssued = req.getDobOrRegDate();
+				Date today = new Date();
+				int licenseDuration = today.getYear() - licenceIssued.getYear();
+				saveData.setLicenseDuration(licenseDuration);
+				
+			} else {
+				saveData.setLicenseIssuedDate(new Date());
+				saveData.setLicenseDuration(20);
+			}
 			
 			
 //			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){

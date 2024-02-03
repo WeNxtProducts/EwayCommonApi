@@ -46,9 +46,11 @@ import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
+import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.repository.CommonDataDetailsRepository;
+import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.repository.BuildingDetailsRepository;
@@ -112,6 +114,9 @@ public class CopyBuildingRaw {
 
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
+	
+	@Autowired
+	private GenerateSeqNoServiceImpl genSeqNoService ; 
 
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
 	
@@ -205,8 +210,17 @@ public class CopyBuildingRaw {
 				prevPolicyNo=ent.getPolicyNo();
 				prevQuoteNo =BuildingDatas.get(0).getQuoteNo();
 			}
-			if(pendingcount==0)
-				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
+			if(pendingcount==0) {
+				//newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
+				// Generate Seq
+	 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+	 		 	generateSeqReq.setInsuranceId(ent.getCompanyId());  
+	 		 	generateSeqReq.setProductId(ent.getProductId().toString());
+	 		 	generateSeqReq.setType("2");
+	 		 	generateSeqReq.setTypeDesc("REQUEST_REFERENCE_NO");
+	 		 	newRequestNo =  genSeqNoService.generateSeqCall(generateSeqReq);
+			}
+				
 			
 			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
 					/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()),new Date(), new Date());*/

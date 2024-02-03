@@ -82,6 +82,7 @@ import com.maan.eway.calculator.util.SubCoverCreationUtil;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.QuoteThreadReq;
+import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.EndtUpdatePremiumRes;
 import com.maan.eway.common.res.ViewQuoteRes;
@@ -1593,21 +1594,29 @@ public class CalculatorEngineService implements CalculatorEngine {
 			String vehUsageCoreappcode = "";
 			
 			
-		 	if(request.getProductId().equalsIgnoreCase("5"))		 	
-		 		vehUsageCoreappcode = getListItemvalue(request.getInsuranceId() , request.getBranchCode(), "MADISON_MOTOR", list.get(0).getMotorUsage(), pi.getPolicyHolderType());	 	
-		 	
-		 	  if(request.getInsuranceId().equalsIgnoreCase("100004")) {
-		 		  
-		 		 String itemvalue = getListItemvalue(request.getInsuranceId() , request.getBranchCode(), "POLICY_NO");
-		 		  
-		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode(), request.getInsuranceId(), vehUsageCoreappcode, request.getProductId(), itemvalue);
-		 		 
-		 	  }else if(request.getInsuranceId().equalsIgnoreCase("100019")) {
-		 		 policyNo = genNo.generateUgandaPolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
-			 } else {
-		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
-		 	  }
-		 	
+//		 	if(request.getProductId().equalsIgnoreCase("5"))		 	
+//		 		vehUsageCoreappcode = getListItemvalue(request.getInsuranceId() , request.getBranchCode(), "MADISON_MOTOR", list.get(0).getMotorUsage(), pi.getPolicyHolderType());	 	
+//		 	
+//		 	  if(request.getInsuranceId().equalsIgnoreCase("100004")) {
+//		 		  
+//		 		 String itemvalue = getListItemvalue(request.getInsuranceId() , request.getBranchCode(), "POLICY_NO");
+//		 		  
+//		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode(), request.getInsuranceId(), vehUsageCoreappcode, request.getProductId(), itemvalue);
+//		 		 
+//		 	  }else {
+//		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
+//		 	  }
+				// Generate Policy Seq
+				SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+			 	generateSeqReq.setInsuranceId(hpm.getCompanyId());  
+			 	generateSeqReq.setProductId(hpm.getProductId().toString());
+			 	generateSeqReq.setType("5");
+			 	generateSeqReq.setTypeDesc("POLICY_NO");
+			 	List<String> params = new ArrayList<String>();
+			 	params.add(hpm.getQuoteNo());
+			 	generateSeqReq.setParams(params);
+			 	policyNo =  genNo.generateSeqCall(generateSeqReq);
+			
 				request.setPolicyNo(policyNo);
 			} else { //endt
 				
