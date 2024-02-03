@@ -251,8 +251,9 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 					 premiumFc =premiumFcWithT * Double.valueOf(brokerCommision.toPlainString()) /100;
 					 premiumLc =premiumLcWithT * Double.valueOf(brokerCommision.toPlainString()) /100;
 					 
-					 jpqlQuery.updateBrokerCommission(quoteNo, premiumFc);
-					 
+					 //jpqlQuery.updateBrokerCommission(quoteNo, premiumFc);
+					 hpm.setCommission(new BigDecimal(premiumFc));
+					 hpmRepo.saveAndFlush(hpm); 
 					docId=hpm.getLoginId();
 					narration=c.getChartAccountDesc() +" @ "+brokerCommision.toPlainString();
 					bokerCommiCheck=true;
@@ -291,8 +292,8 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 					 
 					BigDecimal taxPer =pcd.isPresent()?pcd.get().getTaxRate():new BigDecimal(1);
 					 
-					HomePositionMaster hpmm = hpmRepo.findByQuoteNo(quoteNo);
-					BigDecimal tax =hpmm.getCommission().multiply(taxPer).divide(new BigDecimal(100));
+					//HomePositionMaster hpmm = hpmRepo.findByQuoteNo(quoteNo);
+					BigDecimal tax =hpm.getCommission().multiply(taxPer).divide(new BigDecimal(100));
 					premiumFc =Double.valueOf(tax.toPlainString());
 					docId=hpm.getLoginId();
 					bokerCommiCheck=true;
