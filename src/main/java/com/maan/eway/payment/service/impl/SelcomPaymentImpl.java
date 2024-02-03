@@ -53,7 +53,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 	@Override
 	public JsonObject createOrderForPayment(String merchantRefernceNo) {
 		try {
-			PaymentDetail payment = paymentDetailRepo.findByMerchantReferenceAndPaymentTypeAndPaymentStatus(merchantRefernceNo,"4","PENDING");
+			PaymentDetail payment = paymentDetailRepo.findByMerchantReferenceAndPaymentStatus(merchantRefernceNo,"PENDING");
 			if(payment!=null)
 				return createOrderForPayment(payment);
 			else {
@@ -435,7 +435,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 	@Override
 	public JsonObject createOrderMinimal(String merchantRefernceNo) {
 		try {
-			PaymentDetail payment = paymentDetailRepo.findByMerchantReferenceAndPaymentTypeAndPaymentStatus(merchantRefernceNo,"4","PENDING");
+			PaymentDetail payment = paymentDetailRepo.findByMerchantReferenceAndPaymentStatus(merchantRefernceNo,"PENDING");
 			if(payment!=null) {
 			 return createOrderMinimal(payment);				
 			}else {

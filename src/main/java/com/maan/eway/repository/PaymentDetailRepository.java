@@ -52,6 +52,8 @@ public interface PaymentDetailRepository  extends JpaRepository<PaymentDetail,Pa
 	@Query(value="SELECT ITEM_VALUE FROM EWAY_LIST_ITEM_VALUE WHERE ITEM_CODE='CREDIT_URL' AND COMPANY_ID='100004'",nativeQuery=true)
 	String getCreditLimitApiURL();
 
+	PaymentDetail findByMerchantReferenceAndPaymentStatus(String merchantRefernceNo, String string);
+
 
 	
 }
