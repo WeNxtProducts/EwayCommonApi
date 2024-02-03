@@ -2,7 +2,6 @@ package com.maan.eway.jasper.controller;
 
 import java.util.Collections;
 
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,8 +21,6 @@ import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.service.PrintReqService;
-
-import nonapi.io.github.classgraph.utils.CollectionUtils;
 
 @RestController
 @RequestMapping("/pdf")

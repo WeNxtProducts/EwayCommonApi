@@ -89,11 +89,13 @@ import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataIndividuals;
+import com.maan.eway.bean.PolicyDrcrDetail;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqPaymentid;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
+import com.maan.eway.chartaccount.ChartAccountServiceImpl;
 import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
@@ -310,6 +312,9 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Autowired
 	private EserviceTravelGroupDetailsRepository groupRepo;
+	
+	@Autowired
+	private ChartAccountServiceImpl accountServiceImpl;
 
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -2377,13 +2382,23 @@ public class PaymentServiceImpl implements PaymentService {
 			policyReq.setProductId(paymentInfo.getProductId().toString());
 			policyReq.setQuoteno(req.getQuoteNo());
 			policyReq.setSectionId("");
+			
+			
+			String policyNo = calcService.getPolicyNo(policyReq);
+			//policyDetails = calcService.commissionCalc(policyReq);
 
-			policyDetails = calcService.commissionCalc(policyReq);
+			CommonRes res =accountServiceImpl.drcrEntry(req.getQuoteNo(),policyNo);
+			
+			HomePositionMaster hpm =homerepo.findByQuoteNo(req.getQuoteNo());
+			
+			List<PolicyDrcrDetail> policydrcr =(List<PolicyDrcrDetail>)res.getCommonResponse();
+			
+			List<PolicyDrcrDetail> filterDebit=policydrcr.stream().filter(p->"DR".equalsIgnoreCase(p.getDrcrFlag())).collect(Collectors.toList());
+			List<PolicyDrcrDetail> filterCredit=policydrcr.stream().filter(p->"CR".equalsIgnoreCase(p.getDrcrFlag())).collect(Collectors.toList());
+			//List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+			//List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
 
-			List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
-			List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
-
-			String policyNo = policyDetails.get(0).getPolicyNo();
+			//String policyNo = policyDetails.get(0).getPolicyNo();
 			// Debit
 			String debitNo = filterDebit.size() > 0 ?  filterDebit.get(0).getDocNo() :"" ;
 			Date debitDate = filterDebit.size() > 0 ? filterDebit.get(0).getEntryDate() : null;
@@ -2392,9 +2407,9 @@ public class PaymentServiceImpl implements PaymentService {
 			String creditNo ="";
 			Date creditDate =null;
 			String creditTo = "";
-			BigDecimal commission = new BigDecimal(0);
-			BigDecimal commissionPercent = new BigDecimal(0);
-			BigDecimal commissionVat = new BigDecimal(0);
+			//BigDecimal commission = new BigDecimal(0);
+			//BigDecimal commissionPercent = new BigDecimal(0);
+			//BigDecimal commissionVat = new BigDecimal(0);
 			if(filterCredit!=null && !filterCredit.isEmpty()) {
 			// Credit
 			 creditNo =  filterCredit.get(0).getDocNo();
@@ -2407,8 +2422,8 @@ public class PaymentServiceImpl implements PaymentService {
 //					 (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
 //						).collect(Collectors.toList())	;
 		//	String chargeCode = Double.valueOf(premiumFc)<0 ? "1006" : "1005" ;
-			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o ->(o.getChargeCode().equals(new BigDecimal(1005))||o.getChargeCode().equals(new BigDecimal(1006)) )).collect(Collectors.toList())	;
-			 for ( DebitAndCredit o : commissionList) {
+			// List<DebitAndCredit> commissionList = policyDetails.stream().filter( o ->(o.getChargeCode().equals(new BigDecimal(1005))||o.getChargeCode().equals(new BigDecimal(1006)) )).collect(Collectors.toList())	;
+			/* for ( DebitAndCredit o : commissionList) {
 				 commission= commission.add(o.getAmountFc());
 				 
 			 };
@@ -2420,7 +2435,7 @@ public class PaymentServiceImpl implements PaymentService {
 			for ( DebitAndCredit o : commissionVatList) {
 				commissionVat= commissionVat.add(o.getAmountFc());
 				 
-			 };
+			 };*/
 //			 commission= policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
 //						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
 //					 	).collect(Collectors.toList()).get(0).getAmountFc();
@@ -2430,9 +2445,9 @@ public class PaymentServiceImpl implements PaymentService {
 //								o.getChargeCode().equals(new BigDecimal(1012))
 //								)
 //						).collect(Collectors.toList()).get(0).getAmountFc();
-			 commissionPercent=policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).size() 
-					 >0 ?	policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).get(0).getAmountFc() : new BigDecimal(0);
-			 
+//			 commissionPercent=policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).size() 
+//					 >0 ?	policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).get(0).getAmountFc() : new BigDecimal(0);
+//			 
 			}
 			
 //			List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
@@ -2452,9 +2467,9 @@ public class PaymentServiceImpl implements PaymentService {
 			data.setCreditDate(creditDate);	
 			data.setCreditTo(creditTo);
 
-			data.setCommission(commission);
-			data.setCommissionPercentage(commissionPercent);
-			data.setVatCommission(commissionVat);
+//			data.setCommission(commission);
+//			data.setCommissionPercentage(commissionPercent);
+//			data.setVatCommission(commissionVat);
 			data.setPaymentMode(req.getPaymentType());
 			data.setPaymentType(paymentDetail.getPaymentTypedesc());
 			//data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
@@ -2480,7 +2495,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			// Update ProductWise
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
-			String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn(),commissionPercent); 
+			String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn(),hpm.getCommissionPercentage()); 
   
 			return policyDetails;
 		}catch (Exception e) {

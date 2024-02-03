@@ -1340,7 +1340,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
 			}
 			
-			HomePositionMaster homeData = homeRepo.findByQuoteNo(v1.getQuoteDetails().getQuoteNo());
+		/*	HomePositionMaster homeData = homeRepo.findByQuoteNo(v1.getQuoteDetails().getQuoteNo());
 			List<ChartOfAccount>  getChartList = getChartList(homeData.getCompanyId());
 			// Source Type Search Condition
 			List<String> directSource = new ArrayList<String>();
@@ -1496,7 +1496,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				 * bsubsets.add(subset); }
 				 * 
 				 */
-				setup.put("<CUSTOMER>", csubsets);
+				/*setup.put("<CUSTOMER>", csubsets);
 				
 
 				// Rule
@@ -1560,12 +1560,61 @@ public class CalculatorEngineService implements CalculatorEngine {
 						}
 					}
 				}
-				crdrservice.insertDRCR(resList, request.getQuoteno());
+				crdrservice.insertDRCR(resList, request.getQuoteno()); */
 			} catch(Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 		return resList ;
+	}
+	
+	
+	@Override
+	public String getPolicyNo(CalcCommission request ) {
+		String policyNo = "" ;
+		try {
+			ViewQuoteReq q = new ViewQuoteReq();
+			q.setQuoteNo(request.getQuoteno());
+			ViewQuoteRes v1 = quoteservice.viewQuoteDetails(q);
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(v1.getQuoteDetails().getCompanyId() , v1.getQuoteDetails().getProductId().toString());
+			String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+			String emiYn=v1.getQuoteDetails().getEmiYn();
+			String instalment=v1.getQuoteDetails().getInstallmentMonth();
+			 List<BranchMaster> branchCode=ratingutil.collectBranchMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getBranchCode());
+			 
+			 //Not endt
+			if (StringUtils.isBlank(endttypeid)&& ( emiYn.equalsIgnoreCase("N") || instalment.equalsIgnoreCase("0"))) {			 
+				List<SectionDataDetails> sections = sectionRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
+		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),sections.get(0).getSectionId());
+		 
+		 	List<MotorDataDetails> list = motorRepo.findByQuoteNo(request.getQuoteno());
+		 	HomePositionMaster hpm = homeRepo.findByQuoteNo(request.getQuoteno())	 ;	
+		 	PersonalInfo pi = piRepo.findByCustomerId(hpm.getCustomerId()) 	;
+			String vehUsageCoreappcode = "";
+			
+			
+		 	if(request.getProductId().equalsIgnoreCase("5"))		 	
+		 		vehUsageCoreappcode = getListItemvalue(request.getInsuranceId() , request.getBranchCode(), "MADISON_MOTOR", list.get(0).getMotorUsage(), pi.getPolicyHolderType());	 	
+		 	
+		 	  if(request.getInsuranceId().equalsIgnoreCase("100004")) {
+		 		  
+		 		 String itemvalue = getListItemvalue(request.getInsuranceId() , request.getBranchCode(), "POLICY_NO");
+		 		  
+		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode(), request.getInsuranceId(), vehUsageCoreappcode, request.getProductId(), itemvalue);
+		 		 
+		 	  }else {
+		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
+		 	  }
+		 	
+				request.setPolicyNo(policyNo);
+			} else { //endt
+				
+				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return policyNo;
 	}
 	
 	private EndtUpdatePremiumRes updateEndtPremium2(String quoteNo,Date effDate,String prevQuoteNo,Integer riskId, List<PolicyCoverData> covers, Integer productId , Integer sectionId , String endtType ) {
