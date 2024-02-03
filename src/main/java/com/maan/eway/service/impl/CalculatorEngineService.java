@@ -1616,8 +1616,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 			 	params.add(hpm.getQuoteNo());
 			 	generateSeqReq.setParams(params);
 			 	policyNo =  genNo.generateSeqCall(generateSeqReq);
-			
-				request.setPolicyNo(policyNo);
+			 	policyNo = policyNo.replaceAll(" ", "");
+			 	request.setPolicyNo(policyNo);
 			} else { //endt
 				
 				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
