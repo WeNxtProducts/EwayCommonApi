@@ -1602,7 +1602,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 		 		  
 		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode(), request.getInsuranceId(), vehUsageCoreappcode, request.getProductId(), itemvalue);
 		 		 
-		 	  }else {
+		 	  }else if(request.getInsuranceId().equalsIgnoreCase("100019")) {
+		 		 policyNo = genNo.generateUgandaPolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
+			 } else {
 		 		 policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
 		 	  }
 		 	
