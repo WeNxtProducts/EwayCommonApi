@@ -2300,11 +2300,12 @@ public class PaymentServiceImpl implements PaymentService {
 			}else {
 			
 			if(paymentStatus.equalsIgnoreCase("ACCEPTED")&& paymentInfo.getEmiYn().equalsIgnoreCase("N")) {
-				List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
+				//List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
+				 List<PolicyDrcrDetail> policyDetails =  generatePolicyNew(paymentInfo,req,paymentDetail,token);
 				
 				String policyNo = policyDetails.get(0).getPolicyNo();
-				List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
-				List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
+				List<PolicyDrcrDetail> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+				List<PolicyDrcrDetail> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
 				// Debit
 				String debitNo = filterDebit.size() > 0 ? filterDebit.get(0).getDocNo() : "";
 				// Credit
@@ -2505,6 +2506,149 @@ public class PaymentServiceImpl implements PaymentService {
 		return null;
 	}
 
+	public List<PolicyDrcrDetail>  generatePolicyNew(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail, String token) {
+		List<PolicyDrcrDetail> policydrcr  = new ArrayList<PolicyDrcrDetail>();
+		try {
+
+			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
+			//String paymentMode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_MODE",req.getPaymentType());
+			
+							
+								
+
+
+			List<DebitAndCredit> policyDetails = new ArrayList<DebitAndCredit>();
+			CalcCommission  policyReq = new CalcCommission();
+			policyReq.setAgencyCode("");
+			policyReq.setBranchCode(paymentInfo.getBranchCode());
+			policyReq.setCreatedBy(req.getCreatedBy());
+			policyReq.setInsuranceId(paymentInfo.getCompanyId());
+			policyReq.setPolicyNo("");
+			policyReq.setProductId(paymentInfo.getProductId().toString());
+			policyReq.setQuoteno(req.getQuoteNo());
+			policyReq.setSectionId("");
+			
+			
+			String policyNo = calcService.getPolicyNo(policyReq);
+			//policyDetails = calcService.commissionCalc(policyReq);
+
+			CommonRes res =accountServiceImpl.drcrEntry(req.getQuoteNo(),policyNo);
+			
+			HomePositionMaster hpm =homerepo.findByQuoteNo(req.getQuoteNo());
+			
+			policydrcr =(List<PolicyDrcrDetail>)res.getCommonResponse();
+			
+			List<PolicyDrcrDetail> filterDebit=policydrcr.stream().filter(p->"DR".equalsIgnoreCase(p.getDrcrFlag())).collect(Collectors.toList());
+			List<PolicyDrcrDetail> filterCredit=policydrcr.stream().filter(p->"CR".equalsIgnoreCase(p.getDrcrFlag())).collect(Collectors.toList());
+			//List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+			//List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
+
+			//String policyNo = policyDetails.get(0).getPolicyNo();
+			// Debit
+			String debitNo = filterDebit.size() > 0 ?  filterDebit.get(0).getDocNo() :"" ;
+			Date debitDate = filterDebit.size() > 0 ? filterDebit.get(0).getEntryDate() : null;
+			String debitTo = filterDebit.size() > 0 ?  filterDebit.get(0).getDocType()  : "";
+			
+			String creditNo ="";
+			Date creditDate =null;
+			String creditTo = "";
+			//BigDecimal commission = new BigDecimal(0);
+			//BigDecimal commissionPercent = new BigDecimal(0);
+			//BigDecimal commissionVat = new BigDecimal(0);
+			if(filterCredit!=null && !filterCredit.isEmpty()) {
+			// Credit
+			 creditNo =  filterCredit.get(0).getDocNo();
+			 creditDate = filterCredit.get(0).getEntryDate();
+			 creditTo = filterCredit.get(0).getDocType();
+			 
+			 
+			// Commision
+//			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") &&
+//					 (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
+//						).collect(Collectors.toList())	;
+		//	String chargeCode = Double.valueOf(premiumFc)<0 ? "1006" : "1005" ;
+			// List<DebitAndCredit> commissionList = policyDetails.stream().filter( o ->(o.getChargeCode().equals(new BigDecimal(1005))||o.getChargeCode().equals(new BigDecimal(1006)) )).collect(Collectors.toList())	;
+			/* for ( DebitAndCredit o : commissionList) {
+				 commission= commission.add(o.getAmountFc());
+				 
+			 };
+			 // Commission Vat
+			 String brokerDrFlag = commission.compareTo(new BigDecimal("0") ) < 0 ? "DR" :"CR"  ;
+			List<DebitAndCredit> commissionVatList = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase(brokerDrFlag) &&
+			 (o.getChargeCode().equals(new BigDecimal(1009)) )).collect(Collectors.toList())	;
+			
+			for ( DebitAndCredit o : commissionVatList) {
+				commissionVat= commissionVat.add(o.getAmountFc());
+				 
+			 };*/
+//			 commission= policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
+//						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
+//					 	).collect(Collectors.toList()).get(0).getAmountFc();
+//			 commissionPercent=	policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+//						&& (o.getChargeCode().equals(new BigDecimal(1007))
+//								||
+//								o.getChargeCode().equals(new BigDecimal(1012))
+//								)
+//						).collect(Collectors.toList()).get(0).getAmountFc();
+//			 commissionPercent=policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).size() 
+//					 >0 ?	policyDetails.stream().filter( o ->  (o.getChargeCode().equals(new BigDecimal(1007)))).collect(Collectors.toList()).get(0).getAmountFc() : new BigDecimal(0);
+//			 
+			}
+			
+//			List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+//					&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
+
+//			if (filtercommissionVat.size()>0 ) {
+//				commissionVat =  filtercommissionVat.get(0).getAmountFc();
+//			}
+
+
+			// Update Home Posion Master
+			data.setDebitNoteNo(debitNo);
+			data.setDebitNoteDate(debitDate);
+			data.setDebitTo(debitTo);
+
+			data.setCreditNo(creditNo);
+			data.setCreditDate(creditDate);	
+			data.setCreditTo(creditTo);
+
+//			data.setCommission(commission);
+//			data.setCommissionPercentage(commissionPercent);
+//			data.setVatCommission(commissionVat);
+			data.setPaymentMode(req.getPaymentType());
+			data.setPaymentType(paymentDetail.getPaymentTypedesc());
+			//data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
+			data.setPaymentStatus(paymentInfo.getPaymentStatus());
+			data.setPolicyNo(policyNo);
+			
+			data.setStatus(StringUtils.isNotBlank(data.getEndtTypeId()) && "842".equalsIgnoreCase(data.getEndtTypeId()) ? "D" : "P");
+			data.setIntegrationStatus("S");
+			data.setEmiYn(paymentInfo.getEmiYn());
+			data.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
+			if(StringUtils.isNotBlank(data.getEndtTypeId())) {
+				data.setEndtStatus("C");
+
+			} else {
+				data.setOriginalPolicyNo(policyNo);
+			}
+
+
+			homerepo.saveAndFlush(data);
+
+			
+			
+			
+			// Update ProductWise
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
+			String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn(),hpm.getCommissionPercentage()); 
+  
+			return policydrcr;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 
 	//Tracking Details
 	private QuoteUpdateRes trackingDetailsPayment(HomePositionMaster data,String createdBy) {
