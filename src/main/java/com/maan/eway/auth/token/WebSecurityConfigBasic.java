@@ -31,7 +31,7 @@ public class WebSecurityConfigBasic extends WebSecurityConfigurerAdapter {
 				http.authorizeRequests()
 				.antMatchers("/embedded/create/schedule/**","/embedded/create/policy/schedule/**").permitAll()
 				.and()
-                .requestMatchers().antMatchers("/basicauth/**","/embedded/create/**","post/notification/ack/mail") 
+                .requestMatchers().antMatchers("/api/generatesequence","/basicauth/**","/embedded/create/**","post/notification/ack/mail") 
                 .and()
                 .authorizeRequests().anyRequest().hasRole("USER")
                 .and()
