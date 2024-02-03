@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyDrcrDetail;
+import com.maan.eway.bean.ProductTaxSetup;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
@@ -52,10 +53,10 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 			Integer productId =hpm.getProductId();
 			Integer sectionId =hpm.getSectionId();
 			BigDecimal brokerCommision =hpm.getCommissionPercentage();
-			
+			String taxFor ="";
 			String endorsmentType =StringUtils.isBlank(hpm.getEndtTypeId())?"":hpm.getEndtTypeId();
 			
-			BigDecimal endtPremium =StringUtils.isNotBlank(endorsmentType)?hpm.getEndtPremium():new BigDecimal(1);
+			BigDecimal endtPremium =StringUtils.isNotBlank(endorsmentType)?hpm.getEndtPremium():new BigDecimal(0);
 			
 			List<ChartParentMaster> cpm =chatParentMasterRepo.findByChatParentIdCompanyIdAndStatusIgnoreCaseOrderByDisplayOrderAsc(companyId, "Y");
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
@@ -83,12 +84,12 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 				List<ChartAccountChildMaster> charAccount =jpqlQuery.getChildChartAccountData(companyId,productId,sectionId,c);
 				
 				Double premiumLc =null;
-				Double premiumFc =null;
+				BigDecimal premiumFc =null;
 				String documentType ="";
 				String docId ="";
 				String  documentNo ="";
-				Double premiumFcWithT=0D;
-				Double premiumLcWithT=0D;
+				BigDecimal premiumFcWithT=null;
+				BigDecimal premiumLcWithT=null;
 				String drcrFlag ="";
 				String narration="";
 				Boolean bokerCommiCheck=false;
@@ -105,28 +106,28 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 					 
 						 premiumFc =pcdList.stream().filter(p->p.getTaxId()==0 )
 								 .filter(p ->p.getDiscLoadId()==0)
-								 .map(p ->Double.valueOf(p.getPremiumExcludedTaxFc().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
+								 .map(p ->p.getPremiumExcludedTaxFc())
+								 .reduce(new BigDecimal(0), (a,b) ->a.add(b));
 								 
-						 premiumLc =pcdList.stream().filter(p->p.getTaxId()==0 )
+						/* premiumLc =pcdList.stream().filter(p->p.getTaxId()==0 )
 								 .filter(p ->p.getDiscLoadId()==0)
 								 .map(p ->Double.valueOf(p.getPremiumExcludedTaxLc().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
+								 .collect(Collectors.summingDouble(p ->p));*/
 					 }else {
 						 
-						 Double premiumIncFcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
+						 BigDecimal premiumIncFcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
 								 .filter(p ->p.getDiscLoadId()!=0)
 								 .filter(p ->p.getCoverageType().equals("E"))
-								 .map(p ->Double.valueOf(p.getPremiumIncludedTaxFc().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
+								 .map(p ->p.getPremiumIncludedTaxFc())
+								 .reduce(new BigDecimal(0), (a,b)->a.add(b));
 						 
-						 minusSign =premiumIncFcWithT<0 ?"-" :"";
+						 minusSign =premiumIncFcWithT.longValue()<0L ?"-" :"";
 						 						 
 						 premiumFc =pcdList.stream().filter(p->p.getTaxId()==0 )
 								 .filter(p ->p.getDiscLoadId()!=0)
 								 .filter(p ->p.getCoverageType().equals("E"))
-								 .map(p ->Double.valueOf(p.getPremiumExcludedTaxFc().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
+								 .map(p ->p.getPremiumExcludedTaxFc())
+								 .reduce(new BigDecimal(0), (a,b) ->a.add(b));
 						 
 						/* premiumLc =pcdList.stream().filter(p->p.getTaxId()==0 )
 								 .filter(p ->p.getDiscLoadId()!=0)
@@ -135,8 +136,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 								 .collect(Collectors.summingDouble(p ->p));*/
 						 
 						 premiumFc =StringUtils.isBlank(minusSign)?premiumFc:
-								 premiumFc<0 ? premiumFc :Double.valueOf( "-"+premiumFc);
-						// premiumLc =StringUtils.isBlank(minusSign)?premiumLc:Double.valueOf("-"+premiumLc);
+								 premiumFc.longValue()<0 ? premiumFc : new BigDecimal("-"+premiumFc);
 					 }
 					 
 					 if(endtPremium.doubleValue()<0) {
@@ -170,23 +170,23 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 					 
 					 if(StringUtils.isBlank(endorsmentType)) {
 					 
-						 premiumFc=pcdList.stream().filter(p ->p.getTaxId()!=0)
+						 premiumFc =pcdList.stream().filter(p ->p.getTaxId()!=0)
 								 .filter(p ->p.getDiscLoadId()==0)
-								 .map(p ->Double.valueOf(p.getTaxAmount().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
+								 .map(p ->p.getTaxAmount())
+								 .reduce(new BigDecimal(0),(a,b) ->a.add(b));
+						 
 						 
 					 }else {
 						 
 						 premiumFc=pcdList.stream().filter(p ->p.getTaxId()!=0)
 								 .filter(p ->p.getDiscLoadId()!=0)
 								 .filter(p ->p.getCoverageType().equals("T"))
-								 .map(p ->Double.valueOf(p.getTaxAmount().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
-						 
-						// premiumFc =StringUtils.isBlank(minusSign)?premiumFc:Double.valueOf("-"+premiumFc);
-						 
+								 .map(p ->p.getTaxAmount())
+								 .reduce(new BigDecimal(0), (a,b) ->a.add(b));
+								
+						 						 
 						 premiumFc =StringUtils.isBlank(minusSign)?premiumFc:
-							 premiumFc<0 ? premiumFc :Double.valueOf( "-"+premiumFc);
+							 premiumFc.longValue()<0 ? premiumFc :new BigDecimal( "-"+premiumFc);
 					 }
 					
 					 if(endtPremium.doubleValue()<0) {
@@ -213,13 +213,13 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 						 
 						 premiumFcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
 								 .filter(p ->p.getDiscLoadId()==0)
-								 .map(p ->Double.valueOf(p.getPremiumExcludedTaxFc().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
+								 .map(p ->p.getPremiumExcludedTaxFc())
+								.reduce(new BigDecimal(0),(a,b) -> a.add(b));
 								 
-						 premiumLcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
+						/* premiumLcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
 								 .filter(p ->p.getDiscLoadId()==0)
 								 .map(p ->Double.valueOf(p.getPremiumExcludedTaxLc().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
+								 .collect(Collectors.summingDouble(p ->p));*/
 					 }else {
 						 
 						 Double premiumIncWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
@@ -232,19 +232,19 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 						 premiumFcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
 								 .filter(p ->p.getDiscLoadId()!=0)
 								 .filter(p ->p.getCoverageType().equals("E"))
-								 .map(p ->Double.valueOf(p.getPremiumExcludedTaxFc().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
+								 .map(p ->p.getPremiumExcludedTaxFc())
+								 .reduce(new BigDecimal(0), (a,b) -> a.add(b));
 								 
-						 premiumLcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
+						/* premiumLcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
 								 .filter(p ->p.getDiscLoadId()!=0)
 								 .filter(p ->p.getCoverageType().equals("E"))
 								 .map(p ->Double.valueOf(p.getPremiumExcludedTaxLc().toPlainString()))
-								 .collect(Collectors.summingDouble(p ->p));
+								 .collect(Collectors.summingDouble(p ->p));*/
 						 
 						// premiumFcWithT =StringUtils.isBlank(minusSign)?premiumFcWithT:Double.valueOf("-"+premiumFcWithT.toString());
 						
 						 premiumFcWithT =StringUtils.isBlank(minusSign)?premiumFcWithT:
-							 premiumFcWithT<0 ? premiumFcWithT :Double.valueOf( "-"+premiumFcWithT);
+							 premiumFcWithT.longValue()<0 ? premiumFcWithT :new BigDecimal( "-"+premiumFcWithT);
 						 // premiumLcWithT =StringUtils.isBlank(minusSign)?premiumLcWithT:Double.valueOf("-"+premiumLcWithT.toString());
 
 					 }
@@ -259,55 +259,41 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 						 documentNo =crnumber;
 					 }
 					 	 
-					 premiumFc =premiumFcWithT * Double.valueOf(brokerCommision.toPlainString()) /100;
-					 premiumLc =premiumLcWithT * Double.valueOf(brokerCommision.toPlainString()) /100;
-					 
-					 //jpqlQuery.updateBrokerCommission(quoteNo, premiumFc);
-					 hpm.setCommission(new BigDecimal(premiumFc));
-					 hpmRepo.saveAndFlush(hpm); 
+					premiumFc =premiumFcWithT.multiply(brokerCommision).divide(new BigDecimal(100)).setScale(2,BigDecimal.ROUND_HALF_EVEN);
+					hpm.setCommission(premiumFc);
+					hpmRepo.saveAndFlush(hpm); 
 					docId=hpm.getLoginId();
-					narration=c.getChartAccountDesc() +" @ "+brokerCommision.toPlainString();
+					narration=c.getChartAccountDesc() +" @ "+brokerCommision;
 					bokerCommiCheck=true;
 					
 				}else if("CR".equalsIgnoreCase(c.getAccountType()) && brokerCommision.doubleValue()>0
 						&& "T".equalsIgnoreCase(c.getCharactersticType())) {
 												
-					 List<PolicyCoverData> pcdList =jpqlQuery.getPolicyCoverDataTax(quoteNo, coverIds);
-					 
-					 Optional<PolicyCoverData> pcd =null;
-							 
-					 if(StringUtils.isBlank(endorsmentType)) {		 
-							 
-						 pcd = pcdList.stream().filter(p->p.getTaxId()!=0 )
-							 .filter(p ->p.getDiscLoadId()==0)
-							 .findFirst();
-					 }else {
-						 pcd = pcdList.stream().filter(p->p.getTaxId()!=0 )
-								 .filter(p ->p.getDiscLoadId()!=0)
-								 .filter(p ->p.getCoverageType().equals("T"))
-								 .findFirst();
-					 }
-					 
-					 narration =pcd.isPresent()?pcd.get().getTaxCalcType().equals("P")?c.getChartAccountDesc() +" @ "+pcd.get().getTaxRate().toString()
-						 	 :c.getChartAccountDesc() :"";
-							
+					
 					
 					if(endtPremium.doubleValue()<0) {
-							drcrFlag="DR";
-							documentType="B";
-							documentNo =drnumber;
-					}else {
+						drcrFlag="DR";
+						documentType="B";
+						documentNo =drnumber;
+						taxFor="ER";
+					}else if(endtPremium.doubleValue()>0) {
 						 documentType="B";
 						 documentNo =crnumber;
-					 } 	 
+						 taxFor="EC";
+					 } else {
+						 taxFor="NB";
+						 documentType="B";
+						 documentNo =crnumber;
+					 }
+					
+					ProductTaxSetup taxProductTaxSetup =jpqlQuery.getProductTaxSetup(companyId,coverIds,productId,hpm.getBranchCode(),taxFor); 
 					 
-					BigDecimal taxPer =pcd.isPresent()?pcd.get().getTaxRate():new BigDecimal(1);
-					 
-					//HomePositionMaster hpmm = hpmRepo.findByQuoteNo(quoteNo);
-					BigDecimal tax =hpm.getCommission().multiply(taxPer).divide(new BigDecimal(100));
-					premiumFc =Double.valueOf(tax.toPlainString());
+					BigDecimal taxPer =new BigDecimal(taxProductTaxSetup.getValue());
+					premiumFc =hpm.getCommission().multiply(taxPer).divide(new BigDecimal(100)).setScale(2,BigDecimal.ROUND_HALF_EVEN);
 					docId=hpm.getLoginId();
 					bokerCommiCheck=true;
+					narration =c.getChartAccountDesc() +" @ "+taxPer;
+						 	
 				}
 				
 				if(bokerCommiCheck) {
@@ -354,8 +340,8 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 			return list.stream().map(p ->{
 				
 				PolicyDrcrDetail drcrDetail = PolicyDrcrDetail.builder()
-						.amountFc(p.get("AmountFC")==null?new BigDecimal(0):BigDecimal.valueOf(Double.valueOf(p.get("AmountFC").toString())))
-						.amountLc(p.get("AmountFC")==null?new BigDecimal(0):BigDecimal.valueOf(Double.valueOf(p.get("AmountFC").toString())))
+						.amountFc(p.get("AmountFC")==null?new BigDecimal(0):new BigDecimal(p.get("AmountFC").toString()))
+						.amountLc(p.get("AmountFC")==null?new BigDecimal(0):new BigDecimal(p.get("AmountFC").toString()))
 						.branchCode(p.get("BranchCode")==null?null:p.get("BranchCode").toString())
 						.chargeAccountDesc(p.get("ChargeAccountDesc")==null?null:p.get("ChargeAccountDesc").toString())
 						.chargeCode(p.get("ChargeCode")==null?new BigDecimal(0):BigDecimal.valueOf(Double.valueOf(p.get("ChargeCode").toString())))

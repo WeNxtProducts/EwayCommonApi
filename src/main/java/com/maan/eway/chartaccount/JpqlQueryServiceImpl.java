@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.ProductTaxSetup;
 
 @Component
 @Transactional
@@ -88,6 +89,25 @@ public class JpqlQueryServiceImpl {
 			
 			logger.info("Broker Commission update for this quote No :"+quoteNo+" || Commission : "+commission+"");
 			return count;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public ProductTaxSetup getProductTaxSetup(Integer companyId, List<Integer> coverIds,Integer productId,String branchCode,String taxFor) {
+		try {
+			String jpqlQuery="select pts from ProductTaxSetup pts where pts.companyId=:companyId and pts.productId=:productId and "
+					+ "(pts.branchCode=:branchCode or branchCode=:commonBranch) and pts.taxFor=:taxFor and pts.taxId in(:taxId) and sysdate() between pts.effectiveDateStart and "
+					+ "pts.effectiveDateEnd";
+			
+			@SuppressWarnings("unchecked")
+			List<ProductTaxSetup> list = (List<ProductTaxSetup>) em.createQuery(jpqlQuery).setParameter("companyId", companyId.toString()).setParameter("productId", productId)
+			.setParameter("branchCode", branchCode).setParameter("taxFor", taxFor).setParameter("taxId", coverIds)
+			.setParameter("commonBranch", "99999")
+			.getResultList();
+			
+			return list.get(0);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
