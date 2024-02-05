@@ -426,7 +426,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						Double totaltax_N = notendtfees.stream().filter(f -> "N".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 
 
-						tcal=new TaxCalculator(t.getPremiumExcluedTax().abs().add(new BigDecimal(endtFee)).add(new BigDecimal(totaltax_N)),t.getExchangeRate(),this,customers.get(0));
+						tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().abs().add(new BigDecimal(endtFee)).add(new BigDecimal(totaltax_N)),t.getExchangeRate(),this,customers.get(0));
 						notendtfees.stream().filter(f -> "Y".equals(f.getDependentYn())).forEach(tcal);
 						Double totaltax_Y = notendtfees.stream().filter(f -> "Y".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();						 
 						totaltax=totaltax_N+totaltax_Y;  
