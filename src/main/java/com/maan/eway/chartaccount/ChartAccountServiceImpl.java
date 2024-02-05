@@ -68,11 +68,12 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 		 	List<String> params = new ArrayList<String>();
 		 	params.add(hpm.getQuoteNo());
 		 	generateSeqReq.setType("7");
-		 	generateSeqReq.setTypeDesc("CREDIT_NO");
+		 	generateSeqReq.setParams(params);
 		 	String crnumber =  genNo.generateSeqCall(generateSeqReq);//genNo.generateCreditNo(hpm.getBrokerCode());
 			
 			generateSeqReq.setType("6");
 		 	generateSeqReq.setTypeDesc("DEBIT_NO");
+		 	generateSeqReq.setParams(params);
 		 	String drnumber =  genNo.generateSeqCall(generateSeqReq);//genNo.generateDebitNo(hpm.getBrokerCode());
 			
 			int index =1;
