@@ -310,6 +310,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						 		 }else {
 						 			 endorsement.setEndorsementsumInsuredLc(BigDecimal.ZERO);
 						 			 endorsement.setEndorsementsumInsured(BigDecimal.ZERO);
+						 			 endorsement.setEndorsementRate(0D);
 						 		 }
 					 			
 					 			 
