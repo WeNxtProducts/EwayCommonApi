@@ -325,8 +325,23 @@ public class YiPolicyDetailReq implements Serializable {
     @JsonProperty("InsuredVisaStatus")
     private String     insuredVisaStatus ;
 
-    @JsonProperty("Promocode")
-    private String     promocode ;
+	@JsonProperty("Promocode")
+	private String promocode;
+
+	@JsonProperty("PolCustCode")
+	private String polCustCode;
+
+	@JsonProperty("PolNoRisk")
+	private Integer polNoRisk;
+
+	@JsonProperty("AssrCodeYn")
+	private Integer assrCodeYn;
+
+	@JsonProperty("NetPremiumFc")
+	private BigDecimal netPremiumFc;
+
+	@JsonProperty("CompanyId")
+	private String companyId;
     
 
 

@@ -54,6 +54,7 @@ import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
+import com.maan.eway.common.req.GetByCustomerRefNoReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
@@ -2384,6 +2385,45 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		}
 		return errorList;
 
+	}
+	
+	@Override
+	public SuccessRes updatebycustrefno(GetByCustomerRefNoReq req) {
+		SuccessRes res = new SuccessRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<EserviceCustomerDetails> save = new ArrayList<EserviceCustomerDetails>();
+			List<EserviceCustomerDetails> list = repository.findByCustomerReferenceNoOrderByEntryDateDesc(req.getCustomerReferenceNo());
+			// Update E service Customer Details
+			if (list.size() > 0 && list != null) {
+				for (EserviceCustomerDetails data : list) {
+					EserviceCustomerDetails saveData = new EserviceCustomerDetails();
+					saveData = dozerMapper.map(data, EserviceCustomerDetails.class);
+					saveData.setPolCustCode(req.getPolCustCode());
+					save.add(saveData);
+				}
+				repository.saveAllAndFlush(save);
+				System.out.println("**********Eservice Customer Details Updated Successfully for Customer Reference No : "+req.getCustomerReferenceNo());
+			}
+			// Update Personal Info
+			List<PersonalInfo> savePersonalInfo = new ArrayList<PersonalInfo>();
+			List<PersonalInfo> personalInfoList = personalInforepo.findByCustomerReferenceNo(req.getCustomerReferenceNo());
+			if (list.size() > 0 && list != null) {
+				for (PersonalInfo data : personalInfoList) {
+					PersonalInfo saveData = new PersonalInfo();
+					saveData = dozerMapper.map(data, PersonalInfo.class);
+					saveData.setPolCustCode(req.getPolCustCode());
+					savePersonalInfo.add(saveData);
+				}
+				personalInforepo.saveAllAndFlush(savePersonalInfo);
+				System.out.println("**********PersonalInfo Updated Successfully for Customer Reference No : "+req.getCustomerReferenceNo());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
 	}
 
 }

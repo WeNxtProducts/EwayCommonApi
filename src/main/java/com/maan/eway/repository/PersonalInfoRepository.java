@@ -50,6 +50,8 @@ public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,Pers
 
 	List<PersonalInfo> findByCompanyIdAndCustomerId(String companyId, String customerId);
 
+	List<PersonalInfo> findByCustomerReferenceNo(String customerReferenceNo);
+
 
 
 }

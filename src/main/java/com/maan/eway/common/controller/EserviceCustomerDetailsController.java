@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
+import com.maan.eway.common.req.GetByCustomerRefNoReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
@@ -209,6 +211,22 @@ public class EserviceCustomerDetailsController {
 	}
 	}
 	
-	
+		//External Call Api To Update E service Customer Details and Personal Info
+		@PostMapping("/updatebycustrefno")
+		public ResponseEntity<CommonRes> updatebycustrefno(@RequestBody GetByCustomerRefNoReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		SuccessRes res = entityService.updatebycustrefno(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data,HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		}
 	
 }
