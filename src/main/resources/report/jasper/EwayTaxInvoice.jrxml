@@ -98,7 +98,7 @@
 			<fieldDescription><![CDATA[narration]]></fieldDescription>
 		</field>
 	</subDataset>
-	<parameter name="pvImagepath" class="java.lang.String"/>
+	<parameter name="pvImagePath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[]]>
 	</queryString>
@@ -258,7 +258,7 @@
 					<leftPen lineWidth="0.0" lineStyle="Solid"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
-				<imageExpression><![CDATA[$P{pvImagepath}+$F{companyLogo}]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagePath}+$F{companyLogo}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
