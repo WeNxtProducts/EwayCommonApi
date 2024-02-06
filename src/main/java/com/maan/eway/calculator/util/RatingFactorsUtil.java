@@ -44,6 +44,7 @@ import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.LifePolicytermsMaster;
 import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.OneTimeTableDetails;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -57,6 +58,7 @@ import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.repository.EwayFactorDetailsRepository;
 import com.maan.eway.repository.EwayFactorResultDetailRepository;
 import com.maan.eway.repository.EwayVehicleMakemodelMasterDetailRepository;
+import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.req.referal.ReferralRequest;
 import com.maan.eway.res.DropDownRes;
@@ -1094,6 +1096,18 @@ public class RatingFactorsUtil {
 				return models.get(0);
 		}catch (Exception e) {
 			e.printStackTrace();
+		}
+		return null;
+	}
+	@Autowired
+	private MotorDriverDetailsRepository mddRepo;
+	public MotorDriverDetails collectDriver(CalcEngine engine) {
+		try {
+			List<MotorDriverDetails> mddes=mddRepo.findByRequestReferenceNoAndRiskId(engine.getRequestReferenceNo(),Integer.parseInt(engine.getVehicleId()));
+			return mddes.get(0);
+		}catch (Exception e) {
+			e.printStackTrace();
+			
 		}
 		return null;
 	}

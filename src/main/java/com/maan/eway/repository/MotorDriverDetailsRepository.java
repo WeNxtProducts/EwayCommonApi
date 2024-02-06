@@ -51,6 +51,8 @@ public interface MotorDriverDetailsRepository  extends JpaRepository<MotorDriver
 
 	Long countByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer vehicleId);
 
+	List<MotorDriverDetails> findByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer parseInt);
+
 	
 
 
