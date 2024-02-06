@@ -13,15 +13,15 @@ import lombok.Data;
 
 @Data
 public class FactorRateDetailsList {
-//
+
 //	@JsonProperty("FactorId")
 //	private String factorId ;
 //	
 //	@JsonProperty("VehicleId")
 //	private String vehicleId ;
 //	
-//	@JsonProperty("VehicleId")
-//	private String vehicleId ;
+//	@JsonProperty("RequestReferenceNo")
+//	private String requestReferenceNo ;
 //	
 //	@JsonProperty("RequestReferenceNo")
 //	private String requestReferenceNo ;
@@ -54,99 +54,78 @@ public class FactorRateDetailsList {
 //	@JsonProperty("VehicleId")
 //	private String vehicleId ;
 //	
-//	 @Column(name="FACTOR_ID", nullable=false)
-//	    private Integer    factorId ;
+//	@JsonProperty("FactorId")
+//    private Integer    factorId ;
 //
-//	    @Id
-//	    @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)
-//	    private String     requestReferenceNo ;
+//	@JsonProperty("FactorId")
+//    private String     requestReferenceNo ;
 //
-//	    @Id
-//	    @Column(name="VEHICLE_ID", nullable=false)
-//	    private Integer    vehicleId ;
+//	@JsonProperty("FactorId")
+//	private Integer    vehicleId ;
 //
-//	    @Id
-//	    @Column(name="COMPANY_ID", nullable=false, length=20)
-//	    private String     companyId ;
+//	@JsonProperty("FactorId")
+//	private String     companyId ;
 //
-//	    @Id
-//	    @Column(name="PRODUCT_ID", nullable=false)
-//	    private Integer    productId ;
+//	@JsonProperty("FactorId")
+//	private Integer    productId ;
 //
-//	    @Id
-//	    @Column(name="SECTION_ID", nullable=false)
-//	    private Integer    sectionId ;
+//	@JsonProperty("FactorId")
+//    private Integer    sectionId ;
 //
-//	    @Id
-//	    @Column(name="AMEND_ID", nullable=false)
-//	    private Integer    amendId ;
+//	@JsonProperty("FactorId")
+//    private Integer    amendId ;
 //
-//	    @Id
-//	    @Column(name="COVER_ID", nullable=false)
-//	    private Integer    coverId ;
+//	@JsonProperty("FactorId")
+//    private Integer    coverId ;
 //
-//	    @Id
-//	    @Column(name="SUB_COVER_ID", nullable=false)
-//	    private Integer    subCoverId ;
+//	@JsonProperty("FactorId")
+//	private Integer    subCoverId ;
 //
-//	    //--- ENTITY DATA FIELDS 
-//	    @Column(name="FACTOR_NAME", length=200)
-//	    private String     factorName ;
+//	@JsonProperty("FactorId")
+//    private String     factorName ;
 //
-//	    @Column(name="OWN_DAMAGE")
-//	    private Double     ownDamage ;
+//	@JsonProperty("FactorId")
+//	private Double     ownDamage ;
 //
-//	    @Column(name="WINDSCREEN")
-//	    private Double     windscreen ;
+//	@JsonProperty("FactorId")
+//	private Double     windscreen ;
 //
-//	    @Column(name="THEFT")
-//	    private Double     theft ;
+//	@JsonProperty("FactorId")
+//	private Double     theft ;
 //
-//	    @Column(name="FIRE")
-//	    private Double     fire ;
+//	@JsonProperty("FactorId")
+//	private Double     fire ;
 //
-//	    @Column(name="THIRD_PARTY")
-//	    private Double     thirdParty ;
+//	@JsonProperty("FactorId")
+//	private Double     thirdParty ;
 //
-//	    @Column(name="CD_REFNO", length=20)
-//	    private String     cdRefno ;
+//	@JsonProperty("FactorId")
+//	private String     cdRefno ;
 //
-//	    @Column(name="VD_REFNO", length=20)
-//	    private String     vdRefno ;
+//	@JsonProperty("FactorId")
+//	private String     vdRefno ;
 //
-//	    @Column(name="MS_REFNO", length=20)
-//	    private String     msRefno ;
+//	@JsonProperty("FactorId")
+//	private String     msRefno ;
 //
-//	    @Column(name="COVER_NAME", length=200)
-//	    private String     coverName ;
+//	@JsonProperty("FactorId")
+//	private String     coverName ;
 //
-//	  /*  @Column(name="COVERAGE_LIMIT")
-//	    private Double     coverageLimit ;*/
+//	@JsonProperty("FactorId")
+//	private String     subCoverYn ;
 //
-//	    @Column(name="SUB_COVER_YN", length=20)
-//	    private String     subCoverYn ;
+//	@JsonProperty("FactorId")
+//	private String     subCoverName ;
 //
-//	    @Column(name="SUB_COVER_NAME", length=200)
-//	    private String     subCoverName ;
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @Column(name="ENTRY_DATE")
+//    private Date       entryDate ;
 //
-//	 /*   @Column(name="FACTOR_TYPE_ID")
-//	    private Double     factorTypeId ;*/
+//	@JsonProperty("FactorId")
+//	private String     createdBy ;
 //
-//	    @Temporal(TemporalType.TIMESTAMP)
-//	    @Column(name="ENTRY_DATE")
-//	    private Date       entryDate ;
-//
-//	    @Column(name="CREATED_BY", length=100)
-//	    private String     createdBy ;
-//
-//	    @Column(name="STATUS", length=20)
-//	    private String     status ;
-//
-//	    @Temporal(TemporalType.TIMESTAMP)
-//	    @Column(name="UPDATED_DATE")
-//	    private Date       updatedDate ;
-//
-//	    @Column(name="UPDATED_BY", length=100)
-//	    private String     updatedBy ;
-//
+//	@JsonProperty("FactorId")
+//    private String     status ;
+
+
 	}

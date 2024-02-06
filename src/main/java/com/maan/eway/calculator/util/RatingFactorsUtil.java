@@ -819,7 +819,7 @@ public class RatingFactorsUtil {
 	private EwayFactorResultDetailRepository fdResultRepo;
 	public List<EwayFactorDetails> saveFactorDetails(Map<String, List<Tuple>> queriesResult, CalcEngine engine, List<Tuple> result, List<Tuple> vehicles, List<Tuple> customers, Cover t) {
 		try {
-			int count= fdRepo.deleteByRequestReferenceNo(engine.getRequestReferenceNo());
+			int count= fdRepo.deleteByRequestReferenceNoAndVehicleId(engine.getRequestReferenceNo(),Integer.parseInt(engine.getVehicleId()));
 			List<EwayFactorDetails> fds=new ArrayList<EwayFactorDetails>();
 			int sno=2;
 			for(Entry<String, List<Tuple>> entrySet :queriesResult.entrySet()) {
@@ -928,9 +928,9 @@ public class RatingFactorsUtil {
 			Double minPremium=Double.parseDouble(queryResult.get(0).get("minPremium").toString());
 			Double minRate=Double.parseDouble(queryResult.get(0).get("rate").toString());
 			Double totalLossRatio= (Double) 60d/100;
-			Double riskPremiumAmt=(Double) (fd.getOwnDamage()*fd.getFire()*fd.getTheft()*fd.getThirdParty()*fd.getWindscreen());
+			Double riskPremiumAmt=(Double) (fd.getOwnDamage()+fd.getFire()+fd.getTheft()+fd.getThirdParty()+fd.getWindscreen());
 			Double premium=(Double) riskPremiumAmt/totalLossRatio;
-			Double calcMinRate=sumInsured*minRate;
+			Double calcMinRate=sumInsured*(Double) (minRate/100);
 			premium =(premium>minPremium)?premium:minPremium;
 			
 			premium= (premium>calcMinRate)?premium:calcMinRate;

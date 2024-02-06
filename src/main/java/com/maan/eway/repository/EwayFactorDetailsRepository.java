@@ -35,5 +35,7 @@ public interface EwayFactorDetailsRepository  extends JpaRepository<EwayFactorDe
 	int deleteByRequestReferenceNo(String requestReferenceNo);
 
 	int deleteAllByRequestReferenceNo(String requestReferenceNo);
+	@Transactional
+	int deleteByRequestReferenceNoAndVehicleId(String requestReferenceNo, Integer parseInt);
 
 }

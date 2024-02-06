@@ -182,27 +182,16 @@ public class FactorRateRequestDetailsController {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-	/*	List<Error> validation = entityService.validateMotorDetails(req);
-		//// validation
-		if (validation != null && validation.size() != 0) {
-			data.setCommonResponse(null);
-			data.setIsError(true);
-			data.setErrorMessage(validation);
-			data.setMessage("Failed");
-			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
-
-		} else { */
-			/////// save
-			FactorRateDetailsList res = null ;//entityService.getFactorRateDetailsList(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		FactorRateDetailsList res = null;//entityService.getFactorRateDetailsList(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 		//}
     }
 
