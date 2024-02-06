@@ -1610,7 +1610,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
 			 	generateSeqReq.setInsuranceId(hpm.getCompanyId());  
 			 	generateSeqReq.setProductId(hpm.getProductId().toString());
-			 	generateSeqReq.setType("5");
+			 	generateSeqReq.setType("5"); 
 			 	generateSeqReq.setTypeDesc("POLICY_NO");
 			 	List<String> params = new ArrayList<String>();
 			 	params.add(hpm.getQuoteNo());
@@ -1621,6 +1621,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			} else { //endt
 				
 				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
+				policyNo = v1.getQuoteDetails().getPolicyNo();
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
