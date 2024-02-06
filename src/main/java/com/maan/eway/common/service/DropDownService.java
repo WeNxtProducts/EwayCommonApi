@@ -233,4 +233,8 @@ public interface DropDownService {
 	
 	List<DropDownRes> errormodules(LovDropDownReq req);
 
+	List<DropDownRes> vehicleClasses(LovDropDownReq req);
+
+	List<DropDownRes> maritalStatus(LovDropDownReq req);
+
 }

@@ -7,6 +7,8 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import com.maan.eway.common.res.CityDropdown;
+import com.maan.eway.common.res.StateDropdown;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.StateMasterChangeStatusReq;
 import com.maan.eway.master.req.StateMasterDropDownReq;
@@ -38,6 +40,10 @@ public interface StateMasterService  {
 	SuccessRes changeStatusOfStateMaster(StateMasterChangeStatusReq req);
 
 	List<DropDownRes> getRegionStateMasterDropdown(StateMasterDropDownReq req);
+
+	List<StateDropdown> getStateGroupMasterDropdown(StateMasterDropDownReq req);
+
+	List<CityDropdown> getCityGroupMasterDropdown(StateMasterDropDownReq req);
 
 	
 	

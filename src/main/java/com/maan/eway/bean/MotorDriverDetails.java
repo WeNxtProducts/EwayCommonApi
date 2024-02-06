@@ -52,8 +52,7 @@ public class MotorDriverDetails implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="QUOTE_NO", nullable=false, length=20)
+    @Column(name="QUOTE_NO", length=20)
     private String     quoteNo ;
 
     @Id
@@ -68,6 +67,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ID_NUMBER", nullable=false, length=100)
     private String     idNumber ;
     
+    @Id
     @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)
     private String     requestReferenceNo ;
      
@@ -150,8 +150,43 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="ENDT_CATEG_DESC", length=100)
    private String     endtCategDesc ;
+
+    @Column(name="STATE_ID", length=100)
+   private String     stateId ;
+
+   @Column(name="CITY_ID", length=100)
+   private String     cityId;
    
+   @Column(name="COUNTRY_ID", length=100)
+   private String     countryId;
+
+   @Column(name="SUBURB_ID", length=100)
+   private String     suburbId ;
+
+   @Column(name="AREA_GROUP", length=100)
+   private Integer areaGroup ;
+
+   @Column(name="MARITAL_STATUS", length=100)
+   private String     maritalStatus ;
+
    
+   @Temporal(TemporalType.TIMESTAMP)
+   @Column(name="LICENSE_ISSUE_DT")
+   private Date       licenseIssueDt ;
+   
+   @Column(name="LICENSE_DURATION", length=100)
+   private Integer licenseDuration ;
+
+   @Column(name="AGE", length=100)
+   private Integer age ;
+   
+   @Column(name="LICENSE_EXPERIENCE", length=100)
+   private Integer     licenseExperience ;
+   
+   @Column(name="GENDER", length=100)
+   private String gender ;
+   
+ 
 }
 
 
