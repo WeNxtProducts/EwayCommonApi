@@ -49,6 +49,8 @@ public interface MotorDriverDetailsRepository  extends JpaRepository<MotorDriver
 	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
 			String originalPolicyNo);
 
+	Long countByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer vehicleId);
+
 	
 
 

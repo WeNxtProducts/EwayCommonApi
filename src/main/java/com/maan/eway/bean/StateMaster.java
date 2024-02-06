@@ -114,6 +114,21 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="UPDATED_BY", length=20)
     private String     updatedBy ;
+    
+    @Column(name="CITY", length=20)
+    private String     city ;
+    
+    @Column(name="SUBURB", length=20)
+    private String     suburb ;
+    
+    @Column(name="AREA_GROUP", length=20)
+    private Integer     areaGroup ;
+    
+    @Column(name="CITY_ID", length=20)
+    private Integer     cityId ;
+    
+    @Column(name="SUBURB_ID", length=20)
+    private Integer     suburbId ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

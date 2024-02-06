@@ -36,9 +36,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.StateMaster;
+import com.maan.eway.common.res.CityDropdown;
+import com.maan.eway.common.res.StateDropdown;
+import com.maan.eway.common.res.SubUrbDropDown;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.StateMasterChangeStatusReq;
 import com.maan.eway.master.req.StateMasterDropDownReq;
@@ -705,6 +709,253 @@ public class StateMasterServiceImpl implements StateMasterService {
 			return null;
 		}
 		return resList;
+	}
+
+	@Override
+	public List<StateDropdown> getStateGroupMasterDropdown(StateMasterDropDownReq req) {
+		List<StateDropdown> resList = new ArrayList<StateDropdown>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			String countryId=null;
+		
+			if (StringUtils.isBlank(req.getCountryId())) {
+				countryId="TZA";
+			}else {
+				countryId=req.getCountryId();
+			}
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<StateMaster> query = cb.createQuery(StateMaster.class);
+			List<StateMaster> list = new ArrayList<StateMaster>();
+
+			// Find All
+			Root<StateMaster> c = query.from(StateMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("stateName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			Predicate a7 = cb.equal(c.get("regionCode"), ocpm1.get("regionCode"));
+			Predicate a9 = cb.equal(c.get("stateShortCode"), ocpm1.get("stateShortCode"));
+			Predicate a11 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
+			Predicate a13 = cb.equal(c.get("suburbId"), ocpm1.get("suburbId"));
+			effectiveDate.where(a1, a2,a3,a7 ,a9,a11,a13);
+
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a4 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+			Predicate a8 = cb.equal(c.get("regionCode"), ocpm2.get("regionCode"));
+			Predicate a10 = cb.equal(c.get("stateShortCode"), ocpm2.get("stateShortCode"));
+			Predicate a12 = cb.equal(c.get("cityId"), ocpm2.get("cityId"));
+			Predicate a14 = cb.equal(c.get("suburbId"), ocpm2.get("suburbId"));
+			effectiveDate2.where(a5,a6, a4,a8,a10,a12,a14);
+			
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			//javax.persistence.criteria.Predicate n5 = cb.equal(c.get("regionCode"), req.getRegionCode());
+	
+			query.where(n12, n2,n3,n4).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<StateMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+			Map<Integer ,List<StateMaster>>  groupByStates = list.stream().collect(Collectors.groupingBy(StateMaster :: getStateId ));
+					
+			for (Integer state : groupByStates.keySet() ) {
+				List<StateMaster> cityList = groupByStates.get(state);
+				StateMaster  stateDetails = cityList.get(0); 
+				
+//				Map<Integer ,List<StateMaster>>  groupByCities = list.stream().collect(Collectors.groupingBy(StateMaster :: getCityId ));
+//				
+//				List<CityDropdown> cityDetailsList = new ArrayList<CityDropdown>();
+//				
+//				for (Integer city : groupByCities.keySet() ) {
+//					List<StateMaster> subUrbList = groupByCities.get(city);
+//					StateMaster  cityDetails = subUrbList.get(0); 
+//					
+//					List<SubUrbDropDown> subUrbDetails = new ArrayList<SubUrbDropDown>() ;
+//					
+//					for (StateMaster data : subUrbList) {
+//						// Response
+//						SubUrbDropDown res = new SubUrbDropDown();
+//						res.setCode(data.getSuburbId().toString());
+//						res.setCodeDesc(data.getSuburb());
+//						res.setStatus(data.getStatus());
+//						res.setAreaGroup(data.getAreaGroup()==null?"0":data.getAreaGroup().toString());
+//						subUrbDetails.add(res);
+//						
+//						
+//					}
+//					subUrbDetails.sort(Comparator.comparing(SubUrbDropDown :: getCodeDesc) );
+//					
+//					CityDropdown cityRes = new CityDropdown();
+//					cityRes.setCode(cityDetails.getCityId().toString());
+//					cityRes.setCodeDesc(cityDetails.getCity());
+//					cityRes.setStatus(cityDetails.getStatus());
+//					cityRes.setSubUrbDetails(subUrbDetails);
+//					cityDetailsList.add(cityRes);
+//					
+//				}
+//				
+//				cityDetailsList.sort(Comparator.comparing(CityDropdown :: getCodeDesc) );
+				
+				StateDropdown stateRes = new StateDropdown();
+				stateRes.setCode(stateDetails.getStateId().toString());
+				stateRes.setCodeDesc(stateDetails.getStateName());
+				stateRes.setStatus(stateDetails.getStatus());
+				//stateRes.setCityDetails(cityDetailsList);
+				resList.add(stateRes);
+				
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<CityDropdown> getCityGroupMasterDropdown(StateMasterDropDownReq req) {
+		List<CityDropdown> cityDetailsList = new ArrayList<CityDropdown>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			String countryId=null;
+		
+			if (StringUtils.isBlank(req.getCountryId())) {
+				countryId="TZA";
+			}else {
+				countryId=req.getCountryId();
+			}
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<StateMaster> query = cb.createQuery(StateMaster.class);
+			List<StateMaster> list = new ArrayList<StateMaster>();
+
+			// Find All
+			Root<StateMaster> c = query.from(StateMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("stateName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			Predicate a7 = cb.equal(c.get("regionCode"), ocpm1.get("regionCode"));
+			Predicate a9 = cb.equal(c.get("stateShortCode"), ocpm1.get("stateShortCode"));
+			Predicate a11 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
+			Predicate a13 = cb.equal(c.get("suburbId"), ocpm1.get("suburbId"));
+			effectiveDate.where(a1, a2,a3,a7 ,a9,a11,a13);
+
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a4 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+			Predicate a8 = cb.equal(c.get("regionCode"), ocpm2.get("regionCode"));
+			Predicate a10 = cb.equal(c.get("stateShortCode"), ocpm2.get("stateShortCode"));
+			Predicate a12 = cb.equal(c.get("cityId"), ocpm2.get("cityId"));
+			Predicate a14 = cb.equal(c.get("suburbId"), ocpm2.get("suburbId"));
+			effectiveDate2.where(a5,a6, a4,a8,a10,a12,a14);
+			
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
+	
+			query.where(n12, n2,n3,n4,n5).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<StateMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			Map<Integer ,List<StateMaster>>  groupByCities = list.stream().collect(Collectors.groupingBy(StateMaster :: getCityId ));
+			
+			for (Integer city : groupByCities.keySet() ) {
+				List<StateMaster> subUrbList = groupByCities.get(city);
+				StateMaster  cityDetails = subUrbList.get(0); 
+				
+				List<SubUrbDropDown> subUrbDetails = new ArrayList<SubUrbDropDown>() ;
+				
+				for (StateMaster data : subUrbList) {
+					// Response
+					SubUrbDropDown res = new SubUrbDropDown();
+					res.setCode(data.getSuburbId().toString());
+					res.setCodeDesc(data.getSuburb());
+					res.setStatus(data.getStatus());
+					res.setAreaGroup(data.getAreaGroup()==null?"0":data.getAreaGroup().toString());
+					subUrbDetails.add(res);
+					
+					
+				}
+				subUrbDetails.sort(Comparator.comparing(SubUrbDropDown :: getCodeDesc) );
+				
+				CityDropdown cityRes = new CityDropdown();
+				cityRes.setCode(cityDetails.getCityId().toString());
+				cityRes.setCodeDesc(cityDetails.getCity());
+				cityRes.setStatus(cityDetails.getStatus());
+				cityRes.setSubUrbDetails(subUrbDetails);
+				cityDetailsList.add(cityRes);
+				
+			}
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return cityDetailsList;
 	}
 
 }

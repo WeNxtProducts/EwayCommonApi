@@ -15,8 +15,12 @@ import com.maan.eway.master.req.StateMasterSaveReq;
 import com.maan.eway.master.res.StateMasterRes;
 import com.maan.eway.master.service.StateMasterService;
 import com.maan.eway.bean.StateMaster;
+import com.maan.eway.common.res.CityDropdown;
+import com.maan.eway.common.res.CityGroupMasterDropdown;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.res.StateDropdown;
+import com.maan.eway.common.res.StateGroupMasterDropDown;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -223,6 +227,53 @@ public class StateMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 
-		}	
+		}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value="/dropdown/stategroups",produces = "application/json")
+	@ApiOperation(value = "This method is get State Master Drop Down")
+
+	public ResponseEntity<StateGroupMasterDropDown> getStateGroupMasterDropdown(@RequestBody StateMasterDropDownReq req) {
+
+		StateGroupMasterDropDown data = new StateGroupMasterDropDown();
+
+		// Save
+		List<StateDropdown> res = stateService.getStateGroupMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<StateGroupMasterDropDown>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value="/dropdown/citygroups",produces = "application/json")
+	@ApiOperation(value = "This method is get State Master Drop Down")
+
+	public ResponseEntity<CityGroupMasterDropdown> getCityGroupMasterDropdown(@RequestBody StateMasterDropDownReq req) {
+
+		CityGroupMasterDropdown data = new CityGroupMasterDropdown();
+
+		// Save
+		List<CityDropdown> res = stateService.getCityGroupMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CityGroupMasterDropdown>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}	
 
 }

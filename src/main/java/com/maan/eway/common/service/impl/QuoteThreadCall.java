@@ -878,7 +878,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			//	res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
 				
 			} else {
-				Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
+				Long driverInfo = driverRepo.countByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId());
 				if (driverInfo <= 0  ) {
 					MotorDriverDetails saveDri = new MotorDriverDetails(); 		
 					Integer driId = 1 ;
@@ -1146,7 +1146,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Motor Driver Details 
 			List<MotorDriverDetails>   oldDriDetails = driverRepo.findByQuoteNoAndRiskId( oldQuoteNo ,  request.getVehicleId());
 			
-			Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
+			Long driverInfo = driverRepo.countByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId());
 			if( driverInfo <= 0  ) {
 				if(oldDriDetails.size() > 0 ) {
 					for ( MotorDriverDetails dri : oldDriDetails ) {
