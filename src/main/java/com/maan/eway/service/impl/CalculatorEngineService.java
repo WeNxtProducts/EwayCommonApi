@@ -228,7 +228,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 	public List<Tuple> LoadCover(CalcEngine engine) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			/*String search1 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+			/*
+			  String search1 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
 					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode() + ";branchCode:"
 					+ engine.getBranchCode() + ";";
@@ -1610,7 +1611,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
 			 	generateSeqReq.setInsuranceId(hpm.getCompanyId());  
 			 	generateSeqReq.setProductId(hpm.getProductId().toString());
-			 	generateSeqReq.setType("5");
+			 	generateSeqReq.setType("5"); 
 			 	generateSeqReq.setTypeDesc("POLICY_NO");
 			 	List<String> params = new ArrayList<String>();
 			 	params.add(hpm.getQuoteNo());
@@ -1621,6 +1622,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			} else { //endt
 				
 				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
+				policyNo = v1.getQuoteDetails().getPolicyNo();
 			}
 		}catch (Exception e) {
 			e.printStackTrace();

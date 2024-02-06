@@ -258,8 +258,13 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		//	ListItemValue calc = listrepo.findByItemTypeAndItemCode("CALCULATION_TYPE",req.getCalcTypeId());
 			
 			if(StringUtils.isBlank(req.getEndtTypeId())) {
+				
 				Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),req.getEndtTypeCategoryId());
-				endtTypeId = totalCount+1;
+				if("1".equalsIgnoreCase(req.getEndtTypeId())){//Non Financial
+					endtTypeId = 42+totalCount;
+				}else if("2".equalsIgnoreCase(req.getEndtTypeId())){//Finacial
+					endtTypeId = 842+totalCount;	
+				}
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
 				res.setResponse("Saved Successfully");

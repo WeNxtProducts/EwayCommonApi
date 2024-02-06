@@ -58,17 +58,19 @@ public class SequenceGenerateServiceImpl implements SequenceGenerateService {
 		
 		if(seqMaster !=null ) {
 			
+			//String.format("%07d",entity.getPolicyno());
+			String seqNo = String.format("%0"+ seqMaster.getCurrentSequenceNo().length() +"d", Long.valueOf(seqMaster.getCurrentSequenceNo())+1);  
+			seqMaster.setCurrentSequenceNo(seqNo);
+			
 			String seqCharacter = seqMaster.getSequenceCharacter();
 			
 			String coniditionValue  ="";
 			if( "Y".equalsIgnoreCase(seqMaster.getQueryYn()) ) {
 				coniditionValue = frameQueryConditions(req , seqMaster) ;
 			}
-			//String.format("%07d",entity.getPolicyno());
-			String seqNo = String.format("%0"+ seqMaster.getCurrentSequenceNo().length() +"d", Long.valueOf(seqMaster.getCurrentSequenceNo())+1);  
-			seqMaster.setCurrentSequenceNo(seqNo);
 			
-			String generatedSequence = seqCharacter + coniditionValue + seqNo ;
+			String generatedSequence = seqCharacter + coniditionValue 
+					+ ( StringUtils.isNotBlank(seqMaster.getSequenceNoApplyYn()) &&"N".equalsIgnoreCase(seqMaster.getSequenceNoApplyYn()) ?"" :  seqNo ) ;
 			seqMaster.setCurrentGeneratedSequence(generatedSequence);
 			prodSeqRepo.save(seqMaster);
 			res.setGeneratedValue(generatedSequence);			
