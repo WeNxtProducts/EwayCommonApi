@@ -18,6 +18,8 @@
 	<parameter name="pvBranch" class="java.lang.String"/>
 	<parameter name="pvLoginId" class="java.lang.String"/>
 	<parameter name="pvProductId" class="java.lang.String"/>
+	<parameter name="pvUserType" class="java.lang.String"/>
+	<parameter name="pvCode" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT 
   HPM.LOGIN_ID, 
@@ -192,7 +194,7 @@ WHERE
         LOGIN_ID = $P{pvLoginId}
     )
   )
-  ORDER BY HPM.EFFECTIVE_DATE DESC]]>
+ AND ( CASE WHEN '99999' = $P{pvUserType} THEN '1' WHEN $P{pvUserType} IN( 'Premia Broker', 'Premia Direct', 'Premia Agent' ) THEN HPM.CUSTOMER_CODE ELSE LOGIN_ID END ) = ( CASE WHEN '99999' = $P{pvUserType} THEN '1' WHEN $P{pvUserType} IN( 'Premia Broker', 'Premia Direct', 'Premia Agent' ) THEN $P{pvCode} ELSE $P{pvCode} END ) ORDER BY HPM.EFFECTIVE_DATE DESC]]>
 	</queryString>
 	<field name="LOGIN_ID" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="LOGIN_ID"/>
