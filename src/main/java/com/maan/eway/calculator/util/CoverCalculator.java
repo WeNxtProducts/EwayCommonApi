@@ -134,7 +134,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 calc.perilCalculator(t);
 					 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 					 t.getLoadings().clear();
-					 t.getDiscounts().clear();
+					 //t.getDiscounts().clear();
 					 discountLoading=false;
 				 }else {
 					 t.setRate((t.getRate()*Double.parseDouble(rateFor)));
