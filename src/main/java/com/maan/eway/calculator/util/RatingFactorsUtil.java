@@ -361,7 +361,7 @@ public class RatingFactorsUtil {
 				search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:99999;"+todayInString+"~effectiveDateStart&effectiveDateEnd;taxFor:{"+StringUtils.join(taxFor,',')+"};";
 				criteria = crservice.createCriteria(ProductTaxSetup.class, search, "taxId"); 
 				result=crservice.getResult(criteria, 0, 50);
-				return result.size()>0?result:null;
+				return result.size()>0?result:new ArrayList<Tuple>();
 			}
 			return result;
 		}catch (Exception e) {

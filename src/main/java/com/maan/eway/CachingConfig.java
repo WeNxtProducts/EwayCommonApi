@@ -28,7 +28,7 @@ public class CachingConfig   {
 	      .addCaches(
 	        b->b.name("RatingType").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("ProductType").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("loadTax").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("loadTax").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
 	        b->b.name("loadProRata").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
 	        b->b.name("LoadConstant").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
 	        b->b.name("ProductToRawtable").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
