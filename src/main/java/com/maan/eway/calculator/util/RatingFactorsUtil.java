@@ -1,6 +1,8 @@
 package com.maan.eway.calculator.util;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +33,13 @@ import org.springframework.stereotype.Component;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.CompanyProrataMaster;
-import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.ConstantTableDetails;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.DropdownTableDetails;
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.EwayFactorDetails;
+import com.maan.eway.bean.EwayFactorResultDetail;
+import com.maan.eway.bean.EwayVehicleMakemodelMasterDetail;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.LifePolicytermsMaster;
@@ -50,9 +54,13 @@ import com.maan.eway.bean.TaxExemptionSetup;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TinyurlRequestDetail;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
+import com.maan.eway.repository.EwayFactorDetailsRepository;
+import com.maan.eway.repository.EwayFactorResultDetailRepository;
+import com.maan.eway.repository.EwayVehicleMakemodelMasterDetailRepository;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.req.referal.ReferralRequest;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.RatingInfo;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
@@ -774,4 +782,320 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
+
+	public Long getCountFromRating(String dataquery) {
+		try {
+			SpecCriteria criteria = crservice.createCriteria(FactorRateMaster.class, dataquery, "factorTypeId"); 
+
+			List<Long> count = crservice.getCount(criteria, 0, 50);
+			if(!count.isEmpty()) { 
+				Long countrec = count.get(0);				
+				return countrec;
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return Long.valueOf("0");
+	}
+
+	public List<Tuple> getResult(String dataquery) {
+		try {
+			
+			SpecCriteria criteria = crservice.createCriteria(FactorRateMaster.class, dataquery, "factorTypeId"); 
+			List<Tuple> result = crservice.getResult(criteria, 0, 50);
+			return result;
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+	@Autowired
+	private EwayFactorDetailsRepository fdRepo;
+	@Autowired
+	private EwayFactorResultDetailRepository fdResultRepo;
+	public List<EwayFactorDetails> saveFactorDetails(Map<String, List<Tuple>> queriesResult, CalcEngine engine, List<Tuple> result, List<Tuple> vehicles, List<Tuple> customers, Cover t) {
+		try {
+			int count= fdRepo.deleteByRequestReferenceNo(engine.getRequestReferenceNo());
+			List<EwayFactorDetails> fds=new ArrayList<EwayFactorDetails>();
+			int sno=2;
+			for(Entry<String, List<Tuple>> entrySet :queriesResult.entrySet()) {
+				String key=entrySet.getKey();
+				List<Tuple> value = entrySet.getValue();
+				EwayFactorDetails fd=null;
+				if("Base".equalsIgnoreCase(key)) {
+					 fd=createBaseFactor(value,engine,vehicles,t);
+				}else {
+					 fd=EwayFactorDetails.builder()
+							.amendId(0)
+							.cdRefno(engine.getCdRefNo())
+							.companyId(engine.getInsuranceId())
+							.factorId(sno++)
+							.factorName(key)
+							.coverId(Integer.parseInt(t.getCoverId()))
+							.coverName(t.getCoverName())
+							.createdBy(engine.getCreatedBy())
+							.entryDate(new Date())
+							.fire(value.get(0).get("param19")==null?0D:Double.parseDouble(value.get(0).get("param19").toString()))
+							.thirdParty(value.get(0).get("param20")==null?0D:Double.parseDouble(value.get(0).get("param20").toString()))
+							.theft(value.get(0).get("param18")==null?0D:Double.parseDouble(value.get(0).get("param18").toString()))
+							.windscreen(value.get(0).get("param17")==null?0D:Double.parseDouble(value.get(0).get("param17").toString()))
+							.ownDamage(value.get(0).get("param16")==null?0D:Double.parseDouble(value.get(0).get("param16").toString()))
+							.msRefno(engine.getMsrefno())
+							.productId(Integer.parseInt(engine.getProductId()))
+							.requestReferenceNo(engine.getRequestReferenceNo())
+							.sectionId(Integer.parseInt(engine.getSectionId()))
+							.status("Y")
+							.subCoverYn("N")
+							.subCoverId(0)
+							.subCoverName("")
+							.vdRefno(engine.getVdRefNo())
+							.vehicleId(Integer.parseInt(engine.getVehicleId()))						
+							.build();
+				}
+				fds.add(fd);
+			}
+			
+			//Annual Peril Risk Premium Amount
+			EwayFactorDetails fd=EwayFactorDetails.builder()
+					.amendId(0)
+					.cdRefno(engine.getCdRefNo())
+					.companyId(engine.getInsuranceId())
+					.factorId(sno++)
+					.factorName("Annual Peril Risk Premium Amount")
+					.coverId(Integer.parseInt(t.getCoverId()))
+					.coverName(t.getCoverName())
+					.createdBy(engine.getCreatedBy())
+					.entryDate(new Date())
+					.fire(fds.stream().mapToDouble(EwayFactorDetails::getFire).reduce((a,b)->a*b).getAsDouble())
+					.thirdParty(fds.stream().mapToDouble(EwayFactorDetails::getThirdParty).reduce((a,b)->a*b).getAsDouble())
+					.theft(fds.stream().mapToDouble(EwayFactorDetails::getTheft).reduce((a,b)->a*b).getAsDouble())
+					.windscreen(fds.stream().mapToDouble(EwayFactorDetails::getWindscreen).reduce((a,b)->a*b).getAsDouble())
+					.ownDamage(fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble())
+					.msRefno(engine.getMsrefno())
+					.productId(Integer.parseInt(engine.getProductId()))
+					.requestReferenceNo(engine.getRequestReferenceNo())
+					.sectionId(Integer.parseInt(engine.getSectionId()))
+					.status("Y")
+					.subCoverYn("N")
+					.subCoverId(0)
+					.subCoverName("")
+					.vdRefno(engine.getVdRefNo())
+					.vehicleId(Integer.parseInt(engine.getVehicleId()))						
+					.build();
+			
+			//Annual Peril Risk Premium Rate
+			Double sumInsured=Double.parseDouble(vehicles.get(0).get("sumInsured").toString());
+			EwayFactorDetails fdr=EwayFactorDetails.builder()
+					.amendId(0)
+					.cdRefno(engine.getCdRefNo())
+					.companyId(engine.getInsuranceId())
+					.factorId(sno++)
+					.factorName("Annual Peril Risk Premium Rate")
+					.coverId(Integer.parseInt(t.getCoverId()))
+					.coverName(t.getCoverName())
+					.createdBy(engine.getCreatedBy())
+					.entryDate(new Date())
+					.fire((Double) (fd.getFire()/(sumInsured.doubleValue()>0?sumInsured:1D)))
+					.thirdParty((Double) (fd.getThirdParty()/(sumInsured.doubleValue()>0?sumInsured:1D)))
+					.theft((Double) (fd.getTheft()/(sumInsured.doubleValue()>0?sumInsured:1D)))
+					.windscreen((Double) (fd.getWindscreen()/(sumInsured.doubleValue()>0?sumInsured:1D)))
+					.ownDamage((Double) (fd.getOwnDamage()/(sumInsured.doubleValue()>0?sumInsured:1D)))
+					.msRefno(engine.getMsrefno())
+					.productId(Integer.parseInt(engine.getProductId()))
+					.requestReferenceNo(engine.getRequestReferenceNo())
+					.sectionId(Integer.parseInt(engine.getSectionId()))
+					.status("Y")
+					.subCoverYn("N")
+					.subCoverId(0)
+					.subCoverName("")
+					.vdRefno(engine.getVdRefNo())
+					.vehicleId(Integer.parseInt(engine.getVehicleId()))						
+					.build();
+			
+			fds.add(fd);
+			fds.add(fdr);
+			
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String minRateQuery="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+115+";param10:"+vehicles.get(0).get("vehicleClass").toString()
+			+";param11:"+vehicles.get(0).get("insuranceClass").toString()+";";
+			
+			List<Tuple> queryResult = getResult(minRateQuery);
+			Double minPremium=Double.parseDouble(queryResult.get(0).get("minPremium").toString());
+			Double minRate=Double.parseDouble(queryResult.get(0).get("rate").toString());
+			Double totalLossRatio= (Double) 60d/100;
+			Double riskPremiumAmt=(Double) (fd.getOwnDamage()*fd.getFire()*fd.getTheft()*fd.getThirdParty()*fd.getWindscreen());
+			Double premium=(Double) riskPremiumAmt/totalLossRatio;
+			Double calcMinRate=sumInsured*minRate;
+			premium =(premium>minPremium)?premium:minPremium;
+			
+			premium= (premium>calcMinRate)?premium:calcMinRate;
+			
+			EwayFactorResultDetail efResult=EwayFactorResultDetail.builder()
+					.cdRefno(engine.getCdRefNo())
+					.companyId(engine.getInsuranceId())
+					.coverId(Integer.parseInt(t.getCoverId()))
+					.coverName(t.getCoverName())
+					.createdBy(engine.getCreatedBy())
+					.entryDate(new Date()) 
+					.msRefno(engine.getMsrefno())
+					.productId(Integer.parseInt(engine.getProductId()))					
+					.requestReferenceNo(engine.getRequestReferenceNo())
+					.sectionId(Integer.parseInt(engine.getSectionId()))
+					.status("Y")
+					.targetLossRatio(60D)
+					.vdRefno(engine.getVdRefNo())
+					.vehicleId(Integer.parseInt(engine.getVehicleId()))
+					.minPremium(minPremium)
+					.minRate(minRate)
+					.finalPremiumAmtExclTax(premium)
+					.finalPremiumRateExclTax((Double) (premium/sumInsured))
+					//.proRataPremiumAmtExclTax(sumInsured)					
+					.riskPremiumAmt(riskPremiumAmt)
+					.riskPremiumRate((Double) (riskPremiumAmt)/(sumInsured.doubleValue()>0?sumInsured:1D))
+					.build();
+			
+			fdResultRepo.save(efResult);			
+			fdRepo.saveAll(fds);
+			
+
+			 t.setPremiumBeforeDiscount(new BigDecimal(premium));
+			 t.setMinimumPremium(new BigDecimal(minPremium));
+			 
+			 t.setCalcType("FD");
+			 t.setRegulatoryCode("NA");
+			 /// Referal
+			 t.setIsReferral((riskPremiumAmt<1)?"Y":"N");
+			 if("Y".equals(t.getIsReferral())){
+				 t.setReferalDescription(t.getCoverDesc() +" Referral" );
+				
+			 }
+			 
+			return fds;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	private EwayFactorDetails createBaseFactor(List<Tuple> value, CalcEngine engine, List<Tuple> vehicles,Cover t) {
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String SumInsured="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+101+";param2<"+vehicles.get(0).get("sumInsured").toString()+";";
+			List<Tuple> result = getResult(SumInsured);
+			
+			/*
+				step 1 : take prev values
+				step 2: take upper level si
+				step 3:take lower level si
+				step 4 : subtract step 2 and step 3
+				step 5 multiply step 4 and step 1
+				step 6 :sum of step 5
+				step 7 : take rate
+				step 8: subract sumInsured - lower level si
+				step 9 :multiply step 8 * step 7
+				step 10 : step 6 and step 9
+			 */
+			
+			List<BigDecimal> ownDamages=new ArrayList<BigDecimal>();
+			List<BigDecimal> windscreens=new ArrayList<BigDecimal>();
+			List<BigDecimal> thefts=new ArrayList<BigDecimal>();
+			List<BigDecimal> thirdPartys=new ArrayList<BigDecimal>();
+			List<BigDecimal> fires=new ArrayList<BigDecimal>();
+			
+			for (Tuple tuple : result) {
+				String upperSi=tuple.get("param2").toString();
+				String lowerSi=tuple.get("param1").toString();
+				
+				BigDecimal subtract = new BigDecimal(upperSi).subtract(new BigDecimal(lowerSi));
+				/*
+				 * 	.fire(value.get(0).get("param19")==null?0D:Double.parseDouble(value.get(0).get("param19").toString()))
+							.thirdParty(value.get(0).get("param20")==null?0D:Double.parseDouble(value.get(0).get("param20").toString()))
+							.theft(value.get(0).get("param18")==null?0D:Double.parseDouble(value.get(0).get("param18").toString()))
+							.windscreen(value.get(0).get("param17")==null?0D:Double.parseDouble(value.get(0).get("param17").toString()))
+							.ownDamage(value.get(0).get("param16")==null?0D:Double.parseDouble(value.get(0).get("param16").toString()))
+				 */
+				BigDecimal ownDamage = new BigDecimal(tuple.get("param16").toString()).multiply(subtract,MathContext.DECIMAL32);
+				BigDecimal windscreen = new BigDecimal(tuple.get("param17").toString()).multiply(subtract,MathContext.DECIMAL32);
+				BigDecimal theft = new BigDecimal(tuple.get("param18").toString()).multiply(subtract,MathContext.DECIMAL32);
+				BigDecimal thirdParty = new BigDecimal(tuple.get("param20").toString()).multiply(subtract,MathContext.DECIMAL32);
+				BigDecimal fire = new BigDecimal(tuple.get("param19").toString()).multiply(subtract,MathContext.DECIMAL32);
+				ownDamages.add(ownDamage);
+				windscreens.add(windscreen);
+				thefts.add(theft);
+				thirdPartys.add(thirdParty);
+				fires.add(fire);
+				
+			}
+			BigDecimal sumOwnDamage = ownDamages.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
+			BigDecimal sumwindscreen = windscreens.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
+			BigDecimal sumtheft = thefts.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
+			BigDecimal sumthirdParty = thirdPartys.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
+			BigDecimal sumfire = fires.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
+			
+			BigDecimal sumInsured=new BigDecimal(vehicles.get(0).get("sumInsured").toString());
+			BigDecimal lowerSI=new BigDecimal(value.get(0).get("param1").toString());
+			BigDecimal subtract = sumInsured.subtract(lowerSI,MathContext.DECIMAL32);
+			
+			BigDecimal ownDamage = new BigDecimal(value.get(0).get("param16").toString()).multiply(subtract,MathContext.DECIMAL32);
+			BigDecimal windscreen = new BigDecimal(value.get(0).get("param17").toString()).multiply(subtract,MathContext.DECIMAL32);
+			BigDecimal theft = new BigDecimal(value.get(0).get("param18").toString()).multiply(subtract,MathContext.DECIMAL32);
+			BigDecimal thirdParty = new BigDecimal(value.get(0).get("param20").toString()).multiply(subtract,MathContext.DECIMAL32);
+			BigDecimal fire = new BigDecimal(value.get(0).get("param19").toString()).multiply(subtract,MathContext.DECIMAL32);
+			
+			sumOwnDamage=sumOwnDamage.add(ownDamage);
+			sumwindscreen=sumwindscreen.add(windscreen);
+			sumtheft=sumtheft.add(theft);
+			sumthirdParty=sumthirdParty.add(thirdParty);
+			sumfire=sumfire.add(fire);
+			
+			EwayFactorDetails fd=EwayFactorDetails.builder()
+					.amendId(0)
+					.cdRefno(engine.getCdRefNo())
+					.companyId(engine.getInsuranceId())
+					.factorId(1)
+					.factorName("Base")
+					.coverId(Integer.parseInt(t.getCoverId()))
+					.coverName(t.getCoverName())
+					.createdBy(engine.getCreatedBy())
+					.entryDate(new Date())
+					.fire(sumfire.doubleValue())
+					.thirdParty(sumthirdParty.doubleValue())
+					.theft(sumtheft.doubleValue())
+					.windscreen(sumwindscreen.doubleValue())
+					.ownDamage(sumOwnDamage.doubleValue())
+					.msRefno(engine.getMsrefno())
+					.productId(Integer.parseInt(engine.getProductId()))
+					.requestReferenceNo(engine.getRequestReferenceNo())
+					.sectionId(Integer.parseInt(engine.getSectionId()))
+					.status("Y")
+					.subCoverYn("N")
+					.subCoverId(0)
+					.subCoverName("")
+					.vdRefno(engine.getVdRefNo())
+					.vehicleId(Integer.parseInt(engine.getVehicleId()))						
+					.build();
+			return fd;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Autowired
+	private EwayVehicleMakemodelMasterDetailRepository makemodel;
+	public EwayVehicleMakemodelMasterDetail collectMakeModelDetails(CalcEngine engine, List<Tuple> vehicles) {
+		try {
+			List<EwayVehicleMakemodelMasterDetail> models=makemodel.findByVehicleid(vehicles.get(0).get("vehicleModelId").toString());
+			if(models!=null && models.size()>0)
+				return models.get(0);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
+

@@ -228,7 +228,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 	public List<Tuple> LoadCover(CalcEngine engine) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			/*String search1 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+			/*
+			  String search1 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
 					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode() + ";branchCode:"
 					+ engine.getBranchCode() + ";";
