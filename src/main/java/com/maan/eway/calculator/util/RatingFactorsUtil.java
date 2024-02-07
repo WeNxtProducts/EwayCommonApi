@@ -965,7 +965,7 @@ public class RatingFactorsUtil {
 
 			 t.setPremiumBeforeDiscount(new BigDecimal(premium));
 			 t.setMinimumPremium(new BigDecimal(minPremium));
-			 
+			 t.setRate((Double) premium/sumInsured);
 			 t.setCalcType("FD");
 			 t.setRegulatoryCode("NA");
 			 /// Referal
