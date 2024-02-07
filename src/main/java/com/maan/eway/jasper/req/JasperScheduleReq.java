@@ -1,0 +1,17 @@
+package com.maan.eway.jasper.req;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+public class JasperScheduleReq {
+
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
+	@JsonProperty("ReportId")
+	private String reportId;
+}

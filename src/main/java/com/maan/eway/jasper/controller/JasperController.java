@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
+import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
@@ -151,5 +152,11 @@ public class JasperController {
 			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PostMapping("/getSchedule")
+	public CommonRes getSchedule(@RequestBody JasperScheduleReq req) {
+		return jasper.getSchedule(req);
+	}
+	
 	
 }

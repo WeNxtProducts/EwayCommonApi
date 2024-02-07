@@ -45,6 +45,7 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
+import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
@@ -505,6 +506,8 @@ public class JasperServiceImpl implements JasperService {
 			jasperParameter.put("pvImagePath", imagepath);
 			jasperParameter.put("pvLoginId", req.getLoginId());
 			jasperParameter.put("pvProductId", req.getProductId());
+			jasperParameter.put("pvCode", req.getCode());
+			jasperParameter.put("pvUserType", req.getUserType());
 
 			
 
@@ -691,6 +694,22 @@ public class JasperServiceImpl implements JasperService {
 			e.printStackTrace();
 		}
 		return res;
+	}
+
+	@Override
+	public CommonRes getSchedule(JasperScheduleReq req) {
+		CommonRes response = new CommonRes();
+		try {
+			HomePositionMaster hpm=homeRepo.findByQuoteNo(req.getQuoteNo());
+			String companyId =hpm.getCompanyId();
+			Integer productId =hpm.getProductId();
+			
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
 	}
 	
 }
