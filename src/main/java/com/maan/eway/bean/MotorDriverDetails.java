@@ -180,8 +180,8 @@ private static final long serialVersionUID = 1L;
    @Column(name="AGE", length=100)
    private Integer age ;
    
-   @Column(name="LICENSE_EXPERIENCE", length=100)
-   private Integer     licenseExperience ;
+   @Column(name="DRIVER_EXPERIENCE", length=100)
+   private Integer     driverExperience ;
    
    @Column(name="GENDER", length=100)
    private String gender ;
