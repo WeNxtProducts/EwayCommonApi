@@ -70,7 +70,7 @@ public class PerilCalculator {
 			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+43+";"+driver.getLicenseDuration()+"~param1&param2;";;
 			
 			String PowerMassRatio="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+38+";"+vmaster.getPowerKw()+"~param1&param2;";
+			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+38+";"+((Integer) Integer.parseInt(vmaster.getPowerKw())/Integer.parseInt(vmaster.getWeightKg()))+"~param1&param2;";
 			
 			
 			String VehBodyType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
