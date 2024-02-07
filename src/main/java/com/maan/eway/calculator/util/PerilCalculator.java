@@ -64,13 +64,13 @@ public class PerilCalculator {
 			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+105+";"+vehicles.get(0).get("manufactureAge").toString()+"~param1&param2;";
 			
 			String PolicyDuration="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+41+";"+vehicles.get(0).get("periodOfInsurance").toString()+"~param1&param2;";
+			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+41+";"+Math.round(Double.parseDouble(vehicles.get(0).get("periodOfInsurance").toString())/365)+"~param1&param2;";
 			
 			String LicenseDuration="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+43+";"+driver.getLicenseDuration()+"~param1&param2;";;
 			
 			String PowerMassRatio="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+38+";"+((Integer) Integer.parseInt(vmaster.getPowerKw())/Integer.parseInt(vmaster.getWeightKg()))+"~param1&param2;";
+			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+38+";"+((Double) Double.parseDouble(vmaster.getPowerKw())/Double.parseDouble(vmaster.getWeightKg()))*1000+"~param1&param2;";
 			
 			
 			String VehBodyType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
