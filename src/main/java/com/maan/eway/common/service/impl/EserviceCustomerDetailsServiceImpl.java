@@ -485,28 +485,28 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add("1048");
 					//errorList.add(new Error("12", "Country", "Please select Country"));
 				}
-				if (StringUtils.isBlank(req.getPreferredNotification())) {
-					errorList.add("1049");
-					//errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
-				}
+//				if (StringUtils.isBlank(req.getPreferredNotification())) {
+//					errorList.add("1049");
+//					//errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
+//				}
 				
 				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
 
 					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
-						if (StringUtils.isBlank(req.getBusinessType())) {
-							errorList.add("1050");
-							//errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
-						}
+//						if (StringUtils.isBlank(req.getBusinessType())) {
+//							errorList.add("1050");
+//							//errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+//						}
 					}
 				}
 				if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
-					if (StringUtils.isBlank(req.getVrTinNo())) {
-						errorList.add("1051");
-						//errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
-					} else if (req.getVrTinNo().length() > 20) {
-						errorList.add("1052");
-						//errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
-					}
+//					if (StringUtils.isBlank(req.getVrTinNo())) {
+//						errorList.add("1051");
+//						//errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
+//					} else if (req.getVrTinNo().length() > 20) {
+//						errorList.add("1052");
+//						//errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
+//					}
 					
 				}
 				if (StringUtils.isBlank(req.getRegionCode())) {
@@ -570,81 +570,84 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
 				
+				if(StringUtils.isNotBlank(req.getCompanyId()) && ! req.getCompanyId().equalsIgnoreCase("100019") ) {
+					// DOB Validation	
+					if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
+						if( StringUtils.isNotBlank(req.getIdType()) && req.getIdType().equalsIgnoreCase("1")) {
+							if (req.getDobOrRegDate() == null) {
+								errorList.add("1065");
+								//errorList.add(new Error("38", "DobOrRegDate", "Please Select Dob "));
+							}
+						}
+						
+						try {
+						if (req.getDobOrRegDate() != null) {
+							if (req.getDobOrRegDate().after(today)) {
+								errorList.add("1066");
+								//errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob as Past Date"));
+
+							} else {
+								LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+										.toLocalDate();
+								LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+								Integer years = Period.between(localDate1, localDate2).getYears();
+								if (years > 100) {
+									errorList.add("1067");
+									//errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted More than 100 Years"));
+
+								} else if (years < 18) {
+									errorList.add("1068");
+									//errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted Less than 18 Years For Induvidual"));
+
+								}
+			
+							}
+
+						}else {
+							errorList.add("1069");
+							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+						}
+						}catch (Exception e) {
+							errorList.add("1070");
+							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+						}
+					}
+					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+						try {
+						if (req.getDobOrRegDate() != null) {
+							cal.setTime(today);
+							cal.add(Calendar.DAY_OF_MONTH, +1);
+							cal.set(Calendar.HOUR_OF_DAY, 23);
+							cal.set(Calendar.MINUTE, 50);
+							Date tomorrow = cal.getTime();
+							if (req.getDobOrRegDate().after(tomorrow)) {
+								errorList.add("1071");
+								//errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate as Past Date"));
+
+							} else if(req.getDobOrRegDate()!=null ) {
+								LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+										.toLocalDate();
+								LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+								Integer years = Period.between(localDate1, localDate2).getYears();
+								if (years > 100) {
+									errorList.add("1072");
+									//errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
+								}
+							}
+
+						}else {
+							errorList.add("1073");
+							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+						}
+						}catch (Exception e) {
+							errorList.add("1073");
+							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+						}
+					}
+				}
 				
-				if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
-					if( StringUtils.isNotBlank(req.getIdType()) && req.getIdType().equalsIgnoreCase("1")) {
-						if (req.getDobOrRegDate() == null) {
-							errorList.add("1065");
-							//errorList.add(new Error("38", "DobOrRegDate", "Please Select Dob "));
-						}
-					}
-					
-					try {
-					if (req.getDobOrRegDate() != null) {
-						if (req.getDobOrRegDate().after(today)) {
-							errorList.add("1066");
-							//errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob as Past Date"));
-
-						} else {
-							LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
-									.toLocalDate();
-							LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-							Integer years = Period.between(localDate1, localDate2).getYears();
-							if (years > 100) {
-								errorList.add("1067");
-								//errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted More than 100 Years"));
-
-							} else if (years < 18) {
-								errorList.add("1068");
-								//errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted Less than 18 Years For Induvidual"));
-
-							}
-		
-						}
-
-					}else {
-						errorList.add("1069");
-						//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
-					}
-					}catch (Exception e) {
-						errorList.add("1070");
-						//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
-					}
-				}
-				if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
-					try {
-					if (req.getDobOrRegDate() != null) {
-						cal.setTime(today);
-						cal.add(Calendar.DAY_OF_MONTH, +1);
-						cal.set(Calendar.HOUR_OF_DAY, 23);
-						cal.set(Calendar.MINUTE, 50);
-						Date tomorrow = cal.getTime();
-						if (req.getDobOrRegDate().after(tomorrow)) {
-							errorList.add("1071");
-							//errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate as Past Date"));
-
-						} else if(req.getDobOrRegDate()!=null ) {
-							LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
-									.toLocalDate();
-							LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-							Integer years = Period.between(localDate1, localDate2).getYears();
-							if (years > 100) {
-								errorList.add("1072");
-								//errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
-							}
-						}
-
-					}else {
-						errorList.add("1073");
-						//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
-					}
-					}catch (Exception e) {
-						errorList.add("1073");
-						//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
-					}
-				}
 
 				if (StringUtils.isBlank(req.getBranchCode())) {
 					errorList.add("1074");
@@ -958,7 +961,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			//	Random rand = new Random();
 			//	int random = rand.nextInt(90) + 10;
 				productId=Integer.valueOf(req.getProductId());
-				//custRefNo = "Cust-" +   generateCustRefNo() ; // idf.format(new Date()) + random ;
+			//	custRefNo = "Cust-" +   generateCustRefNo() ; // idf.format(new Date()) + random ;
 				// Generate Seq
 	 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
 	 		 	generateSeqReq.setInsuranceId(req.getCompanyId());  
@@ -978,6 +981,21 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(custRefNo);
 			}
+        
+        	// Dob Condition
+	        if(req.getDobOrRegDate() ==null  ) {
+				Date   dobOrReg = new Date() ;
+				if( req.getPolicyHolderType().equalsIgnoreCase("1") ) {
+					// Dob
+					Calendar cal = new GregorianCalendar();
+					cal.setTime(dobOrReg);
+					cal.add(Calendar.YEAR, -18);
+					dobOrReg = cal.getTime();
+				}
+				req.setDobOrRegDate(dobOrReg);
+				
+			}
+        
 			dozerMapper.map(req, saveData);
 			saveData.setProductId(productId);
 			saveData.setEntryDate(entryDate);
@@ -990,6 +1008,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
 			saveData.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
 			saveData.setBrokerBranchCode(req.getBrokerBranchCode());
+			
 			// Age Calculation
 			int age = 0 ;
 			Date dob = null;
