@@ -26,6 +26,7 @@ import com.maan.eway.common.req.UpdateFactorRateReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.req.FactorFdCalcViewReq;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 import com.maan.eway.service.PrintReqService;
@@ -178,11 +179,11 @@ public class FactorRateRequestDetailsController {
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getfactorratedetailsList")
-	public ResponseEntity<CommonRes> getFactorRateDetailsList(@RequestBody  FactorRateDetailsGetReq req) {
+	public ResponseEntity<CommonRes> getFactorRateFdDetailsList(@RequestBody  FactorFdCalcViewReq req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		FactorRateDetailsList res = null;//entityService.getFactorRateDetailsList(req);
+		FactorRateDetailsList res = entityService.getFactorRateFdDetailsList(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

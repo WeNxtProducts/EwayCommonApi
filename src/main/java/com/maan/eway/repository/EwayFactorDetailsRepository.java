@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -37,5 +38,8 @@ public interface EwayFactorDetailsRepository  extends JpaRepository<EwayFactorDe
 	int deleteAllByRequestReferenceNo(String requestReferenceNo);
 	@Transactional
 	int deleteByRequestReferenceNoAndVehicleId(String requestReferenceNo, Integer parseInt);
+
+	List<EwayFactorDetails> findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(
+			String requestReferenceNo, Integer vehicleId, String insuranceId, Integer productId, Integer sectionId);
 
 }

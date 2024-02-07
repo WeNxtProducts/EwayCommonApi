@@ -13,7 +13,9 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import com.maan.eway.bean.EwayFactorDetails;
 import com.maan.eway.bean.EwayFactorResultDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -29,5 +31,8 @@ import com.maan.eway.bean.EwayFactorResultDetailId;
  
  
 public interface EwayFactorResultDetailRepository  extends JpaRepository<EwayFactorResultDetail,EwayFactorResultDetailId > , JpaSpecificationExecutor<EwayFactorResultDetail> {
+
+	List<EwayFactorResultDetail> findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(
+			String requestReferenceNo, Integer vehicleId, String insuranceId, Integer productId, Integer sectionId);
 
 }

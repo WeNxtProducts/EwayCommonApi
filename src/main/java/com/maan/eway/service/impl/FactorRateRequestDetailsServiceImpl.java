@@ -47,6 +47,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.CompanyProductMaster;
@@ -59,6 +60,8 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
+import com.maan.eway.bean.EwayFactorDetails;
+import com.maan.eway.bean.EwayFactorResultDetail;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MasterReferralDetails;
@@ -73,12 +76,15 @@ import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.common.req.CoverIdReq2;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
+import com.maan.eway.common.req.FactorRateDetailsList;
 import com.maan.eway.common.req.UpdateFactorRateReq;
 import com.maan.eway.common.res.AccessoriesRes;
 import com.maan.eway.common.res.EndtTypeMasterDto;
 import com.maan.eway.common.res.EserviceCommonGetRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
+import com.maan.eway.common.res.EwayFactorResultRes;
+import com.maan.eway.common.res.FdFactorCalcRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BankChangeStatusReq;
@@ -90,6 +96,8 @@ import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
+import com.maan.eway.repository.EwayFactorDetailsRepository;
+import com.maan.eway.repository.EwayFactorResultDetailRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MasterReferralDetailsRepository;
@@ -98,6 +106,7 @@ import com.maan.eway.repository.PolicyCoverDataEndtRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
+import com.maan.eway.req.FactorFdCalcViewReq;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.DropDownRes;
@@ -140,6 +149,13 @@ private EServiceSectionDetailsRepository eserSecRepo;
 
 @Autowired
 private EserviceCommonDetailsRepository eserCommonRepo;
+
+@Autowired
+private EwayFactorDetailsRepository ewayFactorRepo;
+
+@Autowired
+private EwayFactorResultDetailRepository ewayFactorResultRepo;
+
 
 
 @Autowired
@@ -2647,7 +2663,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						for (FactorRateRequestDetails  updateCover : filterCover ) {
 					
 							updateCover.setUserOpt(covReq.getUserOpt());
-							repository.save(updateCover);
+							repository.save(updateCover); 
 						}
 	
 					}
@@ -2686,4 +2702,47 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 		}return res;
 	}
+	
+	@Override
+	public FactorRateDetailsList getFactorRateFdDetailsList(FactorFdCalcViewReq req) {
+		FactorRateDetailsList res = new FactorRateDetailsList();
+		List<FdFactorCalcRes> facCalcResList = new ArrayList<FdFactorCalcRes>();
+		EwayFactorResultRes factorResultRes = new EwayFactorResultRes();
+		res.setFactorCalculationRes(facCalcResList)	;
+		res.setFactorResultRes(factorResultRes);
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			
+			List<EwayFactorDetails> factorCalcRes =   ewayFactorRepo.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() ,
+					req.getVehicleId() ,req.getInsuranceId() , req.getProductId()  , req.getSectionId() );
+			
+			for (EwayFactorDetails fac : factorCalcRes  ) {
+				FdFactorCalcRes   facCalRes = new FdFactorCalcRes();
+				facCalRes.setFactorId(fac.getFactorId());
+				facCalRes.setFactorName(fac.getFactorName());
+				facCalRes.setOwnDamage(fac.getOwnDamage());
+				facCalRes.setWindscreen(fac.getWindscreen());
+				facCalRes.setThirdParty(fac.getThirdParty());
+				facCalRes.setTheft(fac.getTheft());
+				facCalRes.setFire(fac.getFire());
+				facCalcResList.add(facCalRes);				
+			}
+			facCalcResList.sort(Comparator.comparing(FdFactorCalcRes :: getFactorId ));
+			
+			List<EwayFactorResultDetail>  factorResults = ewayFactorResultRepo.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() ,
+					req.getVehicleId() ,req.getInsuranceId() , req.getProductId()  , req.getSectionId() );	
+			EwayFactorResultDetail factorResult = factorResults.get(0);
+			
+			dozerMapper.map(factorResult, factorResultRes);
+			res.setFactorCalculationRes(facCalcResList)	;
+			res.setFactorResultRes(factorResultRes);
+
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return res;
+			
+		}return res;
+	}
+		
 }
