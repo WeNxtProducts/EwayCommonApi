@@ -1181,7 +1181,7 @@
 		</band>
 		<band height="276">
 			<rectangle>
-				<reportElement mode="Transparent" x="0" y="5" width="555" height="175" uuid="26bf346b-7f7c-4828-b0d3-bfd5deb8fb34">
+				<reportElement mode="Transparent" x="0" y="5" width="555" height="185" uuid="26bf346b-7f7c-4828-b0d3-bfd5deb8fb34">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<graphicElement>
@@ -1220,7 +1220,7 @@
 				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="124" width="192" height="15" uuid="7f41381b-e498-481c-832e-4cfb39955996">
+				<reportElement x="0" y="130" width="192" height="15" uuid="7f41381b-e498-481c-832e-4cfb39955996">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1232,7 +1232,7 @@
 				<textFieldExpression><![CDATA["All other Terms and Conditions remain unaltered"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="139" width="230" height="15" uuid="d251daac-f112-4c31-bb0b-364c149f248c">
+				<reportElement x="0" y="145" width="230" height="15" uuid="d251daac-f112-4c31-bb0b-364c149f248c">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1244,7 +1244,7 @@
 				<textFieldExpression><![CDATA["Entered in the books of the Company at "+$F{branchName}+" this :"]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="230" y="124" width="80" height="15" uuid="1b0110c1-4f19-4949-bd64-926a55ff753a">
+				<reportElement x="230" y="130" width="80" height="15" uuid="1b0110c1-4f19-4949-bd64-926a55ff753a">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1257,7 +1257,7 @@
 				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="154" width="40" height="15" uuid="0aaa1c6f-be0a-4e92-a620-679680107558">
+				<reportElement x="0" y="160" width="40" height="15" uuid="0aaa1c6f-be0a-4e92-a620-679680107558">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1269,7 +1269,7 @@
 				<textFieldExpression><![CDATA["TOTAL :-"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="40" y="154" width="270" height="15" uuid="9c667d28-fc98-417c-aaf9-cc7e387dcb5f">
+				<reportElement x="40" y="160" width="270" height="15" uuid="9c667d28-fc98-417c-aaf9-cc7e387dcb5f">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1281,7 +1281,7 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="480" y="154" width="75" height="15" uuid="72e73eb6-0b65-4b17-98e6-92a44a111558">
+				<reportElement x="480" y="160" width="75" height="15" uuid="72e73eb6-0b65-4b17-98e6-92a44a111558">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>

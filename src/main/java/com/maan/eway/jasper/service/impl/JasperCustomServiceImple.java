@@ -391,22 +391,6 @@ public class JasperCustomServiceImple {
 			});
 			
 			OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
-			
-			/*	if(!drcrDetails.isEmpty()) {
-				drcrDetails = drcrDetails.stream().filter(f -> f.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
-				if(drcrDetails.get(0).getDocType().equalsIgnoreCase("C")) {
-					premium = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1001))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
-					response.setPremAndVatName("Premium");
-					
-				}else {
-					premium = drcrDetails.stream().filter(f -> f.getChargeCode().equals(new BigDecimal(1005))).map(k -> k.getAmountLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)); //1005 - commissionAmount
-					response.setPremAndVatName("Commission");
-				}
-				vatPercent = map.get("vatPercent")==null?0.0:Double.parseDouble(map.get("vatPercent").toString());
-				vatPremium = premium*vatPercent/100;
-				OverAllPremium = premium+vatPremium;
-			} */
-			
 			BigDecimal amtInWordValue = new BigDecimal(OverAllPremium);
 			String amtInWords="";
 			if(amtInWordValue!=null) {
@@ -621,6 +605,8 @@ public class JasperCustomServiceImple {
 	public MotorPrivateRes getMotorPrivate(String policyNo,String quoteNo) {
 		log.info("Enter into getMotorPrivate.\nArgument ==> PolicyNo :"+policyNo+" || \t QuoteNo :"+quoteNo);
 		MotorPrivateRes response = new MotorPrivateRes();
+		List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
+		Double OverAllPremium = 0d;
 	try {
 		List<MotorPrivateVehicleDetails> vehicleDetailsRes = new ArrayList<>();
 		List<MotorPrivateDriverDetails> driverDetailsRes = new ArrayList<>();
@@ -794,23 +780,17 @@ public class JasperCustomServiceImple {
 			});
 		}
 		
-		if((map.get("companyId")==null?"":map.get("companyId").toString()).equalsIgnoreCase("100019")) {
-			String pNumber = map.get("policyNo")==null?"":map.get("policyNo").toString();
-			String premiumForUganda = drcrdetail.getPremiumForUganda(pNumber);
-			String premiumlevyForUganda = drcrdetail.getPremiumLevyForUganda(pNumber);
-			String VatforUganda = drcrdetail.getVatForUganda(pNumber);
-			String StrickerforUganda = drcrdetail.getStrickerforUganda(pNumber);
-			String StampDutyforUganda = drcrdetail.getStampDutyforUganda(pNumber);
-			response.setPremiumForUganda(StringUtils.isBlank(premiumForUganda)?"0":new BigDecimal(Double.parseDouble(premiumForUganda)).toString());
-			response.setPremiumLevyForUganda(StringUtils.isBlank(premiumlevyForUganda)?"0":new BigDecimal(Double.parseDouble(premiumlevyForUganda)).toString());
-			response.setVatForUganda(StringUtils.isBlank(VatforUganda)?"0":new BigDecimal(Double.parseDouble(VatforUganda)).toString());
-			response.setStrickerFeeForUganda(StringUtils.isBlank(StrickerforUganda)?"0":new BigDecimal(Double.parseDouble(StrickerforUganda)).toString());
-			response.setStampDutyForUganda(StringUtils.isBlank(StampDutyforUganda)?"0":new BigDecimal(Double.parseDouble(StampDutyforUganda)).toString());
-			response.setTotalPremium(new BigDecimal(Double.parseDouble(response.getPremiumForUganda())+Double.parseDouble(response.getPremiumLevyForUganda())
-					+Double.parseDouble(response.getVatForUganda())+Double.parseDouble(response.getStrickerFeeForUganda())+Double.parseDouble(response.getStampDutyForUganda())).toString());
-		}else {
-			response.setTotalPremium(map.get("totalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("totalPremium").toString())).toString());
-		}
+				List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
+				List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
+				listByRiskId.forEach(h ->{
+					TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
+						.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
+						.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+					.build();
+					premiumDetailsRes.add(u);
+			});
+			
+			OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 		
 			response.setCustomerId(map.get("customerId")==null?"":map.get("customerId").toString());
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
@@ -829,6 +809,8 @@ public class JasperCustomServiceImple {
 			response.setInsuranceTypeDesc(map.get("insuranceTypeDesc")==null?"":map.get("insuranceTypeDesc").toString());
 			response.setPremium(map.get("premium")==null?"":new BigDecimal(Double.parseDouble(map.get("premium").toString())).toString());
 			response.setVatPremium(map.get("vatPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("vatPremium").toString())).toString());
+			//response.setTotalPremium(map.get("totalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("totalPremium").toString())).toString());
+			response.setTotalPremium(new BigDecimal(OverAllPremium).toString());
 			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
 			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
@@ -845,6 +827,7 @@ public class JasperCustomServiceImple {
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
 			response.setTearmsAndConditions(tearmsAndConditionRes);
+			response.setPremiumDetails(premiumDetailsRes);
 		}
 	}catch(Exception e) {
 		log.info("Error in getMotorPrivate ==>"+e.getMessage());

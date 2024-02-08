@@ -108,20 +108,8 @@ public class MotorPrivateRes {
 	@JsonProperty("CustomerId")
 	private String customerId;
 	
-	@JsonProperty("PremiumForUganda")
-	private String premiumForUganda;
-	
-	@JsonProperty("StrickerFeeForUganda")
-	private String strickerFeeForUganda;
-	
-	@JsonProperty("PremiumLevyForUganda")
-	private String premiumLevyForUganda;
-	
-	@JsonProperty("VatForUganda")
-	private String vatForUganda;
-	
-	@JsonProperty("StampDutyForUganda")
-	private String stampDutyForUganda;
+	@JsonProperty("PremiumDetails")
+	private List<TaxInvoicePremiumDetails> premiumDetails;
 	
 	@JsonProperty("Business")
 	private String business;

@@ -85,7 +85,7 @@
 		<queryString language="json">
 			<![CDATA[premiumDetails]]>
 		</queryString>
-		<field name="amount" class="java.math.BigDecimal">
+		<field name="amount" class="java.lang.Integer">
 			<property name="net.sf.jasperreports.json.field.expression" value="amount"/>
 			<fieldDescription><![CDATA[amount]]></fieldDescription>
 		</field>
@@ -110,7 +110,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="approvedBy"/>
 		<fieldDescription><![CDATA[approvedBy]]></fieldDescription>
 	</field>
-	<field name="agencyCode" class="java.math.BigDecimal">
+	<field name="agencyCode" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="agencyCode"/>
 		<fieldDescription><![CDATA[agencyCode]]></fieldDescription>
 	</field>
@@ -162,7 +162,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vrnNumber"/>
 		<fieldDescription><![CDATA[vrnNumber]]></fieldDescription>
 	</field>
-	<field name="tinNumber" class="java.math.BigDecimal">
+	<field name="tinNumber" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="tinNumber"/>
 		<fieldDescription><![CDATA[tinNumber]]></fieldDescription>
 	</field>
@@ -174,15 +174,15 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
 		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="vatPremium" class="java.math.BigDecimal">
+	<field name="vatPremium" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="vatPremium"/>
 		<fieldDescription><![CDATA[vatPremium]]></fieldDescription>
 	</field>
-	<field name="overAllPremium" class="java.math.BigDecimal">
+	<field name="overAllPremium" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="overAllPremium"/>
 		<fieldDescription><![CDATA[overAllPremium]]></fieldDescription>
 	</field>
-	<field name="totSumInsured" class="java.math.BigDecimal">
+	<field name="totSumInsured" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="totSumInsured"/>
 		<fieldDescription><![CDATA[totSumInsured]]></fieldDescription>
 	</field>
@@ -190,7 +190,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vatPercent"/>
 		<fieldDescription><![CDATA[vatPercent]]></fieldDescription>
 	</field>
-	<field name="intermediaryRefNo" class="java.math.BigDecimal">
+	<field name="intermediaryRefNo" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="intermediaryRefNo"/>
 		<fieldDescription><![CDATA[intermediaryRefNo]]></fieldDescription>
 	</field>
