@@ -254,14 +254,19 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						// Temp Prev Premium
 						endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
 						endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTaxLC().divide(endorsement.getExchangeRate(),MathContext.DECIMAL64));
-
-						endorsement.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscountLC().multiply(t.getProRata()))));
-						endorsement.setPremiumBeforeDiscount((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getProRata()))));
-
-
-						endorsement.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTax().multiply(t.getProRata()))));					 		
-						endorsement.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTaxLC().multiply(t.getProRata()))));
-
+						if(!"A".equals(t.getCalcType())) {	
+							endorsement.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscountLC().multiply(t.getProRata()))));
+							endorsement.setPremiumBeforeDiscount((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getProRata()))));
+							
+	
+							endorsement.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTax().multiply(t.getProRata()))));					 		
+							endorsement.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTaxLC().multiply(t.getProRata()))));
+						}else {
+							endorsement.setPremiumBeforeDiscountLC(BigDecimal.ZERO);
+							endorsement.setPremiumBeforeDiscount(BigDecimal.ZERO);
+							endorsement.setPremiumExcluedTax(BigDecimal.ZERO);
+							endorsement.setPremiumExcluedTaxLC(BigDecimal.ZERO);
+						}
 						t.setDiffPremiumIncludedTax(BigDecimal.ZERO);
 						t.setDiffPremiumIncludedTaxLC(BigDecimal.ZERO);
 
