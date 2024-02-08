@@ -789,7 +789,7 @@ public class RatingFactorsUtil {
 		try {
 			SpecCriteria criteria = crservice.createCriteria(FactorRateMaster.class, dataquery, "factorTypeId"); 
 
-			List<Long> count = crservice.getCount(criteria, 0, 50);
+			List<Long> count = crservice.getCount(criteria, 0, 500);
 			if(!count.isEmpty()) { 
 				Long countrec = count.get(0);				
 				return countrec;
@@ -805,7 +805,7 @@ public class RatingFactorsUtil {
 		try {
 			
 			SpecCriteria criteria = crservice.createCriteria(FactorRateMaster.class, dataquery, "factorTypeId"); 
-			List<Tuple> result = crservice.getResult(criteria, 0, 50);
+			List<Tuple> result = crservice.getResult(criteria, 0, 500);
 			return result;
 		}catch (Exception e) {
 			// TODO: handle exception
@@ -929,6 +929,12 @@ public class RatingFactorsUtil {
 			Double minRate=Double.parseDouble(queryResult.get(0).get("rate").toString());
 			Double totalLossRatio= (Double) 60d/100;
 			Double riskPremiumAmt=(Double) (fd.getOwnDamage()+fd.getFire()+fd.getTheft()+fd.getThirdParty()+fd.getWindscreen());
+			if("2".equals(vehicles.get(0).get("insuranceClass").toString())) {
+				riskPremiumAmt=(Double) (fd.getFire()+fd.getTheft()+fd.getThirdParty());
+			}else if("3".equals(vehicles.get(0).get("insuranceClass").toString())) {
+				riskPremiumAmt=(Double) (fd.getThirdParty());
+			}
+			
 			Double premium=(Double) riskPremiumAmt/totalLossRatio;
 			Double calcMinRate=sumInsured*(Double) (minRate/100);
 			premium =(premium>minPremium)?premium:minPremium;
