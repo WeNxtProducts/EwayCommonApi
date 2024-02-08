@@ -2,6 +2,7 @@ package com.maan.eway.chartaccount;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -132,6 +133,8 @@ public class JpqlQueryServiceImpl {
 					.get();
 					filterList.add(cpm);
 					});
+				
+				filterList.sort(Comparator.comparing(ChartParentMaster :: getDisplayOrder));
 				
 			return filterList;
 		}catch (Exception e) {
