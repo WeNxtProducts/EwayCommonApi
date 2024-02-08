@@ -58,7 +58,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 			
 			BigDecimal endtPremium =StringUtils.isNotBlank(endorsmentType)?hpm.getEndtPremium():new BigDecimal(0);
 			
-			List<ChartParentMaster> cpm =chatParentMasterRepo.findByChatParentIdCompanyIdAndStatusIgnoreCaseOrderByDisplayOrderAsc(companyId, "Y");
+			List<ChartParentMaster> cpm =jpqlQuery.getChartParentMasterDetails(companyId);
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 			
 			// Generate Policy Seq

@@ -1,7 +1,9 @@
 package com.maan.eway.chartaccount;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -113,6 +115,31 @@ public class JpqlQueryServiceImpl {
 		}
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ChartParentMaster> getChartParentMasterDetails(Integer companyId){
+		List<ChartParentMaster> list =null;
+		try {
+			String sql ="select cpm from ChartParentMaster cpm where cpm.chatParentId.companyId=:companyId and cpm.status=:status "
+					+ "and sysdate() between cpm.effectiveStartDate and cpm.effectiveEndDate order by cpm.displayOrder";
+			list =(List<ChartParentMaster>) em.createQuery(sql).setParameter("companyId", companyId).setParameter("status", "Y").getResultList();
+			
+			List<ChartParentMaster> filterList = new ArrayList<ChartParentMaster>();
+			
+				list.stream().collect(Collectors.groupingBy(p ->p.getChatParentId().getChartId()))
+				.forEach((key,value) ->{
+					ChartParentMaster cpm =	value.stream().collect(Collectors.maxBy((a,b) ->a.getChatParentId().getAmendId().compareTo(a.getChatParentId().getAmendId())))
+					.get();
+					filterList.add(cpm);
+					});
+				
+			return filterList;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
 	
 
 }
