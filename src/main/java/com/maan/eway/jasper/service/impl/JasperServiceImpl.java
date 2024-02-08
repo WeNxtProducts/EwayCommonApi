@@ -47,6 +47,7 @@ import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
+import com.maan.eway.jasper.req.ReportRes;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.res.MotorCoverNoteRes;
@@ -572,6 +573,12 @@ public class JasperServiceImpl implements JasperService {
 		CommonRes response = new CommonRes();
 		System.out.println("Enter Into getPremiumReportDetails");
 		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			int start =  limit * offset + 1 ; 
+			int end =  limit * offset + offset ;
+//			int start =  limit; 
+//			int end = offset ;
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 			String date1 = new SimpleDateFormat("yyyy-MM-dd").format(sdf.parse(req.getStartDate()));
 			String date2 = new SimpleDateFormat("yyyy-MM-dd").format(sdf.parse(req.getEndDate()));
@@ -580,7 +587,11 @@ public class JasperServiceImpl implements JasperService {
 //            Date date1 = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
 //            Date date2 = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
             String branchCode =StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
-			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
+			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode(),start,end);
+			List<Map<String,Object>> listcount =branchRepo.getPremiumReportDetailsCount(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
+			ReportRes res=new ReportRes();
+			
+			Integer count=listcount.size();
 			if(list.size()>0) {
 				List<Map<String,Object>> dataRes =list.parallelStream().map( p->{
 					LinkedHashMap<String,Object> map =new LinkedHashMap<String,Object>();
@@ -604,8 +615,10 @@ public class JasperServiceImpl implements JasperService {
 					map.put("CreditLimit", p.get("CREDIT_LIMIT")==null?"":p.get("CREDIT_LIMIT"));
 					return map;
 				}).collect(Collectors.toList());
-				
-				 response.setCommonResponse(dataRes);
+					res.setReportList(dataRes);
+					res.setTotalCount(count.toString());
+					
+				 response.setCommonResponse(res);
 		         response.setIsError(false);
 		         response.setErrorMessage(Collections.emptyList());
 		         response.setMessage("Success");

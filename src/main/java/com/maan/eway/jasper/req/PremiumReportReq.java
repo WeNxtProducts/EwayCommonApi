@@ -27,7 +27,12 @@ public class PremiumReportReq {
 	
 	@JsonProperty("UserType")
 	private String userType;
-	
+
 	@JsonProperty("BusinessType")
 	private String businessType;
+
+	@JsonProperty("Limit")
+	private String limit;
+	@JsonProperty("Offset")
+	private String offset;
 }
