@@ -45,7 +45,7 @@ import com.maan.eway.res.SuccessRes;
 
 @Service
 public class TiraIntegerationServiceImpl {
-
+ 
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 	
 	@Value(value = "${TiraIntegReqFrameLink}")
@@ -79,7 +79,7 @@ public class TiraIntegerationServiceImpl {
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
 			
 			String url=nonMotorTiraLink; 
-			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
+			if  (  product.getMotorYn().equalsIgnoreCase("M")  && data.getCompanyId().equalsIgnoreCase("100002") ) {
 				url=tiraIntegPushLink;
 				
 			//	 em.flush();
@@ -92,7 +92,7 @@ public class TiraIntegerationServiceImpl {
 				
 				res.setResponse("Success");
 				
-			} else if( StringUtils.isBlank(data.getCoverNoteReferenceNo())) {
+			} else if( StringUtils.isBlank(data.getCoverNoteReferenceNo()) && data.getCompanyId().equalsIgnoreCase("100002")  ) {
 				Object tiraFramedReq = TiraReqFrame(tiraReq, token);
 				res.setResponse("Success");
 				// Tira Integ Push
