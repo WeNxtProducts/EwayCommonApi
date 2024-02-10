@@ -512,8 +512,8 @@ public class JasperServiceImpl implements JasperService {
 			jasperParameter.put("pvImagePath", imagepath);
 			jasperParameter.put("pvLoginId", req.getLoginId());
 			jasperParameter.put("pvProductId", req.getProductId());
-			jasperParameter.put("pvCode", req.getCode());
-			jasperParameter.put("pvUserType", req.getUserType());
+			jasperParameter.put("pvCode", StringUtils.isBlank(req.getCode())?"99999":req.getCode());
+			jasperParameter.put("pvUserType", StringUtils.isBlank(req.getUserType())?"99999":req.getUserType());
 
 			
 

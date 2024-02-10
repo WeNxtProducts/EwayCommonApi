@@ -159,7 +159,7 @@ WHERE
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('both') THEN '1' ELSE $P{pvLoginId} END
+      ) IN ('SuperAdmin') THEN '1' ELSE $P{pvLoginId} END
     ) 
     OR (
       CASE WHEN (
