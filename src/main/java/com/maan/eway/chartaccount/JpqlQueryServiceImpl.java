@@ -35,7 +35,7 @@ public class JpqlQueryServiceImpl {
 			String stringQuery ="select c from ChartAccountChildMaster c where c.id.companyId =:companyId and c.id.productId=:productId "
 					+ "and c.id.sectionId=:sectionId and c.id.chartId=:chartId and c.status=:status and c.id.amendId=(select max(cc.id.amendId) "
 					+ "from ChartAccountChildMaster cc where cc.id.companyId= c.id.companyId and cc.id.productId=c.id.productId and "
-					+ "cc.id.sectionId=c.id.sectionId and cc.id.chartId=c.id.chartId and cc.id.coverId=c.id.coverId and sysdate() between "
+					+ "cc.id.sectionId=c.id.sectionId and cc.id.chartId=c.id.chartId and cc.id.coverId=c.id.coverId and CURRENT_DATE between "
 					+ "cc.effectiveStartDate and cc.effectiveEndDate)";
 			
 			@SuppressWarnings("unchecked")
@@ -101,7 +101,7 @@ public class JpqlQueryServiceImpl {
 	public ProductTaxSetup getProductTaxSetup(Integer companyId, List<Integer> coverIds,Integer productId,String branchCode,String taxFor) {
 		try {
 			String jpqlQuery="select pts from ProductTaxSetup pts where pts.companyId=:companyId and pts.productId=:productId and "
-					+ "(pts.branchCode=:branchCode or branchCode=:commonBranch) and pts.taxFor=:taxFor and pts.taxId in(:taxId) and sysdate() between pts.effectiveDateStart and "
+					+ "(pts.branchCode=:branchCode or branchCode=:commonBranch) and pts.taxFor=:taxFor and pts.taxId in(:taxId) and CURRENT_DATE between pts.effectiveDateStart and "
 					+ "pts.effectiveDateEnd";
 			
 			@SuppressWarnings("unchecked")
@@ -122,7 +122,7 @@ public class JpqlQueryServiceImpl {
 		List<ChartParentMaster> list =null;
 		try {
 			String sql ="select cpm from ChartParentMaster cpm where cpm.chatParentId.companyId=:companyId and cpm.status=:status "
-					+ "and sysdate() between cpm.effectiveStartDate and cpm.effectiveEndDate order by cpm.displayOrder";
+					+ "and CURRENT_DATE between cpm.effectiveStartDate and cpm.effectiveEndDate order by cpm.displayOrder";
 			list =(List<ChartParentMaster>) em.createQuery(sql).setParameter("companyId", companyId).setParameter("status", "Y").getResultList();
 			
 			List<ChartParentMaster> filterList = new ArrayList<ChartParentMaster>();
