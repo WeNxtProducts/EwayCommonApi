@@ -621,7 +621,13 @@ public class CalculatorEngineService implements CalculatorEngine {
 								|| "L".equals(d.getCoverageType()) || "E".equals(d.getCoverageType())
 								|| "P".equals(d.getCoverageType()) || d.getCoverId().compareTo(Integer.valueOf("945"))==0))
 						.collect(Collectors.toList());
-				
+
+				List<PolicyCoverData> countPolicy = oldPolicyCovers.stream().filter(d -> (d.getCoverId().compareTo(Integer.valueOf("945"))==0)).collect(Collectors.toList());
+				List<Cover> countCover = retc.stream().filter(t -> "945".equals(t.getCoverId())).collect(Collectors.toList());
+				if(countCover.size()>0 && countPolicy.size()>0 && countCover.get(0).getPremiumExcluedTaxLC().compareTo(countPolicy.get(0).getPremiumExcludedTaxLc())==0) {
+					
+					retc.removeIf(t -> "945".equals(t.getCoverId()));
+				}
 				
 				for (PolicyCoverData d : basecovers) {
 					List<Cover> operatedList = new ArrayList<Cover>();
