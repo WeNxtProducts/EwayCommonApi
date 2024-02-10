@@ -19,5 +19,8 @@ public class PremiumReportRes {
 	
 	@JsonProperty("Base64")
 	private String base64;
+	
+	@JsonProperty("FilePath")
+	private String filePath;
 
 }

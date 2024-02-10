@@ -33,6 +33,7 @@ public class PremiumReportReq {
 
 	@JsonProperty("Limit")
 	private String limit;
+	
 	@JsonProperty("Offset")
 	private String offset;
 }

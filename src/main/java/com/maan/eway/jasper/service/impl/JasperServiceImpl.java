@@ -42,6 +42,8 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.ReportJasperConfigMaster;
+import com.maan.eway.chartaccount.JpqlQueryServiceImpl;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
@@ -91,6 +93,9 @@ public class JasperServiceImpl implements JasperService {
 	
 	@Autowired
 	private JasperCustomServiceImple jasperCustomeImple;
+	
+	@Autowired
+	private JpqlQueryServiceImpl jpqlQueryServiceImpl;
 	
 	@Autowired
 	private Gson gson;
@@ -532,6 +537,7 @@ public class JasperServiceImpl implements JasperService {
             PremiumReportRes preRes = PremiumReportRes.builder()
             		.base64("data:application/pdf;base64,"+encodeToString)
             		.fileName("PremiumReport.pdf")
+            		.filePath(jasperPath)
             		.build();		
             response.setCommonResponse(preRes);
             response.setIsError(false);
@@ -587,11 +593,11 @@ public class JasperServiceImpl implements JasperService {
 //            Date date1 = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
 //            Date date2 = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
             String branchCode =StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
-			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode(),start,end);
-			List<Map<String,Object>> listcount =branchRepo.getPremiumReportDetailsCount(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
-			ReportRes res=new ReportRes();
+			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
+			//List<Map<String,Object>> listcount =branchRepo.getPremiumReportDetailsCount(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
+			//ReportRes res=new ReportRes();
 			
-			Integer count=listcount.size();
+			//Integer count=listcount.size();
 			if(list.size()>0) {
 				List<Map<String,Object>> dataRes =list.parallelStream().map( p->{
 					LinkedHashMap<String,Object> map =new LinkedHashMap<String,Object>();
@@ -615,10 +621,8 @@ public class JasperServiceImpl implements JasperService {
 					map.put("CreditLimit", p.get("CREDIT_LIMIT")==null?"":p.get("CREDIT_LIMIT"));
 					return map;
 				}).collect(Collectors.toList());
-					res.setReportList(dataRes);
-					res.setTotalCount(count.toString());
-					
-				 response.setCommonResponse(res);
+				
+				 response.setCommonResponse(dataRes);
 		         response.setIsError(false);
 		         response.setErrorMessage(Collections.emptyList());
 		         response.setMessage("Success");
@@ -712,15 +716,118 @@ public class JasperServiceImpl implements JasperService {
 	@Override
 	public CommonRes getSchedule(JasperScheduleReq req) {
 		CommonRes response = new CommonRes();
+		Connection conn =null;
 		try {
 			HomePositionMaster hpm=homeRepo.findByQuoteNo(req.getQuoteNo());
 			String companyId =hpm.getCompanyId();
 			Integer productId =hpm.getProductId();
+			String quoteNo =hpm.getQuoteNo();
+			String policyNo =hpm.getPolicyNo();
 			
+			List<ReportJasperConfigMaster> list =jpqlQueryServiceImpl.getJasperReportConfigMaster(companyId,productId,Integer.valueOf(req.getReportId()));
 			
+			if(!list.isEmpty()) {
+				ReportJasperConfigMaster report =list.get(0);
+				String jasperReportJrxml =report.getJasperPath().trim();
+				String jasperName =report.getJasperName();		
+				
+				String classpath = this.getClass().getClassLoader().getResource("").getPath();
+				classpath = classpath.replaceAll("%20", " ");
+				classpath = classpath.substring(1, classpath.length());
+				String imagepath = classpath + "images/"; 
+				
+					
+				if("Y".equals(report.getSubJasperYn())) { // for if subjasper yes 
+				
+					String [] subJasperArray =report.getSubJasperName().split(",");
+				
+				for(String subJasperJrxml :subJasperArray) {
+					String jrxmlPath=classpath +subJasperJrxml.replace(".jasper", ".jrxml");
+					String path = JasperCompileManager.compileReportToFile(jrxmlPath);
+					log.info("Jasper compileToReport path" +path);
+					}
+				}
+				
+				HashMap<String, Object> jasperParameter = new HashMap<String, Object>();
+				jasperParameter.put("pvImagepath",imagepath);
+				jasperParameter.put("pvSubReportPath", classpath+"jasper/");
+								
+				Map<String,Object> map = new HashMap<>();
+				
+				JasperDocumentRes reponse = new JasperDocumentRes();
+				
+				if("1".equals(req.getReportId())) { //PolicySchedule pdf
+					
+					MotorPrivateRes schedule =jasperCustomeImple.getMotorPrivate(policyNo, req.getQuoteNo());
+					
+					String jsonString = gson.toJson(schedule);
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
+					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
+
+				}else if("2".equals(req.getReportId())) {  //CreditNote pdf
+					
+					CreditNoteRes creditNoteRes=jasperCustomeImple.getCreditNoteRes(hpm.getPolicyNo());
+					
+					String jsonString = gson.toJson(creditNoteRes);
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
+					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
+
+
+				}else if("3".equals(req.getReportId())) {  // DebitNote pdf
+					
+					TaxInvoiceRes invoiceRes= jasperCustomeImple.getTaxInvoiceRes(hpm.getPolicyNo());
+					
+					String jsonString = gson.toJson(invoiceRes);
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
+					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
+
+					
+				}else if("4".equals(req.getReportId())) {  // Broker Quotation pdf
+					
+					map =jasperCustomeImple.getMotorBrokerQuotation(hpm.getPolicyNo());
+					String jsonString = gson.toJson(map);
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
+					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
+
+				}else if("5".equals(req.getReportId())) {  // Premium register pdf
+					
+					PremiumReportRes reportRes = (PremiumReportRes)getPremiumReport(req.getPremiumRegisterReq()).getCommonResponse();
+					reponse.setPdfoutfile(reportRes.getBase64());
+					reponse.setPdfoutfilepath(reportRes.getFilePath());
+					
+				}else if("6".equals(req.getReportId())) {  // EndorseMent pdf
+					
+					map =jasperCustomeImple.getMotorEndorsementSchedule(hpm.getPolicyNo());
+					String jsonString = gson.toJson(map);
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
+					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
+
+				}else if("7".equals(req.getReportId())) {  // Sticker  pdf
+					
+					MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(hpm.getPolicyNo(),quoteNo);
+					String JsonString = gson.toJson(motPrivateRes);
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
+					reponse = getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, JsonString, jasperParameter, "- "+jasperName+".json");
+					
+				}else if("8".equals(req.getReportId())) { // Illestration Pdf
+					
+					//jasperCustomeImple.i
+				}			
+				response.setCommonResponse(reponse);	
+			
+			}
 			
 		}catch (Exception e) {
 			e.printStackTrace();
+		}finally {
+			if(conn!=null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 		return response;
 	}

@@ -14,4 +14,7 @@ public class JasperScheduleReq {
 	
 	@JsonProperty("ReportId")
 	private String reportId;
+	
+	@JsonProperty("PremiumReportReq")
+	private PremiumReportReq premiumRegisterReq;
 }

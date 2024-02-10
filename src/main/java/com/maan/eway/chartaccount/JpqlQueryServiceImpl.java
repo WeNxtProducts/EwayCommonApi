@@ -14,8 +14,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductTaxSetup;
+import com.maan.eway.bean.ReportJasperConfigMaster;
 
 @Component
 @Transactional
@@ -143,6 +145,42 @@ public class JpqlQueryServiceImpl {
 		return list;
 	}
 
+	public List<ReportJasperConfigMaster> getJasperReportConfigMaster(String companyId, Integer productId, Integer reportId) {
+		try {
+			String sql ="select rjm from ReportJasperConfigMaster rjm  where rjm.id.companyId=:companyId and rjm.id.productId=:productId "
+					+ "and rjm.id.reportId=:reportId and rjm.status=:status and rjm.id.amendId=(select max(rjmm.id.amendId) from ReportJasperConfigMaster rjmm where "
+					+ "rjmm.id.companyId=rjm.id.companyId and rjmm.id.productId=rjm.id.productId and rjmm.id.reportId=rjm.id.reportId and rjmm.status=rjm.status and sysdate() between "
+					+ "rjmm.effectiveDateStart and rjmm.effectiveDateEnd)"
+					+ "";
+			
+			@SuppressWarnings("unchecked")
+			List<ReportJasperConfigMaster> list =em.createQuery(sql).setParameter("companyId", companyId).setParameter("productId", productId).setParameter("reportId", reportId)
+			.setParameter("status", "Y")
+			.getResultList();
+			
+			return list;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+
+	
+	public Object getCompanyLogo(String companyId) {
+		Object companyLogo="";
+		try {
+			
+			String sqlquery ="select icm.companyLogo from InsuranceCompanyMaster icm where  icm.companyId=:companyId and icm.status=:status and "
+					+ "icm.amendId=(select max(icmm.amendId) from InsuranceCompanyMaster icmm where icmm.companyId=icm.companyId and "
+					+ "icmm.status=icm.status)";
+			companyLogo = em.createQuery(sqlquery).setParameter("companyId", companyId).setParameter("status", "Y").getSingleResult();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return companyLogo;
+	}
 	
 
 }
