@@ -237,4 +237,6 @@ public interface DropDownService {
 
 	List<DropDownRes> maritalStatus(LovDropDownReq req);
 
+	List<DropDownRes> quotePeriod(LovDropDownReq req);
+
 }
