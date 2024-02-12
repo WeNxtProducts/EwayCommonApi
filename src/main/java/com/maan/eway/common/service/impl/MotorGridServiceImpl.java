@@ -84,6 +84,7 @@ import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.MotorGridService;
+import com.maan.eway.endorsment.service.EndorsementService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.CoverMasterRepository;
@@ -180,6 +181,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 	 
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ; 
+	
+
 	 
 	 
 	// Exiting Motor Details
@@ -233,7 +236,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					GetExistingBrokerListRes res = new GetExistingBrokerListRes();
 					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString().toLowerCase().replaceAll("premia ", ""));
 					resList.add(res);
 				
 						}
@@ -1758,7 +1761,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setLoginId(req.getLoginId());
 						}
 						savedata.setSubUserType(req.getSubUserType());
-						List<ListItemValue> sourcerTypes =getSourceTypeDropdown(req.getInsuranceId() , req.getBranchCode() ,"SOURCE_TYPE");
+						List<ListItemValue> sourcerTypes =genSeqNoService.getSourceTypeDropdown(req.getInsuranceId() , req.getBranchCode() ,"SOURCE_TYPE");
 						if("broker".equalsIgnoreCase(req.getUserType())){
 							List<ListItemValue> filterSource =  sourcerTypes.stream().filter(o-> o.getItemValue().equalsIgnoreCase(req.getUserType())).collect(Collectors.toList());
 							savedata.setSourceType(req.getUserType());
@@ -1770,6 +1773,16 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setMsRefno(null);
 						savedata.setVdRefNo(null);
 						savedata.setSumInsuredLc(null);
+						
+						// Source Type Condtion
+						String sourceType = savedata.getSourceType() ;
+						if(StringUtils.isNotBlank(savedata.getApplicationId()) && ! "1".equalsIgnoreCase(savedata.getApplicationId()) ) {
+							List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter( o -> "Y".equalsIgnoreCase(o.getStatus()) 
+									&& o.getItemValue().contains(sourceType) ).collect(Collectors.toList()); 							
+							savedata.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	savedata.getSourceType());			
+							savedata.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	savedata.getSourceTypeId());
+						}
+						
 						repo.saveAndFlush(savedata);
 					}
 
@@ -2206,6 +2219,17 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
 						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
+						
+						// Source Type Condtion
+						String sourceType = savedata.getSourceType() ;
+						if(StringUtils.isNotBlank(savedata.getApplicationId()) && ! "1".equalsIgnoreCase(savedata.getApplicationId()) ) {
+							List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(savedata.getCompanyId() , savedata.getBranchCode() ,"SOURCE_TYPE"); 
+							List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter( o -> "Y".equalsIgnoreCase(o.getStatus()) 
+									&& o.getItemValue().contains(sourceType) ).collect(Collectors.toList()); 							
+							savedata.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	savedata.getSourceType());			
+							savedata.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	savedata.getSourceTypeId());
+						}
+							
 						repo.saveAndFlush(savedata);
 					}
 		
@@ -4635,7 +4659,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 								res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 								res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-								res.setType(data.get("type") == null ? "" : data.get("type").toString());
+								res.setType(data.get("type") == null ? "" : data.get("type").toString().toLowerCase().replaceAll("premia ", ""));
 								resList.add(res);
 
 							}

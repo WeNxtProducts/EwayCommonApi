@@ -4585,7 +4585,7 @@ public class GridServiceImpl implements GridService {
 
 						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString().toLowerCase().replaceAll("premia ", ""));
 						resList.add(res);
 
 					}
@@ -4795,7 +4795,7 @@ public class GridServiceImpl implements GridService {
 
 						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString().toLowerCase().replaceAll("premia ", ""));
 						resList.add(res);
 
 					}

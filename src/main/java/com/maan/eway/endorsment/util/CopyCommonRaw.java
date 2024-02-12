@@ -50,6 +50,7 @@ import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
+import com.maan.eway.endorsment.service.EndorsementService;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
@@ -101,6 +102,7 @@ public class CopyCommonRaw {
 
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ; 
+
 	
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
@@ -251,6 +253,15 @@ public class CopyCommonRaw {
 				newObject.setLoginId(m.getLoginId());
 			}else {
 				newObject.setLoginId(ent.getLoginId());
+			}
+			// Source Type Condtion
+			String sourceType = newObject.getSourceType() ;
+			if(StringUtils.isNotBlank(newObject.getApplicationId()) && ! "1".equalsIgnoreCase(newObject.getApplicationId()) ) {
+				List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(newObject.getCompanyId() , newObject.getBranchCode() ,"SOURCE_TYPE"); 
+				List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter( o -> "Y".equalsIgnoreCase(o.getStatus()) 
+						&& o.getItemValue().contains(sourceType) ).collect(Collectors.toList()); 							
+				newObject.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	newObject.getSourceType());			
+				newObject.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	newObject.getSourceTypeId());
 			}
 			newObject.setSubUserType(ent.getSubUserType());
 			newCommonList.add(newObject);

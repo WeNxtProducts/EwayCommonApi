@@ -73,6 +73,7 @@ import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.CommonGridService;
+import com.maan.eway.endorsment.service.EndorsementService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
@@ -164,6 +165,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 	
 	 @Autowired
      private GenerateSeqNoServiceImpl genSeqNoService ;
+
 	 
 	// Exiting Common Details
 	//DropDown
@@ -215,7 +217,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
 						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString().toLowerCase().replaceAll("premia ", ""));
 						resList.add(res);
 					
 							}
@@ -1598,6 +1600,15 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setMsRefno(null);
 						savedata.setVdRefNo(null);
 						savedata.setSumInsuredLc(null);
+						// Source Type Condtion
+						String sourceType = savedata.getSourceType() ;
+						if(StringUtils.isNotBlank(savedata.getApplicationId()) && ! "1".equalsIgnoreCase(savedata.getApplicationId()) ) {
+							List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(savedata.getCompanyId() , savedata.getBranchCode() ,"SOURCE_TYPE"); 
+							List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter( o -> "Y".equalsIgnoreCase(o.getStatus()) 
+									&& o.getItemValue().contains(sourceType) ).collect(Collectors.toList()); 							
+							savedata.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	savedata.getSourceType());			
+							savedata.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	savedata.getSourceTypeId());
+						}
 						repo.saveAndFlush(savedata);
 					}
 //					res.setResponse("Successfully Updated");
@@ -2315,6 +2326,15 @@ public class CommonGridServiceImpl implements CommonGridService {
 							savedata.setLoginId(req.getLoginId());
 						}
 						savedata.setSubUserType(req.getSubUserType());
+						// Source Type Condtion
+						String sourceType = savedata.getSourceType() ;
+						if(StringUtils.isNotBlank(savedata.getApplicationId()) && ! "1".equalsIgnoreCase(savedata.getApplicationId()) ) {
+							List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(savedata.getCompanyId() , savedata.getBranchCode() ,"SOURCE_TYPE"); 
+							List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter( o -> "Y".equalsIgnoreCase(o.getStatus()) 
+									&& o.getItemValue().contains(sourceType) ).collect(Collectors.toList()); 							
+							savedata.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	savedata.getSourceType());			
+							savedata.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	savedata.getSourceTypeId());
+						}
 						repo.saveAndFlush(savedata);
 					}
 		
@@ -3482,7 +3502,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							res.setType(data.get("type") == null ? "" : data.get("type").toString().toLowerCase().replaceAll("premia ", ""));
 							resList.add(res);
 
 						}

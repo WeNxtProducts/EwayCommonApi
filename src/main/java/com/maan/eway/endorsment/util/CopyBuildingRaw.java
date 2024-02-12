@@ -39,6 +39,7 @@ import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.ProductMaster;
@@ -53,6 +54,7 @@ import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
+import com.maan.eway.endorsment.service.EndorsementService;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
@@ -117,6 +119,8 @@ public class CopyBuildingRaw {
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ; 
+
+	 
 
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
 	
@@ -251,6 +255,15 @@ public class CopyBuildingRaw {
 					newObject.setLoginId(m.getLoginId());
 				}else {
 					newObject.setLoginId(ent.getLoginId());
+				}
+				// Source Type Condtion
+				String sourceType = newObject.getSourceType() ;
+				if(StringUtils.isNotBlank(newObject.getApplicationId()) && ! "1".equalsIgnoreCase(newObject.getApplicationId()) ) {
+					List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(newObject.getCompanyId() , newObject.getBranchCode() ,"SOURCE_TYPE"); 
+					List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter( o -> "Y".equalsIgnoreCase(o.getStatus()) 
+							&& o.getItemValue().contains(sourceType) ).collect(Collectors.toList()); 							
+					newObject.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	newObject.getSourceType());			
+					newObject.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	newObject.getSourceTypeId());
 				}
 				newObject.setSubUserType(ent.getSubUserType());
 				newBuildingList.add(newObject);

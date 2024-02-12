@@ -33,6 +33,7 @@ import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
@@ -46,6 +47,7 @@ import com.maan.eway.common.res.TravelGroupGetRes;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
+import com.maan.eway.endorsment.service.EndorsementService;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
@@ -93,6 +95,8 @@ public class CopyTravelRaw {
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ; 
+	
+	 
 
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
@@ -201,6 +205,15 @@ public class CopyTravelRaw {
 					newObject.setLoginId(m.getLoginId());
 				}else {
 					newObject.setLoginId(ent.getLoginId());
+				}
+				// Source Type Condtion
+				String sourceType = newObject.getSourceType() ;
+				if(StringUtils.isNotBlank(newObject.getApplicationId()) && ! "1".equalsIgnoreCase(newObject.getApplicationId()) ) {
+					List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(newObject.getCompanyId() , newObject.getBranchCode() ,"SOURCE_TYPE"); 
+					List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter( o -> "Y".equalsIgnoreCase(o.getStatus()) 
+							&& o.getItemValue().contains(sourceType) ).collect(Collectors.toList()); 							
+					newObject.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	newObject.getSourceType());			
+					newObject.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	newObject.getSourceTypeId());
 				}
 				newObject.setSubUserType(ent.getSubUserType());
 				newtravelList.add(newObject);
