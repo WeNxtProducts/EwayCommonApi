@@ -111,16 +111,23 @@ public class JasperServiceImpl implements JasperService {
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
 
 			Map<String, Object> input = new HashMap<String, Object>();
-			String filePath = null;
+			String filePath = null;String Imagepath;
+			log.info("OS Using ==> "+System.getProperty("os.name").toLowerCase());
+			if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+				Imagepath = config.getImagePath().substring(1, config.getImagePath().length()-0);
+			}else {
+				Imagepath = config.getImagePath().replaceAll("\\\\", "/");
+			}
+			
 
 			if (StringUtils.isNotBlank(homeData.getPolicyNo())) {
 				input.put("pvPolicyNo", homeData.getPolicyNo());
-				input.put("pvImagepath", config.getImagePath().substring(1, config.getImagePath().length()-0));
+				input.put("pvImagepath", Imagepath);
 				filePath = config.getPolicyPath() + "pdf";
 
 			} else {
 				input.put("QuoteNo", req.getQuoteNo());
-				input.put("pvImagePath", config.getImagePath().substring(1, config.getImagePath().length()-0));
+				input.put("pvImagepath", Imagepath);
 				filePath = config.getDraftPath() + "pdf";
 			}
 			
@@ -177,9 +184,8 @@ public class JasperServiceImpl implements JasperService {
 						res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- MotorPrivate.json");
 					}
 				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
-					String imagePath = config.getImagePath().substring(1,config.getImagePath().length()-0);
 					Map<String,Object> input2 = new HashMap<>();
-					input2.put("pvImagePath", imagePath);
+					input2.put("pvImagePath", Imagepath);
 					Map<String,Object> cyberInsurance = jasperCustomeImple.getCyberInsurance(homeData.getPolicyNo());
 					String jsonString = gson.toJson(cyberInsurance);
 					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
@@ -193,7 +199,7 @@ public class JasperServiceImpl implements JasperService {
 					res = getCommonJasperPdfFileByJson("/report/jasper/EwayMotorCoverNote.jrxml",jasperSaveLocation,jsonString,map,"- MotorCoveNote.json");
 				}else {
 					Map<String, Object> input2 = new HashMap<String, Object>();
-					input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+					input2.put("pvImagepath", Imagepath);
 					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
 					String obj[] =new String[2];
 					obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
@@ -455,10 +461,15 @@ public class JasperServiceImpl implements JasperService {
 		try {
 			if(StringUtils.isNotBlank(homeData.getPolicyNo())) {
 				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+				log.info("OS Using ==> "+System.getProperty("os.name").toLowerCase());
+				if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+					map.put("pvImagePath",  config.getImagePath().substring(1, config.getImagePath().length()-0));
+				}else {
+					map.put("pvImagePath",config.getImagePath().replaceAll("\\\\", "/"));
+				}
 				TaxInvoiceRes taxRes = jasperCustomeImple.getTaxInvoiceRes(homeData.getPolicyNo());
 				String JsonString = gson.toJson(taxRes);
-				String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+				String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 				String jasperName="";
 				if(homeData.getCompanyId().equalsIgnoreCase("100004")) {
 					jasperName = "/report/jasper/EwayMadisonTaxInvoice.jrxml";
@@ -480,10 +491,15 @@ public class JasperServiceImpl implements JasperService {
 		try {
 			if(StringUtils.isNotBlank(homeData.getPolicyNo())) {
 				Map<String,Object> input = new HashMap<String,Object>();
-				input.put("pvImagePath", config.getImagePath().substring(1, config.getImagePath().length()-0));
+				log.info("OS Using ==> "+System.getProperty("os.name").toLowerCase());
+				if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+					input.put("pvImagePath",  config.getImagePath().substring(1, config.getImagePath().length()-0));
+				}else {
+					input.put("pvImagePath",config.getImagePath().replaceAll("\\\\", "/"));
+				}
 				CreditNoteRes creditRes = jasperCustomeImple.getCreditNoteRes(homeData.getPolicyNo());
 				String JsonString = gson.toJson(creditRes);
-				String jasperSaveLocation = policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+				String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 				res = getCommonJasperPdfFileByJson("/report/jasper/EwayCreditNote.jrxml", jasperSaveLocation, JsonString, input, "- CreditNote.json");
 			}
 		} catch (Exception e) {
