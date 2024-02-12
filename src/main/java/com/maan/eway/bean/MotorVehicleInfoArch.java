@@ -154,7 +154,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RES_GROSS_WEIGHT")
     private Double     resGrossWeight ;
 
-    @Column(name="RES_MOTOR_USAGE", length=20)
+    @Column(name="RES_MOTOR_USAGE", length=500)
     private String     resMotorUsage ;
 
     @Column(name="RES_OWNER_NAME", length=150)
