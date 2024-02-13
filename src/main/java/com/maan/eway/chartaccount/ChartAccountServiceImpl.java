@@ -108,7 +108,8 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 				Boolean bokerCommiCheck=false;
 			
 				List<Integer> coverIds =charAccount.stream().map(c1 -> c1.getId().getCoverId()).collect(Collectors.toList());
-									 
+				coverIds.add(945); // minimum Premium adjustment
+				
 				if("DR".equalsIgnoreCase(c.getAccountType()) && "C".equalsIgnoreCase(c.getCharactersticType())) {
 							
 											
