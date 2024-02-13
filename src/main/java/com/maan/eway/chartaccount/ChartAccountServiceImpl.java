@@ -59,7 +59,11 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 			Integer productId =hpm.getProductId();
 			//Integer sectionId =hpm.getSectionId();
 			List<SectionDataDetails> sections = secRepo.findByQuoteNo(quoteNo);
-			List<String> sectionIds = sections.stream().map(SectionDataDetails :: getSectionId).collect(Collectors.toList()); 
+			List<Integer> sectionIds = new ArrayList<Integer>(); 
+			sections.forEach( o -> {
+				sectionIds.add(Integer.valueOf(o.getSectionId()));
+			} ); 
+			
 			BigDecimal brokerCommision =hpm.getCommissionPercentage();
 			String taxFor ="";
 			String endorsmentType =StringUtils.isBlank(hpm.getEndtTypeId())?"":hpm.getEndtTypeId();

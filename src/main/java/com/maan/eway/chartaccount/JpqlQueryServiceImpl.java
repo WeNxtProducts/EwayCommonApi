@@ -30,7 +30,7 @@ public class JpqlQueryServiceImpl {
 	Logger logger = LogManager.getLogger(JpqlQueryServiceImpl.class);
 	
 	
-	public List<ChartAccountChildMaster> getChildChartAccountData(Integer companyId, Integer productId, List<String> sectionIds,
+	public List<ChartAccountChildMaster> getChildChartAccountData(Integer companyId, Integer productId, List<Integer> sectionIds,
 			ChartParentMaster cpmm) {
 		try {
 			
