@@ -2832,7 +2832,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    				   o.setPolicyNo(policyNo);
 	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
-	    				   o.setCommissionPercentage(commissionPercent);
+	    				 //  o.setCommissionPercentage(commissionPercent);
 	    				   
 	    			   });
 					} else {
@@ -2844,7 +2844,7 @@ public class PaymentServiceImpl implements PaymentService {
 			    			  
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    			   o.setCommissionPercentage(commissionPercent);
+			    			  // o.setCommissionPercentage(commissionPercent);
 			    		    
 		    		   });
 					}
@@ -2876,7 +2876,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    				   o.setPolicyNo(policyNo);
 	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
-	    				   o.setCommissionPercentage(commissionPercent);
+	    				//   o.setCommissionPercentage(commissionPercent);
 	    			   });
 					} else {
 						passengerList.forEach( o -> {
@@ -2886,7 +2886,7 @@ public class PaymentServiceImpl implements PaymentService {
 			    			   o.setStatus("P");
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    			   o.setCommissionPercentage(commissionPercent);
+			    			 //  o.setCommissionPercentage(commissionPercent);
 			    		    
 		    		   });
 					}
@@ -2897,7 +2897,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    		  eserTravel.setPolicyNo(policyNo);
 	    		  eserTravel.setStatus(StringUtils.isNotBlank(endttypeId) && "842".equalsIgnoreCase(endttypeId) ? "D" : "P");
 	    		  eserTravel.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-	    		  eserTravel.setCommissionPercentage(commissionPercent);
+	    		//  eserTravel.setCommissionPercentage(commissionPercent);
 	    		  eserTraRepo.saveAndFlush(eserTravel);
 	    		  
 	    	   } else  if(motorYn.equalsIgnoreCase("A") ) {
@@ -2919,7 +2919,7 @@ public class PaymentServiceImpl implements PaymentService {
 			    			   
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    			   o.setCommissionPercentage(commissionPercent);
+			    			 //  o.setCommissionPercentage(commissionPercent);
 			    		    
 		    		   });
 					}
@@ -2951,7 +2951,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    				   o.setPolicyNo(policyNo);
 	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
-	    				   o.setCommissionPercentage(commissionPercent);
+	    				//   o.setCommissionPercentage(commissionPercent);
 	    			   });
 					} else {
 						humanList.forEach( o -> {
@@ -2961,7 +2961,7 @@ public class PaymentServiceImpl implements PaymentService {
 			    			   o.setStatus("P");
 						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    			   o.setCommissionPercentage(commissionPercent);
+			    			//   o.setCommissionPercentage(commissionPercent);
 		    			    
 		    		   });
 					}
@@ -2996,7 +2996,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    				   o.setPolicyNo(policyNo);
 	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
-	    				   o.setCommissionPercentage(commissionPercent);
+	    				  // o.setCommissionPercentage(commissionPercent);
 	    			   });
 					} else {
 						humanList.forEach( o -> {
@@ -3005,7 +3005,7 @@ public class PaymentServiceImpl implements PaymentService {
 			    			   o.setStatus("P");
 						   }   
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    			   o.setCommissionPercentage(commissionPercent);
+			    			//   o.setCommissionPercentage(commissionPercent);
 			    		   
 		    			    
 		    		   });
