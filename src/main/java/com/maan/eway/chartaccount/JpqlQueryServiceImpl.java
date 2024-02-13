@@ -30,19 +30,19 @@ public class JpqlQueryServiceImpl {
 	Logger logger = LogManager.getLogger(JpqlQueryServiceImpl.class);
 	
 	
-	public List<ChartAccountChildMaster> getChildChartAccountData(Integer companyId, Integer productId, Integer sectionId,
+	public List<ChartAccountChildMaster> getChildChartAccountData(Integer companyId, Integer productId, List<String> sectionIds,
 			ChartParentMaster cpmm) {
 		try {
 			
 			String stringQuery ="select c from ChartAccountChildMaster c where c.id.companyId =:companyId and c.id.productId=:productId "
-					+ "and c.id.sectionId=:sectionId and c.id.chartId=:chartId and c.status=:status and c.id.amendId=(select max(cc.id.amendId) "
+					+ "and c.id.sectionId in (:sectionId) and c.id.chartId=:chartId and c.status=:status and c.id.amendId=(select max(cc.id.amendId) "
 					+ "from ChartAccountChildMaster cc where cc.id.companyId= c.id.companyId and cc.id.productId=c.id.productId and "
 					+ "cc.id.sectionId=c.id.sectionId and cc.id.chartId=c.id.chartId and cc.id.coverId=c.id.coverId and CURRENT_DATE between "
 					+ "cc.effectiveStartDate and cc.effectiveEndDate)";
 			
 			@SuppressWarnings("unchecked")
 			List<ChartAccountChildMaster> chilldMaster =em.createQuery(stringQuery).setParameter("companyId", companyId).setParameter("productId", productId)
-			.setParameter("sectionId", sectionId).setParameter("chartId", cpmm.getChatParentId().getChartId())
+			.setParameter("sectionId", sectionIds).setParameter("chartId", cpmm.getChatParentId().getChartId())
 			.setParameter("status", "Y").getResultList();
 			
 			return chilldMaster;

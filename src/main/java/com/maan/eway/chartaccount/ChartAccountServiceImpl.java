@@ -18,11 +18,13 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyDrcrDetail;
 import com.maan.eway.bean.ProductTaxSetup;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PolicyDrcrDetailRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 
 @Service
 public class ChartAccountServiceImpl implements ChartAccountService {
@@ -42,6 +44,9 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genNo;
+	
+	@Autowired
+	private SectionDataDetailsRepository secRepo ;
 
 
 	@Override
@@ -52,7 +57,9 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 			HomePositionMaster hpm =hpmRepo.findByQuoteNo(quoteNo);
 			Integer companyId =Integer.valueOf(hpm.getCompanyId());
 			Integer productId =hpm.getProductId();
-			Integer sectionId =hpm.getSectionId();
+			//Integer sectionId =hpm.getSectionId();
+			List<SectionDataDetails> sections = secRepo.findByQuoteNo(quoteNo);
+			List<String> sectionIds = sections.stream().map(SectionDataDetails :: getSectionId).collect(Collectors.toList()); 
 			BigDecimal brokerCommision =hpm.getCommissionPercentage();
 			String taxFor ="";
 			String endorsmentType =StringUtils.isBlank(hpm.getEndtTypeId())?"":hpm.getEndtTypeId();
@@ -83,7 +90,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 			
 			for(ChartParentMaster c : cpm) {
 				
-				List<ChartAccountChildMaster> charAccount =jpqlQuery.getChildChartAccountData(companyId,productId,sectionId,c);
+				List<ChartAccountChildMaster> charAccount =jpqlQuery.getChildChartAccountData(companyId,productId,sectionIds,c);
 				
 				Double premiumLc =null;
 				BigDecimal premiumFc =null;
