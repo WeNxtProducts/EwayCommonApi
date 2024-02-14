@@ -2119,7 +2119,7 @@ public class PaymentServiceImpl implements PaymentService {
 			if( req.getPaymentType().equalsIgnoreCase("1") || req.getPaymentType().equalsIgnoreCase("2")) {
 				paymentStatus = "ACCEPTED" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
-			}else if(req.getPaymentType().equalsIgnoreCase("4")) {
+			}else if(req.getPaymentType().equalsIgnoreCase("4") || req.getPaymentType().equalsIgnoreCase("5")) {
 				paymentStatus = "PENDING" ;
 				
 				
@@ -2198,7 +2198,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 			
 			paymentdetailrepo.saveAndFlush(paymentDetail);
-		//	if(req.getPaymentType().equalsIgnoreCase("4")) 
+		//	if(req.getPaymentType().equalsIgnoreCase("4") || req.getPaymentType().equalsIgnoreCase("5")) 
 				 
 			log.info("Saved Details " + json.toJson(paymentDetail));
 			
@@ -2327,7 +2327,7 @@ public class PaymentServiceImpl implements PaymentService {
 			res.setQuoteNo(req.getQuoteNo());
 			res.setMerchantReference(refno);
 			
-			if(req.getPaymentType().equalsIgnoreCase("4")) {
+			if(req.getPaymentType().equalsIgnoreCase("4") || req.getPaymentType().equalsIgnoreCase("5")) {
 				res.setIserror(((JsonPrimitive) payment.get("result")).getAsString()); //;
 				if(res.getIserror().equals("SUCCESS")) {
 					JsonArray array=(JsonArray) payment.get("data");
