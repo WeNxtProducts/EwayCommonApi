@@ -95,6 +95,7 @@ import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqPaymentid;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
+import com.maan.eway.chartaccount.ChartAccountRequest;
 import com.maan.eway.chartaccount.ChartAccountServiceImpl;
 import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
@@ -2389,7 +2390,11 @@ public class PaymentServiceImpl implements PaymentService {
 			String policyNo = calcService.getPolicyNo(policyReq);
 			//policyDetails = calcService.commissionCalc(policyReq);
 
-			CommonRes res =accountServiceImpl.drcrEntry(req.getQuoteNo(),policyNo);
+			ChartAccountRequest request = new ChartAccountRequest();
+			request.setQuoteNo(req.getQuoteNo());
+			request .setPolicyNo(policyNo);
+			request.setDiscountYn("N");
+			CommonRes res =accountServiceImpl.drcrEntry(request);
 			
 			HomePositionMaster hpm =homerepo.findByQuoteNo(req.getQuoteNo());
 			
@@ -2533,7 +2538,11 @@ public class PaymentServiceImpl implements PaymentService {
 			String policyNo = calcService.getPolicyNo(policyReq);
 			//policyDetails = calcService.commissionCalc(policyReq);
 
-			CommonRes res =accountServiceImpl.drcrEntry(req.getQuoteNo(),policyNo);
+			ChartAccountRequest request = new ChartAccountRequest();
+			request.setQuoteNo(req.getQuoteNo());
+			request .setPolicyNo(policyNo);
+			request.setDiscountYn("N");
+			CommonRes res =accountServiceImpl.drcrEntry(request);
 			
 			HomePositionMaster hpm =homerepo.findByQuoteNo(req.getQuoteNo());
 			

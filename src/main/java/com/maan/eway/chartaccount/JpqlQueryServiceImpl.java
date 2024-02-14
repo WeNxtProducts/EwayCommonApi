@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductTaxSetup;
@@ -180,6 +181,49 @@ public class JpqlQueryServiceImpl {
 			e.printStackTrace();
 		}
 		return companyLogo;
+	}
+	
+	public List<ChartAccountChildMaster> getChildChartAccountData(String companyId, String productId, List<Integer> sectionIds,
+			String chartId) {
+		try {
+			
+			String stringQuery ="select c from ChartAccountChildMaster c where c.id.companyId =:companyId and c.id.productId=:productId "
+					+ "and c.id.sectionId in (:sectionId) and c.id.chartId=:chartId and c.status=:status and c.id.amendId=(select max(cc.id.amendId) "
+					+ "from ChartAccountChildMaster cc where cc.id.companyId= c.id.companyId and cc.id.productId=c.id.productId and "
+					+ "cc.id.sectionId=c.id.sectionId and cc.id.chartId=c.id.chartId and cc.id.coverId=c.id.coverId and CURRENT_DATE between "
+					+ "cc.effectiveStartDate and cc.effectiveEndDate)";
+			
+			@SuppressWarnings("unchecked")
+			List<ChartAccountChildMaster> chilldMaster =em.createQuery(stringQuery).setParameter("companyId", Integer.valueOf(companyId)).setParameter("productId", Integer.valueOf(productId))
+			.setParameter("sectionId", sectionIds).setParameter("chartId", Integer.valueOf(chartId))
+			.setParameter("status", "Y").getResultList();
+			
+			return chilldMaster;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	
+	
+	public BigDecimal getPremium(String refNo,List<Integer> coverIds) {
+		BigDecimal premium =null;
+		try {
+			
+			 
+			String sqlQuery ="select sum(fac.) from FactorRateRequestDetails fac  where fac.requestReferenceNo=:requestReferenceNo and fac.coverId in(:coverId) "
+					+ "and fac.coverageType=:coverageType and (fac.isSelected =:isSelected or fac.userOpt=:userOpt)";
+			
+			premium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", coverIds).setParameter("coverageType", "B")
+			.setParameter("isSelected", "D").setParameter("userOpt", "Y").getSingleResult();
+			
+			return premium;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 
