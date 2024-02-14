@@ -69,11 +69,11 @@ public class SelcomPaymentController {
 	@PostMapping("/v1/checkout/create-order-minim/{merchantRefernceNo}")
 	@ApiOperation(value = "This method is to Payment Sava")
 	//@RequestBody
-	public ResponseEntity<JsonObject> createOrderMinimum(@PathVariable("merchantRefernceNo") String merchantRefernceNo) {
+	public ResponseEntity<Object> createOrderMinimum(@PathVariable("merchantRefernceNo") String merchantRefernceNo) {
 		
 		JsonObject data =service.createOrderMinimal(merchantRefernceNo);
 		if (data != null) {
-			return new ResponseEntity<JsonObject>(data, HttpStatus.CREATED);
+			return new ResponseEntity<Object>(data.toString(), HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}	
