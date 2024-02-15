@@ -1179,7 +1179,7 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="276">
+		<band height="190">
 			<rectangle>
 				<reportElement mode="Transparent" x="0" y="5" width="555" height="185" uuid="26bf346b-7f7c-4828-b0d3-bfd5deb8fb34">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1209,7 +1209,7 @@
 				<textFieldExpression><![CDATA["NOTWITHSTANDING ANYTHING CONTAINED HEREIN TO THE CONTRARY IT IS HEREBY DECLARED AND AGREED"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="480" y="60" width="75" height="15" uuid="ddb0d666-dc7f-485f-b27a-aa426061cad0">
+				<reportElement x="479" y="60" width="75" height="15" uuid="ddb0d666-dc7f-485f-b27a-aa426061cad0">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1257,7 +1257,7 @@
 				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="430" y="160" width="40" height="15" uuid="0aaa1c6f-be0a-4e92-a620-679680107558">
+				<reportElement x="419" y="160" width="46" height="15" uuid="0aaa1c6f-be0a-4e92-a620-679680107558">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1269,7 +1269,7 @@
 				<textFieldExpression><![CDATA["TOTAL :-"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="480" y="160" width="75" height="15" uuid="72e73eb6-0b65-4b17-98e6-92a44a111558">
+				<reportElement x="479" y="160" width="75" height="15" uuid="72e73eb6-0b65-4b17-98e6-92a44a111558">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -1292,7 +1292,7 @@
 				<textFieldExpression><![CDATA["THAT W.E.F INCEPTION POLICY STAYS "+$F{endtTypeDesc}+" DUE TO "+$F{endorsementRemarks}]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement x="430" y="75" width="125" height="15" uuid="1c188f26-e273-4b9f-ad37-f394df904138">
+				<reportElement x="419" y="75" width="135" height="15" uuid="1c188f26-e273-4b9f-ad37-f394df904138">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 2_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 2_CH"/>
@@ -1303,14 +1303,14 @@
 					<datasetRun subDataset="PremiumDetails" uuid="68eb6087-4dd3-463e-ab84-df28ac1a470c">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("premiumDetails")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="50" uuid="7996870e-b82b-4935-b78a-f15a54cee89b">
+					<jr:column width="60" uuid="7996870e-b82b-4935-b78a-f15a54cee89b">
 						<jr:detailCell style="Table 2_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<box>
 								<pen lineWidth="0.0"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="50" height="15" uuid="b0822904-07b8-4a1f-8ca8-907780699ee3"/>
+								<reportElement x="0" y="0" width="60" height="15" uuid="b0822904-07b8-4a1f-8ca8-907780699ee3"/>
 								<box leftPadding="2"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
