@@ -94,7 +94,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="EXCHANGE_RATE", nullable=false)
     private BigDecimal     exchangeRate ;
-   
+
+    @Column(name="BUILDING_SUMINSURED" )
+    private BigDecimal     buildingSuminsured;
+    
+    @Column(name="CD_REFNO", nullable=false)
+    private Long       cdRefno ;
 }
 
 
