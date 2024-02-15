@@ -17,7 +17,7 @@ public class ChartAccountController {
 	private ChartAccountService service;
 	
 	
-	@PostMapping("/drcr/entry/{quoteNo}")
+	@PostMapping("/drcr/entry")
 	public CommonRes drcrEntry(@RequestBody ChartAccountRequest req) {
 		return service.drcrEntry(req);
 	}

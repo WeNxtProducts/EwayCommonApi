@@ -213,7 +213,7 @@ public class JpqlQueryServiceImpl {
 		try {
 			
 			 
-			String sqlQuery ="select sum(fac.) from FactorRateRequestDetails fac  where fac.requestReferenceNo=:requestReferenceNo and fac.coverId in(:coverId) "
+			String sqlQuery ="select sum(fac.premiumExcludedTaxFc) from FactorRateRequestDetails fac  where fac.requestReferenceNo=:requestReferenceNo and fac.coverId in(:coverId) "
 					+ "and fac.coverageType=:coverageType and (fac.isSelected =:isSelected or fac.userOpt=:userOpt)";
 			
 			premium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", coverIds).setParameter("coverageType", "B")
