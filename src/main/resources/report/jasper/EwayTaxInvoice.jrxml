@@ -85,7 +85,7 @@
 		<queryString language="json">
 			<![CDATA[premiumDetails]]>
 		</queryString>
-		<field name="amount" class="java.lang.Integer">
+		<field name="amount" class="java.math.BigDecimal">
 			<property name="net.sf.jasperreports.json.field.expression" value="amount"/>
 			<fieldDescription><![CDATA[amount]]></fieldDescription>
 		</field>
