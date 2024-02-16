@@ -33,6 +33,8 @@ import com.maan.eway.bean.MsVehicleDetailsId;
  
 public interface MsPolicyDetailsRepository  extends JpaRepository<MsPolicyDetails,MsPolicyDetailsId > , JpaSpecificationExecutor<MsPolicyDetails> {
 
+	MsPolicyDetails findTop1ByRequestReferenceNoOrderByEntryDateDesc(String requestReferenceNo);
+
 
 
 }

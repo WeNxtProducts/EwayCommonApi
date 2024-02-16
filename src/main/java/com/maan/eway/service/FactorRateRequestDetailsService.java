@@ -11,6 +11,7 @@ import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.FactorRateDetailsList;
 import com.maan.eway.common.req.UpdateFactorRateReq;
+import com.maan.eway.common.req.ViewPolicyCalc;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.req.FactorFdCalcViewReq;
@@ -34,6 +35,9 @@ UpdateCoverRes updateFactorRatePremiumDetails(UpdateFactorRateReq req);
 List<Error> validateFactorIsSelectedDetails(UpdateFactorRateReq req);
 UpdateCoverRes updateFactorIsSelectedDetails(UpdateFactorRateReq req);
 FactorRateDetailsList getFactorRateFdDetailsList(FactorFdCalcViewReq req);
+ViewPolicyCalc getViewPolicyCalc(FactorRateDetailsGetReq req, String string);
+List<Error> validatePolicyCalcRate(UpdateFactorRateReq req);
+UpdateCoverRes updatePolicyCalcRate(UpdateFactorRateReq req);
 
 
 }

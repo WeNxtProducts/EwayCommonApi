@@ -23,6 +23,7 @@ import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.FactorRateDetailsList;
 import com.maan.eway.common.req.UpdateFactorRateReq;
+import com.maan.eway.common.req.ViewPolicyCalc;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
@@ -157,6 +158,57 @@ public class FactorRateRequestDetailsController {
 		}
 		
     }
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/view/policycalc")
+	public ResponseEntity<CommonRes> getViewPolicyCalc(@RequestBody  FactorRateDetailsGetReq req,@RequestHeader("Authorization") String tokens) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		ViewPolicyCalc res = entityService.getViewPolicyCalc(req,tokens.replaceAll("Bearer ", "").split(",")[0]);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+    }
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/updatepolicycalcrate")
+	public ResponseEntity<CommonRes> updatePolicyCalcRate(@RequestBody  UpdateFactorRateReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validatePolicyCalcRate(req);
+		//// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else { 
+			/////// save
+			UpdateCoverRes res = entityService.updatePolicyCalcRate(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+    }
+	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
     @GetMapping(value = "/factorraterequestdetails")
     public ResponseEntity<List<FactorRateRequestDetails>> getAllFactorRateRequestDetails() {
