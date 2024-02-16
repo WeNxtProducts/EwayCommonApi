@@ -97,6 +97,13 @@ public class EndorsementMasterRes {
 	
 	@JsonProperty("IsCoverEndorsementYN")
 	private String isCoverEndorsementYN;
+	
+	@JsonProperty("EndtShortCode")
+	private String endtShortCode;
+	
+
+	@JsonProperty("EndtShortDesc")
+	private String endtShortDesc;
 /*
 	@JsonProperty("CalcType")
 	private String calcType;

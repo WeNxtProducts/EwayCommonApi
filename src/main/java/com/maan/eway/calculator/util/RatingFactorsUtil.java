@@ -582,6 +582,8 @@ public class RatingFactorsUtil {
 						 			.sectionModificationYn(t.get("sectionModificationYn")==null ? "" : t.get("sectionModificationYn").toString())
 						 			.sectionModificationType(t.get("sectionModificationType")==null ? "" : t.get("sectionModificationType").toString())
 						 			.isCoverendt(t.get("isCoverendt")==null?"N":t.get("isCoverendt").toString())
+						 			.endtShortCode(t.get("endtShortCode")==null?"99999":t.get("endtShortCode").toString())
+						 			.endtShortDesc(t.get("endtShortDesc")==null?"Others":t.get("endtShortDesc").toString())
 						 			.updatedDate(null).build();
 				 result.add(e);
 				 }

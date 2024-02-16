@@ -36,5 +36,9 @@ public class EndorsementType {
 	@JsonProperty("isCoverEndt") 
 	private String isCoverEndt;
 	
+	@JsonProperty("EndtShortCode") 
+	private String endtShortCode;
 	
+	@JsonProperty("EndtShortDesc") 
+	private String endtShortDesc;
 }

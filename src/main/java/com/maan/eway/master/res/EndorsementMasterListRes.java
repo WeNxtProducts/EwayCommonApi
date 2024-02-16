@@ -91,4 +91,12 @@ public class EndorsementMasterListRes {
 
 	@JsonProperty("IsCoverEndorsementYN")
 	private String isCoverEndorsementYN;
+	
+
+	@JsonProperty("EndtShortCode")
+	private String endtShortCode;
+	
+
+	@JsonProperty("EndtShortDesc")
+	private String endtShortDesc;
 }

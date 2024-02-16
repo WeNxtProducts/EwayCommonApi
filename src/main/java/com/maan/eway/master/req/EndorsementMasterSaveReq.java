@@ -74,5 +74,6 @@ public class EndorsementMasterSaveReq {
 	@JsonProperty("IsCoverEndorsementYN")
 	private String isCoverEndorsementYN;
 	
-	
+	@JsonProperty("EndtShortCode")
+	private String endtShortCode;
 }

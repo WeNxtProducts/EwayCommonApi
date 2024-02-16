@@ -377,6 +377,8 @@ public class EndorsementService {
 							.sectionModificationYn(ent.getSectionModificationYn())
 							.sectionModificationType(ent.getSectionModificationType())
 							.isCoverEndt(ent.getIsCoverendt())
+							.endtShortCode(ent.getEndtShortCode())
+							.endtShortDesc(ent.getEndtShortDesc())
 							.build();
 					
 					ets.add(e);

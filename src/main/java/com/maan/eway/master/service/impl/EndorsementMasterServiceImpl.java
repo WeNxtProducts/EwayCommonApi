@@ -35,7 +35,6 @@ import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EndorsementChangeStatusReq;
 import com.maan.eway.master.req.EndorsementMasterDropdownReq;
 import com.maan.eway.master.req.EndorsementMasterGetReq;
@@ -115,6 +114,11 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				errorList.add("1953");
 			}
 			
+			if (StringUtils.isNotBlank(req.getSectionModificationYn())) {
+				if (req.getSectionModificationYn().equalsIgnoreCase("Y") && StringUtils.isBlank(req.getSectionModificationType()) )
+//				errorList.add(new Error("04", "SectionModificationType", "Please Select Section Modition Type "));
+				errorList.add("1953");
+			}
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
@@ -128,6 +132,11 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 //				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 				errorList.add("1262");
 			}
+			if (StringUtils.isBlank(req.getEndtShortCode())) {
+//				errorList.add(new Error("05", "Endorsement Short Code", "Please Select Endorsement Short Code"));
+				errorList.add("2148");
+			}
+				
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
 //				errorList.add(new Error("05", "Status", "Please Select Status"));
@@ -288,8 +297,9 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			String createdBy ="";
 			Integer endtTypeId = 0;
 			
-			ListItemValue data = listrepo.findByItemTypeAndItemCodeAndCompanyId("ENDORSEMENT_TYPE",req.getEndtTypeCategoryId(),req.getCompanyId() );
+			ListItemValue data = getListItem("ENDORSEMENT_TYPE",req.getEndtTypeCategoryId() ,req.getCompanyId());
 		//	ListItemValue calc = listrepo.findByItemTypeAndItemCode("CALCULATION_TYPE",req.getCalcTypeId());
+			ListItemValue endtShortDesc = getListItem("ENDT_SHORTCODE",req.getEndtShortCode(),"99999"  );
 			
 			if(StringUtils.isBlank(req.getEndtTypeId())) {
 				
@@ -377,6 +387,8 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			saveData.setSectionModificationYn(StringUtils.isBlank(req.getSectionModificationYn()) ? "N" : req.getSectionModificationYn()   );
 			saveData.setSectionModificationType(req.getSectionModificationType());
 			saveData.setIsCoverendt(StringUtils.isBlank(req.getIsCoverEndorsementYN()) ?"N" :req.getIsCoverEndorsementYN()  );
+			saveData.setEndtShortCode(req.getEndtShortCode());
+			saveData.setEndtShortDesc(endtShortDesc.getItemValue());
 			/*
 			String id = "";
 			String desc = "";
@@ -414,6 +426,76 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		}
 		return res;
 		}
+	
+	public synchronized ListItemValue getListItem( String itemType,String itemCode , String companyId) {
+		ListItemValue data = new ListItemValue();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			effectiveDate.where(a1,a2,b1,b2);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate b4= cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			effectiveDate2.where(a3,a4,b3,b4);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n5 = cb.equal(c.get("companyId"), companyId);
+			//Predicate n6 = cb.equal(c.get("branchCode"), "");
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+	//		Predicate n8 = cb.or(n4,n5);
+		//	Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType); 
+			Predicate n15 = cb.equal(c.get("itemCode"),itemCode); 
+				
+			query.where(n12,n2,n3,n5,n7,n10,n15).orderBy(orderList);
+		
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			List<ListItemValue> list = result.getResultList();
+			data = list.size() > 0 ? list.get(0) : null ;			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return data ;
+	}
 	
 	
 	private EndtDependantFieldMaster getDependantField(String companyId, String productId, Integer dependantFieldId) {
@@ -616,6 +698,8 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setRegulatoryCode(data.getRegulatoryCode());
 			res.setSelectedYn("N");
 			res.setIsCoverEndorsementYN(data.getIsCoverendt());
+			res.setEndtShortCode(data.getEndtShortCode());
+			res.setEndtShortDesc(data.getEndtShortDesc());
 			if(data.getEndtTypeCategoryId().equals(1) ) {
 				List<String> filterTotalIds = nonfinanceids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
 				if(filterTotalIds.size() > 0 ) {
@@ -801,6 +885,8 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setUpdatedBy(data.getUpdatedBy());
 			res.setRegulatoryCode(data.getRegulatoryCode());
 			res.setSelectedYn("N");
+			res.setEndtShortCode(data.getEndtShortCode());
+			res.setEndtShortDesc(data.getEndtShortDesc());
 			res.setIsCoverEndorsementYN(data.getIsCoverendt());
 			if(data.getEndtTypeCategoryId().equals(1) ) {
 				List<String> filterTotalIds = nonfinanceids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
@@ -914,6 +1000,8 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setUpdatedBy(list.get(0).getUpdatedBy());	
 			res.setRegulatoryCode(list.get(0).getRegulatoryCode());
 			res.setIsCoverEndorsementYN(list.get(0).getIsCoverendt());
+			res.setEndtShortCode(list.get(0).getEndtShortCode());
+			res.setEndtShortDesc(list.get(0).getEndtShortDesc());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1087,6 +1175,8 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 					res.setCreatedBy(data.getCreatedBy());
 					res.setUpdatedBy(data.getUpdatedBy());
 					res.setRegulatoryCode(data.getRegulatoryCode());
+					res.setEndtShortCode(data.getEndtShortCode());
+					res.setEndtShortDesc(data.getEndtShortDesc());
 					endtlist.add(res);
 					}
 					res1.setEndorsementMasterListRes(endtlist);
