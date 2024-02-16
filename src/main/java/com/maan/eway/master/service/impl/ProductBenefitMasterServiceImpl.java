@@ -98,40 +98,47 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 
 
 	@Override
-	public List<Error> validateProductBenefit(ProductBenefitSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateProductBenefit(ProductBenefitSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 		
 			if (StringUtils.isBlank(req.getBenefitDescription())) {
-				errorList.add(new Error("02", "Benefit Description", "Please enter Benefit Description"));
+			//	errorList.add(new Error("02", "Benefit Description", "Please enter Benefit Description"));
+				errorList.add("1588");
 			}else if (req.getBenefitDescription().length() > 1000){
-				errorList.add(new Error("02","Benefit Description", "Please Enter Benefit Description 1000 Characters")); 
+				//errorList.add(new Error("02","Benefit Description", "Please Enter Benefit Description 1000 Characters")); 
+				errorList.add("1589");
 			}else if (StringUtils.isBlank(req.getBenefitId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getProductId()) &&  StringUtils.isNotBlank(req.getTypeId()) ) {
 				List<ProductBenefitMaster> BenefitList = getBenefitDescriptionExistDetails(req.getBenefitDescription() , req.getCompanyId() , req.getProductId(),req.getSectionId() , req.getTypeId() );
 				if (BenefitList.size()>0 ) {
-					errorList.add(new Error("01", "Benefit Description", "This Benefit Description Already Exist "));
+			//		errorList.add(new Error("01", "Benefit Description", "This Benefit Description Already Exist "));
+					errorList.add("1590");
 				}
 			}
 			else if (StringUtils.isNotBlank(req.getBenefitId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId()) &&  StringUtils.isNotBlank(req.getTypeId()) ) {
 				List<ProductBenefitMaster> BenefitList = getBenefitDescriptionExistDetails(req.getBenefitDescription() , req.getCompanyId() , req.getProductId(), req.getSectionId(), req.getTypeId());
 				
 				if (BenefitList.size()>0 &&  (! req.getBenefitId().equalsIgnoreCase(BenefitList.get(0).getBenefitId().toString())) ) {
-					errorList.add(new Error("01", "ExclusionDescription", "This ExclusionDescription Already Exist "));
+				//	errorList.add(new Error("01", "ExclusionDescription", "This ExclusionDescription Already Exist "));
+					errorList.add("1591");
 				}
 				
 			}
 			
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+		//		errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+				errorList.add("1255");
 			}
 			
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+			//	errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+				errorList.add("1259");
 			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+			//	errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+				errorList.add("1260");
 			}
 			
 			// Date Validation 
@@ -140,44 +147,59 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			//	errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
+				
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//	errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+			//	errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+				errorList.add("1270");
 			}else if (req.getCoreAppCode().length() > 20){
-				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+			//	errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+				errorList.add("1271");
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+			//	errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+				errorList.add("1268");
 			}else if (req.getRegulatoryCode().length() > 20){
-				errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+			//	errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+				errorList.add("1269");
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+			//	errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 100){
-				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			//	errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+				errorList.add("1271");
 			}	
 			
 			if (StringUtils.isBlank(req.getProductId())) {
-				errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
+			//	errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
+				errorList.add("1313");
 			}
 			if (StringUtils.isBlank(req.getSectionId())) {
-				errorList.add(new Error("11", "SectionId", "Please Select SectionId"));
+			//	errorList.add(new Error("11", "SectionId", "Please Select SectionId"));
+				errorList.add("1302");
 			}
 			
 			if (StringUtils.isBlank(req.getTypeId())) {
-				errorList.add(new Error("12", "TypeId", "Please Select Benefit TypeId"));
+			//	errorList.add(new Error("12", "TypeId", "Please Select Benefit TypeId"));
+				errorList.add("1314");
 			}
 			
 //			if (StringUtils.isBlank(req.getDisplayOrder())) {

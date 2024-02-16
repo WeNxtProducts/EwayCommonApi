@@ -23,8 +23,10 @@ import com.maan.eway.master.req.UwQuestionMasterSaveReq;
 import com.maan.eway.master.req.UwQuestionsMasterGetAllReq;
 import com.maan.eway.master.res.UwQuestionMasterRes;
 import com.maan.eway.master.service.UwQuestionMasterService;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -47,6 +49,9 @@ public class UwQuestionsMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	// save
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertuwquestions")
@@ -55,8 +60,19 @@ public class UwQuestionsMasterController {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
+		List<String> validationCodes = uwService.validateUwQuestions(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 
-		List<Error> validation = uwService.validateUwQuestions(req);
 		// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

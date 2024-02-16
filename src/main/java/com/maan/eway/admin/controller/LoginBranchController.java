@@ -36,7 +36,9 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -56,6 +58,10 @@ public class LoginBranchController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 //*************************************** Add Branches Apis **********************************************************//
 	
 	@PostMapping("/attachbrokerbranches")
@@ -63,7 +69,20 @@ public class LoginBranchController {
 	public ResponseEntity<CommonRes> attachBrokerBranch(@RequestBody  AttachCompaniesReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validateBrokerBranchReq(req);
+		List<String> validationCodes =  validationService.validateBrokerBranchReq(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getAttachedCompanies().get(0).getInsuranceId() );
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+	
+		
 		//// validation
 		if (validation != null && validation.size() != 0) 	{
 			data.setCommonResponse(null);
@@ -94,7 +113,20 @@ public class LoginBranchController {
 	public ResponseEntity<CommonRes> attachIssuerBranches(@RequestBody  AttachIssuerBrannchReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validateIssuerBranchReq(req);
+		List<String> validationCodes =  validationService.validateIssuerBranchReq(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getAttachedCompanies().get(0).getInsuranceId() );
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+	
+		
 		//// validation
 		if (validation != null && validation.size() != 0) 	{
 			data.setCommonResponse(null);
@@ -162,9 +194,23 @@ public class LoginBranchController {
 	@PostMapping("/attachbranches")
 	@ApiOperation(value="This method is to Attach Broker Company Branches")
 	public ResponseEntity<CommonRes> attachBrokerCompanyBranch(@RequestBody  AttachBrokerBranchReq req) {
+	
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validateBrokerCompanyBranchReq(req);
+		List<String> validationCodes =  validationService.validateBrokerCompanyBranchReq(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId() );
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
+	
 		//// validation
 		if (validation != null && validation.size() != 0) 	{
 			data.setCommonResponse(null);
@@ -271,9 +317,22 @@ public class LoginBranchController {
 	@PostMapping("/attachuserbranches")
 	@ApiOperation("This method is to save branches as multi insert")
 	public ResponseEntity<CommonRes> saveLoginBranches(@RequestBody LoginBranchesSaveReq req){
-		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
-		List<Error> validation = validationService.validateLoginBranches(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes =  validationService.validateLoginBranches(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getInsuranceId() );
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+	
+		
 		if(validation!=null && validation.size() !=0) {
 			data.setCommonResponse(null);
 			data.setIsError(true);

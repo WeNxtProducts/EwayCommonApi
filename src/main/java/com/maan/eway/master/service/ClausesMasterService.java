@@ -27,7 +27,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface ClausesMasterService  {
 
-	List<Error> validateClauses(ClausesMasterSaveReq req);
+	List<String> validateClauses(ClausesMasterSaveReq req);
 
 	SuccessRes saveClauses(ClausesMasterSaveReq req);
 

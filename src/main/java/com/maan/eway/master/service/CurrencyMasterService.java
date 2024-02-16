@@ -33,7 +33,7 @@ public interface CurrencyMasterService  {
 
 	SuccessRes insertCurrency(CurrencyMasterSaveReq req);
 
-	List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req);
+	List<String> validateCurrencyDetails(CurrencyMasterSaveReq req);
 
 	SuccessRes changeStatusCurrencyDetails(CurrencyMasterChangeStatusReq req);
 

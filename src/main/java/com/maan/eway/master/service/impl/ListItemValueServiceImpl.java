@@ -150,8 +150,8 @@ this.repository = repo;
 
 
 	@Override
-	public List<Error> validateLovDetails(ListItemValueSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateLovDetails(ListItemValueSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 		
@@ -165,14 +165,18 @@ this.repository = repo;
 //	
 
 			if (StringUtils.isBlank(req.getItemValue())) {
-				errorList.add(new Error("02", "ItemValue", "Please Enter Description"));
+			//	errorList.add(new Error("02", "ItemValue", "Please Enter Description"));
+				errorList.add("1379");
 			}else if (req.getItemCode().length() > 20){
-				errorList.add(new Error("02","ItemValue", "Please Enter Description Under 20 Characters")); 
+				//errorList.add(new Error("02","ItemValue", "Please Enter Description Under 20 Characters")); 
+				errorList.add("1380");
 			}
 			if (StringUtils.isBlank(req.getItemCode())) {
-				errorList.add(new Error("02", "ItemCode", "Please Enter ItemCode"));
+				//errorList.add(new Error("02", "ItemCode", "Please Enter ItemCode"));
+				errorList.add("1381");
 			}else if (req.getItemCode().length() > 20){
-				errorList.add(new Error("02","ItemCode", "Please Enter ItemCode Under 20 Characters")); 
+				//errorList.add(new Error("02","ItemCode", "Please Enter ItemCode Under 20 Characters")); 
+				errorList.add("1382");
 			}
 //			else if (StringUtils.isBlank(req.getItemId())  && StringUtils.isNotBlank(req.getItemCode()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 //				List<ListItemValue> lovList = getItemCodeExistDetails( req.getItemCode() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
@@ -199,17 +203,21 @@ this.repository = repo;
 //			}
 			
 			if (StringUtils.isBlank(req.getInsuranceId())) {
-				errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
+			//	errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
+				errorList.add("1255");
 			}
 			
 			if (StringUtils.isBlank(req.getBranchCode())) {
-				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+				//errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+				errorList.add("1256");
 			}
 
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
+				//errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
+				errorList.add("1259");
 			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+				//errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+				errorList.add("1260");
 			}
 			
 			// Date Validation 
@@ -218,34 +226,45 @@ this.repository = repo;
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Select Effective Date Start"));
+			//	errorList.add(new Error("05", "EffectiveDateStart", "Please Select Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Select Effective Date Start as Future Date"));
+			//	errorList.add(new Error("05", "EffectiveDateStart", "Please Select Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+				//errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
+				//errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
+				errorList.add("1266");
 			}else if (req.getCoreAppCode().length() > 20){
-				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+			//	errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+				errorList.add("1267");
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			//	errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode"));
+				errorList.add("1268");
 			}else if (req.getRegulatoryCode().length() > 20){
-				errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+			//	errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+				errorList.add("1269");
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
+			//	errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 100){
-				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			//	errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+				errorList.add("1271");
 			}		
 		} catch (Exception e) {
 			log.error(e);

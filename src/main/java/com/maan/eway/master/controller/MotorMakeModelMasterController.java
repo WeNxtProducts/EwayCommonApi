@@ -18,8 +18,10 @@ import com.maan.eway.master.req.MotorMakeModelGetReq;
 import com.maan.eway.master.req.MotorMakeModelSaveReq;
 import com.maan.eway.master.res.MotorMakeModelGetRes;
 import com.maan.eway.master.service.MotorMakeModelMasterService;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -36,15 +38,33 @@ public class MotorMakeModelMasterController {
 	private MotorMakeModelMasterService service;
 	@Autowired
 	private PrintReqService reqPrinter;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	// Insert
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/savemakemodel")
 	@ApiOperation(value = "This method is Save Motor Make Model")
 
 	public ResponseEntity<CommonRes> saveMotorMakeModel(@RequestBody MotorMakeModelSaveReq req) {
+		
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = service.validateMotorMakeModel(req);
+		List<String> validationCodes = service.validateMotorMakeModel(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
+		
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

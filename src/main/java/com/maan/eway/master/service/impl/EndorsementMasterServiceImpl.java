@@ -80,17 +80,21 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 	private Logger log = LogManager.getLogger(EndorsementMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateEndorsement(EndorsementMasterSaveReq req) {
+	public List<String> validateEndorsement(EndorsementMasterSaveReq req) {
 		// TODO Auto-generated method stub
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 			if (StringUtils.isBlank(req.getProductId())) {
-				errorList.add(new Error("01", "ProductId", "Please Enter ProductId"));
+				
+//				errorList.add(new Error("01", "ProductId", "Please Enter ProductId"));
+				errorList.add("1313");
+				
 			}
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+//				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+				errorList.add("1255");
 			}
 						
 		/*	if (StringUtils.isBlank(req.getEndtTypeId())) {
@@ -98,14 +102,17 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			}
 			*/
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
+//				errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
+				errorList.add("1259");
 			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+//				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+				errorList.add("1260");
 			}
 			
 			if (StringUtils.isNotBlank(req.getSectionModificationYn())) {
 				if (req.getSectionModificationYn().equalsIgnoreCase("Y") && StringUtils.isBlank(req.getSectionModificationType()) )
-				errorList.add(new Error("04", "SectionModificationType", "Please Select Section Modition Type "));
+//				errorList.add(new Error("04", "SectionModificationType", "Please Select Section Modition Type "));
+				errorList.add("1953");
 			}
 			
 			// Date Validation 
@@ -114,18 +121,23 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+//				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+//				errorList.add(new Error("05", "Status", "Please Select Status"));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 			
 //			if (StringUtils.isBlank(req.getCoreAppCode())) {
@@ -135,80 +147,100 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 //			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
+//				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 100){
-				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+//				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+				errorList.add("1271");
 			}
 
 			if (StringUtils.isBlank(req.getEndtType())) {
-				errorList.add(new Error("10", "EndtType", "Please Enter EndtType"));
+//				errorList.add(new Error("10", "EndtType", "Please Enter EndtType"));
+				errorList.add("1954");
 			}else if (req.getEndtType().length() > 300){
-				errorList.add(new Error("10","EndtType", "Please Enter EndtType within 300 Characters")); 
+//				errorList.add(new Error("10","EndtType", "Please Enter EndtType within 300 Characters")); 
+				errorList.add("1955");
 			}
 
 			if (StringUtils.isBlank(req.getEndtTypeDesc())) {
-				errorList.add(new Error("11", "EndtTypeDesc", "Please Enter EndtTypeDesc"));
+//				errorList.add(new Error("11", "EndtTypeDesc", "Please Enter EndtTypeDesc"));
+				errorList.add("1956");
 			}else if (req.getEndtTypeDesc().length() > 300){
-				errorList.add(new Error("11","EndtTypeDesc", "Please Enter EndtTypeDesc within 300 Characters")); 
+//				errorList.add(new Error("11","EndtTypeDesc", "Please Enter EndtTypeDesc within 300 Characters")); 
+				errorList.add("1957");
 			}
 
 			if (StringUtils.isBlank(req.getEndtTypeCategoryId())) {
-				errorList.add(new Error("12", "EndtTypeCategoryId", "Please Enter EndtTypeCategoryId"));
+//				errorList.add(new Error("12", "EndtTypeCategoryId", "Please Enter EndtTypeCategoryId"));
+				errorList.add("1958");
 			}
 			
 			if (StringUtils.isBlank(req.getPriority())) {
-				errorList.add(new Error("13", "Priority", "Please Enter Priority"));
+//				errorList.add(new Error("13", "Priority", "Please Enter Priority"));
+				errorList.add("1959");
 			}
 			 else if (StringUtils.isNotBlank(req.getPriority())&& !req.getPriority().matches("[0-9]+")){
-					errorList.add(new Error("13", "Priority", "Please Enter Priority only in numbers"));
+//					errorList.add(new Error("13", "Priority", "Please Enter Priority only in numbers"));
+					errorList.add("1960");
 				}
 				
 			for(String dependantid : req.getEndtDependantIds()) {
 			if (StringUtils.isBlank(dependantid)) {
-				errorList.add(new Error("14", "EndtDependantId", "Please Enter EndtDependantId"));
+//				errorList.add(new Error("14", "EndtDependantId", "Please Enter EndtDependantId"));
+				errorList.add("1961");
 			}
 			}
 			
 			if (req.getEndtDependantIds().isEmpty()){
-				errorList.add(new Error("14", "EndtDependantId", "Please Select EndtDependantId"));
+//				errorList.add(new Error("14", "EndtDependantId", "Please Select EndtDependantId"));
+				errorList.add("1962");
 				}
 			if (StringUtils.isNotBlank(req.getEndtFeeYn()) && req.getEndtFeeYn().equalsIgnoreCase("Y")){		
 			if (StringUtils.isBlank(req.getCalcTypeId())) {
-				errorList.add(new Error("15", "CalcTypeId", "Please Enter CalcTypeId"));
+//				errorList.add(new Error("15", "CalcTypeId", "Please Enter CalcTypeId"));
+				errorList.add("1963");
 			}
 			}
 			if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId().equalsIgnoreCase("A")) {
 				if (StringUtils.isBlank(req.getEndtFeePercent())) {				
-					errorList.add(new Error("16", "EndtFeePercent", "Please Enter EndtFeePercent"));
+//					errorList.add(new Error("16", "EndtFeePercent", "Please Enter EndtFeePercent"));
+					errorList.add("1964");
 					}
 				if ((StringUtils.isNotBlank(req.getEndtFeePercent()))
 						&& !req.getEndtFeePercent().matches("[0-9]+")){
-					errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
+//					errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
+					errorList.add("1965");
 					
 				}
 			}
 			if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId().equalsIgnoreCase("P")) {
 				if (StringUtils.isBlank(req.getEndtFeePercent())) {				
-				errorList.add(new Error("17", "EndtFeePercent", "Please Enter EndtFeePercent"));
+//				errorList.add(new Error("17", "EndtFeePercent", "Please Enter EndtFeePercent"));
+				errorList.add("1966");
 				}
 				Double a =Double.valueOf(req.getEndtFeePercent());
 				if((StringUtils.isNotBlank(req.getEndtFeePercent()))&& a>100) {
-					errorList.add(new Error("17", "EndtFeePercent", "Please Enter EndtFeePercent below 100"));							
+//					errorList.add(new Error("17", "EndtFeePercent", "Please Enter EndtFeePercent below 100"));	
+					errorList.add("1967");
 				}
 				if ((StringUtils.isNotBlank(req.getEndtFeePercent()))
 						&& !req.getEndtFeePercent().matches("[0-9]+")){
-					errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
+//					errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
+					errorList.add("1968");
 					
 				}
 			}
 			if (StringUtils.isBlank(req.getEndtFeeYn())) {
-				errorList.add(new Error("16", "EndtFeeYn", "Please Enter EndtFeeYn"));
+//				errorList.add(new Error("16", "EndtFeeYn", "Please Enter EndtFeeYn"));
+				errorList.add("1969");
 			}
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("18", "Remarks", "Please Enter Remarks"));
+//				errorList.add(new Error("18", "Remarks", "Please Enter Remarks"));
+				errorList.add("1970");
 			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("18","Remarks", "Please Enter Remarks within 100 Characters")); 
+//				errorList.add(new Error("18","Remarks", "Please Enter Remarks within 100 Characters")); 
+				errorList.add("1971");
 			}
 
 			
@@ -219,11 +251,13 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 //			}
 			if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId().equalsIgnoreCase("M")) {
 				if (StringUtils.isBlank(req.getEndtFeePercent())) {				
-					errorList.add(new Error("16", "EndtFeePercent", "Please Enter EndtFeePercent"));
+//					errorList.add(new Error("16", "EndtFeePercent", "Please Enter EndtFeePercent"));
+					errorList.add("1972");
 					}
 				if ((StringUtils.isNotBlank(req.getEndtFeePercent()))
 						&& !req.getEndtFeePercent().matches("[0-9]+")){
-					errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
+//					errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
+					errorList.add("1973");
 					
 				}
 			}

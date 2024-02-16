@@ -22,7 +22,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface CountryMasterService  {
 
-	List<Error> validateCountryDetails(CountryMasterSaveReq req);
+	List<String> validateCountryDetails(CountryMasterSaveReq req);
 
 	SuccessRes insertCountry(CountryMasterSaveReq req);
 

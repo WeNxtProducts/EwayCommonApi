@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.req.CountryGetAllReq;
@@ -50,16 +52,31 @@ public class CountryMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	// save
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/insertcountry")
 		@ApiOperation(value = "This method is Insert Country Details")
 		public ResponseEntity<CommonRes> insertCountry(@RequestBody CountryMasterSaveReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = countryService.validateCountryDetails(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 
-			List<Error> validation = countryService.validateCountryDetails(req);
+			
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

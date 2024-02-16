@@ -19,8 +19,10 @@ import com.maan.eway.master.req.MotorBodyTypeGetAllReq;
 import com.maan.eway.master.req.MotorBodyTypeGetReq;
 import com.maan.eway.master.res.MotorBodyTypeGetRes;
 import com.maan.eway.master.service.MotorBodyTypeMasterService;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -38,6 +40,10 @@ public class MotorBodyTypeMasterController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	// Insert
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/savemotorbodytype")
@@ -46,7 +52,20 @@ public class MotorBodyTypeMasterController {
 	public ResponseEntity<CommonRes> saveMakeMotor(@RequestBody MotorBodySaveReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = service.validateMakeMotor(req);
+		List<String> validationCodes = service.validateMakeMotor(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
+	
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

@@ -14,7 +14,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface ErrorDescMasterService {
 
-	List<Error> validateErrorDesc(ErrorDescMasterSaveReq req);
+	List<String> validateErrorDesc(ErrorDescMasterSaveReq req);
 	
 	SuccessRes inserterrordesc(ErrorDescMasterSaveReq req);
 	

@@ -66,27 +66,31 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 	private Logger log = LogManager.getLogger(MotorBodyTypeMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateMakeMotor(MotorBodySaveReq req) {
+	public List<String> validateMakeMotor(MotorBodySaveReq req) {
 
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 
 			if (StringUtils.isBlank(req.getBodyNameEn())) {
-				errorList.add(new Error("01", "Body Name En", "Please Enter Body Name En "));
+				//errorList.add(new Error("01", "Body Name En", "Please Enter Body Name En "));
+				errorList.add("1315");
 			}
 			else if (req.getBodyNameEn().length()>100) {
-				errorList.add(new Error("01", "Body Name En", "Please Enter Body Name En within 100 Characters "));
+				//errorList.add(new Error("01", "Body Name En", "Please Enter Body Name En within 100 Characters "));
+				errorList.add("1316");
 			}else if (StringUtils.isBlank(req.getBodyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorBodyTypeMaster> motorBodyList = getBodyNameExistDetails(req.getBodyNameEn() , req.getCompanyId() , req.getBranchCode());
 				if (motorBodyList.size()>0 ) {
-					errorList.add(new Error("01", "BodyNameEn", "This Body Name Already Exist "));
+					//errorList.add(new Error("01", "BodyNameEn", "This Body Name Already Exist "));
+					errorList.add("1317");
 				}
 			}else if (StringUtils.isNotBlank(req.getBodyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorBodyTypeMaster> motorBodyList = getBodyNameExistDetails(req.getBodyNameEn() , req.getCompanyId() , req.getBranchCode());
 				
 				if (motorBodyList.size()>0 &&  (! req.getBodyId().equalsIgnoreCase(motorBodyList.get(0).getBodyId().toString())) ) {
-					errorList.add(new Error("01", "BodyNameEn", "This Body Name Already Exist "));
+					//errorList.add(new Error("01", "BodyNameEn", "This Body Name Already Exist "));
+					errorList.add("1317");
 				}
 			}	
 			
@@ -97,45 +101,62 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			cal.add(Calendar.DAY_OF_MONTH, -1);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				//errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				//errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+						
+				errorList.add("1262");
 			}
 			// Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Enter Status"));
+				//errorList.add(new Error("05", "Status", "Please Enter Status"));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+				//errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+				errorList.add("1264");
 			} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				//errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("04", "CompanyId", "Please Enter CompanyId"));
-			} else if (req.getCompanyId().length() > 20) {
-				errorList.add(new Error("04", "CompanyId", "CompanyId 20 Character Only"));
-			}
+				//errorList.add(new Error("04", "CompanyId", "Please Enter CompanyId"));
+				errorList.add("1255");
+			} 
+//			else if (req.getCompanyId().length() > 20) {
+//				//errorList.add(new Error("04", "CompanyId", "CompanyId 20 Character Only"));
+//				errorList.add("0000");
+//			}
 			if (StringUtils.isBlank(req.getSeatingCapacity())) {
-				errorList.add(new Error("05", "SeatingCapacity", "Please Enter Seatin Capacity"));
+				//errorList.add(new Error("05", "SeatingCapacity", "Please Enter Seating Capacity"));
+				errorList.add("1318");
 			} else if (!req.getSeatingCapacity().matches("[0-9.]+")) {
-				errorList.add(new Error("05", "SeatingCapacity", "Please Enter Valid Seating Capacity"));
+			//	errorList.add(new Error("05", "SeatingCapacity", "Please Enter Valid Seating Capacity"));
+				errorList.add("1319");
 			}else if (Integer.valueOf(req.getSeatingCapacity())<0) {
-				errorList.add(new Error("05", "SeatingCapacity", "Please Enter Seating Capacity correct Value"));
+				//errorList.add(new Error("05", "SeatingCapacity", "Please Enter Seating Capacity correct Value"));
+				errorList.add("1320");
 			}
 			if (StringUtils.isBlank(req.getCylinders())) {
-				errorList.add(new Error("06", "Cylinders", "Please Enter Cylinders"));
+			//	errorList.add(new Error("06", "Cylinders", "Please Enter Cylinders"));
+				errorList.add("1321");
 			} else if (!req.getCylinders().matches("[0-9.]+")) {
-				errorList.add(new Error("06", "Cylinders", "Cylinders"));
+				//errorList.add(new Error("06", "Cylinders", "Please Enter Valid Cylinders"));
+				errorList.add("1322");
 			}else if (Integer.valueOf(req.getCylinders())<0) {
-				errorList.add(new Error("05", "Cylinders", "Please Enter  Cylinders correct Value"));
+				//errorList.add(new Error("05", "Cylinders", "Please Enter  Cylinders correct Value"));
+				errorList.add("1323");
 			}
 			if (StringUtils.isBlank(req.getTonnage())) {
-				errorList.add(new Error("07", "Tonnage", "Please Enter Tonnage"));
+			//	errorList.add(new Error("07", "Tonnage", "Please Enter Tonnage"));
+				errorList.add("1324");
 			} else if (!req.getTonnage().matches("[0-9.]+")) {
-				errorList.add(new Error("06", "Tonnage", "Tonnage"));
+				//errorList.add(new Error("06", "Tonnage", "Please Enter Valid Tonnage"));
+				errorList.add("1325");
 			}else if (Integer.valueOf(req.getTonnage())<0) {
-				errorList.add(new Error("05", "Tonnage", "Please Enter  Tonnage correct Value"));
+				//errorList.add(new Error("05", "Tonnage", "Please Enter  Tonnage correct Value"));
+				errorList.add("1326");
 			}
 			
 //			if (StringUtils.isBlank(req.getBranchCode())) {

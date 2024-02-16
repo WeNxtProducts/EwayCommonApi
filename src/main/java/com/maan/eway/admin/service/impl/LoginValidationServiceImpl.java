@@ -74,15 +74,15 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 //*************************************** Login Creation Apis Validations**********************************************************//
 	
 	@Override
-	public List<Error> validateBrokerCreation(BrokerCreationReq req) {
-		List<Error> errors = new ArrayList<Error>();
+	public List<String> validateBrokerCreation(BrokerCreationReq req) {
+		List<String> errors = new ArrayList<String>();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			
 			// Common Errors
 			CommonLoginCreationReq commonReq = new CommonLoginCreationReq();
 			dozerMapper.map(req, commonReq);
-			List<Error>  commonErrors = basicValidation.commonLoginCreationValidation(commonReq) ;
+			List<String>  commonErrors = basicValidation.commonLoginCreationValidation(commonReq) ;
 			if(commonErrors.size()>0  ) {
 				errors.addAll(commonErrors);
 			}
@@ -90,36 +90,43 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 			// Additional Broker Validataion
 			AdditionalInfoReq  brokerReq = new AdditionalInfoReq();
 			dozerMapper.map(req.getPersonalInformation() , brokerReq); 
-			List<Error>  brokerErrors = basicValidation.commonBrokerPersonalValidation(brokerReq) ;
+			List<String>  brokerErrors = basicValidation.commonBrokerPersonalValidation(brokerReq) ;
 			if(brokerErrors.size()>0  ) {
 				errors.addAll(brokerErrors);
 			}
 			
 			if(StringUtils.isBlank(commonReq.getLoginInformation().getBrokerCompanyYn()))  {
-				errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+			//	errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+				errors.add("1761");
+				
 			} else if( ! (commonReq.getLoginInformation().getBrokerCompanyYn().equalsIgnoreCase("Y") || commonReq.getLoginInformation().getBrokerCompanyYn().equalsIgnoreCase("N")) )  {
-				errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+			//	errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+				errors.add("1761");
 			}
 			
 //			if(StringUtils.isBlank(brokerReq.getTaxExemptedYn())  ) {
-//				errors.add(new Error("22", "TaxExempted", "Plese Select Tax Exempted Yes/No" ));
+//				errors.add(new Error("22", "TaxExempted", "Please Select Tax Exempted Yes/No" ));
 //			}
 			
 			if(StringUtils.isNotBlank(brokerReq.getCreditLimit())  ) {
 				if(! brokerReq.getCreditLimit().matches("[0-9.]+")  ) {
-					errors.add(new Error("22", "CreditLimit", "Plese Enter Valid Number in Credit Limit" ));
+			//		errors.add(new Error("22", "CreditLimit", "Please Enter Valid Number in Credit Limit" ));
+					errors.add("1762");
 				}
 			} 
 
 			if(StringUtils.isBlank(brokerReq.getCustomerCode())  ) {
-				errors.add(new Error("22", "CustomerCode", "Plese Select Customer Code" ));
+			//	errors.add(new Error("22", "CustomerCode", "Please Select Customer Code" ));
+				errors.add("1763");
 				
 			} 
 			if(StringUtils.isBlank(brokerReq.getRegulatoryCode())  ) {
-				errors.add(new Error("22", "RegulatoryCode", "Plese Enter Regulatory Code" ));
+			//	errors.add(new Error("22", "RegulatoryCode", "Please Enter Regulatory Code" ));
+				errors.add("1764");
 				
 			} else if (brokerReq.getRegulatoryCode().length() > 20  ) {
-				errors.add(new Error("22", "RegulatoryCode", "Regulatory Code Max 20 Characters only allowed" ));
+			//	errors.add(new Error("22", "RegulatoryCode", "Regulatory Code Max 20 Characters only allowed" ));
+				errors.add("1765");
 				
 			}
 		  
@@ -134,8 +141,8 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 
 	
 	@Override
-	public List<Error> validateIssuerCreation(IssuerCraeationReq req) {
-		List<Error> errors = new ArrayList<Error>();
+	public List<String> validateIssuerCreation(IssuerCraeationReq req) {
+		List<String> errors = new ArrayList<String>();
 		ModelMapper mapper = new ModelMapper();
 		mapper.getConfiguration().setAmbiguityIgnored(true);	
 		try {
@@ -143,7 +150,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 			// Common Errors
 			CommonLoginCreationReq commonReq = new CommonLoginCreationReq();
 			mapper.map(req, commonReq);
-			List<Error>  commonErrors = basicValidation.commonLoginCreationValidation(commonReq) ;
+			List<String>  commonErrors = basicValidation.commonLoginCreationValidation(commonReq) ;
 			if(commonErrors.size()>0  ) {
 				errors.addAll(commonErrors);
 			}
@@ -155,61 +162,75 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 				
 				if(StringUtils.isNotBlank(loginReq.getSubUserType()) && (loginReq.getSubUserType().equalsIgnoreCase("low") ) ) { 
 					if( loginReq.getProductIds()==null || loginReq.getProductIds().size() == 0 ) {
-						errors.add(new Error("06", "ProductIds", "Please Choose Atleast One Product"));
+					//	errors.add(new Error("06", "ProductIds", "Please Choose Atleast One Product"));
+						errors.add("1766");
 					}
 				}
 				
 				if( loginReq.getAttachedBranches()==null || loginReq.getAttachedBranches().size() == 0 ) {
-					errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
+				//	errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
+					errors.add("1767");
 				} 
 			
 			}
 			
 			// Additional Errors
 			if(StringUtils.isBlank(personalReq.getAddress1())  ) {
-				errors.add(new Error("10", "Address1", "Plese Enter Address1" ));
+			//	errors.add(new Error("10", "Address1", "Please Enter Address1" ));
+				errors.add("1768");
 			} else if(personalReq.getAddress1().length()>100 ) {
-				errors.add(new Error("10", "Address1", "Address1 Must Be Under 100 Character Only Allowed" ));
+			//	errors.add(new Error("10", "Address1", "Address1 Must Be Under 100 Character Only Allowed" ));
+				errors.add("1769");
 			}
 			
 			if(StringUtils.isBlank(personalReq.getAddress2())  ) {
-				errors.add(new Error("11", "Address2", "Plese Enter Address2" ));
+			//	errors.add(new Error("11", "Address2", "Please Enter Address2" ));
+				errors.add("1770");
 			} else if(personalReq.getAddress2().length()>100 ) {
-				errors.add(new Error("11", "Address2", "Address2 Must Be Under 100 Character Only Allowed" ));
+			//	errors.add(new Error("11", "Address2", "Address2 Must Be Under 100 Character Only Allowed" ));
+				errors.add("1771");
 			}
 			
 			if(StringUtils.isBlank(personalReq.getCountryCode())  ) {
-				errors.add(new Error("18", "Country", "Plese Select Country" ));
+			//	errors.add(new Error("18", "Country", "Please Select Country" ));
+				errors.add("1772");
 			}
 		/*		
 			if(StringUtils.isBlank(personalReq.getCityCode())  ) {
-				errors.add(new Error("15", "City", "Plese Select City" ));
+				errors.add(new Error("15", "City", "Please Select City" ));
 			} else if(! personalReq.getCityCode().matches("[0-9]+")  ) {
 
 			}
 			*/
 			if(StringUtils.isBlank(personalReq.getMobileCode())  ) {
-				errors.add(new Error("29", "MobileCode", "Plese Select MobileCode" ));
+			//	errors.add(new Error("29", "MobileCode", "Please Select MobileCode" ));
+				errors.add("1773");
 			} 
 			
 			if(StringUtils.isBlank(personalReq.getWhatsappCode())  ) {
-				errors.add(new Error("29", "WhatsappCode", "Plese Select WhatsappCode" ));
+			//	errors.add(new Error("29", "WhatsappCode", "Please Select WhatsappCode" ));
+				errors.add("1774");
 			} 
 			
 			if(StringUtils.isBlank(personalReq.getWhatsappNo())  ) {
-				errors.add(new Error("29", "WhatsappNo", "Plese Enter WhatsappNo" ));
+			//	errors.add(new Error("29", "WhatsappNo", "Please Enter WhatsappNo" ));
+				errors.add("1775");
 			} else if(! personalReq.getWhatsappNo().matches("[0-9]+")  ) {
-				errors.add(new Error("29", "WhatsappNo", "Plese Enter Valid Number in WhatsappNo" ));
+			//	errors.add(new Error("29", "WhatsappNo", "Please Enter Valid Number in WhatsappNo" ));
+				errors.add("1776");
 			} else if(personalReq.getWhatsappNo().length()>20  ) {
-				errors.add(new Error("29", "WhatsappNo", "WhatsappNo Must Be Under 20 Characters Only Allowed" ));
+			//	errors.add(new Error("29", "WhatsappNo", "WhatsappNo Must Be Under 20 Characters Only Allowed" ));
+				errors.add("1777");
 			}
 			
 
 			if(StringUtils.isBlank(personalReq.getRemarks())  ) {
-				errors.add(new Error("30", "Remarks", "Plese Enter Remarks" ));
+			//	errors.add(new Error("30", "Remarks", "Please Enter Remarks" ));
+				errors.add("1778");
 			} 
 			else if(personalReq.getRemarks().length()>100  ) {
-				errors.add(new Error("30", "Remarks", "Remarks Must Be Under 100 Characters Only Allowed" ));
+			//	errors.add(new Error("30", "Remarks", "Remarks Must Be Under 100 Characters Only Allowed" ));
+				errors.add("1779");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -222,15 +243,15 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 	
 	
 	@Override
-	public List<Error> validateUserCreation(UserCreationReq req) {
-		List<Error> errors = new ArrayList<Error>();
+	public List<String> validateUserCreation(UserCreationReq req) {
+		List<String> errors = new ArrayList<String>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			
 			// Common Errors
 			CommonLoginCreationReq commonReq = new CommonLoginCreationReq();
 			dozerMapper.map(req, commonReq);
-			List<Error>  commonErrors = basicValidation.commonLoginCreationValidation(commonReq) ;
+			List<String>  commonErrors = basicValidation.commonLoginCreationValidation(commonReq) ;
 			if(commonErrors.size()>0  ) {
 				errors.addAll(commonErrors);
 			}
@@ -238,38 +259,43 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 			// Additional Broker Validataion
 			AdditionalInfoReq  brokerReq = new AdditionalInfoReq();
 			dozerMapper.map(req.getPersonalInformation() , brokerReq); 
-			List<Error>  brokerErrors = basicValidation.commonBrokerPersonalValidation(brokerReq) ;
+			List<String>  brokerErrors = basicValidation.commonBrokerPersonalValidation(brokerReq) ;
 			if(brokerErrors.size()>0  ) {
 				errors.addAll(brokerErrors);
 			}
 			
 			if(StringUtils.isBlank(req.getLoginInformation().getOaCode())  ) {
-				errors.add(new Error("06","Broker","Please Select Broker OaCode"));
+				//errors.add(new Error("06","Broker","Please Select Broker OaCode"));
+				errors.add("1780");
 			}
 			if(StringUtils.isNotBlank(commonReq.getLoginInformation().getUserType())  && commonReq.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  ) {
 				if(StringUtils.isBlank(commonReq.getLoginInformation().getBrokerCompanyYn()))  {
-					errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+				//	errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+					errors.add("1781");
 				} else if( ! (commonReq.getLoginInformation().getBrokerCompanyYn().equalsIgnoreCase("Y") || commonReq.getLoginInformation().getBrokerCompanyYn().equalsIgnoreCase("N")) )  {
-					errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+				//	errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+					errors.add("1781");
 				}
 			}
 			
 //			if(StringUtils.isBlank(brokerReq.getTaxExemptedYn())  ) {
-//				errors.add(new Error("22", "TaxExempted", "Plese Select Tax Exempted Yes/No" ));
+//				errors.add(new Error("22", "TaxExempted", "Please Select Tax Exempted Yes/No" ));
 //			}
 			
 			if(StringUtils.isNotBlank(brokerReq.getCreditLimit())  ) {
 				if(! brokerReq.getCreditLimit().matches("[0-9.]+")  ) {
-					errors.add(new Error("22", "CreditLimit", "Plese Enter Valid Number in Credit Limit" ));
+				//	errors.add(new Error("22", "CreditLimit", "Please Enter Valid Number in Credit Limit" ));
+					errors.add("1782");
 				}
 			} 
 			
 			if(StringUtils.isBlank(brokerReq.getCustomerCode())  ) {
-				errors.add(new Error("22", "CustomerCode", "Plese Select Customer Code" ));
+			//	errors.add(new Error("1783", "CustomerCode", "Please Select Customer Code" ));
+				errors.add("1783");
 				
 			} 
 //			if(StringUtils.isBlank(brokerReq.getRegulatoryCode())  ) {
-//				errors.add(new Error("22", "RegulatoryCode", "Plese Enter Regulatory Code" ));
+//				errors.add(new Error("22", "RegulatoryCode", "Please Enter Regulatory Code" ));
 //				
 //			} else if (brokerReq.getRegulatoryCode().length() > 20  ) {
 //				errors.add(new Error("22", "RegulatoryCode", "Regulatory Code Max 20 Characters only allowed" ));
@@ -288,37 +314,44 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 //***************************************Add Branch Apis Validations **********************************************************//	
 	
 	@Override
-	public List<Error> validateBrokerBranchReq(AttachCompaniesReq req) {
-		List<Error> errors = new ArrayList<Error>();
+	public List<String> validateBrokerBranchReq(AttachCompaniesReq req) {
+		List<String> errors = new ArrayList<String>();
 		try {
 			// Branch Validation
 			if(StringUtils.isBlank(req.getLoginId()) ) {
-				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+		//		errors.add(new Error("01", "LoginId", "Please Enter LoginId" ));
+				errors.add("1786");
 			}
 			if (StringUtils.isBlank(req.getBrokerCompanyYn())) {
-				errors.add(new Error("02", "BrokerCompanyYn", "Plese Enter BrokerCompanyYn"));
+			//	errors.add(new Error("02", "BrokerCompanyYn", "Please Enter BrokerCompanyYn"));
+				errors.add("1787");
 			}  
 				
 			if(req.getAttachedCompanies()==null || req.getAttachedCompanies().size()== 0 ) {
-				errors.add(new Error("03", "Attached Companies", "Plese select Atleast One  Company" ));
+			//	errors.add(new Error("03", "Attached Companies", "Please select Atleast One  Company" ));
+				errors.add("1788");
 			} else {
 				Long rowNo = 0L ;
 				for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
 					rowNo = rowNo + 1L ;
 					if(StringUtils.isBlank(data.getInsuranceId()) ) {
-						errors.add(new Error("03", "Insurance Id", "Plese Select Atleast One Company" ));
+				//		errors.add(new Error("03", "Insurance Id", "Please Select Atleast One Company" ));
+						errors.add("1788" + "," + rowNo);
 					}
 					
 					if(data.getAttachedBranches()==null || data.getAttachedBranches().size()== 0 ) {
-						errors.add(new Error("03", "Attached Companies", "Plese select Atleast One  Branch in Company Row No : " +  rowNo  ));
+					//	errors.add(new Error("03", "Attached Companies", "Please select Atleast One  Branch in Company Row No : " +  rowNo  ));
+						errors.add("1789" + "," + rowNo);
 					}
 					for (BrokerBranchesReq data2 : data.getAttachedBranches()) {
 						if (req.getBrokerCompanyYn().equals("N")) {
 							if (StringUtils.isBlank(data2.getBranchCode())) {
-								errors.add(new Error("04", "Branch Code", "Plese Enter Branch Code"));
+						//		errors.add(new Error("1790", "Branch Code", "Please Enter Branch Code"));
+								errors.add("1790" + "," + rowNo);
 							} else if (req.getBrokerCompanyYn().equals("Y")) {
 								if (data2.getBrokerBranchCode() == null || data2.getBrokerBranchCode().size() == 0) {
-									errors.add(new Error("04", "Broker Branch Code", "Plese select Atleast One  Broker Branch Code"+rowNo));
+									//errors.add(new Error("04", "Broker Branch Code", "Please select Atleast One  Broker Branch Code in Row: "+rowNo));
+									errors.add("1791" + "," + rowNo);
 								}
 							}
 						}
@@ -336,26 +369,30 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 
 
 	@Override
-	public List<Error> validateIssuerBranchReq(AttachIssuerBrannchReq req) {
-		List<Error> errors = new ArrayList<Error>();
+	public List<String> validateIssuerBranchReq(AttachIssuerBrannchReq req) {
+		List<String> errors = new ArrayList<String>();
 		try {
 			// Branch Validation
 			if(StringUtils.isBlank(req.getLoginId()) ) {
-				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+			//	errors.add(new Error("01", "LoginId", "Please Enter LoginId" ));
+				errors.add("1786");
 			}
 			
 			if(req.getAttachedCompanies()==null || req.getAttachedCompanies().size()== 0 ) {
-				errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Company" ));
+			//	errors.add(new Error("02", "Attached Companies", "Please select Atleast One  Company" ));
+				errors.add("1788");
 			} else {
 				Long rowNo = 0L ;
 				for(AttacheIssuerBranchReq  data : req.getAttachedCompanies() ) {
 					rowNo = rowNo + 1L ;
 					if(StringUtils.isBlank(data.getInsuranceId()) ) {
-						errors.add(new Error("01", "Insurance Id", "Plese Select Atleast One Company" ));
+					//	errors.add(new Error("01", "Insurance Id", "Please Select Atleast One Company" ));
+						errors.add("1788" + "," + rowNo);
 					}
 					
 					if(data.getAttachedBranches()==null || data.getAttachedBranches().size()== 0 ) {
-						errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Branch in Company Row No : " +  rowNo  ));
+					//	errors.add(new Error("02", "Attached Companies", "Please select Atleast One  Branch in Company Row No : " +  rowNo  ));
+						errors.add("1789" + "," + rowNo);
 					}
 				}	
 			}
@@ -371,20 +408,23 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 //***************************************Add Broker Products Apis Validations **********************************************************//	
 
 	@Override
-	public List<Error> validateBrokerProductReq(AttachCompnayProductRequest req) {
-		List<Error> errors = new ArrayList<Error>();
+	public List<String> validateBrokerProductReq(AttachCompnayProductRequest req) {
+		List<String> errors = new ArrayList<String>();
 		try {
 			//Product Validation
 			if(StringUtils.isBlank(req.getLoginId()) ) {
-				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+			//	errors.add(new Error("01", "LoginId", "Please Enter LoginId" ));
+				errors.add("1786");
 			}
 			
 			if(StringUtils.isBlank(req.getInsuranceId()) ) {
-				errors.add(new Error("01", "InsuranceId", "Plese Enter InsuranceId" ));
+			//	errors.add(new Error("01", "InsuranceId", "Please Enter InsuranceId" ));
+				errors.add("1255");
 			}
 			
 			if(req.getProductIds()==null || req.getProductIds().size()== 0 ) {
-				errors.add(new Error("02", "Product Ids", "Plese select Atleast One  Product" ));
+			//	errors.add(new Error("02", "Product Ids", "Please select Atleast One Product" ));
+				errors.add("1792");
 			} 
 			
 			
@@ -399,70 +439,87 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 //***************************************Add Issuer Referal Apis Validations **********************************************************//	
 	
 	@Override
-	public List<Error> validateIssuerReferalReq(AttachIssuerReferalReq req) {
-		List<Error> errors = new ArrayList<Error>();
+	public List<String> validateIssuerReferalReq(AttachIssuerReferalReq req) {
+		List<String> errors = new ArrayList<String>();
 		try {
 			//Referal Validation
 			if(StringUtils.isBlank(req.getLoginId()) ) {
-				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+			//	errors.add(new Error("01", "LoginId", "Please Enter LoginId" ));
+				errors.add("1786");
 			}
 			
 			if(StringUtils.isBlank(req.getInsuranceId()) ) {
-				errors.add(new Error("02", "InsuranceId", "Plese Enter InsuranceId" ));
+			//	errors.add(new Error("02", "InsuranceId", "Please Enter InsuranceId" ));
+				errors.add("1255");
+				
 			}
 			if(StringUtils.isBlank(req.getBranchCode()) ) {
-				errors.add(new Error("03", "BrnchCode", "Plese Enter BranchCode" ));
+			//	errors.add(new Error("03", "BrnchCode", "Please Enter BranchCode" ));
+				errors.add("1256");
 			}
 			
 			if(req.getAttachedReferals()==null || req.getAttachedReferals().size()== 0 ) {
-				errors.add(new Error("02", "Attached Referals", "Plese select Atleast One  Referal" ));
+			//	errors.add(new Error("02", "Attached Referals", "Please select Atleast One  Referal" ));
+				errors.add("1793");
 			} else {
 				Long referalRow  = 0L;
 				boolean status = false ;
 				for (AttachReferalReq referal :  req.getAttachedReferals() ) {
 					referalRow = referalRow + 1L ;
 					if(StringUtils.isBlank(referal.getReferalId())) {
-						errors.add(new Error("02", "ReferalId", "Plese Enter ReferalId in  Referal Row No : " +  referalRow  ));
+				//		errors.add(new Error("02", "ReferalId", "Please Enter ReferalId in  Referal Row No : " +  referalRow  ));
+						errors.add("1794" + "," + referalRow);
 					}
 					
 					if(StringUtils.isBlank(referal.getReferalName())) {
-						errors.add(new Error("02", "Referal Name", "Plese Enter Referal Name in  Referal Row No : " +  referalRow  ));
+					//	errors.add(new Error("02", "Referal Name", "Please Enter Referal Name in  Referal Row No : " +  referalRow  ));
+						errors.add("1795" + "," + referalRow);
 					}
 					
 					if(referal.getEffectiveDate()==null ) {
-						errors.add(new Error("02", "Effective Date ", "Please select Effective Date  in  Referal Row No : " +  referalRow  ));
+					//	errors.add(new Error("02", "Effective Date ", "Please select Effective Date  in  Referal Row No : " +  referalRow  ));
+						errors.add("1796" + "," + referalRow);
 					} else {
 						Calendar cal = new GregorianCalendar();  
 						Date today =  new Date(); 
 						cal.setTime(today); cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50);
 						today = cal.getTime();
 						if(referal.getEffectiveDate().before(today) ) {
-							errors.add(new Error("02", "Effective Date ", "Plese Enter Future Date as Effective Date  in  Referal Row No : " +  referalRow ));
+					//		errors.add(new Error("02", "Effective Date ", "Please Enter Future Date as Effective Date  in  Referal Row No : " +  referalRow ));
+							errors.add("1797" + "," + referalRow);
 						}
 					}
 					if(StringUtils.isBlank(referal.getStatus())) {
-						errors.add(new Error("02", "Status", "Plese Select Status in  Referal Row No : " +  referal ));
+					//	errors.add(new Error("02", "Status", "Please Select Status in  Referal Row No : " +  referal ));
+						errors.add("1798" + "," + referalRow);
+						
 					} else if (referal.getStatus().equalsIgnoreCase("Y") ) {
 						status = true ;
 					}
 					if(StringUtils.isBlank(referal.getSumInsuredStart())) {
-						errors.add(new Error("02", "Start Limit", "Plese Enter Sum Insured Start in  Referal Row No : " +  referalRow ));
+					//	errors.add(new Error("02", "Start Limit", "Please Enter Sum Insured Start in  Referal Row No : " +  referalRow ));
+						errors.add("1799" + "," + referalRow);
 					} else if (! referal.getSumInsuredStart().matches("[0-9]+") ) {
-						errors.add(new Error("02", "Start Limit", "Plese Enter Valid Number Sum Insured Start  in  Referal Row No : " +  referalRow ));
+					//	errors.add(new Error("02", "Start Limit", "Please Enter Valid Number Sum Insured Start  in  Referal Row No : " +  referalRow ));
+						errors.add("1800" + "," + referalRow);
 					}
 					if(StringUtils.isBlank(referal.getSumInsuredEnd())) {
-						errors.add(new Error("02", "End Limit", "Plese Enter Sum Insured End in  Referal Row No : " +  referalRow ));
+					//	errors.add(new Error("02", "End Limit", "Please Enter Sum Insured End in  Referal Row No : " +  referalRow ));
+						errors.add("1801" + "," + referalRow);
 					} else if (! referal.getSumInsuredEnd().matches("[0-9]+") ) {
-						errors.add(new Error("02", "End Limit", "Plese Enter Valid Number Sum Insured End in  Referal Row No : " +  referalRow ));
+					//	errors.add(new Error("02", "End Limit", "Please Enter Valid Number Sum Insured End in  Referal Row No : " +  referalRow ));
+						errors.add("1802" + "," + referalRow);
 					} else if (StringUtils.isNotBlank(referal.getSumInsuredEnd()) && StringUtils.isBlank(referal.getSumInsuredEnd())  ) {
 						if (Long.valueOf(referal.getSumInsuredEnd()) > Long.valueOf(referal.getSumInsuredStart()) ) {
-							errors.add(new Error("02", "End Limit", "Sum Insured Start Greater Than Sum Insured End in  Referal Row No : " +  referalRow ));
+					//		errors.add(new Error("02", "End Limit", "Sum Insured Start Greater Than Sum Insured End in  Referal Row No : " +  referalRow ));
+							errors.add("1803" + "," + referalRow);
 						}
 					}
 				}	
 				
 				if( status == false   ) {
-					errors.add(new Error("02", "Status", "Plese Select Active Status for Alteast One Referal " ));
+				//	errors.add(new Error("02", "Status", "Please Select Active Status for Alteast One Referal " ));
+					errors.add("1804" + "," + referalRow);
 				}
 			}
 			
@@ -476,95 +533,109 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 
 
 @Override
-public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
-	List<Error> errors = new ArrayList<Error>();
+public List<String> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
+	List<String> errors = new ArrayList<String>();
 	try {
 		
 		if(StringUtils.isBlank(req.getLoginId()) ) {
-			errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+//				errors.add(new Error("01", "LoginId", "Please Enter LoginId" ));
+			errors.add("1786");
 		}
 		//Login  Data
 //		LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
 //		if (loginData.getBrokerCompanyYn() != null && !loginData.getBrokerCompanyYn().equals("N")) {
 //			if (loginData.getBrokerCompanyYn().equals("Y") && loginData.getUserType().equalsIgnoreCase("BROKER")) {
 //				if (StringUtils.isBlank(req.getBranchCode())) {
-//					errors.add(new Error("03", "BranchCode", "Plese Enter BranchCode"));
+//					errors.add(new Error("03", "BranchCode", "Please Enter BranchCode"));
 //				}
 //				if (StringUtils.isBlank(req.getAttachedBranch())) {
-//					errors.add(new Error("03", "AttachedBranchCode", "Plese Enter AttachedBranchCode"));
+//					errors.add(new Error("03", "AttachedBranchCode", "Please Enter AttachedBranchCode"));
 //				}
 //			}
 //		}
 		
 		if (StringUtils.isBlank(req.getBranchCode())) {
-			errors.add(new Error("03", "BranchCode", "Plese Enter BranchCode"));
+		//	errors.add(new Error("03", "BranchCode", "Please Enter BranchCode"));
+			errors.add("1256");
 			
 		}  else if ( StringUtils.isBlank(req.getBrokerBranchCode()) && StringUtils.isNotBlank(req.getSalePointCode()) && StringUtils.isNotBlank(req.getLoginId()) ) {
 			List<LoginBranchMaster> list = getSalePointExistDetails(req.getSalePointCode() , req.getLoginId());
 			if (list.size()>0 ) {
-				errors.add(new Error("01", "SalePointCode", "This Company Sale Point Code Exist "));
+		//		errors.add(new Error("01", "SalePointCode", "This Company Sale Point Code Exist "));
+				errors.add("1805");
 			}
 		} else if(  StringUtils.isNotBlank(req.getBrokerBranchCode())&& StringUtils.isNotBlank(req.getSalePointCode()) && StringUtils.isNotBlank(req.getLoginId()) ) {
 			List<LoginBranchMaster> list =  getSalePointExistDetails(req.getSalePointCode() ,req.getLoginId() );
 			if (list.size()>0 &&  (! req.getBrokerBranchCode().equalsIgnoreCase(list.get(0).getBrokerBranchCode().toString())) ) {
-				errors.add(new Error("01", "SalePointCode", "This Sale Point Code  Already Exist "));
+			//	errors.add(new Error("01", "SalePointCode", "This Sale Point Code  Already Exist "));
+				errors.add("1806");
 			}
 
 		}
 		
 		if (StringUtils.isBlank(req.getBranchType())) {
-			errors.add(new Error("03", "BranchType", "Plese Enter BranchType"));
+	//		errors.add(new Error("03", "BranchType", "Please Enter BranchType"));
+			errors.add("1807");
 		}
 		if(StringUtils.isBlank(req.getCompanyId()) ) {
-			errors.add(new Error("02", "InsuranceId", "Plese Enter InsuranceId" ));
+		//	errors.add(new Error("02", "InsuranceId", "Please Enter InsuranceId" ));
+			errors.add("1255");
 		}
 		
 		if (StringUtils.isBlank(req.getSalePointCode())) {
-			errors.add(new Error("03", "SalePointCode", "Plese Enter Sale Point Code"));
+	//		errors.add(new Error("03", "SalePointCode", "Please Enter Sale Point Code"));
+			errors.add("1808");
 		} else if (req.getSalePointCode().length() > 100 ) {
-			errors.add(new Error("03", "SalePointCode", "Sale Point Code Must be under 100 charecter only allowed"));
+		//	errors.add(new Error("03", "SalePointCode", "Sale Point Code Must be under 100 charecter only allowed"));
+			errors.add("1809");
 		}
 		
 //		if(StringUtils.isBlank(req.getCustomerCode()) ) {
-//			errors.add(new Error("02", "CustomerCode", "Plese Select CustomerCode" ));
+//			errors.add(new Error("02", "CustomerCode", "Please Select CustomerCode" ));
 //		}
 		
 //		if (StringUtils.isBlank(req.getBrokerBranchCode())) {
-//			errors.add(new Error("03", "BrokerBranchCode", "Plese Enter BrokerBranchCode"));
+//			errors.add(new Error("03", "BrokerBranchCode", "Please Enter BrokerBranchCode"));
 //		}
 		
 		if (StringUtils.isBlank(req.getBrokerBranchName())) {
-			errors.add(new Error("03", "BranchName", "Plese Select Branch Name"));
+//			errors.add(new Error("03", "BranchName", "Please Select Branch Name"));
+			errors.add("1810");
 	
 		} else if (StringUtils.isBlank(req.getBrokerBranchCode()) &&  StringUtils.isNotBlank(req.getLoginId()) ) {
 			List<LoginBranchMaster> list = getBrokerBranchNameExistDetails(req.getBrokerBranchName() , req.getLoginId());
 			if (list.size()>0 ) {
-				errors.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+			//	errors.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+				errors.add("1811");
 			}
 		} else if(  StringUtils.isNotBlank(req.getLoginId())) {
 			List<LoginBranchMaster> list =  getBrokerBranchNameExistDetails(req.getBrokerBranchName() ,req.getLoginId() );
 			if (list.size()>0 &&  (! req.getBrokerBranchCode().equalsIgnoreCase(list.get(0).getBrokerBranchCode().toString())) ) {
-				errors.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+			//	errors.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+				errors.add("1811");
 			}
 
 		}
 		
 		
 //		if(StringUtils.isBlank(req.getAttachedCompany()) ) {
-//			errors.add(new Error("03", "AttachedComapany", "Plese Enter AttachedComapany" ));
+//			errors.add(new Error("03", "AttachedComapany", "Please Enter AttachedComapany" ));
 //		}
 
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errors.add(new Error("05", "Status", "Please Select Status  "));
+		//	errors.add(new Error("05", "Status", "Please Select Status  "));
+			errors.add("1263");
 		} else if (req.getStatus().length() > 1) {
-			errors.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		//	errors.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			errors.add("1264");
 		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errors.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+		//	errors.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errors.add("1265");
 		}
 		
 //		if (StringUtils.isBlank(req.getRemarks())) {
-//			errors.add(new Error("03", "Remarks", "Plese Enter Remarks"));
+//			errors.add(new Error("03", "Remarks", "Please Enter Remarks"));
 //		}
 		Calendar cal = new GregorianCalendar();
 		Date today = new Date();
@@ -574,10 +645,12 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 		cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
 		if (req.getEffectiveDateStart() == null) {
-			errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+		//	errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			errors.add("1261");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		//	errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errors.add("1262");
 		} 
 		
 	} catch (Exception e) {
@@ -674,20 +747,23 @@ public List<LoginBranchMaster> getSalePointExistDetails(String spCode , String l
 }
 
 @Override
-public List<Error> validateLoginBranches(LoginBranchesSaveReq req) {
-	List<Error> errors = new ArrayList<Error>();
+public List<String> validateLoginBranches(LoginBranchesSaveReq req) {
+	List<String> errors = new ArrayList<String>();
 	try {
 		//Product Validation
 		if(StringUtils.isBlank(req.getLoginId()) ) {
-			errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+		//	errors.add(new Error("01", "LoginId", "Please Enter LoginId" ));
+			errors.add("1786");
 		}
 		
 		if(StringUtils.isBlank(req.getInsuranceId()) ) {
-			errors.add(new Error("02", "InsuranceId", "Plese Select InsuranceId" ));
+		//	errors.add(new Error("02", "InsuranceId", "Please Select InsuranceId" ));
+			errors.add("1255");
 		}
 		
 		if(req.getBrokerBranchIds()==null || req.getBrokerBranchIds().size()== 0 ) {
-			errors.add(new Error("03", "Branch Ids", "Plese select Atleast One  Branch " ));
+		//	errors.add(new Error("03", "Branch Ids", "Please select Atleast One  Branch " ));
+			errors.add("1812");
 		} 
 		
 		
@@ -701,17 +777,19 @@ public List<Error> validateLoginBranches(LoginBranchesSaveReq req) {
 
 
 @Override
-public List<Error> validateIssuerProductReq(AttachIssuerProductRequest req) {
+public List<String> validateIssuerProductReq(AttachIssuerProductRequest req) {
 	// TODO Auto-generated method stub
-	List<Error> errors = new ArrayList<Error>();
+	List<String> errors = new ArrayList<String>();
 	try {
 		//Product Validation
 		if(StringUtils.isBlank(req.getLoginId()) ) {
-			errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+		//	errors.add(new Error("01", "LoginId", "Please Enter LoginId" ));
+			errors.add("1786");
 		}
 		
 		if(StringUtils.isBlank(req.getInsuranceId()) ) {
-			errors.add(new Error("01", "InsuranceId", "Plese Enter InsuranceId" ));
+		//	errors.add(new Error("01", "InsuranceId", "Please Enter InsuranceId" ));
+			errors.add("1255");
 		}
 			
 		
@@ -725,21 +803,24 @@ public List<Error> validateIssuerProductReq(AttachIssuerProductRequest req) {
 
 
 @Override
-public List<Error> validateProductsEndtIds(AttachEndtIdsReq req) {
+public List<String> validateProductsEndtIds(AttachEndtIdsReq req) {
 	// TODO Auto-generated method stub
-		List<Error> errors = new ArrayList<Error>();
+		List<String> errors = new ArrayList<String>();
 		try {
 			//Product Validation
 			if(StringUtils.isBlank(req.getLoginId()) ) {
-				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+			//	errors.add(new Error("01", "LoginId", "Please Enter LoginId" ));
+				errors.add("1786");
 			}
 			
 			if(StringUtils.isBlank(req.getInsuranceId()) ) {
-				errors.add(new Error("01", "InsuranceId", "Plese Enter InsuranceId" ));
+			//	errors.add(new Error("01", "InsuranceId", "Please Enter InsuranceId" ));
+				errors.add("1255");
 			}
 				
 			if(StringUtils.isBlank(req.getProductId()) ) {
-				errors.add(new Error("01", "ProductId", "Plese Enter ProductId" ));
+		//		errors.add(new Error("1313", "ProductId", "Please Enter ProductId" ));
+				errors.add("00");
 			}
 			
 		} catch (Exception e) {

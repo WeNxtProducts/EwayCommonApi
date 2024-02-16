@@ -7,14 +7,12 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.IndustryMasterChangeStatusReq;
 import com.maan.eway.master.req.IndustryMasterDropdownReq;
 import com.maan.eway.master.req.IndustryMasterGetReq;
 import com.maan.eway.master.req.IndustryMasterGetallReq;
 import com.maan.eway.master.req.IndustryMasterSaveReq;
 import com.maan.eway.master.res.IndustryMasterRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.IndustryDropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -22,7 +20,7 @@ public interface IndustryMasterService  {
 
 	List<IndustryDropDownRes> getIndustryMasterDropdown(IndustryMasterDropdownReq req);
 
-	List<Error> validateIndustryDetails(IndustryMasterSaveReq req);
+	List<String> validateIndustryDetails(IndustryMasterSaveReq req);
 
 	SuccessRes insertIndustry(IndustryMasterSaveReq req);
 

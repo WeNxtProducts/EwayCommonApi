@@ -220,47 +220,57 @@ public Integer getMasterTableCount(String companyId, String branchCode)	{
 
 
 @Override
-public List<Error> validateBankDetails(BankMasterSaveReq req) {
+public List<String> validateBankDetails(BankMasterSaveReq req) {
 
-	List<Error> errorList = new ArrayList<Error>();
+	List<String> errorList = new ArrayList<String>();
 
 	try {
 		if (StringUtils.isBlank(req.getBankFullName())) {
-			errorList.add(new Error("02", "BankFullName", "Please Select BankFullName"));
+			//errorList.add(new Error("02", "BankFullName", "Please Select BankFullName"));
+			errorList.add("1252");
 		}else if (req.getBankFullName().length() > 100){
-			errorList.add(new Error("02","BankFullName", "Please Enter BankFullName 100 Characters")); 
+			//errorList.add(new Error("02","BankFullName", "Please Enter BankFullName 100 Characters")); 
+			errorList.add("1702");
 		}else if (StringUtils.isBlank(req.getBankCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 			List<BankMaster> BankList = getBankFullNameExistDetails(req.getBankFullName() , req.getCompanyId() , req.getBranchCode());
 			if (BankList.size()>0 ) {
-				errorList.add(new Error("01", "BankFullName", "This BankFullName Already Exist "));
+				//errorList.add(new Error("01", "BankFullName", "This BankFullName Already Exist "));
+				errorList.add("1253");
 			}
 		}else if (StringUtils.isNotBlank(req.getBankCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 			List<BankMaster> BankList = getBankFullNameExistDetails(req.getBankFullName() , req.getCompanyId() , req.getBranchCode());
 			
 			if (BankList.size()>0 &&  (! req.getBankCode().equalsIgnoreCase(BankList.get(0).getBankCode().toString())) ) {
-				errorList.add(new Error("01", "BankFullName", "This BankFullName Already Exist "));
+				//errorList.add(new Error("01", "BankFullName", "This BankFullName Already Exist "));
+				errorList.add("1253");
 			}
 			
 		}
 		
 		
 		if (StringUtils.isBlank(req.getCompanyId())) {
-			errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+		//	errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+			errorList.add("2101");
 		}
 		
 		if (StringUtils.isBlank(req.getBranchCode())) {
-			errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			//errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			errorList.add("1256");
 		}
 		if (StringUtils.isBlank(req.getBankShortName())) {
-			errorList.add(new Error("03", "BankShortName", "Please Select BankShortName"));
+			//errorList.add(new Error("03", "BankShortName", "Please Select BankShortName"));
+			errorList.add("1257");
 		}else if (req.getBankShortName().length() > 100){
-			errorList.add(new Error("03","BankShortName", "Please Enter BankShortName 100 Characters")); 
+			//errorList.add(new Error("03","BankShortName", "Please Enter BankShortName 100 Characters")); 
+			errorList.add("1258");
 		} 
 		
 		if (StringUtils.isBlank(req.getRemarks())) {
-			errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+			//errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
+			errorList.add("2032");
 		}else if (req.getRemarks().length() > 100){
-			errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+		//	errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+			errorList.add("2033");
 		}
 		
 		// Date Validation 
@@ -269,34 +279,45 @@ public List<Error> validateBankDetails(BankMasterSaveReq req) {
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 		today = cal.getTime();
 		if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			//errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			errorList.add("2034");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errorList.add("2035");
 		}
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Select Status  "));
+		//	errorList.add(new Error("05", "Status", "Please Select Status  "));
+			errorList.add("2036");
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		//	errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			errorList.add("2037");
 		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add("2038");
 		}
 
 		if (StringUtils.isBlank(req.getCoreAppCode())) {
-			errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+		//	errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
+			errorList.add("2124");
 		}else if (req.getCoreAppCode().length() > 20){
-			errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+			//errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+			errorList.add("2125");
 		}
 		if (StringUtils.isBlank(req.getRegulatoryCode())) {
-			errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+		//	errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			errorList.add("2041");
 		}else if (req.getRegulatoryCode().length() > 20){
-			errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+			//errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+			errorList.add("2042");
 		}
 		if (StringUtils.isBlank(req.getCreatedBy())) {
-			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+			//errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+			errorList.add("2039");
 		}else if (req.getCreatedBy().length() > 100){
-			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			//errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			errorList.add("2040");
 		}		
 	
 	} catch (Exception e) {

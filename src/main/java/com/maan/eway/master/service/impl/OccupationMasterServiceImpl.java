@@ -73,36 +73,44 @@ Gson json = new Gson();
 private Logger log=LogManager.getLogger(OccupationMasterServiceImpl.class);
 
 @Override
-public List<Error> validateOccupation(OccupationMasterSaveReq req) {
-	List<Error> errorList = new ArrayList<Error>();
+public List<String> validateOccupation(OccupationMasterSaveReq req) {
+	List<String> errorList = new ArrayList<String>();
 
 	try {
 	
 		if (StringUtils.isBlank(req.getOccupationName())) {
-			errorList.add(new Error("02", "OccupationName", "Please Enter OccupationName"));
+			//errorList.add(new Error("02", "OccupationName", "Please Enter OccupationName"));
+			errorList.add("1327");
+			
 		}else if (req.getOccupationName().length() > 100){
-			errorList.add(new Error("02","OccupationName", "Please Enter OccupationName 100 Characters")); 
+			//errorList.add(new Error("02","OccupationName", "Please Enter OccupationName 100 Characters")); 
+			errorList.add("1328");
+			
 		}else if (StringUtils.isBlank(req.getOccupationId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getCategoryId())) {
 			List<OccupationMaster> OccupationList = getOccupationNameExistDetails(req.getOccupationName() , req.getInsuranceId() , req.getBranchCode() , req.getProductId() , req.getCategoryId());
 			if (OccupationList.size()>0 ) {
-				errorList.add(new Error("01", "OccupationName", "This Occupation Name Already Exist "));
+				//errorList.add(new Error("01", "OccupationName", "This Occupation Name Already Exist "));
+				errorList.add("1329");
 			}
 		}else if (StringUtils.isNotBlank(req.getOccupationId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getCategoryId())) {
 			List<OccupationMaster> OccupationList = getOccupationNameExistDetails(req.getOccupationName() , req.getInsuranceId() , req.getBranchCode(), req.getProductId() , req.getCategoryId());
 			
 			if (OccupationList.size()>0 &&  (! req.getOccupationId().equalsIgnoreCase(OccupationList.get(0).getOccupationId().toString())) ) {
-				errorList.add(new Error("01", "OccupationName", "This Occupation Name Already Exist "));
+				//errorList.add(new Error("01", "OccupationName", "This Occupation Name Already Exist "));
+				errorList.add("1329");
 			}
 			
 		}
 		
 		
 		if (StringUtils.isBlank(req.getInsuranceId())) {
-			errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
+			//errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
+			errorList.add("1255");
 		}
 		
 		if (StringUtils.isBlank(req.getBranchCode())) {
-			errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			//errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			errorList.add("1256");
 		}
 /*		if (StringUtils.isBlank(req.getOccupationNameAr())) {
 			errorList.add(new Error("03", "OccupationNameAr", "Please Select OccupationNameAr"));
@@ -111,9 +119,11 @@ public List<Error> validateOccupation(OccupationMasterSaveReq req) {
 		} */
 		
 		if (StringUtils.isBlank(req.getRemarks())) {
-			errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+			//errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+			errorList.add("1259");
 		}else if (req.getRemarks().length() > 100){
-			errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+			//errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+			errorList.add("1260");
 		}
 		
 		// Date Validation 
@@ -122,40 +132,53 @@ public List<Error> validateOccupation(OccupationMasterSaveReq req) {
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 		today = cal.getTime();
 		if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			//errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			errorList.add("1261");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errorList.add("1262");
 		}
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//errorList.add(new Error("05", "Status", "Please Select Status  "));
+			errorList.add("1263");
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			errorList.add("1264");
 		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add("1265");
 		}
 
 		if (StringUtils.isBlank(req.getCoreAppCode())) {
-			errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+		//	errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+			errorList.add("1266");
 		}else if (req.getCoreAppCode().length() > 20){
-			errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+			//errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+			errorList.add("1267");
 		}
 		if (StringUtils.isBlank(req.getRegulatoryCode())) {
-			errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+			//errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+			errorList.add("1268");
 		}else if (req.getRegulatoryCode().length() > 20){
-			errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+		//	errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+			errorList.add("1269");
 		}
 		if (StringUtils.isBlank(req.getCreatedBy())) {
-			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+			//errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+			errorList.add("1270");
 		}else if (req.getCreatedBy().length() > 100){
-			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			//errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			errorList.add("1271");
 		}
 		if (StringUtils.isBlank(req.getProductId())) {
-			errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
+		//	errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
+			errorList.add("1313");
 		}
 		if (StringUtils.isBlank(req.getCategoryId())) {
-			errorList.add(new Error("11", "CategoryId", "Please Select CategoryId"));
+			//errorList.add(new Error("11", "CategoryId", "Please Select CategoryId"));
+			errorList.add("1330");
 		}
 		
 	} catch (Exception e) {

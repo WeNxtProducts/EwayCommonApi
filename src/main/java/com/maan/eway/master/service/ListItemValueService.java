@@ -27,7 +27,7 @@ ListItemValue update(ListItemValue d);
  List<ListItemValue> getAll();
 long getTotal();
 //boolean delete(long id);
-List<Error> validateLovDetails(ListItemValueSaveReq req);
+List<String> validateLovDetails(ListItemValueSaveReq req);
 SuccessRes insertLovDetails(ListItemValueSaveReq req);
 List<LovDetailsGetRes> getallLovDetails(LovGetAllReq req);
 List<LovDetailsGetRes> getActiveLovDetails(LovGetAllReq req);

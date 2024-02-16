@@ -62,8 +62,8 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 	private Logger log = LogManager.getLogger(MotorMakeModelMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateMotorMakeModel(MotorMakeModelSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateMotorMakeModel(MotorMakeModelSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 //		
@@ -92,11 +92,13 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 //				errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
 //			}
 			if (StringUtils.isBlank(req.getMakeId())) {
-				errorList.add(new Error("02", "MakeId", "Please Enter MakeId"));
+			//	errorList.add(new Error("02", "MakeId", "Please Enter MakeId"));
+				errorList.add("1337");
 			}
 			
 			if(StringUtils.isBlank(req.getBaseRate())) {
-				errorList.add(new Error("12","BaseRate","Please Enter the base rate"));
+			//	errorList.add(new Error("12","BaseRate","Please Enter the base rate"));
+				errorList.add("1338");
 			}
 //			if (StringUtils.isBlank(req.getMakeNameEn())) {
 //				errorList.add(new Error("02", "MakeName", "Please Enter MakeName"));
@@ -106,7 +108,8 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 //				errorList.add(new Error("02", "BodyId", "Please Enter BodyId"));
 //			}
 			if (StringUtils.isBlank(req.getBodyNameEn())) {
-				errorList.add(new Error("02", "BodyName", "Please Enter BodyName"));
+			//	errorList.add(new Error("02", "BodyName", "Please Enter BodyName"));
+				errorList.add("1341");
 			}
 			
 //			if (StringUtils.isBlank(req.getInsuranceId())) {
@@ -114,7 +117,8 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 //			}
 //			
 			if (StringUtils.isBlank(req.getBranchCode())) {
-				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			//	errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+				errorList.add("1256");
 			}
 	/*		if (StringUtils.isBlank(req.getOccupationNameAr())) {
 				errorList.add(new Error("03", "OccupationNameAr", "Please Select OccupationNameAr"));
@@ -123,9 +127,11 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			} */
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+			//	errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+				errorList.add("1259");
 			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+				//errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+				errorList.add("1260");
 			}
 			
 			// Date Validation 
@@ -134,18 +140,23 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			//	errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//errorList.add(new Error("05", "Status", "Please Select Status  "));
+			errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status One Character Only Allwed"));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status One Character Only Allwed"));
+			errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add("1265");
 			}
 
 //			if (StringUtils.isBlank(req.getCoreAppCode())) {
@@ -156,9 +167,11 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 //			
 			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+				//errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+				errorList.add("1268");
 			}else if (req.getRegulatoryCode().length() > 20){
-				errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+			//	errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+				errorList.add("1269");
 			}
 //			if (StringUtils.isBlank(req.getCreatedBy())) {
 //				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
@@ -166,117 +179,148 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 //				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
 //			}
 			if(StringUtils.isBlank(req.getNetRate())) {
-				errorList.add(new Error("10","NetRate","Please Enter the netrate"));
+			//	errorList.add(new Error("10","NetRate","Please Enter the NetRate"));
+				errorList.add("1342");
 			}
 			
 			if(StringUtils.isBlank(req.getRopBodyid())) {
-				errorList.add(new Error("11","RopBodyId","Please enter the RopBodyId"));
+			//	errorList.add(new Error("11","RopBodyId","Please enter the RopBodyId"));
+				errorList.add("1343");
 			}
 			
 			
 			if(StringUtils.isBlank(req.getVehCc())){
-				errorList.add(new Error("13","VechCC","Please Enter the VechCC"));
+			//	errorList.add(new Error("13","VechCC","Please Enter the VechCC"));
+				errorList.add("1344");
 			}
 			if(StringUtils.isBlank(req.getTplRate())) {
-				errorList.add(new Error("14","TplRate","Please Enter the tpl rate"));
+			//	errorList.add(new Error("14","TplRate","Please Enter the tpl rate"));
+				errorList.add("1345");
 			}
 			if(StringUtils.isBlank(req.getOtherBodyId1())) {
-				errorList.add(new Error("15","OtherBodyId1","Please Enter the OtherBodyId1"));
+			//	errorList.add(new Error("15","OtherBodyId1","Please Enter the OtherBodyId1"));
+				errorList.add("1346");
 			}
 			else if(req.getOtherBodyId1().length()>100) {
-				errorList.add(new Error("15","OtherBodyId1","Please Enter the otherBodyId1 characters between 100"));
+				//errorList.add(new Error("15","OtherBodyId1","Please Enter the otherBodyId1 characters between 100"));
+				errorList.add("1347");
 				
 			}
 			if(StringUtils.isBlank(req.getOtherBodyId2())) {
-				errorList.add(new Error("16","OtherBodyId2","Please Enter the OtherBodyId2"));
+			//	errorList.add(new Error("16","OtherBodyId2","Please Enter the OtherBodyId2"));
+				errorList.add("1348");
 			}
 			else if(req.getOtherBodyId2().length()>100) {
-				errorList.add(new Error("16","OtherBodyId2","Please Enter the OtherBodyId2 characters between 100"));
+			//	errorList.add(new Error("16","OtherBodyId2","Please Enter the OtherBodyId2 characters between 100"));
+				errorList.add("1349");
 				
 			}
 			
 			if(StringUtils.isBlank(req.getOtherMakeId1())) {
-				errorList.add(new Error("17","OtherMakeId1","Please Enter the OtherMakeId1"));
+			//	errorList.add(new Error("17","OtherMakeId1","Please Enter the OtherMakeId1"));
+				errorList.add("1350");
 			}
 			else if(req.getOtherMakeId1().length()>100) {
-				errorList.add(new Error("17","OtherMakeId1","Please Enter the otherMakeId1 characters between 100"));
+				//errorList.add(new Error("17","OtherMakeId1","Please Enter the otherMakeId1 characters between 100"));
+				errorList.add("1351");
 				
 			}
 			
 			if(StringUtils.isBlank(req.getOtherMakeId2())) {
-				errorList.add(new Error("18","OtherMakeId2","Please Enter the OtherMakeId2"));
+			//	errorList.add(new Error("18","OtherMakeId2","Please Enter the OtherMakeId2"));
+				errorList.add("1352");
 			}
 			else if(req.getOtherMakeId2().length()>100) {
-				errorList.add(new Error("18","OtherMakeId2","Please Enter the otherMakeId2 characters between 100"));
+			//	errorList.add(new Error("18","OtherMakeId2","Please Enter the otherMakeId2 characters between 100"));
+				errorList.add("1353");
 				
 			}
 			if(StringUtils.isBlank(req.getOtherModelId1())) {
-				errorList.add(new Error("19","OtherModelId1","Please Enter the OtherModelId1"));
+			//	errorList.add(new Error("19","OtherModelId1","Please Enter the OtherModelId1"));
+				errorList.add("1354");
 			}
 			else if(req.getOtherModelId1().length()>1000) {
-				errorList.add(new Error("19","OtherModelId1","Please Enter the otherModelId1 characters between 1000"));
+			//	errorList.add(new Error("19","OtherModelId1","Please Enter the otherModelId1 characters between 1000"));
+				errorList.add("1355");
 				
 			}
 			
 			if(StringUtils.isBlank(req.getOtherModelId2())) {
-				errorList.add(new Error("20","OtherModelId2","Please Enter the OtherModelId2"));
+				//errorList.add(new Error("20","OtherModelId2","Please Enter the OtherModelId2"));
+				errorList.add("1356");
 			}
 			else if(req.getOtherModelId2().length()>100) {
-				errorList.add(new Error("20","OtherModelId2","Please Enter the otherModelId2 characters between 100"));
+				//errorList.add(new Error("20","OtherModelId2","Please Enter the otherModelId2 characters between 100"));
+				errorList.add("1357");
 				
 			}
 			
 			if(StringUtils.isBlank(req.getVehFueltype())) {
-				errorList.add(new Error("21","VehFueltype","Please Enter the VehFueltype"));
+			//	errorList.add(new Error("21","VehFueltype","Please Enter the VehFueltype"));
+				errorList.add("1358");
 			}
 			
 			if(StringUtils.isBlank(req.getVehClass())) {
-				errorList.add(new Error("22","VehClass","Please Enter the VehClass"));
+			//	errorList.add(new Error("22","VehClass","Please Enter the VehClass"));
+				errorList.add("1359");
 			}
 			
 			if(StringUtils.isBlank(req.getVehClassEn())) {
-				errorList.add(new Error("23","VehClassEn","Please Enter the VehClassEn"));
+			//	errorList.add(new Error("23","VehClassEn","Please Enter the VehClassEn"));
+				errorList.add("1360");
 			}
 			else if(req.getVehClassEn().length()>1000) {
-				errorList.add(new Error("23","VehClassEn","Please Enter the VehclassEn characters between 1000"));
+				//errorList.add(new Error("23","VehClassEn","Please Enter the VehclassEn characters between 1000"));
+				errorList.add("1361");
 			}
 			
 			if(StringUtils.isBlank(req.getVehManfCountry())) {
-				errorList.add(new Error("24","VehManfCountry","Please Enter the VehManfCounry"));
+			//	errorList.add(new Error("24","VehManfCountry","Please Enter the VehManfCounry"));
+				errorList.add("1362");
 			}
 			else if(req.getVehManfCountry().length()>20) {
-				errorList.add(new Error("24","VehManfCountry","Please Enter the VehManfCountry between characters 20"));
+			//	errorList.add(new Error("24","VehManfCountry","Please Enter the VehManfCountry between characters 20"));
+				errorList.add("1363");
 			}
 			if(StringUtils.isBlank(req.getVehManfCountryEn())) {
-				errorList.add(new Error("25","VehManfCountryEn","Please Enter the VehManfCountryEn"));
+			//	errorList.add(new Error("25","VehManfCountryEn","Please Enter the VehManfCountryEn"));
+				errorList.add("1364");
 			}
 			else if(req.getVehManfCountryEn().length()>1000) {
-				errorList.add(new Error("25","VehManfCountryEn","Please Enter the VehManfCountryEn between characters 1000"));
+			//	errorList.add(new Error("25","VehManfCountryEn","Please Enter the VehManfCountryEn between characters 1000"));
+				errorList.add("1365");
 			}
 			
 			if(StringUtils.isBlank(req.getVehManfRegion())) {
-				errorList.add(new Error("26","VehManfRegion","Please Enter the VehManfRegion"));
+			//	errorList.add(new Error("26","VehManfRegion","Please Enter the VehManfRegion"));
+				errorList.add("1366");
 			}
 			
 			if(StringUtils.isBlank(req.getVehManfRegionEn())) {
-				errorList.add(new Error("27","VehManfRegionEn","Please Enter the ManfRegionEn"));
+			//	errorList.add(new Error("27","VehManfRegionEn","Please Enter the ManfRegionEn"));
+				errorList.add("1367");
 			}
 			else if(req.getVehManfRegionEn().length()>1000) {
-				errorList.add(new Error("28","VehManfRegionEn","Please Enter the VehManfRegionEn characters between 1000"));
+			//	errorList.add(new Error("28","VehManfRegionEn","Please Enter the VehManfRegionEn characters between 1000"));
+				errorList.add("1368");
 			}
 			
 			if(StringUtils.isBlank(req.getCoreMakeId())) {
-				errorList.add(new Error("29","CoreMakeId","Please Enter the CoreMakeId"));
+			//	errorList.add(new Error("29","CoreMakeId","Please Enter the CoreMakeId"));
+				errorList.add("1369");
 			}
 			else if(req.getCoreMakeId().length()>100) {
-				errorList.add(new Error("29","CoreMakeId","Please Enter the CoreMakeId characters between 100"));
+			//	errorList.add(new Error("29","CoreMakeId","Please Enter the CoreMakeId characters between 100"));
+				errorList.add("1370");
 			}
 						
 			if(StringUtils.isBlank(req.getCoreModelId())) {
-				errorList.add(new Error("30","CoreModelId","Please Enter the CoreModelId"));
+			//	errorList.add(new Error("30","CoreModelId","Please Enter the CoreModelId"));
+				errorList.add("1371");
 			}
 			else if(req.getCoreModelId().length()>100) {
-				errorList.add(new Error("30","CoreModelId","Please Enter the CoreModeld characters between 100"));
+			//	errorList.add(new Error("30","CoreModelId","Please Enter the CoreModeld characters between 100"));
+				errorList.add("1372");
 			}
 			
 //			if(StringUtils.isBlank(req.getCoreRefNo())) {
@@ -297,11 +341,13 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			
 			
 			if(StringUtils.isBlank(req.getRefNo())) {
-				errorList.add(new Error("31","Refno","Please Enter the Refno"));
+			//	errorList.add(new Error("31","Refno","Please Enter the Refno"));
+				errorList.add("1373");
 			}
 			
 			if(StringUtils.isBlank(req.getPrimaCode())) {
-				errorList.add(new Error("32","PrimaCode","Please Enter the Prima code"));
+			//	errorList.add(new Error("32","PrimaCode","Please Enter the Prima code"));
+				errorList.add("1374");
 			}
 			
 

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
@@ -36,15 +38,32 @@ public class ErrorDescMasterController {
 	@Autowired
 	private ErrorDescMasterService errorDescMasterService;
 	
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/inserterrormodules")
 	@ApiOperation(value = "This method is Insert Error Modules Details")
 	public ResponseEntity<com.maan.eway.common.res.CommonRes> insertProduct(@RequestBody ErrorDescMasterSaveReq req) {
 
 		
-		CommonRes data = new com.maan.eway.common.res.CommonRes();
 
-		List<Error> validation = errorDescMasterService.validateErrorDesc(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = errorDescMasterService.validateErrorDesc(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
+
 		
 		// validation
 		if (validation != null && validation.size() != 0) {

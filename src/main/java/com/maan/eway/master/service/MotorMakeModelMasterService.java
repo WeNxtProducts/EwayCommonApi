@@ -13,7 +13,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface MotorMakeModelMasterService {
 
-	List<Error> validateMotorMakeModel(MotorMakeModelSaveReq req);
+	List<String> validateMotorMakeModel(MotorMakeModelSaveReq req);
 
 	SuccessRes saveMotorMakeModel(MotorMakeModelSaveReq req);
 

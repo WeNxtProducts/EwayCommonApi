@@ -187,35 +187,41 @@ public class StateMasterServiceImpl implements StateMasterService {
 	}
 
 	@Override
-	public List<Error> validateStateDetails(StateMasterSaveReq req) {
+	public List<String> validateStateDetails(StateMasterSaveReq req) {
 
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 
 			if (StringUtils.isBlank(req.getStateName())) {
-				errorList.add(new Error("01", "StateName", "Please Select State  Name "));
+//				errorList.add(new Error("01", "StateName", "Please Select State  Name "));
+				errorList.add("2126");
 			}else if (req.getStateName().length() > 100){
-				errorList.add(new Error("01","StateName", "Please Enter State Name within 100 Characters")); 
+//				errorList.add(new Error("01","StateName", "Please Enter State Name within 100 Characters")); 
+				errorList.add("2127");
 			}else if (StringUtils.isBlank(req.getStateId()) && StringUtils.isNotBlank(req.getCountryId())) {
 				List<StateMaster> stateList = getStateNameExistDetails(req.getStateName() , req.getCountryId());
 				if (stateList.size()>0 ) {
-					errorList.add(new Error("01", "State", "This State Name Already Exist "));
+//					errorList.add(new Error("01", "State", "This State Name Already Exist "));
+					errorList.add("2128");
 				}
 			}else if(  StringUtils.isNotBlank(req.getCountryId())) {
 				List<StateMaster> stateList =  getStateNameExistDetails(req.getStateName() ,req.getCountryId() );
 				if (stateList.size()>0 &&  (! req.getStateId().equalsIgnoreCase(stateList.get(0).getStateId().toString())) ) {
-					errorList.add(new Error("01", "State", "This State Name Already Exist "));
+//					errorList.add(new Error("01", "State", "This State Name Already Exist "));
+					errorList.add("2128");
 				}
 				
 			}
 
 			if (StringUtils.isBlank(req.getCountryId()) ) {
-				errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
+//				errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
+				errorList.add("2129");
 			} 
 			
 			if (StringUtils.isBlank(req.getCoreAppCode()) ) {
-				errorList.add(new Error("03", "CoreAppCode", "Please Enter CoreAppCode"));
+//				errorList.add(new Error("03", "CoreAppCode", "Please Enter CoreAppCode"));
+				errorList.add("2130");
 			}
 
 			// Date Validation
@@ -224,10 +230,12 @@ public class StateMasterServiceImpl implements StateMasterService {
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null ) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("2034");
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("2035");
 			}
 //			else if (req.getEffectiveDateEnd() == null ) {
 //				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
@@ -237,43 +245,56 @@ public class StateMasterServiceImpl implements StateMasterService {
 //			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+//				errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("2036");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("2037");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("2038");
 			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+//				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("2039");
 			}else if (req.getCreatedBy().length() > 50) {
-				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+//				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("2040");
 			}
 			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode"));
+//				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode"));
+				errorList.add("2041");
 			}else if (req.getRegulatoryCode().length() > 20) {
-				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+//				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+				errorList.add("2042");
 			}
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
+//				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
+				errorList.add("2032");
 			}else if (req.getRemarks().length() > 100) {
-				errorList.add(new Error("09", "Remarks", "Please Enter Remarks within 100 Characters"));
+//				errorList.add(new Error("09", "Remarks", "Please Enter Remarks within 100 Characters"));
+				errorList.add("2033");
 			}
 			if (StringUtils.isBlank(req.getStateShortCode())) {
-				errorList.add(new Error("10", "StateShortCode", "Please Enter StateShortCode"));
+//				errorList.add(new Error("10", "StateShortCode", "Please Enter StateShortCode"));
+				errorList.add("2131");
 			}else if (req.getStateShortCode().length() > 20) {
-				errorList.add(new Error("10", "StateShortCode", "Please Enter StateShortCode within 20 Characters"));
+//				errorList.add(new Error("10", "StateShortCode", "Please Enter StateShortCode within 20 Characters"));
+				errorList.add("2132");
 			}else if (! req.getStateShortCode().matches("[0-9]+") ) {
-				errorList.add(new Error("10", "StateShortCode", "Please Enter Valid number in StateShortCode"));
+//				errorList.add(new Error("10", "StateShortCode", "Please Enter Valid number in StateShortCode"));
+				errorList.add("2133");
 			}
 
 			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			errorList.add(new Error("10", "Common Error",e.getMessage()));
+//			errorList.add(new Error("10", "Common Error",e.getMessage()));
+			errorList.add("2114");
 		}
 		return errorList;
 	}

@@ -24,7 +24,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface ProductBenefitMasterService {
 
-	List<Error> validateProductBenefit(ProductBenefitSaveReq req);
+	List<String> validateProductBenefit(ProductBenefitSaveReq req);
 
 	//SuccessRes saveProductBenefit(ProductBenefitSaveReq req, Object file);
 	SuccessRes saveProductBenefit(ProductBenefitSaveReq req);

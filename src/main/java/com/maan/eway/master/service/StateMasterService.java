@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.maan.eway.common.res.CityDropdown;
 import com.maan.eway.common.res.StateDropdown;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.StateMasterChangeStatusReq;
 import com.maan.eway.master.req.StateMasterDropDownReq;
 import com.maan.eway.master.req.StateMasterGetAllReq;
@@ -25,7 +24,7 @@ public interface StateMasterService  {
 
 
 
-	List<Error> validateStateDetails(StateMasterSaveReq req);
+	List<String> validateStateDetails(StateMasterSaveReq req);
 
 	SuccessRes insertState(StateMasterSaveReq req);
 

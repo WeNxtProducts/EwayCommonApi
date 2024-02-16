@@ -6,40 +6,38 @@
 package com.maan.eway.master.controller;
 
 
-import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.Collections;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.maan.eway.common.req.CommonErrorModuleReq;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BranchChangeStatusReq;
 import com.maan.eway.master.req.BranchMasterGetAllReq;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
-import com.maan.eway.master.req.CityChangeStatusReq;
 import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.res.BranchMasterRes;
 import com.maan.eway.master.service.BranchMasterService;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.List;
 
 
 /**
@@ -56,6 +54,9 @@ public class BranchMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	// save
 		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/insertbranch")
@@ -64,8 +65,20 @@ public class BranchMasterController {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
+			List<String> validationCodes =  branchService.validateBranchDetails(req);
+			List<Error> validation = null;
+			if(validationCodes!=null && validationCodes.size() > 0 ) {
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				comErrDescReq.setBranchCode("99999");
+				comErrDescReq.setInsuranceId(req.getCompanyId());
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("31");
+				comErrDescReq.setModuleName("MASTERS");
+				
+				validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+			}
+		
 
-			List<Error> validation = branchService.validateBranchDetails(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

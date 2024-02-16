@@ -77,48 +77,59 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 	private Logger log = LogManager.getLogger(UwQuesitonMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateUwQuestions(UwQuestionMasterSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateUwQuestions(UwQuestionMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 			if (StringUtils.isBlank(req.getQuestionCategory())) {
-				errorList.add(new Error("02", "QuestionCategory", "Please Select Question Category"));
+			//	errorList.add(new Error("02", "QuestionCategory", "Please Select Question Category"));
+				errorList.add("1632");
 			}
 			
 			if (StringUtils.isBlank(req.getUwQuestionDesc())) {
-				errorList.add(new Error("02", "QuestionCategory Desc", "Please Select Question Category Desc"));
+			//	errorList.add(new Error("02", "QuestionCategory Desc", "Please Select Question Category Desc"));
+				errorList.add("1633");
 			}
 			
 		
 			if (StringUtils.isBlank(req.getUwQuestionDesc())) {
-				errorList.add(new Error("02", "UwQuestionDesc", "Please Select UwQuestionDesc"));
+		//		errorList.add(new Error("02", "UwQuestionDesc", "Please Select UwQuestionDesc"));
+				errorList.add("1634");
 			}else if (req.getUwQuestionDesc().length() > 500){
-				errorList.add(new Error("02","UwQuestionDesc", "Please Enter UwQuestionDesc 500 Characters")); 
+			//	errorList.add(new Error("02","UwQuestionDesc", "Please Enter UwQuestionDesc 500 Characters")); 
+				errorList.add("1635");
 			}
 			
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+			//	errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+				errorList.add("1255");
 			}
 			
 			if (StringUtils.isBlank(req.getBranchCode())) {
-				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+		//		errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+				errorList.add("1636");
 			}
 			if (StringUtils.isBlank(req.getQuestionType())) {
-				errorList.add(new Error("03", "QuestionType", "Please Select QuestionType"));
+		//		errorList.add(new Error("03", "QuestionType", "Please Select QuestionType"));
+				errorList.add("1637");
 			}else if (req.getQuestionType().length() > 100){
-				errorList.add(new Error("03","QuestionType", "Please Enter QuestionType 100 Characters")); 
+			//	errorList.add(new Error("03","QuestionType", "Please Enter QuestionType 100 Characters")); 
+				errorList.add("1638");
 			} 
 			if(req.getQuestionType().equalsIgnoreCase("02")){
 				if (StringUtils.isBlank(req.getDataType())) {
-					errorList.add(new Error("03", "DataType", "Please Select DataType"));
+			//		errorList.add(new Error("03", "DataType", "Please Select DataType"));
+					errorList.add("1639");
 				}	
 			}
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+		//		errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+				errorList.add("1259");
 			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+		//		errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+				errorList.add("1260");
 			}
 			
 			// Date Validation 
@@ -127,18 +138,23 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+	//			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		//		errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+	//			errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		//		errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+		//		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 
 //			if (StringUtils.isBlank(req.getCoreAppCode())) {
@@ -152,9 +168,11 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 //				errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
 //			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+		//		errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 100){
-				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+		//		errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+				errorList.add("1271");
 			}
 			
 			
@@ -165,86 +183,100 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			//Options Validation
 			if(req.getQuestionType().equalsIgnoreCase("01")) { //Radio Button
 				
-				if(req.getOptionsReq().size()<=0)
-					errorList.add(new Error("01","Options", "Please Add Atleast One Option Details")); 
-				else {
+				if(req.getOptionsReq().size()<=0) {
+			//		errorList.add(new Error("01","Options", "Please Add Atleast One Option Details")); 
+					errorList.add("1640");
+				}	else {
 					int row = 0;
 					for(OptionsReq ops : req.getOptionsReq()) {
 						row = row + 1;
 						
 
 						if (StringUtils.isBlank(ops.getUwQuesOptionId())) {
-							errorList.add(new Error("07", "Option Id", "Please Enter Value in Row "+ row));
+				//			errorList.add(new Error("07", "Option Id", "Please Enter Value in Row "+ row));
+							errorList.add("1641" + "," + row);
 						}else {
 							
 							if(opsId.contains(ops.getUwQuesOptionId())) {
-								errorList.add(new Error("07","Option Id", "Duplicate Value Entered in Row " + row)); 
+								errorList.add("1642" + "," + row);
+					//			errorList.add(new Error("07","Option Id", "Duplicate Value Entered in Row " + row)); 
 							}
 							
 							opsId.add(ops.getUwQuesOptionId());
-							if ( ! isNumeric(ops.getUwQuesOptionId())  )
-								errorList.add(new Error("07","Option Id", "Please Enter Value in Numeric Only in Row " + row)); 
+							if ( ! isNumeric(ops.getUwQuesOptionId())  ) {
+								errorList.add("1643" + "," + row);
+						//		errorList.add(new Error("07","Option Id", "Please Enter Value in Numeric Only in Row " + row));
+								}
 						}
 						
 						if (StringUtils.isBlank(ops.getUwQuesOptionDesc())) {
-							errorList.add(new Error("07", "Option Desc", "Please Enter Display Name in Row "+ row));
+					//		errorList.add(new Error("07", "Option Desc", "Please Enter Display Name in Row "+ row));
+							errorList.add("1644" + "," + row);
 						}else {
 							
 							if(opsDesc.contains(ops.getUwQuesOptionDesc())) {
-								errorList.add(new Error("07","Option Desc", "Duplicate Display Name Entered in Row " + row)); 
+						//		errorList.add(new Error("07","Option Desc", "Duplicate Display Name Entered in Row " + row)); 
+								errorList.add("1645" + "," + row);
 							}
 							
 							opsDesc.add(ops.getUwQuesOptionDesc());
 							
-							if ( ops.getUwQuesOptionDesc().length()>100  )
-								errorList.add(new Error("07","Option Desc", "Please Enter Display Name within 100 Characters in Row " + row)); 
+							if ( ops.getUwQuesOptionDesc().length()>100  ) {
+					//			errorList.add(new Error("07","Option Desc", "Please Enter Display Name within 100 Characters in Row " + row)); 
+								errorList.add("1646" + "," + row);}
 						}
 						
 						if (StringUtils.isBlank(ops.getStatus())) {
-							errorList.add(new Error("05", "Status", "Please Select Status in Row "+ row));
+					//		errorList.add(new Error("05", "Status", "Please Select Status in Row "+ row));
+							errorList.add("1483" + "," + row);
 						} else if (ops.getStatus().length() > 1) {
-							errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed in row" + row));
+					//		errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed in row" + row));
+							errorList.add("1484" + "," + row);
 						}
 						
 						if (StringUtils.isBlank(ops.getLoadingPercent())) {
-							errorList.add(new Error("07", "Loading", "Please Enter Loading in Row "+ row));
+					//		errorList.add(new Error("07", "Loading", "Please Enter Loading in Row "+ row));
+							errorList.add("1647" + "," + row);
 						}else if ( ! ops.getLoadingPercent().matches("[0-9.]+")  ){
-							errorList.add(new Error("07","Loading", "Please Enter Loading in Numeric Only in Row " + row)); 
+					//		errorList.add(new Error("07","Loading", "Please Enter Loading in Numeric Only in Row " + row)); 
+							errorList.add("1648" + "," + row);
 						}
 						
 						//DependantYN
 						if (StringUtils.isBlank(ops.getDependentYn())) {
-							errorList.add(new Error("05", "DependentYn", "Please Select DependentYn in Row "+ row));
+					//		errorList.add(new Error("05", "DependentYn", "Please Select DependentYn in Row "+ row));
+							errorList.add("1649" + "," + row);
 						} else {
 							
-							if (ops.getDependentYn().length() > 1) 
-								errorList.add(new Error("05", "DependentYn", "Please Select Valid DependentYn - One Character Only Allwed in row" + row));
+							if (ops.getDependentYn().length() > 1) {
+							//	errorList.add(new Error("05", "DependentYn", "Please Select Valid DependentYn - One Character Only Allowed in row" + row));
+							errorList.add("1650" + "," + row); }
 						
 							if(ops.getDependentYn().equalsIgnoreCase("Y")) {
 							
 								if (CollectionUtils.isEmpty(ops.getDependentUnderwriterId())) {
-									errorList.add(new Error("07", "Dependant Question", "Please Select Dependant Question in Row "+ row));
+								//	errorList.add(new Error("07", "Dependent Question", "Please Select Dependent Question in Row "+ row));
+									errorList.add("1651" + "," + row);
 								}
 								
 //								if (StringUtils.isBlank(ops.getDependentUwAction())) {
-//									errorList.add(new Error("07", "Dependant Question Action", "Please Enter Dependant Question Action in Row "+ row));
+//									errorList.add(new Error("07", "Dependent Question Action", "Please Enter Dependent Question Action in Row "+ row));
 //								}else if ( ops.getDependentUwAction().length()>100  ){
-//									errorList.add(new Error("07","Dependant Question Action", "Please Enter Dependant Question Action within 100 Characters in Row " + row)); 
+//									errorList.add(new Error("07","Dependent Question Action", "Please Enter Dependent Question Action within 100 Characters in Row " + row)); 
 //								}
 						
 							}
 						}
 						
 						if (StringUtils.isBlank(ops.getReferralYn())) {
-							errorList.add(new Error("05", "Referral", "Please Select Referral in Row "+ row));
+						//	errorList.add(new Error("05", "Referral", "Please Select Referral in Row "+ row));
+							errorList.add("1654" + "," + row);
 						} else if (ops.getReferralYn().length() > 1) {
-							errorList.add(new Error("05", "Referral", "Please Select Valid Referral - One Character Only Allwed in row" + row));
+						//	errorList.add(new Error("05", "Referral", "Please Select Valid Referral - One Character Only Allowed in row" + row));
+							errorList.add("1655" + "," + row);
 						}
-						
 				}
-				
-				
-				
+			
 			}
 			
 			}

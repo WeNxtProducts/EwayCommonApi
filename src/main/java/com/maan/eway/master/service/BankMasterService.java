@@ -31,7 +31,7 @@ long getTotal();
 
 SuccessRes insertBank(BankMasterSaveReq req);
 
-List<Error> validateBankDetails(BankMasterSaveReq req);
+List<String> validateBankDetails(BankMasterSaveReq req);
 
 List<BankMasterRes> getallBankDetails(BankMasterGetAllReq req);
 

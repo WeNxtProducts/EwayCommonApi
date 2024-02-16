@@ -7,19 +7,11 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
-import com.maan.eway.error.Error;
-import com.maan.eway.master.controller.OccupationDropDownReq;
-import com.maan.eway.master.req.AcExecutiveDropDownReq;
-import com.maan.eway.master.req.OccupationChangeStatusReq;
-import com.maan.eway.master.req.OccupationMasterGetAllReq;
-import com.maan.eway.master.req.OccupationMasterGetReq;
-import com.maan.eway.master.req.OccupationMasterSaveReq;
 import com.maan.eway.master.req.TinyUrlChangeStatusReq;
 import com.maan.eway.master.req.TinyUrlDropdownReq;
 import com.maan.eway.master.req.TinyUrlMasterGetReq;
 import com.maan.eway.master.req.TinyUrlMasterGetallReq;
 import com.maan.eway.master.req.TinyUrlMasterSaveReq;
-import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.res.TinyUrlMasterRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -28,7 +20,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface TinyUrlMasterService  {
 
-	List<Error> validateTinyUrl(TinyUrlMasterSaveReq req);
+	List<String> validateTinyUrl(TinyUrlMasterSaveReq req);
 
 	SuccessRes insertTinyUrl(TinyUrlMasterSaveReq req);
 

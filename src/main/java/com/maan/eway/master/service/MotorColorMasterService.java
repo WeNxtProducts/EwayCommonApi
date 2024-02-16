@@ -15,7 +15,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface MotorColorMasterService {
 
-	List<Error> validateColorMotor(MotorColorSaveReq req);
+	List<String> validateColorMotor(MotorColorSaveReq req);
 
 	SuccessRes saveColor(MotorColorSaveReq req);
 

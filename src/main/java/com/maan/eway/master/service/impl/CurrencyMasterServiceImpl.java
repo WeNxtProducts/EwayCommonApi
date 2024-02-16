@@ -202,15 +202,15 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 
 
 @Override
-public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
-
-	List<Error> errorList = new ArrayList<Error>();
-
+public List<String> validateCurrencyDetails(CurrencyMasterSaveReq req) {
+	List<String> errorList = new ArrayList<String>();
 	try {
 		if (StringUtils.isBlank(req.getRemarks())) {
-			errorList.add(new Error("03", "Remark", "Please Select Remark "));
+			//errorList.add(new Error("03", "Remark", "Please Enter Remark "));
+			errorList.add("2032");
 		}else if (req.getRemarks().length() > 100){
-			errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
+			//errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
+			errorList.add("2033");
 		}
 		
 		// Date Validation 
@@ -219,51 +219,66 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
 		if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			//errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			errorList.add("2034");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errorList.add("2035");
 		}
 		// Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Enter Status"));
+			//errorList.add(new Error("05", "Status", "Please Enter Status"));
+			errorList.add("2036");
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+			//errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+			errorList.add("2037");
 		} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add("2038");
 		}
 		if (StringUtils.isBlank(req.getCurrencyShortCode())) {
-			errorList.add(new Error("05", "CurrencyShortCode", "Please Enter CurrencyShortCode"));
+			//errorList.add(new Error("05", "CurrencyShortCode", "Please Enter CurrencyShortCode"));
+			errorList.add("1282");
 		} else if (req.getCurrencyShortCode().length() > 5) {
-			errorList.add(new Error("08", "Currency", "Please Enter CurrencyShortCode within 5 Characters"));	
+			//errorList.add(new Error("08", "Currency", "Please Enter CurrencyShortCode within 5 Characters"));	
+			errorList.add("1283");
 		}else if (!StringUtils.isAlpha(req.getCurrencyShortCode())) {
-			errorList.add(new Error("08", "Currency", "Please Enter CurrencyShortCode In Alphabets"));	
+			//errorList.add(new Error("08", "Currency", "Please Enter CurrencyShortCode In Alphabets"));	
+			errorList.add("1284");
 		} else {
 			CurrencyMaster currencyShortCode =   getCurrencyShortCodeRes(req.getCurrencyShortCode(),req.getCompanyId());
 			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyShortCode !=null ) {
-				errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));
+				//errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));
+				errorList.add("1285");
 			} else if( currencyShortCode !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
 				if(! currencyShortCode.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
-					errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));	
+					//errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));	
+					errorList.add("1285");
 				}			
 			}
 		}
 		
 		if (StringUtils.isBlank(req.getCurrencyName())) {
-			errorList.add(new Error("05", "CurrencyName", "Please Enter CurrencyName"));
+			//errorList.add(new Error("05", "CurrencyName", "Please Enter CurrencyName"));
+			errorList.add("1286");
 		} else if (req.getCurrencyName().length() > 25) {
-			errorList.add(new Error("08", "Currency Name", "Please Enter Currency Name within 25 Characters"));
+			//errorList.add(new Error("08", "Currency Name", "Please Enter Currency Name within 25 Characters"));
+			errorList.add("1287");
 		}else {
 			//String curr = req.getCurrencyName().replaceAll(" ", "") ;
 			if (! req.getCurrencyName().matches("[a-zA-Z\\s]+") ) {
-				errorList.add(new Error("08", "CurrencyName", "Please Enter Valid CurrencyName "));	
+				//errorList.add(new Error("08", "CurrencyName", "Please Enter Valid CurrencyName "));	
+				errorList.add("1288");
 			} else {
 				CurrencyMaster currencyName =   getCurrencyNameRes(req.getCurrencyName(),req.getCompanyId());
 				if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyName !=null ) {
-					errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));
+					//errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));
+					errorList.add("1289");
 				} else if( currencyName !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
 					if(! currencyName.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
-						errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));	
+						//errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));	
+						errorList.add("1289");
 					}			
 				}
 			}
@@ -271,23 +286,30 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			
 		
 		if (StringUtils.isNotBlank(req.getSubCurrency())&& req.getSubCurrency().length() > 10) {
-			errorList.add(new Error("09", "SubCurrency", "Please Enter SubCurrency within 10 Characters"));
+			//errorList.add(new Error("09", "SubCurrency", "Please Enter SubCurrency within 10 Characters"));
+			errorList.add("1290");
 		}
 		
 		if (StringUtils.isBlank(req.getMinDiscount())) {
-			errorList.add(new Error("10", "MinDiscount", "Please Enter MinDiscount "));
+			//errorList.add(new Error("10", "MinDiscount", "Please Enter MinDiscount "));
+			errorList.add("1291");
 		}
 		if (StringUtils.isBlank(req.getMaxLoading())) {
-			errorList.add(new Error("11", "MaxLoading", "Please Enter MaxLoading "));
+			//errorList.add(new Error("11", "MaxLoading", "Please Enter MaxLoading "));
+			errorList.add("1292");
 		}
 		if (StringUtils.isBlank(req.getDecimalDigit())) {
-			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit "));
+			//errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit "));
+			errorList.add("1293");
 		}else if(req.getDecimalDigit().length()>1) {
-			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit Single Digit "));
+			//errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit Single Digit "));
+			errorList.add("1294");
 		}else if(!req.getDecimalDigit().matches("[0-3]+") ) {
-			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit 0 to 9 "));
+			//errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit 0 to 9 "));
+			errorList.add("1295");
 		}else if(Integer.valueOf(req.getDecimalDigit())<0 ){
-			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit greater than 0  "));
+			//errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit greater than 0  "));
+			errorList.add("1296");
 		}
 		
 	} catch (Exception e) {

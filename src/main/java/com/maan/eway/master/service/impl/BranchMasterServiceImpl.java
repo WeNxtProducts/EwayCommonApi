@@ -405,16 +405,18 @@ public List<Tuple> getStateAndCityName(String countryId , String stateId  ) {
 }
 
 @Override
-public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
+public List<String> validateBranchDetails(BranchMasterSaveReq req) {
 
-	List<Error> errorList = new ArrayList<Error>();
+	List<String> errorList = new ArrayList<String>();
 
 	try {
 	
 		if (StringUtils.isBlank(req.getBranchName()) ) {
-			errorList.add(new Error("02", "BranchName", "Please Select Branch Name "));
+		//	errorList.add(new Error("02", "BranchName", "Please Select Branch Name "));
+			errorList.add("1433");
 		}else if (req.getBranchName().length() > 100){
-			errorList.add(new Error("02","BranchName", "Please Enter Branch  Name within 100 Characters")); 
+		//	errorList.add(new Error("02","BranchName", "Please Enter Branch  Name within 100 Characters")); 
+			errorList.add("1434");
 		}
 //		else if (StringUtils.isBlank(req.getBranchCode()) ) {
 //			List<BranchMaster> list = getBranchNameExistDetails(req.getBranchName());
@@ -438,14 +440,17 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 //		}
 
 		if(StringUtils.isBlank(req.getCityName())) {
-			errorList.add(new Error("03","City","Please Enter City Name "));
+		//	errorList.add(new Error("03","City","Please Enter City Name "));
+			errorList.add("1435");
 		}
 		if(StringUtils.isBlank(req.getStateCode())) {
-			errorList.add(new Error("04","State","Please Select State"));
+		//	errorList.add(new Error("04","State","Please Select State"));
+			errorList.add("1436");
 		}
 		
 		if(StringUtils.isBlank(req.getCountryId())) {
-			errorList.add(new Error("04","CountryID","Please Select CountryId"));
+		//	errorList.add(new Error("04","CountryID","Please Select CountryId"));
+			errorList.add("1437");
 		}
 		
 		
@@ -456,9 +461,11 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 //		}
 		
 		if (StringUtils.isBlank(req.getCreatedBy())) {
-			errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy"));
+		//	errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy"));
+			errorList.add("1270");
 		} else if (req.getCreatedBy().length() > 100) {
-			errorList.add(new Error("03", "CreatedBy", "CreatedBy under 100 Characters only allowed"));
+		//	errorList.add(new Error("03", "CreatedBy", "CreatedBy under 100 Characters only allowed"));
+			errorList.add("1271");
 		}
 		
 		// Date Validation 
@@ -467,26 +474,34 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
 		if (req.getEffectiveDateStart() == null ) {
-			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+		//	errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			errorList.add("1261");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		//	errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errorList.add("1262");
 		} 
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//errorList.add(new Error("05", "Status", "Please Select Status  "));
+			errorList.add("1263");
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		//	errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			errorList.add("1264");
 		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+		//	errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add("1265");
 		}
 		if (StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId() == null) {
-			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
+		//	errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
+			errorList.add("1255");
 		}else if (req.getCompanyId().length() > 20){
-			errorList.add(new Error("06","CompanyId", "Please Enter Company Id within 20 Characters")); 
+			//errorList.add(new Error("06","CompanyId", "Please Enter Company Id within 20 Characters")); 
+			errorList.add("1256");
 		}
 		if (StringUtils.isBlank(req.getCoreAppCode()) ){
-			errorList.add(new Error("07","Core App Code", "Please Enter CoreAppCode")); 
+		//	errorList.add(new Error("07","Core App Code", "Please Enter CoreAppCode")); 
+			errorList.add("1266");
 		}
 //		else if (StringUtils.isNotBlank(req.getCoreAppCode())) {
 //			List<BranchMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , null,req.getCoreAppCode());
@@ -501,45 +516,58 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 //		}
 		
 		if (StringUtils.isBlank(req.getRegulatoryCode()) ){
-			errorList.add(new Error("08","Regulatory Code", "Please Enter Regulatory Code")); 
+			//errorList.add(new Error("08","Regulatory Code", "Please Enter Regulatory Code")); 
+			errorList.add("1268");
 		}
 		if (StringUtils.isBlank(req.getAddress1()) ){
-			errorList.add(new Error("09","Address1", "Please Enter Address1")); 
+			//errorList.add(new Error("09","Address1", "Please Enter Address1")); 
+			errorList.add("1438");
 		}
 		if (StringUtils.isBlank(req.getAddress1()) ){
-			errorList.add(new Error("10","Address2", "Please Enter Address2")); 
+		//	errorList.add(new Error("10","Address2", "Please Enter Address2")); 
+			errorList.add("1439");
 		}
 		
 		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z" + "A-Z]{2,7}$";
 		Pattern pattern = Pattern.compile(regex);
-		if(StringUtils.isBlank(req.getEmail()))
-			errorList.add(new Error("11" ,"Email", "please Enter Email"));
+		if(StringUtils.isBlank(req.getEmail())) {
+			//errorList.add(new Error("11" ,"Email", "please Enter Email"));
+			errorList.add("1440");
+		}
 		else if(StringUtils.isNotBlank(req.getEmail())) {
 		Matcher matcher3 = pattern.matcher(req.getEmail());
-		if (!matcher3.matches())
-			errorList.add(new Error("11" ,"Email", "please Enter Valid Email"));
+		if (!matcher3.matches()) {
+		//	errorList.add(new Error("11" ,"Email", "please Enter Valid Email"));
+			errorList.add("1443");
+		}
 		}
 		
 
 		String regex1 = "(0-9)+";
 		
 		if (StringUtils.isBlank(req.getMobileNumber())) {
-			errorList.add(new Error("12", "Mobile Number", "Please Enter Mobile Number"));
+			//errorList.add(new Error("12", "Mobile Number", "Please Enter Mobile Number"));
+			errorList.add("1441");
 		}
 		else if (!req.getMobileNumber().matches("[0-9]+")) {
-			errorList.add(new Error("12", "Mobile Number","Mobile Number format should be Only Numbers"));
+		//	errorList.add(new Error("12", "Mobile Number","Mobile Number format should be Only Numbers"));
+			errorList.add("1442");
 		}
 		if (StringUtils.isBlank(req.getBranchType())) {
-			errorList.add(new Error("13", "Branch Type", "Please Enter Branch Type"));
+			//errorList.add(new Error("13", "Branch Type", "Please Enter Branch Type"));
+			errorList.add("1444");
 		}
 		else if (req.getBranchType().length()>10) {
-			errorList.add(new Error("13", "Branch Type", "Please Enter Branch Type within 10 Characters"));
+		//	errorList.add(new Error("13", "Branch Type", "Please Enter Branch Type within 10 Characters"));
+			errorList.add("1445");
 		}
 		if (StringUtils.isBlank(req.getSalePointCode()) ){
-			errorList.add(new Error("14","SalePointCode", "Please Enter Sale Point Code")); 
+		//	errorList.add(new Error("14","SalePointCode", "Please Enter Sale Point Code")); 
+			errorList.add("1446");
 		}
 		else if (req.getSalePointCode().length() > 100) {
-			errorList.add(new Error("14", "SalePointCode", "Sale Point Code under 100 Characters only allowed"));
+		//	errorList.add(new Error("14", "SalePointCode", "Sale Point Code under 100 Characters only allowed"));
+			errorList.add("1447");
 		}
 		
 //		if(StringUtils.isBlank(req.getPoBox())) {

@@ -27,7 +27,9 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BrokerCompanyListProductReq;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
@@ -58,6 +60,9 @@ public class LoginProductController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	
 //*************************************** Add Products Apis **********************************************************//
 	 
@@ -66,7 +71,19 @@ public class LoginProductController {
 	public ResponseEntity<CommonRes> attachBrokerProducts(@RequestBody  AttachCompnayProductRequest req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validateBrokerProductReq(req);
+		List<String> validationCodes = validationService.validateBrokerProductReq(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+	
 		//// validation
 		if (validation != null && validation.size() != 0) 	{
 			data.setCommonResponse(null);
@@ -264,9 +281,22 @@ public class LoginProductController {
 	@PostMapping("/attachissuerproducts")
 	@ApiOperation(value="This method is to Attach Issuer Products")
 	public ResponseEntity<CommonRes> attachIssuerProducts(@RequestBody  AttachIssuerProductRequest req) {
+		
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validateIssuerProductReq(req);
+		List<String> validationCodes = validationService.validateIssuerProductReq(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+	
 		//// validation
 		if (validation != null && validation.size() != 0) 	{
 			data.setCommonResponse(null);
@@ -295,9 +325,23 @@ public class LoginProductController {
 	@PostMapping("/attachloginendtids")
 	@ApiOperation(value="This method is to Attach Issuer Products")
 	public ResponseEntity<CommonRes> attachProductsEndtIds(@RequestBody  AttachEndtIdsReq req) {
+		
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validateProductsEndtIds(req);
+		List<String> validationCodes = validationService.validateProductsEndtIds(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
+	
 		//// validation
 		if (validation != null && validation.size() != 0) 	{
 			data.setCommonResponse(null);

@@ -66,22 +66,22 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 	private Logger log = LogManager.getLogger(PaymentMasterServiceImpl.class);
 	
 	@Override
-	public List<Error>  validatePaymentMaster(PaymentMasterSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
-		
+	public List<String>  validatePaymentMaster(PaymentMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 		try {
 		
-			
-			
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+			//	errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+				errorList.add("1255");
 			}
 			
 			if (StringUtils.isBlank(req.getBranchCode())) {
-				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			//	errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+				errorList.add("1256");
 			}
 			if (StringUtils.isBlank(req.getProductId())) {
-				errorList.add(new Error("02", "ProductId", "Please Select ProductId"));
+			//	errorList.add(new Error("02", "ProductId", "Please Select ProductId"));
+				errorList.add("1313");
 			}
 			
 			// Date Validation 
@@ -90,25 +90,32 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				//errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				//errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//	errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 			
 
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+			//	errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 100){
-				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			//	errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			}
 			
 			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode())  ? req.getAgencyCode() : "99999"   ;
@@ -131,8 +138,8 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 						)
 					
 				{
-					errorList.add(new Error("10","Duplicate Data", "Already Data Available for the same, It is a Duplicate Data")); 
-					
+			//		errorList.add(new Error("10","Duplicate Data", "Already Data Available for the same, It is a Duplicate Data")); 
+					errorList.add("1676");
 				}
 			}
 				}

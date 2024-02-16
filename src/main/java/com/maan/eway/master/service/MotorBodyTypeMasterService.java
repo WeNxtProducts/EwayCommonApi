@@ -34,7 +34,7 @@ public interface MotorBodyTypeMasterService {
 
 	List<DropDownRes> getInduvidualBodyTypeMasterDropdown(BodyTypeDropDownReq req);
 
-	List<Error> validateMakeMotor(MotorBodySaveReq req);
+	List<String> validateMakeMotor(MotorBodySaveReq req);
 
 
 }

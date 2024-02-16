@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.req.ProductBenefitDropDownReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.CommonValidationException;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductBenefitChangeStatusReq;
@@ -52,6 +54,9 @@ public class ProductBenefitMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 	
 /*	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertproductbenefit")
@@ -92,9 +97,23 @@ public class ProductBenefitMasterController {
 	@PostMapping("/insertproductbenefit")
 	@ApiOperation(value="This Method is to save Product Benefit Master")
 	public ResponseEntity<CommonRes> saveExclusion(@RequestBody ProductBenefitSaveReq req){
-		CommonRes data = new CommonRes();
+		
 		reqPrinter.reqPrint(req);
-	List<Error> validation = service.validateProductBenefit(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = service.validateProductBenefit(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
+	
 	//validation
 	if(validation !=null && validation.size()!=0) {
 		data.setCommonResponse(null);

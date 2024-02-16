@@ -17,7 +17,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface ExclusionMasterService {
 
-	List<Error> validateExclusion(ExclusionMasterSaveReq req);
+	List<String> validateExclusion(ExclusionMasterSaveReq req);
 
 	SuccessRes saveExclusion(ExclusionMasterSaveReq req);
 

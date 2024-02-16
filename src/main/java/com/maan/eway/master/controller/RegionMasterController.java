@@ -6,15 +6,21 @@
 package com.maan.eway.master.controller;
 import java.util.Collections;
 import java.util.List;
-import com.maan.eway.error.Error;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.access.prepost.PreAuthorize;
+
+import com.maan.eway.common.req.CommonErrorModuleReq;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.RegionChangeStatusReq;
 import com.maan.eway.master.req.RegionMasterDropDownReq;
 import com.maan.eway.master.req.RegionMasterGetAllReq;
@@ -22,8 +28,6 @@ import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.req.RegionMasterSaveReq;
 import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.service.RegionMasterService;
-import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -45,6 +49,10 @@ public class RegionMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
+	
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 	
 	// Region Master Drop Down Type
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
@@ -75,10 +83,22 @@ public class RegionMasterController {
 		@ApiOperation(value = "This method is Insert Region Details")
 		public ResponseEntity<CommonRes> insertRegion(@RequestBody RegionMasterSaveReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = regionService.validateRegionDetails(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId("99999");
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
 
-			List<Error> validation = regionService.validateRegionDetails(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

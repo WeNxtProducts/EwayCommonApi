@@ -13,7 +13,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface ExchangeMasterService {
 
-	List<Error> validateInsertExchangeMaster(ExchangeMasterSaveReq req);
+	List<String> validateInsertExchangeMaster(ExchangeMasterSaveReq req);
 
 	SuccessRes insertExchangeMaster(ExchangeMasterSaveReq req);
 

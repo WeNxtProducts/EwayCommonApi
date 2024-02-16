@@ -7,30 +7,30 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-import com.maan.eway.error.Error;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.req.ExclusionMasterDropdownReq;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ExclusionChangeStatusReq;
 import com.maan.eway.master.req.ExclusionMasterGetReq;
 import com.maan.eway.master.req.ExclusionMasterGetallReq;
-import com.maan.eway.master.req.ExclusionMasterListSaveReq;
 import com.maan.eway.master.req.ExclusionMasterReq;
 import com.maan.eway.master.req.ExclusionMasterSaveReq;
 import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.res.ExclusionMasterRes;
-import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.master.service.ExclusionMasterService;
-import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -50,16 +50,31 @@ public class ExclusionMasterController {
 	@Autowired
 	private  ExclusionMasterService service;
 	
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	@Autowired
 	private  PrintReqService reqPrinter;
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertexclusion")
 	@ApiOperation(value="This Method is to save Exclusion Master")
 	public ResponseEntity<CommonRes> saveExclusion(@RequestBody ExclusionMasterSaveReq req){
-		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = service.validateExclusion(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 		
-	List<Error> validation = service.validateExclusion(req);
 	//validation
 	if(validation !=null && validation.size()!=0) {
 		data.setCommonResponse(null);
@@ -202,8 +217,8 @@ public class ExclusionMasterController {
 	@PostMapping("/insertexclusionlist")
 	@ApiOperation(value="This Method is to save Exclusion Master List")
 	public ResponseEntity<CommonRes> saveExclusion(@RequestBody List<ExclusionMasterReq> req){
-		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 		
 	List<Error> validation = service.validateExclusionList(req);
 	//validation

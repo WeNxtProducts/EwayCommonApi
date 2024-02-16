@@ -7,8 +7,6 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
-import com.maan.eway.common.req.UwMasterDropdownReq;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.UwQuestionChangeStatusReq;
 import com.maan.eway.master.req.UwQuestionMasterGetReq;
 import com.maan.eway.master.req.UwQuestionMasterSaveReq;
@@ -22,7 +20,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface UwQuestionMasterService  {
 
-	List<Error> validateUwQuestions(UwQuestionMasterSaveReq req);
+	List<String> validateUwQuestions(UwQuestionMasterSaveReq req);
 
 	SuccessRes insertUwQuestions(UwQuestionMasterSaveReq req);
 

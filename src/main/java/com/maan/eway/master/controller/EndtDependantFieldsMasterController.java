@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EndtDependantFieldChangeStatusReq;
 import com.maan.eway.master.req.EndtDependantFieldMasterSaveReq;
@@ -39,6 +41,10 @@ public class EndtDependantFieldsMasterController {
 
 	@Autowired
 	private EndtDependantFieldMasterService service;
+	
+
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 
 	// Save
 
@@ -47,10 +53,21 @@ public class EndtDependantFieldsMasterController {
 	@ApiOperation(value = "This Method is to save Endorsement Dependant Fields")
 	public ResponseEntity<CommonRes> saveDependantField(@RequestBody EndtDependantFieldMasterSaveReq req) {
 
-		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = service.validateDependantField(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 
-		List<Error> validation = service.validateDependantField(req);
 		// Validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

@@ -66,27 +66,31 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 	private Logger log = LogManager.getLogger(MotorMakeMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateMakeMotor(MotorMakeSaveReq req) {
+	public List<String> validateMakeMotor(MotorMakeSaveReq req) {
 
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 
 			if (StringUtils.isBlank(req.getMakeNameEn())) {
-				errorList.add(new Error("01", "Make Name En", "Please Enter Make Name En "));
+				//errorList.add(new Error("01", "Make Name En", "Please Enter Make Name En "));
+				errorList.add("1375");
 			}
 			else if (req.getMakeNameEn().length()>100) {
-				errorList.add(new Error("01", "Make Name En", "Please Enter Make Name En within 100 Characters "));
+				//errorList.add(new Error("01", "Make Name En", "Please Enter Make Name En within 100 Characters "));
+				errorList.add("1376");
 			}else if (StringUtils.isBlank(req.getMakeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorMakeMaster> makeList = getMakeNameEnExistDetails(req.getMakeNameEn() , req.getInsuranceId() , req.getBranchCode());
 				if (makeList.size()>0 ) {
-					errorList.add(new Error("01", "Make Name En", "This Make Name Already Exist "));
+					//errorList.add(new Error("01", "Make Name En", "This Make Name Already Exist "));
+					errorList.add("1377");
 				}
 			}else if (StringUtils.isNotBlank(req.getMakeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorMakeMaster> makeList = getMakeNameEnExistDetails(req.getMakeNameEn() , req.getInsuranceId() , req.getBranchCode());
 				
 				if (makeList.size()>0 &&  (! req.getMakeId().equalsIgnoreCase(makeList.get(0).getMakeId().toString())) ) {
-					errorList.add(new Error("01", "Make Name En", "This Make Name Already Exist "));
+					//errorList.add(new Error("01", "Make Name En", "This Make Name Already Exist "));
+					errorList.add("1377");
 				}
 				
 			}
@@ -97,29 +101,37 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				//errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			// Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("03", "Status", "Please Enter Status"));
+				//errorList.add(new Error("03", "Status", "Please Enter Status"));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("03", "Status", "Enter Status in One Character Only"));
+				//errorList.add(new Error("03", "Status", "Enter Status in One Character Only"));
+				errorList.add("1264");
 			} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("03", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				//errorList.add(new Error("03", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
-			if (req.getColorDesc().length() > 100) {
-				errorList.add(new Error("04", "Color Desc", "Please Enter Color Desc within 100 Characters "));
+			if (StringUtils.isNotBlank(req.getColorDesc()) && req.getColorDesc().length() > 100) {
+				//errorList.add(new Error("04", "Color Desc", "Please Enter Color Desc within 100 Characters "));
+				errorList.add("1378");
 			}
 
 			if (StringUtils.isBlank(req.getInsuranceId())) {
-				errorList.add(new Error("05", "InsuranceId", "Please Enter InsuranceId"));
+				//errorList.add(new Error("05", "InsuranceId", "Please Enter InsuranceId"));
+				errorList.add("1255");
 			}
 
 			if (StringUtils.isBlank(req.getBranchCode())) {
-				errorList.add(new Error("06", "BranchCode", "Please Select BranchCode"));
+				//errorList.add(new Error("06", "BranchCode", "Please Select BranchCode"));
+				errorList.add("1256");
 			}
 			 
 		} catch (Exception e) {

@@ -80,8 +80,8 @@ private Logger log=LogManager.getLogger(MotorVehicleUsageMasterServiceImpl.class
 Gson json = new Gson();
 
 @Override
-public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req) {
-	List<Error> errorList = new ArrayList<Error>();
+public List<String> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req) {
+	List<String> errorList = new ArrayList<String>();
 
 	try {
 
@@ -89,23 +89,28 @@ public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveR
 //			errorList.add(new Error("01", "VehicleUsageId", "Please Enter VehicleUsageId "));
 //		}
 		if (StringUtils.isBlank(req.getSectionId())) {
-			errorList.add(new Error("01", "SectionId", "Please Enter SectionId "));
+			//errorList.add(new Error("01", "SectionId", "Please Enter SectionId "));
+			errorList.add("1302");
 		}
 		if (StringUtils.isBlank(req.getVehicleUsageDesc())) {
-			errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc"));
+			//errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc"));
+			errorList.add("1303");
 		}
 		else if (req.getVehicleUsageDesc().length()>100) {
-			errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc within 100 Characters"));
+			//errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc within 100 Characters"));
+			errorList.add("1304");
 		}else if (StringUtils.isBlank(req.getVehicleUsageId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 			List<MotorVehicleUsageMaster> vehList = getVehicleUsageDescExistDetails(req.getVehicleUsageDesc() , req.getInsuranceId() , req.getBranchCode());
 			if (vehList.size()>0 ) {
-				errorList.add(new Error("02", "VehicleUsageDesc", "This VehicleUsageDesc Already Exist "));
+				//errorList.add(new Error("02", "VehicleUsageDesc", "This VehicleUsageDesc Already Exist "));
+				errorList.add("1305");
 			}
 		}else if (StringUtils.isNotBlank(req.getVehicleUsageId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 			List<MotorVehicleUsageMaster> vehList = getVehicleUsageDescExistDetails(req.getVehicleUsageDesc() , req.getInsuranceId() , req.getBranchCode());
 			
 			if (vehList.size()>0 &&  (! req.getVehicleUsageId().equalsIgnoreCase(vehList.get(0).getVehicleUsageId().toString())) ) {
-				errorList.add(new Error("02", "VehicleUsageDesc", "This VehicleUsageDesc Already Exist "));
+				//errorList.add(new Error("02", "VehicleUsageDesc", "This VehicleUsageDesc Already Exist "));
+				errorList.add("1305");
 			}
 			
 		}
@@ -118,36 +123,47 @@ public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveR
 		cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
 		if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-			errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			//errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			errorList.add("2034");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errorList.add("2035");
 		}
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//errorList.add(new Error("05", "Status", "Please Select Status  "));
+			errorList.add("2036");
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			errorList.add("2037");
 		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add("2038");
 		}
 		// Claim Status Validation
 		if (req.getClaimStatus().length() > 1) {
-			errorList.add(new Error("05", "Claim Status", "Claim Status 1 Character Only"));
+			//errorList.add(new Error("05", "Claim Status", "Claim Status 1 Character Only"));
+			errorList.add("1306");
 		} else if (!("Y".equals(req.getClaimStatus()) || "N".equals(req.getClaimStatus()))) {
-			errorList.add(new Error("05", "Claim Status", "Enter Claim Status Y or N Only"));
+			//errorList.add(new Error("05", "Claim Status", "Enter Claim Status Y or N Only"));
+			errorList.add("1307");
 		}
 		if (req.getB2cStatus().length() > 1) {
-			errorList.add(new Error("06", "B2C Status", "B2C Status 1 Character Only"));
+			//errorList.add(new Error("06", "B2C Status", "B2C Status 1 Character Only"));
+			errorList.add("1308");
 		} else if (!("Y".equals(req.getB2cStatus()) || "N".equals(req.getB2cStatus()))) {
-			errorList.add(new Error("06", "B2C Status", "Enter B2C Status Y or N Only"));
+			//errorList.add(new Error("06", "B2C Status", "Enter B2C Status Y or N Only"));
+			errorList.add("1309");
 		}
 		if (StringUtils.isBlank(req.getInsuranceId())) {
-			errorList.add(new Error("07", "InsuranceId", "Please Enter InsuranceId"));
+			//errorList.add(new Error("07", "InsuranceId", "Please Enter InsuranceId"));
+			errorList.add("2101");
 		}
 		
 		if (StringUtils.isBlank(req.getBranchCode())) {
-			errorList.add(new Error("07", "BranchCode", "Please Select BranchCode"));
+			//errorList.add(new Error("07", "BranchCode", "Please Select BranchCode"));
+			errorList.add("1256");
 		}
 	} catch (Exception e) {
 		log.error(e);

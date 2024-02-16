@@ -16,7 +16,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface EndorsementMasterService {
 
-	List<Error> validateEndorsement(EndorsementMasterSaveReq req);
+	List<String> validateEndorsement(EndorsementMasterSaveReq req);
 
 	SuccessRes saveEndorsement(EndorsementMasterSaveReq req);
 

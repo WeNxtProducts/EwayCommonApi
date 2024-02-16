@@ -23,7 +23,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface OccupationMasterService  {
 
-	List<Error> validateOccupation(OccupationMasterSaveReq req);
+	List<String> validateOccupation(OccupationMasterSaveReq req);
 
 	SuccessRes insertOccupation(OccupationMasterSaveReq req);
 

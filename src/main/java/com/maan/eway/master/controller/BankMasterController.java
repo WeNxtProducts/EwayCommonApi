@@ -25,8 +25,10 @@ import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.service.BankMasterService;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -47,6 +49,9 @@ public class BankMasterController {
 
 	@Autowired
 	private PrintReqService reqPrinter;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 
 	// save
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
@@ -56,8 +61,18 @@ public class BankMasterController {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-
-		List<Error> validation = bankService.validateBankDetails(req);
+		List<String> validationCodes = bankService.validateBankDetails(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 		// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

@@ -50,8 +50,10 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.res.BrokerDropDownRes;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.service.DepositService;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -76,6 +78,10 @@ public class LoginDetailsController {
 
 	@Autowired
 	private PrintReqService reqPrinter;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 /*
 	private static final String ENTITY_TITLE = "LoginMaster";
 
@@ -90,9 +96,23 @@ public class LoginDetailsController {
 	@PostMapping("/createbroker")
 	@ApiOperation(value="This method is to Create Broker Login")
 	public ResponseEntity<CommonRes> createBrokerLogin(@RequestBody  BrokerCreationReq req) {
+	
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validateBrokerCreation(req);
+		List<String> validationCodes = validationService.validateBrokerCreation(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getLoginInformation().getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
+	
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
@@ -120,9 +140,23 @@ public class LoginDetailsController {
 	@PostMapping("/createissuer")
 	@ApiOperation(value="This method is to Create Issuer Login")
 	public ResponseEntity<CommonRes> createIssuerLogin(@RequestBody  IssuerCraeationReq req) {
+	
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validateIssuerCreation(req);
+		List<String> validationCodes = validationService.validateIssuerCreation(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getLoginInformation().getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+	
+		
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
@@ -151,9 +185,22 @@ public class LoginDetailsController {
 	@PostMapping("/createuser")
 	@ApiOperation(value="This method is to Create BrokerEmployees Login")
 	public ResponseEntity<CommonRes> createIssuerLogin(@RequestBody  UserCreationReq req) {
+	
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validateUserCreation(req);
+		List<String> validationCodes = validationService.validateUserCreation(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getLoginInformation().getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+	
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

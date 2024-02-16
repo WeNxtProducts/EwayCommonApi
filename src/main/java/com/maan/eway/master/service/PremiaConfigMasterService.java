@@ -5,30 +5,23 @@
 */
 package com.maan.eway.master.service;
 
-import com.maan.eway.master.req.BankChangeStatusReq;
-import com.maan.eway.master.req.BankMasterGetAllReq;
-import com.maan.eway.master.req.BankMasterGetReq;
-import com.maan.eway.master.req.BankMasterSaveReq;
-import com.maan.eway.master.req.CustomerSaveReq;
+import java.util.List;
+
 import com.maan.eway.master.req.PremiaConfigMasterChangeStatusReq;
 import com.maan.eway.master.req.PremiaConfigMasterDropDownReq;
 import com.maan.eway.master.req.PremiaConfigMasterGetAllReq;
 import com.maan.eway.master.req.PremiaConfigMasterGetReq;
 import com.maan.eway.master.req.PremiaConfigMasterSaveReq;
 import com.maan.eway.master.req.PremiaTableColumnDropDownReq;
-import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.res.PremiaConfigMasterRes;
-import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-
-import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface PremiaConfigMasterService  {
 
-	List<Error> validatePremiaConfig(PremiaConfigMasterSaveReq req);
+	List<String> validatePremiaConfig(PremiaConfigMasterSaveReq req);
 
 	SuccessRes insertPremiaConfig(PremiaConfigMasterSaveReq req);
 

@@ -73,33 +73,40 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 
 	@Transactional
 	@Override
-	public List<Error> validateInsertExchangeMaster(ExchangeMasterSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateInsertExchangeMaster(ExchangeMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("03", "Remark", "Please Select Remark "));
+			//	errorList.add(new Error("03", "Remark", "Please Select Remark "));
+				errorList.add("2032");
 			} else if (req.getRemarks().length() > 100) {
-				errorList.add(new Error("03", "Remark", "Please Enter Remark within 100 Characters"));
+			//	errorList.add(new Error("03", "Remark", "Please Enter Remark within 100 Characters"));
+				errorList.add("2033");
 			}
 			if (StringUtils.isBlank(req.getCurrencyId())) {
-				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId"));
+			//	errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId"));
+				errorList.add("1297");
 			}
 			else if (req.getCurrencyId().length() > 20) {
-				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
+			//	errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
+				errorList.add("1298");
 			}
 
 			ExchangeMaster currencyId =   getCurrencyNameRes(req.getCurrencyId(),req.getCompanyId());
 			
 			if(StringUtils.isBlank(req.getExchangeId()) &&  currencyId !=null ) {
-				errorList.add(new Error("08", "Currency", "This Currency Id Already Exist"));
+			//	errorList.add(new Error("08", "Currency", "This Currency Id Already Exist"));
+				errorList.add("1299");
 			} 
 			else if( currencyId !=null  && StringUtils.isNotBlank(req.getExchangeId()) ) 
 			{
 				if(! currencyId.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
-					errorList.add(new Error("08", "Currency", "This Currency Id Already Exist"));	
-			}		
+				//	errorList.add(new Error("08", "Currency", "This Currency Id Already Exist"));	
+					errorList.add("1299");
+			}	
+			}
 				// Date Validation
 				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
@@ -109,45 +116,55 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
 				if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				//	errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+					errorList.add("2034");
 
 				} else if (req.getEffectiveDateStart().before(today)) {
-					errorList
-					.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				//	errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+					errorList.add("2035");
 				}
 				// Status Validation
 				if (StringUtils.isBlank(req.getStatus())) {
-					errorList.add(new Error("05", "Status", "Please Enter Status"));
+				//	errorList.add(new Error("05", "Status", "Please Enter Status"));
+					errorList.add("2036");
 				} else if (req.getStatus().length() > 1) {
-					errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+				//	errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+					errorList.add("2037");
 				} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-					errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				//	errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+					errorList.add("2038");
 				}
 				if (StringUtils.isBlank(req.getExchangeRate())) {
-					errorList.add(new Error("06", "ExchangeRate", "Please Enter ExchangeRate"));
+				//	errorList.add(new Error("06", "ExchangeRate", "Please Enter ExchangeRate"));
+					errorList.add("1300");
 				}
 
 				if (StringUtils.isBlank(req.getCompanyId())) {
-					errorList.add(new Error("08", "CompanyId", "Please Enter CompanyId"));
+				//	errorList.add(new Error("08", "CompanyId", "Please Enter CompanyId"));
+					errorList.add("2101");
 				}
 				else if (StringUtils.isBlank(req.getCoreAppCode())) {
-					errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+				//	errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+					errorList.add("2124");
 				} else if (req.getCoreAppCode().length() > 20) {
-					errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+				//	errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+					errorList.add("2125");
 				}else if (req.getCoreAppCode().equalsIgnoreCase("99999")||   StringUtils.isBlank(req.getExchangeId())||req.getExchangeId()==null) {
 					List<ExchangeMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd());
 					if (CompanyList.size()>0 ) {
-						errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+					//	errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+						errorList.add("1301");
 					}
 				}else  {
 					List<ExchangeMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd());
 					if (CompanyList.size()>0 &&  (! req.getExchangeId().equalsIgnoreCase(CompanyList.get(0).getExchangeId().toString())) ) {
-						errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+					//	errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+						errorList.add("1301");
 					}
 
 				}
 
-			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

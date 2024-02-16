@@ -200,19 +200,22 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 	
 	
 	@Override
-	public List<Error> validateRegionDetails(RegionMasterSaveReq req) {
+	public List<String> validateRegionDetails(RegionMasterSaveReq req) {
 	
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 	
 		try {
 		
 			// Region Name
 			if (StringUtils.isBlank(req.getRegionName())) {
-				errorList.add(new Error("01", "RegionName", "Please Select Region Name"));
+//				errorList.add(new Error("01", "RegionName", "Please Select Region Name"));
+				errorList.add("2140");
 			}else if (req.getRegionName().length() > 100){
-				errorList.add(new Error("01","Region Name", "Please Enter Region Name within 100 Characters")); 
+//				errorList.add(new Error("01","Region Name", "Please Enter Region Name within 100 Characters")); 
+				errorList.add("2141");
 			} else if (StringUtils.isBlank(req.getCountryId()) ) {
-				errorList.add(new Error("06", "Country Id", "Please Select Country Id  "));
+//				errorList.add(new Error("06", "Country Id", "Please Select Country Id  "));
+				errorList.add("2147");
 				
 			} /*else if (StringUtils.isBlank(req.getRegionCode())) {
 				List<RegionMaster> RegionList = getRegionNameExistDetails(req.getRegionName() , req.getCountryId());
@@ -229,30 +232,37 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 			
 			// Region Short Code
 			if (StringUtils.isBlank(req.getRegionShortCode())) {
-				errorList.add(new Error("01", "RegionShortCode", "Please Select Region ShortCode"));
+//				errorList.add(new Error("01", "RegionShortCode", "Please Select Region ShortCode"));
+				errorList.add("2142");
 			}else if (req.getRegionShortCode().length() > 20){
-				errorList.add(new Error("01","RegionShortCode", "Please Enter Region ShortCode within 20 Characters")); 
+//				errorList.add(new Error("01","RegionShortCode", "Please Enter Region ShortCode within 20 Characters")); 
+				errorList.add("2143");
 			} else if (StringUtils.isBlank(req.getRegionCode()) && StringUtils.isNotBlank(req.getCountryId())) {
 				List<RegionMaster> RegionList = getRegionShortCodeExistDetails(req.getRegionShortCode() , req.getCountryId());
 				if (RegionList.size()>0 ) {
-					errorList.add(new Error("01", "RegionShortCode", "This Region Short Code Already Exist "));
+//					errorList.add(new Error("01", "RegionShortCode", "This Region Short Code Already Exist "));
+					errorList.add("2144");
 				}
 			}else if(StringUtils.isNotBlank(req.getCountryId()) )  {
 				List<RegionMaster> RegionList =  getRegionShortCodeExistDetails(req.getRegionShortCode() ,  req.getCountryId() );
 				if (RegionList.size()>0 &&  (! req.getRegionCode().equalsIgnoreCase(RegionList.get(0).getRegionCode())) ) {
-					errorList.add(new Error("01", "RegionShortCode", "This Region Short Code Already Exist "));
+//					errorList.add(new Error("01", "RegionShortCode", "This Region Short Code Already Exist "));
+					errorList.add("2144");
 				}
 				
 			}
 	
-			if (req.getRegionCode().length() > 20){
-				errorList.add(new Error("03","RegionCode", "Please Enter Region Code  within 100 Characters")); 
+			if (StringUtils.isNotBlank(req.getRegionCode()) && req.getRegionCode().length() > 20){
+//				errorList.add(new Error("03","RegionCode", "Please Enter Region Code  within 100 Characters")); 
+				errorList.add("2146");
 			}
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("08", "Remarks", "Please Enter Remarks"));
+//				errorList.add(new Error("08", "Remarks", "Please Enter Remarks"));
+				errorList.add("2032");
 			}else if (req.getRemarks().length() > 100) {
-				errorList.add(new Error("11", "Remarks", "Please Enter Remarks within 100 Characters"));
+//				errorList.add(new Error("11", "Remarks", "Please Enter Remarks within 100 Characters"));
+				errorList.add("2033");
 			}
 
 			// Date Validation 
@@ -261,34 +271,51 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null ) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("2034");
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("2035");
 			} 
 			
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+//				errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("2036");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("2037");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("2038");
 			}
 			
 			
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
+//				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("2039");
 			}else if (req.getCreatedBy().length() > 50) {
-				errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+//				errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("2040");
 			}
 			
 		
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("12", "RegulatoryCode", "Please Enter RegulatoryCode"));
+//				errorList.add(new Error("12", "RegulatoryCode", "Please Enter RegulatoryCode"));
+				errorList.add("2041");
 			}else if (req.getRegulatoryCode().length() > 20) {
-				errorList.add(new Error("12", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+//				errorList.add(new Error("12", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+				errorList.add("2042");
+			}
+			
+			if (StringUtils.isBlank(req.getCoreAppCode())) {
+//				errorList.add(new Error("12", "CoreAppCode", "Please Enter CoreAppCode"));
+				errorList.add("2124");
+			}else if (req.getCoreAppCode().length() > 20) {
+//				errorList.add(new Error("12", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
+				errorList.add("2125");
 			}
 		} catch (Exception e) {
 			log.error(e);

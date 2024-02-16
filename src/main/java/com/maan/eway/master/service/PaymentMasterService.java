@@ -7,21 +7,13 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.ClausesChangeStatusReq;
-import com.maan.eway.master.req.ClausesMasterDropdownReq;
-import com.maan.eway.master.req.ClausesMasterGetReq;
-import com.maan.eway.master.req.ClausesMasterGetallReq;
-import com.maan.eway.master.req.ClausesMasterSaveReq;
 import com.maan.eway.master.req.PaymentMasterChangeStatusReq;
 import com.maan.eway.master.req.PaymentMasterDropdownReq;
 import com.maan.eway.master.req.PaymentMasterGetReq;
 import com.maan.eway.master.req.PaymentMasterGetallReq;
 import com.maan.eway.master.req.PaymentMasterSaveReq;
-import com.maan.eway.master.res.ClausesMasterRes;
 import com.maan.eway.master.res.PaymentMasterDropDownRes;
 import com.maan.eway.master.res.PaymentMasterRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 /**
@@ -29,7 +21,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface PaymentMasterService  {
 
-	List<Error> validatePaymentMaster(PaymentMasterSaveReq req);
+	List<String> validatePaymentMaster(PaymentMasterSaveReq req);
 
 	SuccessRes savePaymentMaster(PaymentMasterSaveReq req);
 

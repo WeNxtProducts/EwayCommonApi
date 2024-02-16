@@ -26,7 +26,9 @@ import com.maan.eway.master.req.LovGetAllReq;
 import com.maan.eway.master.req.LovGetReq;
 import com.maan.eway.master.res.LovDetailsGetRes;
 import com.maan.eway.master.service.ListItemValueService;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -49,6 +51,9 @@ public class ListItemValueController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 /*
 	private static final String ENTITY_TITLE = "ListItemValue";
 
@@ -64,10 +69,22 @@ public class ListItemValueController {
 			@ApiOperation(value = "This method is Lov Master")
 			public ResponseEntity<CommonRes> insertLovDetails(@RequestBody ListItemValueSaveReq req) {
 
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes =  service.validateLovDetails(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 
-				List<Error> validation = service.validateLovDetails(req);
+			
 				// validation
 				if (validation != null && validation.size() != 0) {
 					data.setCommonResponse(null);

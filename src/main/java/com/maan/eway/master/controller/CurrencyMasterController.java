@@ -27,7 +27,9 @@ import com.maan.eway.master.req.CurrencyMasterSaveReq;
 import com.maan.eway.master.req.ProductCurrDropDownReq;
 import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.service.CurrencyMasterService;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.res.CuurencyDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -48,17 +50,31 @@ public class CurrencyMasterController {
 
 	@Autowired
 	private PrintReqService reqPrinter;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 
 	// save
-		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertcurrency")
 	@ApiOperation(value = "This method is Insert Currency Details")
 	public ResponseEntity<CommonRes> insertCurrency(@RequestBody CurrencyMasterSaveReq req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
+		List<String> validationCodes = currencyService.validateCurrencyDetails(req);
+		List<Error> validation = null;
+		if (validationCodes != null && validationCodes.size() > 0) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
 
-		List<Error> validation = currencyService.validateCurrencyDetails(req);
+			validation = errorDescService.getErrorDesc(validationCodes, comErrDescReq);
+		}
 		// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

@@ -6,26 +6,24 @@
 package com.maan.eway.master.service;
 
 
+import java.util.List;
+
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CityChangeStatusReq;
 import com.maan.eway.master.req.CityMasterDropDownReq;
 import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
 import com.maan.eway.master.req.CityMasterSaveReq;
-
 import com.maan.eway.master.res.CityMasterRes;
-
-import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-
-import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface CityMasterService  {
 
 
-	List<Error> validateCityDetails(CityMasterSaveReq req);
+	List<String> validateCityDetails(CityMasterSaveReq req);
 
 	List<CityMasterRes> getActiveCityDetails(CityMasterGetAllReq req);
 

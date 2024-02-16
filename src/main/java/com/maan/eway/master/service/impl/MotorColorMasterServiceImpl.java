@@ -63,33 +63,39 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 	private Logger log = LogManager.getLogger(MotorColorMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateColorMotor(MotorColorSaveReq req) {
+	public List<String> validateColorMotor(MotorColorSaveReq req) {
 
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 
 			if (StringUtils.isBlank(req.getColorCode())) {
-				errorList.add(new Error("01", "Color Code", "Please Enter Color Name "));
+			//	errorList.add(new Error("01", "Color Code", "Please Enter Color Name "));
+				errorList.add("1383");
 			}
 			else if (req.getColorCode().length()>100) {
-				errorList.add(new Error("01", "Color Code", "Please Enter Color Name within 100 Characters "));
+			//	errorList.add(new Error("01", "Color Code", "Please Enter Color Name within 100 Characters "));
+				errorList.add("1384");
 			}
 			if (StringUtils.isBlank(req.getColorDesc())) {
-				errorList.add(new Error("02", "Color Desc", "Please Enter Color Desc "));
+			//	errorList.add(new Error("02", "Color Desc", "Please Enter Color Desc "));
+				errorList.add("1385");
 			}
 			else if (req.getColorDesc().length()>100) {
-				errorList.add(new Error("02", "Color Desc", "Please Enter Color Desc within 100 Characters "));
+				//errorList.add(new Error("02", "Color Desc", "Please Enter Color Desc within 100 Characters "));
+				errorList.add("1386");
 			}else if (StringUtils.isBlank(req.getColorId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorColorMaster> colorList = getColorDescExistDetails(req.getColorDesc() , req.getInsuranceId() , req.getBranchCode());
 				if (colorList.size()>0 ) {
-					errorList.add(new Error("01", "ColorDesc", "This Color Desc Already Exist "));
+				//	errorList.add(new Error("01", "ColorDesc", "This Color Desc Already Exist "));
+					errorList.add("1387");
 				}
 			}else if (StringUtils.isNotBlank(req.getColorId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorColorMaster> colorList = getColorDescExistDetails(req.getColorDesc() , req.getInsuranceId() , req.getBranchCode());
 				
 				if (colorList.size()>0 &&  (! req.getColorId().equalsIgnoreCase(colorList.get(0).getColorId().toString())) ) {
-					errorList.add(new Error("01", "ColorDesc", "This Color Desc Already Exist "));
+				//	errorList.add(new Error("01", "ColorDesc", "This Color Desc Already Exist "));
+					errorList.add("1387");
 				}
 				
 			}
@@ -103,24 +109,30 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			//	errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+					
+				errorList.add("1262");
 			}
 			// Status Validation
 			 if (req.getStatus().length() > 1) {
-				errorList.add(new Error("04", "Status", "Status 1 Character Only"));
+			//	errorList.add(new Error("04", "Status", "Status 1 Character Only"));
+				errorList.add("1264");
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
-				errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+			//	errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+				errorList.add("1265");
 			}
 			if (StringUtils.isBlank(req.getInsuranceId())) {
-				errorList.add(new Error("05", "InsuranceId", "Please Enter InsuranceId"));
+			//	errorList.add(new Error("05", "InsuranceId", "Please Enter InsuranceId"));
+				errorList.add("1255");
 			}
 
 			if (StringUtils.isBlank(req.getBranchCode())) {
-				errorList.add(new Error("06", "BranchCode", "Please Select BranchCode"));
+			//	errorList.add(new Error("06", "BranchCode", "Please Select BranchCode"));
+				errorList.add("1256");
 			}
 		} catch (Exception e) {
 			log.error(e);

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ColorChangeStatusReq;
 import com.maan.eway.master.req.MotorVehicleUsageChangeStatusReq;
@@ -27,6 +28,7 @@ import com.maan.eway.master.req.MotorVehicleUsageMasterGetallReq;
 import com.maan.eway.master.req.MotorVehicleUsageMasterSaveReq;
 import com.maan.eway.master.req.UsageDropDownReq;
 import com.maan.eway.master.service.MotorVeicleUsageMasterService;
+import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
@@ -50,12 +52,29 @@ public class MotorVehicleUsageMasterController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
+	
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
+	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/savemotorvehicleusagedetails")
 	public ResponseEntity<CommonRes> saveMotorVehicleUsageDetails(@RequestBody  MotorVehicleUsageMasterSaveReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = entityService.validateMotorVehicleUsageDetails(req);
+		List<String> validationCodes = entityService.validateMotorVehicleUsageDetails(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

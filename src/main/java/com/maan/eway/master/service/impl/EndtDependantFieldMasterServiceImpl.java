@@ -58,39 +58,47 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 	private Logger log = LogManager.getLogger(EndtDependantFieldMasterServiceImpl.class); 
 	
 	@Override
-	public List<Error> validateDependantField(EndtDependantFieldMasterSaveReq req) {
+	public List<String> validateDependantField(EndtDependantFieldMasterSaveReq req) {
 		// TODO Auto-generated method stub
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 			if (StringUtils.isBlank(req.getProductId())) {
-				errorList.add(new Error("01", "ProductId", "Please Enter ProductId"));
+//				errorList.add(new Error("01", "ProductId", "Please Enter ProductId"));
+				errorList.add("1313");
 			}
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+//				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+				errorList.add("1255");
 			}
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
+//				errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
+				errorList.add("1259");
 			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+//				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters"));
+				errorList.add("1260");
 			}
 
 			if (StringUtils.isBlank(req.getDependantFieldName())) {
-				errorList.add(new Error("11", "DependantFieldName", "Please Enter DependantFieldName"));
+//				errorList.add(new Error("11", "DependantFieldName", "Please Enter DependantFieldName"));
+				errorList.add("1921");
 			}else if (req.getDependantFieldName().length() > 100){
-				errorList.add(new Error("11","DependantFieldName", "Please Enter DependantFieldName within 100 Characters")); 
+//				errorList.add(new Error("11","DependantFieldName", "Please Enter DependantFieldName within 100 Characters")); 
+				errorList.add("1922");
 			}
 			else if (StringUtils.isBlank(req.getDependantFieldId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
 				List<EndtDependantFieldMaster> dependentList = getDependantFieldNameExistDetails(req.getDependantFieldName() , req.getCompanyId(), req.getProductId());
 				if (dependentList.size()>0 ) {
-					errorList.add(new Error("01", "DependantFieldName", "This DependantFieldName Already Exist "));
+//					errorList.add(new Error("01", "DependantFieldName", "This DependantFieldName Already Exist "));
+					errorList.add("1923");
 				}
 			}else if (StringUtils.isNotBlank(req.getDependantFieldId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
 				List<EndtDependantFieldMaster> dependentList = getDependantFieldNameExistDetails(req.getDependantFieldName() , req.getCompanyId() , req.getProductId());
 				
 				if (dependentList.size()>0 &&  (! req.getDependantFieldId().equalsIgnoreCase(dependentList.get(0).getDependantFieldId().toString())) ) {
-					errorList.add(new Error("01", "DependantFieldName", "This DependantFieldName Already Exist "));
+//					errorList.add(new Error("01", "DependantFieldName", "This DependantFieldName Already Exist "));
+					errorList.add("1923");
 				}
 				
 			}
@@ -100,35 +108,46 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+//				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+//				errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 			
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
+//				errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
+				errorList.add("1266");
 			}else if (req.getCoreAppCode().length() > 20){
-				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+//				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+				errorList.add("1267");
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("20", "RegulatoryCode", "Please Enter RegulatoryCode"));
+//				errorList.add(new Error("20", "RegulatoryCode", "Please Enter RegulatoryCode"));
+				errorList.add("1268");
 			}else if (req.getRegulatoryCode().length() > 10){
-				errorList.add(new Error("20","RegulatoryCode", "Please Enter RegulatoryCode within 10 Characters")); 
+//				errorList.add(new Error("20","RegulatoryCode", "Please Enter RegulatoryCode within 10 Characters")); 
+				errorList.add("1269");
 			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
+//				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 100){
-				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+//				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+				errorList.add("1271");
 			}
 
 		

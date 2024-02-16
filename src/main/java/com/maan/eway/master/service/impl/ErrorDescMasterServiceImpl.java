@@ -58,8 +58,8 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 
 	
 	@Override
-	public List<Error> validateErrorDesc(ErrorDescMasterSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateErrorDesc(ErrorDescMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 	//	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		
 		try
@@ -69,14 +69,24 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 //			}
 			
 			if (StringUtils.isBlank(req.getErrorDesc()) ) {
-				errorList.add(new Error("01", "Error Desc", "Please Enter Error Desc"));
+			//	errorList.add(new Error("01", "Error Desc", "Please Enter Error Desc"));
+				errorList.add("1813");
+				
 			} else if (req.getErrorDesc().length() > 200 ) {
-				errorList.add(new Error("01", "Error Desc", "Error Desc Must be under 200 Charecters Allowed"));
+			//	errorList.add(new Error("01", "Error Desc", "Error Desc Must be under 200 Charecters Allowed"));
+				errorList.add("1814");
 			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy()) ) {
-				errorList.add(new Error("01", "CreatedBy", "Please Enter CreatedBy"));
+			//	errorList.add(new Error("01", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("2039");
 			}
+			
+			if (StringUtils.isBlank(req.getErrorField()) ) {
+				//	errorList.add(new Error("01", "ErrorField", "Please Enter ErrorField"));
+					errorList.add("2102");
+					
+				}
 			
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
@@ -87,28 +97,34 @@ public class ErrorDescMasterServiceImpl implements ErrorDescMasterService {
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			//	errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("2034");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+					
+				errorList.add("2035");
 			}
 						
 			if (StringUtils.isBlank(req.getProductId()) ) {
-				errorList.add(new Error("01", "Product Id", "Please Select Product Id"));
+//				errorList.add(new Error("01", "Product Id", "Please Select Product Id"));
+				errorList.add("2100");
 			}
 			
 			if (StringUtils.isBlank(req.getInsuranceId()) ) {
-				errorList.add(new Error("01", "Insurance Id", "Please Select Insurance Id"));
+//				errorList.add(new Error("01", "Insurance Id", "Please Select Insurance Id"));
+				errorList.add("2101");
 			}
 		
 			if (StringUtils.isNotBlank(req.getLanguage()) ) {
 				
 				if (StringUtils.isBlank(req.getLocalLanguageErrDesc()) ) {
-					errorList.add(new Error("01", "Local Language Error Desc", "Please Enter Local Language Error Description"));
+//					errorList.add(new Error("01", "Local Language Error Desc", "Please Enter Local Language Error Description"));
+					errorList.add("1815");
 				}
 				if (StringUtils.isBlank(req.getLocalLanguageErrField()) ) {
-					errorList.add(new Error("01", "Local Language Error Field", "Please Enter Local Language Error Field"));
+//					errorList.add(new Error("01", "Local Language Error Field", "Please Enter Local Language Error Field"));
+					errorList.add("1816");
 				}
 			}	
 			

@@ -24,7 +24,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface MotorVeicleUsageMasterService  {
 
-	List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req);
+	List<String> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req);
 
 	SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req);
 
