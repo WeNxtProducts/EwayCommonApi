@@ -109,5 +109,12 @@ public class RatingCalculatorController {
 	
 	}
 
-	
+
+    @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/policy/calc")
+	@ApiOperation("This Method is to get by id")
+	public EserviceMotorDetailsSaveRes policyCalc(@RequestBody CalcEngine request,@RequestHeader("Authorization") String tokens) {
+		EserviceMotorDetailsSaveRes response = service.policyCalculator(request,tokens.replaceAll("Bearer ", "").split(",")[0]); 
+		return response;
+	}
 }

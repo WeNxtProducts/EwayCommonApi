@@ -55,4 +55,6 @@ public class CalcEngine {
 		@JsonProperty("CoverModification")
 		private String coverModification;
 		
+		@JsonProperty("PDRefNo") 
+		 private String pdrefno;
 }

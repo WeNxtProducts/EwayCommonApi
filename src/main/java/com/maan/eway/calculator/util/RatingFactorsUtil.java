@@ -54,6 +54,9 @@ import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.TaxExemptionSetup;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TinyurlRequestDetail;
+import com.maan.eway.chartaccount.ChartAccountRequest;
+import com.maan.eway.chartaccount.ChartAccountService;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.repository.EwayFactorDetailsRepository;
 import com.maan.eway.repository.EwayFactorResultDetailRepository;
@@ -1116,6 +1119,14 @@ public class RatingFactorsUtil {
 			
 		}
 		return null;
+	}
+	
+	@Autowired
+	private ChartAccountService chartService;
+
+
+	public CommonRes drcrEntry(ChartAccountRequest r) {
+	   return chartService.drcrEntry(r);		
 	}
 }
 

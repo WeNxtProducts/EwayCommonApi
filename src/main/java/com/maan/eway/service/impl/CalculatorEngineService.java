@@ -2,7 +2,6 @@ package com.maan.eway.service.impl;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,11 +10,8 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -24,7 +20,6 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -43,8 +38,6 @@ import com.maan.eway.bean.ChartOfAccount;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
-import com.maan.eway.bean.ErrorDescMaster;
-import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -57,6 +50,7 @@ import com.maan.eway.bean.MsCommonDetails;
 import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsLifeDetails;
+import com.maan.eway.bean.MsPolicyDetails;
 import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
@@ -65,15 +59,17 @@ import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TaxRemover;
-import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.calculator.util.AdminCoverCalculator;
 import com.maan.eway.calculator.util.CoverCalculator;
 import com.maan.eway.calculator.util.CoverFromFactor;
 import com.maan.eway.calculator.util.CreateMinimumPremium;
+import com.maan.eway.calculator.util.CreatePolicyPremium;
 import com.maan.eway.calculator.util.DiscountFromFactor;
 import com.maan.eway.calculator.util.EndtCoverCalculator;
 import com.maan.eway.calculator.util.EndtFromFactor;
 import com.maan.eway.calculator.util.LoadingFromFactor;
+import com.maan.eway.calculator.util.PolicyCoverCalculator;
+import com.maan.eway.calculator.util.PolicyDiscountMapper;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.calculator.util.SplitDiscountUtils;
 import com.maan.eway.calculator.util.SplitLoadingUtils;
@@ -81,7 +77,6 @@ import com.maan.eway.calculator.util.SplitSubCoverUtil;
 import com.maan.eway.calculator.util.SubCoverCreationUtil;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
-import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.EndtUpdatePremiumRes;
@@ -154,6 +149,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 	protected List<Cover> calculatedcover = null;
 	protected List<Tuple> prorata = null;
 	protected BigDecimal minimumPremium=BigDecimal.ZERO;
+	protected List<Tuple> policytbl = null;
 
 	@Autowired
 	private FactorRateRequestDetailsService fservice;
@@ -3385,7 +3381,138 @@ public class CalculatorEngineService implements CalculatorEngine {
 		return list ;
 	}
 	
+
+	@Override
+	public EserviceMotorDetailsSaveRes policyCalculator(CalcEngine engine, String tokens) {
+		String isEndt=null;
+		List<UWReferrals> referr=null;
+		List<MasterReferal> masterreferral = null;
+		List<Cover> retc = new ArrayList<Cover>();
+		String promocode="";
+		loadOnetimetablePolicy(engine);
+		String currencyId = policytbl.get(0).get("currency") == null ? "TTT"
+				: policytbl.get(0).get("currency").toString();
+		
+		String decimalDigits = ratingutil.currencyDecimalFormat(engine.getInsuranceId(), currencyId);
+		String stringFormat = "%0" + decimalDigits + "d";
+		String decimalLength = decimalDigits.equals("0") ? "" : String.format(stringFormat, 0L);
+		String pattern = StringUtils.isBlank(decimalLength) ? "#####0" : "#####0." + decimalLength;
+		decimalFormat = new DecimalFormat(pattern);
+		
+		CreatePolicyPremium c=new CreatePolicyPremium(engine,null);
+		Cover create = c.create();
+		
+		List<Tuple> covers = LoadCoverPolicy(engine);
+		
+		List<Discount> discounts = null;
+		List<Loading> loadings = null;
+		if (covers != null && covers.size() > 0) {
+			SplitDiscountUtils discountUtil = new SplitDiscountUtils(engine.getEffectiveDate(),
+					engine.getPolicyEndDate() ,promocode);
+			discounts = covers.stream().map(discountUtil).filter(d -> d != null).collect(Collectors.toList());
+			discounts.stream().forEach(t -> t.setEffectiveDate(engine.getEffectiveDate()));
+			
+			SplitLoadingUtils loadingtuils = new SplitLoadingUtils(engine.getEffectiveDate(),engine.getPolicyEndDate());
+			loadings = covers.stream().map(loadingtuils).filter(d -> d != null).collect(Collectors.toList());
+		}
+		create.setDiscounts(discounts);
+		create.setLoadings(loadings);
+		
+		List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);	
+		TaxUtils tzx = new TaxUtils(BigDecimal.ZERO,"");
+		List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null).collect(Collectors.toList());
+		create.setTaxes(taxey);
+		
+		/*PolicyDiscountMapper maps=new PolicyDiscountMapper(engine.getEffectiveDate(),engine.getPolicyEndDate());
+		List<Cover> policyCovers = covers.stream().map(maps).filter(d -> d != null).collect(Collectors.toList());
+		*/
+		List<Cover> policyCovers=new ArrayList<Cover>();
+		policyCovers.add(create);
+		PolicyCoverCalculator calc=new PolicyCoverCalculator(policytbl,ratingutil,engine,decimalFormat,customers);
+		policyCovers.stream().forEach(calc);
+		
+		try {
+			EserviceMotorDetailsSaveRes response = new EserviceMotorDetailsSaveRes();
+			response.setCoverList(policyCovers);
+			response.setResponse("Saved Successfully");
+			response.setRequestReferenceNo(engine.getRequestReferenceNo());
+			// response.setCustomerReferenceNo(req.getCustomerReferenceNo());
+			response.setVehicleId(engine.getVehicleId());
+			response.setVdRefNo(engine.getVdRefNo());
+			response.setCdRefNo(engine.getCdRefNo());
+			response.setInsuranceId(engine.getInsuranceId());
+			response.setSectionId(engine.getSectionId());
+			response.setCreatedBy(engine.getCreatedBy());
+			response.setProductId(engine.getProductId());
+			response.setMsrefno(engine.getMsrefno());
+			response.setUpdateas(isEndt);
+			response.setUwList(referr);
+			response.setReferals(masterreferral);
+			fservice.saveFactorRateRequestDetails(response); 
+			return response;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private List<Tuple> LoadCoverPolicy(CalcEngine engine) {
+
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			
+			String search2 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+					+ ";sectionId:99999;status:{Y,R};" + todayInString
+					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode()
+					+ ";branchCode:99999;";
+
+			String search4 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+					+ ";sectionId:99999;status:{Y,R};" + todayInString
+					+ "~effectiveDateStart&effectiveDateEnd;agencyCode:99999;branchCode:99999;";
+
+			SpecCriteria commonCriteria = crservice.createCriteria(SectionCoverMaster.class, search4, "coverId");
+			List<Tuple> commonResult = crservice.getResult(commonCriteria, 0, 50);
+			
+			
+			SpecCriteria criteria = null;		
+			
+			criteria = crservice.createCriteria(SectionCoverMaster.class, search2, "coverId");
+			List<Long> count = crservice.getCount(criteria, 0, 50);
+			if (!count.isEmpty()) {
+				Long countrec = count.get(0);
+				if (countrec > 0) {
+					List<Tuple> specific = crservice.getResult(criteria, 0, 50);
+					for(Tuple t:specific) {
+						commonResult.removeIf(c-> c.get("coverId").toString().equals(t.get("coverId").toString()));
+						commonResult.add(t);
+					}
+				}
+					
+			}
+
+			return commonResult;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 		 	
+		return null;  
+	}
 	
 	
+	public void loadOnetimetablePolicy(CalcEngine engine) {
+ 
+		try {
+			SpecCriteria criteria = null;
+		 	String search = "pdRefno:" + engine.getPdrefno() + ";";
+ 			criteria = crservice.createCriteria(MsPolicyDetails.class, search, "pdRefno");
+			policytbl = crservice.getResult(criteria, 0, 50); 
+			String cdRefno=policytbl.get(0).get("cdRefno").toString();
+			search = "cdRefno:" + cdRefno + ";";
+			criteria = crservice.createCriteria(MsCustomerDetails.class, search, "cdRefno");
+			customers = crservice.getResult(criteria, 0, 50);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}	
 	
 }

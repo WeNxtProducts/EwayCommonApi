@@ -24,4 +24,6 @@ public interface CalculatorEngine {
 	 EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount,String endtTypeId,Boolean isPolicyDateEndt);
 
 	String getPolicyNo(CalcCommission request);
+
+	EserviceMotorDetailsSaveRes policyCalculator(CalcEngine request, String string);
 }
