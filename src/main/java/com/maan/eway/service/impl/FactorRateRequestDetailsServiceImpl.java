@@ -69,6 +69,7 @@ import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MsPolicyDetails;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataEndt;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
@@ -2890,12 +2891,11 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , 99999 ,
 					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(99999)   ) ;	
 		
-			List<ProductSectionMaster> sectionList = getProductSectionDropdown(req.getCompanyId(), req.getProductId(), req.getSectionId() ) ;
-			String productType  =sectionList.size()> 0 ? sectionList.get(0).getMotorYn() :  "M" ; 
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(), req.getProductId()) ;
+			String productType  =product!=null ? product.getMotorYn() :  "M" ; 
 			
 			if(    productType.equalsIgnoreCase("M") ){
-				EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleId() 
-						) ;
+				EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNo(req.getRequestReferenceNo()).get(0);
 				agencyCode = findMot.getAgencyCode();
 				branchCode = findMot.getBranchCode();
 				currencyId = findMot.getCurrency();
@@ -2913,8 +2913,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 		
 				
 			} else if(   productType.equalsIgnoreCase("H") &&  req.getProductId().equalsIgnoreCase(travelProductId)) {
-				EserviceTravelDetails  findTra = eserTraRepo.findByRequestReferenceNoAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() ,
-						req.getCompanyId() , 	 req.getProductId(),req.getSectionId()  ) ;
+				EserviceTravelDetails  findTra = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo()) ;
 				agencyCode = findTra.getBrokerCode();
 				branchCode = findTra.getBranchCode();
 				currencyId = findTra.getCurrency();
@@ -2924,7 +2923,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				originalPolicyNo=findTra.getOriginalPolicyNo();
 		
 			} else if(    productType.equalsIgnoreCase("A") ) {
-				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() , 1 , req.getSectionId());
+				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() , 1 , "0");
 				agencyCode = findBuild.getBrokerCode();
 				branchCode = findBuild.getBranchCode();
 				currencyId = findBuild.getCurrency();
@@ -2934,7 +2933,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				originalPolicyNo=findBuild.getOriginalPolicyNo();
 			
 			} else  {
-				EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,req.getSectionId() ) ;
+				EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() ).get(0) ;
 				agencyCode = findCommon.getBrokerCode();
 				branchCode = findCommon.getBranchCode();
 				currencyId = findCommon.getCurrency();
