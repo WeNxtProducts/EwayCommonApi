@@ -62,4 +62,22 @@ public class MotorPrivateVehicleDetails {
 	@JsonProperty("ChassisNumber")
 	private String chassisNumber;
 	
+	@JsonProperty("Premium")
+	private String premium;
+	
+	@JsonProperty("InceptionDate")
+	private String inceptionDate;
+	
+	@JsonProperty("ExpiryDate")
+	private String expiryDate;
+	
+	@JsonProperty("CustomerName")
+	private String customerName;
+	
+	@JsonProperty("PolicyNo")
+	private String policyNo;
+	
+	@JsonProperty("CompanyName")
+	private String companyName;
+	
 }

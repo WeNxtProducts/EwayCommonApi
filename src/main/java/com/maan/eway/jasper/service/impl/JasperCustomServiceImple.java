@@ -662,7 +662,8 @@ public class JasperCustomServiceImple {
 			mddRoot.get("insuranceTypeDesc").alias("insuranceTypeDesc"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("premiumLc"))
 			.otherwise(hpmRoot.get("premiumFc")).alias("premium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("vatPremiumLc"))
 			.otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("overallPremiumLc"))
-			.otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("approvedBy").alias("approvedBy"),
+			.otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")),"LC").otherwise("FC").alias("vehiclePremiumDesc"),
+			hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("approvedBy").alias("approvedBy"),
 			cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), hpmRoot.get("customerName"))
 			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),
 			imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),piRoot.get("customerId").alias("customerId"),
@@ -678,6 +679,7 @@ public class JasperCustomServiceImple {
 			Tuple map = list.get(0);
 			List<MotorDataDetails> vehicleDetails = motorRepo.findByQuoteNoOrderByVehicleIdAsc(map.get("quoteNo").toString())
 						.stream().filter(f -> !f.getStatus().equalsIgnoreCase("D")).collect(Collectors.toList());
+			String vehiclePremiumDesc = map.get("vehiclePremiumDesc")==null?"":map.get("vehiclePremiumDesc").toString();
 			vehicleDetails.forEach(k -> {
 				MotorPrivateVehicleDetails t = MotorPrivateVehicleDetails.builder()
 					.vehicleId(k.getVehicleId()==null?"":k.getVehicleId().toString())
@@ -697,6 +699,14 @@ public class JasperCustomServiceImple {
 					.insTypeDesc(k.getInsuranceTypeDesc()==null?"":k.getInsuranceTypeDesc())
 					.engineNumber(k.getEngineNumber()==null?"":k.getEngineNumber())
 					.chassisNumber(k.getChassisNumber()==null?"":k.getChassisNumber())
+					.premium("LC".equalsIgnoreCase(vehiclePremiumDesc)?k.getOverallPremiumLc()==null?"":
+						new BigDecimal(Double.parseDouble(k.getOverallPremiumLc().toString())).toString():k.getOverallPremiumFc()==null?"":
+							new BigDecimal(Double.parseDouble(k.getOverallPremiumFc().toString())).toString())
+					.inceptionDate(map.get("inceptionDate")==null?"":sdf.format(map.get("inceptionDate")))
+					.expiryDate(map.get("expiryDate")==null?"":sdf.format(map.get("expiryDate")))
+					.policyNo(map.get("policyNo")==null?"":map.get("policyNo").toString())
+					.customerName(map.get("customerName")==null?"":map.get("customerName").toString())
+					.companyName(map.get("companyName")==null?"":map.get("companyName").toString())
 					.build();
 				vehicleDetailsRes.add(t);
 			});
