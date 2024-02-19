@@ -27,19 +27,21 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 
  
 
-	public PolicyCoverCalculator(List<Tuple> policy, RatingFactorsUtil crservice, CalcEngine engine,DecimalFormat decimalFormat,List<Tuple> customers) {
+	public PolicyCoverCalculator(List<Tuple> policy, RatingFactorsUtil crservice, CalcEngine engine,DecimalFormat decimalFormat,List<Tuple> customers,boolean isRateUpdate) {
 		super();
 		this.policy = policy;
 		this.crservice = crservice;
 		this.engine = engine;
 		this.decimalFormat = decimalFormat;
 		this.customers=customers;
+		this.isRateUpdate=isRateUpdate;
 	}
 	protected List<Tuple> policy;
 	protected RatingFactorsUtil crservice;
 	protected CalcEngine engine;
 	protected DecimalFormat decimalFormat = null;
 	protected List<Tuple> customers =null;
+	protected boolean isRateUpdate;
 	
 	@Override
 	public void accept(Cover t) {
@@ -64,22 +66,39 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 			 Double totaldiscount=0D;
 			 Double totalloading=0D;
 			 
+			 if(isRateUpdate) {
+				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
+					 DiscountCalculatorPolicy dcal=new DiscountCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);					 
+					 t.getDiscounts().stream().forEach(dcal);
+					 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
+				 }
+				 		 
+				 
+				 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
+					 LoadingCalculatorPolicy dcal=new LoadingCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);					 
+					 t.getLoadings().stream().forEach(dcal);
+					 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
+				 }
+			 }else {
 
-				
-			 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
-				 DiscountCalculatorPolicy dcal=new DiscountCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat);					 
-				 t.getDiscounts().stream().forEach(dcal);
-				 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
+				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
+					 DiscountCalculatorPolicy dcal=new DiscountCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);					 
+					 t.getDiscounts().stream().forEach(dcal);
+					 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
+				 }
+
+
+
+				 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
+					 LoadingCalculatorPolicy dcal=new LoadingCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);					 
+					 t.getLoadings().stream().forEach(dcal);
+					 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
+				 }
 			 }
-
-
 			 
-			 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
-				 LoadingCalculatorPolicy dcal=new LoadingCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat);					 
-				 t.getLoadings().stream().forEach(dcal);
-				 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
-			 }
-		 
+			 
+			 
+			 
 			 if(!t.getDiscounts().isEmpty()) {
 				 t.setRate(t.getDiscounts().get(0).getMaxAmount().doubleValue());
 			 }else if(!t.getLoadings().isEmpty()) {

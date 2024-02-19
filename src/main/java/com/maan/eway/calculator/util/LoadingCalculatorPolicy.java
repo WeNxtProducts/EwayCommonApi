@@ -30,9 +30,9 @@ public class LoadingCalculatorPolicy implements Consumer<Loading> {
 	protected RatingFactorsUtil crservice;
 	protected CalcEngine engine;
 	protected DecimalFormat decimalFormat = null;
-	
+	protected boolean isRateUpdate;
 	public LoadingCalculatorPolicy(BigDecimal premium, BigDecimal exchangeRate, List<Tuple> policy,
-			RatingFactorsUtil crservice, CalcEngine engine, DecimalFormat decimalFormat) {
+			RatingFactorsUtil crservice, CalcEngine engine, DecimalFormat decimalFormat,boolean isRateUpdate) {
 		super();
 		this.premium = premium;
 		this.exchangeRate = exchangeRate;
@@ -40,6 +40,7 @@ public class LoadingCalculatorPolicy implements Consumer<Loading> {
 		this.crservice = crservice;
 		this.engine = engine;
 		this.decimalFormat = decimalFormat;
+		this.isRateUpdate=isRateUpdate;
 	}
 
 
@@ -60,7 +61,7 @@ public class LoadingCalculatorPolicy implements Consumer<Loading> {
 			premium = new BigDecimal(drcr.getCommonResponse().toString());
 
 			
-		 if("F".equals(t.getLoadingCalcType())) {
+		 if("F".equals(t.getLoadingCalcType()) && !isRateUpdate) {
 			 List<Tuple> factors = LoadFactorRates(engine, t.getLoadingId(),t.getFactorTypeId());
 			 Tuple tuple = factors.get(0);
 			 calctype=tuple.get("calcType").toString();

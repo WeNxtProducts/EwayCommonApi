@@ -21,10 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
@@ -47,7 +45,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.CompanyProductMaster;
@@ -65,23 +62,26 @@ import com.maan.eway.bean.EwayFactorResultDetail;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MasterReferralDetails;
-import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MsPolicyDetails;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataEndt;
-import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
+import com.maan.eway.calculator.util.CoverFromFactor;
+import com.maan.eway.calculator.util.CreatePolicyPremium;
+import com.maan.eway.calculator.util.DiscountFromFactor;
+import com.maan.eway.calculator.util.LoadingFromFactor;
+import com.maan.eway.calculator.util.PolicyCoverCalculator;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.calculator.util.TaxFromFactor;
+import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.CoverIdReq2;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.FactorRateDetailsList;
 import com.maan.eway.common.req.UpdateFactorRateReq;
 import com.maan.eway.common.req.ViewPolicyCalc;
-import com.maan.eway.common.res.AccessoriesRes;
 import com.maan.eway.common.res.EndtTypeMasterDto;
 import com.maan.eway.common.res.EserviceCommonGetRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
@@ -90,7 +90,6 @@ import com.maan.eway.common.res.EwayFactorResultRes;
 import com.maan.eway.common.res.FdFactorCalcRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BankChangeStatusReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
@@ -113,7 +112,6 @@ import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.FactorFdCalcViewReq;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.req.calcengine.CalcEngine;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.Cover;
@@ -2961,13 +2959,13 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			engine.setMsrefno(findCovers.get(0).getMsRefno());
 			engine.setProductId(findCovers.get(0).getProductId().toString());
 			engine.setRequestReferenceNo(findCovers.get(0).getRequestReferenceNo());
-			engine.setSectionId(findCovers.get(0).getSectionId().toString());
-			engine.setVehicleId(findCovers.get(0).getVehicleId()+"");
+			engine.setSectionId("99999");
+			engine.setVehicleId("99999");
 			engine.setCreatedBy(findCovers.get(0).getCreatedBy());
 			engine.setMsVehicleDetails(null);
 			engine.setEffectiveDate(findCovers.get(0).getCoverPeriodFrom());
 			engine.setPolicyEndDate(findCovers.get(0).getCoverPeriodTo());
-			
+			engine.setPdrefno(pattern);
 			
 			List<PolicyCoverDataEndt> oldPolicyData = policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
 					Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
@@ -3161,6 +3159,10 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 			Gson json = new Gson();
 			log.info( "Referral Calc Request --> " +  json.toJson(engine) );
+			
+			
+			calcEngine.policyReferralCalc(engine);
+			
 			
 //			EserviceMotorDetailsSaveRes resp=null;
 //			if(StringUtils.isBlank(endtTypdId)) {

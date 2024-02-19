@@ -32,10 +32,10 @@ public class DiscountCalculatorPolicy   implements Consumer<Discount> {
 	protected CalcEngine engine;
 	protected DecimalFormat decimalFormat = null;
 	
-	 
+	 protected boolean isRateUpdate;
 
 	public DiscountCalculatorPolicy(BigDecimal premium, BigDecimal exchangeRate, List<Tuple> policy,
-			RatingFactorsUtil crservice, CalcEngine engine, DecimalFormat decimalFormat) {
+			RatingFactorsUtil crservice, CalcEngine engine, DecimalFormat decimalFormat,boolean isRateUpdate) {
 		super();
 		this.premium = premium;
 		this.exchangeRate = exchangeRate;
@@ -43,6 +43,7 @@ public class DiscountCalculatorPolicy   implements Consumer<Discount> {
 		this.crservice = crservice;
 		this.engine = engine;
 		this.decimalFormat = decimalFormat;
+		this.isRateUpdate=isRateUpdate;
 	}
 
 	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid){
@@ -148,7 +149,7 @@ public class DiscountCalculatorPolicy   implements Consumer<Discount> {
 			
 			premium = new BigDecimal(drcr.getCommonResponse().toString());
 		  
-		 if("F".equals(t.getDiscountCalcType())) {
+		 if("F".equals(t.getDiscountCalcType()) && !isRateUpdate) {
 			 List<Tuple> factors = LoadFactorRates(engine, t.getDiscountId(),t.getFactorTypeId());
 			 
 			 Tuple tuple = null;

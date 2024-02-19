@@ -26,4 +26,6 @@ public interface CalculatorEngine {
 	String getPolicyNo(CalcCommission request);
 
 	EserviceMotorDetailsSaveRes policyCalculator(CalcEngine request, String string);
+
+	void policyReferralCalc(CalcEngine engine);
 }

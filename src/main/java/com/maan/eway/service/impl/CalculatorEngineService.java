@@ -3428,7 +3428,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 		*/
 		List<Cover> policyCovers=new ArrayList<Cover>();
 		policyCovers.add(create);
-		PolicyCoverCalculator calc=new PolicyCoverCalculator(policytbl,ratingutil,engine,decimalFormat,customers);
+		PolicyCoverCalculator calc=new PolicyCoverCalculator(policytbl,ratingutil,engine,decimalFormat,customers,false);
 		policyCovers.stream().forEach(calc);
 		
 		try {
@@ -3438,7 +3438,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setRequestReferenceNo(engine.getRequestReferenceNo());
 			// response.setCustomerReferenceNo(req.getCustomerReferenceNo());
 			response.setVehicleId(engine.getVehicleId());
-			response.setVdRefNo(engine.getVdRefNo());
+			response.setVdRefNo(engine.getPdrefno());
 			response.setCdRefNo(engine.getCdRefNo());
 			response.setInsuranceId(engine.getInsuranceId());
 			response.setSectionId(engine.getSectionId());
@@ -3513,6 +3513,42 @@ public class CalculatorEngineService implements CalculatorEngine {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	public void policyReferralCalc(CalcEngine engine) {
+		try {
+			
+			List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc
+					(engine.getRequestReferenceNo(), Integer.valueOf(99999),Integer.valueOf(engine.getProductId()), Integer.valueOf(99999));
+			engine.setPdrefno(factors.get(0).getVdRefno());
+			loadOnetimetablePolicy(engine);
+			List<FactorRateRequestDetails> covers = factors.stream().collect(Collectors.toList());
+
+			DiscountFromFactor discountUtil = new DiscountFromFactor();
+			List<Discount> discounts = covers.stream().map(discountUtil).filter(d -> d != null)
+					.collect(Collectors.toList());
+			LoadingFromFactor loadingtuils = new LoadingFromFactor();
+			List<Loading> loadings = covers.stream().map(loadingtuils).filter(d -> d != null)
+					.collect(Collectors.toList());
+			CreatePolicyPremium c=new CreatePolicyPremium(engine,null);
+			Cover create = c.create();
+			create.setDiscounts(discounts);
+			create.setLoadings(loadings);
+			
+			List<Tuple> taxes = ratingutil.LoadTax(engine,Arrays.asList("NB"));	
+			TaxUtils tzx = new TaxUtils(BigDecimal.ZERO,"");
+			List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null).collect(Collectors.toList());
+			create.setTaxes(taxey);
+			List<Cover> policyCovers=new ArrayList<Cover>();
+			policyCovers.add(create);
+			PolicyCoverCalculator calc=new PolicyCoverCalculator(policytbl,ratingutil,engine,decimalFormat,customers,true);
+			policyCovers.stream().forEach(calc);
+
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}	
 	
 }
