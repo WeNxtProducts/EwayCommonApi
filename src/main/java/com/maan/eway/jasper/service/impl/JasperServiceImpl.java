@@ -172,12 +172,14 @@ public class JasperServiceImpl implements JasperService {
 						res = getCommonJasperPdfFileByJson("/report/jasper/EwayMadisonMotorSchedule.jrxml", jasperSaveLocation, jsonString, input, "- EwayMadisonMotorSchedule.json");
 					}else {
 						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo(),"");
-						String JsonString = gson.toJson(motPrivateRes);
+						String JsonString="";
 						String JasperName = "MotorPrivate";
 							if("100019".equalsIgnoreCase(homeData.getCompanyId())){		// UIA
 								if("Y".equalsIgnoreCase(req.getStrickerYn())) {
+									JsonString = gson.toJson(motPrivateRes.getVehicleDetails());
 									JasperName = "Schedule_UIA";
 								}else {
+									JsonString = gson.toJson(motPrivateRes);
 									JasperName = "UgandaMotorSchedule";
 								}
 							}
