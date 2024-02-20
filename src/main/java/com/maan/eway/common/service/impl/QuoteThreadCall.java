@@ -1641,18 +1641,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
 				
-				// Save Endt Covers
-				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
-					res = EndtCoverSavePoint(request , covers );
-				} else {
-					res = CoverSavePoint(covers ) ;
+				if(covers.size() > 0 ) {
+					// Save Endt Covers
+					if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+						res = EndtCoverSavePoint(request , covers );
+					} else {
+						res = CoverSavePoint(covers ) ;
+					}
 				}
-				
-			
-			
-
-			
-				
+					
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -1677,9 +1674,22 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<CoverIdsReq> coverReqList =new ArrayList<CoverIdsReq>();
 			
 			// Insert Other Covers
-			if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
+			if(request.getVehicleId()!= null && request.getVehicleId().equals(99999) ) {
+				
+				List<FactorRateRequestDetails> fleetCovers = covers.stream().filter( o -> o.getVehicleId().equals(99999)  && o.getSectionId().equals(99999)).collect(Collectors.toList());
+				Integer coverId = fleetCovers.size() > 0 ? fleetCovers.get(0).getCoverId() : 99999 ;   
+				Integer subCoverId = fleetCovers.size() > 0 ? fleetCovers.get(0).getSubCoverId() : 0;
+				
+				CoverIdsReq coverReq = new CoverIdsReq();
+				coverReq.setCoverId(coverId);
+				coverReq.setSubCoverYn("N");
+				coverReq.setSubCoverId(subCoverId.toString() );
+				
+				coverReqList.add(coverReq);
+				
+			} else if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
-				coverReqList = VehicleList.get(0).getCoverIdList();
+				coverReqList =  VehicleList.get(0).getCoverIdList();
 				
 			} else if ( request.getMotorYn().equalsIgnoreCase("M") ) {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) ). collect(Collectors.toList());
@@ -1837,12 +1847,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setIndividualId(request.getVehicleId());
 					coverData.setOriginalPolicyNo(request.getOriginalPolicyNo());
 					// Period End Condition
-					Calendar cal = new GregorianCalendar(); 
-					cal.setTime(cov.getCoverPeriodTo());
-					cal.set(Calendar.HOUR_OF_DAY, 23);
-					cal.set(Calendar.MINUTE, 59);
-					Date endDate = cal.getTime();
-					coverData.setCoverPeriodTo(endDate);
+					if(cov.getCoverPeriodTo()!=null ) {
+						Calendar cal = new GregorianCalendar(); 
+						cal.setTime(cov.getCoverPeriodTo());
+						cal.set(Calendar.HOUR_OF_DAY, 23);
+						cal.set(Calendar.MINUTE, 59);
+						Date endDate = cal.getTime();
+						coverData.setCoverPeriodTo(endDate);
+					}
 					saveCovers.add(coverData);
 					
 				}
