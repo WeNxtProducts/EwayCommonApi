@@ -237,6 +237,9 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 			}else if (req.getRegionShortCode().length() > 20){
 //				errorList.add(new Error("01","RegionShortCode", "Please Enter Region ShortCode within 20 Characters")); 
 				errorList.add("2143");
+			} else if (! req.getRegionShortCode().matches("[0-9]+") ){
+//				errorList.add(new Error("01","RegionShortCode", "Please Enter Region ShortCode within 20 Characters")); 
+				errorList.add("2149");
 			} else if (StringUtils.isBlank(req.getRegionCode()) && StringUtils.isNotBlank(req.getCountryId())) {
 				List<RegionMaster> RegionList = getRegionShortCodeExistDetails(req.getRegionShortCode() , req.getCountryId());
 				if (RegionList.size()>0 ) {
