@@ -1641,18 +1641,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
 				
-				// Save Endt Covers
-				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
-					res = EndtCoverSavePoint(request , covers );
-				} else {
-					res = CoverSavePoint(covers ) ;
+				if(covers.size() > 0 ) {
+					// Save Endt Covers
+					if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+						res = EndtCoverSavePoint(request , covers );
+					} else {
+						res = CoverSavePoint(covers ) ;
+					}
 				}
-				
-			
-			
-
-			
-				
+					
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -1677,9 +1674,22 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<CoverIdsReq> coverReqList =new ArrayList<CoverIdsReq>();
 			
 			// Insert Other Covers
-			if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
+			if(request.getVehicleId()!= null && request.getVehicleId().equals(99999) ) {
+				
+				List<FactorRateRequestDetails> fleetCovers = covers.stream().filter( o -> o.getVehicleId().equals(99999)  && o.getSectionId().equals(99999)).collect(Collectors.toList());
+				Integer coverId = fleetCovers.size() > 0 ? fleetCovers.get(0).getCoverId() : 99999 ;   
+				Integer subCoverId = fleetCovers.size() > 0 ? fleetCovers.get(0).getSubCoverId() : 0;
+				
+				CoverIdsReq coverReq = new CoverIdsReq();
+				coverReq.setCoverId(coverId);
+				coverReq.setSubCoverYn("N");
+				coverReq.setSubCoverId(subCoverId.toString() );
+				
+				coverReqList.add(coverReq);
+				
+			} else if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
-				coverReqList = VehicleList.get(0).getCoverIdList();
+				coverReqList =  VehicleList.get(0).getCoverIdList();
 				
 			} else if ( request.getMotorYn().equalsIgnoreCase("M") ) {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) ). collect(Collectors.toList());
@@ -1837,12 +1847,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setIndividualId(request.getVehicleId());
 					coverData.setOriginalPolicyNo(request.getOriginalPolicyNo());
 					// Period End Condition
-					Calendar cal = new GregorianCalendar(); 
-					cal.setTime(cov.getCoverPeriodTo());
-					cal.set(Calendar.HOUR_OF_DAY, 23);
-					cal.set(Calendar.MINUTE, 59);
-					Date endDate = cal.getTime();
-					coverData.setCoverPeriodTo(endDate);
+					if(cov.getCoverPeriodTo()!=null ) {
+						Calendar cal = new GregorianCalendar(); 
+						cal.setTime(cov.getCoverPeriodTo());
+						cal.set(Calendar.HOUR_OF_DAY, 23);
+						cal.set(Calendar.MINUTE, 59);
+						Date endDate = cal.getTime();
+						coverData.setCoverPeriodTo(endDate);
+					}
 					saveCovers.add(coverData);
 					
 				}
@@ -3105,6 +3117,37 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setEndtPremiumTax(endtValues.getEndtVatPremium());
 				home.setIsChargRefund(endtChargeOrRefund);
 			}
+			
+			// 99999 fleet covers
+//			List<PolicyCoverData>  filterFleetCovers = covers.stream().filter( o -> o.getVehicleId().equals(99999) && o.getSectionId().equals(99999)	 )
+//					.collect(Collectors.toList());
+//			if(filterFleetCovers.size() > 0 ) {
+//				PolicyCoverData fleetCover = filterFleetCovers.get(0);
+//				
+//				home.setPremiumFc(new BigDecimal(df.format(fleetCover.getPremiumExcludedTaxFc())) );
+//				home.setOverallPremiumFc(new BigDecimal(df.format(fleetCover.getPremiumIncludedTaxFc())));
+//				home.setPremiumLc(new BigDecimal(df.format(fleetCover.getPremiumExcludedTaxLc())));
+//				home.setOverallPremiumLc(new BigDecimal(df.format(fleetCover.getPremiumIncludedTaxLc())));
+//				home.setVatPremiumFc(new BigDecimal(df.format(fleetCover.getPremiumIncludedTaxFc().subtract(fleetCover.getPremiumExcludedTaxFc()))));
+//				home.setVatPremiumLc(  home.getVatPremiumFc().multiply(home.getExchangeRate(),MathContext.DECIMAL32));
+//				
+//				// Endt COvers
+//				if(StringUtils.isNotBlank(home.getEndtTypeId())) {
+//					List<PolicyCoverData>  covers3 = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteNo() );
+//					Integer endtType = Integer.valueOf(home.getEndtTypeId()) ; 
+//					List<PolicyCoverData>  filterFleetEndtCovers = covers3.stream().filter( o -> o.getVehicleId().equals(99999) && o.getSectionId().equals(99999) &&
+//							o.getDiscLoadId().equals(endtType) && o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") )
+//							.collect(Collectors.toList());
+//					if(filterFleetEndtCovers.size() > 0 ) {
+//						PolicyCoverData fleetEndtCover = filterFleetEndtCovers.get(0);
+//						home.setEndtPremium(new BigDecimal(df.format(fleetEndtCover.getPremiumExcludedTaxFc())));
+//						home.setEndtPremiumLc(home.getEndtPremium().multiply(home.getExchangeRate(),MathContext.DECIMAL32));
+//						home.setEndtPremiumTax(new BigDecimal(df.format(fleetEndtCover.getPremiumIncludedTaxFc().subtract(fleetEndtCover.getPremiumExcludedTaxFc()))));
+//					}	
+//				}
+//				
+//						
+//			}
 			
 			homeRepo.saveAndFlush(home);
 			

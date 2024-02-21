@@ -749,6 +749,14 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					uptCover.setUserOpt("Y");
 					
 				}
+				// Update 99999
+				List<FactorRateRequestDetails> fleetCovers = covers.stream().filter( o -> o.getVehicleId().equals(99999) && o.getSectionId().equals(99999)  ).collect(Collectors.toList());
+				for (FactorRateRequestDetails uptCover : fleetCovers ) {
+					nonOptCovers.remove(uptCover);
+					uptCover.setUserOpt("Y");
+					userOptCovers.add(uptCover);				
+				}
+				
 				facRateRepo.saveAllAndFlush(userOptCovers);
 				
 				// Update Non Opted Covers
@@ -1257,6 +1265,36 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
 					coverQueue.add(coverSave);	
 	            }
+			
+			 // 99999 Covers
+	       	 {
+	       		threadCount = threadCount + 1;
+	       		 QuoteThreadReq request2 = new QuoteThreadReq();
+	           	 request2.setVehicleId(99999);
+	           	 request2.setCustomerId(request.getCustomerId());
+	           	 request2.setProductId(request.getProductId());
+	           	 request2.setQuoteNo(request.getQuoteNo());
+	           	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+	           	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
+	           	 request2.setVehicleIdsList(request.getVehicleIdsList());
+	           	 request2.setCreatedBy(request.getCreatedBy());
+	           	 request2.setGroupId(99999);
+	           	 request2.setGroupCount(1);
+	           	 request2.setSectionId("99999");
+	           	 request2.setPolicyStartDate(request.getPolicyStartDate());
+		             request2.setPolicyEndDate(request.getPolicyEndDate());
+		             request2.setEffetiveDate(request.getEffetiveDate());
+		             request2.setNoOfDays(request.getNoOfDays());
+		         	 request2.setEndtType(request.getEndtType());
+	           	 request2.setEndtCount(request.getEndtCount());
+	           	 request2.setEndtFields(request.getEndtFields());	
+	           	 request2.setMotorYn(request.getMotorYn());
+	           	 request2.setIsFinYn(request.getIsFinYn());
+	           	 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+								, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+							    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+					 coverQueue.add(coverSave);
+	       	 }
 	    	 // Response 
 	        ProductThreadRes.setProductQueue(productQueue);
 	        ProductThreadRes.setCoverQueue(coverQueue);
@@ -1332,6 +1370,37 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						 coverQueue.add(coverSave);
 					// }					 
 		         } 
+	        	 // 99999 Covers
+	        	 {
+	        		 threadCount = threadCount + 1;
+	        		 QuoteThreadReq request2 = new QuoteThreadReq();
+	            	 request2.setVehicleId(99999);
+	            	 request2.setCustomerId(request.getCustomerId());
+	            	 request2.setProductId(request.getProductId());
+	            	 request2.setQuoteNo(request.getQuoteNo());
+	            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+	            	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
+	            	 request2.setVehicleIdsList(request.getVehicleIdsList());
+	            	 request2.setCreatedBy(request.getCreatedBy());
+	            	 request2.setGroupId(99999);
+	            	 request2.setGroupCount(1);
+	            	 request2.setSectionId("99999");
+	            	 request2.setPolicyStartDate(request.getPolicyStartDate());
+		             request2.setPolicyEndDate(request.getPolicyEndDate());
+		             request2.setEffetiveDate(request.getEffetiveDate());
+		             request2.setNoOfDays(request.getNoOfDays());
+		         	 request2.setEndtType(request.getEndtType());
+	            	 request2.setEndtCount(request.getEndtCount());
+	            	 request2.setEndtFields(request.getEndtFields());	
+	            	 request2.setMotorYn(request.getMotorYn());
+	            	 request2.setIndividualId(passCount);
+	            	 request2.setIsFinYn(request.getIsFinYn());
+	            	 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+								, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+							    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+					 coverQueue.add(coverSave);
+	        	 }
+	        	
 	        	 
 	        	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 	     				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
@@ -1474,6 +1543,36 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	
 	            	}
 	            }
+				 // 99999 Covers
+		       	 {
+		       		threadCount = threadCount + 1;
+		       		 QuoteThreadReq request2 = new QuoteThreadReq();
+		           	 request2.setVehicleId(99999);
+		           	 request2.setCustomerId(request.getCustomerId());
+		           	 request2.setProductId(request.getProductId());
+		           	 request2.setQuoteNo(request.getQuoteNo());
+		           	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+		           	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
+		           	 request2.setVehicleIdsList(request.getVehicleIdsList());
+		           	 request2.setCreatedBy(request.getCreatedBy());
+		           	 request2.setGroupId(99999);
+		           	 request2.setGroupCount(1);
+		           	 request2.setSectionId("99999");
+		           	 request2.setPolicyStartDate(request.getPolicyStartDate());
+			             request2.setPolicyEndDate(request.getPolicyEndDate());
+			             request2.setEffetiveDate(request.getEffetiveDate());
+			             request2.setNoOfDays(request.getNoOfDays());
+			         	 request2.setEndtType(request.getEndtType());
+		           	 request2.setEndtCount(request.getEndtCount());
+		           	 request2.setEndtFields(request.getEndtFields());	
+		           	 request2.setMotorYn(request.getMotorYn());
+		           	 request2.setIsFinYn(request.getIsFinYn());
+		           	 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+									, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+								    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+						 coverQueue.add(coverSave);
+		       	 }
+		       	 
 			 	ProductThreadRes.setProductQueue(productQueue);
 			 	ProductThreadRes.setCoverQueue(coverQueue);
 			 	ProductThreadRes.setThreadCount(threadCount);
@@ -1532,6 +1631,37 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					coverQueue.add(coverSave);
 				}
 			}
+			
+			 // 99999 Covers
+	       	 {
+	       		threadCount = threadCount + 1;
+	       		 QuoteThreadReq request2 = new QuoteThreadReq();
+	           	 request2.setVehicleId(99999);
+	           	 request2.setCustomerId(request.getCustomerId());
+	           	 request2.setProductId(request.getProductId());
+	           	 request2.setQuoteNo(request.getQuoteNo());
+	           	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+	           	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
+	           	 request2.setVehicleIdsList(request.getVehicleIdsList());
+	           	 request2.setCreatedBy(request.getCreatedBy());
+	           	 request2.setGroupId(99999);
+	           	 request2.setGroupCount(1);
+	           	 request2.setSectionId("99999");
+	           	 request2.setPolicyStartDate(request.getPolicyStartDate());
+		             request2.setPolicyEndDate(request.getPolicyEndDate());
+		             request2.setEffetiveDate(request.getEffetiveDate());
+		             request2.setNoOfDays(request.getNoOfDays());
+		         	 request2.setEndtType(request.getEndtType());
+	           	 request2.setEndtCount(request.getEndtCount());
+	           	 request2.setEndtFields(request.getEndtFields());	
+	           	 request2.setMotorYn(request.getMotorYn());
+	           	 request2.setIsFinYn(request.getIsFinYn());
+	           	 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+								, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+							    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+					 coverQueue.add(coverSave);
+	       	 }
+	       	 
 			ProductThreadRes.setProductQueue(productQueue);
 			ProductThreadRes.setCoverQueue(coverQueue);
 			ProductThreadRes.setThreadCount(threadCount);	
