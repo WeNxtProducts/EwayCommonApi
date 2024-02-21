@@ -399,20 +399,20 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			Root<BranchMaster> b = query.from(BranchMaster.class);
 
 			// Select Region Name SubQuery for Effective Date Max Filter
-			Subquery<Long> regEff = query.subquery(Long.class);
-			Root<RegionMaster> r = regEff.from(RegionMaster.class);
-			Subquery<Long> region = query.subquery(Long.class);
-			Root<RegionMaster> rn = region.from(RegionMaster.class);
-
-			regEff.select(cb.max(r.get("effectiveDateStart")));
-			Predicate e1 = cb.equal(rn.get("regionCode"), r.get("regionCode"));
-			Predicate e2 = cb.lessThanOrEqualTo(r.get("effectiveDateStart"), today);
-			regEff.where(e1, e2);
-
-			region.select(rn.get("regionName"));
-			Predicate r1 = cb.equal(rn.get("regionCode"), b.get("regionCode"));
-			Predicate r2 = cb.equal(rn.get("effectiveDateStart"), regEff);
-			region.where(r1, r2);
+//			Subquery<Long> regEff = query.subquery(Long.class);
+//			Root<RegionMaster> r = regEff.from(RegionMaster.class);
+//			Subquery<Long> region = query.subquery(Long.class);
+//			Root<RegionMaster> rn = region.from(RegionMaster.class);
+//
+//			regEff.select(cb.max(r.get("effectiveDateStart")));
+//			Predicate e1 = cb.equal(rn.get("regionCode"), r.get("regionCode"));
+//			Predicate e2 = cb.lessThanOrEqualTo(r.get("effectiveDateStart"), today);
+//			regEff.where(e1, e2);
+//
+//			region.select(rn.get("regionName"));
+//			Predicate r1 = cb.equal(rn.get("regionCode"), b.get("regionCode"));
+//			Predicate r2 = cb.equal(rn.get("effectiveDateStart"), regEff);
+//			region.where(r1, r2);
 
 			// Select Company Name SubQuery for Effective Date Max Filter
 			Subquery<Long> insEff = query.subquery(Long.class);
@@ -432,7 +432,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 
 			// Select
 			query.multiselect(b.get("branchCode").alias("branchCode"), b.get("branchName").alias("branchName"),
-					b.get("regionCode").alias("regionCode"), region.alias("regionName"),
+					b.get("regionCode").alias("regionCode"), b.get("regionCode").alias("regionName"),
 					b.get("companyId").alias("companyId"), company.alias("companyName"));
 
 			// Branch Effective Date Max Filter
