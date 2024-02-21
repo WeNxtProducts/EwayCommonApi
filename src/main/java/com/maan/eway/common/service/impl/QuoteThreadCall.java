@@ -3118,6 +3118,37 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setIsChargRefund(endtChargeOrRefund);
 			}
 			
+			// 99999 fleet covers
+			List<PolicyCoverData>  filterFleetCovers = covers.stream().filter( o -> o.getVehicleId().equals(99999) && o.getSectionId().equals(99999)	 )
+					.collect(Collectors.toList());
+			if(filterFleetCovers.size() > 0 ) {
+				PolicyCoverData fleetCover = filterFleetCovers.get(0);
+				
+				home.setPremiumFc(new BigDecimal(df.format(fleetCover.getPremiumExcludedTaxFc())) );
+				home.setOverallPremiumFc(new BigDecimal(df.format(fleetCover.getPremiumIncludedTaxFc())));
+				home.setPremiumLc(new BigDecimal(df.format(fleetCover.getPremiumExcludedTaxLc())));
+				home.setOverallPremiumLc(new BigDecimal(df.format(fleetCover.getPremiumIncludedTaxLc())));
+				home.setVatPremiumFc(new BigDecimal(df.format(fleetCover.getPremiumIncludedTaxFc().subtract(fleetCover.getPremiumExcludedTaxFc()))));
+				home.setVatPremiumLc(  home.getVatPremiumFc().multiply(home.getExchangeRate(),MathContext.DECIMAL32));
+				
+				// Endt COvers
+				if(StringUtils.isNotBlank(home.getEndtTypeId())) {
+					List<PolicyCoverData>  covers3 = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteNo() );
+					Integer endtType = Integer.valueOf(home.getEndtTypeId()) ; 
+					List<PolicyCoverData>  filterFleetEndtCovers = covers3.stream().filter( o -> o.getVehicleId().equals(99999) && o.getSectionId().equals(99999) &&
+							o.getDiscLoadId().equals(endtType) && o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") )
+							.collect(Collectors.toList());
+					if(filterFleetEndtCovers.size() > 0 ) {
+						PolicyCoverData fleetEndtCover = filterFleetEndtCovers.get(0);
+						home.setEndtPremium(new BigDecimal(df.format(fleetEndtCover.getPremiumExcludedTaxFc())));
+						home.setEndtPremiumLc(home.getEndtPremium().multiply(home.getExchangeRate(),MathContext.DECIMAL32));
+						home.setEndtPremiumTax(new BigDecimal(df.format(fleetEndtCover.getPremiumIncludedTaxFc().subtract(fleetEndtCover.getPremiumExcludedTaxFc()))));
+					}	
+				}
+				
+						
+			}
+			
 			homeRepo.saveAndFlush(home);
 			
 	/*		home.setExcessSign(null);
