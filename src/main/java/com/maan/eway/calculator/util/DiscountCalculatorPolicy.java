@@ -174,6 +174,7 @@ public class DiscountCalculatorPolicy   implements Consumer<Discount> {
 			 t.setMaxAmount(new BigDecimal(minPremium));
 			 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
 			 t.setRegulatoryCode(regulatoryCode);
+			 t.setDiscountCalcType(calctype);
 		 }
 		 BigDecimal domath = domath(calctype, Double.parseDouble(t.getDiscountRate()), premium,exchangeRate);
 		 t.setDiscountAmount(domath);
