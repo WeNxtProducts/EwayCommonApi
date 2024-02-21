@@ -676,10 +676,10 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate eff1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			Predicate eff2 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
+		//	Predicate eff2 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
 			Predicate eff3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate eff4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(eff1, eff2, eff3, eff4 );
+			effectiveDate.where(eff1, eff3, eff4 );
 		
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
