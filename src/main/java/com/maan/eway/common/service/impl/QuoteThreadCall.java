@@ -1749,7 +1749,20 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<CoverIdsReq> coverReqList =new ArrayList<CoverIdsReq>();
 			
 			// Insert Other Covers
-			 if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
+			if(request.getVehicleId()!= null && request.getVehicleId().equals(99999) ) {
+				
+				List<FactorRateRequestDetails> fleetCovers = covers.stream().filter( o -> o.getVehicleId().equals(99999)  && o.getSectionId().equals(99999)).collect(Collectors.toList());
+				Integer coverId = fleetCovers.size() > 0 ? fleetCovers.get(0).getCoverId() : 99999 ;   
+				Integer subCoverId = fleetCovers.size() > 0 ? fleetCovers.get(0).getSubCoverId() : 0;
+				
+				CoverIdsReq coverReq = new CoverIdsReq();
+				coverReq.setCoverId(coverId);
+				coverReq.setSubCoverYn("N");
+				coverReq.setSubCoverId(subCoverId.toString() );
+				
+				coverReqList.add(coverReq);
+				
+			} else if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
 					VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
 					coverReqList = VehicleList.get(0).getCoverIdList();
 					

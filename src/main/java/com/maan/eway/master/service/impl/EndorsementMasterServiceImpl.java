@@ -304,9 +304,9 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			if(StringUtils.isBlank(req.getEndtTypeId())) {
 				
 				Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),req.getEndtTypeCategoryId());
-				if("1".equalsIgnoreCase(req.getEndtTypeId())){//Non Financial
+				if("1".equalsIgnoreCase(req.getEndtTypeCategoryId())){//Non Financial
 					endtTypeId = 42+totalCount;
-				}else if("2".equalsIgnoreCase(req.getEndtTypeId())){//Finacial
+				}else if("2".equalsIgnoreCase(req.getEndtTypeCategoryId())){//Finacial
 					endtTypeId = 842+totalCount;	
 				}
 				entryDate = new Date();
