@@ -2159,7 +2159,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				
 //				List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
 //						branches);
-				List<EserviceMotorDetails> motors=repo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+				List<EserviceMotorDetails> motors=repo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo , "D");
 				++count;
 				if (motors.size() > 0) {
 					for (EserviceMotorDetails data : motors) {
