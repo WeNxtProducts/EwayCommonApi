@@ -239,4 +239,6 @@ public interface DropDownService {
 
 	List<DropDownRes> quotePeriod(LovDropDownReq req);
 
+	List<DropDownRes> ratingRelationType(LovDropDownReq req);
+
 }

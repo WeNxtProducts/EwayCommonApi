@@ -240,6 +240,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name = "INSURANCE_PERIOD_SI_LC")
     private BigDecimal insurancePeriodSiLc;
+    
+    @Column(name="RATING_RELATION_ID")
+    private String ratingRelationId;
+
 }
 
 

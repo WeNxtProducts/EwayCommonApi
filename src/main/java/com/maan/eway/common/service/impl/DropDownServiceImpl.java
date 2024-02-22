@@ -3363,6 +3363,32 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
+
+
+	@Override
+	public List<DropDownRes> ratingRelationType(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "RATING_RELATION_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+			resList = resList.stream().sorted((o1, o2)->Long.valueOf(o1.getCode()).compareTo(Long.valueOf(o2.getCode()))).collect(Collectors.toList());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
 	
 	
 	
