@@ -260,13 +260,13 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				errorList.add("1969");
 			}
 			
-			if (StringUtils.isBlank(req.getRemarks())) {
-//				errorList.add(new Error("18", "Remarks", "Please Enter Remarks"));
-				errorList.add("1970");
-			}else if (req.getRemarks().length() > 100){
-//				errorList.add(new Error("18","Remarks", "Please Enter Remarks within 100 Characters")); 
-				errorList.add("1971");
-			}
+//			if (StringUtils.isBlank(req.getRemarks())) {
+////				errorList.add(new Error("18", "Remarks", "Please Enter Remarks"));
+//				errorList.add("1970");
+//			}else if (req.getRemarks().length() > 100){
+////				errorList.add(new Error("18","Remarks", "Please Enter Remarks within 100 Characters")); 
+//				errorList.add("1971");
+//			}
 
 			
 //			if (StringUtils.isBlank(req.getRegulatoryCode())) {
