@@ -2,8 +2,10 @@ package com.maan.eway.admin.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginUserInfo;
 
 @Service
@@ -28,6 +31,10 @@ public class MarineLoginApi {
 	private String createbrokerlink;
 	@Value(value="${marine.auth.createproduct}")
 	private String createProductLink;
+	
+	
+	@Value(value="${marine.auth.createbranch}")
+	private String createBranchLink;
 	private String createLogin() {
 		try {
 			Map<String,Object > mainRequest=new HashMap<String, Object>();
@@ -158,4 +165,55 @@ public class MarineLoginApi {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	public void createBranch(LoginBranchMaster save) {
+		try {
+			Map<String,Object > mainRequest=new HashMap<String, Object>();
+			
+			List<Map<String,Object>> AttachedBranchInfo=new ArrayList<Map<String,Object>>();
+			
+			Map<String,Object> AttachedBranchId=new HashMap<String, Object>();
+			AttachedBranchId.put("AttachedBranchId", save.getBranchCode());
+			
+			AttachedBranchInfo.add(AttachedBranchId);
+			mainRequest.put("AttachedBranchInfo", AttachedBranchInfo);
+			
+			List<Map<String,Object>> AttachedRegionInfo=new ArrayList<Map<String,Object>>();
+			
+			Map<String,Object> RegionCode=new HashMap<String, Object>();
+			RegionCode.put("RegionCode", "01");
+			
+			mainRequest.put("AttachedRegionInfo", AttachedRegionInfo);
+			
+			mainRequest.put("BranchCode", save.getBranchCode());
+			mainRequest.put("LoginId", save.getLoginId());
+			mainRequest.put("RegionCode", "01");
+			 
+			
+			String token = createLogin();
+			RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
+			
+			
+			HttpHeaders header=new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			//header.setCharset("UTF-8");
+			header.setBearerAuth(token);
+			 
+
+
+			HttpEntity<?> requestent = 
+					new HttpEntity<>(mainRequest, header);
+
+			System.out.println( new Date()+" Start "+ createBranchLink);
+			ResponseEntity<Map<String, Object>> postForEntity = temp.exchange(createBranchLink,HttpMethod.POST, requestent,new ParameterizedTypeReference<Map<String, Object>>(){} );
+			System.out.println( new Date()+" End "+ createBranchLink);
+			System.out.println("response"+postForEntity.getBody());
+			//createBranchLink
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 }
