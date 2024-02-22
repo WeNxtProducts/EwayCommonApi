@@ -21,7 +21,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -181,6 +183,9 @@ public class LoginDetailsServiceImpl implements LoginDetailsService {
 	@Autowired
 	private InsuranceCompanyMasterRepository insuranceRepo ;
 	
+	
+	@Autowired
+	private MarineLoginApi marineapi;
 private Logger log=LogManager.getLogger(LoginDetailsServiceImpl.class);
 /*
 public LoginMasterServiceImpl(LoginMasterRepository repo) {
@@ -300,6 +305,9 @@ this.repository = repo;
 				}
 				
 			}
+			
+			
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -582,7 +590,7 @@ this.repository = repo;
 		      
 		      loginUserRepo.saveAndFlush(userInfo);
 			
-			
+		      marineapi.createMarineBroker(userInfo);
 			res = saveLogin.getAgencyCode() ;
 			
 			// Framing Request Save Deposit Cbc Master
@@ -847,7 +855,7 @@ this.repository = repo;
 			
 			loginUserRepo.saveAndFlush(updateUser);
 			log.info( "Login User Info Updated Details ---> " + json.toJson(updateUser) );
-			
+			marineapi.createMarineBroker(updateUser);
 			res = updateLogin.getAgencyCode() ;
 			
 			/*// Branch Setup	
