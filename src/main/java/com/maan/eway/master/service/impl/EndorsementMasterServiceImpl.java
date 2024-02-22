@@ -135,6 +135,22 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			if (StringUtils.isBlank(req.getEndtShortCode())) {
 //				errorList.add(new Error("05", "Endorsement Short Code", "Please Select Endorsement Short Code"));
 				errorList.add("2148");
+			} else if(StringUtils.isNotBlank(req.getEndtTypeCategoryId()) && "1".equalsIgnoreCase(req.getEndtTypeCategoryId()) && !"99999".equalsIgnoreCase(req.getEndtShortCode()) ) {
+				//errorList.add(new Error("05", "ShortCode Description", "ShortCode Description - Others Only Allowed in Non Financial"));
+				errorList.add("2150");
+			} else if(  StringUtils.isNotBlank(req.getCompanyId()) &&  StringUtils.isNotBlank(req.getProductId()) 
+					&& StringUtils.isNotBlank(req.getEndtTypeCategoryId()) && "842".equalsIgnoreCase(req.getEndtShortCode()) ) {
+				
+				 List<EndtTypeMaster> cancelTypes =  checkDuplicateCount(req.getCompanyId() ,req.getProductId() ,req.getEndtTypeCategoryId() );
+				 if(StringUtils.isBlank(req.getEndtType() )  && cancelTypes.size() > 0   ) {
+					//errorList.add(new Error("05", "ShortCode Description", "ShortCode Description - Cancellation Already Exist"));
+					errorList.add("2151");
+				 } else if (StringUtils.isNotBlank(req.getEndtType() )  && !"842".equalsIgnoreCase(req.getEndtTypeId()) && cancelTypes.size() > 0 ) {
+					//errorList.add(new Error("05", "ShortCode Description", "ShortCode Description - Cancellation Already Exist"));
+					errorList.add("2151"); 
+				 }
+				 
+				
 			}
 				
 			//Status Validation
@@ -305,9 +321,9 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				
 				Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),req.getEndtTypeCategoryId());
 				if("1".equalsIgnoreCase(req.getEndtTypeCategoryId())){//Non Financial
-					endtTypeId = 42+totalCount;
+					endtTypeId = totalCount + 1 ;
 				}else if("2".equalsIgnoreCase(req.getEndtTypeCategoryId())){//Finacial
-					endtTypeId = 842+totalCount;	
+					endtTypeId = req.getEndtShortCode().equalsIgnoreCase("842") ? 842 :   totalCount + 1  ;	
 				}
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
@@ -584,7 +600,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-			data = list.size() > 0 ? list.get(0).getEndtTypeId() : 0 ;
+			data = list.size() > 0 ? list.get(0).getEndtTypeId() : endtTypeCategoryId.equalsIgnoreCase("1") ? 50 : 850 ;
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -593,6 +609,44 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		return data;
 	}
 	
+	public List<EndtTypeMaster> checkDuplicateCount(String companyId,  String productId, String endtTypeCategoryId)	{
+
+		List<EndtTypeMaster> list = new ArrayList<EndtTypeMaster>();
+		try {
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EndtTypeMaster> query = cb.createQuery(EndtTypeMaster.class);
+			//Find all
+			Root<EndtTypeMaster> b = query.from(EndtTypeMaster.class);
+			// Select
+			query.select(b);
+			//OrderBy
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("endtTypeId")));
+			
+			Predicate n1 = cb.equal(b.get("endtShortCode"),"842");
+			Predicate n2 = cb.equal(b.get("companyId"),companyId);
+			Predicate n3 = cb.equal(b.get("productId"),productId);
+			Predicate n4 = cb.equal(b.get("endtTypeCategoryId"),endtTypeCategoryId);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+			
+			
+			
+			// Get Result
+			TypedQuery<EndtTypeMaster> result = em.createQuery(query);
+			int limit = 0 , offset = 1 ;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+		}
+		return list;
+	}
 	
 	@Override
 	public List<EndorsementMasterGetallRes> getallEndorsement(EndorsementMasterGetallReq req) {
