@@ -111,6 +111,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 	@PersistenceContext
 	private EntityManager em;
 
+	@Autowired
+	private MarineLoginApi marineLogin;
+	
 	Gson json = new Gson();
 
 	private Logger log = LogManager.getLogger(LoginBranchServiceImpl.class);
@@ -534,7 +537,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			save.setCustomerName(loginUserInfo.getCustomerName());
 		
 			loginBrokerRepo.save(save);
-
+			marineLogin.createBranch(save);
 			log.info("Login Master Updated Details ---> " + json.toJson(save));
 			res.setResponse("Branch Added Successfully");
 

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -21,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.repository.LoginBranchMasterRepository;
 
 @Service
 public class MarineLoginApi {
@@ -35,6 +38,9 @@ public class MarineLoginApi {
 	
 	@Value(value="${marine.auth.createbranch}")
 	private String createBranchLink;
+	
+	@Autowired
+	private LoginBranchMasterRepository lbmRepo; 
 	private String createLogin() {
 		try {
 			Map<String,Object > mainRequest=new HashMap<String, Object>();
@@ -170,13 +176,24 @@ public class MarineLoginApi {
 	public void createBranch(LoginBranchMaster save) {
 		try {
 			Map<String,Object > mainRequest=new HashMap<String, Object>();
-			
+			String mainBranch="";
+					
 			List<Map<String,Object>> AttachedBranchInfo=new ArrayList<Map<String,Object>>();
+			
 			
 			Map<String,Object> AttachedBranchId=new HashMap<String, Object>();
 			AttachedBranchId.put("AttachedBranchId", save.getBranchCode());
-			
 			AttachedBranchInfo.add(AttachedBranchId);
+			
+			List<LoginBranchMaster> branches = lbmRepo.findByLoginId(save.getLoginId());
+			for(LoginBranchMaster branch:branches) {
+				Map<String,Object> AttachedBranch=new HashMap<String, Object>();
+				AttachedBranch.put("AttachedBranchId", branch.getBranchCode());
+				AttachedBranchInfo.add(AttachedBranch);
+				mainBranch= "Main".equalsIgnoreCase(branch.getBranchType())?branch.getBranchCode():"";
+			}
+			mainBranch=StringUtils.isBlank(mainBranch)?save.getBranchCode():mainBranch;
+			
 			mainRequest.put("AttachedBranchInfo", AttachedBranchInfo);
 			
 			List<Map<String,Object>> AttachedRegionInfo=new ArrayList<Map<String,Object>>();
@@ -186,7 +203,7 @@ public class MarineLoginApi {
 			
 			mainRequest.put("AttachedRegionInfo", AttachedRegionInfo);
 			
-			mainRequest.put("BranchCode", save.getBranchCode());
+			mainRequest.put("BranchCode", mainBranch);
 			mainRequest.put("LoginId", save.getLoginId());
 			mainRequest.put("RegionCode", "01");
 			 
