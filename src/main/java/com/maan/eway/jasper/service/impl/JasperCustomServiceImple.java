@@ -391,10 +391,9 @@ public class JasperCustomServiceImple {
 			});
 			
 			OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
-			BigDecimal amtInWordValue = new BigDecimal(OverAllPremium);
 			String amtInWords="";
-			if(amtInWordValue!=null) {
-				amtInWords = motorRepo.getAmountByWords(amtInWordValue);
+			if(OverAllPremium!=null) {
+				amtInWords = motorRepo.getAmountByWords(OverAllPremium);
 			}
 			
 			List<Map<String,Object>> companyDetails = insuranceComMasRepo.getCompanyDetailsById(map.get("companyId")==null?"":map.get("companyId").toString());

@@ -9,6 +9,7 @@
 	<style name="common1" vTextAlign="Middle" vImageAlign="Middle" isBlankWhenNull="false" fontName="Arial" fontSize="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" isPdfEmbedded="true">
 		<paragraph lineSpacing="Single"/>
 	</style>
+	<parameter name="pvImagePath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[]]>
 	</queryString>
@@ -181,7 +182,7 @@
 		<band height="83" splitType="Stretch">
 			<image scaleImage="FillFrame" hAlign="Center">
 				<reportElement x="-19" y="3" width="168" height="80" uuid="353d0e70-dfe4-4e6f-8261-1a3c322b08a7"/>
-				<imageExpression><![CDATA[$F{companyLogo}]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagePath}+$F{companyLogo}]]></imageExpression>
 			</image>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement style="common" stretchType="RelativeToBandHeight" x="314" y="33" width="206" height="15" isRemoveLineWhenBlank="true" uuid="aaff4216-af9f-4632-aabd-c6c0a126c4dd"/>

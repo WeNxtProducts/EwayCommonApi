@@ -70,6 +70,6 @@ public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDeta
 			String originalPolicyNo);
 
 	@Query(value = "SELECT NUM_TO_WORDS_CONVERT(?1) FROM DUAL",nativeQuery = true)
-	String getAmountByWords(BigDecimal amtInWordValue);
+	String getAmountByWords(Double amtInWordValue);
 
 }
