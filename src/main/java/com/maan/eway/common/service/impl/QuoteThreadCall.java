@@ -1865,6 +1865,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						cal.setTime(cov.getCoverPeriodTo());
 						cal.set(Calendar.HOUR_OF_DAY, 23);
 						cal.set(Calendar.MINUTE, 59);
+						cal.set(Calendar.SECOND,59);
 						Date endDate = cal.getTime();
 						coverData.setCoverPeriodTo(endDate);
 					}
@@ -1980,6 +1981,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					cal.setTime(periodEnd);
 					cal.set(Calendar.HOUR_OF_DAY, 23);
 					cal.set(Calendar.MINUTE, 59);
+					cal.set(Calendar.SECOND, 59);
 					periodEnd = cal.getTime();
 					coverData.setCoverPeriodTo(periodEnd);
 					coverData.setNoOfDays(new BigDecimal(diff));
