@@ -86,7 +86,7 @@ public class MarineLoginApi {
 			mainRequest.put("AttachedBranchInfo",null);
 			mainRequest.put("AttachedRegionInfo",null);
 			mainRequest.put("BorkerOrganization",userInfo.getCustomerName());
-			mainRequest.put("BranchCode",null);
+			mainRequest.put("BranchCode",userInfo.getBranchCode());
 			mainRequest.put("BrokerCode",userInfo.getCustomerCode());
 			mainRequest.put("City","0");
 			mainRequest.put("Country","1");
@@ -123,8 +123,7 @@ public class MarineLoginApi {
 			mainRequest.put("TelephoneNo","");
 			mainRequest.put("Title","");
 			mainRequest.put("ValidNcheck",""); 
-			
-			String token = createLogin();
+ 			String token = createLogin();
 			RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
 			
 			
@@ -139,6 +138,7 @@ public class MarineLoginApi {
 					new HttpEntity<>(mainRequest, header);
 
 			System.out.println( new Date()+" Start "+ createbrokerlink);
+			System.out.println("request"+requestent);
 			ResponseEntity<Map<String, Object>> postForEntity = temp.exchange(createbrokerlink,HttpMethod.POST, requestent,new ParameterizedTypeReference<Map<String, Object>>(){} );
 			System.out.println( new Date()+" End "+ createbrokerlink);
 			System.out.println("response"+postForEntity.getBody());
