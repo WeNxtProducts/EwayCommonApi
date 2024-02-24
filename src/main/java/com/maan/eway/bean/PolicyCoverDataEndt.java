@@ -309,7 +309,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="COVERAGE_LIMIT")
     private BigDecimal     coverageLimit ;
 
-
+    @Column(name="FREE_COVER_LIMIT")
+    private BigDecimal     freeCoverLimit;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

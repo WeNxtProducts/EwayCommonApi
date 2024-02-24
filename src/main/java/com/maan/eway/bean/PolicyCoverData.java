@@ -311,7 +311,9 @@ private static final long serialVersionUID = 1L;
     private String originalPolicyNo ;
     @Column(name="MIN_COVERAGE_LIMIT")
     private BigDecimal     minCoverageLimit;
-    
+
+    @Column(name="FREE_COVER_LIMIT")
+    private BigDecimal     freeCoverLimit;
 }
 
 

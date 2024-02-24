@@ -217,6 +217,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRO_RATA_DESC")
     private String       proRataDesc;
+    
+    @Column(name="FREE_COVER_LIMIT")
+    private BigDecimal     freeCoverLimit;
 }
 
 
