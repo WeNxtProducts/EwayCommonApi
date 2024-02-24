@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 import javax.persistence.Tuple;
 
-import org.apache.tomcat.util.buf.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.maan.eway.chartaccount.ChartAccountRequest;
 import com.maan.eway.common.res.CommonRes;
@@ -45,104 +45,198 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 	
 	@Override
 	public void accept(Cover t) {
-		try {
-			String chartId = t.getDependentCoverId();
+
+		 try {
 			
-			BigDecimal premium =BigDecimal.ZERO;// new BigDecimal(drcr.getCommonResponse().toString());
-			
-			
-     		BigDecimal exchangeRate= new BigDecimal(policy.get(0).get("exchangeRate")==null?"1":policy.get(0).get("exchangeRate").toString());
-			 t.setExchangeRate(exchangeRate);
-			 String currecy=policy.get(0).get("currency")==null?"N/A":policy.get(0).get("currency").toString();
-			 t.setCurrency(currecy);
-			 t.setSumInsured(premium);
-			 t.setSumInsuredLc(premium.multiply(exchangeRate,MathContext.DECIMAL64));
-			 t.setProRata(BigDecimal.ONE);
-			 
-			 
-		
-			
-			
-			 Double totaldiscount=0D;
-			 Double totalloading=0D;
-			 
-			 if(isRateUpdate) {
-				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
-					 DiscountCalculatorPolicy dcal=new DiscountCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);					 
-					 t.getDiscounts().stream().forEach(dcal);
-					 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
-				 }
-				 		 
-				 
-				 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
-					 LoadingCalculatorPolicy dcal=new LoadingCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);					 
-					 t.getLoadings().stream().forEach(dcal);
-					 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
-				 }
+			 if("Y".equals( t.getIsSubCover())) {
+				 //this.setEngine(engine);
+				 t.getSubcovers().stream().forEach(this);
 			 }else {
 
-				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
-					 DiscountCalculatorPolicy dcal=new DiscountCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);					 
-					 t.getDiscounts().stream().forEach(dcal);
-					 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
+			//	 loadOnetimetable(engine);
+				 boolean discountLoading=true;
+				 
+				 BigDecimal exchangeRate= new BigDecimal(policy.get(0).get("exchangeRate")==null?"1":policy.get(0).get("exchangeRate").toString());
+				 t.setExchangeRate(exchangeRate);
+				 String currecy=policy.get(0).get("currency")==null?"N/A":policy.get(0).get("currency").toString();
+				 t.setCurrency(currecy);
+				 
+				 t.setProRata(new BigDecimal("1"));
+				 
+				 
+			 
+				 
+				 
+				 
+				 
+				 BigDecimal si=BigDecimal.ZERO;
+				 
+				 if("B".equals(t.getCoverageType())) {
+					 ChartAccountRequest r=new ChartAccountRequest();
+						r.setCompanyId(engine.getInsuranceId());
+						r.setChartId(t.getDependentCoverId());
+						r.setProductId(engine.getProductId());
+						r.setDiscountYn("Y");
+						r.setRequestRefNo(engine.getRequestReferenceNo());
+						
+						CommonRes drcr = crservice.drcrEntry(r);
+						si = new BigDecimal(drcr.getCommonResponse().toString());
+						t.setRate(si.doubleValue());
+				 }else if("Y".equals(t.getDependentCoveryn())) {
+					 /*if(calculatedcover!=null) {
+							Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);
+							si=ct!=null?ct.getPremiumExcluedTax():BigDecimal.ZERO;
+						}*/ 
+				 }else if(!"A".equals(t.getCalcType())) {
+					 si=policy.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(policy.get(0).get(t.getCoverBasedOn()).toString());
+				 }else {
+					si=new BigDecimal(t.getRate());
 				 }
+				 				 
+				 t.setSumInsured(si);
+				 t.setSumInsuredLc(si.multiply(exchangeRate,MathContext.DECIMAL64));
+				 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
+				/* if(t.getSumInsured().compareTo(t.getCoverageLimit())>0) {
+					 t.setIsReferral("Y");
+					 t.setReferalDescription("CoverageLimit Referral Limits Upto"+t.getCoverageLimit());
+					 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
+					 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);
+					 t.setCalcType("P");
+				 }else */if(t.getSumInsured().compareTo(t.getMinSumInsured())<0) {
+					    discountLoading=false;
+						CoverException build = CoverException.builder().message(t.getCoverName()+ "Min SumInsured is:"+t.getMinSumInsured()+ " & SumInsured:"+t.getSumInsured())
+						.isError(true).build();
+						t.setError(build);
+						t.setNotsutable(true);
+						throw build;
+				 } if("F".equals(t.getCalcType())) {
+					 // Tuple vehicle,Tuple customer,Tuple common
+					 List<Tuple> factors = LoadFactorRates(engine, t.getCoverId(),t.getFactorTypeId());
+					 
+					 /*if(factors==null || factors.size()==0) 
+						 throw CoverException.builder().message("Not Found Result "+"CoverID:"+t.getCoverId()+"<Desc>:"+t.getCoverDesc()+",subcoverId:"+t.getSubCoverId())
+					 .isError(true).build();*/
+						 
+					 Tuple tuple = null;
+					 try {
+						 tuple=factors.get(0);
+					 }catch (Exception e) {
+						// TODO: handle exception
+						 discountLoading=false;
+						CoverException build = CoverException.builder().message("No factor found")
+						 .isError(true).build();
+						 t.setError(build);
+						 t.setNotsutable(true);
+						 throw build;
+						 /*t.setIsReferral("Y");
+						 t.setReferalDescription("No factor found Referral for "+t.getCoverDesc());
+						 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
+						 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);*/
+					}
+					 if(tuple!=null) {
+						 String calctype=tuple.get("calcType").toString();
+						 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
+						 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
 
+						 t.setRate((Double) ((Double.parseDouble(rate) )));
 
+						 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
+						 BigDecimal domath = domath(calctype, t.getRate(), si,t.getExchangeRate());
+						 t.setPremiumBeforeDiscount(domath);
 
-				 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
-					 LoadingCalculatorPolicy dcal=new LoadingCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);					 
-					 t.getLoadings().stream().forEach(dcal);
-					 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
+						 t.setPremiumBeforeDiscountLC(new BigDecimal(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
+						 t.setCalcType(calctype);
+						 t.setRegulatoryCode(regulatoryCode);
+						 /// Referal
+						 t.setIsReferral((tuple.get("status")==null?"N":tuple.get("status").toString()).equals("R")?"Y":"N");
+						 if("Y".equals(t.getIsReferral())){
+							 t.setReferalDescription(t.getCoverDesc() +" Referral" );
+							
+						 }
+						 t.setExcessAmount(tuple.get("excessAmount")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("excessAmount").toString()));
+						 t.setExcessDesc(tuple.get("excessDesc")==null?"":tuple.get("excessDesc").toString());
+						 t.setExcessPercent(tuple.get("excessPercent")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("excessPercent").toString()));
+					 }
+				 } else {
+					  
+					 
+					 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
+					 t.setPremiumBeforeDiscount(domath);					 
+					 t.setPremiumBeforeDiscountLC(new BigDecimal(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 				 }
-			 }
-			 
-			 
-			 
-			 
-			 if(!t.getDiscounts().isEmpty()) {
-				 t.setRate(t.getDiscounts().get(0).getMaxAmount().doubleValue());
-			 }else if(!t.getLoadings().isEmpty()) {
-				 t.setRate(t.getLoadings().get(0).getMaxAmount().doubleValue());
-			 }
-			 
-			 BigDecimal domath = domath(t.getCalcType(), t.getRate(), premium,t.getExchangeRate());
-			 t.setPremiumBeforeDiscount(domath);
-			 t.setPremiumBeforeDiscountLC(new BigDecimal(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
-			 
-			 t.setPremiumAfterDiscount(new BigDecimal(decimalFormat.format(t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()))) );
+				 
+				 
+				 //BigDecimal domathTira = domathTira(t.getCalcType(),t.getRate(),t.getSumInsured(),t.getExchangeRate()); Tira Calculation only for referral
+				 t.setTiraSumInsured(si);
+				 if(!"A".equals(t.getCalcType()))
+					 t.setTiraRate(t.getRate());
+				 Double totaldiscount=0D;
+				 Double totalloading=0D;
+				 if(discountLoading) {
+					
+					 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
+						 DiscountCalculatorPolicy dcal=new DiscountCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);
+ 						 t.getDiscounts().stream().forEach(dcal);
+						 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
+					 }
 
-			 t.setPremiumAfterDiscountLC(new BigDecimal(decimalFormat.format(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()))));
-			 //.multiply(t.getProRata())				 
-			 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());				 
-			 t.setPremiumExcluedTaxLC(new BigDecimal(decimalFormat.format(t.getPremiumExcluedTax().multiply(t.getExchangeRate()))));
-			 
-			 // Minimium Premium setup.
-			 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0 && !"Y".equals(t.getIsReferral())) {
+
+					 
+					 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
+						 LoadingCalculatorPolicy dcal=new LoadingCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);					 
+						 t.getLoadings().stream().forEach(dcal);
+						 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
+					 }
+				 }
 				 
-				 t.setPremiumExcluedTax(new BigDecimal(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate(),MathContext.DECIMAL64)))); 
-				 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
-				 t.setMinimumPremiumYn("Y");
+				 
+				 t.setPremiumAfterDiscount(new BigDecimal(decimalFormat.format(t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()))) );
+
+				 t.setPremiumAfterDiscountLC(new BigDecimal(decimalFormat.format(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()))));
+				 //.multiply(t.getProRata())				 
+				 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());				 
+				 t.setPremiumExcluedTaxLC(new BigDecimal(decimalFormat.format(t.getPremiumExcluedTax().multiply(t.getExchangeRate()))));
+				 
+				 // Minimium Premium setup.
+				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0 && !"Y".equals(t.getIsReferral())) {
+					 
+					 t.setPremiumExcluedTax(new BigDecimal(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate(),MathContext.DECIMAL64)))); 
+					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
+					 t.setMinimumPremiumYn("Y");
+				 }
+				 
+				 Double totaltax=0D;
+				 if(t.getTaxes()!=null && t.getTaxes().size()>0 && customers!=null && customers.get(0)!=null ) {
+						TaxCalculatorPolicy tcal=new TaxCalculatorPolicy(t.getPremiumExcluedTax(),t.getExchangeRate(),customers.get(0),decimalFormat);
+					 t.getTaxes().stream().filter(f -> "N".equals(f.getDependentYn())).forEach(tcal);
+					 Double totaltax_N = t.getTaxes().stream().filter(f -> "N".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+					 
+					 
+					 tcal=new TaxCalculatorPolicy(t.getPremiumExcluedTax(),t.getExchangeRate(),customers.get(0),decimalFormat);
+					 t.getTaxes().stream().filter(f -> "Y".equals(f.getDependentYn())).forEach(tcal);
+					 Double totaltax_Y = t.getTaxes().stream().filter(f -> "Y".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+					 
+					 totaltax=totaltax_N+totaltax_Y;
+				 }
+				 
+				 t.setPremiumIncludedTax(new BigDecimal(decimalFormat.format(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)))));				 
+				 t.setPremiumIncludedTaxLC(new BigDecimal(decimalFormat.format(t.getPremiumIncludedTax().multiply(t.getExchangeRate()))));
 			 }
 			 
-			 Double totaltax=0D;
-			if(t.getTaxes()!=null && t.getTaxes().size()>0 ) {
-				TaxCalculatorPolicy tcal=new TaxCalculatorPolicy(t.getPremiumExcluedTax(),t.getExchangeRate(),customers.get(0),decimalFormat);
-				 t.getTaxes().stream().filter(f -> "N".equals(f.getDependentYn())).forEach(tcal);
-				 Double totaltax_N = t.getTaxes().stream().filter(f -> "N".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
-				 
-				 
-				 tcal=new TaxCalculatorPolicy(t.getPremiumExcluedTax().add(new BigDecimal(totaltax_N)),t.getExchangeRate(),customers.get(0),decimalFormat);
-				 t.getTaxes().stream().filter(f -> "Y".equals(f.getDependentYn())).forEach(tcal);
-				 Double totaltax_Y = t.getTaxes().stream().filter(f -> "Y".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
-				 
-				 totaltax=totaltax_N+totaltax_Y;
-			 }
+			
 			 
-			 t.setPremiumIncludedTax(new BigDecimal(decimalFormat.format(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)))));				 
-			 t.setPremiumIncludedTaxLC(new BigDecimal(decimalFormat.format(t.getPremiumIncludedTax().multiply(t.getExchangeRate()))));
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
+		 }catch(CoverException ex) {
+			 ex.printStackTrace();
+		 }catch (Exception e) {
+			 System.out.println("CoverID:"+t.getCoverId()+"<Desc>:"+t.getCoverDesc()+",subcoverId:"+t.getSubCoverId());
+			 e.printStackTrace();
+			 CoverException build = CoverException.builder().isError(true).message(e.getMessage() +" "+"CoverID:"+t.getCoverId()+"<Desc>:"+t.getCoverDesc()+",subcoverId:"+t.getSubCoverId()).build();
+			 
+			 t.setError(build);
+		 }
+		
+	
+		
 		
 	}
 	

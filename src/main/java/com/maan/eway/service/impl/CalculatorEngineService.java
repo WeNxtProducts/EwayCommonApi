@@ -3398,42 +3398,186 @@ public class CalculatorEngineService implements CalculatorEngine {
 		String decimalLength = decimalDigits.equals("0") ? "" : String.format(stringFormat, 0L);
 		String pattern = StringUtils.isBlank(decimalLength) ? "#####0" : "#####0." + decimalLength;
 		decimalFormat = new DecimalFormat(pattern);
+	 	
+		List<Tuple> totalcoverstuple = LoadCoverPolicy(engine);
 		
-		CreatePolicyPremium c=new CreatePolicyPremium(engine,null);
-		Cover create = c.create();
+		List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
+		TaxUtils tzx = new TaxUtils(BigDecimal.ZERO	,"");
+		List<Tuple> excludedTaxes = ratingutil.LoadExcludedTax(engine,NORMAL_TAX_LIST);
+		TaxRemover taxRemov=new TaxRemover(excludedTaxes,null);
 		
-		List<Tuple> covers = LoadCoverPolicy(engine);
-		
-		List<Discount> discounts = null;
-		List<Loading> loadings = null;
-		if (covers != null && covers.size() > 0) {
-			SplitDiscountUtils discountUtil = new SplitDiscountUtils(engine.getEffectiveDate(),
-					engine.getPolicyEndDate() ,promocode);
-			discounts = covers.stream().map(discountUtil).filter(d -> d != null).collect(Collectors.toList());
-			discounts.stream().forEach(t -> t.setEffectiveDate(engine.getEffectiveDate()));
+		List<String> dependedcovers = new ArrayList<String>();
+		dependedcovers.add("N");
+		dependedcovers.add("Y");
+		for (String dependcover : dependedcovers) {
+			List<Cover> totalcovers = new ArrayList<Cover>();
+			List<Tuple> covers = totalcoverstuple.stream()
+					.filter(t -> dependcover.equals(t.get("dependentCoverYn").toString()))
+					.collect(Collectors.toList());
+			List<Discount> discounts = null;
+			List<Loading> loadings = null;
+			if (covers != null && covers.size() > 0) {
+				SplitDiscountUtils discountUtil = new SplitDiscountUtils(engine.getEffectiveDate(),
+						engine.getPolicyEndDate() ,promocode);
+				discounts = covers.stream().map(discountUtil).filter(d -> d != null).collect(Collectors.toList());
+				discounts.stream().forEach(t -> t.setEffectiveDate(engine.getEffectiveDate()));
+				SplitLoadingUtils loadingtuils = new SplitLoadingUtils(engine.getEffectiveDate(),
+						engine.getPolicyEndDate());
+				loadings = covers.stream().map(loadingtuils).filter(d -> d != null).collect(Collectors.toList());
+			}
+
+			SplitSubCoverUtil splitsub = new SplitSubCoverUtil("N", engine.getEffectiveDate(),
+					engine.getPolicyEndDate());
+			Map<String, List<Cover>> nonSubcovers = covers.stream().map(splitsub).filter(d -> d != null)
+					.collect(Collectors.groupingBy(Cover::getIsSubCover));
+			if (!nonSubcovers.isEmpty()) {
+				List<Cover> noncovers = nonSubcovers.get("N"); // noncovers
+				if (!discounts.isEmpty() && !noncovers.isEmpty()) {
+					for (Cover c : noncovers) {
+						List<Discount> ds = discounts.stream()
+								.filter(d -> d.getDiscountforId().equals(c.getCoverId()))
+								.collect(Collectors.toList());
+						ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
+						// List<Tax> taxey =
+						// taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+						c.setDiscounts(ds);
+						// c.setTaxes(taxey);
+					}
+				}
+
+				if (!loadings.isEmpty() && !noncovers.isEmpty()) {
+					for (Cover c : noncovers) {
+						List<Loading> ds = loadings.stream().filter(d -> d.getLoadingforId().equals(c.getCoverId()))
+								.collect(Collectors.toList());
+						ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
+						// List<Tax> taxey =
+						// taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+						c.setLoadings(ds);
+						// c.setTaxes(taxey);
+					}
+				}
+
+				if (!noncovers.isEmpty()) {
+					for (Cover c : noncovers) {
+						if(!c.getCoverageType().equals("A") && !c.getIsTaxExcempted().equals("Y")) {
+							List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+									.collect(Collectors.toList());
+							c.setTaxes(taxey);
+						}
+					}
+				}
+			}
+
+			splitsub = new SplitSubCoverUtil("Y", engine.getEffectiveDate(), engine.getPolicyEndDate());
+			Map<String, List<Cover>> subcovers = covers.stream().map(splitsub)
+					.filter(d -> (d != null && !"0".equals(d.getSubCoverId())))
+					.collect(Collectors.groupingBy(Cover::getIsSubCover));
+			if (!subcovers.isEmpty()) {
+				List<Cover> noncovers = subcovers.get("Y"); // noncovers
+				if (!discounts.isEmpty() && !noncovers.isEmpty()) {
+					for (Cover c : noncovers) {
+						List<Discount> ds = discounts.stream()
+								.filter(d -> d.getDiscountforId().equals(c.getCoverId()))
+								.collect(Collectors.toList());
+						ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
+
+						List<Discount> dss = ds.stream().map(dx -> SerializationUtils.clone(dx))
+								.collect(Collectors.toList());
+						// List<Tax> taxez =
+						// taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+						c.setDiscounts(dss);
+						// c.setTaxes(taxez);
+					}
+				}
+
+				if (!loadings.isEmpty() && !noncovers.isEmpty()) {
+					for (Cover c : noncovers) {
+						List<Loading> ds = loadings.stream().filter(d -> d.getLoadingforId().equals(c.getCoverId()))
+								.collect(Collectors.toList());
+						ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
+
+						List<Loading> dss = ds.stream().map(dx -> SerializationUtils.clone(dx))
+								.collect(Collectors.toList());
+						c.setLoadings(dss);
+					}
+				}
+				if (!noncovers.isEmpty()) {
+					for (Cover c : noncovers) {
+						if(!c.getCoverageType().equals("A") && !c.getIsTaxExcempted().equals("Y")) {
+						List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+								.collect(Collectors.toList());
+						c.setTaxes(taxey);
+						}
+					}
+				}
+
+				List<Cover> d = noncovers.stream().filter(SubCoverCreationUtil.distinctByKey(Cover::getCoverId))
+						.collect(Collectors.toList());
+				List<Cover> subcov = new ArrayList<Cover>();
+				for (Cover cover : d) {
+					List<Cover> subcover = noncovers.stream()
+							.filter(cv -> cv.getCoverId().equals(cover.getCoverId())).collect(Collectors.toList());
+					subcover.stream().forEach(s -> s.setIsSubCover("N"));
+					// subcover.stream().forEach(s->s.setTaxes(new ArrayList<Tax>(taxez)));
+					Cover newcover = SerializationUtils.clone(cover);
+					newcover.setSubcovers(subcover);
+					newcover.setIsSubCover("Y");
+					newcover.setSubCoverId(null);
+					newcover.setSubCoverDesc(null);
+					newcover.setSubCoverName(null);
+					newcover.setDiscounts(null);
+					newcover.setLoadings(null);
+					newcover.setTaxes(null);
+					subcov.add(newcover);
+				}
+				subcovers.put("Y", subcov);
+			}
+
+			if (!nonSubcovers.isEmpty() && !subcovers.isEmpty()) {
+				totalcovers = subcovers.get("Y");
+				totalcovers.addAll(nonSubcovers.get("N"));
+			} else if (!nonSubcovers.isEmpty() && subcovers.isEmpty()) {
+				totalcovers = nonSubcovers.get("N");
+			} else if (nonSubcovers.isEmpty() && !subcovers.isEmpty()) {
+				totalcovers = subcovers.get("Y");
+			}
 			
-			SplitLoadingUtils loadingtuils = new SplitLoadingUtils(engine.getEffectiveDate(),engine.getPolicyEndDate());
-			loadings = covers.stream().map(loadingtuils).filter(d -> d != null).collect(Collectors.toList());
+			
+			totalcovers.stream().forEach(taxRemov);
+			/*
+			 * if(StringUtils.isNotBlank(engine.getVdRefNo()) &&
+			 * StringUtils.isNotBlank(engine.getCdRefNo())) { //calc.setEngine(engine,
+			 * retc);
+			 * 
+			 * 
+			 * }
+			 */
+
+			/*CoverCalculator calc = new CoverCalculator();
+			calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);*/
+			PolicyCoverCalculator calc=new PolicyCoverCalculator(policytbl,ratingutil,engine,decimalFormat,customers,false);
+			retc.stream().forEach(calc);
+
+			totalcovers.stream().forEach(calc);
+			// remove error records
+			totalcovers.removeIf(ll -> (ll.isNotsutable()));
+			retc.addAll(totalcovers);
+			Comparator<Cover> comp = Comparator.comparing(Cover::getCoverageType);
+			retc.sort(comp);
 		}
-		create.setDiscounts(discounts);
-		create.setLoadings(loadings);
+		 
 		
-		List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);	
-		TaxUtils tzx = new TaxUtils(BigDecimal.ZERO,"");
-		List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null).collect(Collectors.toList());
-		create.setTaxes(taxey);
+		 
 		
 		/*PolicyDiscountMapper maps=new PolicyDiscountMapper(engine.getEffectiveDate(),engine.getPolicyEndDate());
 		List<Cover> policyCovers = covers.stream().map(maps).filter(d -> d != null).collect(Collectors.toList());
 		*/
-		List<Cover> policyCovers=new ArrayList<Cover>();
-		policyCovers.add(create);
-		PolicyCoverCalculator calc=new PolicyCoverCalculator(policytbl,ratingutil,engine,decimalFormat,customers,false);
-		policyCovers.stream().forEach(calc);
+		 
+		
 		
 		try {
 			EserviceMotorDetailsSaveRes response = new EserviceMotorDetailsSaveRes();
-			response.setCoverList(policyCovers);
+			response.setCoverList(retc);
 			response.setResponse("Saved Successfully");
 			response.setRequestReferenceNo(engine.getRequestReferenceNo());
 			// response.setCustomerReferenceNo(req.getCustomerReferenceNo());

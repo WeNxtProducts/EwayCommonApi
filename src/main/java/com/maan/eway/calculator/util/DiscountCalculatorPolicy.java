@@ -138,7 +138,7 @@ public class DiscountCalculatorPolicy   implements Consumer<Discount> {
 	 try {
 		 String calctype= t.getDiscountCalcType();
 		 t.setDiscountAmount(BigDecimal.ZERO);
-		 ChartAccountRequest r=new ChartAccountRequest();
+		/* ChartAccountRequest r=new ChartAccountRequest();
 			r.setCompanyId(engine.getInsuranceId());
 			r.setChartId(t.getDiscountforId());
 			r.setProductId(engine.getProductId());
@@ -148,7 +148,7 @@ public class DiscountCalculatorPolicy   implements Consumer<Discount> {
 			CommonRes drcr = crservice.drcrEntry(r);
 			
 			premium = new BigDecimal(drcr.getCommonResponse().toString());
-		  
+		  */
 		 if("F".equals(t.getDiscountCalcType()) && !isRateUpdate) {
 			 List<Tuple> factors = LoadFactorRates(engine, t.getDiscountId(),t.getFactorTypeId());
 			 

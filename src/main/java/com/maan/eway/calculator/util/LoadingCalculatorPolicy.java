@@ -49,7 +49,7 @@ public class LoadingCalculatorPolicy implements Consumer<Loading> {
 	 try {
 		 String calctype= t.getLoadingCalcType();
 		 t.setLoadingAmount(BigDecimal.ZERO);
-		 ChartAccountRequest r=new ChartAccountRequest();
+		 /*ChartAccountRequest r=new ChartAccountRequest();
 			r.setCompanyId(engine.getInsuranceId());
 			r.setChartId(t.getLoadingforId());
 			r.setProductId(engine.getProductId());
@@ -59,7 +59,7 @@ public class LoadingCalculatorPolicy implements Consumer<Loading> {
 			CommonRes drcr = crservice.drcrEntry(r);
 			
 			premium = new BigDecimal(drcr.getCommonResponse().toString());
-
+*/
 			
 		 if("F".equals(t.getLoadingCalcType()) && !isRateUpdate) {
 			 List<Tuple> factors = LoadFactorRates(engine, t.getLoadingId(),t.getFactorTypeId());
