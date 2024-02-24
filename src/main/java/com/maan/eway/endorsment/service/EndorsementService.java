@@ -19,10 +19,12 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -48,8 +50,11 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.PolicyCoverDataIndividuals;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
@@ -88,6 +93,7 @@ import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TermsAndConditionRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.res.SuccessRes;
@@ -156,6 +162,14 @@ public class EndorsementService {
 	
 	@Autowired
 	private LoginMasterRepository loginRepo ;
+	
+
+	@Autowired
+	private EServiceSectionDetailsRepository sectionRepo ;
+	
+
+	@Autowired
+	private  SectionDataDetailsRepository sddRepo;
 	
 	public CommonRes cancelPolicy(Endorsment request) {
 		try {
@@ -950,8 +964,9 @@ public class EndorsementService {
 		}
 	}
 
+	@Transactional
 	public CommonRes changeEndtStatus(ChangeEndoStatusReq req) {
-
+		DozerBeanMapper dozerMapper =new DozerBeanMapper(); 
 		try {
 			HomePositionMaster data=hpmrepo.findByQuoteNo(req.getQuoteNo());
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , req.getProductId().toString());
@@ -960,11 +975,91 @@ public class EndorsementService {
 				// Update Home Posion Master
 				if (StringUtils.isNotBlank(data.getEndtTypeId()))
 					data.setEndtStatus("C");
-					
 					hpmrepo.saveAndFlush(data);
 					// Update ProductWise
 					paymentServiceImpl.updateProductWisePolicyNo(req.getProductId().toString(), data.getPolicyNo(),
 						req.getQuoteNo(), data.getEndtTypeId(),product.getMotorYn() , new BigDecimal(0));
+			} else {
+				  // Policy Cover Data
+		    	   {
+		    		   CriteriaBuilder cb = em.getCriteriaBuilder();
+						// create update
+						CriteriaUpdate<PolicyCoverData> update = cb.createCriteriaUpdate(PolicyCoverData.class);
+						// set the root class
+						Root<PolicyCoverData> m = update.from(PolicyCoverData.class);
+						// set update and where clause
+						update.set("policyNo", data.getPolicyNo() );
+						
+						Predicate n1 = cb.equal(m.get("quoteNo"),req.getQuoteNo());
+						// Cancellation Condition
+						if(StringUtils.isNotBlank(data.getEndtTypeId()) && data.getEndtTypeId().equalsIgnoreCase("842")) {
+							update.where(n1);
+						} else {
+							Predicate n2 = cb.notEqual(m.get("status"),"D" );
+							update.where(n1,n2);
+						}
+						// perform update
+						em.createQuery(update).executeUpdate();
+		    	   }
+		    	   
+		    	   // Policy Cover Data Induviduals
+		    	   {
+		    		   CriteriaBuilder cb = em.getCriteriaBuilder();
+						// create update
+						CriteriaUpdate<PolicyCoverDataIndividuals> update = cb.createCriteriaUpdate(PolicyCoverDataIndividuals.class);
+						// set the root class
+						Root<PolicyCoverDataIndividuals> m = update.from(PolicyCoverDataIndividuals.class);
+						// set update and where clause
+						update.set("policyNo", data.getPolicyNo());
+						
+						Predicate n1 = cb.equal(m.get("quoteNo"),req.getQuoteNo() );
+						// Cancellation Condition
+						if(StringUtils.isNotBlank(data.getEndtTypeId()) && data.getEndtTypeId().equalsIgnoreCase("842")) {
+							update.where(n1);
+						} else {
+							Predicate n2 = cb.notEqual(m.get("status"),"D" );
+							update.where(n1,n2);
+						}
+						// perform update
+						em.createQuery(update).executeUpdate();  
+		    	   }
+		    	   
+		    	// Section Update
+		    	   List<SectionDataDetails> secList =  sddRepo.findByQuoteNo(req.getQuoteNo());
+	    		   if(StringUtils.isNotBlank(data.getEndtTypeId()) && data.getEndtTypeId().equalsIgnoreCase("842")) {
+	    			   secList.forEach( o -> {
+	    				   o.setPolicyNo(data.getPolicyNo());
+	    				   o.setStatus("D");
+	    				   o.setEndtStatus("C");
+	    			   });
+					} else {
+						secList.forEach( o -> {
+						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
+							   o.setPolicyNo(data.getPolicyNo());
+			    			   o.setStatus("P");
+						   }
+			    			   o.setEndtStatus(StringUtils.isNotBlank(data.getEndtTypeId()) ? "C" : "");
+			    		    
+		    		   });
+					}
+	    		   sddRepo.saveAllAndFlush(secList);
+	    		  
+	    		// Update Eservice Asset
+	    		   List<EserviceSectionDetails> updateEserList = new ArrayList<EserviceSectionDetails>();
+	    		   List<EserviceSectionDetails> eserBuildingList =  sectionRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+		    	   eserBuildingList.forEach( o -> {
+		    			  
+	    			  List<SectionDataDetails> filterAsset = secList.stream().filter( e -> e.getRiskId().equals(o.getRiskId())
+	    					  && e.getSectionId().equals(o.getSectionId()) ).collect(Collectors.toList());
+	    			  
+	    			  if( filterAsset.size()> 0 ) {
+	    				  EserviceSectionDetails updateEser = o; 
+	    				  dozerMapper.map(filterAsset.get(0) , updateEser);
+	    				  updateEserList.add(updateEser);
+	    			   }
+		    		 
+		    		  });	    		   
+		    	   sectionRepo.saveAllAndFlush(updateEserList);
 			}
 			Object res = null ;
 			if (product.getMotorYn().equalsIgnoreCase("M") ) {
