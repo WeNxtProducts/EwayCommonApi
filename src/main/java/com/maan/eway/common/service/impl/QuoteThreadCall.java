@@ -803,16 +803,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 	    		Object motorKey =  motorKeyValue.get(cov.getCoverBasedOn());
 	    		
 	    		if(motorKey!=null && filterCovers.size() > 0 &&  !cov.getCoverName().contains("Minimum Premium") ) {
-	    			if(!cov.getCoverBasedOn().equalsIgnoreCase("suminsured") ) {
-	    				if(cov.getCoverId().equals(42)) {// || cov.getCoverId().equals(55) ) {
-		    				// skip
-		    			} else {
+	    			if(!cov.getCoverBasedOn().equalsIgnoreCase("suminsured") && (cov.getFreeCoverLimit()==null || cov.getFreeCoverLimit().compareTo(BigDecimal.ZERO)==0) ) {
+//	    				if(cov.getCoverId().equals(42)) {// || cov.getCoverId().equals(55) ) {
+//		    				// skip
+//		    			} else {
 		    				motorKeyValue.put(cov.getCoverBasedOn(),  cov.getSumInsured()==null ?  null : cov.getSumInsured().toPlainString());
-		    			}
+		    	//		}
 	    			}
 	    			
 	    		} else if (motorKey!=null && "N".equalsIgnoreCase(cov.getDependentCoverYn())  && ! cov.getCoverName().contains("Minimum Premium")   ) {
-	    			if(!cov.getCoverBasedOn().equalsIgnoreCase("suminsured") ) {
+	    			if(!cov.getCoverBasedOn().equalsIgnoreCase("suminsured") && (cov.getFreeCoverLimit()==null || cov.getFreeCoverLimit().compareTo(BigDecimal.ZERO)==0) ) {
 	    				motorKeyValue.put(cov.getCoverBasedOn(), null );
 	    			}
 	    			
@@ -1381,10 +1381,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			    			&&  o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId()) &&   o.getTaxId().equals(0) &&  o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
 			    	
 		    		Object assetKey =  assetKeyValue.get(cov.getCoverBasedOn());
-		    		if(assetKey!=null && filterCovers.size() > 0 && ! cov.getCoverName().contains("Minimum Premium")) {
+		    		if(assetKey!=null && filterCovers.size() > 0 && ! cov.getCoverName().contains("Minimum Premium") && (cov.getFreeCoverLimit()==null || cov.getFreeCoverLimit().compareTo(BigDecimal.ZERO)==0) ) {
 		    			assetKeyValue.put(cov.getCoverBasedOn(),  cov.getSumInsured()==null ?  null : cov.getSumInsured().toPlainString());	
 				    
-		    		}	else if (assetKey!=null && "N".equalsIgnoreCase(cov.getDependentCoverYn())  && ! cov.getCoverName().contains("Minimum Premium") ) {
+		    		}	else if (assetKey!=null && "N".equalsIgnoreCase(cov.getDependentCoverYn())  && ! cov.getCoverName().contains("Minimum Premium") && (cov.getFreeCoverLimit()==null || cov.getFreeCoverLimit().compareTo(BigDecimal.ZERO)==0)  ) {
 		    			assetKeyValue.put(cov.getCoverBasedOn(),  null );
 			    	}
 			    	
