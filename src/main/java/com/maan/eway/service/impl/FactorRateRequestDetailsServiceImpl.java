@@ -292,13 +292,15 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 		String successRes = "" ;
 		try {
 			// Delete Unopted Sections 
-			List<EserviceSectionDetails> secList = eserSecRepo.findByRequestReferenceNoAndProductIdOrderBySectionIdAsc(req.getRequestReferenceNo(), req.getProductId());
+			List<EserviceSectionDetails> secList = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()), req.getProductId());
 			List<Integer> optedSectionIds = new ArrayList<Integer>();
-			secList.forEach( o -> { 	optedSectionIds.add(Integer.valueOf(o.getSectionId()));	} ); 					
+			secList.forEach( o -> { 
+				
+				optedSectionIds.add(Integer.valueOf(o.getSectionId()));	} ); 					
 					
-			Long notSecCount = 	repository.countByRequestReferenceNoAndSectionIdNotIn(req.getRequestReferenceNo(), optedSectionIds );	
+			Long notSecCount = 	repository.countByRequestReferenceNoAndVehicleIdAndSectionIdNotIn(req.getRequestReferenceNo(), Integer.valueOf(req.getVehicleId()), optedSectionIds );	
 			if(notSecCount > 0) {
-				repository.deleteByRequestReferenceNoAndSectionIdNotIn(req.getRequestReferenceNo(), optedSectionIds );
+				repository.deleteByRequestReferenceNoAndVehicleIdAndSectionIdNotIn(req.getRequestReferenceNo(), Integer.valueOf(req.getVehicleId()) ,optedSectionIds );
 			}
 					
 			// Find Datas
