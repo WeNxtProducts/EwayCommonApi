@@ -92,6 +92,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					}
 				}		
 				 si=si.subtract(t.getFreeCoverLimit());
+				 si=si.compareTo(BigDecimal.ZERO)>0?si:BigDecimal.ZERO;
 				t.setSumInsured(si);
 				t.setSumInsuredLc(si.multiply(exchangeRate,MathContext.DECIMAL64));
 				if(t.getSumInsured().compareTo(t.getCoverageLimit())>0) {

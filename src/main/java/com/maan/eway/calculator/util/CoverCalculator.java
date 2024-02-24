@@ -66,6 +66,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					}
 				 }		
 				 si=si.subtract(t.getFreeCoverLimit());
+				 si=si.compareTo(BigDecimal.ZERO)>0?si:BigDecimal.ZERO;
 				 t.setSumInsured(si);
 				 t.setSumInsuredLc(si.multiply(exchangeRate,MathContext.DECIMAL64));
 				 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0

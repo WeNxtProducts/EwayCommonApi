@@ -57,6 +57,7 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 					}
 				 }		
 				 si=si.subtract(t.getFreeCoverLimit());
+				 si=si.compareTo(BigDecimal.ZERO)>0?si:BigDecimal.ZERO;
 				 t.setSumInsured(si);
 				 t.setSumInsuredLc(si.multiply(exchangeRate,MathContext.DECIMAL64));
 			
