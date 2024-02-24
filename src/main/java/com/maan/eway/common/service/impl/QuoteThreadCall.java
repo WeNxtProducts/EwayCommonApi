@@ -2791,6 +2791,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 								cal.setTime(oldEndDate);
 								cal.set(Calendar.HOUR_OF_DAY, 23);
 								cal.set(Calendar.MINUTE, 59);
+								cal.set(Calendar.SECOND, 59);
 								oldEndDate = cal.getTime();
 								fc.setCoverPeriodTo(oldEndDate)  ;
 								fc.setStatus("D");
