@@ -795,8 +795,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Map
 			ObjectMapper m = new ObjectMapper();
 			Map<String,String> motorKeyValue = m.convertValue(motorData , Map.class);
-			
-		    for (FactorRateRequestDetails cov : premiumCovers) {
+			List<FactorRateRequestDetails>  overAllCovers = covers.stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) && 
+					o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getProductId().equals(Integer.valueOf(request.getProductId())) && o.getTaxId().equals(0)
+					&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+					
+					
+			for (FactorRateRequestDetails cov : overAllCovers) {
 		    	List<FactorRateRequestDetails>  filterCovers = premiumCovers.stream().filter( o -> "N".equalsIgnoreCase(o.getDependentCoverYn()) && o.getVehicleId().equals(cov.getVehicleId()) &&  o.getSectionId().equals(Integer.valueOf(cov.getSectionId())) 
 		    			&&  o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId()) &&   o.getTaxId().equals(0) &&  o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
 		    	
@@ -1376,7 +1380,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 				ObjectMapper m = new ObjectMapper();
 				// Set Empty Un opted Covers
 				Map<String,String> assetKeyValue = m.convertValue(bulildDetails , Map.class);
-				for (FactorRateRequestDetails cov : premiumCovers ) {
+				List<FactorRateRequestDetails>  overAllCovers = covers.stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) && 
+						o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getProductId().equals(Integer.valueOf(request.getProductId())) && o.getTaxId().equals(0)
+						&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+				
+				for (FactorRateRequestDetails cov : overAllCovers ) {
 			    	List<FactorRateRequestDetails>  filterCovers = premiumCovers.stream().filter( o -> "N".equalsIgnoreCase(o.getDependentCoverYn()) && o.getVehicleId().equals(cov.getVehicleId()) &&  o.getSectionId().equals(Integer.valueOf(cov.getSectionId())) 
 			    			&&  o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId()) &&   o.getTaxId().equals(0) &&  o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
 			    	
