@@ -81,6 +81,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.minSumInsured(t.getMinCoverageLimit()==null?BigDecimal.ZERO:t.getMinCoverageLimit())
 					.policyPeriod(t.getNoOfDays())
 					.isTaxExcempted(t.getIsTaxExtempted()==null?"N":t.getIsTaxExtempted())
+					.freeCoverLimit(t.getFreeCoverLimit()==null?BigDecimal.ZERO:t.getFreeCoverLimit())
 					.build();
 				return c;
 			 }			

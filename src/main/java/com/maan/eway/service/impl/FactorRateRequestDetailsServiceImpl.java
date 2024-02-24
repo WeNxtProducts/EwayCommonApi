@@ -454,7 +454,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					saveCover.setDiscountCoverId(0) ;
 					saveCover.setDiffPremiumIncludedTaxFc(coverData.getDiffPremiumIncludedTax()==null?BigDecimal.ZERO:coverData.getDiffPremiumIncludedTax());
 					saveCover.setDiffPremiumIncludedTaxLc(coverData.getDiffPremiumIncludedTaxLC()==null?BigDecimal.ZERO:coverData.getDiffPremiumIncludedTaxLC());
-					
+					saveCover.setFreeCoverLimit(coverData.getFreeCoverLimit()==null?BigDecimal.ZERO:coverData.getFreeCoverLimit());
 					//saveCover.setEndtCount(BigDecimal.ZERO );
 					saveCoverList.add(saveCover);
 					premiumLc = premiumLc + (saveCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxLc().toString()) );
@@ -553,7 +553,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						String userOpt=(!"D".equals(saveSubCover.getIsSelected()) )?(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt()):(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt());
 						saveSubCover.setMinimumPremiumYn(StringUtils.isBlank(subCoverData.getMinimumPremiumYn())?"N":subCoverData.getMinimumPremiumYn());
 						saveSubCover.setEndtCount(coverData.getEndtCount()==null?BigDecimal.ZERO:coverData.getEndtCount());
-						
+						saveSubCover.setFreeCoverLimit(coverData.getFreeCoverLimit()==null?BigDecimal.ZERO:coverData.getFreeCoverLimit());
 						/*if(coverIds!=null && !coverIds.isEmpty()) {
 							long count = coverIds.stream().filter(t-> (saveSubCover.getCoverId().equals(t.getCoverId()) && saveSubCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 							if(count>0) userOpt="Y";

@@ -76,6 +76,7 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.status("Y")
 					.minSumInsured(t.get("minSuminsured")==null?BigDecimal.ZERO:new BigDecimal(t.get("minSuminsured").toString()))
 					.isTaxExcempted(t.get("isTaxExcempted")==null?"N":t.get("isTaxExcempted").toString())
+					.freeCoverLimit(t.get("freeCoverLimit")==null?BigDecimal.ZERO:new BigDecimal(t.get("freeCoverLimit").toString()))
 					.build();
 				return c;
 			 }			

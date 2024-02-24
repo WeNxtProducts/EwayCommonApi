@@ -86,6 +86,7 @@ public class CreateMinimumPremium {
 				.branchCode(engine.getBranchCode())
 				.agencyCode(engine.getAgencyCode())
 				.tiraRate(0D)
+				.freeCoverLimit(BigDecimal.ZERO)
 				.build();
   		
 

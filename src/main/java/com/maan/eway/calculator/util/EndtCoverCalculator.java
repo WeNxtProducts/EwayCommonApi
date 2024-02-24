@@ -90,7 +90,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);
 						si=ct!=null?ct.getPremiumExcluedTax():BigDecimal.ZERO;
 					}
-				}				 
+				}		
+				 si=si.subtract(t.getFreeCoverLimit());
 				t.setSumInsured(si);
 				t.setSumInsuredLc(si.multiply(exchangeRate,MathContext.DECIMAL64));
 				if(t.getSumInsured().compareTo(t.getCoverageLimit())>0) {

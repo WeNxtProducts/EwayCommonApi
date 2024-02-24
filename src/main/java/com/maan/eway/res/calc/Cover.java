@@ -201,6 +201,9 @@ public class Cover implements Serializable{
 				  
 				  @JsonProperty("IsTaxExcempted")
 				  private String isTaxExcempted;
+				  @JsonProperty("FreeCoverLimit")
+				  private BigDecimal     freeCoverLimit;
+
 }
 
 
