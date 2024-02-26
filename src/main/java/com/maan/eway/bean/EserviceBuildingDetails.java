@@ -821,5 +821,8 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="OTHER_OCCUPATION")
 	      private String otherOccupation;
 	      
-	      
+
+	      @Column(name="GROUND_UNDERGROUND_SI")
+	      private 	BigDecimal groundUndergroundSi;
+	     
 }
