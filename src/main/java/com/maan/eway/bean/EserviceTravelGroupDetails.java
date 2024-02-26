@@ -167,6 +167,17 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="SECTION_DESC")
    private String    sectionDesc ;
+   
+   @Column(name="RATING_RELATION_ID")
+   private String ratingRelationId;
+
+   @Column(name="RATING_RELATION_DESC")
+   private String ratingRelationDesc;
+   
+   @Column(name="NICK_NAME")
+   private String nickName;
+
+
 }
 
 
