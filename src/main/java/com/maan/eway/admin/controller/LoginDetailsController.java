@@ -8,6 +8,7 @@ package com.maan.eway.admin.controller;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -104,7 +105,7 @@ public class LoginDetailsController {
 		if(validationCodes!=null && validationCodes.size() > 0 ) {
 			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
 			comErrDescReq.setBranchCode("99999");
-			comErrDescReq.setInsuranceId(req.getLoginInformation().getCompanyId());
+			comErrDescReq.setInsuranceId(StringUtils.isBlank(req.getLoginInformation().getCompanyId())?"99999": req.getLoginInformation().getCompanyId());
 			comErrDescReq.setProductId("99999");
 			comErrDescReq.setModuleId("31");
 			comErrDescReq.setModuleName("MASTERS");
@@ -148,7 +149,8 @@ public class LoginDetailsController {
 		if(validationCodes!=null && validationCodes.size() > 0 ) {
 			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
 			comErrDescReq.setBranchCode("99999");
-			comErrDescReq.setInsuranceId(req.getLoginInformation().getCompanyId());
+		//	comErrDescReq.setInsuranceId(req.getLoginInformation().getCompanyId());
+			comErrDescReq.setInsuranceId(StringUtils.isBlank(req.getLoginInformation().getCompanyId())?"99999": req.getLoginInformation().getCompanyId());
 			comErrDescReq.setProductId("99999");
 			comErrDescReq.setModuleId("31");
 			comErrDescReq.setModuleName("MASTERS");
@@ -193,7 +195,7 @@ public class LoginDetailsController {
 		if(validationCodes!=null && validationCodes.size() > 0 ) {
 			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
 			comErrDescReq.setBranchCode("99999");
-			comErrDescReq.setInsuranceId(req.getLoginInformation().getCompanyId());
+			comErrDescReq.setInsuranceId(StringUtils.isBlank(req.getLoginInformation().getCompanyId())?"99999": req.getLoginInformation().getCompanyId());
 			comErrDescReq.setProductId("99999");
 			comErrDescReq.setModuleId("31");
 			comErrDescReq.setModuleName("MASTERS");
