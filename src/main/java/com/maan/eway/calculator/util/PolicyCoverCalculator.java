@@ -66,7 +66,7 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 				 
 			 
 				 
-				 
+				 String rateFor=policy.get(0).get("groupCount")==null?"1":policy.get(0).get("groupCount").toString();
 				 
 				 
 				 BigDecimal si=BigDecimal.ZERO;
@@ -138,7 +138,7 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 						 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
 						 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
 
-						 t.setRate((Double) ((Double.parseDouble(rate) )));
+						 t.setRate((Double) ((Double.parseDouble(rate)*Double.parseDouble(rateFor) )));
 
 						 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
 						 BigDecimal domath = domath(calctype, t.getRate(), si,t.getExchangeRate());
@@ -159,7 +159,7 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 					 }
 				 } else {
 					  
-					 
+					 t.setRate((t.getRate()*Double.parseDouble(rateFor)));
 					 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
 					 t.setPremiumBeforeDiscount(domath);					 
 					 t.setPremiumBeforeDiscountLC(new BigDecimal(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
