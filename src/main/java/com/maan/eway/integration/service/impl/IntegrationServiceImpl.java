@@ -39,6 +39,9 @@ import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PgithPolRiskAddlInfo;
 import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.PremiaConfigMaster;
+import com.maan.eway.bean.PtIntgFlexTran;
+import com.maan.eway.bean.SeqCustid;
+import com.maan.eway.bean.SeqPiftTranId;
 import com.maan.eway.bean.YiChargeDetail;
 import com.maan.eway.bean.YiCoverDetail;
 import com.maan.eway.bean.YiPolicyApproval;
@@ -57,6 +60,8 @@ import com.maan.eway.repository.MotcommDiscountDetailRepository;
 import com.maan.eway.repository.PgitPolRiskAddlInfoRepository;
 import com.maan.eway.repository.PremiaConfigDataMasterRepository;
 import com.maan.eway.repository.PremiaConfigMasterRepository;
+import com.maan.eway.repository.PtintgFlexTransRepository;
+import com.maan.eway.repository.SeqPiftTranIdRepository;
 import com.maan.eway.repository.YiChargeDetailRepository;
 import com.maan.eway.repository.YiCoverDetailRepository;
 import com.maan.eway.repository.YiPolicyApprovalRepository;
@@ -104,7 +109,11 @@ private YiSectionDetailRepository yisecRepo;
 @Autowired
 private YiVatDetailRepository yivatRepo;
 
+@Autowired
+private SeqPiftTranIdRepository seqPiftTranIdRepo;
 
+@Autowired
+private PtintgFlexTransRepository ptTransRepo;
 
 @Autowired
 private FrameReqService frameReqService;
@@ -234,7 +243,8 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 					
 					if(result=true) {
 					if(!jmap.isEmpty()) {
-						
+						//Madison
+//						Boolean result1=deleteTable(quoteNo,masterdata.getPremiaTableName(),jmap);
 						String insertQuery="INSERT INTO "+masterdata.getPremiaTableName()+" ("+StringUtils.join(colums,",")
 						+") VALUES ("+StringUtils.join(values,",")+")";
 						log.info("Insert Query::"+insertQuery);
@@ -259,19 +269,10 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 			}
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId);
 		
-			
-			if("100002".equalsIgnoreCase(companyId)){
-				if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
-					ewayMotorPremiaPush(policyNo,reqRefNo,configMas);
-				}
-				
+			if ("100002".equalsIgnoreCase(companyId)) {
+				ewayMotorPremiaPush(policyNo, reqRefNo, configMas);
+
 			}
-//			else if("100004".equalsIgnoreCase(companyId)){
-//				if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
-//					madisonMotorPremiaPush(policyNo,reqRefNo,configMas);
-//				}
-//					
-//			}
 		}
 		
 		return true;
@@ -450,6 +451,44 @@ public Boolean delete(String quoteNo,String tableName) {
 	}
 	return result;
 }
+
+public Boolean deleteTable(String quoteNo, String tableName,Map<String,String> jmap) {
+	Boolean result=false; 
+	try {
+		String companyId="";
+		String productId="";
+		String policyNo="";
+		HomePositionMaster home = homeRepo.findByQuoteNo(quoteNo);
+		if (home != null) {
+			policyNo = home.getPolicyNo();
+			companyId = home.getCompanyId();
+			productId = home.getProductId().toString();
+		}
+		if("100004".equalsIgnoreCase(companyId) && "5".equalsIgnoreCase(productId)) {
+        // using for-each loop for iteration over Map.entrySet() 
+        for (Map.Entry<String,String> entry : jmap.entrySet())  {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            String key=entry.getKey();
+            String value="";
+            if("PIFT_LEVEL".equalsIgnoreCase(key)) {
+            	value=entry.getValue();
+            	if ("Pt_intg_flex_tran".equalsIgnoreCase(tableName)) { 
+    				List<PtIntgFlexTran> list = ptTransRepo.findByPiftPolicyNoAndPiftLevel(policyNo,value.replaceAll("\'",""));
+    				if (list.size() > 0 && list != null) {
+    					ptTransRepo.deleteAll(list);
+    					 System.out.println("Record Deteted :: "+key+" "+value);
+    					result = true;
+    				}
+    			}
+            }
+        }
+		}
+	}catch (Exception e) {
+		e.printStackTrace();
+	}
+	return result;
+}
+
 private String frameselectfromMap(Map<String, String> maps) {
 	String result = maps.entrySet().stream().map(map -> (map.getValue()+" "+map.getKey()))
     .collect(Collectors.joining(","));
@@ -519,6 +558,14 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			
 		}
 		if ("100004".equalsIgnoreCase(companyId)) {
+			 SeqPiftTranId entity=new SeqPiftTranId();
+			 List<SeqPiftTranId> data=seqPiftTranIdRepo.findAllByOrderByTranIdDesc();
+			 Long id=data.get(0).getTranId()+1;
+			 entity.setTranId(id);
+	         seqPiftTranIdRepo.saveAndFlush(entity);  
+	         System.out.println(entity);
+		}
+		if ("100004".equalsIgnoreCase(companyId)) {
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				madisonMotorPremiaPush(policyNo, reqRefNo);
 			}
@@ -581,10 +628,12 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), insuraceId);
 			Predicate n5 = cb.equal(c.get("productId"), productId);
+			Predicate n7 = cb.equal(c.get("productId"), "99999");
+			Predicate n8 = cb.or(n5,n7);
 			//In 
 			Expression<String>e0= c.get("premiaId");
 			Predicate n6 = e0.in(premiaIds);
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n8,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
@@ -674,8 +723,10 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			Predicate n2 = cb.equal(c.get("amendId"),amendId);	
 			Predicate n3 = cb.equal(c.get("companyId"), insuraceId);
 			Predicate n4 = cb.equal(c.get("productId"), productId);
-			Predicate n5 = cb.equal(c.get("premiaId"), premiaId);
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			Predicate n5 = cb.equal(c.get("productId"), "99999");
+			Predicate n6 =cb.or(n4,n5);
+			Predicate n7 = cb.equal(c.get("premiaId"), premiaId);
+			query.where(n1,n2,n3,n6,n7).orderBy(orderList);
 			// Get Result
 			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
 			list = result.getResultList();

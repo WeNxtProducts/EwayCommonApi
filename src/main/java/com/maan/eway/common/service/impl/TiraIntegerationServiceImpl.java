@@ -128,6 +128,18 @@ public class TiraIntegerationServiceImpl {
 		    				  
 		    				// service.pushPremiaIntegration(premiaReq);
 		    				  pushPremiaIntegration(premiaReq , token);
+		    			}else {
+		    				PremiaRequest premiaReq = new PremiaRequest();
+		    				  premiaReq.setQuoteNo(tiraReq.getQuoteNo()); List<String> premiaIds = new
+		    				  ArrayList<String>(); premiaIds.add( "1" ); premiaIds.add( "2" );
+		    				   premiaIds.add( "4" ); premiaIds.add( "5" );
+		    				  premiaIds.add( "6" ); premiaIds.add( "7" ); premiaIds.add( "8" );
+		    				 premiaIds.add( "9" ); premiaIds.add( "10" ); premiaIds.add( "11" );
+		    				 premiaIds.add( "12" );
+		    				  premiaReq.setPremiaIds(premiaIds);
+		    				  
+		    				// service.pushPremiaIntegration(premiaReq);
+		    				  pushPremiaIntegration(premiaReq , token);
 		    			}
 		        		System.out.println("Premia Integration Ended... Quote No ---> " + tiraReq.getQuoteNo() + " . Time : " + sdf.format(new Date()) );
 					

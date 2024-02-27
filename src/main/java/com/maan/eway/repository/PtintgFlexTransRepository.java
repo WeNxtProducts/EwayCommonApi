@@ -30,5 +30,8 @@ public interface PtintgFlexTransRepository  extends JpaRepository<PtIntgFlexTran
 
 	List<PtIntgFlexTran> findByPiftPolicyNo(String policyNo);
 
+	List<PtIntgFlexTran> findByPiftPolicyNoAndPiftLevel(String policyNo, String value);
+
+
 
 }
