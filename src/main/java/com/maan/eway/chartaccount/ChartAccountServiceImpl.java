@@ -362,7 +362,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 				List<Integer> coverIds =childMaster.stream().map(p ->p.getId().getCoverId())
 						.collect(Collectors.toList());
 				
-				BigDecimal premium =jpqlQuery.getPremium(req.getRequestRefNo(),coverIds);
+				BigDecimal premium =jpqlQuery.getPremium(req.getRequestRefNo(),coverIds,req);
 				
 				response.setCommonResponse(premium);
 				response.setMessage("Success");

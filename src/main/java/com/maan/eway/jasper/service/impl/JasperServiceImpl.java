@@ -465,9 +465,9 @@ public class JasperServiceImpl implements JasperService {
 				Map<String,Object> map = new HashMap<String,Object>();
 				log.info("OS Using ==> "+System.getProperty("os.name").toLowerCase());
 				if(System.getProperty("os.name").toLowerCase().contains("windows")) {
-					map.put("pvImagePath",  config.getImagePath().substring(1, config.getImagePath().length()-0));
+					map.put("pvImagepath",  config.getImagePath().substring(1, config.getImagePath().length()-0));
 				}else {
-					map.put("pvImagePath",config.getImagePath().replaceAll("\\\\", "/"));
+					map.put("pvImagepath",config.getImagePath().replaceAll("\\\\", "/"));
 				}
 				TaxInvoiceRes taxRes = jasperCustomeImple.getTaxInvoiceRes(homeData.getPolicyNo());
 				String JsonString = gson.toJson(taxRes);
@@ -495,9 +495,9 @@ public class JasperServiceImpl implements JasperService {
 				Map<String,Object> input = new HashMap<String,Object>();
 				log.info("OS Using ==> "+System.getProperty("os.name").toLowerCase());
 				if(System.getProperty("os.name").toLowerCase().contains("windows")) {
-					input.put("pvImagePath",  config.getImagePath().substring(1, config.getImagePath().length()-0));
+					input.put("pvImagepath",  config.getImagePath().substring(1, config.getImagePath().length()-0));
 				}else {
-					input.put("pvImagePath",config.getImagePath().replaceAll("\\\\", "/"));
+					input.put("pvImagepath",config.getImagePath().replaceAll("\\\\", "/"));
 				}
 				CreditNoteRes creditRes = jasperCustomeImple.getCreditNoteRes(homeData.getPolicyNo());
 				String JsonString = gson.toJson(creditRes);
@@ -752,7 +752,7 @@ public class JasperServiceImpl implements JasperService {
 				String classpath = this.getClass().getClassLoader().getResource("").getPath();
 				classpath = classpath.replaceAll("%20", " ");
 				classpath = classpath.substring(1, classpath.length());
-				String imagepath = classpath + "images/"; 
+				String imagepath = classpath + "report/images/"; 
 				
 					
 				if("Y".equals(report.getSubJasperYn())) { // for if subjasper yes 
@@ -760,9 +760,9 @@ public class JasperServiceImpl implements JasperService {
 					String [] subJasperArray =report.getSubJasperName().split(",");
 				
 				for(String subJasperJrxml :subJasperArray) {
-					String jrxmlPath=classpath +subJasperJrxml.replace(".jasper", ".jrxml");
-					String path = JasperCompileManager.compileReportToFile(jrxmlPath);
-					log.info("Jasper compileToReport path" +path);
+						String jrxmlPath=classpath +subJasperJrxml.replace(".jasper", ".jrxml");
+						String path = JasperCompileManager.compileReportToFile(jrxmlPath);
+						log.info("Jasper compileToReport path" +path);
 					}
 				}
 				

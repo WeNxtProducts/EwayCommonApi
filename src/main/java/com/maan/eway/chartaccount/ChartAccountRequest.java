@@ -1,5 +1,7 @@
 package com.maan.eway.chartaccount;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -27,5 +29,8 @@ public class ChartAccountRequest {
 	
 	@JsonProperty("ProductId")
 	private String productId;
+	
+	@JsonProperty("UserOptedCoverReq")
+	private List<UserOptedCoverReq> userOptedCoverReq;
 
 }

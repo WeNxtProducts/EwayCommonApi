@@ -3,7 +3,10 @@ package com.maan.eway.chartaccount;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -14,8 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import com.maan.eway.bean.FactorRateRequestDetails;
-import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductTaxSetup;
 import com.maan.eway.bean.ReportJasperConfigMaster;
@@ -208,18 +209,48 @@ public class JpqlQueryServiceImpl {
 	}
 	
 	
-	public BigDecimal getPremium(String refNo,List<Integer> coverIds) {
-		BigDecimal premium =null;
+	public BigDecimal getPremium(String refNo,List<Integer> coverIds, ChartAccountRequest req) {
+		BigDecimal premium =BigDecimal.ZERO;
+		BigDecimal extraCover =BigDecimal.ZERO;
 		try {
-			
+						
+			if(req.getUserOptedCoverReq().size()>0) {
+				
+				
+				List<BigDecimal> premiumList =new ArrayList<>();
+				
+				Map<Integer, List<UserOptedCoverReq>> groupByVehicleId =req.getUserOptedCoverReq().stream()
+						.collect(Collectors.groupingBy(p ->Integer.valueOf(p.getVehicleId())));
+				
+				groupByVehicleId.forEach((a,b) ->{
+					
+					BigDecimal extraCoverPremium =BigDecimal.ZERO;
+					
+					List<Integer> ids =b.stream().map(p ->Integer.valueOf(p.getCoverId()))
+							.filter(p ->coverIds.contains(p))
+							.collect(Collectors.toList());
+					
+					String sqlQuery ="select sum(fac.premiumExcludedTaxFc) from FactorRateRequestDetails fac  where fac.requestReferenceNo=:requestReferenceNo and fac.coverId in(:coverId) "
+							+ "and fac.coverageType=:coverageType and (fac.isSelected =:isSelected or fac.userOpt=:userOpt) and fac.minimumPremiumYn!=:minimumPremiumYn and fac.vehicleId in(:vehicleId)";
+					
+					extraCoverPremium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", ids).setParameter("coverageType", "B")
+					.setParameter("isSelected", "D").setParameter("minimumPremiumYn", "Y").setParameter("vehicleId", a)
+					.getSingleResult();
+					
+					premiumList.add(extraCoverPremium);
+				
+				});
+				
+				extraCover =premiumList.stream().reduce(BigDecimal.ZERO, (a,b) ->a.add(b));
+			}
 			 
-			String sqlQuery ="select sum(fac.premiumExcludedTaxFc) from FactorRateRequestDetails fac  where fac.requestReferenceNo=:requestReferenceNo and fac.coverId in(:coverId) "
-					+ "and fac.coverageType=:coverageType and (fac.isSelected =:isSelected or fac.userOpt=:userOpt)";
+				String sqlQuery ="select sum(fac.premiumExcludedTaxFc) from FactorRateRequestDetails fac  where fac.requestReferenceNo=:requestReferenceNo and fac.coverId in(:coverId) "
+						+ "and fac.coverageType=:coverageType and (fac.isSelected =:isSelected or fac.userOpt=:userOpt) and fac.minimumPremiumYn!=:minimumPremiumYn";
+				
+				premium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", coverIds).setParameter("coverageType", "B")
+				.setParameter("isSelected", "D").setParameter("userOpt", "Y").setParameter("minimumPremiumYn", "Y").getSingleResult();
 			
-			premium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", coverIds).setParameter("coverageType", "B")
-			.setParameter("isSelected", "D").setParameter("userOpt", "Y").getSingleResult();
-			
-			return premium;
+			return premium.add(extraCover);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
