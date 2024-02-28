@@ -445,6 +445,25 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="AGE")
    private Integer age;
+   
+   @Column(name = "TTD_SUM_INSURED")
+   private Integer ttdSumInsured;
+   
+   @Column(name = "ME_SUM_INSURED")
+   private Integer meSumInsured;
+   
+   @Column(name = "FE_SUM_INSURED")
+   private Integer feSumInsured; 
+   
+   @Column(name = "TTD_SUM_INSURED_LC")
+   private Integer ttdSumInsuredLc;
+   
+   @Column(name = "ME_SUM_INSURED_LC")
+   private Integer meSumInsuredLc;
+   
+   @Column(name = "FE_SUM_INSURED_LC")
+   private Integer feSumInsuredLc;
+   
 }
 
 
