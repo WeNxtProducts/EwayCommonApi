@@ -35,4 +35,6 @@ public interface BrokerCommissionDetailsMasterService  {
 	SuccessRes changeStatusBrokerCommission(BrokerCommissionDetailsMasterChangeStatusReq req);
 
 	BrokerCommRes getBackDays(BrokerBackdaysGetReq req);
+
+	List<BrokerCommissionDetailsMasterGetRes> getUnOptedBrokerCommission(BrokerCommissionDetailsMasterGetallReq req);
 }

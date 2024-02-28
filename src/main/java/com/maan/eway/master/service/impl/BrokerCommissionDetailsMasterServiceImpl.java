@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -191,7 +192,7 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			if (StringUtils.isNotBlank(req.getSuminsuredStart())) {
 					Double a= Double.valueOf(req.getSuminsuredStart());
 					if(a<=0.0) {
-				errorList.add(new Error("11","SuminsuredStart", "Please Enter SuminsuredStart above zero")); 
+				//errorList.add(new Error("11","SuminsuredStart", "Please Enter SuminsuredStart above zero")); 
 					}
 			}
 			if (StringUtils.isNotBlank(req.getSuminsuredEnd())) {
@@ -936,6 +937,192 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 		return brokerRes;
 	}
 
+
+
+	@Override
+	public List<BrokerCommissionDetailsMasterGetRes> getUnOptedBrokerCommission(
+			BrokerCommissionDetailsMasterGetallReq req) {
+		List<BrokerCommissionDetailsMasterGetRes> resList = new ArrayList<BrokerCommissionDetailsMasterGetRes>() ;
+		DozerBeanMapper mapper = new DozerBeanMapper(); 
+		try {
+			List<BrokerCommissionDetails> companyComList = getCompanyCommissionList(req.getCompanyId() , req.getProductId());
+			
+			List<PolicyTypeMaster> policyTypes = getPolicyTypeList(req.getCompanyId() , req.getProductId());
+			
+			for (PolicyTypeMaster pol : policyTypes) {
+				List<BrokerCommissionDetails> filterAlreadyOpt = companyComList.stream().filter(o -> o.getProductId().equalsIgnoreCase(pol.getProductId().toString()) 
+						&& o.getPolicyType().equalsIgnoreCase(pol.getPolicyTypeId().toString()) ).collect(Collectors.toList());
+				if(filterAlreadyOpt.size() <=0 ) {
+					BrokerCommissionDetailsMasterGetRes res = new BrokerCommissionDetailsMasterGetRes();
+		         	res = mapper.map(pol, BrokerCommissionDetailsMasterGetRes.class);
+		     		res.setAmendId(pol.getAmendId().toString());
+					res.setEntryDate(pol.getEntryDate());
+					res.setEffectiveDateStart(pol.getEffectiveDateStart());
+					res.setEffectiveDateEnd(pol.getEffectiveDateEnd());
+					res.setProductId(pol.getProductId().toString());
+					res.setStatus(pol.getStatus());
+					res.setCompanyId(pol.getCompanyId());
+					res.setRemarks(pol.getRemarks());
+					res.setCreatedBy(pol.getCreatedBy());
+					res.setUpdatedBy(pol.getUpdatedBy());
+					res.setCommissionPercentage("12.5");
+					res.setSuminsuredStart("0");
+					res.setSuminsuredEnd("9999999999");
+					res.setPolicyType(pol.getPolicyTypeId().toString());
+					res.setPolicyTypeDesc(pol.getPolicyTypeName());
+					res.setId(pol.getPolicyTypeId().toString());
+					res.setLoginId("99999");
+					res.setAgencyCode("99999");
+					res.setOaCode("99999");
+					res.setCheckerYn("N");
+					resList.add(res);
+				}
+			}
+			
+			
+			} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
 	
+	public List<BrokerCommissionDetails> getCompanyCommissionList(String insuranceId , String productId ) {
+		List<BrokerCommissionDetails> brokerComlist = new ArrayList<BrokerCommissionDetails>();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
 	
+			// Find All
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			Predicate a7 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			effectiveDate.where(a1,a2,a3,a7);
+	
+			// Effective Date End
+			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm5 = effectiveDate5.from(BrokerCommissionDetails.class);
+			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
+			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
+			Predicate a8 = cb.equal(ocpm5.get("loginId"), b.get("loginId"));
+			effectiveDate5.where(a4,a5,a6,a8);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("productId")));
+			
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
+			Predicate n3 = cb.equal(b.get("status"), "Y");
+			Predicate n4 = cb.equal(b.get("companyId"),insuranceId);
+			Predicate n5 = cb.equal(b.get("loginId"),"99999" );
+			Predicate n6 = cb.equal(b.get("productId"),productId );
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+			brokerComlist = result.getResultList();
+			
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return brokerComlist;
+	}
+	
+	public List<PolicyTypeMaster> getPolicyTypeList(String insuranceId , String productId) {
+		List<PolicyTypeMaster> policyTypes = new ArrayList<PolicyTypeMaster>();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PolicyTypeMaster> query = cb.createQuery(PolicyTypeMaster.class);
+	
+			// Find All
+			Root<PolicyTypeMaster> b = query.from(PolicyTypeMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			Predicate a7 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			effectiveDate.where(a1,a2,a3,a7);
+	
+			// Effective Date End
+			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Root<PolicyTypeMaster> ocpm5 = effectiveDate5.from(PolicyTypeMaster.class);
+			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
+			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
+			Predicate a8 = cb.equal(ocpm5.get("policyTypeId"), b.get("policyTypeId"));
+			effectiveDate5.where(a4,a5,a6,a8);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("productId")));
+			
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
+			Predicate n3 = cb.equal(b.get("status"), "Y");
+			Predicate n4 = cb.equal(b.get("companyId"), insuranceId);
+			Predicate n5 = cb.equal(b.get("productId"),productId );
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+			policyTypes = result.getResultList();
+			
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return policyTypes;
+	}
 }

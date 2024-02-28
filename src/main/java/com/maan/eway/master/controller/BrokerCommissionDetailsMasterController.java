@@ -114,6 +114,25 @@ public ResponseEntity<CommonRes> getallBrokerCommission(@RequestBody BrokerCommi
 	}
 
 @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+@PostMapping("/productunoptedcommission")
+@ApiOperation(value = "This Method is to Getall Broker Commission")
+public ResponseEntity<CommonRes> getUnOptedBrokerCommission(@RequestBody BrokerCommissionDetailsMasterGetallReq req) {
+	CommonRes data = new CommonRes();
+	reqPrinter.reqPrint(req);
+		List<BrokerCommissionDetailsMasterGetRes> res = service.getUnOptedBrokerCommission(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 @PostMapping("/getactivebrokercommission")
 @ApiOperation(value = "This Method is to Getall Broker Commission")
 public ResponseEntity<CommonRes> getactiveBrokerCommission(@RequestBody BrokerCommissionDetailsMasterGetallReq req) {
