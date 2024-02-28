@@ -628,7 +628,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				for (PolicyCoverData d : basecovers) {
 					List<Cover> operatedList = new ArrayList<Cover>();
 					//try {
-						isPolicyPeriod=engine.getPolicyEndDate().after(d.getCoverPeriodTo());
+						isPolicyPeriod=	getZeroTimeDate(engine.getPolicyEndDate()).compareTo(getZeroTimeDate(d.getCoverPeriodTo()))>=0?true:false;
 					/*}catch (Exception e) {
 						e.printStackTrace();
 					}*/
@@ -3694,5 +3694,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 			e.printStackTrace();
 		}		
 	}	
-	
+	private Date getZeroTimeDate(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		date = calendar.getTime();
+		return date;
+	}	
 }
