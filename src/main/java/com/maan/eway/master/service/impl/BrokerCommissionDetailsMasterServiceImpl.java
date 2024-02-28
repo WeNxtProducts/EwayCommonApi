@@ -965,9 +965,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 					res.setRemarks(pol.getRemarks());
 					res.setCreatedBy(pol.getCreatedBy());
 					res.setUpdatedBy(pol.getUpdatedBy());
-					res.setCommissionPercentage("12.5");
+					res.setCommissionPercentage(null);
 					res.setSuminsuredStart("0");
-					res.setSuminsuredEnd("9999999999");
+					res.setSuminsuredEnd("0");
 					res.setPolicyType(pol.getPolicyTypeId().toString());
 					res.setPolicyTypeDesc(pol.getPolicyTypeName());
 					res.setId(pol.getPolicyTypeId().toString());
@@ -975,6 +975,26 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 					res.setAgencyCode("99999");
 					res.setOaCode("99999");
 					res.setCheckerYn("N");
+					resList.add(res);
+				} else {
+					BrokerCommissionDetails comm = filterAlreadyOpt.get(0);
+					BrokerCommissionDetailsMasterGetRes res = new BrokerCommissionDetailsMasterGetRes();
+		         	res = mapper.map(comm, BrokerCommissionDetailsMasterGetRes.class);
+		         	res.setAmendId(comm.getAmendId().toString());
+					res.setEntryDate(comm.getEntryDate());
+					res.setEffectiveDateStart(comm.getEffectiveDateStart());
+					res.setEffectiveDateEnd(comm.getEffectiveDateEnd());
+					res.setProductId(comm.getProductId().toString());
+					res.setStatus(comm.getStatus());
+					res.setCompanyId(comm.getCompanyId());
+					res.setRemarks(comm.getRemarks());
+					res.setCreatedBy(comm.getCreatedBy());
+					res.setUpdatedBy(comm.getUpdatedBy());
+					res.setCommissionPercentage(comm.getCommissionPercentage().toString());
+					res.setSuminsuredStart(comm.getSuminsuredStart().toString());
+					res.setSuminsuredEnd(comm.getSuminsuredEnd().toString());
+					res.setPolicyTypeDesc(comm.getPolicyTypeDesc());
+					res.setId(comm.getId().toString());
 					resList.add(res);
 				}
 			}
