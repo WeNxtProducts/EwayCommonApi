@@ -4,6 +4,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
+import com.maan.eway.jasper.req.PdfJsonReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 
@@ -28,6 +29,8 @@ public interface JasperService {
 	public JasperDocumentRes getInalipaSchedule(String policyNo);
 
 	public CommonRes getSchedule(JasperScheduleReq req);
+
+	public CommonRes PdfJsonResponse(PdfJsonReq req);
 
 
 }

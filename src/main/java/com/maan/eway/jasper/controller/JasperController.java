@@ -18,6 +18,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
+import com.maan.eway.jasper.req.PdfJsonReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
@@ -157,6 +158,12 @@ public class JasperController {
 	public CommonRes getSchedule(@RequestBody JasperScheduleReq req) {
 		return jasper.getSchedule(req);
 	}
+	
+	@PostMapping("/json/Response")
+	public CommonRes PdfJsonResponse(@RequestBody PdfJsonReq req) {
+		return jasper.PdfJsonResponse(req);
+	}
+	
 	
 	
 }

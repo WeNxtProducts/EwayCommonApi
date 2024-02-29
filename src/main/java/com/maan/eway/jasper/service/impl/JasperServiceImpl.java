@@ -48,8 +48,8 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
+import com.maan.eway.jasper.req.PdfJsonReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
-import com.maan.eway.jasper.req.ReportRes;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.res.MotorCoverNoteRes;
@@ -828,8 +828,10 @@ public class JasperServiceImpl implements JasperService {
 					reponse = getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, JsonString, jasperParameter, "- "+jasperName+".json");
 					
 				}else if("8".equals(req.getReportId())) { // Illestration Pdf
-					
-					//jasperCustomeImple.i
+					map = jasperCustomeImple.getInalipaSchedule(hpm.getPolicyNo());
+					String JsonString = gson.toJson(map);
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
+					reponse = getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, JsonString, jasperParameter, "- "+jasperName+".json");
 				}			
 				response.setCommonResponse(reponse);	
 			
@@ -846,6 +848,63 @@ public class JasperServiceImpl implements JasperService {
 					e.printStackTrace();
 				}
 			}
+		}
+		return response;
+	}
+
+	@Override
+	public CommonRes PdfJsonResponse(PdfJsonReq req) {
+		log.info("Enter in PdfJsonResponse => "+gson.toJson(req));
+		CommonRes response = new CommonRes();
+		Object Result = null;
+		try {
+			HomePositionMaster hpmData = homeRepo.findByQuoteNo(req.getQuoteNo());
+			if(StringUtils.isNotBlank(hpmData.getQuoteNo())) {
+				if(StringUtils.isBlank(req.getTaxInvoiceYn()) && StringUtils.isBlank(req.getCreditYn()) && StringUtils.isBlank(req.getEndtSchedule())) {
+					if(hpmData.getProductId() == 4){
+						TravelReportRes res = jasperCustomeImple.getTravelReport(hpmData.getPolicyNo());
+						Result = res;
+					}else if(hpmData.getProductId() == 42) {
+						Result = jasperCustomeImple.getCyberInsurance(hpmData.getPolicyNo());
+					}else if(hpmData.getProductId() == 46) {
+						MotorCoverNoteRes res = jasperCustomeImple.getMotorCoverNote(hpmData.getPolicyNo());
+						Result = res;
+					}else if(hpmData.getProductId() == 5){
+						if("100004".equalsIgnoreCase(hpmData.getCompanyId())) {
+							Result = jasperCustomeImple.getMadisonMotorSchedule(hpmData.getPolicyNo());
+						}else if("100015".equalsIgnoreCase(hpmData.getCompanyId())) {
+							Result = jasperCustomeImple.getInalipaSchedule(hpmData.getPolicyNo());
+						}else {
+							MotorPrivateRes res = jasperCustomeImple.getMotorPrivate(hpmData.getPolicyNo(),hpmData.getQuoteNo());
+							Result = res;
+						}
+					}else {
+						Result = jasperCustomeImple.getEwaySchedule(hpmData.getQuoteNo());
+					}
+				}else if(StringUtils.isNotBlank(hpmData.getPolicyNo())){
+					if("Y".equalsIgnoreCase(req.getTaxInvoiceYn())) {
+						TaxInvoiceRes res = jasperCustomeImple.getTaxInvoiceRes(hpmData.getPolicyNo());
+						Result = res;
+					}else if("Y".equalsIgnoreCase(req.getCreditYn())) {
+						CreditNoteRes res = jasperCustomeImple.getCreditNoteRes(hpmData.getPolicyNo());
+						Result = res;
+					}else if("Y".equalsIgnoreCase(req.getEndtSchedule())) {
+						Result = jasperCustomeImple.getMotorEndorsementSchedule(hpmData.getPolicyNo());
+					}
+				}
+				response.setCommonResponse(Result);
+				response.setMessage("SUCCESS");
+				response.setErrorMessage(null);
+				response.setIsError(false);
+			}else {
+				response.setCommonResponse(null);
+				response.setMessage("FAILED");
+				response.setIsError(true);
+			}
+			log.info("Exit into PdfJsonResponse");
+		}catch(Exception e) {
+			log.info("Error in PdfJsonResponse ==> "+e.getMessage());
+			e.printStackTrace();
 		}
 		return response;
 	}
