@@ -590,7 +590,24 @@ this.repository = repo;
 		      
 		      loginUserRepo.saveAndFlush(userInfo);
 			
-		      marineapi.createMarineBroker(userInfo);
+		      if(loginReq.getUserType().equalsIgnoreCase("Broker") ) {
+		    	  
+		    	  marineapi.createMarineBroker(userInfo); //broker
+		    	  
+		      }else  if(loginReq.getUserType().equalsIgnoreCase("User") ) {
+		    	  
+		    	  marineapi.createMarineUser(userInfo, saveLogin, req, "new"); //user
+		    	  
+		      }else  if(loginReq.getUserType().equalsIgnoreCase("Issuer") && loginReq.getSubUserType().equalsIgnoreCase("SuperAdmin")  ) {
+		    	  
+		    	  marineapi.createMarineAdmin(userInfo, saveLogin, "new", req); //Admin
+		    	  
+		      }else  if(loginReq.getUserType().equalsIgnoreCase("Issuer") && !loginReq.getSubUserType().equalsIgnoreCase("SuperAdmin") ) {
+		    	  
+		    	  marineapi.createMarineIssuer(userInfo, saveLogin, req, "new");//Issuer
+		      }
+		      
+		     
 			res = saveLogin.getAgencyCode() ;
 			
 			// Framing Request Save Deposit Cbc Master
@@ -855,7 +872,24 @@ this.repository = repo;
 			
 			loginUserRepo.saveAndFlush(updateUser);
 			log.info( "Login User Info Updated Details ---> " + json.toJson(updateUser) );
-			marineapi.createMarineBroker(updateUser);
+			
+			if(loginReq.getUserType().equalsIgnoreCase("Broker") ) {
+		    	  
+		    	  marineapi.createMarineBroker(updateUser); //insert
+		    	  
+		      }else  if(loginReq.getUserType().equalsIgnoreCase("User") ) {
+		    	  
+		    	  marineapi.createMarineUser(updateUser, updateLogin, req, "new"); //user
+		    	  
+		      }else  if(loginReq.getUserType().equalsIgnoreCase("Issuer") && loginReq.getSubUserType().equalsIgnoreCase("SuperAdmin")  ) {
+		    	  
+		    	  marineapi.createMarineAdmin(updateUser, updateLogin, "edit", req); //Admin
+		    	  
+		      }else  if(loginReq.getUserType().equalsIgnoreCase("Issuer") && !loginReq.getSubUserType().equalsIgnoreCase("SuperAdmin") ) {
+		    	  
+		    	  marineapi.createMarineIssuer(updateUser, updateLogin, req,  "edit");
+		      }
+  
 			res = updateLogin.getAgencyCode() ;
 			
 			/*// Branch Setup	

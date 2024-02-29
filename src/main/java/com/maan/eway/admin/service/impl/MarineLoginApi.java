@@ -21,7 +21,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.maan.eway.admin.req.CommonLoginCreationReq;
+import com.maan.eway.admin.req.CommonLoginInformationReq;
+import com.maan.eway.admin.req.CommonPersonalInforReq;
 import com.maan.eway.bean.LoginBranchMaster;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 
@@ -35,9 +39,22 @@ public class MarineLoginApi {
 	@Value(value="${marine.auth.createproduct}")
 	private String createProductLink;
 	
-	
 	@Value(value="${marine.auth.createbranch}")
 	private String createBranchLink;
+	
+	@Value(value="${marine.auth.createadmin}")
+	private String createAdminLink;
+	
+	@Value(value="${marine.auth.createissuer}")
+	private String createIssuerLink;
+	
+	@Value(value="${marine.auth.createuser}")
+	private String createUserLink;
+	
+	@Value(value="${marine.auth.userproduct}")
+	private String createUserProductLink;
+	
+	
 	
 	@Autowired
 	private LoginBranchMasterRepository lbmRepo; 
@@ -228,6 +245,174 @@ public class MarineLoginApi {
 			System.out.println("response"+postForEntity.getBody());
 			//createBranchLink
 		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	//Admin Insert
+	
+	public void createMarineAdmin(LoginUserInfo userInfo, LoginMaster saveLogin, String mode, CommonLoginCreationReq req) { 
+		CommonLoginInformationReq logreq = req.getLoginInformation();
+		CommonPersonalInforReq perreq = req.getPersonalInformation();
+		
+		
+		try {
+			List<String> products = new ArrayList<String>();
+			products.add("3");
+			products.add("11");
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 			
+			Map<String,Object > mainRequest=new HashMap<String, Object>();
+			
+			mainRequest.put("LoginId",userInfo.getLoginId());
+			mainRequest.put("Password",logreq.getPassword() );
+			mainRequest.put("UserType", "admin"  );
+			mainRequest.put("UserName",userInfo.getUserName());
+			mainRequest.put("BranchCode", userInfo.getBranchCode());
+			mainRequest.put("RegionCode", "01"  ); 	//logreq.getAttachedRegions()
+			mainRequest.put("Email", userInfo.getUserMail() );
+			mainRequest.put("Status", userInfo.getStatus() );
+			mainRequest.put("Mode", mode );
+			mainRequest.put("MenuInfo", null );
+			mainRequest.put("ProductInfo",null);
+			mainRequest.put("BrokerInfo", null);
+			mainRequest.put("UnderWriterInfo", null);
+			mainRequest.put("AttachedBranchInfo", null);
+			mainRequest.put("AttachedRegionInfo", null);
+			
+ 			String token = createLogin();
+			RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
+			
+			
+			HttpHeaders header=new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			//header.setCharset("UTF-8");
+			header.setBearerAuth(token);
+
+
+			HttpEntity<?> requestent = new HttpEntity<>(mainRequest, header);
+					
+
+			System.out.println( new Date()+" Start "+ createAdminLink);
+			System.out.println("request"+requestent);
+			ResponseEntity<Map<String, Object>> postForEntity = temp.exchange(createAdminLink,HttpMethod.POST, requestent,new ParameterizedTypeReference<Map<String, Object>>(){} );
+			System.out.println( new Date()+" End "+ createAdminLink);
+			System.out.println("response"+postForEntity.getBody());
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+		
+	}
+
+	//Issuer Insert
+	public void createMarineIssuer(LoginUserInfo userInfo, LoginMaster updateLogin, CommonLoginCreationReq req, String mode) {
+		CommonLoginInformationReq logreq = req.getLoginInformation();
+		CommonPersonalInforReq perreq = req.getPersonalInformation();
+		
+		try {
+			List<String> products = new ArrayList<String>();
+			products.add("3");
+			products.add("11");
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 			
+			Map<String,Object > mainRequest=new HashMap<String, Object>();
+			
+			mainRequest.put("LoginId",userInfo.getLoginId());
+			mainRequest.put("Password",logreq.getPassword() );
+			mainRequest.put("LoginUserType", "Issuer"  );
+			mainRequest.put("BranchCode", userInfo.getBranchCode() );
+			mainRequest.put("RegionCode", "01"  ); 	//logreq.getAttachedRegions()
+			mainRequest.put("EmailId", userInfo.getUserMail() );
+			mainRequest.put("Status", userInfo.getStatus() );
+			mainRequest.put("IssuerName", userInfo.getUserName()  );
+			mainRequest.put("CoreLoginId",userInfo.getLoginId());
+			mainRequest.put("EffectiveDate", sdf.format(userInfo.getEntryDate()));
+			mainRequest.put("OptionMode", mode);
+			mainRequest.put("BrokerLinkLocation", null);
+			mainRequest.put("AttachedBranchInfo", null);
+			mainRequest.put("ProductInfo", null);
+			mainRequest.put("AttachedRegionInfo", null);
+			
+ 			String token = createLogin();
+			RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
+			
+			
+			HttpHeaders header=new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			//header.setCharset("UTF-8");
+			header.setBearerAuth(token);
+
+
+			HttpEntity<?> requestent = new HttpEntity<>(mainRequest, header);
+					
+
+			System.out.println( new Date()+" Start "+ createIssuerLink);
+			System.out.println("request"+requestent);
+			ResponseEntity<Map<String, Object>> postForEntity = temp.exchange(createIssuerLink,HttpMethod.POST, requestent,new ParameterizedTypeReference<Map<String, Object>>(){} );
+			System.out.println( new Date()+" End "+ createIssuerLink);
+			System.out.println("response"+postForEntity.getBody());
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	//User 
+	public void createMarineUser(LoginUserInfo userInfo, LoginMaster updateLogin, CommonLoginCreationReq req,	String mode) {
+		
+		CommonLoginInformationReq logreq = req.getLoginInformation();
+		CommonPersonalInforReq perreq = req.getPersonalInformation();
+		
+		try {
+			List<String> products = new ArrayList<String>();
+			products.add("3");
+			products.add("11");
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 			
+			Map<String,Object > mainRequest=new HashMap<String, Object>();
+			
+			mainRequest.put("UserAgencyCode", logreq.getAgencyCode());
+			mainRequest.put("CustomerName", perreq.getCustomerName() );
+			mainRequest.put("AgencyCode", logreq.getAgencyCode() );
+			mainRequest.put("CustomerId", perreq.getCustomerId() );
+			mainRequest.put("ProductInfo", null ); 	//logreq.getAttachedRegions()
+			mainRequest.put("OpenCoverInfo", null);
+			
+ 			String token = createLogin();
+			RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
+			
+			HttpHeaders header=new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			//header.setCharset("UTF-8");
+			header.setBearerAuth(token);
+
+			HttpEntity<?> requestent = new HttpEntity<>(mainRequest, header);
+
+			System.out.println( new Date()+" Start "+ createUserLink);
+			System.out.println("request"+requestent);
+			ResponseEntity<Map<String, Object>> postForEntity = temp.exchange(createUserLink,HttpMethod.POST, requestent, new ParameterizedTypeReference<Map<String, Object>>(){} );
+			System.out.println(new Date()+" End "+ createUserLink);
+			System.out.println("response"+postForEntity.getBody());
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	//for user
+	public void createUserProductLink() {
+		try {
+			
+			Map<String,Object > mainRequest=new HashMap<String, Object>();
+			mainRequest.put("OpenCoverInfo","");
+			mainRequest.put("UserAgencyCode","");
+			mainRequest.put("CustomerName","");
+			mainRequest.put("AgencyCode","");
+			mainRequest.put("CustomerId","");
+			mainRequest.put("ProductInfo",null);
+			
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
