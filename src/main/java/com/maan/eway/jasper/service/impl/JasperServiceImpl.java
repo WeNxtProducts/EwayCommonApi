@@ -597,11 +597,11 @@ public class JasperServiceImpl implements JasperService {
 		CommonRes response = new CommonRes();
 		System.out.println("Enter Into getPremiumReportDetails");
 		try {
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			/*int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			int start =  limit * offset + 1 ; 
 			int end =  limit * offset + offset ;
-//			int start =  limit; 
+//			int start =  limit; */
 //			int end = offset ;
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 			String date1 = new SimpleDateFormat("yyyy-MM-dd").format(sdf.parse(req.getStartDate()));
@@ -734,7 +734,6 @@ public class JasperServiceImpl implements JasperService {
 	@Override
 	public CommonRes getSchedule(JasperScheduleReq req) {
 		CommonRes response = new CommonRes();
-		Connection conn =null;
 		try {
 			HomePositionMaster hpm=homeRepo.findByQuoteNo(req.getQuoteNo());
 			String companyId =hpm.getCompanyId();
@@ -775,10 +774,26 @@ public class JasperServiceImpl implements JasperService {
 				JasperDocumentRes reponse = new JasperDocumentRes();
 				
 				if("1".equals(req.getReportId())) { //PolicySchedule pdf
-					
-					MotorPrivateRes schedule =jasperCustomeImple.getMotorPrivate(policyNo, req.getQuoteNo());
-					
-					String jsonString = gson.toJson(schedule);
+					Object result = null;
+					if(report.getId().getProductId()==5) {
+						if("100004".equalsIgnoreCase(report.getId().getCompanyId())) {
+							List<Map<String,Object>> reportRes = jasperCustomeImple.getMadisonMotorSchedule(policyNo);
+							result = reportRes;
+						}else {
+							MotorPrivateRes reportRes =jasperCustomeImple.getMotorPrivate(policyNo, req.getQuoteNo());
+							result = reportRes;
+						}
+					}else if(report.getId().getProductId()==4) {
+						TravelReportRes reportRes = jasperCustomeImple.getTravelReport(policyNo);
+						result = reportRes;
+					}else if(report.getId().getProductId()==42) {
+						Map<String, Object> reportRes = jasperCustomeImple.getCyberInsurance(policyNo);
+						result = reportRes;
+					}else {
+						Map<String, Object> reportRes = jasperCustomeImple.getEwaySchedule(policyNo);
+						result = reportRes;
+					}
+					String jsonString = gson.toJson(result);
 					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
 					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
 
@@ -838,16 +853,8 @@ public class JasperServiceImpl implements JasperService {
 			}
 			
 		}catch (Exception e) {
+			log.info("Error in getSchedule ==> "+e.getMessage());
 			e.printStackTrace();
-		}finally {
-			if(conn!=null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 		}
 		return response;
 	}
