@@ -673,8 +673,8 @@ private static final long serialVersionUID = 1L;
      @Column(name="PAYMENT_FREQUENCY", length=20)
      private Integer     paymentFrequency ;
      
-     
-     
+     @Column(name="RENEWAL_DATE_YN", length=20)
+     private String renewalDateYn;     
      
 }
 

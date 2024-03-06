@@ -825,4 +825,6 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="GROUND_UNDERGROUND_SI")
 	      private 	BigDecimal groundUndergroundSi;
 	     
+	      @Column(name="RENEWAL_DATE_YN", length=20)
+	      private String renewalDateYn;
 }

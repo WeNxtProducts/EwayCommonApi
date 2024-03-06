@@ -489,6 +489,9 @@ private static final long serialVersionUID = 1L;
     @Column(name = "PTD_SUM_INSURED_LC")
     private Integer ptdSumInsuredLc;
     
+    @Column(name="RENEWAL_DATE_YN", length=20)
+    private String renewalDateYn;
+
 }
 
 

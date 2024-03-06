@@ -372,6 +372,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="RATING_RELATION_DESC")
     private String ratingRelationDesc;
 
+    @Column(name="RENEWAL_DATE_YN", length=20)
+    private String renewalDateYn;
 }
 
 

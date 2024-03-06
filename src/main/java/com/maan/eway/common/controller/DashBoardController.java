@@ -47,6 +47,8 @@ public class DashBoardController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	@Autowired
+	private DashBoardServiceV1 dashbordService;
 	
 	//Count
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
@@ -134,5 +136,14 @@ public class DashBoardController {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}*/
+	@PostMapping("/dashboard/v1/count")
+	public ResponseEntity<CommonRes> getallCountV1(@RequestBody  DashBoardGetReq req) {
+		CommonRes data =dashbordService.getallCount(req);
+		if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }

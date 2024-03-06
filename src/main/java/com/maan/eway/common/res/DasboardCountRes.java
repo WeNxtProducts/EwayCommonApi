@@ -1,23 +1,30 @@
 package com.maan.eway.common.res;
 
-import java.util.Date;
-import java.util.List;
+import java.math.BigDecimal;
 
-import javax.persistence.Column;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import groovy.transform.builder.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class DasboardCountRes {
 
 	@JsonProperty("Position")
     private String     position     ;
 	@JsonProperty("Status")
     private String     status     ;
+	
 	@JsonProperty("TotalCount")
     private String     count     ;
-		
+	
+	@JsonProperty("Type")
+    private String type;
+	
+	@JsonProperty("CurrencyCode")
+    private String currencyCode;
+	
+	@JsonProperty("Premium")
+    private BigDecimal premium;
 }
