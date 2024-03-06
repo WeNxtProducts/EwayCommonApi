@@ -56,6 +56,7 @@ import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TinyurlRequestDetail;
 import com.maan.eway.chartaccount.ChartAccountRequest;
 import com.maan.eway.chartaccount.ChartAccountService;
+import com.maan.eway.common.req.DashBoardGetReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.repository.EwayFactorDetailsRepository;
@@ -1129,6 +1130,16 @@ public class RatingFactorsUtil {
 
 	public CommonRes drcrEntry(ChartAccountRequest r) {
 	   return chartService.drcrEntry(r);		
+	}
+
+	public List<Map<String, Object>> executeCorporatePlusQuery(DashBoardGetReq req, List<String> loginIds, Date startDate, Date endDate) {
+		try {
+			List<Map<String, Object>> list = mddRepo.findByCorporatePlus(req.getInsuranceId(),req.getProductId(),loginIds,req.getUserType(),startDate,endDate);
+			return list;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
 

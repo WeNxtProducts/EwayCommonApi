@@ -13,12 +13,15 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorDriverDetailsId;
@@ -52,6 +55,10 @@ public interface MotorDriverDetailsRepository  extends JpaRepository<MotorDriver
 	Long countByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer vehicleId);
 
 	List<MotorDriverDetails> findByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer parseInt);
+	
+	@Query(value="SELECT TYPE,SUM(COUNT) AS COUNT,SUM(PREMIUM) AS PREMIUM,CURRENCY_CODE FROM( SELECT (CASE WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN IS NULL) THEN 'QUOTE' WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN='Y') THEN 'RENEWAL QUOTE' END) AS TYPE, COUNT(*) AS COUNT, ROUND(SUM(OVERALL_PREMIUM_LC),0) AS PREMIUM, MAX(CPM.CURRENCY_ID) AS CURRENCY_CODE FROM ESERVICE_BUILDING_DETAILS HPM,EWAY_INSURANCE_COMPANY_MASTER CPM WHERE HPM.COMPANY_ID=?1 AND HPM.PRODUCT_ID=?2 AND HPM.STATUS IN ('Y')  AND (CASE WHEN 'Issuer'=?4 THEN HPM.APPLICATION_ID ELSE HPM.LOGIN_ID END) IN (?3) AND (HPM.ENTRY_DATE>= ?5 AND HPM.ENTRY_DATE<=?6 ) AND CPM.COMPANY_ID=HPM.COMPANY_ID AND CPM.AMEND_ID=(SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER WHERE CPM.COMPANY_ID=COMPANY_ID) GROUP BY HPM.STATUS,HPM.RENEWAL_DATE_YN UNION ALL SELECT (CASE WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN IS NULL) THEN 'QUOTE' WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN='Y') THEN 'RENEWAL QUOTE' END) AS TYPE, COUNT(*) AS COUNT, ROUND(SUM(OVERALL_PREMIUM_LC),0) AS PREMIUM, MAX(CPM.CURRENCY_ID) AS CURRENCY_CODE FROM ESERVICE_COMMON_DETAILS HPM,EWAY_INSURANCE_COMPANY_MASTER CPM WHERE HPM.COMPANY_ID=?1 AND HPM.PRODUCT_ID=?2 AND HPM.STATUS IN ('Y') AND (CASE WHEN 'Issuer'=?4 THEN HPM.APPLICATION_ID ELSE HPM.LOGIN_ID END) IN (?3)  AND (HPM.ENTRY_DATE>= ?5 AND HPM.ENTRY_DATE<=?6 ) AND CPM.COMPANY_ID=HPM.COMPANY_ID   AND CPM.AMEND_ID=(SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER WHERE CPM.COMPANY_ID=COMPANY_ID) GROUP BY HPM.STATUS,HPM.RENEWAL_DATE_YN) X GROUP BY TYPE,CURRENCY_CODE",nativeQuery=true)
+	List<Map<String,Object>> findByCorporatePlus(String insuranceId,String productId,List<String> loginIds,String usertype,Date startDate,Date endDate);
+//	List<Map<String,Object>> findByCorporatePlus(String insuranceId,String productId,List<String> loginIds,Date startDate,Date endDate,String usertype);
 
 	
 

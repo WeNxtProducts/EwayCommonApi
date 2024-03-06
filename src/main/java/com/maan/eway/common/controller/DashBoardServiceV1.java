@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -45,26 +46,87 @@ public class DashBoardServiceV1 {
 	@Autowired
 	private RatingFactorsUtil ratingutil;
 	
+	
+	//SELECT TYPE,SUM(COUNT) AS COUNT,SUM(PREMIUM) AS PREMIUM,CURRENCY_CODE FROM( SELECT (CASE WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN IS NULL) THEN 'QUOTE' WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN='Y') THEN 'RENEWAL QUOTE' END) AS TYPE, COUNT(*) AS COUNT, ROUND(SUM(OVERALL_PREMIUM_LC),0) AS PREMIUM, MAX(CPM.CURRENCY_ID) AS CURRENCY_CODE FROM ESERVICE_BUILDING_DETAILS HPM,EWAY_INSURANCE_COMPANY_MASTER CPM WHERE HPM.COMPANY_ID=? AND HPM.PRODUCT_ID=? AND HPM.STATUS IN ('Y') AND (CASE WHEN 'Issuer'='Issuer' THEN HPM.APPLICATION_ID ELSE HPM.LOGIN_ID END) IN () AND HPM.entry_date >= ? AND HPM.ENTRY_DATE <=? AND CPM.COMPANY_ID=HPM.COMPANY_ID AND CPM.AMEND_ID=(SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER WHERE CPM.COMPANY_ID=COMPANY_ID) GROUP BY HPM.STATUS,HPM.RENEWAL_DATE_YN UNION ALL SELECT (CASE WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN IS NULL) THEN 'QUOTE' WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN='Y') THEN 'RENEWAL QUOTE' END) AS TYPE, COUNT(*) AS COUNT, ROUND(SUM(OVERALL_PREMIUM_LC),0) AS PREMIUM, MAX(CPM.CURRENCY_ID) AS CURRENCY_CODE FROM ESERVICE_COMMON_DETAILS HPM,EWAY_INSURANCE_COMPANY_MASTER CPM WHERE HPM.COMPANY_ID=? AND HPM.PRODUCT_ID=? AND HPM.STATUS IN ('Y') AND CPM.COMPANY_ID=HPM.COMPANY_ID and (CASE WHEN 'Issuer'='Issuer' THEN HPM.APPLICATION_ID ELSE HPM.LOGIN_ID END) IN () AND HPM.entry_date >= ? AND HPM.ENTRY_DATE <=? AND CPM.AMEND_ID=(SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER WHERE CPM.COMPANY_ID=COMPANY_ID) GROUP BY HPM.STATUS,HPM.RENEWAL_DATE_YN)X GROUP BY TYPE,CURRENCY_CODE
+	
 	public CommonRes getallCount(DashBoardGetReq req) {
-		
-		
-		
-		CalcEngine engine=new CalcEngine();
-		engine.setInsuranceId(req.getInsuranceId());
-		engine.setProductId(req.getProductId());
-		List<Tuple> product = ratingutil.collectProductType(engine);
-		String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
-		if("M".equals(oneProduct)) {
-			return getDashBoard(req,EserviceMotorDetails.class);	
-		} else if (oneProduct.equals("H")) {
-			return getDashBoard(req,EserviceTravelDetails.class);
-		}else if (oneProduct.equalsIgnoreCase("A")) {
-			return getDashBoard(req,EserviceBuildingDetails.class);
-		}else if (oneProduct.equalsIgnoreCase("L")) {
-			return getDashBoard(req,EserviceCommonDetails.class);
+		if("19".equals(req.getProductId())) {
+			return getDashBoardCorporatePlus(req);
+		}else {
+			CalcEngine engine=new CalcEngine();
+			engine.setInsuranceId(req.getInsuranceId());
+			engine.setProductId(req.getProductId());
+			List<Tuple> product = ratingutil.collectProductType(engine);
+			String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
+			if("M".equals(oneProduct)) {
+				return getDashBoard(req,EserviceMotorDetails.class);	
+			} else if (oneProduct.equals("H")) {
+				return getDashBoard(req,EserviceTravelDetails.class);
+			}else if (oneProduct.equalsIgnoreCase("A")) {
+				return getDashBoard(req,EserviceBuildingDetails.class);
+			}else if (oneProduct.equalsIgnoreCase("L")) {
+				return getDashBoard(req,EserviceCommonDetails.class);
+			}
 		}
 		return null;
 		
+	}
+
+	private CommonRes getDashBoardCorporatePlus(DashBoardGetReq req) {
+
+		List<DasboardCountRes> total=new ArrayList<DasboardCountRes>();
+		Date date1 = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(date1);
+		cal.add(Calendar.DATE, -30);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+		Date startDate = cal.getTime();
+		
+		
+		List<String> loginIds=new ArrayList<String>();
+		if("Broker".equals(req.getUserType())) {
+			loginIds.addAll(findByCompanyAndLoginId(req.getInsuranceId(),req.getLoginId()));
+		}else {
+			loginIds.add(req.getLoginId());
+		}
+		try { 
+			List<Map<String, Object>> results = ratingutil.executeCorporatePlusQuery(req,loginIds,startDate,new Date());
+			for (Map<String,Object> objects : results) {
+				DasboardCountRes res=new DasboardCountRes();
+			  
+				res.setType(objects.get("TYPE").toString());
+				res.setCount(objects.get("COUNT").toString());
+				res.setPremium(new BigDecimal(objects.get("PREMIUM")==null?"0":objects.get("PREMIUM").toString()));
+				res.setCurrencyCode(objects.get("CURRENCY_CODE").toString());
+				total.add(res);
+			}
+			
+			List<String> list=new ArrayList<String>();
+			list.add("QUOTE");
+			list.add("RENEWAL QUOTE");
+			list.add("POLICY");
+			list.add("RENEWAL POLICY");
+			for(String type:list) {
+				long count = total.stream().filter(t-> type.equals(t.getType())).count();
+				if(count==0) {
+					DasboardCountRes res=new DasboardCountRes();				
+					res.setType(type);
+					res.setCount("0".toString());
+					res.setPremium(new BigDecimal("0"));
+					res.setCurrencyCode("None");
+					total.add(res);
+				}
+			}
+			
+			CommonRes res=new CommonRes();
+			res.setCommonResponse(total);
+			return res;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		 
+		return null;
+		
+	
 	}
 
 	private CommonRes getDashBoard(DashBoardGetReq req,Class tablename) {
