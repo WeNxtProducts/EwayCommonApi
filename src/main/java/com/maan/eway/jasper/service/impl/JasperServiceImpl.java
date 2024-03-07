@@ -759,7 +759,7 @@ public class JasperServiceImpl implements JasperService {
 					String [] subJasperArray =report.getSubJasperName().split(",");
 				
 				for(String subJasperJrxml :subJasperArray) {
-						String jrxmlPath=classpath +subJasperJrxml.replace(".jasper", ".jrxml");
+						String jrxmlPath=classpath+"report/jasper/" +subJasperJrxml.replace(".jasper", ".jrxml");
 						String path = JasperCompileManager.compileReportToFile(jrxmlPath);
 						log.info("Jasper compileToReport path" +path);
 					}
@@ -767,7 +767,7 @@ public class JasperServiceImpl implements JasperService {
 				
 				HashMap<String, Object> jasperParameter = new HashMap<String, Object>();
 				jasperParameter.put("pvImagepath",imagepath);
-				jasperParameter.put("pvSubReportPath", classpath+"jasper/");
+				jasperParameter.put("pvSubReportPath", classpath+"report/jasper/");
 								
 				Map<String,Object> map = new HashMap<>();
 				
@@ -790,7 +790,7 @@ public class JasperServiceImpl implements JasperService {
 						Map<String, Object> reportRes = jasperCustomeImple.getCyberInsurance(policyNo);
 						result = reportRes;
 					}else {
-						Map<String, Object> reportRes = jasperCustomeImple.getEwaySchedule(policyNo);
+						Map<String, Object> reportRes = jasperCustomeImple.getEwaySchedule(quoteNo);
 						result = reportRes;
 					}
 					String jsonString = gson.toJson(result);

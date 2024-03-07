@@ -128,7 +128,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 							 premiumFc =pcdList.stream().filter(p->p.getTaxId()==0 )
 									 .filter(p ->p.getDiscLoadId()==0)
 									 .map(p ->p.getPremiumExcludedTaxFc())
-									 .reduce(new BigDecimal(0), (a,b) ->a.add(b));
+									 .reduce(new BigDecimal(0), (a,b) ->a==null?BigDecimal.ZERO: a.add( b==null?BigDecimal.ZERO:b)).abs();
 									 
 							/* premiumLc =pcdList.stream().filter(p->p.getTaxId()==0 )
 									 .filter(p ->p.getDiscLoadId()==0)
@@ -148,7 +148,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 									 .filter(p ->p.getDiscLoadId()!=0)
 									 .filter(p ->p.getCoverageType().equals("E"))
 									 .map(p ->p.getPremiumExcludedTaxFc())
-									 .reduce(new BigDecimal(0), (a,b) ->a.add(b)).abs();
+									 .reduce(new BigDecimal(0), (a,b) ->a==null?BigDecimal.ZERO: a.add( b==null?BigDecimal.ZERO:b)).abs();
 							 
 							/* premiumLc =pcdList.stream().filter(p->p.getTaxId()==0 )
 									 .filter(p ->p.getDiscLoadId()!=0)
@@ -195,7 +195,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 							 premiumFc =pcdList.stream().filter(p ->p.getTaxId()!=0)
 									 .filter(p ->p.getDiscLoadId()==0)
 									 .map(p ->p.getTaxAmount())
-									 .reduce(new BigDecimal(0),(a,b) ->a.add(b));
+									 .reduce(new BigDecimal(0),(a,b) ->a==null?BigDecimal.ZERO: a.add( b==null?BigDecimal.ZERO:b));
 							 
 							 
 						 }else {
@@ -204,7 +204,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 									 .filter(p ->p.getDiscLoadId()!=0)
 									 .filter(p ->p.getCoverageType().equals("T"))
 									 .map(p ->p.getTaxAmount())
-									 .reduce(new BigDecimal(0), (a,b) ->a.add(b)).abs();
+									 .reduce(new BigDecimal(0), (a,b) ->a==null?BigDecimal.ZERO: a.add( b==null?BigDecimal.ZERO:b)).abs();
 									
 							 						 
 							// premiumFc =StringUtils.isBlank(minusSign)?premiumFc:
@@ -236,7 +236,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 							 premiumFcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
 									 .filter(p ->p.getDiscLoadId()==0)
 									 .map(p ->p.getPremiumExcludedTaxFc())
-									.reduce(new BigDecimal(0),(a,b) -> a.add(b));
+									.reduce(new BigDecimal(0),(a,b) -> a==null?BigDecimal.ZERO: a.add( b==null?BigDecimal.ZERO:b));
 									 
 							/* premiumLcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
 									 .filter(p ->p.getDiscLoadId()==0)
@@ -255,7 +255,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 									 .filter(p ->p.getDiscLoadId()!=0)
 									 .filter(p ->p.getCoverageType().equals("E"))
 									 .map(p ->p.getPremiumExcludedTaxFc())
-									 .reduce(new BigDecimal(0), (a,b) -> a.add(b)).abs();
+									 .reduce(new BigDecimal(0), (a,b) -> a==null?BigDecimal.ZERO: a.add( b==null?BigDecimal.ZERO:b)).abs();
 									 
 							/* premiumLcWithT =pcdList.stream().filter(p->p.getTaxId()==0 )
 									 .filter(p ->p.getDiscLoadId()!=0)
