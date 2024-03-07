@@ -92,7 +92,7 @@ public class MarineLoginApi {
 		
 	}
 	
-	public void createMarineBroker(LoginUserInfo userInfo,String mode,LoginMaster saveLogin) {
+	public void createMarineBroker(LoginUserInfo userInfo) {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 			
 			Map<String,Object > mainRequest=new HashMap<String, Object>();
@@ -123,7 +123,7 @@ public class MarineLoginApi {
 			mainRequest.put("LoginId",userInfo.getLoginId());
 			mainRequest.put("MissippiId","");
 			mainRequest.put("MobileNo",userInfo.getUserMobile());
-			mainRequest.put("Mode",mode);
+			mainRequest.put("Mode","");
 			mainRequest.put("Nationality","1");
 			mainRequest.put("Occupation",userInfo.getDesignation());
 			mainRequest.put("OneOffCommission","");
@@ -133,7 +133,7 @@ public class MarineLoginApi {
 			mainRequest.put("PolicyFee","");
 			mainRequest.put("PolicyFeeStatus","");
 			mainRequest.put("RePassword","Admin@01");
-			mainRequest.put("RegionCode",saveLogin.getCompanyId());
+			mainRequest.put("RegionCode","02");
 			mainRequest.put("Status",userInfo.getStatus());
 			mainRequest.put("SubBranchCode","");
 			mainRequest.put("TaxApplicable","");
@@ -261,15 +261,7 @@ public class MarineLoginApi {
 			List<String> products = new ArrayList<String>();
 			products.add("3");
 			products.add("11");
-			List<String> underWriter = new ArrayList<String>();
-			underWriter.add("6");
-			underWriter.add("7");
-			underWriter.add("8");
-			underWriter.add("9");
-			List<String> broker = new ArrayList<String>();
-			broker.add("0");
-			List<String> menu = new ArrayList<String>();
-			broker.add("0");
+			
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 			
 			Map<String,Object > mainRequest=new HashMap<String, Object>();
 			
@@ -278,14 +270,14 @@ public class MarineLoginApi {
 			mainRequest.put("UserType", "admin"  );
 			mainRequest.put("UserName",userInfo.getUserName());
 			mainRequest.put("BranchCode", userInfo.getBranchCode());
-			mainRequest.put("RegionCode", saveLogin.getCompanyId()  ); 	//logreq.getAttachedRegions()
+			mainRequest.put("RegionCode", "01"  ); 	//logreq.getAttachedRegions()
 			mainRequest.put("Email", userInfo.getUserMail() );
 			mainRequest.put("Status", userInfo.getStatus() );
 			mainRequest.put("Mode", mode );
-			mainRequest.put("MenuInfo", menu );
-			mainRequest.put("ProductInfo",products);
-			mainRequest.put("BrokerInfo", broker);
-			mainRequest.put("UnderWriterInfo", underWriter);
+			mainRequest.put("MenuInfo", null );
+			mainRequest.put("ProductInfo",null);
+			mainRequest.put("BrokerInfo", null);
+			mainRequest.put("UnderWriterInfo", null);
 			mainRequest.put("AttachedBranchInfo", null);
 			mainRequest.put("AttachedRegionInfo", null);
 			
@@ -329,9 +321,9 @@ public class MarineLoginApi {
 			
 			mainRequest.put("LoginId",userInfo.getLoginId());
 			mainRequest.put("Password",logreq.getPassword() );
-			mainRequest.put("LoginUserType", "RSAIssuer"  );
+			mainRequest.put("LoginUserType", "Issuer"  );
 			mainRequest.put("BranchCode", userInfo.getBranchCode() );
-			mainRequest.put("RegionCode", updateLogin.getCompanyId()  ); 	//logreq.getAttachedRegions()
+			mainRequest.put("RegionCode", "01"  ); 	//logreq.getAttachedRegions()
 			mainRequest.put("EmailId", userInfo.getUserMail() );
 			mainRequest.put("Status", userInfo.getStatus() );
 			mainRequest.put("IssuerName", userInfo.getUserName()  );
@@ -340,7 +332,7 @@ public class MarineLoginApi {
 			mainRequest.put("OptionMode", mode);
 			mainRequest.put("BrokerLinkLocation", null);
 			mainRequest.put("AttachedBranchInfo", null);
-			mainRequest.put("ProductInfo", products);
+			mainRequest.put("ProductInfo", null);
 			mainRequest.put("AttachedRegionInfo", null);
 			
  			String token = createLogin();
@@ -381,37 +373,11 @@ public class MarineLoginApi {
 			Map<String,Object > mainRequest=new HashMap<String, Object>();
 			
 			mainRequest.put("UserAgencyCode", logreq.getAgencyCode());
-//			mainRequest.put("CustomerName", perreq.getCustomerName() );
+			mainRequest.put("CustomerName", perreq.getCustomerName() );
 			mainRequest.put("AgencyCode", logreq.getAgencyCode() );
 			mainRequest.put("CustomerId", perreq.getCustomerId() );
-			mainRequest.put("ProductInfo", products ); 	//logreq.getAttachedRegions()
+			mainRequest.put("ProductInfo", null ); 	//logreq.getAttachedRegions()
 			mainRequest.put("OpenCoverInfo", null);
-			mainRequest.put("CustFirstName", perreq.getCustomerName());
-			mainRequest.put("Nationality", "");
-			mainRequest.put("City", perreq.getCityCode() );
-			mainRequest.put("PoBox", perreq.getPobox() );
-			mainRequest.put("Country", perreq.getCountryCode() ); 
-			mainRequest.put("TelephoneNo", null );
-			mainRequest.put("MobileNo",perreq.getUserMobile()); 
-			mainRequest.put("Email", perreq.getUserMail() );
-			mainRequest.put("LoginId",logreq.getLoginId()); 
-			mainRequest.put("Mode", mode );
-			mainRequest.put("Password", logreq.getPassword() );
-			mainRequest.put("RePassword", logreq.getPassword() );
-			mainRequest.put("Status", logreq.getStatus() );
-			mainRequest.put("Title", "" );
-			mainRequest.put("CustLastName", "" );
-			mainRequest.put("DateOfBirth", null );
-			mainRequest.put("Gender",null  );
-			mainRequest.put("Fax",perreq.getFax()  );
-			mainRequest.put("Address1",perreq.getAddress1()  );
-			mainRequest.put("Address2", perreq.getAddress2() );
-			mainRequest.put("Occupation", null );
-			mainRequest.put("SubBranchCode",null );
-			mainRequest.put("UserId", null );
-			mainRequest.put("UserType",logreq.getUserType() );
-			mainRequest.put("AttachedBranchInfo", null );
-			mainRequest.put("AttachedRegionInfo",null );
 			
  			String token = createLogin();
 			RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
