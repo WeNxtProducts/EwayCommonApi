@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="UgandaMotorSchedule" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="90b19932-63dc-4d3b-9daa-7e585a615da1">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
-	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+	<style name="Table_TH" mode="Transparent" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -11,7 +11,7 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+	<style name="Table_CH" mode="Transparent" backcolor="#BFE1FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -20,7 +20,7 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+	<style name="Table_TD" mode="Transparent" backcolor="#FFFFFF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -29,7 +29,7 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+	<style name="Table 2_TH" mode="Transparent" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -38,7 +38,7 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+	<style name="Table 2_CH" mode="Transparent" backcolor="#BFE1FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -47,7 +47,7 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+	<style name="Table 2_TD" mode="Transparent" backcolor="#FFFFFF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -173,6 +173,7 @@
 		<field name="amount" class="java.math.BigDecimal"/>
 		<field name="narration" class="java.lang.String"/>
 	</subDataset>
+	<parameter name="pvImagepath" class="java.lang.String"/>
 	<queryString language="json">
 		<![CDATA[]]>
 	</queryString>
@@ -311,9 +312,33 @@
 	<field name="stampDutyForUganda" class="java.math.BigDecimal"/>
 	<field name="customerId" class="java.lang.String"/>
 	<field name="business" class="java.lang.String"/>
+	<field name="signImg" class="java.lang.String"/>
 	<background>
-		<band splitType="Stretch"/>
+		<band height="802" splitType="Stretch">
+			<textField>
+				<reportElement mode="Transparent" x="0" y="349" width="555" height="104" forecolor="#FC1612" uuid="4d5e3960-5b72-47ef-9428-e11bdf7683d9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="50"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{policyNo} == null || $F{policyNo} == "")?"DARFT":"POLICY"]]></textFieldExpression>
+			</textField>
+		</band>
 	</background>
+	<columnHeader>
+		<band height="15">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="15" uuid="f150edf7-effb-401e-8a8b-28642f383aef">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER}>1]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{policyNo}==null || $F{policyNo} == "")?"Attached to and Forming Part of Quote No. "+$F{quoteNo}:"Attached to and Forming Part of Policy No. "+$F{policyNo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1689,7 +1714,7 @@
 		</band>
 	</columnFooter>
 	<pageFooter>
-		<band height="116" splitType="Stretch">
+		<band height="136" splitType="Stretch">
 			<textField>
 				<reportElement x="162" y="50" width="63" height="13" uuid="1af006a3-d62a-4314-b409-a9789e4d90a8"/>
 				<box leftPadding="4"/>
@@ -1747,7 +1772,7 @@
 				<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="290" y="37" width="264" height="13" uuid="8b3a5fa3-258f-435f-b805-e7091297fdc0"/>
+				<reportElement x="290" y="37" width="265" height="13" uuid="8b3a5fa3-258f-435f-b805-e7091297fdc0"/>
 				<box leftPadding="2">
 					<rightPen lineWidth="0.0"/>
 				</box>
@@ -1802,7 +1827,7 @@
 				<textFieldExpression><![CDATA["Date :"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="340" y="63" width="215" height="13" uuid="39373675-3789-4542-ac08-a992051a81a9"/>
+				<reportElement x="340" y="88" width="215" height="13" uuid="39373675-3789-4542-ac08-a992051a81a9"/>
 				<box leftPadding="2">
 					<bottomPen lineWidth="0.0"/>
 					<rightPen lineWidth="0.0"/>
@@ -1875,7 +1900,7 @@
 				<textFieldExpression><![CDATA["In witness whereof the undersigned being duly authorized by the Insurers and on behalf of the Insurers has/have hereunto set his/their hand(s)"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="86" width="555" height="15" uuid="a4e1efc4-6d3d-4ffb-98e6-1cf45b9f0936">
+				<reportElement x="0" y="106" width="555" height="15" uuid="a4e1efc4-6d3d-4ffb-98e6-1cf45b9f0936">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2"/>
@@ -1885,7 +1910,7 @@
 				<textFieldExpression><![CDATA["*THIS DOCUMENT IS NOT VALID FOR ANY PURPOSE IF NOT ACCOMPANIED BY EFRIS INVOICE AS PROOF OF PAYMENT OF PREMIUM*"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="101" width="555" height="15" uuid="07d222d1-df0d-4d68-b1ec-6c7a90be1e6d">
+				<reportElement x="0" y="121" width="555" height="15" uuid="07d222d1-df0d-4d68-b1ec-6c7a90be1e6d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="0"/>
@@ -1894,6 +1919,12 @@
 				</textElement>
 				<textFieldExpression><![CDATA["*AAGIL IS NOT OBLIGED TO REMIND PAYMENT*"]]></textFieldExpression>
 			</textField>
+			<image hAlign="Center">
+				<reportElement x="406" y="63" width="83" height="25" uuid="6769d74d-6875-4e67-b00d-39dd2989b1ff">
+					<printWhenExpression><![CDATA[$F{policyNo} != null && $F{policyNo} !=""]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{signImg}]]></imageExpression>
+			</image>
 		</band>
 	</pageFooter>
 </jasperReport>

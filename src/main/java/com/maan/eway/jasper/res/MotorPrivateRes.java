@@ -114,4 +114,7 @@ public class MotorPrivateRes {
 	@JsonProperty("Business")
 	private String business;
 	
+	@JsonProperty("SignImg")
+	private String signImg;
+	
 }

@@ -553,15 +553,33 @@ public class JasperCustomServiceImple {
 			});
 			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
 			if(!drcrDetails.isEmpty()) {
-				List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("CR") && !r.getChargeCode().equals(new BigDecimal(1007))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
-				listByRiskId.forEach(h ->{
-					TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
-						.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
-						.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
-					.build();
-					premiumDetailsRes.add(u);
-			});
-				OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+				if("100019".equalsIgnoreCase(map.get("companyId")==null?"":map.get("companyId").toString())) {
+					List<PolicyDrcrDetail> drcrList = drcrDetails.stream().filter(f -> f.getDrcrFlag().equalsIgnoreCase("CR")).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
+					drcrList.forEach(h -> {
+						TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
+								.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
+								.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+							.build();
+							premiumDetailsRes.add(u);
+					});
+					Double WHTLevy = drcrList.stream().filter(f -> f.getChargeCode().equals(new BigDecimal("1008")) || f.getChargeCode().equals(new BigDecimal("1009")))
+							.map(h -> h.getAmountFc()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+					Double Commission = drcrList.stream().filter(f -> f.getChargeCode().equals(new BigDecimal("1006"))).map(h -> h.getAmountFc())
+							.map(BigDecimal::doubleValue).findFirst().get();
+					Double VAT = drcrList.stream().filter(f -> f.getChargeCode().equals(new BigDecimal("1007"))).map(h -> h.getAmountFc())
+							.map(BigDecimal::doubleValue).findFirst().get();
+					OverAllPremium = (Commission - WHTLevy) + VAT;
+				}else {
+					List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("CR") && !r.getChargeCode().equals(new BigDecimal(1007))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
+					listByRiskId.forEach(h ->{
+						TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
+							.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
+							.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+						.build();
+						premiumDetailsRes.add(u);
+				});
+					OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+				}
 			}
 			
 			response.setBrokerName(map.get("brokerName")==null?"":map.get("brokerName").toString());
@@ -642,6 +660,8 @@ public class JasperCustomServiceImple {
 		companyName.select(companyNameRoot.get("companyName")).where(cb.equal(companyNameRoot.get("companyId"), hpmRoot.get("companyId")),
 				cb.equal(companyNameRoot.get("amendId"), companyNameAmd));
 		
+		
+		//COMPANY_LOGO
 		Subquery<String> imageURL = cq.subquery(String.class);
 		Root<InsuranceCompanyMaster> imageURLRoot = imageURL.from(InsuranceCompanyMaster.class);
 		//AMD MAX
@@ -650,6 +670,16 @@ public class JasperCustomServiceImple {
 		imageURLAmd.select(cb.max(imageURLAmdRoot.get("amendId"))).where(cb.equal(imageURLAmdRoot.get("companyId"), imageURLRoot.get("companyId")));
 		imageURL.select(imageURLRoot.get("companyLogo")).where(cb.equal(imageURLRoot.get("companyId"), hpmRoot.get("companyId")),
 				cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
+		
+		//SIGNATURE_IMG
+		Subquery<String> signimageURL = cq.subquery(String.class);
+		Root<InsuranceCompanyMaster> signimageURLRoot = signimageURL.from(InsuranceCompanyMaster.class);
+		//AMD MAX
+		Subquery<Integer> signimageURLAmd = cq.subquery(Integer.class);
+		Root<InsuranceCompanyMaster> signimageURLAmdRoot = signimageURLAmd.from(InsuranceCompanyMaster.class);
+		signimageURLAmd.select(cb.max(signimageURLAmdRoot.get("amendId"))).where(cb.equal(signimageURLAmdRoot.get("companyId"), signimageURLRoot.get("companyId")));
+		signimageURL.select(signimageURLRoot.get("signature")).where(cb.equal(signimageURLRoot.get("companyId"), hpmRoot.get("companyId")),
+				cb.equal(signimageURLRoot.get("amendId"), signimageURLAmd));
 		
 		cq.multiselect(cpmRoot.get("companyId").alias("companyId"),cpmRoot.get("effectiveDateStart").alias("effectiveDateStart"),cpmRoot.get("effectiveDateEnd").alias("effectiveDateEnd"),
 			hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
@@ -666,7 +696,7 @@ public class JasperCustomServiceImple {
 			cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), hpmRoot.get("customerName"))
 			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),
 			imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),piRoot.get("customerId").alias("customerId"),
-			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"))
+			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"),signimageURL.alias("signImg"))
 		.where(StringUtils.isBlank(policyNo)?cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")):cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),
 				cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(cpmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cpmRoot.get("status"), "Y"),cb.equal(hpmRoot.get("productId"), cpmRoot.get("productId")),
@@ -832,6 +862,7 @@ public class JasperCustomServiceImple {
 			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
 			response.setCoverNoteReferenceNo(map.get("coverNoteReferenceNo")==null?"":map.get("coverNoteReferenceNo").toString());
 			response.setBusiness(map.get("business")==null?"":map.get("business").toString());
+			response.setSignImg(map.get("signImg")==null?"":map.get("signImg").toString());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
