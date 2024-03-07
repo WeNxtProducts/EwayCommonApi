@@ -78,7 +78,7 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 						r.setProductId(engine.getProductId());
 						r.setDiscountYn("Y");
 						r.setRequestRefNo(engine.getRequestReferenceNo());
-						
+						r.setIsCheckMinimumPremium(true);
 						CommonRes drcr = crservice.drcrEntry(r);
 						si = new BigDecimal(drcr.getCommonResponse().toString());
 						t.setRate(si.doubleValue());
@@ -172,10 +172,24 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 					 t.setTiraRate(t.getRate());
 				 Double totaldiscount=0D;
 				 Double totalloading=0D;
+				 BigDecimal premiumBeforeDiscount = t.getPremiumBeforeDiscount();
+				 if("B".equals(t.getCoverageType())) {
+					 ChartAccountRequest r=new ChartAccountRequest();
+						r.setCompanyId(engine.getInsuranceId());
+						r.setChartId(t.getDependentCoverId());
+						r.setProductId(engine.getProductId());
+						r.setDiscountYn("Y");
+						r.setRequestRefNo(engine.getRequestReferenceNo());
+						r.setIsCheckMinimumPremium(false);
+						CommonRes drcr = crservice.drcrEntry(r);
+						premiumBeforeDiscount = new BigDecimal(drcr.getCommonResponse().toString());
+						 
+				}
+				 
 				 if(discountLoading) {
 					
 					 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
-						 DiscountCalculatorPolicy dcal=new DiscountCalculatorPolicy(t.getPremiumBeforeDiscount(),t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);
+						 DiscountCalculatorPolicy dcal=new DiscountCalculatorPolicy(premiumBeforeDiscount,t.getExchangeRate(),policy,crservice,engine,decimalFormat,isRateUpdate);
  						 t.getDiscounts().stream().forEach(dcal);
 						 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
 					 }

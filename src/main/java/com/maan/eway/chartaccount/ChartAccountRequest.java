@@ -32,5 +32,8 @@ public class ChartAccountRequest {
 	
 	@JsonProperty("UserOptedCoverReq")
 	private List<UserOptedCoverReq> userOptedCoverReq;
+	
+	@JsonProperty("IsCheckMinimumPremium")
+	private Boolean isCheckMinimumPremium;
 
 }
