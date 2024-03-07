@@ -592,7 +592,7 @@ this.repository = repo;
 			
 		      if(loginReq.getUserType().equalsIgnoreCase("Broker") ) {
 		    	  
-		    	  marineapi.createMarineBroker(userInfo); //broker
+		    	  marineapi.createMarineBroker(userInfo,"new",saveLogin); //broker
 		    	  
 		      }else  if(loginReq.getUserType().equalsIgnoreCase("User") ) {
 		    	  
@@ -875,11 +875,11 @@ this.repository = repo;
 			
 			if(loginReq.getUserType().equalsIgnoreCase("Broker") ) {
 		    	  
-		    	  marineapi.createMarineBroker(updateUser); //insert
+		    	  marineapi.createMarineBroker(updateUser,"edit",updateLogin); //insert
 		    	  
 		      }else  if(loginReq.getUserType().equalsIgnoreCase("User") ) {
 		    	  
-		    	  marineapi.createMarineUser(updateUser, updateLogin, req, "new"); //user
+		    	  marineapi.createMarineUser(updateUser, updateLogin, req, "edit"); //user
 		    	  
 		      }else  if(loginReq.getUserType().equalsIgnoreCase("Issuer") && loginReq.getSubUserType().equalsIgnoreCase("SuperAdmin")  ) {
 		    	  
