@@ -150,7 +150,7 @@ public class JasperServiceImpl implements JasperService {
 					}
 				}else if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
 						Map<String, Object> input2 = new HashMap<String, Object>();
-						input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+						input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 						input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
 						String obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
 								String jrxml_path=obj.replace(".jasper", ".jrxml");
@@ -172,7 +172,7 @@ public class JasperServiceImpl implements JasperService {
 						res = getCommonJasperPdfFileByJson("/report/jasper/EwayMadisonMotorSchedule.jrxml", jasperSaveLocation, jsonString, input, "- EwayMadisonMotorSchedule.json");
 					}else {
 						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo(),"");
-						String JsonString="";
+						String JsonString= gson.toJson(motPrivateRes);
 						String JasperName = "MotorPrivate";
 							if("100019".equalsIgnoreCase(homeData.getCompanyId())){		// UIA
 								if("Y".equalsIgnoreCase(req.getStrickerYn())) {
@@ -187,14 +187,14 @@ public class JasperServiceImpl implements JasperService {
 					}
 				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
 					Map<String,Object> input2 = new HashMap<>();
-					input2.put("pvImagePath", Imagepath);
+					input2.put("pvImagepath", Imagepath);
 					Map<String,Object> cyberInsurance = jasperCustomeImple.getCyberInsurance(homeData.getPolicyNo());
 					String jsonString = gson.toJson(cyberInsurance);
 					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					res = getCommonJasperPdfFileByJson("/report/jasper/CyberInsurance.jrxml", jasperSaveLocation, jsonString, input2, "- CyberInsurance.json");
 				}else if(product.getMotorYn().equalsIgnoreCase("M") && "46".equalsIgnoreCase(homeData.getProductId().toString())){
 					Map<String,Object> map = new HashMap<String,Object>();
-					map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+					map.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 					MotorCoverNoteRes MotorCoverNote = jasperCustomeImple.getMotorCoverNote(homeData.getPolicyNo());
 					String jsonString = gson.toJson(MotorCoverNote);
@@ -428,7 +428,7 @@ public class JasperServiceImpl implements JasperService {
  			
 			Map<String, Object> input = new HashMap<String, Object>();
 			input.put("pvStartDate", sdf.format(req.getStartDate()));
-			input.put("pvImagePath", config.getImagePath());
+			input.put("pvImagepath", config.getImagePath());
 			input.put("pvEndDate", sdf.format(req.getEndDate()));
 			input.put("pvBranch", req.getBranchCode());
 			input.put("pvLoginId", req.getLoginId());
@@ -527,7 +527,7 @@ public class JasperServiceImpl implements JasperService {
 			jasperParameter.put("pvStartDate", getFormattedDate(req.getStartDate()));
 			jasperParameter.put("pvEndDate", getFormattedDate(req.getEndDate()));
 			jasperParameter.put("pvBranch", StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode());
-			jasperParameter.put("pvImagePath", imagepath);
+			jasperParameter.put("pvImagepath", imagepath);
 			jasperParameter.put("pvLoginId", req.getLoginId());
 			jasperParameter.put("pvProductId", req.getProductId());
 			jasperParameter.put("pvCode", StringUtils.isBlank(req.getCode())?"99999":req.getCode());
@@ -670,7 +670,7 @@ public class JasperServiceImpl implements JasperService {
 			 	//String filePath="d:\\"+Instant.now().toEpochMilli();
 			 	String getPdfOutFilePath = filePath + ".pdf";
 				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+				map.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 				//map.put("pvPolicyNo", homeData.getPolicyNo());
 				
 				JasperDocumentRes	res = getJasperPdfFileFromJson("/report/jasper/Illestration.jrxml", getPdfOutFilePath, map,jsonFile);

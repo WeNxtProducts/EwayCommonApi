@@ -213,7 +213,7 @@
 	<pageHeader>
 		<band height="68">
 			<image>
-				<reportElement x="0" y="0" width="555" height="68" uuid="5897be8c-a11a-44f1-bc23-69c8f8e04d1d"/>
+				<reportElement x="0" y="0" width="180" height="68" uuid="5897be8c-a11a-44f1-bc23-69c8f8e04d1d"/>
 				<box topPadding="4" leftPadding="2"/>
 				<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}]]></imageExpression>
 			</image>

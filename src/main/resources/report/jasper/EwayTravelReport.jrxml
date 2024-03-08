@@ -65,7 +65,7 @@
 			<fieldDescription><![CDATA[sno]]></fieldDescription>
 		</field>
 	</subDataset>
-	<parameter name="pvImagePath" class="java.lang.String"/>
+	<parameter name="pvImagepath" class="java.lang.String"/>
 	<parameter name="pvSubReportPath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[]]>
@@ -133,7 +133,7 @@
 		<band height="50" splitType="Stretch">
 			<image>
 				<reportElement x="0" y="0" width="80" height="50" uuid="b005a9bb-0f45-4b76-a4d1-d53d0b3ce322"/>
-				<imageExpression><![CDATA[$P{pvImagePath}+"travellogo.JPG"]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}+"travellogo.JPG"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -785,7 +785,7 @@
 			<image>
 				<reportElement x="170" y="15" width="32" height="44" uuid="ecacd35f-5d24-481b-8fe1-10a21c6e6749"/>
 				<box topPadding="7"/>
-				<imageExpression><![CDATA[$P{pvImagePath}+"Whatsapplogo.JPG"]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}+"Whatsapplogo.JPG"]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="202" y="15" width="55" height="10" uuid="b72b9b8f-3c65-4180-aefa-3ee214a3414c"/>
@@ -832,7 +832,7 @@
 			</textField>
 			<image>
 				<reportElement x="330" y="15" width="40" height="44" uuid="368c89d8-0591-466c-91d6-7966fe51c545"/>
-				<imageExpression><![CDATA[$P{pvImagePath}+"Email.JPG"]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}+"Email.JPG"]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="370" y="15" width="184" height="10" uuid="8b87960c-a32f-4e45-babb-de1898fe8aaa"/>
