@@ -214,9 +214,9 @@ public class JpqlQueryServiceImpl {
 		BigDecimal extraCover =BigDecimal.ZERO;
 		try {
 			
-			List<String> minPremium=new ArrayList<String>(); 
-			minPremium.add("Y");
-			if(!req.getIsCheckMinimumPremium()) // if minium premiun Not check
+			List<String> minPremium=new ArrayList<String>();
+			if(req.getIsCheckMinimumPremium()) // if minium premiun Not check
+			minPremium.add("Y");			
 			minPremium.add("N");
 			
 			
@@ -258,7 +258,7 @@ public class JpqlQueryServiceImpl {
 				premium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", coverIds).setParameter("coverageType", "B")
 				.setParameter("isSelected", "D").setParameter("minimumPremiumYn", minPremium).setParameter("vehicleId", 99999).getSingleResult();
 			
-			return premium.add(extraCover);
+			return (premium==null?BigDecimal.ZERO:premium).add(extraCover);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
