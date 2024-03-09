@@ -15,6 +15,7 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginBranchMasterId;
 import com.maan.eway.bean.LoginMaster;
@@ -68,6 +69,8 @@ public interface LoginBranchMasterRepository  extends JpaRepository<LoginBranchM
 			Integer valueOf, String branchCode, String companyId);
 
 	List<LoginBranchMaster> findByLoginIdAndCompanyId(String loginId, String companyId);
+
+	List<BranchMaster> findByCompanyId(String string);
 
 	
 

@@ -94,6 +94,7 @@ import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.token.passwordEnc;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.DepositcbcMaster;
@@ -590,6 +591,8 @@ this.repository = repo;
 		      
 		      loginUserRepo.saveAndFlush(userInfo);
 			
+		      
+		      
 		      if(loginReq.getUserType().equalsIgnoreCase("Broker") ) {
 		    	  
 		    	  marineapi.createMarineBroker(userInfo,"new",saveLogin); //broker

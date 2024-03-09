@@ -24,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.admin.req.CommonLoginInformationReq;
 import com.maan.eway.admin.req.CommonPersonalInforReq;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
@@ -258,6 +259,25 @@ public class MarineLoginApi {
 		
 		
 		try {
+			
+			List<BranchMaster> branchlist=lbmRepo.findByCompanyId(req.getLoginInformation().getAttachedCompanies().get(0));
+			String branchCode=branchlist.get(0).getBranchCode();
+			List<String> attachBranch = new ArrayList<String>();
+			if (branchlist != null) {
+				for (int i = 1; i <= branchlist.size(); i++) {
+					attachBranch.add(branchlist.get(i).toString());
+				}
+			}
+			
+			List<String> companyId = new ArrayList<String>();
+			companyId=logreq.getAttachedCompanies();
+			String region=companyId.get(0);
+			List<String> attachRegion = new ArrayList<String>();
+			if (companyId != null) {
+				for (int i = 1; i <= companyId.size(); i++) {
+					attachRegion.add(companyId.get(i).toString());
+				}
+			}
 			List<String> products = new ArrayList<String>();
 			products.add("3");
 			products.add("11");
@@ -269,7 +289,8 @@ public class MarineLoginApi {
 			List<String> broker = new ArrayList<String>();
 			broker.add("0");
 			List<String> menu = new ArrayList<String>();
-			broker.add("0");
+			menu.add("0");
+			
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 			
 			Map<String,Object > mainRequest=new HashMap<String, Object>();
 			
@@ -277,8 +298,8 @@ public class MarineLoginApi {
 			mainRequest.put("Password",logreq.getPassword() );
 			mainRequest.put("UserType", "admin"  );
 			mainRequest.put("UserName",userInfo.getUserName());
-			mainRequest.put("BranchCode", userInfo.getBranchCode());
-			mainRequest.put("RegionCode", saveLogin.getCompanyId()  ); 	//logreq.getAttachedRegions()
+			mainRequest.put("BranchCode", branchCode);
+			mainRequest.put("RegionCode", region); 	//logreq.getAttachedRegions()
 			mainRequest.put("Email", userInfo.getUserMail() );
 			mainRequest.put("Status", userInfo.getStatus() );
 			mainRequest.put("Mode", mode );
@@ -286,8 +307,8 @@ public class MarineLoginApi {
 			mainRequest.put("ProductInfo",products);
 			mainRequest.put("BrokerInfo", broker);
 			mainRequest.put("UnderWriterInfo", underWriter);
-			mainRequest.put("AttachedBranchInfo", null);
-			mainRequest.put("AttachedRegionInfo", null);
+			mainRequest.put("AttachedBranchInfo", attachBranch);
+			mainRequest.put("AttachedRegionInfo", attachRegion);
 			
  			String token = createLogin();
 			RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
@@ -320,6 +341,24 @@ public class MarineLoginApi {
 		CommonPersonalInforReq perreq = req.getPersonalInformation();
 		
 		try {
+			List<BranchMaster> branchlist=lbmRepo.findByCompanyId(req.getLoginInformation().getAttachedCompanies().get(0));
+			String branchCode=branchlist.get(0).getBranchCode();
+			List<String> attachBranch = new ArrayList<String>();
+			if (branchlist != null) {
+				for (int i = 1; i <= branchlist.size(); i++) {
+					attachBranch.add(branchlist.get(i).toString());
+				}
+			}
+			
+			List<String> companyId = new ArrayList<String>();
+			companyId=logreq.getAttachedCompanies();
+			String region=companyId.get(0);
+			List<String> attachRegion = new ArrayList<String>();
+			if (companyId != null) {
+				for (int i = 1; i <= companyId.size(); i++) {
+					attachRegion.add(companyId.get(i).toString());
+				}
+			}
 			List<String> products = new ArrayList<String>();
 			products.add("3");
 			products.add("11");
@@ -330,8 +369,8 @@ public class MarineLoginApi {
 			mainRequest.put("LoginId",userInfo.getLoginId());
 			mainRequest.put("Password",logreq.getPassword() );
 			mainRequest.put("LoginUserType", "RSAIssuer"  );
-			mainRequest.put("BranchCode", userInfo.getBranchCode() );
-			mainRequest.put("RegionCode", updateLogin.getCompanyId()  ); 	//logreq.getAttachedRegions()
+			mainRequest.put("BranchCode", branchCode );
+			mainRequest.put("RegionCode",region ); 	//logreq.getAttachedRegions()
 			mainRequest.put("EmailId", userInfo.getUserMail() );
 			mainRequest.put("Status", userInfo.getStatus() );
 			mainRequest.put("IssuerName", userInfo.getUserName()  );
@@ -339,9 +378,9 @@ public class MarineLoginApi {
 			mainRequest.put("EffectiveDate", sdf.format(userInfo.getEntryDate()));
 			mainRequest.put("OptionMode", mode);
 			mainRequest.put("BrokerLinkLocation", null);
-			mainRequest.put("AttachedBranchInfo", null);
+			mainRequest.put("AttachedBranchInfo", attachBranch);
 			mainRequest.put("ProductInfo", products);
-			mainRequest.put("AttachedRegionInfo", null);
+			mainRequest.put("AttachedRegionInfo", attachRegion);
 			
  			String token = createLogin();
 			RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
@@ -373,6 +412,24 @@ public class MarineLoginApi {
 		CommonPersonalInforReq perreq = req.getPersonalInformation();
 		
 		try {
+			List<BranchMaster> branchlist=lbmRepo.findByCompanyId(req.getLoginInformation().getAttachedCompanies().get(0));
+			String branchCode=branchlist.get(0).getBranchCode();
+			List<String> attachBranch = new ArrayList<String>();
+			if (branchlist != null) {
+				for (int i = 1; i <= branchlist.size(); i++) {
+					attachBranch.add(branchlist.get(i).toString());
+				}
+			}
+			
+			List<String> companyId = new ArrayList<String>();
+			companyId=logreq.getAttachedCompanies();
+			String region=companyId.get(0);
+			List<String> attachRegion = new ArrayList<String>();
+			if (companyId != null) {
+				for (int i = 1; i <= companyId.size(); i++) {
+					attachRegion.add(companyId.get(i).toString());
+				}
+			}
 			List<String> products = new ArrayList<String>();
 			products.add("3");
 			products.add("11");
@@ -410,8 +467,8 @@ public class MarineLoginApi {
 			mainRequest.put("SubBranchCode",null );
 			mainRequest.put("UserId", null );
 			mainRequest.put("UserType",logreq.getUserType() );
-			mainRequest.put("AttachedBranchInfo", null );
-			mainRequest.put("AttachedRegionInfo",null );
+			mainRequest.put("AttachedBranchInfo", attachBranch );
+			mainRequest.put("AttachedRegionInfo",attachRegion );
 			
  			String token = createLogin();
 			RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
