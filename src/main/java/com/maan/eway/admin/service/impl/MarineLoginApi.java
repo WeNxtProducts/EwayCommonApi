@@ -347,7 +347,7 @@ public class MarineLoginApi {
 			String branchCode=branchlist.get(0).getBranchCode();
 			List<String> attachBranch = new ArrayList<String>();
 			if (branchlist != null && branchlist.size()>0) {
-				for (int i = 0; i <= branchlist.size(); i++) {
+				for (int i = 0; i < branchlist.size(); i++) {
 					attachBranch.add(branchlist.get(i).getBranchCode().toString());
 				}
 			}
@@ -357,7 +357,7 @@ public class MarineLoginApi {
 			String region=companyId.get(0);
 			List<String> attachRegion = new ArrayList<String>();
 			if (companyId != null && companyId.size()>0) {
-				for (int i = 0; i <= companyId.size(); i++) {
+				for (int i = 0; i < companyId.size(); i++) {
 					attachRegion.add(companyId.get(i).toString());
 				}
 			}
