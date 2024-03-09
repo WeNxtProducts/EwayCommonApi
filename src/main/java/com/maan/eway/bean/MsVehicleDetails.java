@@ -297,6 +297,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PAYMENT_FREQUENCY", length=20)
     private Integer     paymentFrequency ;
+    
+    @Column(name="EXCESS")
+    private BigDecimal     excess ;
+    
 }
 
 
