@@ -675,6 +675,28 @@ private static final long serialVersionUID = 1L;
      
      @Column(name="RENEWAL_DATE_YN", length=20)
      private String renewalDateYn;     
+     @Column(name = "VEHICLE_VALUE_TYPE", length = 100)
+ 	private String vehicleValueType;
+
+ 	@Column(name = "VEHICLE_VALUE_TYPE_DESC", length = 100)
+ 	private String vehicleValueTypeDesc;
+
+ 	@Column(name = "INFLATION", length = 100)
+ 	private String inflation;
+
+ 	@Column(name = "NCB", length = 100)
+ 	private String ncb;
+ 	
+ 	@Column(name = "DEFENCE_VALUE", length = 100)
+ 	private String defenceValue;
+
+ 	@Temporal(TemporalType.TIMESTAMP)
+ 	@Column(name = "PURCHASE_DATE")
+ 	private Date purchaseDate;
+
+ 	@Temporal(TemporalType.TIMESTAMP)
+ 	@Column(name = "REGISTRATION_DATE")
+ 	private Date registrationDate;
      
 }
 
