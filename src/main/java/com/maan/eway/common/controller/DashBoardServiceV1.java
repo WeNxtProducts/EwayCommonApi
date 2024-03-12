@@ -11,16 +11,21 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.hibernate.sql.JoinType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +40,7 @@ import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.DashBoardGetReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DasboardCountRes;
+import com.maan.eway.common.res.DashBoardChart;
 import com.maan.eway.req.calcengine.CalcEngine;
 
 @Service
@@ -306,6 +312,173 @@ public class DashBoardServiceV1 {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public CommonRes getChartModel(DashBoardGetReq req,Class tableName) {
+
+		try {
+			// Assuming you have an EntityManager instance named em
+			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+			Root<EserviceMotorDetails> hpm = cq.from(tableName);
+			//Join<EserviceMotorDetails, InsuranceCompanyMaster> cpm =hpm.join("companyId");
+			Root<InsuranceCompanyMaster> cpm=cq.from(InsuranceCompanyMaster.class);
+					 
+			// Define the expressions for the select clause
+			Expression<Date> date = cb.<Date>selectCase().when(cb.equal(hpm.get("status"), "Y"), hpm.get("entryDate")).otherwise(hpm.get("updatedDate"));
+			Expression<Long> quoteCount = cb.sum(cb.<Long>selectCase()
+					.when(cb.equal(hpm.get("status"), "Y"), cb.literal(1L))
+					.otherwise(cb.nullLiteral(Long.class)));
+			Expression<Long> policyCount = cb.sum(cb.<Long>selectCase()
+					.when(cb.equal(hpm.get("status"), "P"), cb.literal(1L))
+					.otherwise(cb.nullLiteral(Long.class)));
+			Expression<BigDecimal> quotePremium = cb.sum(cb.<BigDecimal>selectCase()
+					.when(cb.equal(hpm.get("status"), "Y"), hpm.get("overallPremiumLc"))
+					.otherwise(cb.nullLiteral(BigDecimal.class)));
+			Expression<BigDecimal> policyPremium = cb.sum(cb.<BigDecimal>selectCase()
+					.when(cb.equal(hpm.get("status"), "P"), hpm.get("overallPremiumLc"))
+					.otherwise(cb.nullLiteral(BigDecimal.class)));
+			Expression<Number> currencyCode = cb.max(cpm.get("currencyId"));
+			// Add the expressions to the select clause with aliases
+			cq.multiselect(
+					date.alias("date"),
+					quoteCount.alias("quoteCount"),
+					policyCount.alias("policyCount"),
+					quotePremium.alias("quotePremium"),
+					policyPremium.alias("policyPremium"),
+					currencyCode.alias("currencyCode")
+					);
+			// Define the predicates for the where clause
+			Predicate companyIdPredicate = cb.equal(hpm.get("companyId"), req.getInsuranceId());
+			Predicate productIdPredicate = cb.equal(hpm.get("productId"), req.getProductId());
+			Predicate statusPredicate = hpm.get("status").in("P", "Y");
+			//cb.equal(statusPredicate, companyIdPredicate);
+			Predicate companyIdJoin = cb.equal(cpm.get("companyId"), hpm.get("companyId"));
+			
+			Expression<Date> dateAsLocalDate = cb.function("DATE", Date.class, date);
+			 
+			Date date1 = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(date1);
+			cal.add(Calendar.DATE, -30);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+			Date startDate = cal.getTime();
+			
+			Predicate datePredicate = cb.between(dateAsLocalDate, cb.literal(startDate), cb.literal(date1));
+			
+			Subquery<Long> sub = cq.subquery(Long.class); // <-- call subquery on cq, not cb
+			sub.select(cb.max(cpm.get("amendId")));
+			sub.from(InsuranceCompanyMaster.class);
+			sub.where(cb.equal(cpm.get("companyId"), hpm.get("companyId")));
+			
+			Predicate amendIdPredicate = cb.equal(cpm.get("amendId"), sub);
+			
+			Predicate loginIdPredicate = cb.equal(cb.<String>selectCase()
+					.when(cb.equal(cb.literal("Issuer"), req.getUserType()), hpm.get("applicationId"))
+					.otherwise(hpm.get("loginId")), req.getLoginId());
+			// Combine the predicates with logical and
+			cq.where(companyIdPredicate, productIdPredicate, statusPredicate, datePredicate, amendIdPredicate, loginIdPredicate,companyIdJoin);
+			// Define the group by clause
+			cq.groupBy(date);
+			// Create a typed query and get the result list
+			TypedQuery<Tuple> query = entityManager.createQuery(cq);
+			List<Tuple> results = query.getResultList();
+
+			
+			System.out.println( "out put "+results);
+			List<DashBoardChart> total=new ArrayList<DashBoardChart>();
+			for (int i = 0; i < results.size(); i++) {
+				Tuple objects = results.get(i);
+				DashBoardChart res=DashBoardChart.builder()
+						.date(objects.get(0).toString())
+						.quoteCount(new BigDecimal(objects.get(1)==null?"0":objects.get(1).toString()))
+						.policyCount(new BigDecimal(objects.get(2)==null?"0":objects.get(2).toString()))
+						.quotePremium(new BigDecimal(objects.get(3)==null?"0":objects.get(3).toString()))
+						.policyPremium(new BigDecimal(objects.get(4)==null?"0":objects.get(4).toString()))
+						.currency(objects.get(5)==null?"0":objects.get(5).toString())
+						.build();
+				
+				 
+				total.add(res);
+			}
+			CommonRes res=new CommonRes();
+			res.setCommonResponse(total);
+			return res;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	
+	}
+	public CommonRes getChartModel(DashBoardGetReq req) {
+		try {
+
+			if("19".equals(req.getProductId())) {
+				return getChartModelCorporatePlus(req);
+			}else {
+				CalcEngine engine=new CalcEngine();
+				engine.setInsuranceId(req.getInsuranceId());
+				engine.setProductId(req.getProductId());
+				List<Tuple> product = ratingutil.collectProductType(engine);
+				String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
+				if("M".equals(oneProduct)) {
+					return getChartModel(req,EserviceMotorDetails.class);	
+				} else if (oneProduct.equals("H")) {
+					return getChartModel(req,EserviceTravelDetails.class);
+				}else if (oneProduct.equalsIgnoreCase("A")) {
+					return getChartModel(req,EserviceBuildingDetails.class);
+				}else if (oneProduct.equalsIgnoreCase("L")) {
+					return getChartModel(req,EserviceCommonDetails.class);
+				}
+			}
+			return null;
+			
+		
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private CommonRes getChartModelCorporatePlus(DashBoardGetReq req) {
+
+		List<DashBoardChart> total=new ArrayList<DashBoardChart>();
+		Date date1 = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(date1);
+		cal.add(Calendar.DATE, -30);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+		Date startDate = cal.getTime();
+		
+		
+		List<String> loginIds=new ArrayList<String>();
+		if("Broker".equals(req.getUserType())) {
+			loginIds.addAll(findByCompanyAndLoginId(req.getInsuranceId(),req.getLoginId()));
+		}else {
+			loginIds.add(req.getLoginId());
+		}
+		try { 
+			List<Map<String, Object>> results = ratingutil.executeChartCorporatePlusQuery(req,loginIds,startDate,new Date());
+			for (Map<String,Object> objects : results) {							
+				DashBoardChart res=DashBoardChart.builder()
+						.date(objects.get("DATE").toString())
+						.quoteCount(new BigDecimal(objects.get("QUOTE_COUNT")==null?"0":objects.get("QUOTE_COUNT").toString()))
+						.policyCount(new BigDecimal(objects.get("POLICY_COUNT")==null?"0":objects.get("POLICY_COUNT").toString()))
+						.quotePremium(new BigDecimal(objects.get("QUOTE_PREMIUM")==null?"0":objects.get("QUOTE_PREMIUM").toString()))
+						.policyPremium(new BigDecimal(objects.get("POLICY_PREMIUM")==null?"0":objects.get("POLICY_PREMIUM").toString()))
+						.currency(objects.get("CURRENCY_CODE")==null?"0":objects.get("CURRENCY_CODE").toString())
+						.build();				
+				 
+				total.add(res);
+			}
+			CommonRes res=new CommonRes();
+			res.setCommonResponse(total);
+			return res;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		 
+		return null;
+		
+	
 	}
 
 }

@@ -1141,5 +1141,16 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
+
+	public List<Map<String, Object>> executeChartCorporatePlusQuery(DashBoardGetReq req, List<String> loginIds,
+			Date startDate, Date endDate) {
+		try {
+			List<Map<String, Object>> list = mddRepo.findByCorporatePlusChart(req.getInsuranceId(),req.getProductId(),loginIds,req.getUserType(),startDate,endDate);
+			return list;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
 
