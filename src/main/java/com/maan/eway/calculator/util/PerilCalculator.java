@@ -226,7 +226,7 @@ public class PerilCalculator {
 									.cdRefno(engine.getCdRefNo())
 									.companyId(engine.getInsuranceId())
 									.factorId(sno++)
-									.factorName(l.getFactorTypeId())
+									.factorName(l.getLoadingDesc())
 									.coverId(Integer.parseInt(t.getCoverId()))
 									.coverName(l.getLoadingDesc())
 									.createdBy(engine.getCreatedBy())
