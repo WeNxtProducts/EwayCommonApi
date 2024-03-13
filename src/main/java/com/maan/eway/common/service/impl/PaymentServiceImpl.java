@@ -779,10 +779,10 @@ public class PaymentServiceImpl implements PaymentService {
 						.mapToDouble(o -> Double.valueOf(o.getSalary().toString())).sum() ;
 				
 				if(indivcount!=checkCount) {
-					if(cdata.getProductId().equalsIgnoreCase("19"))
+					if(cdata.getProductId().equalsIgnoreCase("19") )
 						error.add("1115");
 //						error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
-					else
+					else if(!cdata.getProductId().equalsIgnoreCase("56"))
 						error.add("1115");
 //						error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"'"));
 					temp1 = false;
