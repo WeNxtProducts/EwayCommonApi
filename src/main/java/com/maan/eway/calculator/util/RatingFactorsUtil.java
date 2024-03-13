@@ -1153,8 +1153,9 @@ public class RatingFactorsUtil {
 		return null;
 	}
 
-	public void saveFds(List<EwayFactorDetails> fds) {
+	public void saveFds(List<EwayFactorDetails> fds, CalcEngine engine) {
 		try {
+			int count= fdRepo.deleteByRequestReferenceNoAndVehicleId(engine.getRequestReferenceNo(),Integer.parseInt(engine.getVehicleId()));
 		fdRepo.saveAll(fds);
 		}catch(Exception e) {
 			e.printStackTrace();

@@ -251,7 +251,7 @@ public class PerilCalculator {
 						fds.add(fd);
 					 
 				}
-				crservice.saveFds(fds);
+				crservice.saveFds(fds,engine);
 				
 				Double premiumRate=fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble();
 				Double riskPremiumAmt=t.getSumInsured().multiply(new BigDecimal(premiumRate/100), MathContext.DECIMAL32).doubleValue();
