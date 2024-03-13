@@ -1152,5 +1152,21 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
+
+	public void saveFds(List<EwayFactorDetails> fds) {
+		try {
+		fdRepo.saveAll(fds);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void saveFactorResult(EwayFactorResultDetail efResult) {
+		try {
+			fdResultRepo.save(efResult);		
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+	}
 }
 

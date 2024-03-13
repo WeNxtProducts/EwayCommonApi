@@ -1,6 +1,9 @@
 package com.maan.eway.calculator.util;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,11 +12,15 @@ import java.util.Map.Entry;
 
 import javax.persistence.Tuple;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.maan.eway.bean.EwayFactorDetails;
+import com.maan.eway.bean.EwayFactorResultDetail;
 import com.maan.eway.bean.EwayVehicleMakemodelMasterDetail;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.calc.Cover;
+import com.maan.eway.res.calc.Loading;
 
 public class PerilCalculator {
 	
@@ -24,166 +31,266 @@ public class PerilCalculator {
 	protected List<Tuple> vehicles=null;
 	protected List<Tuple> customers =null;
 	
-	
+	protected CoverCalculator coverCalculator=null;
 	
 	public PerilCalculator(RatingFactorsUtil crservice, CalcEngine engine, List<Tuple> result, List<Tuple> vehicles,
-			List<Tuple> customers) {
+			List<Tuple> customers, CoverCalculator coverCalculator) {
 		super();
 		this.crservice = crservice;
 		this.engine = engine;
 		this.result = result;
 		this.vehicles = vehicles;
 		this.customers = customers;
+		this.coverCalculator=coverCalculator;
 	}
 
 	protected SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
 	
 	public void perilCalculator(Cover t) {
-		try {
-			String todayInString = DD_MM_YYYY.format(new Date());
-			//agencyCode:"+engine.getAgencyCode()+";branchCode:"+engine.getBranchCode()+";"
-			
-			EwayVehicleMakemodelMasterDetail vmaster=crservice.collectMakeModelDetails(engine,vehicles);
-			MotorDriverDetails	driver=crservice.collectDriver(engine);
-			String VehicleClass="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+56+";"+"param9:"+vehicles.get(0).get("vehicleClass").toString()+";";
-			
-			String CoverType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+23+";param9:"+vehicles.get(0).get("insuranceClass").toString()+";";
 		
-			String SumInsured="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+101+";"+vehicles.get(0).get("sumInsured").toString()+"~param1&param2;";
-			
-			/*String ThirdPartyLiabilityLimit="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+		if("100020".equals(engine.getInsuranceId())) {
+			try {
+				String todayInString = DD_MM_YYYY.format(new Date());
+				//agencyCode:"+engine.getAgencyCode()+";branchCode:"+engine.getBranchCode()+";"
+
+				EwayVehicleMakemodelMasterDetail vmaster=crservice.collectMakeModelDetails(engine,vehicles);
+				MotorDriverDetails	driver=crservice.collectDriver(engine);
+				String VehicleClass="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+56+";"+"param9:"+vehicles.get(0).get("vehicleClass").toString()+";";
+
+				String CoverType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+23+";param9:"+vehicles.get(0).get("insuranceClass").toString()+";";
+
+				String SumInsured="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+101+";"+vehicles.get(0).get("sumInsured").toString()+"~param1&param2;";
+
+				/*String ThirdPartyLiabilityLimit="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+56+";";
-			*/
-			String NumberOfVehicles="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+96+";"+vehicles.get(0).get("noOfVehicles").toString()+"~param1&param2;";
-			
-			String VehicleAge="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+105+";"+vehicles.get(0).get("manufactureAge").toString()+"~param1&param2;";
-			
-			String PolicyDuration="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+41+";"+Math.round(Double.parseDouble(vehicles.get(0).get("periodOfInsurance").toString())/365)+"~param1&param2;";
-			
-			String LicenseDuration="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+43+";"+driver.getLicenseDuration()+"~param1&param2;";;
-			
-			String PowerMassRatio="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+38+";"+((Double) Double.parseDouble(vmaster.getPowerKw())/Double.parseDouble(vmaster.getWeightKg()))*1000+"~param1&param2;";
-			
-			
-			String VehBodyType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+54+";param9:"+vmaster.getBodyId()+";";
-			 Long countBody =crservice.getCountFromRating(VehBodyType);
-			 if(countBody<=0) {
-				 VehBodyType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				 */
+				String NumberOfVehicles="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+96+";"+vehicles.get(0).get("noOfVehicles").toString()+"~param1&param2;";
+
+				String VehicleAge="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+105+";"+vehicles.get(0).get("manufactureAge").toString()+"~param1&param2;";
+
+				String PolicyDuration="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+41+";"+Math.round(Double.parseDouble(vehicles.get(0).get("periodOfInsurance").toString())/365)+"~param1&param2;";
+
+				String LicenseDuration="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+43+";"+driver.getLicenseDuration()+"~param1&param2;";;
+
+				String PowerMassRatio="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+38+";"+((Double) Double.parseDouble(vmaster.getPowerKw())/Double.parseDouble(vmaster.getWeightKg()))*1000+"~param1&param2;";
+
+
+				String VehBodyType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+54+";param9:"+vmaster.getBodyId()+";";
+				Long countBody =crservice.getCountFromRating(VehBodyType);
+				if(countBody<=0) {
+					VehBodyType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 					+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+54+";param9:99999;";
-			 }
-			
-			
-			String FuelType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+19+";param9:"+(vmaster.getFueltype().equalsIgnoreCase("Petrol")?"2":"1")+";";
-			
-			
-			String VehicleGroup="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+67+";"+vmaster.getVehiclegroup()+"~param21&param22;";
-			
-			String VehicleUse="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+73+";param9:"+vehicles.get(0).get("motorUsage").toString()+";";
-			
-			String DriveClaimNum_12m_0m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+4+";param9:"+vehicles.get(0).get("claimNum12m0m").toString()+";";
-			
-			countBody =crservice.getCountFromRating(DriveClaimNum_12m_0m);
-			 if(countBody<=0) {
-				 DriveClaimNum_12m_0m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-					+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+4+";param9:99999;";
-			 }
-			 
-			String DriveClaimNum_24m_12m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+11+";param9:"+vehicles.get(0).get("claimNum24m12m").toString()+";";
-			countBody =crservice.getCountFromRating(DriveClaimNum_24m_12m);
-			 if(countBody<=0) {
-				 DriveClaimNum_24m_12m= "companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-					+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+11+";param9:99999;";
-			 }
-			String DriveClaimNum_36m_24m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+12+";param9:"+vehicles.get(0).get("claimNum36m24m").toString()+";";
-			
-			countBody =crservice.getCountFromRating(DriveClaimNum_36m_24m);
-			 if(countBody<=0) {
-				 DriveClaimNum_36m_24m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-					+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+12+";param9:99999;";
-			 }
-			 
-			String DriverAge="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+40+";param9:"+driver.getGender()+";param10:"+driver.getAge()+";";
-						
-			String PaymentFreq="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+29+";param9:"+vehicles.get(0).get("paymentFrequency").toString()+";";
-			
-			String EngineSize="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+100+";"+vmaster.getEnginesizeCc()+"~param1&param2;";
-			
-			String MaritalStatus="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+10+";param9:"+driver.getMaritalStatus()+";";
-			
-			String AreaGroup="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+68+";"+driver.getAreaGroup()+"~param21&param22;";
-			//  23
-			
-			Map<String,String> queries=new HashMap<String,String>();
-			queries.put("VehicleGroup",VehicleGroup);
-			queries.put("DriverAgeXGender",DriverAge);
-			queries.put("EngineSize",EngineSize);
-			queries.put("PowerMassRatio",PowerMassRatio);
-			queries.put("PolicyDuration",PolicyDuration);
-			queries.put("PaymentFreq",PaymentFreq);
-			queries.put("VehicleUse",VehicleUse);
-			queries.put("VehicleAge",VehicleAge);
-			queries.put("Vehicle Class",VehicleClass);
-			queries.put("MaritalStatus",MaritalStatus);
-			queries.put("LicenseDuration",LicenseDuration);
-			queries.put("NoClaims0to1",DriveClaimNum_12m_0m);
-			queries.put("NoClaims1to2",DriveClaimNum_24m_12m);
-			queries.put("NoClaims2to3",DriveClaimNum_36m_24m); 
-			queries.put("FuelType",FuelType);
-			queries.put("VehBodyType",VehBodyType);
-			queries.put("AreaGroup",AreaGroup);
-			queries.put("NumberOfVehicles",NumberOfVehicles);
-			queries.put("CoverType",CoverType);
-			queries.put("Base",SumInsured);
-			
-			for(Entry<String, String> entrySet : queries.entrySet()) {
-				String key = entrySet.getKey();
-				String dataquery = entrySet.getValue();
-				
-				 Long count =crservice.getCountFromRating(dataquery+"agencyCode:"+engine.getAgencyCode()+";");
-				 if(count>0) {
-					 queries.put(key, dataquery+"agencyCode:"+engine.getAgencyCode()+";"); 
-				 }else {
-					 queries.put(key, dataquery+"agencyCode:99999;"); 
-				 }
-				
-			}
-			Map<String,List<Tuple>> queriesResult=new HashMap<String, List<Tuple>>();
-			for(Entry<String, String> entrySet : queries.entrySet()) {
-				String key = entrySet.getKey();
-				String dataquery = entrySet.getValue();
-				List<Tuple> queryResult = crservice.getResult(dataquery);
-				if(queryResult!=null && queryResult.size()>0) {
-					queriesResult.put(key, queryResult);	
-				}else {
-					System.out.println("No Factor Found for "+key +"\nquery:"+dataquery);
 				}
+
+
+				String FuelType="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+19+";param9:"+(vmaster.getFueltype().equalsIgnoreCase("Petrol")?"2":"1")+";";
+
+
+				String VehicleGroup="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+67+";"+vmaster.getVehiclegroup()+"~param21&param22;";
+
+				String VehicleUse="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+73+";param9:"+vehicles.get(0).get("motorUsage").toString()+";";
+
+				String DriveClaimNum_12m_0m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+4+";param9:"+vehicles.get(0).get("claimNum12m0m").toString()+";";
+
+				countBody =crservice.getCountFromRating(DriveClaimNum_12m_0m);
+				if(countBody<=0) {
+					DriveClaimNum_12m_0m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+					+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+4+";param9:99999;";
+				}
+
+				String DriveClaimNum_24m_12m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+11+";param9:"+vehicles.get(0).get("claimNum24m12m").toString()+";";
+				countBody =crservice.getCountFromRating(DriveClaimNum_24m_12m);
+				if(countBody<=0) {
+					DriveClaimNum_24m_12m= "companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+					+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+11+";param9:99999;";
+				}
+				String DriveClaimNum_36m_24m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+12+";param9:"+vehicles.get(0).get("claimNum36m24m").toString()+";";
+
+				countBody =crservice.getCountFromRating(DriveClaimNum_36m_24m);
+				if(countBody<=0) {
+					DriveClaimNum_36m_24m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+					+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+12+";param9:99999;";
+				}
+
+				String DriverAge="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+40+";param9:"+driver.getGender()+";param10:"+driver.getAge()+";";
+
+				String PaymentFreq="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+29+";param9:"+vehicles.get(0).get("paymentFrequency").toString()+";";
+
+				String EngineSize="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+100+";"+vmaster.getEnginesizeCc()+"~param1&param2;";
+
+				String MaritalStatus="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+10+";param9:"+driver.getMaritalStatus()+";";
+
+				String AreaGroup="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+68+";"+driver.getAreaGroup()+"~param21&param22;";
+				//  23
+
+				Map<String,String> queries=new HashMap<String,String>();
+				queries.put("VehicleGroup",VehicleGroup);
+				queries.put("DriverAgeXGender",DriverAge);
+				queries.put("EngineSize",EngineSize);
+				queries.put("PowerMassRatio",PowerMassRatio);
+				queries.put("PolicyDuration",PolicyDuration);
+				queries.put("PaymentFreq",PaymentFreq);
+				queries.put("VehicleUse",VehicleUse);
+				queries.put("VehicleAge",VehicleAge);
+				queries.put("Vehicle Class",VehicleClass);
+				queries.put("MaritalStatus",MaritalStatus);
+				queries.put("LicenseDuration",LicenseDuration);
+				queries.put("NoClaims0to1",DriveClaimNum_12m_0m);
+				queries.put("NoClaims1to2",DriveClaimNum_24m_12m);
+				queries.put("NoClaims2to3",DriveClaimNum_36m_24m); 
+				queries.put("FuelType",FuelType);
+				queries.put("VehBodyType",VehBodyType);
+				queries.put("AreaGroup",AreaGroup);
+				queries.put("NumberOfVehicles",NumberOfVehicles);
+				queries.put("CoverType",CoverType);
+				queries.put("Base",SumInsured);
+
+				for(Entry<String, String> entrySet : queries.entrySet()) {
+					String key = entrySet.getKey();
+					String dataquery = entrySet.getValue();
+
+					Long count =crservice.getCountFromRating(dataquery+"agencyCode:"+engine.getAgencyCode()+";");
+					if(count>0) {
+						queries.put(key, dataquery+"agencyCode:"+engine.getAgencyCode()+";"); 
+					}else {
+						queries.put(key, dataquery+"agencyCode:99999;"); 
+					}
+
+				}
+				Map<String,List<Tuple>> queriesResult=new HashMap<String, List<Tuple>>();
+				for(Entry<String, String> entrySet : queries.entrySet()) {
+					String key = entrySet.getKey();
+					String dataquery = entrySet.getValue();
+					List<Tuple> queryResult = crservice.getResult(dataquery);
+					if(queryResult!=null && queryResult.size()>0) {
+						queriesResult.put(key, queryResult);	
+					}else {
+						System.out.println("No Factor Found for "+key +"\nquery:"+dataquery);
+					}
+				}
+
+				List<EwayFactorDetails> data = crservice.saveFactorDetails(queriesResult,engine,result,vehicles,customers,t);
+
+				// for(EwayFactorDetails f :data)
+			}catch (Exception e) {
+				e.printStackTrace();
 			}
-			
-			List<EwayFactorDetails> data = crservice.saveFactorDetails(queriesResult,engine,result,vehicles,customers,t);
-			
-			// for(EwayFactorDetails f :data)
-		}catch (Exception e) {
-			e.printStackTrace();
+		}else {
+			if(t.getLoadings()!=null && t.getLoadings().size()>0) {
+				List<EwayFactorDetails> fds=new ArrayList<EwayFactorDetails>();
+				int sno=1;
+				for(Loading l:t.getLoadings()) {
+					List<Tuple> factors = coverCalculator.LoadFactorRates(engine, l.getLoadingId(),l.getFactorTypeId(),engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
+					try {
+					 Tuple tuple = factors.get(0);
+					 
+					 String calctype=tuple.get("calcType").toString();
+					 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
+					 String minPremium=tuple.get("minPremium")==null?"0":tuple.get("minPremium").toString();
+					 l.setLoadingRate(rate);
+					 l.setMaxAmount(new BigDecimal(minPremium));
+					 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
+					 l.setRegulatoryCode(regulatoryCode);
+					 l.setLoadingCalcType(calctype);
+					 
+					}catch (Exception e) {
+						 l.setLoadingRate("0");
+						 l.setMaxAmount(new BigDecimal("0"));
+						 String regulatoryCode="N/A";
+						 l.setRegulatoryCode(regulatoryCode);
+						 l.setLoadingCalcType("P");
+						} 
+					 EwayFactorDetails fd=null;						
+							 fd=EwayFactorDetails.builder()
+									.amendId(0)
+									.cdRefno(engine.getCdRefNo())
+									.companyId(engine.getInsuranceId())
+									.factorId(sno++)
+									.factorName(l.getFactorTypeId())
+									.coverId(Integer.parseInt(t.getCoverId()))
+									.coverName(l.getLoadingDesc())
+									.createdBy(engine.getCreatedBy())
+									.entryDate(new Date())
+									.fire(0D)
+									.thirdParty(0D)
+									.theft(0D)
+									.windscreen(0D)
+									.ownDamage(StringUtils.isBlank(l.getLoadingRate())?0D:Double.parseDouble(l.getLoadingRate()))
+									.msRefno(engine.getMsrefno())
+									.productId(Integer.parseInt(engine.getProductId()))
+									.requestReferenceNo(engine.getRequestReferenceNo())
+									.sectionId(Integer.parseInt(engine.getSectionId()))
+									.status("Y")
+									.subCoverYn("N")
+									.subCoverId(0)
+									.subCoverName("")
+									.vdRefno(engine.getVdRefNo())
+									.vehicleId(Integer.parseInt(engine.getVehicleId()))						
+									.build();
+						 
+						fds.add(fd);
+					 
+				}
+				crservice.saveFds(fds);
+				
+				Double premiumRate=fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble();
+				Double riskPremiumAmt=t.getSumInsured().multiply(new BigDecimal(premiumRate/100), MathContext.DECIMAL32).doubleValue();
+				EwayFactorResultDetail efResult=EwayFactorResultDetail.builder()
+						.cdRefno(engine.getCdRefNo())
+						.companyId(engine.getInsuranceId())
+						.coverId(Integer.parseInt(t.getCoverId()))
+						.coverName(t.getCoverName())
+						.createdBy(engine.getCreatedBy())
+						.entryDate(new Date()) 
+						.msRefno(engine.getMsrefno())
+						.productId(Integer.parseInt(engine.getProductId()))					
+						.requestReferenceNo(engine.getRequestReferenceNo())
+						.sectionId(Integer.parseInt(engine.getSectionId()))
+						.status("Y")
+						.targetLossRatio(60D)
+						.vdRefno(engine.getVdRefNo())
+						.vehicleId(Integer.parseInt(engine.getVehicleId()))
+						.minPremium(t.getMinimumPremium().doubleValue())
+						.minRate(0D)
+						.finalPremiumAmtExclTax(riskPremiumAmt)
+						.finalPremiumRateExclTax(premiumRate)
+						//.proRataPremiumAmtExclTax(sumInsured)					
+						.riskPremiumAmt(t.getSumInsured().doubleValue())
+						.riskPremiumRate(premiumRate)
+						.build();
+				crservice.saveFactorResult(efResult);
+				 t.setPremiumBeforeDiscount(new BigDecimal(riskPremiumAmt));
+				 t.setMinimumPremium(new BigDecimal("0"));
+				 t.setRate(premiumRate);
+				 t.setCalcType("P");
+				 t.setRegulatoryCode("NA");
+				 /// Referal
+				 t.setIsReferral((riskPremiumAmt<1)?"Y":"N");
+				 if("Y".equals(t.getIsReferral())){
+					 t.setReferalDescription(t.getCoverDesc() +" Referral" );
+					
+				 }
+			}
 		}
 	}
 	

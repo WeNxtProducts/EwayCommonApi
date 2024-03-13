@@ -132,7 +132,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 						 t.setExcessPercent(tuple.get("excessPercent")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("excessPercent").toString()));
 					 }
 				 }else if("FD".equals(t.getCalcType())){
-					 PerilCalculator calc=new PerilCalculator(crservice, engine, result, vehicles, customers);
+					 PerilCalculator calc=new PerilCalculator(crservice, engine, result, vehicles, customers,this);
 					 calc.perilCalculator(t);
 					 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 					 t.getLoadings().clear();

@@ -3569,10 +3569,17 @@ public class CalculatorEngineService implements CalculatorEngine {
 		
 		 
 		
-		/*PolicyDiscountMapper maps=new PolicyDiscountMapper(engine.getEffectiveDate(),engine.getPolicyEndDate());
-		List<Cover> policyCovers = covers.stream().map(maps).filter(d -> d != null).collect(Collectors.toList());
-		*/
-		 
+		try {
+
+			String endtTypeId = policytbl.get(0).get("endtTypeId") == null ? "": policytbl.get(0).get("endtTypeId").toString();
+			if (StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
+			  			//	loadAndRemoveCoversForEndt(engine, retc, result);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	  
 		
 		
 		try {
@@ -3593,7 +3600,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setUwList(referr);
 			response.setReferals(masterreferral);
 			fservice.saveFactorRateRequestDetails(response); 
-			return response;
+			//return response;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
