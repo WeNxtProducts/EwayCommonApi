@@ -241,4 +241,6 @@ public interface DropDownService {
 
 	List<DropDownRes> ratingRelationType(LovDropDownReq req);
 
+	List<DropDownRes> claimType(LovDropDownReq req);
+
 }
