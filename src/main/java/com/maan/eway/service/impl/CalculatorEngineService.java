@@ -318,7 +318,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 			for (String dependcover : dependedcovers) {
 				List<Cover> totalcovers = new ArrayList<Cover>();
-				List<Tuple> covers = totalcoverstuple.stream()
+				List<Tuple> covers = totalcoverstuple.parallelStream()
 						.filter(t -> dependcover.equals(t.get("dependentCoverYn").toString()))
 						.collect(Collectors.toList());
 				List<Discount> discounts = null;
@@ -326,16 +326,16 @@ public class CalculatorEngineService implements CalculatorEngine {
 				if (covers != null && covers.size() > 0) {
 					SplitDiscountUtils discountUtil = new SplitDiscountUtils(engine.getEffectiveDate(),
 							engine.getPolicyEndDate() ,promocode);
-					discounts = covers.stream().map(discountUtil).filter(d -> d != null).collect(Collectors.toList());
+					discounts = covers.parallelStream().map(discountUtil).filter(d -> d != null).collect(Collectors.toList());
 					discounts.stream().forEach(t -> t.setEffectiveDate(engine.getEffectiveDate()));
 					SplitLoadingUtils loadingtuils = new SplitLoadingUtils(engine.getEffectiveDate(),
 							engine.getPolicyEndDate());
-					loadings = covers.stream().map(loadingtuils).filter(d -> d != null).collect(Collectors.toList());
+					loadings = covers.parallelStream().map(loadingtuils).filter(d -> d != null).collect(Collectors.toList());
 				}
 
 				SplitSubCoverUtil splitsub = new SplitSubCoverUtil("N", engine.getEffectiveDate(),
 						engine.getPolicyEndDate());
-				Map<String, List<Cover>> nonSubcovers = covers.stream().map(splitsub).filter(d -> d != null)
+				Map<String, List<Cover>> nonSubcovers = covers.parallelStream().map(splitsub).filter(d -> d != null)
 						.collect(Collectors.groupingBy(Cover::getIsSubCover));
 				if (!nonSubcovers.isEmpty()) {
 					List<Cover> noncovers = nonSubcovers.get("N"); // noncovers
@@ -376,7 +376,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				}
 
 				splitsub = new SplitSubCoverUtil("Y", engine.getEffectiveDate(), engine.getPolicyEndDate());
-				Map<String, List<Cover>> subcovers = covers.stream().map(splitsub)
+				Map<String, List<Cover>> subcovers = covers.parallelStream().map(splitsub)
 						.filter(d -> (d != null && !"0".equals(d.getSubCoverId())))
 						.collect(Collectors.groupingBy(Cover::getIsSubCover));
 				if (!subcovers.isEmpty()) {
@@ -411,7 +411,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					if (!noncovers.isEmpty()) {
 						for (Cover c : noncovers) {
 							if(!c.getCoverageType().equals("A") && !c.getIsTaxExcempted().equals("Y")) {
-							List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+							List<Tax> taxey = taxes.parallelStream().map(tzx).filter(d -> d != null)
 									.collect(Collectors.toList());
 							c.setTaxes(taxey);
 							}
@@ -450,7 +450,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				}
 				
 				
-				totalcovers.stream().forEach(taxRemov);
+				totalcovers.parallelStream().forEach(taxRemov);
 				/*
 				 * if(StringUtils.isNotBlank(engine.getVdRefNo()) &&
 				 * StringUtils.isNotBlank(engine.getCdRefNo())) { //calc.setEngine(engine,
@@ -463,7 +463,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				CoverCalculator calc = new CoverCalculator();
 				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);
 
-				totalcovers.stream().forEach(calc);
+				totalcovers.parallelStream().forEach(calc);
 				// remove error records
 				totalcovers.removeIf(ll -> (ll.isNotsutable()));
 				retc.addAll(totalcovers);
@@ -3600,7 +3600,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setUwList(referr);
 			response.setReferals(masterreferral);
 			fservice.saveFactorRateRequestDetails(response); 
-			return response;
+			//return response;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

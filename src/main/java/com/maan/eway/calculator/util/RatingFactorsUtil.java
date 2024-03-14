@@ -161,31 +161,31 @@ public class RatingFactorsUtil {
 	
 	private Map<Integer,String>  commonQueries(CalcEngine engine,String condtion,String coverId, String subCoverId) {
 		String todayInString = DD_MM_YYYY.format(new Date());
-		String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
+	/*	String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
 				engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
 				+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:"+engine.getAgencyCode()
-				+";branchCode:"+engine.getBranchCode()+";"+condtion;
+				+";branchCode:"+engine.getBranchCode()+";"+condtion;*/
 
 
 		String search2="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
 				engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
 				+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:"+engine.getAgencyCode()
 				+";branchCode:99999;"+condtion;
-
+/*
 		String search3="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
 				engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
 				+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:99999"
 				+";branchCode:"+engine.getBranchCode()+";"+condtion;
-
+*/
 		String search4="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
 				engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
 				+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:99999"
 				+";branchCode:99999;"+condtion;
 
 		Map<Integer,String> hsmap=new TreeMap<Integer,String>();
-		hsmap.put(1, search);
+	//	hsmap.put(1, search);
 		hsmap.put(2, search2);
-		hsmap.put(3, search3);
+	//	hsmap.put(3, search3);
 		hsmap.put(4, search4);
 		return hsmap;
 	}
@@ -308,7 +308,7 @@ public class RatingFactorsUtil {
 			if(result!=null && result.size()>0) {
 				
 				RatingTypeUtil rate=new RatingTypeUtil();
-				List<RatingInfo> collect = result.stream().map(rate).filter(d->d!=null).collect(Collectors.toList());
+				List<RatingInfo> collect = result.parallelStream().map(rate).filter(d->d!=null).collect(Collectors.toList());
 				collect.sort(new Comparator<RatingInfo>() {
 
 					@Override

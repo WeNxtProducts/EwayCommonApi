@@ -102,7 +102,13 @@ public class CommonCalculator {
 				if(loopfactorrates==null || loopfactorrates.size()==0) {
 					condtions.clear(); 
 					vloop.clear();
-		
+					for(int i=0;i<rateInfos.size();i++) {							
+						RatingInfo r = rateInfos.get(i);
+						if("Y".equals(r.getFactorRangeYn())) {
+							String condtion=""+r.getInputColumValue()+"~"+r.getRangeFromCol()+"&"+r.getRangeToCol(); 
+							condtions.add(condtion); 
+						}
+					}
 					for(int i=0;i<rateInfos.size();i++) {							
 						RatingInfo r = rateInfos.get(i);
 						if("N".equals(r.getFactorRangeYn())) {
@@ -119,12 +125,8 @@ public class CommonCalculator {
 							if(count<=0) {
 								r.setInputColumValue("99999");
 							} 	
-						}
-						String condtion=r.getDiscretCol()+":"+r.getInputColumValue()+"";
-						if("Y".equals(r.getFactorRangeYn())) {
-							condtion=""+r.getInputColumValue()+"~"+r.getRangeFromCol()+"&"+r.getRangeToCol();  
-						} 
-						condtions.add(condtion);  
+						}					
+						 
 					}						 
 					vloop.put(vehicleId, condtions);
 					loopfactorrates =  crservice.loopfactorrates(engine,vloop,coverId,subCoverId); 
