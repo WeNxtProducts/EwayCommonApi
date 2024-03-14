@@ -184,9 +184,9 @@ public class RatingFactorsUtil {
 
 		Map<Integer,String> hsmap=new TreeMap<Integer,String>();
 	//	hsmap.put(1, search);
-		hsmap.put(2, search2);
+		hsmap.put(1, search2);
 	//	hsmap.put(3, search3);
-		hsmap.put(4, search4);
+		hsmap.put(2, search4);
 		return hsmap;
 	}
 	@Cacheable(cacheNames= {"loadfactorOnlyquery"},keyGenerator  = "loadfactorOnlyqueryKeyGen",value = "loadfactorOnlyquery")
