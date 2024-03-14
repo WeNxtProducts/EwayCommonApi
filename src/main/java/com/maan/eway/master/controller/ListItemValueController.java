@@ -157,7 +157,7 @@ public class ListItemValueController {
 					}
 				}
 			
-			// Get By Occupation Id
+			// Get By  Id
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/getbyidlovdetails")
 			@ApiOperation("This Method is to get by  id Lov Details")
@@ -249,5 +249,24 @@ public class ListItemValueController {
 
 			}
 
+			// Get By Item value
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PostMapping("/getbyitemvalue")
+			@ApiOperation("This Method is to get by  id Lov Details")
+			public ResponseEntity<CommonRes> getByItemValue(@RequestBody LovGetReq req) {
+				CommonRes data = new CommonRes();
+				List<DropDownRes> res = service.getByItemValue(req);
+				data.setCommonResponse(res);
+				data.setErrorMessage(Collections.emptyList());
+				data.setIsError(false);
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
 
 }

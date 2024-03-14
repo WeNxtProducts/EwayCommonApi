@@ -902,5 +902,68 @@ this.repository = repo;
     }
 
  */
+	@Override
+	public List<DropDownRes> getByItemValue(LovGetReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			List<ListItemValue> list = new ArrayList<ListItemValue>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query = cb.createQuery(ListItemValue.class);
+
+			// Find All
+			Root<ListItemValue> b = query.from(ListItemValue.class);
+
+			// Select
+			query.select(b);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = amendId.from(ListItemValue.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
+//			Predicate a2 = cb.equal(ocpm1.get("itemCode"), b.get("itemCode"));
+			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(b.get("branchCode"), ocpm1.get("branchCode"));
+			amendId.where(a1,a3,a4);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n4 = cb.equal(b.get("branchCode"), StringUtils.isBlank(req.getBranchCode()) ?"99999" :req.getBranchCode() );
+			Predicate n8 = cb.equal(b.get("itemType"), req.getItemType());
+			query.where(n1,n2,n4,n8).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(ListItemValue :: getItemValue ));
+			// Map
+			for (ListItemValue data : list) {
+				DropDownRes res = new DropDownRes();
+
+				res.setCode(data.getItemCode().toString());
+				res.setCodeDesc(data.getItemValue().toString());
+				res.setStatus(data.getStatus()==null?"":data.getStatus().toString());
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+	}
+
+
 
 }

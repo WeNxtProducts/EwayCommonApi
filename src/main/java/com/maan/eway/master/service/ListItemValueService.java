@@ -34,5 +34,6 @@ List<LovDetailsGetRes> getActiveLovDetails(LovGetAllReq req);
 LovDetailsGetRes getByIdLovDetails(LovGetReq req);
 List<DropDownRes> getLovMasterDropdown(LovDropDownReq req);
 SuccessRes changeStatusOfLovDetails(LovChangeStatusReq req);
+List<DropDownRes> getByItemValue(LovGetReq req);
 
 }
