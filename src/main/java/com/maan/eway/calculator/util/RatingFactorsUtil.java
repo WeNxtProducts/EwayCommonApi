@@ -308,7 +308,7 @@ public class RatingFactorsUtil {
 			if(result!=null && result.size()>0) {
 				
 				RatingTypeUtil rate=new RatingTypeUtil();
-				List<RatingInfo> collect = result.parallelStream().map(rate).filter(d->d!=null).collect(Collectors.toList());
+				List<RatingInfo> collect = result.stream().map(rate).filter(d->d!=null).collect(Collectors.toList());
 				collect.sort(new Comparator<RatingInfo>() {
 
 					@Override

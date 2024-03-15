@@ -124,7 +124,12 @@ public class CommonCalculator {
 							Long count=onlyquery.get(0);
 							if(count<=0) {
 								r.setInputColumValue("99999");
-							} 	
+								condtion=r.getDiscretCol()+":"+r.getInputColumValue()+";";
+								condtions.add(condtion); 
+							}else {
+								condtion=r.getDiscretCol()+":"+r.getInputColumValue()+";";
+								condtions.add(condtion);
+							}
 						}					
 						 
 					}						 
