@@ -97,7 +97,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
 
-
+    @Column(name="DD_REFNO")
+    private Long       ddRefno ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
