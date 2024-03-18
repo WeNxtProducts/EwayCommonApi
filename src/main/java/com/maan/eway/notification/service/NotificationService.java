@@ -1,14 +1,7 @@
 package com.maan.eway.notification.service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,8 +30,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.bean.CompanyProductMaster;
@@ -110,6 +109,11 @@ public class NotificationService {
 	
 	@Value(value = "${kafka.push.sms}")
 	private String kafkaLinksms;	
+	
+	@Value("${turl.api}")						
+	private String turlApi;
+
+	
 	private Logger log = LogManager.getLogger(NotificationService.class);
 	
 	
@@ -472,7 +476,7 @@ public class NotificationService {
 
 	}
 	public String getShorternURL(String encryptedURL) {
-		BufferedReader reader = null;
+		/*BufferedReader reader = null;
 		URL url =null;
 		URLConnection con =null;
 		InputStream openStream =null;
@@ -502,8 +506,27 @@ public class NotificationService {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+		}*/
+		
+		String shortUrl ="";
+		try {
+			 RestTemplate restTemplate = new RestTemplate();
+		     String apiUrl = turlApi;
+		     HttpHeaders headers = new HttpHeaders();
+		     headers.setContentType(MediaType.APPLICATION_JSON);
+		     String requestBody = "{\"RequestUrl\": \""+encryptedURL+"\"}"; // Example JSON request body
+		     HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+		     ResponseEntity<Object> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST, requestEntity, Object.class);
+		     Object responseBody = responseEntity.getBody();
+		     log.info("Encrypted URL result: " + responseBody + " Encrypted URL " );
+			 Map<String,Object> object =(Map<String,Object>) responseBody;
+			 shortUrl =object.get("ShortUrl")==null?"":object.get("ShortUrl").toString();
+			
+		}catch (Exception e) {
+			log.error(e);
 		}
-		return "";
+		
+		return shortUrl;
 	}
 	
 	@Value(value = "${travel.productId}")
