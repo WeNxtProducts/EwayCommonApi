@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -264,30 +265,49 @@ public class RatingFactorsUtil {
 	
 	public List<RatingInfo> LoadRatingField(CalcEngine engine,List<RatingInfo> infos){
 		
+		List<String> infoStr = infos.stream().map(RatingInfo::getRatingFieldId)/*.sorted(new 
+				Comparator<String>() {
+
+			@Override
+			public int compare(String o1, String o2) {
+				// TODO Auto-generated method stub
+				return (Integer.parseInt(o1)>Integer.parseInt(o2))?0:1;
+			} 
+			})*/.toList();
+				//collect(Collectors.toList());
+		List<Tuple> result=this.getCachedRatingFields(engine,infoStr);
+		if(result!=null && result.size()>0) {
+			for(int i=0;i<result.size();i++) {
+				Tuple t = result.get(i);
+				String ratingId=t.get("ratingId")==null?"":t.get("ratingId").toString();
+				Optional<RatingInfo> findFirst = infos.stream().filter(jk->jk.getRatingFieldId().equals(ratingId)).findFirst();
+				RatingInfo info = findFirst.get();
+				info.setRatingFieldId(ratingId);
+				info.setRatingField(t.get("ratingField")==null?"":t.get("ratingField").toString());
+				info.setInputTableName(t.get("inputTable")==null?"":t.get("inputTable").toString());
+				info.setInputColumName(t.get("inputColumnName")==null?"":t.get("inputColumnName").toString());
+			}
+		}
 		
-		for (RatingInfo info : infos) {
+		/*for (RatingInfo info : infos) {
 			try {
+				
 				List<Tuple> result=this.getCachedRatingFields(engine,info);
-				if(result!=null && result.size()>0) {					
-					Tuple t = result.get(0);
-					info.setRatingFieldId(t.get("ratingId")==null?"":t.get("ratingId").toString());
-					info.setRatingField(t.get("ratingField")==null?"":t.get("ratingField").toString());
-					info.setInputTableName(t.get("inputTable")==null?"":t.get("inputTable").toString());
-					info.setInputColumName(t.get("inputColumnName")==null?"":t.get("inputColumnName").toString());
-					 
-				}			
+							
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		
 		return infos;
 	}
 	@Cacheable(cacheNames = {"getCachedRatingFields"},keyGenerator  = "getCachedRatingFieldsKeyGen",value = "getCachedRatingFields" )
-	public List<Tuple> getCachedRatingFields(CalcEngine engine,RatingInfo info){
+	public List<Tuple> getCachedRatingFields(CalcEngine engine,List<String> info){
+			//RatingInfo info){
 		try {
+			String ratingFieldIds="{"+StringUtils.join(info,",")+"}";
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;ratingId:"+info.getRatingFieldId()+";";
+			String search="productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;ratingId:"+ratingFieldIds+";";
 			List<Tuple> result=null;
 			SpecCriteria criteria = crservice.createCriteria(RatingFieldMaster.class, search, "ratingId"); 
 			result=crservice.getResult(criteria, 0, 50);
@@ -776,7 +796,7 @@ public class RatingFactorsUtil {
 	}
 		return null;
 	}
-
+	@Cacheable(cacheNames = {"excludedTax"},keyGenerator  = "excludedTaxKeyGen",value = "excludedTax" )
 	public List<Tuple> LoadExcludedTax(CalcEngine engine, List<String> taxFor) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date()); 

@@ -418,7 +418,7 @@ public List<Tuple> getResult(SpecCriteria cr,String amendIdCol,Integer limit,Int
 	 					if(parameterType.isAssignableFrom(Double.class) )
 	 						value=Double.parseDouble(keyas.getValue().toString());
 	 					else if(parameterType.isAssignableFrom(BigDecimal.class) ) {
-	 						System.out.println("D:::"+keyas.getValue().toString());
+	 					//	System.out.println("D:::"+keyas.getValue().toString());
 	 						value=new BigDecimal(keyas.getValue().toString());
 	 					}else if(parameterType.isAssignableFrom(Integer.class) )
 	 						value=new Integer(keyas.getValue().toString());

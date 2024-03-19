@@ -57,4 +57,8 @@ public class CalcEngine {
 		
 		@JsonProperty("PDRefNo") 
 		 private String pdrefno;
+		
+		@JsonProperty("DdRefno")
+		private String ddRefno;
+		
 }

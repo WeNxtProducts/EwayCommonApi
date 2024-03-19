@@ -1384,8 +1384,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 		} catch(Exception e) {
 			log.info("Log Details" + e.getMessage());
-			return null;
-			
+			return null;			
 		}return motorDetailsList;
 	}
 	

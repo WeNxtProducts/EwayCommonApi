@@ -36,8 +36,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 	}
 
 	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers
-			,List<Tuple> prorata, RatingFactorsUtil crservice,Date effectiveDate,DecimalFormat decimalFormat) {		
-		this.setEngine(engine, c, result, vehicles, customers, prorata, crservice,decimalFormat);
+			,List<Tuple> prorata, RatingFactorsUtil crservice,Date effectiveDate,DecimalFormat decimalFormat,List<Tuple> drivers) {		
+		this.setEngine(engine, c, result, vehicles, customers, prorata, crservice,decimalFormat,drivers);
 		this.effectiveDate=effectiveDate;
 	}
 

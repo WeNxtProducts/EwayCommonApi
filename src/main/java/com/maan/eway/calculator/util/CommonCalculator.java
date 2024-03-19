@@ -36,7 +36,7 @@ public class CommonCalculator {
 	protected List<Tuple> customers =null;
 	protected List<Cover> calculatedcover=null;
 	protected List<Tuple> prorata=null;
-	
+	protected List<Tuple> drivers=null;
 	protected DecimalFormat decimalFormat = null;
 
 	/*public void setEngine(CalcEngine engine,List<Cover> c) {
@@ -44,7 +44,7 @@ public class CommonCalculator {
 		this.calculatedcover=c;
 	}
 	*/
-	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers,List<Tuple> prorata, RatingFactorsUtil crservice,DecimalFormat decimalFormat) {
+	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers,List<Tuple> prorata, RatingFactorsUtil crservice,DecimalFormat decimalFormat, List<Tuple> drivers) {
 		this.engine = engine;
 		this.calculatedcover=c;
 		this.result=result;
@@ -54,14 +54,15 @@ public class CommonCalculator {
 		this.crservice=crservice;
 		this.decimalFormat=decimalFormat;
 		this.decimalFormat.setParseBigDecimal(true);
+		this.drivers=drivers;
 		
 	}
 	
 	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId, String subCoverId){
-		return LoadFactorRates(engine, coverId, factorid, vehicleId, vehicles.get(0), customers.get(0), result.get(0),subCoverId);
+		return LoadFactorRates(engine, coverId, factorid, vehicleId, vehicles.get(0), customers.get(0), result.get(0),subCoverId,(drivers==null)?null:drivers.get(0));
 	}
 	
-	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId,Tuple vehicle,Tuple customer,Tuple common,String subCoverId) {
+	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId,Tuple vehicle,Tuple customer,Tuple common,String subCoverId,Tuple drivers) {
 		Map<String,List<String>> vloop=new HashMap<String, List<String>>();
 		try {
 			
@@ -79,6 +80,8 @@ public class CommonCalculator {
 						r.setInputColumValue(customer.get(r.getInputColumName()).toString());
 					}else if("MsCommonDetails".equalsIgnoreCase(r.getInputTableName())) {
 						r.setInputColumValue(common.get(r.getInputColumName()).toString());
+					}else if("MsDriverDetails".equalsIgnoreCase(r.getInputTableName())){
+						r.setInputColumName(drivers.get(r.getInputColumName()).toString());
 					}else /*if("MS_Vehicle_DETAILS".equalsIgnoreCase(r.getInputTableName()) || "MSVehicleDETAILS".equalsIgnoreCase(r.getInputTableName()) 
 							|| "MsHumanDetails".equalsIgnoreCase(r.getInputTableName()) || "MsAssetDetails".equalsIgnoreCase(r.getInputTableName()) )*/ {
 						if (vehicle.get(r.getInputColumName()) instanceof BigDecimal) {

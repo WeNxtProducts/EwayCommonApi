@@ -97,7 +97,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 }catch (Exception e) {
 						// TODO: handle exception
 						 discountLoading=false;
-						CoverException build = CoverException.builder().message("No factor found")
+						CoverException build = CoverException.builder().message("No factor found "+t.getCoverDesc())
 						 .isError(true).build();
 						 t.setError(build);
 						 t.setNotsutable(true);

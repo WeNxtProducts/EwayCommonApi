@@ -7,8 +7,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.tomcat.util.buf.StringUtils;
 import org.cache2k.extra.spring.SpringCache2kCacheManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
@@ -21,7 +25,7 @@ import com.maan.eway.res.calc.RatingInfo;
 @EnableCaching
 public class CachingConfig   {
 	private SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
-	  @Bean
+	  @Bean(name = "catcheManager")
 	  public CacheManager  cacheManager() {
 	    return new SpringCache2kCacheManager()
 	      .defaultSetup(b->b.entryCapacity(2000))
@@ -41,11 +45,21 @@ public class CachingConfig   {
 	        b->b.name("collectCommissionDetails").expireAfterWrite(2, TimeUnit.MINUTES).entryCapacity(10L).permitNullValues(false),
 	        b->b.name("collectProductsFromLoginId").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(2L).permitNullValues(false),
 	        b->b.name("collectSectionMaster").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
-	        b->b.name("collectBranchMaster").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false)  
-	        );
+	        b->b.name("collectBranchMaster").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
+	        b->b.name("excludedTax").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true)
+	        )
+	      
+	      ;
 		
+	  } 
+	  @Qualifier("catcheManager")
+	  @Autowired
+	  private CacheManager catcheManager;
+	  @PreDestroy
+	  public void cleanUp() {
+		    ((SpringCache2kCacheManager) catcheManager).destroy();
 	  }
-	
+
 	
 	    @Bean
 		public KeyGenerator ratingTypeKeyGen() {
@@ -103,7 +117,7 @@ public class CachingConfig   {
 
 	    		};
 	    	}
-	    	
+	    		    	
 	    	@Bean
 	    	public KeyGenerator loadProRataKeyGen() {
 	    		return new KeyGenerator() {
@@ -188,7 +202,7 @@ public class CachingConfig   {
 		    				String string = new StringBuilder().append(e.getInsuranceId())
 		    						.append(e.getProductId())
 		    						.append(e.getBranchCode())
-		    						.append(r.getRatingFieldId())
+		    						//.append(r.getRatingFieldId())
 		    						.append("RatingFields")
 		    						.toString();
 		    				return string;
@@ -373,7 +387,25 @@ public class CachingConfig   {
 		    	
 	    	 	}
 	    	 	
-		            	 	
+	    	 	@Bean
+		    	public KeyGenerator excludedTaxKeyGen() {
+		    		return new KeyGenerator() {
+		    			@Override
+		    			public Object generate(Object target, Method method, Object... params) {
+		    				CalcEngine e=(CalcEngine)params[0];
+		    				List<String> taxFor=(List<String>) params[1];
+		    				String string = new StringBuilder().append(e.getInsuranceId())
+		    						.append(e.getProductId())
+		    						.append(e.getBranchCode())
+		    						.append("excludedTax")
+		    						.append(StringUtils.join(taxFor,','))
+		    						.toString();
+		    				return string;
+		    			}
+
+		    		};
+		    	}		            	 	
 	    	 	
 	    	 	
+
 }

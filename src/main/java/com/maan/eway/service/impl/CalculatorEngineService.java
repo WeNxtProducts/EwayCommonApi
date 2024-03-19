@@ -48,6 +48,7 @@ import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MsAssetDetails;
 import com.maan.eway.bean.MsCommonDetails;
 import com.maan.eway.bean.MsCustomerDetails;
+import com.maan.eway.bean.MsDriverDetails;
 import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsLifeDetails;
 import com.maan.eway.bean.MsPolicyDetails;
@@ -150,6 +151,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 	protected List<Tuple> prorata = null;
 	protected BigDecimal minimumPremium=BigDecimal.ZERO;
 	protected List<Tuple> policytbl = null;
+	protected List<Tuple> drivers = null;
+	
 
 	@Autowired
 	private FactorRateRequestDetailsService fservice;
@@ -461,7 +464,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				 */
 
 				CoverCalculator calc = new CoverCalculator();
-				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);
+				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
 
 				totalcovers.parallelStream().forEach(calc);
 				// remove error records
@@ -481,7 +484,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				List<Cover> minies=new ArrayList<Cover>(1);
 				minies.add(mini);
 				CoverCalculator calc = new CoverCalculator();
-				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);
+				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
 				minies.stream().forEach(calc);
 				retc.add(mini);
 				
@@ -910,7 +913,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					loadOnetimetable(request);
 				}
 				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil,
-						request.getEffectiveDate(), decimalFormat);
+						request.getEffectiveDate(), decimalFormat,drivers);
 
 				totalcovers.stream().filter(t -> "Y".equals(t.getStatus())).forEach(calc);
 				// remove error records
@@ -1006,6 +1009,13 @@ public class CalculatorEngineService implements CalculatorEngine {
 						search = "vdRefno:" + engine.getVdRefNo() + ";vehicleId:" + engine.getVehicleId();
 						criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
+						
+						if(StringUtils.isNotBlank(engine.getDdRefno())) {
+							search = "ddRefno:" + engine.getDdRefno() + ";riskId:" + engine.getVehicleId()+";driverId:1";
+							criteria = crservice.createCriteria(MsDriverDetails.class, search, "ddRefno");
+							drivers = crservice.getResult(criteria, 0, 50);
+						}
+						
 					} else if (oneProduct.equals("H")) {
 						search = "vdRefno:" + engine.getVdRefNo() + ";humanId:" + engine.getVehicleId();
 						criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");
@@ -1221,7 +1231,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				
 				
 				AdminCoverCalculator calc = new AdminCoverCalculator();
-				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);
+				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
 
 				totalcovers.stream().forEach(calc);
 				// remove error records
@@ -1241,7 +1251,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				List<Cover> minies=new ArrayList<Cover>(1);
 				minies.add(mini);
 				CoverCalculator calc = new CoverCalculator();
-				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);
+				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
 				minies.stream().forEach(calc);
 				retc.add(mini);
 				
