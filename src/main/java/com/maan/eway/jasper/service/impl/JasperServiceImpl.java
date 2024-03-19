@@ -138,7 +138,7 @@ public class JasperServiceImpl implements JasperService {
 					theDir.mkdirs();
 				}
 				if(StringUtils.isBlank(homeData.getPolicyNo()) && homeData.getProductId()==5) {
-					if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && !"100019".equalsIgnoreCase(homeData.getCompanyId())) {
+					if("Y".equalsIgnoreCase(req.getBrokerQuoteYn())) {
 						Map<String,Object> brokerQuotation = jasperCustomeImple.getMotorBrokerQuotation(homeData.getQuoteNo());
 						String jsonString = gson.toJson(brokerQuotation);
 						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");

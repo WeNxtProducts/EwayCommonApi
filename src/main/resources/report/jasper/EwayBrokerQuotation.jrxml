@@ -178,6 +178,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vehicleList"/>
 		<fieldDescription><![CDATA[vehicleList]]></fieldDescription>
 	</field>
+	<field name="companyLogo" class="java.lang.String"/>
 	<background>
 		<band height="802" splitType="Stretch">
 			<textField>
@@ -200,7 +201,7 @@
 		<band height="70" splitType="Stretch">
 			<image>
 				<reportElement x="0" y="0" width="555" height="70" uuid="6f920235-6b77-4efa-9ebb-0a1d80d6c200"/>
-				<imageExpression><![CDATA[$P{pvImagepath}+"AllianceHearderlogo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{companyLogo}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>

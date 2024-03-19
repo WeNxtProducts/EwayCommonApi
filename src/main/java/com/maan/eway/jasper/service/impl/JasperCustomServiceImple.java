@@ -1355,7 +1355,7 @@ public class JasperCustomServiceImple {
 					hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("paymentType").alias("paymentType"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "")
 					.otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),cb.concat(",", countryName)))))))).alias("address"),
-					piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("email1").alias("email1"),piRoot.get("mobileNo1").alias("mobileNo1"))
+					piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("email1").alias("email1"),piRoot.get("mobileNo1").alias("mobileNo1"),imageURL.alias("companyLogo"))
 			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
 					cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("productId"), "5"),cb.equal(hpmRoot.get("quoteNo"), QuoteNo))
 			.orderBy(cb.desc(hpmRoot.get("entryDate")));
@@ -1402,6 +1402,7 @@ public class JasperCustomServiceImple {
 				result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
 				result.put("vrTinNo", map.get("vrTinNo")==null?null:map.get("vrTinNo").toString());
 				result.put("expiryDate", map.get("expiryDate")==null?null:map.get("expiryDate").toString());
+				result.put("companyLogo", map.get("companyLogo")==null?"":map.get("companyLogo").toString());
 				result.put("vehicleList", vehicleList);
 			}
 				
