@@ -158,6 +158,8 @@ public class CommonCalculator {
 			d=(new BigDecimal(rate).divide(exchangeRate,3,RoundingMode.HALF_UP));// for foreign currency calculation we have to divide by exchange rate			
 		 }else if("M".equals(calctype)) {
 			 d = si.multiply(new BigDecimal(rate/1000)/*, round*/);			
+		 }else if("X".equals(calctype)) {
+			 d = si.multiply(new BigDecimal(rate));
 		 }
 		d = (BigDecimal) decimalFormat.parse(decimalFormat.format(d));
 		return d;
@@ -172,6 +174,8 @@ public class CommonCalculator {
 			d=(new BigDecimal(rate));			
 		 }else if("M".equals(calctype)) {
 			 d = premium.divide(new BigDecimal((rate>0D?rate:1D))).multiply(new BigDecimal(1000));			
+		 }else if("X".equals(calctype)) {
+			 d = premium.multiply(new BigDecimal(rate));
 		 }
 		
 		d = (BigDecimal) decimalFormat.parse(decimalFormat.format(d));
