@@ -938,7 +938,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["For, Alliance Insurance Tanzania Limited"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["For, "+$F{companyName}]]></textFieldExpression>
 			</textField>
 			<break>
 				<reportElement x="0" y="95" width="100" height="1" uuid="ba7b4cdd-73d7-4291-8435-267c39b6d3a7"/>
@@ -975,7 +975,7 @@
 				<textElement markup="styled">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Following are are the bank details for Alliance Insurance for payment via \nbank: "]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Following are are the bank details for "+$F{companyName}+" for payment via \nbank: "]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="3" y="35" width="277" height="45" uuid="b3a80021-8254-4880-bbd2-bf8f72dc0b3c">
@@ -986,7 +986,7 @@
 				<textElement markup="styled">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Account Name: Alliance Insurance Corporation Limited \nBank: Exim Bank (Tanzania) Limited \nTZS Account No: 0300174027 / USD Account No: 0300174019 \nSwift Code : EXTNTZTZ"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Account Name: " +$F{companyName}+"\nBank: Exim Bank (Tanzania) Limited \nTZS Account No: 0300174027 / USD Account No: 0300174019 \nSwift Code : EXTNTZTZ"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="3" y="95" width="277" height="34" uuid="bd2706a1-66df-46d0-9fe6-09306d511afd">
@@ -1095,18 +1095,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["The payment should be made in favour of the insurance company Alliance"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="393" width="549" height="15" uuid="cadb3b9a-cf30-489d-b996-c79bc340162b">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Insurance Corporation Ltd."]]></textFieldExpression>
+				<textFieldExpression><![CDATA["The payment should be made in favour of the insurance company "+$F{companyName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="3" y="408" width="549" height="15" backcolor="#D3D3D3" uuid="2da88544-bdab-41da-8817-2051920bd78c">
@@ -1227,7 +1216,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Alliance Insurance Tanzania Limited"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="3" y="17" width="549" height="15" uuid="8a1407e2-d851-40cc-83f6-f6d6bb106dc9">
@@ -1307,7 +1296,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["O  Alliance Insurance Corporation Ltd. ( )"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["O  "+$F{companyName}+" ( )"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="30" y="165" width="10" height="15" uuid="1c188111-f81f-4d06-b38a-39773546667c">
@@ -1356,7 +1345,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["the terms and conditions of the insurance policy I intend to purchase through Alliance Insurance Tanzania Limited, who acts as an agent of the insurer I intend to purchase the policy from, I also understand that Alliance Insurance Tanzania Limited is not liable to pay any claims on behalf of the insurer and that all premiums are paid directly to the insurer’s nominated bank Account held in Alliance Insurance Tanzania Limited.I confirm further that I have not been obligated to open a bank account for the purpose of this insurance policy."]]></textFieldExpression>
+				<textFieldExpression><![CDATA["the terms and conditions of the insurance policy I intend to purchase through "+$F{companyName}+", who acts as an agent of the insurer I intend to purchase the policy from, I also understand that "+$F{companyName}+" is not liable to pay any claims on behalf of the insurer and that all premiums are paid directly to the insurer’s nominated bank Account held in "+$F{companyName}+".I confirm further that I have not been obligated to open a bank account for the purpose of this insurance policy."]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="30" y="240" width="490" height="36" uuid="1a46cb4a-8530-4f51-830f-34fed482d832">
@@ -1367,7 +1356,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["I hereby voluntarily provide informed consent to Alliance Insurance Tanzania Limited,its Group, my preferred insurance company, and their associated partners to use my special personal information for the purpose of underwriting, policy administration,analysis and providing future product suggestions."]]></textFieldExpression>
+				<textFieldExpression><![CDATA["I hereby voluntarily provide informed consent to "+$F{companyName}+",its Group, my preferred insurance company, and their associated partners to use my special personal information for the purpose of underwriting, policy administration,analysis and providing future product suggestions."]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="30" y="306" width="70" height="15" uuid="20f56699-a7bf-4b07-9298-4bbc52b29a99">
