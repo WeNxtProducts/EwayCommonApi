@@ -681,6 +681,16 @@ public class JasperCustomServiceImple {
 		signimageURL.select(signimageURLRoot.get("signature")).where(cb.equal(signimageURLRoot.get("companyId"), hpmRoot.get("companyId")),
 				cb.equal(signimageURLRoot.get("amendId"), signimageURLAmd));
 		
+		
+		Subquery<String> attachment = cq.subquery(String.class);
+		Root<InsuranceCompanyMaster> attachmentRoot = attachment.from(InsuranceCompanyMaster.class);
+		//AMD MAX
+		Subquery<Integer> attachmentAmd = cq.subquery(Integer.class);
+		Root<InsuranceCompanyMaster> attachmentAmdRoot = attachmentAmd.from(InsuranceCompanyMaster.class);
+		attachmentAmd.select(cb.max(attachmentAmdRoot.get("amendId"))).where(cb.equal(attachmentAmdRoot.get("companyId"), attachmentRoot.get("companyId")));
+		attachment.select(attachmentRoot.get("remarks")).where(cb.equal(attachmentRoot.get("companyId"), hpmRoot.get("companyId")),
+				cb.equal(attachmentRoot.get("amendId"), attachmentAmd));
+		
 		cq.multiselect(cpmRoot.get("companyId").alias("companyId"),cpmRoot.get("effectiveDateStart").alias("effectiveDateStart"),cpmRoot.get("effectiveDateEnd").alias("effectiveDateEnd"),
 			hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 			hpmRoot.get("debitNoteNo").alias("debitNoteNo"),cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(piRoot.get("cityName"),
@@ -696,7 +706,7 @@ public class JasperCustomServiceImple {
 			cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), hpmRoot.get("customerName"))
 			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),
 			imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),piRoot.get("customerId").alias("customerId"),
-			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"),signimageURL.alias("signImg"))
+			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"),signimageURL.alias("signImg"),attachment.alias("attachment"))
 		.where(StringUtils.isBlank(policyNo)?cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")):cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),
 				cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(cpmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cpmRoot.get("status"), "Y"),cb.equal(hpmRoot.get("productId"), cpmRoot.get("productId")),
@@ -721,6 +731,7 @@ public class JasperCustomServiceImple {
 					.seatingCapacity(k.getSeatingCapacity()==null?"":k.getSeatingCapacity().toString())
 					.colorDesc(k.getColorDesc()==null?"":k.getColorDesc().toString())
 					.policyTypeDesc(k.getPolicyTypeDesc()==null?"":k.getPolicyTypeDesc().toString())
+					.policyTypeId(k.getPolicyType()==null?"":k.getPolicyType())
 					.windScreenSumInsuredLc(k.getWindScreenSumInsured()==null?null:new BigDecimal(Double.parseDouble(k.getWindScreenSumInsured().toString())).toString())
 					.sumInsured(k.getSumInsured()==null?"":new BigDecimal(Double.parseDouble(k.getSumInsured().toString())).toString())
 					.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
@@ -863,6 +874,7 @@ public class JasperCustomServiceImple {
 			response.setCoverNoteReferenceNo(map.get("coverNoteReferenceNo")==null?"":map.get("coverNoteReferenceNo").toString());
 			response.setBusiness(map.get("business")==null?"":map.get("business").toString());
 			response.setSignImg(map.get("signImg")==null?"":map.get("signImg").toString());
+			response.setAttachment(map.get("attachment")==null?"":map.get("attachment").toString());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);

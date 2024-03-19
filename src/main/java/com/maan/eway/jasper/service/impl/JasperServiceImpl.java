@@ -34,6 +34,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -180,10 +181,14 @@ public class JasperServiceImpl implements JasperService {
 									JasperName = "Schedule_UIA";
 								}else {
 									JsonString = gson.toJson(motPrivateRes);
+									if("1".equalsIgnoreCase(motPrivateRes.getVehicleDetails().get(0).getPolicyTypeId())) {
+										input.put("attachMent", "Y");
+										input.put("attachMentName", motPrivateRes.getAttachment());
+									}
 									JasperName = "UgandaMotorSchedule";
 								}
 							}
-						res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- MotorPrivate.json");
+						res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- UgandaMotorSchedule.json");
 					}
 				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
 					Map<String,Object> input2 = new HashMap<>();
@@ -681,6 +686,7 @@ public class JasperServiceImpl implements JasperService {
 		return null;
 	}
 	
+	@SuppressWarnings("deprecation")
 	private JasperDocumentRes getCommonJasperPdfFileByJson(String jrxmlPath,String jasperSaveLocation, String jsonString, Map<String, Object> map,String fileNameEnd) {
 		log.info("Enter into getCommonJasperPdfFileByJson");
 		JasperDocumentRes res = new JasperDocumentRes();
@@ -696,9 +702,20 @@ public class JasperServiceImpl implements JasperService {
 			JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map,dataSource);
 			JasperExportManager.exportReportToPdfFile(jasperPrint, jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
-			GetFileFromPath filePath = new GetFileFromPath(jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
+			String path = jasperSaveLocation+fileNameEnd.replace(".json", ".pdf");
+			String attachMent = map.get("attachMent")==null?"":map.get("attachMent").toString();
+			if(attachMent.equalsIgnoreCase("Y")) {
+				String attachMentName = map.get("attachMentName")==null?"":map.get("attachMentName").toString();
+				PDFMergerUtility mergerUtility = new PDFMergerUtility();
+				mergerUtility.setDestinationFileName(jasperSaveLocation+fileNameEnd.replace(".json", "_merged.pdf"));
+				mergerUtility.addSource(jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
+				mergerUtility.addSource(policyReportPath.replaceAll("PolicyReport", "UgandaAttachments")+attachMentName);
+				mergerUtility.mergeDocuments();
+				path = jasperSaveLocation+fileNameEnd.replace(".json", "_merged.pdf");
+			}
+			GetFileFromPath filePath = new GetFileFromPath(path);
 			res.setPdfoutfile(filePath.call().getImgUrl());
-			res.setPdfoutfilepath(jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
+			res.setPdfoutfilepath(path);
 		}catch(Exception e) {
 			log.info("Error in getCommonJasperPdfFileByJson ==> "+e.getMessage());
 			e.printStackTrace();

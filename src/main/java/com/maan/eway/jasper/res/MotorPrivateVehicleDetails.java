@@ -41,6 +41,9 @@ public class MotorPrivateVehicleDetails {
 	@JsonProperty("PolicyTypeDesc")
 	private String policyTypeDesc;
 	
+	@JsonProperty("PolicyTypeId")
+	private String policyTypeId;
+	
 	@JsonProperty("WindScreenSumInsuredLc")
 	private String windScreenSumInsuredLc;
 	
