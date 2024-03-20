@@ -915,6 +915,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 				res.setCode(data.getBodyId().toString());
 				res.setCodeDesc(data.getBodyNameEn());
 				res.setStatus(data.getStatus());
+				res.setBodyType(data.getBodyType());
 				totalList.add(res);
 			}
 			
