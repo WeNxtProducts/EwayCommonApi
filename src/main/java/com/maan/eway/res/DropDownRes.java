@@ -26,5 +26,7 @@ public class DropDownRes {
 	private String codeDesc;
 	@JsonProperty("Status")
 	private String status;
+	@JsonProperty("BodyType")
+	private String bodyType;
 	
 }

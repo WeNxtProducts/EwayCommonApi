@@ -873,6 +873,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 			res.setCode(data.getVehicleUsageId().toString());
 			res.setCodeDesc(data.getVehicleUsageDesc());
 			res.setStatus(data.getStatus());
+			res.setBodyType(data.getBodyType());
 			resList.add(res);
 		}
 	}
