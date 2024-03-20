@@ -32,9 +32,9 @@ public class PerilCalculator {
 	protected List<Tuple> customers =null;
 	
 	protected CoverCalculator coverCalculator=null;
-	
+	protected List<Tuple> factors=null;
 	public PerilCalculator(RatingFactorsUtil crservice, CalcEngine engine, List<Tuple> result, List<Tuple> vehicles,
-			List<Tuple> customers, CoverCalculator coverCalculator) {
+			List<Tuple> customers, CoverCalculator coverCalculator, List<Tuple> factors) {
 		super();
 		this.crservice = crservice;
 		this.engine = engine;
@@ -42,6 +42,7 @@ public class PerilCalculator {
 		this.vehicles = vehicles;
 		this.customers = customers;
 		this.coverCalculator=coverCalculator;
+		this.factors=factors;
 	}
 
 	protected SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
@@ -199,6 +200,36 @@ public class PerilCalculator {
 			if(t.getLoadings()!=null && t.getLoadings().size()>0) {
 				List<EwayFactorDetails> fds=new ArrayList<EwayFactorDetails>();
 				int sno=1;
+				
+				EwayFactorDetails fd=null;						
+				 fd=EwayFactorDetails.builder()
+						.amendId(0)
+						.cdRefno(engine.getCdRefNo())
+						.companyId(engine.getInsuranceId())
+						.factorId(sno++)
+						.factorName(t.getCoverDesc())
+						.coverId(Integer.parseInt(t.getCoverId()))
+						.coverName(t.getCoverDesc())
+						.createdBy(engine.getCreatedBy())
+						.entryDate(new Date())
+						.fire(0D)
+						.thirdParty(0D)
+						.theft(0D)
+						.windscreen(0D)
+						.ownDamage(StringUtils.isBlank(factors.get(0).get("rate")==null?"0":factors.get(0).get("rate").toString())?0D:Double.parseDouble(factors.get(0).get("rate")==null?"0":factors.get(0).get("rate").toString()))
+						.msRefno(engine.getMsrefno())
+						.productId(Integer.parseInt(engine.getProductId()))
+						.requestReferenceNo(engine.getRequestReferenceNo())
+						.sectionId(Integer.parseInt(engine.getSectionId()))
+						.status("Y")
+						.subCoverYn("N")
+						.subCoverId(0)
+						.subCoverName("")
+						.vdRefno(engine.getVdRefNo())
+						.vehicleId(Integer.parseInt(engine.getVehicleId()))						
+						.build();
+			 
+			fds.add(fd);
 				for(Loading l:t.getLoadings()) {
 					List<Tuple> factors = coverCalculator.LoadFactorRates(engine, l.getLoadingId(),l.getFactorTypeId(),engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
 					try {
@@ -220,7 +251,7 @@ public class PerilCalculator {
 						 l.setRegulatoryCode(regulatoryCode);
 						 l.setLoadingCalcType("P");
 						} 
-					 EwayFactorDetails fd=null;						
+					 						
 							 fd=EwayFactorDetails.builder()
 									.amendId(0)
 									.cdRefno(engine.getCdRefNo())

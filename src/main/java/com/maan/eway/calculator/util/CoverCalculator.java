@@ -28,6 +28,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 			 if("Y".equals( t.getIsSubCover())) {
 				 //this.setEngine(engine);
 				 t.getSubcovers().stream().forEach(this);
+				 t.getSubcovers().removeIf(ll -> (ll.isNotsutable()));
 			 }else {
 
 			//	 loadOnetimetable(engine);
@@ -83,7 +84,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 						t.setError(build);
 						t.setNotsutable(true);
 						throw build;
-				 } if("F".equals(t.getCalcType())) {
+				 } if("F".equals(t.getCalcType()) || "FD".equals(t.getCalcType())) {
 					 // Tuple vehicle,Tuple customer,Tuple common
 					 List<Tuple> factors = LoadFactorRates(engine, t.getCoverId(),t.getFactorTypeId(),engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
 					 
@@ -107,7 +108,18 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 						 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
 						 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);*/
 					}
-					 if(tuple!=null) {
+					 if("FD".equals(t.getCalcType())){
+						 PerilCalculator calc=new PerilCalculator(crservice, engine, result, vehicles, customers,this,factors);
+						 calc.perilCalculator(t);
+						 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
+						 t.getLoadings().clear();
+						 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
+						 t.setExcessAmount(tuple.get("excessAmount")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("excessAmount").toString()));
+						 t.setExcessDesc(tuple.get("excessDesc")==null?"":tuple.get("excessDesc").toString());
+						 t.setExcessPercent(tuple.get("excessPercent")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("excessPercent").toString()));
+						 //t.getDiscounts().clear();
+						 discountLoading=false;
+					 }else if(tuple!=null) {
 						 String calctype=tuple.get("calcType").toString();
 						 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
 						 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
@@ -131,14 +143,14 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 						 t.setExcessDesc(tuple.get("excessDesc")==null?"":tuple.get("excessDesc").toString());
 						 t.setExcessPercent(tuple.get("excessPercent")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("excessPercent").toString()));
 					 }
-				 }else if("FD".equals(t.getCalcType())){
+				 }/*else if("FD".equals(t.getCalcType())){
 					 PerilCalculator calc=new PerilCalculator(crservice, engine, result, vehicles, customers,this);
 					 calc.perilCalculator(t);
 					 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 					 t.getLoadings().clear();
 					 //t.getDiscounts().clear();
 					 discountLoading=false;
-				 }else {
+				 }*/else {
 					 t.setRate((t.getRate()*Double.parseDouble(rateFor)));
 					 
 					 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
