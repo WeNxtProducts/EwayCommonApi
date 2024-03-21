@@ -33,17 +33,14 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ClausesChangeStatusReq;
 import com.maan.eway.master.req.ClausesMasterDropdownReq;
 import com.maan.eway.master.req.ClausesMasterGetReq;
 import com.maan.eway.master.req.ClausesMasterGetallReq;
-import com.maan.eway.master.req.ClausesMasterListSaveReq;
 import com.maan.eway.master.req.ClausesMasterReq;
 import com.maan.eway.master.req.ClausesMasterSaveReq;
 import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
-import com.maan.eway.master.req.WarrantyMasterReq;
 import com.maan.eway.master.res.ClausesMasterRes;
 import com.maan.eway.master.service.ClausesMasterService;
 import com.maan.eway.repository.ClausesMasterRepository;
@@ -340,7 +337,7 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 //		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
 		saveData.setTypeId(req.getTypeId());
 		saveData.setTypeDesc(data.getItemValue());
-		
+		saveData.setBrokerCode(req.getBrokerCode()==null?"99999":req.getBrokerCode());
 		saveData.setCoverId(req.getCoverId()==null?0:Integer.valueOf(req.getCoverId()));
 		saveData.setExtraCoverId(req.getExtraCoverId()==null?0:Integer.valueOf(req.getExtraCoverId()));
 		saveData.setDisplayOrder(req.getDisplayOrder()==null?0:Integer.valueOf(req.getDisplayOrder()));

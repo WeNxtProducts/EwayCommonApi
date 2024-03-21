@@ -51,6 +51,7 @@ import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.req.PdfJsonReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
+import com.maan.eway.jasper.res.AttachMentRes;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.res.MotorCoverNoteRes;
@@ -182,8 +183,7 @@ public class JasperServiceImpl implements JasperService {
 								}else {
 									JsonString = gson.toJson(motPrivateRes);
 									if("1".equalsIgnoreCase(motPrivateRes.getVehicleDetails().get(0).getPolicyTypeId())) {
-										input.put("attachMent", "Y");
-										input.put("attachMentName", motPrivateRes.getAttachment());
+										input.put("attachMents", motPrivateRes.getAttachmentList());
 									}
 									JasperName = "UgandaMotorSchedule";
 								}
@@ -686,7 +686,7 @@ public class JasperServiceImpl implements JasperService {
 		return null;
 	}
 	
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private JasperDocumentRes getCommonJasperPdfFileByJson(String jrxmlPath,String jasperSaveLocation, String jsonString, Map<String, Object> map,String fileNameEnd) {
 		log.info("Enter into getCommonJasperPdfFileByJson");
 		JasperDocumentRes res = new JasperDocumentRes();
@@ -703,13 +703,15 @@ public class JasperServiceImpl implements JasperService {
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map,dataSource);
 			JasperExportManager.exportReportToPdfFile(jasperPrint, jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
 			String path = jasperSaveLocation+fileNameEnd.replace(".json", ".pdf");
-			String attachMent = map.get("attachMent")==null?"":map.get("attachMent").toString();
-			if(attachMent.equalsIgnoreCase("Y")) {
-				String attachMentName = map.get("attachMentName")==null?"":map.get("attachMentName").toString();
+			List<AttachMentRes> attachMentList = map.get("attachMents")==null?Collections.emptyList():(List<AttachMentRes>) map.get("attachMents");
+			if(!attachMentList.isEmpty()) {
 				PDFMergerUtility mergerUtility = new PDFMergerUtility();
 				mergerUtility.setDestinationFileName(jasperSaveLocation+fileNameEnd.replace(".json", "_merged.pdf"));
 				mergerUtility.addSource(jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
-				mergerUtility.addSource(policyReportPath.replaceAll("PolicyReport", "UgandaAttachments")+attachMentName);
+				for(AttachMentRes attMap : attachMentList) {
+					File Attfile = new File(attMap.getDocloction());
+					mergerUtility.addSource(Attfile);
+				}
 				mergerUtility.mergeDocuments();
 				path = jasperSaveLocation+fileNameEnd.replace(".json", "_merged.pdf");
 			}
@@ -798,6 +800,9 @@ public class JasperServiceImpl implements JasperService {
 							result = reportRes;
 						}else {
 							MotorPrivateRes reportRes =jasperCustomeImple.getMotorPrivate(policyNo, req.getQuoteNo());
+							if("100019".equalsIgnoreCase(report.getId().getCompanyId())) {
+								jasperParameter.put("attachMents", reportRes.getAttachmentList());
+							}
 							result = reportRes;
 						}
 					}else if(report.getId().getProductId()==4) {

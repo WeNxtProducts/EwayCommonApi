@@ -40,6 +40,7 @@ import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.DocumentUniqueDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.ExclusionMaster;
@@ -63,6 +64,7 @@ import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.WarrantyMaster;
+import com.maan.eway.jasper.res.AttachMentRes;
 import com.maan.eway.jasper.res.CreditDataSetOne;
 import com.maan.eway.jasper.res.CreditDataSetTwo;
 import com.maan.eway.jasper.res.CreditNoteRes;
@@ -629,6 +631,7 @@ public class JasperCustomServiceImple {
 		List<MotorPrivateDriverDetails> driverDetailsRes = new ArrayList<>();
 		List<MotorPrivateAccessoriesDetails> accessoriesDetailsRes = new ArrayList<>();
 		List<TearmsAndCondition> tearmsAndConditionRes = new ArrayList<>();
+		List<AttachMentRes> attachments = new ArrayList<>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();	
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
@@ -706,7 +709,8 @@ public class JasperCustomServiceImple {
 			cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), hpmRoot.get("customerName"))
 			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),
 			imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),piRoot.get("customerId").alias("customerId"),
-			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"),signimageURL.alias("signImg"),attachment.alias("attachment"))
+			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"),signimageURL.alias("signImg"),
+			attachment.alias("attachment"),hpmRoot.get("loginId").alias("loginId"))
 		.where(StringUtils.isBlank(policyNo)?cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")):cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),
 				cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(cpmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cpmRoot.get("status"), "Y"),cb.equal(hpmRoot.get("productId"), cpmRoot.get("productId")),
@@ -842,6 +846,38 @@ public class JasperCustomServiceImple {
 			
 			OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 		
+			String loginId = map.get("loginId")==null?"":map.get("loginId").toString();
+			if(StringUtils.isNotBlank(loginId)) {
+					CriteriaBuilder cb1 = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> doc = cb1.createQuery(Tuple.class);
+					Root<DocumentUniqueDetails> dudRoot = doc.from(DocumentUniqueDetails.class);
+					Root<ClausesMaster> cmRoot = doc.from(ClausesMaster.class);
+					Root<LoginMaster> lmRoot = doc.from(LoginMaster.class);
+					Root<LoginUserInfo> dlui = doc.from(LoginUserInfo.class);
+					
+					Subquery<Integer> cmAmd = cq.subquery(Integer.class);
+					Root<ClausesMaster> cmAmdRoot = cmAmd.from(ClausesMaster.class);
+					
+					cmAmd.select(cb.max(cmAmdRoot.get("amendId"))).where(cb.equal(cmAmdRoot.get("brokerCode"), dlui.get("customerCode")),
+							cb.equal(cmAmdRoot.get("clausesId"), cmRoot.get("clausesId")),cb.equal(cmAmdRoot.get("status"), cmRoot.get("status")));
+					
+					doc.multiselect(cmRoot.get("docRefNo").alias("docRefNo"),dudRoot.get("filePathOrginal").alias("filePathOrginal"))
+					.where(cb.equal(lmRoot.get("loginId"), dlui.get("loginId")),cb.equal(dlui.get("customerCode"), cmRoot.get("brokerCode")),
+							cb.equal(cmRoot.get("docRefNo"), dudRoot.get("uniqueId")),cb.equal(lmRoot.get("loginId"), loginId),
+							cb.equal(cmRoot.get("status"), "Y"),cb.equal(cmRoot.get("amendId"), cmAmd));
+					
+					List<Tuple> docList = em.createQuery(doc).getResultList();
+					if(!docList.isEmpty()) {
+						docList.forEach(e -> {
+							AttachMentRes m = AttachMentRes.builder()
+									.docRefNo(e.get("docRefNo")==null?"":e.get("docRefNo").toString())
+									.docloction(e.get("filePathOrginal")==null?"":e.get("filePathOrginal").toString())
+									.build();
+							attachments.add(m);
+						});
+					}
+				}
+			
 			response.setCustomerId(map.get("customerId")==null?"":map.get("customerId").toString());
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
 			response.setEffectiveDateStart(map.get("effectiveDateStart")==null?"":map.get("effectiveDateStart").toString());
@@ -874,12 +910,12 @@ public class JasperCustomServiceImple {
 			response.setCoverNoteReferenceNo(map.get("coverNoteReferenceNo")==null?"":map.get("coverNoteReferenceNo").toString());
 			response.setBusiness(map.get("business")==null?"":map.get("business").toString());
 			response.setSignImg(map.get("signImg")==null?"":map.get("signImg").toString());
-			response.setAttachment(map.get("attachment")==null?"":map.get("attachment").toString());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
 			response.setTearmsAndConditions(tearmsAndConditionRes);
 			response.setPremiumDetails(premiumDetailsRes);
+			response.setAttachmentList(attachments);
 		}
 	}catch(Exception e) {
 		log.info("Error in getMotorPrivate ==>"+e.getMessage());

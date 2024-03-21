@@ -75,5 +75,8 @@ public class ClausesMasterSaveReq {
 
 	@JsonProperty("TypeId")
 	private String typeId;
+	
+	@JsonProperty("BrokerCode")
+	private String brokerCode;
 
 }

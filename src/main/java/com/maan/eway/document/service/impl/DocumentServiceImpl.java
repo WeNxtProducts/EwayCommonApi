@@ -898,7 +898,6 @@ public class DocumentServiceImpl implements DocumentService {
 		if (StringUtils.isBlank(req.getUploadedBy())) {
 			errorList.add(new Error("01", "UploadedBy", "Please Select Uploaded By"));
 		}
-
 		return errorList;
 
 	}

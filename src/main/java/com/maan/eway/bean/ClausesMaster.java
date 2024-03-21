@@ -116,5 +116,8 @@ public class ClausesMaster {
 
 	@Column(name="TYPE_DESC",length=20)
 	private String typeDesc;
+	
+	@Column(name = "BROKER_CODE")
+	private String brokerCode;
 
 }

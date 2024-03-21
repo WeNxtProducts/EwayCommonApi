@@ -40,6 +40,8 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
@@ -3410,6 +3412,41 @@ public class DropDownServiceImpl  implements DropDownService{
 			return null;
 		}
 		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> brokerlist(String companyId) {
+		log.info("Enter into brokerlist :: "+companyId);
+		List<DropDownRes> result = new ArrayList<DropDownRes>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+			Root<LoginUserInfo> lui = cq.from(LoginUserInfo.class);
+			
+			Subquery<String> loginIds = cq.subquery(String.class);
+			Root<LoginMaster> lm = loginIds.from(LoginMaster.class);
+			loginIds.select(lm.get("loginId")).where(cb.equal(lm.get("userType"), "Broker"),cb.equal(lm.get("companyId"), companyId));
+			
+			cq.multiselect(lui.get("customerCode").alias("customerCode"),lui.get("customerName").alias("customerName"),lui.get("status").alias("status"))
+			.where(cb.in(lui.get("loginId")).value(loginIds));
+			
+			List<Tuple> list = em.createQuery(cq).getResultList();
+			if(!list.isEmpty()) {
+				list.forEach(k -> {
+					DropDownRes y = new DropDownRes();
+					y.setCode(k.get("customerCode")==null?"":k.get("customerCode").toString());
+					y.setCodeDesc(k.get("customerName")==null?"":k.get("customerName").toString());
+					y.setStatus(k.get("status")==null?"":k.get("status").toString());
+					result.add(y);
+				});
+				return result;
+			}
+		}catch(Exception e) {
+			log.info("Error in brokerlist :: "+e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	

@@ -90,6 +90,9 @@ public class ClausesMasterRes {
 	@JsonProperty("TypeDesc")
 	private String typeDesc;
 	
+	@JsonProperty("BrokerCode")
+	private String brokerCode;
+	
 	//	
 //	@JsonProperty("PolicyType")
 //	private String policyType;

@@ -243,4 +243,6 @@ public interface DropDownService {
 
 	List<DropDownRes> claimType(LovDropDownReq req);
 
+	List<DropDownRes> brokerlist(String companyId);
+
 }
