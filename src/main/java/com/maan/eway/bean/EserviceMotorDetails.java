@@ -697,6 +697,10 @@ private static final long serialVersionUID = 1L;
  	@Temporal(TemporalType.TIMESTAMP)
  	@Column(name = "REGISTRATION_DATE")
  	private Date registrationDate;
+ 	
+ 	@Column(name = "REGISTRATION_STATUS", length = 10)
+	private String registrationStatus;
+
      
 }
 
