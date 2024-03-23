@@ -1,9 +1,11 @@
 package com.maan.eway.jasper.service.impl;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -40,6 +42,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
@@ -184,6 +190,7 @@ public class JasperServiceImpl implements JasperService {
 									JsonString = gson.toJson(motPrivateRes);
 									if("1".equalsIgnoreCase(motPrivateRes.getVehicleDetails().get(0).getPolicyTypeId())) {
 										input.put("attachMents", motPrivateRes.getAttachmentList());
+										input.put("policyNo", motPrivateRes.getPolicyNo());
 									}
 									JasperName = "UgandaMotorSchedule";
 								}
@@ -691,6 +698,7 @@ public class JasperServiceImpl implements JasperService {
 		log.info("Enter into getCommonJasperPdfFileByJson");
 		JasperDocumentRes res = new JasperDocumentRes();
 		InputStream inputStream=null;
+		int count = 0;
 		log.info(fileNameEnd.substring(2).replaceAll(".json", " ")+"JsonResponse ==> "+jsonString);
 		try {
 			FileWriter fileWriter = new FileWriter(jasperSaveLocation+fileNameEnd, false);
@@ -709,10 +717,31 @@ public class JasperServiceImpl implements JasperService {
 				mergerUtility.setDestinationFileName(jasperSaveLocation+fileNameEnd.replace(".json", "_merged.pdf"));
 				mergerUtility.addSource(jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
 				for(AttachMentRes attMap : attachMentList) {
-					File Attfile = new File(attMap.getDocloction());
+					count = count+1;
+					OutputStream outputStream = new FileOutputStream(new File(jasperSaveLocation+fileNameEnd.replace(".json", "_"+count+".pdf")));
+					PdfReader pdfReader = new PdfReader(attMap.getDocloction());
+					PdfStamper pdfStamper = new PdfStamper(pdfReader, outputStream);
+					for(int i = 1;i<=pdfReader.getNumberOfPages();i++) {
+						PdfContentByte contentByte = pdfStamper.getOverContent(i);
+						contentByte.beginText();
+						contentByte.setFontAndSize(BaseFont.createFont(BaseFont.TIMES_BOLD, BaseFont.CP1257, BaseFont.EMBEDDED), 12);
+						contentByte.setTextMatrix(125, pdfReader.getPageSizeWithRotation(i).getHeight()-20);
+						contentByte.showText("Attached to and Forming Part of Policy No. "+(map.get("policyNo")==null?"":map.get("policyNo").toString()));
+						contentByte.endText();
+					}
+					pdfStamper.close();
+					File Attfile = new File(jasperSaveLocation+fileNameEnd.replace(".json", "_"+count+".pdf"));
 					mergerUtility.addSource(Attfile);
 				}
 				mergerUtility.mergeDocuments();
+				if(count>0) {
+					for(int f=0;f<count;f++) {
+						File Attfile = new File(jasperSaveLocation+fileNameEnd.replace(".json", "_"+count+".pdf"));
+						Attfile.delete();
+					}
+						File file1 = new File(jasperSaveLocation+fileNameEnd.replace(".json", ".pdf"));
+						file1.delete();
+				}
 				path = jasperSaveLocation+fileNameEnd.replace(".json", "_merged.pdf");
 			}
 			GetFileFromPath filePath = new GetFileFromPath(path);
@@ -802,6 +831,7 @@ public class JasperServiceImpl implements JasperService {
 							MotorPrivateRes reportRes =jasperCustomeImple.getMotorPrivate(policyNo, req.getQuoteNo());
 							if("100019".equalsIgnoreCase(report.getId().getCompanyId())) {
 								jasperParameter.put("attachMents", reportRes.getAttachmentList());
+								jasperParameter.put("policyNo", reportRes.getPolicyNo());
 							}
 							result = reportRes;
 						}

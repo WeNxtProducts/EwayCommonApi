@@ -324,6 +324,16 @@
 			</textField>
 		</band>
 	</background>
+	<title>
+		<band height="80">
+			<image>
+				<reportElement x="0" y="0" width="555" height="80" uuid="c9ce3694-92c8-49f1-88c9-3f5cec92dfef">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}]]></imageExpression>
+			</image>
+		</band>
+	</title>
 	<columnHeader>
 		<band height="15">
 			<textField>
@@ -1910,7 +1920,7 @@
 				<textFieldExpression><![CDATA["*THIS DOCUMENT IS NOT VALID FOR ANY PURPOSE IF NOT ACCOMPANIED BY EFRIS INVOICE AS PROOF OF PAYMENT OF PREMIUM*"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="121" width="555" height="15" uuid="07d222d1-df0d-4d68-b1ec-6c7a90be1e6d">
+				<reportElement x="128" y="121" width="302" height="15" uuid="07d222d1-df0d-4d68-b1ec-6c7a90be1e6d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="0"/>
@@ -1925,6 +1935,22 @@
 				</reportElement>
 				<imageExpression><![CDATA[$P{pvImagepath}+$F{signImg}]]></imageExpression>
 			</image>
+			<textField>
+				<reportElement x="460" y="121" width="40" height="15" uuid="7d2d4546-1626-4cb3-997f-17b1c9b15eac"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="500" y="121" width="55" height="15" uuid="7b943214-9f32-4bab-a38c-999cb98a6bd5"/>
+				<box leftPadding="0"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 </jasperReport>
