@@ -17,7 +17,8 @@ public class DropDownRes {
 	/**
 	 * 
 	 */
-	 
+	@JsonProperty("TitleType")
+	private String titletype;
 	@JsonProperty("Code")
 	private String code;
 	@JsonProperty("CodeDesc")

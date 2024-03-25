@@ -966,14 +966,21 @@ public class DropDownServiceImpl  implements DropDownService{
 	public List<DropDownRes> title(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
+			String itemType= "TITLE" ;
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TITLE", "Y");
-			String itemType = "TITLE" ;
+			//List<ListItemValue> getList1 = listRepo.findByCompanyIdAndBranchCodeAndStatus(req.getInsuranceId(),req.getBranchCode(), "Y");
+		/*
+		 * if(getList1.size()>0) { itemType=getList1.get(0).getItemType(); }
+		 */
 			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				if(!data.getParam1().isEmpty()) {
+				res.setTitletype(data.getParam1());
+				}
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1412,6 +1419,8 @@ public class DropDownServiceImpl  implements DropDownService{
 
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
+			
+			
 			
 		//	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode()))).collect(Collectors.toList());
 		//	list = list.stream().sorted((o1, o2)->Long.valueOf(o1.getItemValue()).compareTo(Long.valueOf(o2.getItemValue()))).collect(Collectors.toList());

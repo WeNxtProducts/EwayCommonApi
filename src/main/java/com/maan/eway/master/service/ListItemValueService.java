@@ -16,6 +16,7 @@ import com.maan.eway.master.req.LovGetReq;
 import com.maan.eway.master.res.LovDetailsGetRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.TitleType;
 /**
 * <h2>ListItemValueServiceimpl</h2>
 */
@@ -35,5 +36,6 @@ LovDetailsGetRes getByIdLovDetails(LovGetReq req);
 List<DropDownRes> getLovMasterDropdown(LovDropDownReq req);
 SuccessRes changeStatusOfLovDetails(LovChangeStatusReq req);
 List<DropDownRes> getByItemValue(LovGetReq req);
+TitleType getByTitleType(LovGetReq req);
 
 }

@@ -6,6 +6,7 @@
 package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -32,6 +33,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.common.service.impl.DropDownServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ListItemValueSaveReq;
 import com.maan.eway.master.req.LovChangeStatusReq;
@@ -52,6 +55,7 @@ import com.maan.eway.master.service.ListItemValueService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.TitleType;
 /**
 * <h2>ListItemValueServiceimpl</h2>
 */
@@ -464,6 +468,7 @@ this.repository = repo;
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
+			saveData.setParam1(StringUtils.isBlank(req.getTitleType())?"I":req.getTitleType());
 			saveData.setCoreAppCode(req.getCoreAppCode());
 			repository.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
@@ -904,6 +909,8 @@ this.repository = repo;
  */
 	@Override
 	public List<DropDownRes> getByItemValue(LovGetReq req) {
+		
+	
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
@@ -946,13 +953,15 @@ this.repository = repo;
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(ListItemValue :: getItemValue ));
 			// Map
+			
+			
 			for (ListItemValue data : list) {
 				DropDownRes res = new DropDownRes();
-
-				res.setCode(data.getItemCode().toString());
-				res.setCodeDesc(data.getItemValue().toString());
+               res.setTitletype(data.getParam1());
+			res.setCode(data.getItemCode().toString());
+			res.setCodeDesc(data.getItemValue().toString());
 				res.setStatus(data.getStatus()==null?"":data.getStatus().toString());
-				resList.add(res);
+			resList.add(res);
 			}
 
 		} catch (Exception e) {
@@ -964,6 +973,85 @@ this.repository = repo;
 		return resList;
 	}
 
+	@Override
+	public TitleType getByTitleType(LovGetReq req) {
+		
+		//List<DropDownRes> individual = new ArrayList<DropDownRes>();
+		//List<DropDownRes> corporate = new ArrayList<DropDownRes>();
+	    TitleType resList = new TitleType();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			List<ListItemValue> list = new ArrayList<ListItemValue>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query = cb.createQuery(ListItemValue.class);
 
+			// Find All
+			Root<ListItemValue> b = query.from(ListItemValue.class);
+
+			// Select
+			query.select(b);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = amendId.from(ListItemValue.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
+//			Predicate a2 = cb.equal(ocpm1.get("itemCode"), b.get("itemCode"));
+			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(b.get("branchCode"), ocpm1.get("branchCode"));
+			amendId.where(a1,a3,a4);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n4 = cb.equal(b.get("branchCode"), StringUtils.isBlank(req.getBranchCode()) ?"99999" :req.getBranchCode() );
+			Predicate n8 = cb.equal(b.get("itemType"), req.getItemType());
+			query.where(n1,n2,n4,n8).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(ListItemValue :: getItemValue ));
+			
+			List<DropDownRes> individual = list.stream().filter(data -> data.getParam1().equals("I")) .map(data -> {
+			            DropDownRes res = new DropDownRes();
+			            res.setTitletype(data.getParam1());
+			            res.setCode(data.getItemCode().toString());
+			            res.setCodeDesc(data.getItemValue().toString());
+			            res.setStatus(data.getStatus() == null ? "" : data.getStatus().toString());
+			            return res;
+			        })
+			        .collect(Collectors.toList());
+
+			List<DropDownRes> corporate = list.stream().filter(data -> data.getParam1().equals("C")).map(data -> {
+			            DropDownRes res = new DropDownRes();
+			            res.setTitletype(data.getParam1());
+			            res.setCode(data.getItemCode().toString());
+			            res.setCodeDesc(data.getItemValue().toString());
+			            res.setStatus(data.getStatus() == null ? "" : data.getStatus().toString());
+			            return res;
+			        })
+			        .collect(Collectors.toList());
+
+			resList.setIndividual(individual);
+			resList.setCorporate(corporate);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+	}
 
 }

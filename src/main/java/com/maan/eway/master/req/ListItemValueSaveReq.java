@@ -67,6 +67,8 @@ public class ListItemValueSaveReq implements Serializable {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
+	@JsonProperty("TitleType")
+    private String   titleType ;
 	
 	@JsonProperty("Remarks")
 	private String remarks;

@@ -31,6 +31,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.TitleType;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -228,7 +229,7 @@ public class ListItemValueController {
 
 			*/
 
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	        @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/lovdetails/changestatus")
 			@ApiOperation(value = "This method is get Lov Details Change Status")
 			public ResponseEntity<CommonRes> changeStatusOfOccupation(@RequestBody LovChangeStatusReq req) {
@@ -256,6 +257,25 @@ public class ListItemValueController {
 			public ResponseEntity<CommonRes> getByItemValue(@RequestBody LovGetReq req) {
 				CommonRes data = new CommonRes();
 				List<DropDownRes> res = service.getByItemValue(req);
+				data.setCommonResponse(res);
+				data.setErrorMessage(Collections.emptyList());
+				data.setIsError(false);
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PostMapping("/getbytitletype")
+			@ApiOperation("This Method is to get by  id Lov Details")
+			public ResponseEntity<CommonRes> getByTitleType(@RequestBody LovGetReq req) {
+				CommonRes data = new CommonRes();
+				TitleType res = service.getByTitleType(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);
