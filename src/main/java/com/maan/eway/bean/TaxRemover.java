@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Tuple;
 
 import com.maan.eway.res.calc.Cover;
+import com.maan.eway.res.calc.Tax;
 
 public class TaxRemover implements Consumer<Cover> {
 
@@ -24,7 +25,9 @@ public class TaxRemover implements Consumer<Cover> {
 		List<Tuple> collect = result.stream().filter(r-> r.get("coverId").toString().equals(t.getCoverId())).collect(Collectors.toList());
 		if(!collect.isEmpty() && !t.getTaxes().isEmpty()) {
 			for(Tuple tup: collect) {
-				t.getTaxes().removeIf(e-> tup.get("taxId").toString().equals(e.getTaxId()));
+				List<Tax> totalTax = t.getTaxes().stream().collect(Collectors.toList());
+				totalTax.removeIf(e-> tup.get("taxId").toString().equals(e.getTaxId()));
+				t.setTaxes(totalTax);
 			}
 		}
 		
