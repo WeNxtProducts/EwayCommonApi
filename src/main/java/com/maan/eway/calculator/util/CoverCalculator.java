@@ -2,7 +2,7 @@ package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -24,7 +24,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 	@Override
 	public void accept(Cover t) {
 		 try {
-			
+			 DecimalFormat dcf=	 (DecimalFormat) this.decimalFormat.clone();
 			 if("Y".equals( t.getIsSubCover())) {
 				 //this.setEngine(engine);
 				 t.getSubcovers().stream().forEach(this);
@@ -111,7 +111,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 if("FD".equals(t.getCalcType())){
 						 PerilCalculator calc=new PerilCalculator(crservice, engine, result, vehicles, customers,this,factors);
 						 calc.perilCalculator(t);
-						 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
+						 t.setPremiumBeforeDiscountLC((BigDecimal) dcf.parse(dcf.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 						 t.getLoadings().clear();
 						 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
 						 t.setExcessAmount(tuple.get("excessAmount")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("excessAmount").toString()));
@@ -127,10 +127,13 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 						 t.setRate((Double) ((Double.parseDouble(rate)*Double.parseDouble(rateFor))));
 
 						 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
+						 //System.out.println(t.getCoverDesc()+ "<--->"+t.getRate() +"---"+si);
+						 
 						 BigDecimal domath = domath(calctype, t.getRate(), si,t.getExchangeRate());
+						// System.out.println(t.getCoverDesc()+ "<--->"+domath);
 						 t.setPremiumBeforeDiscount(domath);
 
-						 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
+						 t.setPremiumBeforeDiscountLC((BigDecimal) dcf.parse(dcf.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 						 t.setCalcType(calctype);
 						 t.setRegulatoryCode(regulatoryCode);
 						 /// Referal
@@ -146,16 +149,19 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 }/*else if("FD".equals(t.getCalcType())){
 					 PerilCalculator calc=new PerilCalculator(crservice, engine, result, vehicles, customers,this);
 					 calc.perilCalculator(t);
-					 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
+					 t.setPremiumBeforeDiscountLC((BigDecimal) dcf.parse(dcf.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 					 t.getLoadings().clear();
 					 //t.getDiscounts().clear();
 					 discountLoading=false;
 				 }*/else {
 					 t.setRate((t.getRate()*Double.parseDouble(rateFor)));
-					 
-					 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
+					 CommonCalculator calcul=new CommonCalculator();
+					 calcul.setEngine(engine, calculatedcover, result, vehicles, customers, prorata, crservice, dcf,drivers);
+					// System.out.println(t.getCoverDesc()+ "---"+t.getRate() +"---"+si);
+					 BigDecimal domath = calcul.domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
+					// System.out.println(t.getCoverDesc()+ "---"+domath);
 					 t.setPremiumBeforeDiscount(domath);					 
-					 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
+					 t.setPremiumBeforeDiscountLC((BigDecimal) dcf.parse(dcf.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 				 }
 				 
 				 
@@ -183,17 +189,17 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 }
 				 
 				 
-				 t.setPremiumAfterDiscount((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()))) );
+				 t.setPremiumAfterDiscount((BigDecimal) dcf.parse(dcf.format(t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()))) );
  
-				 t.setPremiumAfterDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()))));
+				 t.setPremiumAfterDiscountLC((BigDecimal) dcf.parse(dcf.format(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()))));
 				 //.multiply(t.getProRata())				 
 				 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());				 
-				 t.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTax().multiply(t.getExchangeRate()))));
+				 t.setPremiumExcluedTaxLC((BigDecimal) dcf.parse(dcf.format(t.getPremiumExcluedTax().multiply(t.getExchangeRate()))));
 				 
 				 // Minimium Premium setup.
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0 && !"Y".equals(t.getIsReferral())) {
 					 
-					 t.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate(),MathContext.DECIMAL64)))); 
+					 t.setPremiumExcluedTax((BigDecimal) dcf.parse(dcf.format(t.getMinimumPremium().divide(t.getExchangeRate(),MathContext.DECIMAL64)))); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
 					 t.setMinimumPremiumYn("Y");
 				 }
@@ -212,8 +218,8 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 totaltax=totaltax_N+totaltax_Y;
 				 }
 				 
-				 t.setPremiumIncludedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)))));				 
-				 t.setPremiumIncludedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumIncludedTax().multiply(t.getExchangeRate()))));
+				 t.setPremiumIncludedTax((BigDecimal) dcf.parse(dcf.format(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)))));				 
+				 t.setPremiumIncludedTaxLC((BigDecimal) dcf.parse(dcf.format(t.getPremiumIncludedTax().multiply(t.getExchangeRate()))));
 			 }
 			 
 			

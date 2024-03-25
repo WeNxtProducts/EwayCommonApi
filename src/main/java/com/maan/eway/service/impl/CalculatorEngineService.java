@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -70,7 +71,6 @@ import com.maan.eway.calculator.util.EndtCoverCalculator;
 import com.maan.eway.calculator.util.EndtFromFactor;
 import com.maan.eway.calculator.util.LoadingFromFactor;
 import com.maan.eway.calculator.util.PolicyCoverCalculator;
-import com.maan.eway.calculator.util.PolicyDiscountMapper;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.calculator.util.SplitDiscountUtils;
 import com.maan.eway.calculator.util.SplitLoadingUtils;
@@ -320,7 +320,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 			// effectiveDateStart&effectiveDateEnd
 
 			for (String dependcover : dependedcovers) {
-				List<Cover> totalcovers = new ArrayList<Cover>();
+				//List<Cover> totalcovers = new ArrayList<Cover>();
+				CopyOnWriteArrayList<Cover> totalcovers=new  CopyOnWriteArrayList<Cover>();
 				List<Tuple> covers = totalcoverstuple.parallelStream()
 						.filter(t -> dependcover.equals(t.get("dependentCoverYn").toString()))
 						.collect(Collectors.toList());
@@ -346,7 +347,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						for (Cover c : noncovers) {
 							List<Discount> ds = discounts.stream()
 									.filter(d -> d.getDiscountforId().equals(c.getCoverId()))
-									.collect(Collectors.toList());
+									//.collect(Collectors.toList());
+									.collect(Collectors.toUnmodifiableList());
 							ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
 							// List<Tax> taxey =
 							// taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
@@ -358,7 +360,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 					if (!loadings.isEmpty() && !noncovers.isEmpty()) {
 						for (Cover c : noncovers) {
 							List<Loading> ds = loadings.stream().filter(d -> d.getLoadingforId().equals(c.getCoverId()))
-									.collect(Collectors.toList());
+									//.collect(Collectors.toList());
+									.collect(Collectors.toUnmodifiableList());
 							ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
 							// List<Tax> taxey =
 							// taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
@@ -371,7 +374,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						for (Cover c : noncovers) {
 							if(!c.getCoverageType().equals("A") && !c.getIsTaxExcempted().equals("Y")) {
 								List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
-										.collect(Collectors.toList());
+										//.collect(Collectors.toList());
+										.collect(Collectors.toUnmodifiableList());
 								c.setTaxes(taxey);
 							}
 						}
@@ -380,6 +384,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 				splitsub = new SplitSubCoverUtil("Y", engine.getEffectiveDate(), engine.getPolicyEndDate());
 				Map<String, List<Cover>> subcovers = covers.parallelStream().map(splitsub)
+						
 						.filter(d -> (d != null && !"0".equals(d.getSubCoverId())))
 						.collect(Collectors.groupingBy(Cover::getIsSubCover));
 				if (!subcovers.isEmpty()) {
@@ -392,7 +397,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 							ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
 
 							List<Discount> dss = ds.stream().map(dx -> SerializationUtils.clone(dx))
-									.collect(Collectors.toList());
+								//	.collect(Collectors.toList());
+									.collect(Collectors.toUnmodifiableList());
 							// List<Tax> taxez =
 							// taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
 							c.setDiscounts(dss);
@@ -407,7 +413,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 							ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
 
 							List<Loading> dss = ds.stream().map(dx -> SerializationUtils.clone(dx))
-									.collect(Collectors.toList());
+									//.collect(Collectors.toList());
+									.collect(Collectors.toUnmodifiableList());
 							c.setLoadings(dss);
 						}
 					}
@@ -415,7 +422,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						for (Cover c : noncovers) {
 							if(!c.getCoverageType().equals("A") && !c.getIsTaxExcempted().equals("Y")) {
 							List<Tax> taxey = taxes.parallelStream().map(tzx).filter(d -> d != null)
-									.collect(Collectors.toList());
+									//.collect(Collectors.toList());
+									.collect(Collectors.toUnmodifiableList());
 							c.setTaxes(taxey);
 							}
 						}
@@ -423,7 +431,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					List<Cover> d = noncovers.stream().filter(SubCoverCreationUtil.distinctByKey(Cover::getCoverId))
 							.collect(Collectors.toList());
-					List<Cover> subcov = new ArrayList<Cover>();
+					//List<Cover> subcov = new ArrayList<Cover>();
+					CopyOnWriteArrayList<Cover> subcov=new  CopyOnWriteArrayList<Cover>();
 					for (Cover cover : d) {
 						List<Cover> subcover = noncovers.stream()
 								.filter(cv -> cv.getCoverId().equals(cover.getCoverId())).collect(Collectors.toList());
@@ -444,12 +453,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 				}
 
 				if (!nonSubcovers.isEmpty() && !subcovers.isEmpty()) {
-					totalcovers = subcovers.get("Y");
+					//totalcovers = 
+					List<Cover> list = subcovers.get("Y");
+					totalcovers.addAll(list);
 					totalcovers.addAll(nonSubcovers.get("N"));
 				} else if (!nonSubcovers.isEmpty() && subcovers.isEmpty()) {
-					totalcovers = nonSubcovers.get("N");
+					totalcovers.addAll(nonSubcovers.get("N"));
 				} else if (nonSubcovers.isEmpty() && !subcovers.isEmpty()) {
-					totalcovers = subcovers.get("Y");
+					totalcovers.addAll(subcovers.get("Y"));
 				}
 				
 				

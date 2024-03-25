@@ -54,6 +54,7 @@ public class CommonCalculator {
 		this.crservice=crservice;
 		this.decimalFormat=decimalFormat;
 		this.decimalFormat.setParseBigDecimal(true);
+		
 		this.drivers=drivers;
 		
 	}
