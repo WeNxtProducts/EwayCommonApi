@@ -106,6 +106,23 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@PersistenceContext
 	private EntityManager em;
 
+	
+	public boolean containsOnlyNumbers(String input) {
+	    if (input == null || input.isEmpty()) {
+	        return false; // Return false for null or empty strings
+	    }
+	    
+	    for (int i = 0; i < input.length(); i++) {
+	        if (!Character.isDigit(input.charAt(i))) {
+	            return false; // Return false if any character is not a digit
+	        }
+	    }
+	    if(input.length()!=9)
+	    {
+	    	return false;
+	    }
+	    return true; // Return true if all characters are digits
+	}
 	@Override
 	public List<String> validateCustomerDetails(EserviceCustomerSaveReq req) {
 		List<String> errorList = new ArrayList<String>();
@@ -171,7 +188,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
 					errorList.add("1015");
 					//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
-				} 
+				} else if(!containsOnlyNumbers(req.getIdNumber()))
+				{
+					errorList.add("1015");
+				}
+				
+				
 //				else if (! req.getIdNumber().matches("[A-Za-z0-9]+") ) {
 //					errorList.add(new Error("11", "IdNumber", "Please Enter Valid IdNumber "));
 //				}
