@@ -61,6 +61,9 @@ public interface ListItemValueRepository  extends JpaRepository<ListItemValue,Li
 	@Query(value = "SELECT item_code,item_value FROM eway_list_item_value lv WHERE item_type='BANK_DETAILS' AND company_id=?1 AND amend_id = (SELECT MAX(amend_id) FROM eway_list_item_value WHERE item_type='BANK_DETAILS' AND company_id = lv.company_id AND item_id = lv.item_id AND branch_code = lv.branch_code AND item_code = lv.item_code AND STATUS = 'Y')",nativeQuery = true)
 	List<Map<String,Object>> getBankDetailsByCompanyId(String companyId);
 
+	@Query(value = "SELECT ITEM_CODE,ITEM_VALUE FROM eway_list_item_value WHERE ITEM_TYPE='DOMESTIC_KEY_FACTS' AND ITEM_CODE=?1",nativeQuery = true)
+	List<Map<String, Object>> getDomesticKeyFactor(String itemCode);
+
 
 
 

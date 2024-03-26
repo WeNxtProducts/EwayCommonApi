@@ -231,6 +231,8 @@ public class JasperServiceImpl implements JasperService {
 							designSection.removeBand(0);
 			                JasperCompileManager.compileReportToFile(design, config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jasper");
 						}
+						input2.put("attachMents", EwaySchedule.get("attachMents"));
+						input2.put("policyNo", EwaySchedule.get("policyNo"));
 						res = getCommonJasperPdfFileByJson("/report/jasper/MadisonSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- MadisonSchedule.json");
 					}else {
 						String obj[] =new String[2];

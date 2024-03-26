@@ -82,6 +82,7 @@ import com.maan.eway.jasper.res.TravelDataSetTwoRes;
 import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
@@ -128,6 +129,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private InsuranceCompanyMasterRepository insuranceComMasRepo;
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository eserviceBuildingDetailsRepo;
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		
@@ -1453,6 +1457,7 @@ public class JasperCustomServiceImple {
 	public Map<String,Object> getEwaySchedule(String QuoteNo){
 		log.info("Enter into EwaySchedule.\nArgument ==> "+QuoteNo);
 		Map<String,Object> result = new HashMap<String,Object>();
+		List<AttachMentRes> attachments = new ArrayList<>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
@@ -1702,6 +1707,20 @@ public class JasperCustomServiceImple {
 				coverageDetails.add(coverMap);
 			}
 			
+			List<EserviceBuildingDetails> buildingDtl = eserviceBuildingDetailsRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(QuoteNo, "Y");
+			String buildingOwnerYn = buildingDtl.get(0).getBuildingOwnerYn()==null?"":buildingDtl.get(0).getBuildingOwnerYn();
+			List<Map<String,Object>> domesticKeyFactor = listItemValueRepo.getDomesticKeyFactor(buildingOwnerYn.equalsIgnoreCase("Y")?"1":"2");
+			if(!domesticKeyFactor.isEmpty()) {
+				String attachmentloc = this.getClass().getClassLoader().getResource("").getPath().replaceAll("%20", "")+"report/attachments/";
+				domesticKeyFactor.forEach(k->{
+					AttachMentRes a = AttachMentRes.builder()
+							.docRefNo(k.get("ITEM_CODE")==null?"":k.get("ITEM_CODE").toString())
+							.docloction(k.get("ITEM_VALUE")==null?"":(attachmentloc+k.get("ITEM_VALUE").toString()))
+							.build();
+					attachments.add(a);
+				});
+			}
+			
 			result.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
 			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
@@ -1730,6 +1749,7 @@ public class JasperCustomServiceImple {
 			result.put("sectionDetails", sectionList);
 			result.put("locationDetails", locationDetails);
 			result.put("coverageDetails", coverageDetails);
+			result.put("attachMents", attachments);
 			}
 		}catch(Exception e) {
 			log.info("Error in EwaySchedule ==> "+e.getMessage());
