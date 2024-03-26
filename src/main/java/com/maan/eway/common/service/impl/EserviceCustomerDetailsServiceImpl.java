@@ -117,10 +117,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	            return false; // Return false if any character is not a digit
 	        }
 	    }
-	    if(input.length()!=9)
-	    {
-	    	return false;
-	    }
+		/*
+		 * if(company_id.equals("100004") && idType.contains("NRC")) {
+		 * if(input.length()!=9) { return false; } }
+		 */
 	    return true; // Return true if all characters are digits
 	}
 	@Override
