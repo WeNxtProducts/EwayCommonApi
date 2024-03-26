@@ -1516,6 +1516,7 @@ public class JasperCustomServiceImple {
 				List<BuildingDetails> Blist = buildingDetRepo.findByQuoteNo(map.get("quoteNo").toString());
 				List<Map<String,Object>> locationDetails = Blist.stream().map(k ->{
 					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
+					lmap.put("riskId", k.getRiskId());
 					lmap.put("locationName", k.getLocationName()==null?"":StringUtils.capitalize(k.getLocationName()));
 					lmap.put("buildingAddress", k.getBuildingAddress()==null?"":k.getBuildingAddress());
 					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
@@ -1603,25 +1604,44 @@ public class JasperCustomServiceImple {
 					sectList.add(Smap);
 				}
 			}
-			Map<Object, List<Map<String,Object>>> sectionRes = sectList.stream().collect(Collectors.groupingBy(g -> g.get("sectionDesc"),Collectors.mapping(v ->{
-				Map<String,Object> Smap = new HashMap<String,Object>();
-				Smap.put("occupationDesc", v.get("occupationDesc"));
-				Smap.put("coverDesc", v.get("coverDesc"));
-				Smap.put("sumInsured", v.get("sumInsured"));
-				Smap.put("rate", v.get("rate"));
-				Smap.put("premiumIncludedTaxLc", v.get("premiumIncludedTaxLc"));
-				Smap.put("premiumIncludedTaxFc", v.get("premiumIncludedTaxFc"));
-				Smap.put("premiumExcludedTaxLc", v.get("premiumExcludedTaxLc"));
-				Smap.put("premiumExcludedTaxFc", v.get("premiumExcludedTaxFc"));
-				return Smap;
-			}, Collectors.toList())));			
 			List<Map<String,Object>> sectionList = new ArrayList<Map<String,Object>>();
-			for(Map.Entry<Object, List<Map<String,Object>>> entry :sectionRes.entrySet()) {
-				Map<String, Object> sectionMap = new HashMap<String, Object>();
-				sectionMap.put("sectionKey", entry.getKey());
-				sectionMap.put("sectionValue", entry.getValue());
-				sectionList.add(sectionMap);
+			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
+			if("100004".equalsIgnoreCase(companyId)) {
+				sectList.forEach(k -> {
+					Map<String,Object> Smap = new HashMap<String,Object>();
+					Smap.put("sectionDesc", k.get("sectionDesc"));
+					Smap.put("coverDesc", k.get("coverDesc"));
+					Smap.put("sumInsured", k.get("sumInsured"));
+					Smap.put("rate", k.get("rate"));
+					Smap.put("premiumIncludedTaxLc", k.get("premiumIncludedTaxLc"));
+					Smap.put("premiumIncludedTaxFc", k.get("premiumIncludedTaxFc"));
+					Smap.put("premiumExcludedTaxLc", k.get("premiumExcludedTaxLc"));
+					Smap.put("premiumExcludedTaxFc", k.get("premiumExcludedTaxFc"));
+					sectionList.add(Smap);
+					result.put("occupationDesc", sectList.stream().filter(f -> f.get("occupationDesc") != null).map(m -> m.get("occupationDesc"))
+							.map(Object::toString).findAny().orElse(null));
+				});
+			}else {
+				Map<Object, List<Map<String,Object>>> sectionRes = sectList.stream().collect(Collectors.groupingBy(g -> g.get("sectionDesc"),Collectors.mapping(v ->{
+					Map<String,Object> Smap = new HashMap<String,Object>();
+					Smap.put("occupationDesc", v.get("occupationDesc"));
+					Smap.put("coverDesc", v.get("coverDesc"));
+					Smap.put("sumInsured", v.get("sumInsured"));
+					Smap.put("rate", v.get("rate"));
+					Smap.put("premiumIncludedTaxLc", v.get("premiumIncludedTaxLc"));
+					Smap.put("premiumIncludedTaxFc", v.get("premiumIncludedTaxFc"));
+					Smap.put("premiumExcludedTaxLc", v.get("premiumExcludedTaxLc"));
+					Smap.put("premiumExcludedTaxFc", v.get("premiumExcludedTaxFc"));
+					return Smap;
+				}, Collectors.toList())));			
+				for(Map.Entry<Object, List<Map<String,Object>>> entry :sectionRes.entrySet()) {
+					Map<String, Object> sectionMap = new HashMap<String, Object>();
+					sectionMap.put("sectionKey", entry.getKey());
+					sectionMap.put("sectionValue", entry.getValue());
+					sectionList.add(sectionMap);
+				}
 			}
+			
 			List<Object> sectionIds = Slist.stream().map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
 			List<Map<String,Object>> coverageList = new ArrayList<Map<String,Object>>();
 			for(int i=0;i<sectionIds.size();i++) {
@@ -1630,6 +1650,7 @@ public class JasperCustomServiceImple {
 				List<ContentAndRisk> contentInfo = conAndRiskRepo.findByQuoteNoAndSectionId(map.get("quoteNo").toString(),sectionId);
 				List<Map<String,Object>> contentList = contentInfo.stream().map(k ->{
 					LinkedHashMap<String, Object> contentMap = new LinkedHashMap<String, Object>();
+						contentMap.put("riskId", k.getRiskId());
 						contentMap.put("itemId", k.getItemId());
 						contentMap.put("itemDesc", k.getItemDesc());
 						contentMap.put("contentRiskDesc", k.getContentRiskDesc());

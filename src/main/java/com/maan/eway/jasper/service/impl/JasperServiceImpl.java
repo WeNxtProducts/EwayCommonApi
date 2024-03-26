@@ -76,6 +76,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JsonDataSource;
+import net.sf.jasperreports.engine.design.JRDesignSection;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 @Service
 public class JasperServiceImpl implements JasperService {
@@ -215,22 +218,33 @@ public class JasperServiceImpl implements JasperService {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvImagepath", Imagepath);
 					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
-					String obj[] =new String[2];
-					obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
-					obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";		 // for linux system
-                for(String s :obj) {
-					String jrxml_path=s.replace(".jasper", ".jrxml");
-					String path = JasperCompileManager.compileReportToFile(jrxml_path);
-					System.out.println("Jasper compileToReport path" +path);
-					}
-	                Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
+					Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
 					String jsonString = gson.toJson(EwaySchedule);
 					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
+					if("100004".equalsIgnoreCase(homeData.getCompanyId())) {
+						String obj[] =new String[1];
+						obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
+						for(String s :obj) {
+							String jrxml_path=s.replace(".jasper", ".jrxml");
+							JasperDesign design = JRXmlLoader.load(new File(jrxml_path));
+							JRDesignSection designSection = (JRDesignSection) design.getDetailSection();
+							designSection.removeBand(0);
+			                JasperCompileManager.compileReportToFile(design, config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jasper");
+						}
+						res = getCommonJasperPdfFileByJson("/report/jasper/MadisonSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- MadisonSchedule.json");
+					}else {
+						String obj[] =new String[2];
+						obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
+						obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";		 // for linux system
+						for(String s :obj) {
+							String jrxml_path=s.replace(".jasper", ".jrxml");
+							String path = JasperCompileManager.compileReportToFile(jrxml_path);
+							System.out.println("Jasper compileToReport path" +path);
+						}
+						res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
+					}
 				}
-				
 			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
