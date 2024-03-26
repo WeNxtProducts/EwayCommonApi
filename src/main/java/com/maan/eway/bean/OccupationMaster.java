@@ -113,5 +113,8 @@ public class OccupationMaster implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "UPDATED_DATE")
 	private Date updatedDate;
+	
+	@Column(name = "Occupation_Type", length = 100)
+	private String occupationType;
 
 }

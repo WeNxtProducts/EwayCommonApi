@@ -945,14 +945,26 @@ this.repository = repo;
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n4 = cb.equal(b.get("branchCode"), StringUtils.isBlank(req.getBranchCode()) ?"99999" :req.getBranchCode() );
 			Predicate n8 = cb.equal(b.get("itemType"), req.getItemType());
-			query.where(n1,n2,n4,n8).orderBy(orderList);
+			/*
+			 * if(!StringUtils.isBlank(req.getTitletype())) { Predicate
+			 * n9=cb.equal(b.get("param1"),req.getTitletype());
+			 * query.where(n1,n2,n4,n8,n9).orderBy(orderList); }
+			 */
 			
+			query.where(n1,n2,n4,n8).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(ListItemValue :: getItemValue ));
 			// Map
+			if(!StringUtils.isBlank(req.getTitletype()))
+			{
+		
+					list = list.stream()
+	                .filter(item -> req.getTitletype().equals(item.getParam1()))
+	                .collect(Collectors.toList());
+			}
 			
 			
 			for (ListItemValue data : list) {

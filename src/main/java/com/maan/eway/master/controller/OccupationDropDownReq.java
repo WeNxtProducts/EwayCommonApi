@@ -17,4 +17,6 @@ public class OccupationDropDownReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("TitleType")
+	private String titletype;
 }

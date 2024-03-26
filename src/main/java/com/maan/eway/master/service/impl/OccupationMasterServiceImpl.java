@@ -230,7 +230,7 @@ try {
 	Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 	Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
 	Predicate a11 = cb.equal(c.get("productId"),ocpm2.get("productId"));
-
+	
 	effectiveDate2.where(a3,a4,a7,a8,a11);
 	// Where
 	Predicate n1 = cb.equal(c.get("status"),"Y");
@@ -267,7 +267,13 @@ try {
 	list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
 	
 	// Get Result
-
+	
+	 if(!StringUtils.isBlank(req.getTitletype())) {
+	 
+	 list = list.stream() .filter(item ->
+	 req.getTitletype().equals(item.getOccupationType()))
+	 .collect(Collectors.toList()); }
+	 
 	for (OccupationMaster data : list) {
 		// Response 
 		IndustryDropDownRes res = new IndustryDropDownRes();
@@ -276,7 +282,7 @@ try {
 		res.setStatus(data.getStatus());
 		res.setCategoryId(data.getCategoryId());
 		res.setCategoryDesc("Category " + data.getCategoryId());
-		
+		res.setTitletype(data.getOccupationType());
 		resList.add(res);
 	}
 }

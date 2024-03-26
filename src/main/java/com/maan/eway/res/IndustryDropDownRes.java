@@ -18,4 +18,6 @@ public class IndustryDropDownRes {
 	private String categoryId;
 	@JsonProperty("CategoryDesc")
 	private String categoryDesc;
+	@JsonProperty("TitleType")
+	private String titletype;
 }

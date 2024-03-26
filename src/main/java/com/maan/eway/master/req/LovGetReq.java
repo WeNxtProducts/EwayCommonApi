@@ -20,5 +20,6 @@ public class LovGetReq {
 	@JsonProperty("ItemCode")
 	private String itemCode;
 	
-
+	@JsonProperty("TitleType")
+	private String titletype;
 }
