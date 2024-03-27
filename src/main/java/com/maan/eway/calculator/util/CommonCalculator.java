@@ -82,7 +82,7 @@ public class CommonCalculator {
 					}else if("MsCommonDetails".equalsIgnoreCase(r.getInputTableName())) {
 						r.setInputColumValue(common.get(r.getInputColumName()).toString());
 					}else if("MsDriverDetails".equalsIgnoreCase(r.getInputTableName())){
-						r.setInputColumName(drivers.get(r.getInputColumName()).toString());
+						r.setInputColumValue(drivers.get(r.getInputColumName()).toString());
 					}else /*if("MS_Vehicle_DETAILS".equalsIgnoreCase(r.getInputTableName()) || "MSVehicleDETAILS".equalsIgnoreCase(r.getInputTableName()) 
 							|| "MsHumanDetails".equalsIgnoreCase(r.getInputTableName()) || "MsAssetDetails".equalsIgnoreCase(r.getInputTableName()) )*/ {
 						if (vehicle.get(r.getInputColumName()) instanceof BigDecimal) {
