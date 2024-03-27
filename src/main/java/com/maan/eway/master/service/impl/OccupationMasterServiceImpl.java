@@ -219,7 +219,8 @@ try {
 	Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 	Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 	Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
-
+	//Predicate a10 = cb.equal(c.get("productId"),"99999");
+	//Predicate a21=cb.or(a9,a10);
 	effectiveDate.where(a1,a2,a5,a6,a9);
 	// Effective Date End Max Filter
 	Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -230,7 +231,8 @@ try {
 	Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 	Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
 	Predicate a11 = cb.equal(c.get("productId"),ocpm2.get("productId"));
-	
+	//Predicate a12 = cb.equal(c.get("productId"),"99999");
+	//Predicate a13=cb.or(a11,a12);
 	effectiveDate2.where(a3,a4,a7,a8,a11);
 	// Where
 	Predicate n1 = cb.equal(c.get("status"),"Y");
@@ -243,21 +245,19 @@ try {
 	Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
-	
-//	Predicate n8= cb.equal(c.get("productId"),req.getProductId());
-//	Predicate n9= cb.equal(c.get("productId"),"99999");
-//	Predicate n10 = cb.or(n8,n9);
-	Predicate n8=null;
-	if(StringUtils.isNotBlank(req.getProductId() )) {
-		n8 = cb.equal(c.get("productId"),req.getProductId());
-	} else {
-		n8 = cb.equal(c.get("productId"),"99999");
-	}
+		Predicate n8= cb.equal(c.get("productId"),req.getProductId());
+	Predicate n9= cb.equal(c.get("productId"),"99999");
+	Predicate n10 = cb.or(n8,n9);
+	/*
+	 * Predicate n8=null; if(StringUtils.isNotBlank(req.getProductId())) { n8 =
+	 * cb.equal(c.get("productId"),req.getProductId()); } else { n8 =
+	 * cb.equal(c.get("productId"),"99999"); }
+	 */
 	
 	//Predicate n9 = cb.equal(c.get("productId"),"99999");
 //	Predicate n10 = cb.or(n8,);
 	
-	query.where(n12,n2,n3,n4,n7,n8).orderBy(orderList);
+	query.where(n12,n2,n3,n4,n7,n10).orderBy(orderList);
 		
 	
 	TypedQuery<OccupationMaster> result = em.createQuery(query);
