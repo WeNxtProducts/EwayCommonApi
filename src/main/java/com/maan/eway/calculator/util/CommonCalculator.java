@@ -60,7 +60,7 @@ public class CommonCalculator {
 	}
 	
 	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId, String subCoverId){
-		return LoadFactorRates(engine, coverId, factorid, vehicleId, vehicles.get(0), customers.get(0), result.get(0),subCoverId,(drivers==null)?null:drivers.get(0));
+		return LoadFactorRates(engine, coverId, factorid, vehicleId, vehicles.get(0), customers.get(0), result.get(0),subCoverId,(drivers==null || drivers.isEmpty())?null:drivers.get(0));
 	}
 	
 	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId,Tuple vehicle,Tuple customer,Tuple common,String subCoverId,Tuple drivers) {
