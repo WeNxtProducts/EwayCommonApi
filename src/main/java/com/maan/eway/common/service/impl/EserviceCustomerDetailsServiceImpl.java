@@ -57,6 +57,7 @@ import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetByCustomerRefNoReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.req.SequenceGenerateReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
@@ -2466,5 +2467,1127 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		}
 		return res;
 	}
+	
+	@Override
+	public CommonRes validateCustomerId(String accountType, String identifyType, String companyId, String saveOrSubmit,
+			String customerId) {
 
-}
+		CommonRes res = new CommonRes();
+		List<String> errorCodes = new ArrayList<>();
+		List<Error> fetchErrorDetails = new ArrayList<>();
+
+		if (null != companyId && !companyId.isEmpty() && null != accountType && !accountType.isEmpty()
+				&& null != identifyType && !identifyType.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty()) {
+
+			if ("Submit".equalsIgnoreCase(saveOrSubmit)) {
+
+				if (null != customerId && !customerId.isEmpty()) {
+
+					if ("100028".equals(companyId)) {
+
+						if ("individual".equalsIgnoreCase(accountType.trim())) {
+
+							if ("NIC".equalsIgnoreCase(identifyType.trim())) {
+
+								if (customerId.length() != 14) {
+									errorCodes.add("2181");
+								} else if (!Character.isLetter(customerId.charAt(0))) {
+
+									errorCodes.add("2182");
+								} else if (!customerId.matches("^[a-zA-Z0-9]*$")) {
+
+									errorCodes.add("2183");
+								}
+
+							} else if ("passport".equalsIgnoreCase(identifyType.trim())) {
+
+								if (!customerId.matches("^[a-zA-Z0-9]*$")) {
+
+									errorCodes.add("2183");
+								}
+
+							}
+
+						} else if ("corporate".equalsIgnoreCase(accountType.trim())) {
+
+							if ("BRNNUMBER".equalsIgnoreCase(identifyType.trim())) {
+
+								if (!Character.isLetter(customerId.charAt(0))) {
+									errorCodes.add("2182");
+								} else if (!customerId.matches("^[a-zA-Z0-9]*$")) {
+
+									errorCodes.add("2183");
+								}
+
+							}
+
+							else if ("NGOID".equalsIgnoreCase(identifyType.trim())) {
+
+								if ((customerId.charAt(0) != 'f' && customerId.charAt(0) != 'F')) {
+
+									errorCodes.add("2184");
+								} else if (!customerId.matches("^[a-zA-Z0-9]*$")) {
+									errorCodes.add("2183");
+
+								}
+
+							}
+
+						}
+					} else { // other companies
+
+						if (customerId.length() > 100) {
+
+							errorCodes.add("1014");
+						} else if (customerId.matches("[0-9]+") && Double.valueOf(customerId) <= 0) {
+							errorCodes.add("1015");
+						}
+
+					}
+				} else { // common to all companies
+
+					errorCodes.add("1013");
+
+				}
+			}
+
+		} else {
+			res.setMessage("Failed - BadRequest");
+			res.setIsError(false);
+			res.setErrorMessage(null);
+			res.setCommonResponse(null);
+			res.setErroCode(0);
+			return res;
+		}
+
+		if (null != errorCodes && !errorCodes.isEmpty()) {
+
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			// comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(companyId);
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("1");
+			comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+			fetchErrorDetails = errorDescService.getErrorDesc(errorCodes, comErrDescReq);
+
+			if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+				res.setMessage("Failed");
+				res.setIsError(true);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+
+			}
+		} else {
+			res.setMessage("Success");
+			res.setIsError(false);
+			res.setErrorMessage(fetchErrorDetails);
+			res.setCommonResponse(null);
+			res.setErroCode(0);
+			return res;
+		}
+		return res;
+
+	}
+
+		@Override
+		public CommonRes validateCustomerName(String customerName, String companyId, String saveOrSubmit) {
+
+			List<String> errorCodes = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+			CommonRes res = new CommonRes();
+			
+			
+			if(null != companyId && !companyId.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty() ) {
+
+			if ("Submit".equalsIgnoreCase(saveOrSubmit)) {
+
+				if (null != customerName && !customerName.isEmpty()) { // common to all companies
+
+					if (customerName.length() > 250) {
+						errorCodes.add("1002");
+					} else if (!customerName.matches("[a-zA-Z.&() ]+")) {
+						errorCodes.add("1003");
+					}
+
+				} else {
+					errorCodes.add("1001");
+				}
+
+			} else if ("Save".equalsIgnoreCase(saveOrSubmit)) {
+
+				if (null != customerName && !customerName.isEmpty()) {
+					if (customerName.length() > 100) {
+						errorCodes.add("1085");
+					}
+				} else {
+					errorCodes.add("1084");
+				}
+
+			}
+		} else {
+			res.setMessage("Failed - BadRequest");
+			res.setIsError(false);
+			res.setErrorMessage(null);
+			res.setCommonResponse(null);
+			res.setErroCode(0);
+			return res;
+		}
+			if (null != errorCodes && !errorCodes.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(companyId);
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorCodes, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+		}
+
+		@Override
+		public CommonRes validateOccupationAndOtherOccupation(String occupation, String otherOccupation,
+				String companyId, String saveOrSubmit) {
+
+			CommonRes res = new CommonRes();
+			List<String> errorCodes = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+
+			if (null != companyId && !companyId.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty()) {
+				
+				if ((null == occupation || occupation.isEmpty()) && null != otherOccupation
+						&& !otherOccupation.isEmpty()) {
+
+					res.setMessage("Failed - BadRequest");
+					res.setIsError(false);
+					res.setErrorMessage(null);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+				}
+				if ("Submit".equalsIgnoreCase(saveOrSubmit)) {
+				if (null != occupation && !occupation.isEmpty()) {
+
+					if ("99999".equals(occupation)) {
+
+						if (null != otherOccupation && !otherOccupation.isEmpty()) {
+
+							if (otherOccupation.length() > 100) {
+								errorCodes.add("1024");
+							} else if (!otherOccupation.matches("[a-zA-Z\\s]+")) {
+								errorCodes.add("1025");
+							}
+
+						} else {
+							errorCodes.add("1023");
+						}
+
+					}
+				} else {
+					errorCodes.add("1022");
+				}
+
+			}
+		} else {
+				res.setMessage("Failed - BadRequest");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			if (null != errorCodes && !errorCodes.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(companyId);
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorCodes, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+
+		}
+		
+		@Override
+		public CommonRes validateAddress(String address, String companyId, String saveOrSubmit) {
+			
+			CommonRes res = new CommonRes();
+			List<String> errorCodes = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+			
+			if(null != companyId && !companyId.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty()) {
+				
+				if("Submit".equalsIgnoreCase(saveOrSubmit)) {
+					
+					if(null != address && !address.isEmpty()) {
+						
+						if(address.length() > 100) {
+							errorCodes.add("1009");
+						}
+						
+					}else {
+						errorCodes.add("1004");
+					}
+					
+				}
+				
+				
+			}else {
+
+				res.setMessage("Failed - BadRequest");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+
+			}
+			
+			if (null != errorCodes && !errorCodes.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(companyId);
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorCodes, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+
+		}
+
+		@Override
+		public CommonRes validateCityName(String cityName, String companyId, String saveOrSubmit) {
+
+			CommonRes res = new CommonRes();
+			List<String> errorCodes = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+
+			if (null != companyId && !companyId.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty()) {
+
+				if ("Submit".equalsIgnoreCase(saveOrSubmit)) {
+
+					if ("100004".equals(companyId)) { // specific company
+
+						if (null != cityName && !cityName.isEmpty()) {
+
+							if (cityName.length() > 100) {
+								errorCodes.add("1081");
+							}
+
+						} else {
+							errorCodes.add("1080");
+						}
+
+					} else { // other company
+
+						if (null != cityName && !cityName.isEmpty()) {
+
+							if (cityName.length() > 100) {
+								errorCodes.add("1083");
+							}
+
+						} else {
+							errorCodes.add("1082");
+						}
+
+					}
+
+				}
+
+			} else {
+
+				res.setMessage("Failed - BadRequest");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+
+			}
+			if (null != errorCodes && !errorCodes.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(companyId);
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorCodes, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+
+		}
+		
+		@Override
+		public CommonRes validateStatus(String status, String companyId, String saveOrSubmit) {
+
+			CommonRes res = new CommonRes();
+			List<String> errorCodes = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+
+			if (null != companyId && !companyId.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty()) {
+
+				if ("Submit".equalsIgnoreCase(saveOrSubmit)) { // common to all companies
+
+					if (null != status && !status.isEmpty()) {
+
+						if (status.length() > 1) {
+							errorCodes.add("1059");
+						} else if (!("Y".equals(status) || "N".equals(status) || "P".equals(status))) {
+							errorCodes.add("1060");
+						}
+
+					} else {
+						errorCodes.add("1058");
+
+					}
+
+				}
+
+			} else {
+				res.setMessage("Failed - BadRequest");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			if (null != errorCodes && !errorCodes.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(companyId);
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorCodes, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+
+		}
+		
+		@Override
+		public CommonRes validateMobileNumber(String mobileNumber, String mobileCode, String companyId,
+				String saveOrSubmit) {
+
+			CommonRes res = new CommonRes();
+			List<String> errorCodes = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+
+			if (null != companyId && !companyId.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty()) {
+
+				if ("Submit".equalsIgnoreCase(saveOrSubmit)) { // common to all companies
+
+					if (null != mobileCode && !mobileCode.isEmpty()) {
+						if (null != mobileNumber && !mobileNumber.isEmpty()) {
+
+							if (mobileNumber.length() > 10 || mobileNumber.length() < 8) {
+								errorCodes.add("1027");
+							} else if (!mobileNumber.matches("[0-9]+")) {
+								errorCodes.add("1028");
+							} else if (mobileNumber.matches("[0-9]+") && Double.valueOf(mobileNumber) <= 0) {
+								errorCodes.add("1029");
+							}
+						} else {
+							errorCodes.add("1026");
+
+						}
+					} else {
+						errorCodes.add("1062");
+
+					}
+
+				}
+
+			} else {
+				res.setMessage("Failed - BadRequest");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+
+			if (null != errorCodes && !errorCodes.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(companyId);
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorCodes, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+		}
+		
+		@Override
+		public CommonRes validateCustomerCreationFields(EserviceCustomerSaveReq req) {
+			CommonRes res = new CommonRes();
+			List<String> errorList = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+
+			if (null != req) {
+
+				if (null != req.getSaveOrSubmit() && !req.getSaveOrSubmit().isEmpty()
+						&& "Submit".equalsIgnoreCase(req.getSaveOrSubmit())) {
+
+					if (StringUtils.isBlank(req.getClientName())) {
+
+						errorList.add("1001");
+					}
+					if (StringUtils.isBlank(req.getAddress1())) {
+						errorList.add("1004");
+					}
+					if (StringUtils.isBlank(req.getClientStatus())) {
+						errorList.add("1010");
+					}
+					if (StringUtils.isBlank(req.getIdType())) {
+						errorList.add("1011");
+					}
+
+					if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
+						errorList.add("1012");
+					}
+
+					if (StringUtils.isBlank(req.getIdNumber())) {
+						errorList.add("1013");
+					}
+					if (StringUtils.isBlank(req.getOccupation())) {
+						errorList.add("1022");
+					}
+					if (StringUtils.isBlank(req.getMobileNo1())) {
+						errorList.add("1026");
+					}
+					if (StringUtils.isBlank(req.getLanguage())) {
+						errorList.add("1038");
+					}
+					if (StringUtils.isBlank(req.getTitle())) {
+						errorList.add("1047");
+					}
+					if (StringUtils.isBlank(req.getNationality())) {
+						errorList.add("1048");
+					}
+					if (StringUtils.isBlank(req.getRegionCode())) {
+						errorList.add("1053");
+					}
+					if (StringUtils.isBlank(req.getIsTaxExempted())) {
+						errorList.add("1055");
+
+					}
+					if (StringUtils.isBlank(req.getStatus())) {
+						errorList.add("1058");
+					}
+					if (StringUtils.isBlank(req.getStateCode())) {
+						errorList.add("1061");
+					}
+
+					if (StringUtils.isBlank(req.getMobileCode1())) {
+						errorList.add("1062");
+					}
+
+					if (StringUtils.isBlank(req.getCreatedBy())) {
+						errorList.add("1063");
+					}
+
+					if (StringUtils.isNotBlank(req.getCompanyId()) && !req.getCompanyId().equalsIgnoreCase("100019")) {
+						// DOB Validation
+						if (StringUtils.isNotBlank(req.getPolicyHolderType())
+								&& req.getPolicyHolderType().equalsIgnoreCase("1")) {
+							if (StringUtils.isNotBlank(req.getIdType()) && req.getIdType().equalsIgnoreCase("1")) {
+								if (req.getDobOrRegDate() == null) {
+									errorList.add("1065");
+								}
+							} else {
+								if (req.getDobOrRegDate() == null) {
+									errorList.add("1069");
+								}
+							}
+
+						} else if (StringUtils.isNotBlank(req.getPolicyHolderType())
+								&& req.getPolicyHolderType().equalsIgnoreCase("2")) {
+
+							if (req.getDobOrRegDate() == null) {
+								errorList.add("1073");
+
+							}
+						}
+					}
+
+					if (StringUtils.isBlank(req.getBranchCode())) {
+						errorList.add("1074");
+					}
+
+					if (StringUtils.isBlank(req.getProductId())) {
+						errorList.add("1076");
+					}
+
+					if (StringUtils.isBlank(req.getCompanyId())) {
+						errorList.add("1078");
+					}
+					if (null != req.getCompanyId() && !req.getCompanyId().isEmpty()
+							&& req.getCompanyId().equalsIgnoreCase("100004")) {
+						if (StringUtils.isBlank(req.getCityName())) {
+							errorList.add("1080");
+						}
+					} else {
+						if (StringUtils.isBlank(req.getCityName())) {
+							errorList.add("1082");
+						}
+					}
+					
+					// length and empty validation
+					
+					
+					
+					if (StringUtils.isNotBlank(req.getIsTaxExempted()) && req.getIsTaxExempted().equals("Y")) {
+						if (StringUtils.isBlank(req.getTaxExemptedId())) {
+							errorList.add("1056");
+						} else if (req.getTaxExemptedId().length() > 20) {
+							errorList.add("1057");
+						}
+
+					}
+					
+					
+					             // length validations
+					
+					if (StringUtils.isNotBlank(req.getFax()) && req.getFax().length() > 20) {
+						errorList.add("1017");
+						
+					}
+					if (StringUtils.isNotBlank(req.getRegionCode()) && req.getRegionCode().length() > 20) {
+						errorList.add("1054");
+					}
+					
+					if (StringUtils.isNotBlank(req.getCreatedBy()) && req.getCreatedBy().length() > 100) {
+						errorList.add("1064");
+					}
+					if (StringUtils.isNotBlank(req.getBranchCode()) && req.getBranchCode().length() > 20) {
+						errorList.add("1075");
+					}
+					if (StringUtils.isNotBlank(req.getProductId()) && req.getProductId().length() > 20) {
+						errorList.add("1077");
+					}
+					 if ( StringUtils.isNotBlank(req.getCompanyId()) && req.getCompanyId().length() > 20) {
+							errorList.add("1079");
+						}
+					
+					
+
+		} else if (null != req.getSaveOrSubmit() && !req.getSaveOrSubmit().isEmpty()
+				&& "Save".equalsIgnoreCase(req.getSaveOrSubmit())) {
+
+					if (StringUtils.isBlank(req.getClientName())) {
+						errorList.add("1084");
+
+					}
+					if (StringUtils.isBlank(req.getPolicyHolderType())) {
+						errorList.add("1086");
+					}
+
+					if (null != req.getPolicyHolderType() && !req.getPolicyHolderType().isEmpty()
+							&& req.getPolicyHolderType().equalsIgnoreCase("1")) {
+
+						if (req.getDobOrRegDate() != null) {
+							if (StringUtils.isBlank(req.getGender())) {
+								errorList.add("1087");
+							}
+
+						}
+					}
+					// else
+					if (null != req.getPolicyHolderType() && !req.getPolicyHolderType().isEmpty()
+							&& req.getPolicyHolderType().equalsIgnoreCase("2")) {
+
+						if (req.getDobOrRegDate() != null) {
+							if (StringUtils.isBlank(req.getGender())) {
+								errorList.add("1087");
+							}
+
+						}
+					}
+
+				}
+			} else {
+
+				res.setMessage("Failed - BadRequest");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+
+			if (null != errorList && !errorList.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(null != req.getCompanyId() ? req.getCompanyId() : "99999");
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorList, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+		}
+		
+		@Override
+		public CommonRes validatePincode(String pinCode, String companyId, String saveOrSubmit) {
+			CommonRes res = new CommonRes();
+			List<String> errorCodes = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+
+			if (null != companyId && !companyId.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty()
+					&& null != pinCode && !pinCode.isEmpty()) {
+
+				if ("Submit".equalsIgnoreCase(saveOrSubmit)) {
+
+					if (pinCode.length() > 20) {
+
+						errorCodes.add("1016");
+					}
+				}
+
+			} else {
+
+				res.setMessage("Failed - BadRequest");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+
+			if (null != errorCodes && !errorCodes.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(companyId);
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorCodes, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+
+		}
+
+		@Override
+		public CommonRes validateEmail(String email, String companyId, String saveOrSubmit) {
+
+			CommonRes res = new CommonRes();
+			List<String> errorCodes = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+
+			if (null != companyId && !companyId.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty()) {
+				if("Submit".equalsIgnoreCase(saveOrSubmit)) {
+				if (null != email && !email.isEmpty()) {
+
+					if (email.length() > 100) {
+						errorCodes.add("1032");
+					} else {
+						boolean b = isValidMail(email);
+						if (b == false) {
+							errorCodes.add("1033");
+						}
+					}
+
+				}
+
+			}
+
+			}	else {
+
+				res.setMessage("Failed - BadRequest");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			if (null != errorCodes && !errorCodes.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(companyId);
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorCodes, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+
+		}
+
+		@Override
+		public CommonRes validateDate(Date date, String policyHolderType, String idType, String companyId,
+				String saveOrSubmit , String gender) {
+
+			CommonRes res = new CommonRes();
+			List<String> errorList = new ArrayList<>();
+			List<Error> fetchErrorDetails = new ArrayList<>();
+
+			if (null != companyId && !companyId.isEmpty() && null != saveOrSubmit && !saveOrSubmit.isEmpty()) {
+                
+				if("Submit".equalsIgnoreCase(saveOrSubmit)) {
+				// Date Validation
+				Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(today);
+				cal.add(Calendar.DAY_OF_MONTH, -1);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 50);
+				today = cal.getTime();
+
+				if (StringUtils.isNotBlank(companyId) && !companyId.equalsIgnoreCase("100019")) {
+					// DOB Validation
+					if (StringUtils.isNotBlank(policyHolderType) && policyHolderType.equalsIgnoreCase("1")) {
+						if (StringUtils.isNotBlank(idType) && idType.equalsIgnoreCase("1")) {
+							if (date == null) {
+								errorList.add("1065");
+							}
+						}
+
+						try {
+							if (date != null) {
+								if (date.after(today)) {
+									errorList.add("1066");
+
+								} else {
+									LocalDate localDate1 = date.toInstant().atZone(ZoneId.systemDefault())
+											.toLocalDate();
+									LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault())
+											.toLocalDate();
+
+									Integer years = Period.between(localDate1, localDate2).getYears();
+									if (years > 100) {
+										errorList.add("1067");
+
+									} else if (years < 18) {
+										errorList.add("1068");
+
+									}
+
+								}
+
+							} else {
+								errorList.add("1069");
+							}
+						} catch (Exception e) {
+							errorList.add("1070");
+						}
+					}
+					if (StringUtils.isNotBlank(policyHolderType) && policyHolderType.equalsIgnoreCase("2")) {
+						try {
+							if (date != null) {
+								cal.setTime(today);
+								cal.add(Calendar.DAY_OF_MONTH, +1);
+								cal.set(Calendar.HOUR_OF_DAY, 23);
+								cal.set(Calendar.MINUTE, 50);
+								Date tomorrow = cal.getTime();
+								if (date.after(tomorrow)) {
+									errorList.add("1071");
+
+								} else if (date != null) {
+									LocalDate localDate1 = date.toInstant().atZone(ZoneId.systemDefault())
+											.toLocalDate();
+									LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault())
+											.toLocalDate();
+
+									Integer years = Period.between(localDate1, localDate2).getYears();
+									if (years > 100) {
+										errorList.add("1072");
+									}
+								}
+
+							} else {
+								errorList.add("1073");
+							}
+						} catch (Exception e) {
+							errorList.add("1073");
+						}
+					}
+				}
+
+				}
+				else if("Save".equalsIgnoreCase(saveOrSubmit)) {
+					
+					// Date Validation
+					Calendar cal = new GregorianCalendar();
+					Date today = new Date();
+					cal.setTime(today);
+					cal.add(Calendar.DAY_OF_MONTH, -1);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 50);
+					today = cal.getTime();
+					if (StringUtils.isNotBlank(policyHolderType) &&  policyHolderType.equalsIgnoreCase("1")) {
+
+						if (date != null) {
+							if (StringUtils.isBlank(gender) ) {
+								errorList.add("1087");
+							}
+							if (date.after(today)) {
+								errorList.add("1088");
+
+							}
+						
+							LocalDate localDate1 = date.toInstant().atZone(ZoneId.systemDefault())
+									.toLocalDate();
+							LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+							Integer years = Period.between(localDate1, localDate2).getYears();
+							if (years > 100) {
+								errorList.add("1089");
+
+							}
+
+						} 					
+
+						
+						
+					}
+
+					if (StringUtils.isNotBlank(policyHolderType) && policyHolderType.equalsIgnoreCase("2")) {
+
+						if (date != null) {
+							 if (date.after(today)) {
+									errorList.add("1090");
+
+							}
+							 LocalDate localDate1 = date.toInstant().atZone(ZoneId.systemDefault())
+										.toLocalDate();
+							LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+							Integer years = Period.between(localDate1, localDate2).getYears();
+							if (years > 100) {
+								errorList.add("1091");
+
+							}
+						} 
+
+						
+					}
+				}
+			
+			} else {
+
+				res.setMessage("Failed - BadRequest");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+
+			if (null != errorList && !errorList.isEmpty()) {
+
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				// comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(companyId);
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("1");
+				comErrDescReq.setModuleName("CUSTOMER CREATION");
+
+				fetchErrorDetails = errorDescService.getErrorDesc(errorList, comErrDescReq);
+
+				if (null != fetchErrorDetails && !fetchErrorDetails.isEmpty()) {
+
+					res.setMessage("Failed");
+					res.setIsError(true);
+					res.setErrorMessage(fetchErrorDetails);
+					res.setCommonResponse(null);
+					res.setErroCode(0);
+					return res;
+
+				}
+			} else {
+				res.setMessage("Success");
+				res.setIsError(false);
+				res.setErrorMessage(fetchErrorDetails);
+				res.setCommonResponse(null);
+				res.setErroCode(0);
+				return res;
+			}
+			return res;
+		}
+	}

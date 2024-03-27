@@ -1,5 +1,6 @@
 package com.maan.eway.common.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -29,6 +32,7 @@ import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api")
@@ -53,7 +57,8 @@ public class EserviceCustomerDetailsController {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<String> validationCodes = entityService.validateCustomerDetails(req);
+		List<String> validationCodes = new ArrayList<>();
+	//	 validationCodes = entityService.validateCustomerDetails(req);
 		List<Error> validation = null;
 		if(validationCodes!=null && validationCodes.size() > 0 ) {
 			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
@@ -229,4 +234,128 @@ public class EserviceCustomerDetailsController {
 		}
 		}
 	
+		
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/validatecustomerid", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate ID", notes = "validation based on individual and corporate")
+		public CommonRes validateCustomerId(@RequestParam(value = "accounttype", required = true) String accountType,
+				@RequestParam(value = "identifytype", required = true) String identifyType,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit,
+				@RequestParam(value = "id", required = true) String customerId) {
+
+			return entityService.validateCustomerId(accountType, identifyType, companyId, saveOrSubmit, customerId);
+
+		}
+
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/validateCustomerName", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate Customer Name", notes = "validate length , empty etc ")
+		public CommonRes validateCustomerName(@RequestParam(value = "name", required = true) String customerName,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit) {
+
+			return entityService.validateCustomerName(customerName,companyId , saveOrSubmit);
+
+		}
+
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/validateOccupation", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate Occupation And Other Occupation", notes = "validate length , empty etc")
+		public CommonRes validateOccupationAndOtherOccupation(
+				@RequestParam(value = "occupation", required = true) String occupation,
+				@RequestParam(value = "otheroccupation", required = true) String OtherOccupation,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit) {
+
+			return entityService.validateOccupationAndOtherOccupation(occupation, OtherOccupation, companyId,
+					saveOrSubmit);
+
+		}
+
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/validateaddress", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate Address", notes = "validate length and empty")
+		public CommonRes validateAddress(@RequestParam(value = "address", required = true) String address,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit) {
+
+			return entityService.validateAddress(address, companyId, saveOrSubmit);
+
+		}
+		
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/validatedistrict", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate District", notes = "validation based on companies")
+		public CommonRes validateDistrict(@RequestParam(value = "name", required = true) String cityName,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit) {
+
+			return entityService.validateCityName(cityName ,companyId, saveOrSubmit);
+
+		}
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/validatestatus", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate Status", notes = "validate length and empty etc")
+		public CommonRes validateStatus(@RequestParam(value = "status", required = true) String status,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit) {
+
+			return entityService.validateStatus(status ,companyId, saveOrSubmit);
+
+		}
+
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/validatemobilenumber", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate Mobile Number", notes = "validate length and empty etc")
+		public CommonRes validateMobileNumber(@RequestParam(value = "number", required = true) String mobileNumber,
+				@RequestParam(value = "code", required = true) String mobileCode,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit) {
+
+			return entityService.validateMobileNumber(mobileNumber, mobileCode, companyId, saveOrSubmit);
+
+		}
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/blankvalidation", method = RequestMethod.POST)
+		@ApiOperation(value = "Validate Customer Creation Fields", notes = "validate empty")
+		public CommonRes validateCustomerCreationFields(@RequestBody EserviceCustomerSaveReq req) {
+
+			return entityService.validateCustomerCreationFields(req);
+
+		}
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/Validatepincode", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate Pincode", notes = "validate length")
+		public CommonRes validatePincode(@RequestParam(value =  "pincode" , required = true) String pinCode,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit) {
+
+			return entityService.validatePincode(pinCode , companyId , saveOrSubmit);
+
+		}
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/ValidatEmail", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate Email", notes = "validate length and format")
+		public CommonRes validateEmail(@RequestParam(value =  "email" , required = true) String email,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit) {
+
+			return entityService.validateEmail(email , companyId , saveOrSubmit);
+
+		}
+
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@RequestMapping(value = "/Validatdate", method = RequestMethod.GET)
+		@ApiOperation(value = "Validate Date", notes = "validate date")
+		public CommonRes validateDate(@RequestParam(value = "date", required = true) Date date,
+				@RequestParam(value = "policyholdertype", required = true) String policyHolderType,
+				@RequestParam(value = "idtype", required = true) String idType,
+				@RequestParam(value = "companyid", required = true) String companyId,
+				@RequestParam(value = "saveOrsubmit", required = true) String saveOrSubmit , 
+				@RequestParam(value = "gender", required = false) String gender) {
+
+			return entityService.validateDate(date,policyHolderType , idType ,  companyId, saveOrSubmit, gender);
+
+		}
 }
