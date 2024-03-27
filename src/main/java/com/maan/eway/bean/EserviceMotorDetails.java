@@ -701,6 +701,15 @@ private static final long serialVersionUID = 1L;
  	@Column(name = "REGISTRATION_STATUS", length = 10)
 	private String registrationStatus;
 
+ 	@Column(name = "EXCESS", length = 100)
+	private String excess;
+	
+	@Column(name = "EXCESS_DESC", length = 100)
+	private String excessDesc;
+	
+	@Column(name = "DEFENCE_VALUE_DESC ", length = 100)
+	private String defenceValueDesc;
+ 	
      
 }
 

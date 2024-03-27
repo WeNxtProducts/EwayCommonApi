@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -1328,58 +1329,63 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 		try {
 			// Motor Product Details
 			List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
-					
+			List<EserviceSectionDetails>    sectionDatas = eserSecRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
+			
 			for (EserviceMotorDetails mot :  motorDatas) {
 				// Response 
-				EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
-				
-				dozerMapper.map(mot,res);
-				res.setInsuranceId(mot.getCompanyId());
-				res.setOverallPremiumFc(mot.getOverallPremiumFc()==null?"0": mot.getOverallPremiumFc().toPlainString());
-				res.setOverallPremiumLc(mot.getOverallPremiumLc()==null?"0":mot.getOverallPremiumLc().toPlainString());
-				res.setActualPremiumFc(mot.getActualPremiumFc()==null?"0":mot.getActualPremiumFc().toPlainString());
-				res.setActualPremiumLc(mot.getActualPremiumLc()==null?"0":mot.getActualPremiumLc().toPlainString());
-				res.setVehicleId(mot.getRiskId().toString());
-				res.setGroupId(1);
-				res.setGroupMember(0);
-				res.setSectionId(mot.getSectionId() );
-				res.setSectionName(mot.getSectionName());	
-				res.setEffectiveDate(mot.getEndorsementEffdate()==null?null:mot.getEndorsementEffdate() );
-				res.setCommissionPercentage(mot.getCommissionPercentage()==null?"" :mot.getCommissionPercentage().toPlainString());
-				res.setVatCommission(mot.getVatCommission()==null?"" :mot.getVatCommission().toPlainString());
-				res.setPolicyNo(mot.getPolicyNo());
-				res.setOriginalPolicyNo(mot.getOriginalPolicyNo());
-				res.setSourceType(mot.getSourceType());
-				res.setFinalizeYn(mot.getFinalizeYn());				
-				//res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
-				if(mot.getEndorsementType()!=null) {
-					EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(mot.getCompanyId(),req.getProductId(),mot.getEndorsementType().toString());
-					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
-					dozerMapper.map(endtmaster,ddto);
-					ddto.setEndorsementeffdate(mot.getEndorsementEffdate() );
-					ddto.setEndorsementPolicyNo(mot.getPolicyNo());
-					ddto.setPolicyNo(mot.getPolicyNo());
-					res.setEndtType(ddto);
-				}
-				Object riskDetails = new Object();
-				EserviceMotorDetailsRes  motorRes = new EserviceMotorDetailsRes();
-				dozerMapper.map(mot, motorRes);
-				//motorRes.setSectionName(mot.getSectionName());
-				motorRes.setBorrowerTypeDesc(mot.getBorrowerTypeDesc());
-				motorRes.setBankCode(mot.getBankCode());
-				if( StringUtils.isNotBlank(mot.getBankCode())) {
-					List<BankMaster> bankList = getBankMasterDropdown(mot.getCompanyId() ,mot.getBranchCode() , mot.getBankCode() );
- 					if(bankList.size()> 0 ) {
- 						motorRes.setBankName(bankList.get(0).getBankFullName());
- 					}
+					
+				List<EserviceSectionDetails> sections=sectionDatas.stream().filter(s -> (s.getRiskId().compareTo(mot.getRiskId())==0)).collect(Collectors.toList());
+				for(EserviceSectionDetails section:sections) {
+					EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes(); 
+					dozerMapper.map(mot,res);
+						res.setInsuranceId(mot.getCompanyId());
+						res.setOverallPremiumFc(mot.getOverallPremiumFc()==null?"0": mot.getOverallPremiumFc().toPlainString());
+						res.setOverallPremiumLc(mot.getOverallPremiumLc()==null?"0":mot.getOverallPremiumLc().toPlainString());
+						res.setActualPremiumFc(mot.getActualPremiumFc()==null?"0":mot.getActualPremiumFc().toPlainString());
+						res.setActualPremiumLc(mot.getActualPremiumLc()==null?"0":mot.getActualPremiumLc().toPlainString());
+						res.setVehicleId(mot.getRiskId().toString());
+						res.setGroupId(1);
+						res.setGroupMember(0);
+						res.setSectionId(section.getSectionId());
+						res.setSectionName(section.getSectionName());	
+						res.setEffectiveDate(section.getEndorsementEffdate()==null?null:section.getEndorsementEffdate() );
+						res.setCommissionPercentage(mot.getCommissionPercentage()==null?"" :mot.getCommissionPercentage().toPlainString());
+						res.setVatCommission(mot.getVatCommission()==null?"" :mot.getVatCommission().toPlainString());
+						res.setPolicyNo(mot.getPolicyNo());
+						res.setOriginalPolicyNo(mot.getOriginalPolicyNo());
+						res.setSourceType(mot.getSourceType());
+						res.setFinalizeYn(mot.getFinalizeYn());				
+						//res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
+						if(mot.getEndorsementType()!=null) {
+							EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(mot.getCompanyId(),req.getProductId(),mot.getEndorsementType().toString());
+							EndtTypeMasterDto ddto=new EndtTypeMasterDto();
+							dozerMapper.map(endtmaster,ddto);
+							ddto.setEndorsementeffdate(mot.getEndorsementEffdate() );
+							ddto.setEndorsementPolicyNo(mot.getPolicyNo());
+							ddto.setPolicyNo(mot.getPolicyNo());
+							res.setEndtType(ddto);
+						}
+						Object riskDetails = new Object();
+						EserviceMotorDetailsRes  motorRes = new EserviceMotorDetailsRes();
+						dozerMapper.map(mot, motorRes);
+					//	motorRes.setSectionName(section.getSectionName());
+						motorRes.setBorrowerTypeDesc(mot.getBorrowerTypeDesc());
+						motorRes.setBankCode(mot.getBankCode());
+						motorRes.setSectionId(section.getSectionId());
+						if( StringUtils.isNotBlank(mot.getBankCode())) {
+							List<BankMaster> bankList = getBankMasterDropdown(mot.getCompanyId() ,mot.getBranchCode() , mot.getBankCode() );
+		 					if(bankList.size()> 0 ) {
+		 						motorRes.setBankName(bankList.get(0).getBankFullName());
+		 					}
+								
+						}
 						
-				}
+						riskDetails = motorRes ;
+						res.setRiskDetails(riskDetails);
+						res.setAccessoriesSumInsured(mot.getAcccessoriesSumInsured()==null?0.0:mot.getAcccessoriesSumInsured().doubleValue());
+						motorDetailsList.add(res); 
+				 }
 				
-				riskDetails = motorRes ;
-				res.setRiskDetails(riskDetails);
-				res.setAccessoriesSumInsured(mot.getAcccessoriesSumInsured()==null?0.0:mot.getAcccessoriesSumInsured().doubleValue());
-				
-				motorDetailsList.add(res);
 			}
 			
 		} catch(Exception e) {

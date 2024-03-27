@@ -785,7 +785,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n1 = cb.equal(c.get("status"), "Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			Predicate n4 = cb.equal(c.get("sectionId"), req.getSectionId());
+		//	Predicate n4 = cb.equal(c.get("sectionId"), req.getSectionId());
 			Predicate n8 = cb.equal(c.get("companyId"), req.getInsuranceId());
 			Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
@@ -794,9 +794,9 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n13 = cb.or(n1,n12);
 			if (StringUtils.isNotBlank(req.getBodyType()) ) {
 				Predicate n14 = cb.equal(c.get("bodyType"), req.getBodyType() );
-				query.where(n13,n2,n3,n4,n7,n8,n14).orderBy(orderList);
+				query.where(n13,n2,n3,n7,n8,n14).orderBy(orderList);
 			} else {
-				query.where(n13,n2,n3,n4,n7,n8).orderBy(orderList);	
+				query.where(n13,n2,n3,n7,n8).orderBy(orderList);	
 			}
 			
 			// Get Result
