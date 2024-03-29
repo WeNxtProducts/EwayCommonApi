@@ -459,6 +459,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="RELATION_TYPE_DESC")
     private String relationTypeDesc;
     
+ 
+    
     @Column(name="NICK_NAME")
     private String nickName;
     
@@ -491,6 +493,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="RENEWAL_DATE_YN", length=20)
     private String renewalDateYn;
+    
+    @Column(name="PROFESSIONAL_TYPE ")
+    private String professionaltype ;
+    
+    @Column(name="PROFESSIONAL_TYPE_DESC")
+    private String professionaltypedesc ;
 
 }
 

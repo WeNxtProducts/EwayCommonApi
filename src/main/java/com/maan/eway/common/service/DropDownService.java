@@ -245,4 +245,8 @@ public interface DropDownService {
 
 	List<DropDownRes> brokerlist(String companyId);
 
+	List<DropDownRes> professionalType(LovDropDownReq req);
+
+	List<DropDownRes> indemnityType(LovDropDownReq req);
+
 }
