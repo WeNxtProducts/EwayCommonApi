@@ -499,6 +499,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PROFESSIONAL_TYPE_DESC")
     private String professionaltypedesc ;
+    
+    @Column(name="INDEMNITY_TYPE  ")
+    private String indemnitytype  ;
+    
+    @Column(name="INDEMNITY_TYPE_DESC")
+    private String indemnitytypedesc ;
 
 }
 
