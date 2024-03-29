@@ -218,7 +218,13 @@ public class RatingFactorsUtil {
 			if(criteria!=null) {
 				List<Tuple> result=null;
 				result=crservice.getResult(criteria, 0, 50);
-				return result.size()>0?result:null;
+				if( result.size()>0) {					
+					return result;
+					
+				}else {
+					System.out.println("Cover Id"+coverId+" EXCEPTION ::: NODATA");
+					return null;
+				}
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -985,7 +991,7 @@ public class RatingFactorsUtil {
 					.minPremium(minPremium)
 					.minRate(minRate)
 					.finalPremiumAmtExclTax(premium)
-					.finalPremiumRateExclTax((Double) (premium/sumInsured))
+					.finalPremiumRateExclTax((Double) (premium/(sumInsured==0?1:sumInsured)))
 					//.proRataPremiumAmtExclTax(sumInsured)					
 					.riskPremiumAmt(riskPremiumAmt)
 					.riskPremiumRate((Double) (riskPremiumAmt)/(sumInsured.doubleValue()>0?sumInsured:1D))
@@ -997,7 +1003,7 @@ public class RatingFactorsUtil {
 
 			 t.setPremiumBeforeDiscount(new BigDecimal(premium));
 			 t.setMinimumPremium(new BigDecimal(minPremium));
-			 t.setRate((Double) premium/sumInsured);
+			 t.setRate((Double) premium/(sumInsured==0?1:sumInsured));
 			 t.setCalcType("P");
 			 t.setRegulatoryCode("NA");
 			 /// Referal

@@ -109,7 +109,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 						 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);*/
 					}
 					 if("FD".equals(t.getCalcType())){
-						 PerilCalculator calc=new PerilCalculator(crservice, engine, result, vehicles, customers,this,factors);
+						 PerilCalculator calc=new PerilCalculator(crservice, engine, result, vehicles, customers,this,factors,this.drivers);
 						 calc.perilCalculator(t);
 						 t.setPremiumBeforeDiscountLC((BigDecimal) dcf.parse(dcf.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 						 t.getLoadings().clear();

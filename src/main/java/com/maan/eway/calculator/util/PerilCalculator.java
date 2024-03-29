@@ -18,6 +18,7 @@ import com.maan.eway.bean.EwayFactorDetails;
 import com.maan.eway.bean.EwayFactorResultDetail;
 import com.maan.eway.bean.EwayVehicleMakemodelMasterDetail;
 import com.maan.eway.bean.MotorDriverDetails;
+import com.maan.eway.bean.MsDriverDetails;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Loading;
@@ -31,10 +32,10 @@ public class PerilCalculator {
 	protected List<Tuple> vehicles=null;
 	protected List<Tuple> customers =null;
 	
-	protected CoverCalculator coverCalculator=null;
+	protected CoverCalculator coverCalculator=null;protected List<Tuple> drivers=null;
 	protected List<Tuple> factors=null;
 	public PerilCalculator(RatingFactorsUtil crservice, CalcEngine engine, List<Tuple> result, List<Tuple> vehicles,
-			List<Tuple> customers, CoverCalculator coverCalculator, List<Tuple> factors) {
+			List<Tuple> customers, CoverCalculator coverCalculator, List<Tuple> factors,List<Tuple> drivers) {
 		super();
 		this.crservice = crservice;
 		this.engine = engine;
@@ -43,6 +44,7 @@ public class PerilCalculator {
 		this.customers = customers;
 		this.coverCalculator=coverCalculator;
 		this.factors=factors;
+		this.drivers=drivers;
 	}
 
 	protected SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
@@ -55,7 +57,7 @@ public class PerilCalculator {
 				//agencyCode:"+engine.getAgencyCode()+";branchCode:"+engine.getBranchCode()+";"
 
 				EwayVehicleMakemodelMasterDetail vmaster=crservice.collectMakeModelDetails(engine,vehicles);
-				MotorDriverDetails	driver=crservice.collectDriver(engine);
+				//MsDriverDetails	driver=crservice.collectDriver(engine);
 				String VehicleClass="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+56+";"+"param9:"+vehicles.get(0).get("vehicleClass").toString()+";";
 
@@ -78,7 +80,7 @@ public class PerilCalculator {
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+41+";"+Math.round(Double.parseDouble(vehicles.get(0).get("periodOfInsurance").toString())/365)+"~param1&param2;";
 
 				String LicenseDuration="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+43+";"+driver.getLicenseDuration()+"~param1&param2;";;
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+43+";"+drivers.get(0).get("licenseExperience").toString()+"~param1&param2;";;
 
 				String PowerMassRatio="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+38+";"+((Double) Double.parseDouble(vmaster.getPowerKw())/Double.parseDouble(vmaster.getWeightKg()))*1000+"~param1&param2;";
@@ -129,7 +131,7 @@ public class PerilCalculator {
 				}
 
 				String DriverAge="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+40+";param9:"+driver.getGender()+";param10:"+driver.getAge()+";";
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+40+";param9:"+drivers.get(0).get("gender")+";param10:"+drivers.get(0).get("age")+";";
 
 				String PaymentFreq="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+29+";param9:"+vehicles.get(0).get("paymentFrequency").toString()+";";
@@ -138,10 +140,10 @@ public class PerilCalculator {
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+100+";"+vmaster.getEnginesizeCc()+"~param1&param2;";
 
 				String MaritalStatus="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+10+";param9:"+driver.getMaritalStatus()+";";
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+10+";param9:"+drivers.get(0).get("maritalStatus")+";";
 
 				String AreaGroup="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+68+";"+driver.getAreaGroup()+"~param21&param22;";
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+68+";"+drivers.get(0).get("areaGroup")+"~param21&param22;";
 				//  23
 
 				Map<String,String> queries=new HashMap<String,String>();
