@@ -736,7 +736,7 @@ public class JasperCustomServiceImple {
 					.vehicleTypeDesc(k.getVehicleTypeDesc()==null?"":k.getVehicleTypeDesc().toString())
 					.cubicCapacity(k.getCubicCapacity()==null?"":k.getCubicCapacity().toString())
 					.manufactureYear(k.getManufactureYear()==null?"":k.getManufactureYear().toString())
-					.seatingCapacity(k.getSeatingCapacity()==null?"":k.getSeatingCapacity().toString())
+					.seatingCapacity(k.getSeatingCapacity()==null?null:k.getSeatingCapacity().toString())
 					.colorDesc(k.getColorDesc()==null?"":k.getColorDesc().toString())
 					.policyTypeDesc(k.getPolicyTypeDesc()==null?"":k.getPolicyTypeDesc().toString())
 					.policyTypeId(k.getPolicyType()==null?"":k.getPolicyType())

@@ -822,10 +822,17 @@ public class JasperServiceImpl implements JasperService {
 				
 					String [] subJasperArray =report.getSubJasperName().split(",");
 				
-				for(String subJasperJrxml :subJasperArray) {
+					for(String subJasperJrxml :subJasperArray) {
 						String jrxmlPath=classpath+"report/jasper/" +subJasperJrxml.replace(".jasper", ".jrxml");
-						String path = JasperCompileManager.compileReportToFile(jrxmlPath);
-						log.info("Jasper compileToReport path" +path);
+						if("100004".equalsIgnoreCase(report.getId().getCompanyId()) && report.getId().getReportId()==1) {
+							JasperDesign design = JRXmlLoader.load(new File(jrxmlPath));
+							JRDesignSection designSection = (JRDesignSection) design.getDetailSection();
+							designSection.removeBand(0);
+			                JasperCompileManager.compileReportToFile(design, classpath+"report/jasper/" +subJasperJrxml.replace("jrxml", "jasper"));
+						}else {
+							String path = JasperCompileManager.compileReportToFile(jrxmlPath);
+							log.info("Jasper compileToReport path" +path);
+						}
 					}
 				}
 				
@@ -860,6 +867,10 @@ public class JasperServiceImpl implements JasperService {
 					}else {
 						Map<String, Object> reportRes = jasperCustomeImple.getEwaySchedule(quoteNo);
 						result = reportRes;
+						if("100004".equalsIgnoreCase(report.getId().getCompanyId())) {
+							jasperParameter.put("attachMents", reportRes.get("attachMents"));
+							jasperParameter.put("policyNo", reportRes.get("policyNo"));
+						}
 					}
 					String jsonString = gson.toJson(result);
 					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
