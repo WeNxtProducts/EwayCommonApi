@@ -273,4 +273,7 @@ private static final long serialVersionUID = 1L;
 	       
    @Column(name="INDEMNITY_TYPE  ")
 	    private String indemnityType  ;
+   
+   @Column(name="INDEMNITY_SUMINSURED")
+   private Double  Indemnitysuminsured  ;
 }
