@@ -709,6 +709,9 @@ private static final long serialVersionUID = 1L;
 	
 	@Column(name = "DEFENCE_VALUE_DESC ", length = 100)
 	private String defenceValueDesc;
+	
+	@Column(name ="CUST_RENEWAL_YN", length = 5)
+	private String custRenewalYn;
  	
      
 }
