@@ -288,8 +288,8 @@ public class PerilCalculator {
 				}
 				crservice.saveFds(fds,engine);
 				
-				Double premiumRate=fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble();
-				String pattern =  "#####0." + 4;
+				Double premiumRate=fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble();				
+				String pattern =  "#####0.####" ;
 				DecimalFormat decimalFormat = new DecimalFormat(pattern);
 				try {
 					premiumRate=Double.valueOf(decimalFormat.format(premiumRate));
