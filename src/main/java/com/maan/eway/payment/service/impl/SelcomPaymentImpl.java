@@ -5,6 +5,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
@@ -177,15 +178,17 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 	@Override
-	public JsonObject methodWebhook(JsonObject jsonData) {
+	public JsonObject methodWebhook(Map<String,Object> jsonData) {
 		try {
 			log.info("WEBHOOK START"+jsonData);
-			for (String key : jsonData.keySet()) {
-				log.info(key.toString() + "="+jsonData.get(key).getAsString());
+			for (Entry<String, Object> key : jsonData.entrySet()) {
+				 System.out.println(key.getKey() +"--"+key.getValue());
 
 			}
 			log.info("WEBHOOK END");
 			String orderId=jsonData.get("order_id").toString();
+			PaymentDetail payment = paymentDetailRepo.findByMerchantReferenceAndPaymentStatus(orderId,"PENDING");
+			return orderStatus(payment.getQuoteNo(), "");
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
