@@ -3406,7 +3406,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-			String itemType = "PROFESSIONAL_INDEMNITY" ;
+			String itemType = "PROFESSIONAL_TYPE" ;
 			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
@@ -3431,7 +3431,8 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-			String itemType = "PROFESSIONAL_TYPE" ;
+		
+			String itemType = "PROFESSIONAL_INDEMNITY" ;
 			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();

@@ -653,7 +653,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			Long findInfo =  perInfoRepo.countByCustomerId(request.getCustomerId());
-	
+	         String sectionid=request.getVehicleIdsList().get(0).getSectionId();
 			if(findInfo > 0 ) {
 				perInfoRepo.deleteByCustomerId(request.getCustomerId());	
 			}
@@ -674,8 +674,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 				customerRefNo = buldingData.getCustomerReferenceNo();
 				
 			}else {
-				EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
+				//***EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
+				EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId(),sectionid);
 				customerRefNo = commonData.getCustomerReferenceNo();
+				
 			}
 			
 			// Find Customer
@@ -3587,8 +3589,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private HomePositionMaster setCommonDetails(QuoteThreadReq  request) {
 		HomePositionMaster home = new HomePositionMaster();
 		try {
-			
-			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
+			String sectionid=request.getVehicleIdsList().get(0).getSectionId();
+			//EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
+			//***
+			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() , request.getVehicleId(),sectionid) ;
 			Long commonCount =  eserCommonRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(eserCommonData.getCustomerReferenceNo());
 			
