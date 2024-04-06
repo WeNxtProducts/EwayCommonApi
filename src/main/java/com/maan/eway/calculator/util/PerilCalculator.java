@@ -2,6 +2,8 @@ package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -286,7 +288,15 @@ public class PerilCalculator {
 				}
 				crservice.saveFds(fds,engine);
 				
-				Double premiumRate=fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble();
+				Double premiumRate=fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble();				
+				String pattern =  "#####0.####" ;
+				DecimalFormat decimalFormat = new DecimalFormat(pattern);
+				try {
+					premiumRate=Double.valueOf(decimalFormat.format(premiumRate));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				Double riskPremiumAmt=t.getSumInsured().multiply(new BigDecimal(premiumRate/100), MathContext.DECIMAL32).doubleValue();
 				EwayFactorResultDetail efResult=EwayFactorResultDetail.builder()
 						.cdRefno(engine.getCdRefNo())

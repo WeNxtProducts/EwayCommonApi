@@ -1,10 +1,13 @@
 package com.maan.eway.payment;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,7 +18,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.payment.service.SelcomPaymentService;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 
 
 
@@ -42,7 +45,7 @@ public class SelcomPaymentController {
 	@PostMapping("/v1/checkout/webhook")
 	@ApiOperation(value = "This method is to Payment Sava")
 	//@RequestBody
-	public ResponseEntity<JsonObject> methodWebhook(@RequestBody JsonObject jsObject) {
+	public ResponseEntity<Map<String,Object>> methodWebhook(@RequestBody Map<String,Object> jsObject) {
 		/*new Runnable() {
 			
 			@Override
@@ -51,8 +54,8 @@ public class SelcomPaymentController {
 			}
 		};*/
 		service.methodWebhook(jsObject);
-		jsObject.addProperty("AcknowledegeStatus", true);
-		return new ResponseEntity<JsonObject>(jsObject, HttpStatus.CREATED);	
+		jsObject.put("AcknowledegeStatus", true);
+		return new ResponseEntity<Map<String,Object>>(jsObject, HttpStatus.CREATED);	
 	}
 	
 	@PostMapping("/v1/checkout/order-status/{orderId}")
