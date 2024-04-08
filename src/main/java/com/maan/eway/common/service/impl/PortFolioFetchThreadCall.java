@@ -180,14 +180,16 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
+				statusNot.add("E");
 			//	statusNot.add("N");
 				predicate.add(e0.in(statusNot).not() );
 				
 				// Endt Status Not
-				Expression<String> e1 = h.get("endtStatus");
-				List<String> endtStatusNot = new ArrayList<String>();
-				endtStatusNot.add("C");
-				predicate.add(e1.in(endtStatusNot).not() );
+//				Expression<String> e1 = h.get("endtStatus");
+//				List<String> endtStatusNot = new ArrayList<String>();
+//				endtStatusNot.add("C");
+//				endtStatusNot.add("P");
+//				predicate.add(e1.in(endtStatusNot).not() );
 			} 
 			
 			// Product  & Branch Condition
@@ -288,10 +290,10 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 				predicate.add(e0.in(statusNot).not() );
 				
 				// Endt Status Not
-				Expression<String> e1 = h.get("endtStatus");
-				List<String> endtStatusNot = new ArrayList<String>();
-				endtStatusNot.add("C");
-				predicate.add(e1.in(endtStatusNot).not() );
+//				Expression<String> e1 = h.get("endtStatus");
+//				List<String> endtStatusNot = new ArrayList<String>();
+//				endtStatusNot.add("C");
+//				predicate.add(e1.in(endtStatusNot).not() );
 			} 
 			
 			// Product  & Branch Condition
@@ -392,10 +394,10 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 				predicate.add(e0.in(statusNot).not() );
 				
 				// Endt Status Not
-				Expression<String> e1 = h.get("endtStatus");
-				List<String> endtStatusNot = new ArrayList<String>();
-				endtStatusNot.add("C");
-				predicate.add(e1.in(endtStatusNot).not() );
+//				Expression<String> e1 = h.get("endtStatus");
+//				List<String> endtStatusNot = new ArrayList<String>();
+//				endtStatusNot.add("C");
+//				predicate.add(e1.in(endtStatusNot).not() );
 			} 
 			
 			// Product  & Branch Condition
@@ -493,14 +495,15 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
+				statusNot.add("E");
 			//	statusNot.add("N");
 				predicate.add(e0.in(statusNot).not() );
 				
-				// Endt Status Not
-				Expression<String> e1 = h.get("endtStatus");
-				List<String> endtStatusNot = new ArrayList<String>();
-				endtStatusNot.add("C");
-				predicate.add(e1.in(endtStatusNot).not() );
+//				// Endt Status Not
+//				Expression<String> e1 = h.get("endtStatus");
+//				List<String> endtStatusNot = new ArrayList<String>();
+//				endtStatusNot.add("C");
+//				predicate.add(e1.in(endtStatusNot).not() );
 			} 
 			
 			// Product  & Branch Condition
