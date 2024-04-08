@@ -205,6 +205,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", length=100)
     private String    regulatoryCode;
     
+    @Column(name ="BROKER_LOGO")
+    private String brokerLogo;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

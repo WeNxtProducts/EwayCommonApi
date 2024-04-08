@@ -714,7 +714,7 @@ public class JasperCustomServiceImple {
 			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),
 			imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),piRoot.get("customerId").alias("customerId"),
 			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"),signimageURL.alias("signImg"),
-			attachment.alias("attachment"),hpmRoot.get("loginId").alias("loginId"))
+			attachment.alias("attachment"),hpmRoot.get("loginId").alias("loginId"),luiRoot.get("brokerLogo").alias("brokerLogo"))
 		.where(StringUtils.isBlank(policyNo)?cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")):cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),
 				cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(cpmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cpmRoot.get("status"), "Y"),cb.equal(hpmRoot.get("productId"), cpmRoot.get("productId")),
@@ -914,6 +914,7 @@ public class JasperCustomServiceImple {
 			response.setCoverNoteReferenceNo(map.get("coverNoteReferenceNo")==null?"":map.get("coverNoteReferenceNo").toString());
 			response.setBusiness(map.get("business")==null?"":map.get("business").toString());
 			response.setSignImg(map.get("signImg")==null?"":map.get("signImg").toString());
+			response.setBrokerLogo(map.get("brokerLogo")==null?"":map.get("brokerLogo").toString());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);

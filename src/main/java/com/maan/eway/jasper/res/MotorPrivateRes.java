@@ -117,6 +117,9 @@ public class MotorPrivateRes {
 	@JsonProperty("SignImg")
 	private String signImg;
 	
+	@JsonProperty("BrokerLogo")
+	private String brokerLogo;
+	
 	@JsonProperty("AttachmentList")
 	private List<AttachMentRes> attachmentList;
 	
