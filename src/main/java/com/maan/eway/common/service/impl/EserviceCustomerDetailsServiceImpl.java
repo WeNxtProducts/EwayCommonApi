@@ -3163,11 +3163,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					if (null != req.getPolicyHolderType() && !req.getPolicyHolderType().isEmpty()
 							&& "2".equals(req.getPolicyHolderType())) {
 
-						if (null == req.getBusinessType() || req.getBusinessType().isEmpty()) {
+						if (null == req.getBusinessType() || req.getBusinessType().trim().isEmpty()) {
 							errorList.add("1050");
 						}
 
-						if (null == req.getVrTinNo() || req.getVrTinNo().isEmpty()) {
+						if (null == req.getVrTinNo() || req.getVrTinNo().trim().isEmpty()) {
 							errorList.add("1051");
 						}
 					}
