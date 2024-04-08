@@ -3159,6 +3159,19 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						}
 					}
 					
+					
+					if (null != req.getPolicyHolderType() && !req.getPolicyHolderType().isEmpty()
+							&& "2".equals(req.getPolicyHolderType())) {
+
+						if (null == req.getBusinessType() || req.getBusinessType().isEmpty()) {
+							errorList.add("1050");
+						}
+
+						if (null == req.getVrTinNo() || req.getVrTinNo().isEmpty()) {
+							errorList.add("1051");
+						}
+					}
+					
 					// length and empty validation
 					
 					
