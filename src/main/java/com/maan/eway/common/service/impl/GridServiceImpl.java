@@ -2961,14 +2961,15 @@ public class GridServiceImpl implements GridService {
 				Expression<String> e0 = h.get("status");
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
-				statusNot.add("D");
+//				statusNot.add("D");
+				statusNot.add("E");
 				predicate.add(e0.in(statusNot).not());
 
 				// Endt Status Not
-				Expression<String> e3 = h.get("endtStatus");
-				List<String> endtStatusNot = new ArrayList<String>();
-				endtStatusNot.add("C");
-				predicate.add(e3.in(endtStatusNot).not() );
+//				Expression<String> e3 = h.get("endtStatus");
+//				List<String> endtStatusNot = new ArrayList<String>();
+//				endtStatusNot.add("C");
+//				predicate.add(e3.in(endtStatusNot).not() );
 			}
 
 			// Branch Condition
@@ -3256,13 +3257,14 @@ public class GridServiceImpl implements GridService {
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
+				statusNot.add("E");
 				predicate.add(e0.in(statusNot).not());
 
-				// Endt Status Not
-				Expression<String> e3 = h.get("endtStatus");
-				List<String> endtStatusNot = new ArrayList<String>();
-				endtStatusNot.add("C");
-				predicate.add(e3.in(endtStatusNot).not() );
+//				// Endt Status Not
+//				Expression<String> e3 = h.get("endtStatus");
+//				List<String> endtStatusNot = new ArrayList<String>();
+//				endtStatusNot.add("C");
+//				predicate.add(e3.in(endtStatusNot).not() );
 			}
 
 			// Branch Condition
@@ -3404,13 +3406,14 @@ public class GridServiceImpl implements GridService {
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
+				statusNot.add("E");
 				predicate.add(e0.in(statusNot).not());
 
-				// Endt Status Not
-							Expression<String> e3 = h.get("endtStatus");
-							List<String> endtStatusNot = new ArrayList<String>();
-							endtStatusNot.add("C");
-							predicate.add(e3.in(endtStatusNot).not() );
+//				// Endt Status Not
+//							Expression<String> e3 = h.get("endtStatus");
+//							List<String> endtStatusNot = new ArrayList<String>();
+//							endtStatusNot.add("C");
+//							predicate.add(e3.in(endtStatusNot).not() );
 			}
 
 			// Branch Condition
