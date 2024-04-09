@@ -37,6 +37,7 @@ import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.SequenceGenerateReq;
+import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
@@ -56,6 +57,8 @@ import com.maan.eway.bean.SectionDataDetails;
 @Service
 public class CopyRawTable  {
 
+	@Autowired
+	private CopyBuildingRaw section;
 	@Autowired
 	private EServiceMotorDetailsRepository emotorRepo;
 	
@@ -175,6 +178,23 @@ public class CopyRawTable  {
 	 		 	newRequestNo =  genSeqNoService.generateSeqCall(generateSeqReq);
 			}
 			List<EserviceMotorDetails> save=savemotor(ent, entMaster, prevQuoteNo, count, newRequestNo, prevPolicyNo, prevRequestRefNo);
+			// Section Copy
+			BuildingCopyRes riskRes=new BuildingCopyRes();
+			riskRes.setRequestReferenceNo(newRequestNo);
+			riskRes.setOldRequestReferenceNo(prevRequestRefNo );
+			riskRes.setPolicyNo(ent.getPolicyNo()+"-"+count) ;
+			riskRes.setEndtPrevPolicyNo(prevPolicyNo);
+			riskRes.setEndtPrevQuoteNo(prevQuoteNo);
+			riskRes.setEndtCount(new BigDecimal(count));
+			riskRes.setOriginalPolicyNo(save.get(0).getOriginalPolicyNo());
+			riskRes.setEndtStatus(save.get(0).getEndtStatus());
+			riskRes.setIsFinanceYn(save.get(0).getIsFinaceYn());
+			riskRes.setEndtCategoryDesc(save.get(0).getEndtCategDesc());
+			riskRes.setEndTypeDesc(save.get(0).getEndorsementTypeDesc());
+			riskRes.setApplicationId(save.get(0).getApplicationId());
+			riskRes.setLoginId(save.get(0).getLoginId());
+			riskRes.setSubUserType(save.get(0).getSubUserType());
+			List<String> sectionIds = section.copyBuildingSections( riskRes ) ;
 			return save;
 		}catch(ObjectOptimisticLockingFailureException ex ) {
 			return copyMotorRaw(ent, entMaster);
