@@ -182,6 +182,9 @@ public class EserviceMotorDetailsRes implements Serializable {
 	@JsonProperty("SectionId")
 	private  String sectionId;	
 	
+	@JsonProperty("SectionName")
+	private String sectionName;
+	
 	 @JsonProperty("SectionDetails")
 	 private List<SectionDetails>    sectionDetails;
 	 

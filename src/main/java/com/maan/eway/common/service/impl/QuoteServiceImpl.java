@@ -565,6 +565,8 @@ public class QuoteServiceImpl implements QuoteService {
 				vehicleDetails.setDriverDetails(driverResList);
 				vehicleDetails.setDocumentsTitle(mot.getSectionName());			
 				vehicleDetails.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
+				
+				
 			
 				// Section Details
 				SectionDetails sec = new SectionDetails(); 
@@ -584,6 +586,22 @@ public class QuoteServiceImpl implements QuoteService {
 				List<SectionDetails>  sectionList = new ArrayList<SectionDetails>();
 				sectionList.add(sec);
 				vehicleDetails.setSectionDetails(sectionList);
+				
+				
+				if (null != sectionList && !sectionList.isEmpty()) {
+
+					sectionList.stream().forEach(a -> {
+
+						if (null != a && null != a.getSectionId() && !a.getSectionId().isEmpty()
+								&& null != vehicleDetails && null != vehicleDetails.getSectionId()
+								&& !vehicleDetails.getSectionId().isEmpty()
+								&& a.getSectionId().equals(vehicleDetails.getSectionId())) {
+
+							vehicleDetails.setSectionName(a.getSectionName() != null ? a.getSectionName() : "");
+						}
+
+					});
+				}
 				
 				// Document 
 				DocumentDetails  document = new DocumentDetails();
