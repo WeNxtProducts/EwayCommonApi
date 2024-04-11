@@ -3620,7 +3620,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setUwList(referr);
 			response.setReferals(masterreferral);
 			fservice.saveFactorRateRequestDetails(response); 
-			//return response;
+			return response;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
