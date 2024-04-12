@@ -65,6 +65,8 @@ public interface MotorDriverDetailsRepository  extends JpaRepository<MotorDriver
 	List<Map<String, Object>> findByCorporatePlusChart(String insuranceId, String productId, List<String> loginIds,
 			String userType, Date startDate, Date endDate);
 
+	List<MotorDriverDetails> findByRequestReferenceNoAndStatusNot(String searchValue, String string);
+
 	
 
 

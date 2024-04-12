@@ -83,6 +83,7 @@ import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.common.res.RejectCriteriaRes;
+import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.endorsment.service.EndorsementService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
@@ -114,8 +115,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 	private EntityManager em;
 
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
+	
+	@Autowired
+	private BuildingGridServiceImpl buildingservice;
 
-
+	@Autowired
+	private MotorDriverDetailsRepository driverRepo;
+	
 	@Autowired
 	private HomePositionMasterRepository homePosistionRepo;
 	
@@ -1785,7 +1791,61 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						
 						repo.saveAndFlush(savedata);
 					}
+					//Section Save
+					List<Tuple> list3 = buildingservice.copySectionQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
+							branches);
+					if (list3 != null && list3.size() > 0) {
+						for (Tuple data : list3) {
+							EserviceSectionDetails savedata3 = new EserviceSectionDetails();
+							savedata3 = dozerMapper.map(data.get(0), EserviceSectionDetails.class);
 
+							savedata3.setEntryDate(new Date());
+							savedata3.setCreatedBy(req.getLoginId());
+							savedata3.setUpdatedBy(req.getLoginId());
+							savedata3.setUpdatedDate(new Date());
+							savedata3.setRequestReferenceNo(refNo);
+							savedata3.setQuoteNo("");
+							savedata3.setStatus("Y");
+							savedata3.setEndorsementDate(null);
+							savedata3.setEndorsementEffdate(null);
+							savedata3.setEndorsementRemarks(null);
+							savedata3.setEndorsementType(null);
+							savedata3.setEndorsementTypeDesc(null);
+							savedata3.setEndtCategDesc(null);
+							savedata3.setEndtCount(null);
+							savedata3.setEndtPremium(null);
+							savedata3.setEndtPrevPolicyNo(null);
+							savedata3.setEndtPrevQuoteNo(null);
+							savedata3.setEndtStatus(null);
+							savedata3.setPolicyNo(null);
+							eserSecRepo.saveAndFlush(savedata3);
+						}
+
+					}
+					//Driver Save
+					List<MotorDriverDetails> motorDriverData = motordrivDetepo.findByRequestReferenceNoAndStatusNot(searchValue,"D");
+					if (motorDriverData.size() > 0) {
+						for (MotorDriverDetails data : motorDriverData) {
+							MotorDriverDetails savedriver =new MotorDriverDetails();
+							savedriver = dozerMapper.map(data, MotorDriverDetails.class);
+							savedriver.setRequestReferenceNo(refNo);
+							savedriver.setQuoteNo("");
+							savedriver.setEntryDate(new Date());
+							savedriver.setCreatedBy(loginId);
+							savedriver.setEndorsementDate(null);
+							savedriver.setEndorsementEffdate(null);
+							savedriver.setEndorsementRemarks(null);
+							savedriver.setEndorsementType(null);
+							savedriver.setEndorsementTypeDesc(null);
+							savedriver.setEndtCategDesc(null);
+							savedriver.setEndtCount(null);
+							savedriver.setEndtPrevPolicyNo(null);
+							savedriver.setEndtPrevQuoteNo(null);
+							savedriver.setEndtStatus(null);
+							savedriver.setIsFinaceYn("N");
+							driverRepo.saveAndFlush(savedriver);
+						}
+					}
 				}
 				res.setRequestReferenceNo(refNo);
 

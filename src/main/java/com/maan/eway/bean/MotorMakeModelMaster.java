@@ -213,5 +213,20 @@ public class MotorMakeModelMaster implements Serializable {
 	@Temporal(TemporalType.DATE)
 	@Column(name = "UPDATED_DATE")
 	private Date updatedDate;
+	
+	@Column(name = "VEHICLE_VALUE")
+	private Double vehicleValue;
+	
+	@Column(name = "EXCESS")
+	private Double excess;
+	
+	@Column(name = "YOUNG_DRIVER_EXCESS")
+	private Double youngDriverExcess;
+	
+	@Column(name = "LOSS_OF_USE_DAYS")
+	private Integer lossOfUseDays;
+	
+	@Column(name = "LOSS_OF_USE_VALUE")
+	private Double lossOfUseValue;
 
 }
