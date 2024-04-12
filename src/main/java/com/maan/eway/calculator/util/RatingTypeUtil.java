@@ -12,7 +12,7 @@ public class RatingTypeUtil implements Function<Tuple,RatingInfo > {
 	public RatingInfo apply(Tuple t) { 
 		try {
 	 
-			RatingInfo r=
+			final RatingInfo r=
 					RatingInfo.builder().companyId(t.get("companyId")==null?"":t.get("companyId").toString())
 					.discretCol(t.get("discreteColumn")==null?"":t.get("discreteColumn").toString())
 					.factorRangeYn(t.get("rangeYn")==null?"":t.get("rangeYn").toString())

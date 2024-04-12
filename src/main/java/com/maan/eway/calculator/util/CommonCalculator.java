@@ -63,13 +63,13 @@ public class CommonCalculator {
 		return LoadFactorRates(engine, coverId, factorid, vehicleId, vehicles.get(0), customers.get(0), result.get(0),subCoverId,(drivers==null || drivers.isEmpty())?null:drivers.get(0));
 	}
 	
-	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId,Tuple vehicle,Tuple customer,Tuple common,String subCoverId,Tuple drivers) {
+	public  List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId,Tuple vehicle,Tuple customer,Tuple common,String subCoverId,Tuple drivers) {
 		Map<String,List<String>> vloop=new HashMap<String, List<String>>();
 		try {
 			
 			
 			
-				List<RatingInfo> rateInfos = crservice.LoadRatingType(engine, factorid);
+				final List<RatingInfo> rateInfos = crservice.LoadRatingType(engine, factorid);
 				
 				
 					
@@ -113,20 +113,23 @@ public class CommonCalculator {
 							condtions.add(condtion); 
 						}
 					}
+					System.out.println("----------------------"+coverId);
 					for(int i=0;i<rateInfos.size();i++) {							
 						RatingInfo r = rateInfos.get(i);
 						if("N".equals(r.getFactorRangeYn())) {
 							String condtion=r.getDiscretCol()+":"+r.getInputColumValue()+";";
 							if(condtions.size()>0)
 								condtion=condtion.concat(StringUtils.join(condtions,';'));
-							List<Long> onlyquery =null;
+							//List<> onlyquery =null;
+							Long count =0L;
 							try {
-								onlyquery =	crservice.countfactorOnlyquery(engine,condtion, coverId,subCoverId);
+								count =	crservice.countfactorOnlyquery(engine,condtion, coverId,subCoverId);
+								System.out.println(" ----------------------"+coverId+""+count +condtion);
 							}catch (Exception e) {
 								e.printStackTrace();
 							}	
-							Long count=onlyquery.get(0);
-							if(count<=0) {
+							
+							if(count<=0L) {
 								r.setInputColumValue("99999");
 								condtion=r.getDiscretCol()+":"+r.getInputColumValue()+";";
 								condtions.add(condtion); 
@@ -136,7 +139,8 @@ public class CommonCalculator {
 							}
 						}					
 						 
-					}						 
+					}
+					System.out.println("----------------------"+coverId);
 					vloop.put(vehicleId, condtions);
 					loopfactorrates =  crservice.loopfactorrates(engine,vloop,coverId,subCoverId); 
 

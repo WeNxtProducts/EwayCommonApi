@@ -74,6 +74,7 @@ public class CachingConfig   {
 				.append(s)
 				.append(e.getBranchCode())
 				.append("rating")
+				.append(e.getSectionId())
 				.toString();
 				return string;
 			}
@@ -204,6 +205,7 @@ public class CachingConfig   {
 		    						.append(e.getBranchCode())
 		    						//.append(r.getRatingFieldId())
 		    						.append("RatingFields")
+		    						.append(e.getSectionId())
 		    						.toString();
 		    				return string;
 		    			}
@@ -230,6 +232,10 @@ public class CachingConfig   {
 		    						.append(r)
 		    						.append(r1)
 		    						.append(r2)
+		    						.append(e.getCdRefNo())
+		    						.append(e.getVdRefNo())
+		    						.append(e.getMsrefno())
+		    						.append(e.getDdRefno())
 		    						.append(DD_MM_YYYY.format(new Date()))
 		    						.toString();
 		    				return string;
@@ -256,6 +262,10 @@ public class CachingConfig   {
 		    						.append(r)
 		    						.append(r1)
 		    						.append(r2)
+		    						.append(e.getCdRefNo())
+		    						.append(e.getVdRefNo())
+		    						.append(e.getMsrefno())
+		    						.append(e.getDdRefno())
 		    						.append(DD_MM_YYYY.format(new Date()))
 		    						.toString();
 		    				return string;

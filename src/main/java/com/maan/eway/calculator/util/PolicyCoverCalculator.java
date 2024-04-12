@@ -319,13 +319,13 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 							String condtion=r.getDiscretCol()+":"+r.getInputColumValue()+";";
 							if(condtions.size()>0)
 								condtion=condtion.concat(StringUtils.join(condtions,';'));
-							List<Long> onlyquery =null;
+							Long count=0L;
 							try {
-								onlyquery =	crservice.countfactorOnlyquery(engine,condtion, coverId,"0");
+								count =	crservice.countfactorOnlyquery(engine,condtion, coverId,"0");
 							}catch (Exception e) {
 								e.printStackTrace();
 							}	
-							Long count=onlyquery.get(0);
+							
 							if(count<=0) {
 								r.setInputColumValue("99999");
 							} 	

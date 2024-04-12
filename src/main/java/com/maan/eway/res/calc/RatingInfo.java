@@ -4,13 +4,18 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import groovy.transform.EqualsAndHashCode;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class RatingInfo implements Serializable {
-	 @JsonProperty("FactortypeId") 
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3301222282893059909L;
+	@JsonProperty("FactortypeId") 
 	    public String factortypeId;
 	    @JsonProperty("FactortypeName") 
 	    public String factortypeName;

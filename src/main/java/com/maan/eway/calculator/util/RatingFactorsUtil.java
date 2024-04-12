@@ -233,7 +233,7 @@ public class RatingFactorsUtil {
 	}
 	
 	@Cacheable(cacheNames= {"countfactorOnlyquery"},keyGenerator  = "countfactorOnlyqueryKeyGen",value = "countfactorOnlyquery")
-	public List<Long> countfactorOnlyquery(CalcEngine engine,String condtion,String coverId, String subCoverId) {
+	public Long countfactorOnlyquery(CalcEngine engine,String condtion,String coverId, String subCoverId) {
 		String dataquery = null;
 		try{
 			Map<Integer, String> hsmap = commonQueries(engine, condtion, coverId, subCoverId);
@@ -241,6 +241,7 @@ public class RatingFactorsUtil {
 			//2.priorty both specifi agencycode
 			//3.priorty both specifi branchcode
 			//4.priorty both common
+			Long countrec=0L;
 			SpecCriteria criteria = null;
 			List<Long> count=null;
 			for(int i=1;i<=hsmap.size();i++) {
@@ -251,21 +252,21 @@ public class RatingFactorsUtil {
 
 				  count = crservice.getCount(criteria, 0, 50);
 				if(!count.isEmpty()) { 
-					Long countrec = count.get(0);				
+					countrec = count.get(0);				
 					if(countrec>0) 
-						break;
+						return countrec;
 				}
 
 			}
 
 			 
-			return count;
+			return countrec;
 		}catch (Exception e) {
 			System.out.println("Factor Id"+dataquery);
 			e.printStackTrace();
 			
 		}
-		return null;
+		return 0L;
 	}
 	
 	
@@ -323,14 +324,12 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
-	@Cacheable(cacheNames = {"RatingType"},keyGenerator  = "ratingTypeKeyGen",value = "RatingType" )
+	
 	public synchronized   List<RatingInfo> LoadRatingType(CalcEngine engine,String factorTypeId){
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
 			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;factorTypeId:"+factorTypeId+";";
-			List<Tuple> result=null;
-			SpecCriteria criteria = crservice.createCriteria(FactorTypeDetails.class, search, "ratingFieldId"); 
-			result=crservice.getResult(criteria, 0, 50);
+			List<Tuple>  result=this.getRatingType(engine, factorTypeId, search);
 			if(result!=null && result.size()>0) {
 				
 				RatingTypeUtil rate=new RatingTypeUtil();
@@ -351,7 +350,22 @@ public class RatingFactorsUtil {
 			e.printStackTrace();
 		}
 		return null;
-	} 
+	}
+	@Cacheable(cacheNames = {"RatingType"},keyGenerator  = "ratingTypeKeyGen",value = "RatingType" )
+	public List<Tuple> getRatingType(CalcEngine engine,String factorTypeId,String search) {
+		try {
+			
+			List<Tuple> result=null;
+			SpecCriteria criteria = crservice.createCriteria(FactorTypeDetails.class, search, "ratingFieldId"); 
+			result=crservice.getResult(criteria, 0, 50);
+			return result;
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	
 	@Cacheable(cacheNames = {"ProductType"},keyGenerator  = "productTypeKeyGen",value = "ProductType" )
 	public synchronized List<Tuple> collectProductType(CalcEngine engine) {
