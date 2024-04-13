@@ -595,7 +595,7 @@ this.repository = repo;
 		      
 		      if(loginReq.getUserType().equalsIgnoreCase("Broker") ) {
 		    	  
-		    	  marineapi.createMarineBroker(userInfo,"new",saveLogin); //broker
+		    	  marineapi.createMarineBroker(userInfo,"new",req,saveLogin); //broker
 		    	  
 		      }else  if(loginReq.getUserType().equalsIgnoreCase("User") ) {
 		    	  
@@ -878,7 +878,7 @@ this.repository = repo;
 			
 			if(loginReq.getUserType().equalsIgnoreCase("Broker") ) {
 		    	  
-		    	  marineapi.createMarineBroker(updateUser,"edit",updateLogin); //insert
+		    	  marineapi.createMarineBroker(updateUser,"edit", req,updateLogin); //insert
 		    	  
 		      }else  if(loginReq.getUserType().equalsIgnoreCase("User") ) {
 		    	  
