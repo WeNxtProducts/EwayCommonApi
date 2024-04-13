@@ -75,7 +75,7 @@ public class CommonCalculator {
 					
 				 
 
-				List<String> condtions=new ArrayList<String>();
+				//List<String> condtions=new ArrayList<String>();
 				for (RatingInfo r : rateInfos) {
 					if("MsCustomerDetails".equalsIgnoreCase(r.getInputTableName())) {
 						r.setInputColumValue(customer.get(r.getInputColumName()).toString());
@@ -91,19 +91,21 @@ public class CommonCalculator {
 							r.setInputColumValue(vehicle.get(r.getInputColumName()).toString());
 					}
 					
+					
+					/*
 					String condtion=r.getDiscretCol()+":"+r.getInputColumValue()+"";
 					if("Y".equals(r.getFactorRangeYn())) {
 						condtion=""+r.getInputColumValue()+"~"+r.getRangeFromCol()+"&"+r.getRangeToCol();  
 					} 
-					condtions.add(condtion);   
+					condtions.add(condtion);*/  
 				}
+			
+				//vloop.put(vehicleId, condtions);
 
-				vloop.put(vehicleId, condtions);
 
+				List<Tuple> loopfactorrates = crservice.loopfactorrates(engine,vloop,coverId,subCoverId,rateInfos);
 
-				List<Tuple> loopfactorrates = crservice.loopfactorrates(engine,vloop,coverId,subCoverId);
-
-				if(loopfactorrates==null || loopfactorrates.size()==0) {
+			/*	if(loopfactorrates==null || loopfactorrates.size()==0) {
 					condtions.clear(); 
 					vloop.clear();
 					for(int i=0;i<rateInfos.size();i++) {							
@@ -113,7 +115,7 @@ public class CommonCalculator {
 							condtions.add(condtion); 
 						}
 					}
-					System.out.println("----------------------"+coverId);
+					//System.out.println("----------------------"+coverId);
 					for(int i=0;i<rateInfos.size();i++) {							
 						RatingInfo r = rateInfos.get(i);
 						if("N".equals(r.getFactorRangeYn())) {
@@ -124,7 +126,7 @@ public class CommonCalculator {
 							Long count =0L;
 							try {
 								count =	crservice.countfactorOnlyquery(engine,condtion, coverId,subCoverId);
-								System.out.println(" ----------------------"+coverId+""+count +condtion);
+								//System.out.println(" ----------------------"+coverId+""+count +condtion);
 							}catch (Exception e) {
 								e.printStackTrace();
 							}	
@@ -140,11 +142,11 @@ public class CommonCalculator {
 						}					
 						 
 					}
-					System.out.println("----------------------"+coverId);
+					//System.out.println("----------------------"+coverId);
 					vloop.put(vehicleId, condtions);
 					loopfactorrates =  crservice.loopfactorrates(engine,vloop,coverId,subCoverId); 
-
-				}
+			 		 
+				}*/
 			
 			return loopfactorrates;  
 		}catch (Exception e) {

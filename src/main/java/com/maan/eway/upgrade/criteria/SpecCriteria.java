@@ -13,5 +13,6 @@ public class SpecCriteria {
 	private List<SearchCriteria> wheres;
 	private List<String> orderby;
 	private List<JoinCriteria> joins;
+	private List<String> groupBy;
 	
 }

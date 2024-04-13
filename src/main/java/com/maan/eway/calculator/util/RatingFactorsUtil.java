@@ -193,14 +193,14 @@ public class RatingFactorsUtil {
 	@Cacheable(cacheNames= {"loadfactorOnlyquery"},keyGenerator  = "loadfactorOnlyqueryKeyGen",value = "loadfactorOnlyquery")
 	public List<Tuple> loadfactorOnlyquery(CalcEngine engine,String condtion,String coverId, String subCoverId) {
 		try{
-			Map<Integer, String> hsmap = commonQueries(engine, condtion, coverId, subCoverId);
+		///	Map<Integer, String> hsmap = commonQueries(engine, condtion, coverId, subCoverId);
 			//1.Priorty both s pecifi agencycode & branchcode
 			//2.priorty both specifi agencycode
 			//3.priorty both specifi branchcode
 			//4.priorty both common
 			SpecCriteria criteria = null;
 
-			for(int i=1;i<=hsmap.size();i++) {
+			/*for(int i=1;i<=hsmap.size();i++) {
 				String dataquery = hsmap.get(i);
 
 
@@ -213,7 +213,9 @@ public class RatingFactorsUtil {
 						break;
 				}
 
-			}
+			}*/
+			
+			criteria = crservice.createCriteria(FactorRateMaster.class, condtion, "factorTypeId"); 
 
 			if(criteria!=null) {
 				List<Tuple> result=null;
@@ -1209,5 +1211,56 @@ public class RatingFactorsUtil {
 				e.printStackTrace();
 			}
 	}
+
+	public List<Tuple> loopfactorrates(CalcEngine engine, Map<String, List<String>> vloop, String coverId,	String subCoverId, List<RatingInfo> rateInfos) {
+		try {
+			List<String> condtions=new ArrayList<String>();
+			List<String> groupBy=new ArrayList<String>();
+			groupBy.add("agencyCode");
+			String todayInString = DD_MM_YYYY.format(new Date());
+			condtions.add("companyId:"+ engine.getInsuranceId() );
+			condtions.add("productId:"+ engine.getProductId() );
+			condtions.add("sectionId:"+ engine.getSectionId() );
+			condtions.add("status:{Y,R}");
+			condtions.add("coverId:"+ coverId);
+			condtions.add("subCoverId:"+subCoverId);
+			condtions.add(todayInString+"~effectiveDateStart&effectiveDateEnd");
+		 
+					
+			
+			for (RatingInfo r : rateInfos) {
+				
+				if("Y".equals(r.getFactorRangeYn())) {
+					String condtion=""+r.getInputColumValue()+"~"+r.getRangeFromCol()+"&"+r.getRangeToCol();
+					condtions.add(condtion);
+				}else {
+					groupBy.add(r.getDiscretCol());
+				}
+				
+			}
+			 
+			SpecCriteria specCriteria = crservice.createCriteriaForGroupBy(FactorRateMaster.class, StringUtils.join(condtions,';'), "agencyCode",groupBy);
+			List<Tuple> result = crservice.getResultGroupBy(specCriteria, 0, 1000);
+			if(result.size()>0)
+				for (RatingInfo r : rateInfos) {
+					if(!"Y".equals(r.getFactorRangeYn())) {
+						Optional<Tuple> findFirst = result.stream().filter(i -> i.get(r.getDiscretCol()).equals(r.getInputColumValue())
+								).findFirst();
+						if(findFirst.isEmpty())
+							condtions.add(r.getDiscretCol()+":99999");
+						else
+							condtions.add(r.getDiscretCol()+":"+r.getInputColumValue());
+					}
+				}
+			
+			
+			List<Tuple> loadfactorOnlyquery = loadfactorOnlyquery(engine,StringUtils.join(condtions,';'), coverId,subCoverId);
+			return loadfactorOnlyquery;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+ 
 }
 
