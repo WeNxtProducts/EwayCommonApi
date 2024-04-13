@@ -311,13 +311,13 @@
 			<image>
 				<reportElement x="1" y="0" width="419" height="80" uuid="37fca82f-d9f9-4e36-bfee-7f0ad564124e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{brokerLogo} !=null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{brokerLogo} !=null && $F{brokerLogo} !=""]]></printWhenExpression>
 				</reportElement>
 				<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}]]></imageExpression>
 			</image>
 			<image>
 				<reportElement x="420" y="0" width="134" height="80" uuid="23278163-22d1-4632-9d4a-170f985e07b7">
-					<printWhenExpression><![CDATA[$F{brokerLogo} != null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{brokerLogo} !=null && $F{brokerLogo} !=""]]></printWhenExpression>
 				</reportElement>
 				<imageExpression><![CDATA[$P{pvImagepath}+$F{brokerLogo}]]></imageExpression>
 			</image>
