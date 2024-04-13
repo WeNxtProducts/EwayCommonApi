@@ -99,7 +99,7 @@ public class MarineLoginApi {
 	public void createMarineBroker(LoginUserInfo userInfo,String mode, CommonLoginCreationReq req,LoginMaster saveLogin) {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
-			List<BranchMaster> branchlist=bmRepo.findByCompanyId(req.getLoginInformation().getAttachedCompanies().get(0));
+			List<BranchMaster> branchlist=bmRepo.findByCompanyId(req.getLoginInformation().getCompanyId());
 			String branchCode=branchlist.get(0).getBranchCode();
 			List<String> attachBranch = new ArrayList<String>();
 			if (branchlist != null) {
@@ -108,14 +108,14 @@ public class MarineLoginApi {
 				}
 			}
 			
-			List<String> companyId = new ArrayList<String>();
-			String region=companyId.get(0);
+//			List<String> companyId = new ArrayList<String>();
+//			String region=companyId.get(0);
 			List<String> attachRegion = new ArrayList<String>();
-			if (companyId != null) {
-				for (int i = 1; i <= companyId.size(); i++) {
-					attachRegion.add(companyId.get(i).toString());
-				}
-			}
+//			if (companyId != null) {
+//				for (int i = 1; i <= companyId.size(); i++) {
+					attachRegion.add(req.getLoginInformation().getCompanyId());
+//				}
+//			}
 			Map<String,Object > mainRequest=new HashMap<String, Object>();
 			mainRequest.put("Address1",userInfo.getAddress1());
 			mainRequest.put("Address2",userInfo.getAddress2());
@@ -368,8 +368,8 @@ public class MarineLoginApi {
 			List<String> attachBranch = new ArrayList<String>();
 			if (branchlist != null && branchlist.size()>0) {
 				for (int i = 0; i < branchlist.size(); i++) {
-					attachBranch.add(branchlist.get(i).getBranchCode().toString());
-//					attachBranch.add("46");
+//					attachBranch.add(branchlist.get(i).getBranchCode().toString());
+					attachBranch.add("46");
 				}
 			}
 			
@@ -436,7 +436,7 @@ public class MarineLoginApi {
 		CommonPersonalInforReq perreq = req.getPersonalInformation();
 		
 		try {
-			List<BranchMaster> branchlist=bmRepo.findByCompanyId(req.getLoginInformation().getAttachedCompanies().get(0));
+			List<BranchMaster> branchlist=bmRepo.findByCompanyId(req.getLoginInformation().getCompanyId());
 			String branchCode=branchlist.get(0).getBranchCode();
 			List<String> attachBranch = new ArrayList<String>();
 			if (branchlist != null) {
@@ -445,15 +445,15 @@ public class MarineLoginApi {
 				}
 			}
 			
-			List<String> companyId = new ArrayList<String>();
-			companyId=logreq.getAttachedCompanies();
-			String region=companyId.get(0);
+//			List<String> companyId = new ArrayList<String>();
+//			companyId=logreq.getAttachedCompanies();
+//			String region=companyId.get(0);
 			List<String> attachRegion = new ArrayList<String>();
-			if (companyId != null) {
-				for (int i = 1; i <= companyId.size(); i++) {
-					attachRegion.add(companyId.get(i).toString());
-				}
-			}
+//			if (companyId != null) {
+//				for (int i = 1; i <= companyId.size(); i++) {
+					attachRegion.add(req.getLoginInformation().getCompanyId());
+//				}
+//			}
 			List<String> products = new ArrayList<String>();
 			products.add("3");
 			products.add("11");

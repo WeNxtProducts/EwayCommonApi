@@ -324,6 +324,23 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="POL_CUST_CODE", length=50)
     private String     polCustCode ;
+    
+    @Column(name="FIRST_NAME", length=200)
+    private String     firstName ;
+    
+    @Column(name="MIDDLE_NAME", length=200)
+    private String     middleName ;
+    
+    @Column(name="LAST_NAME", length=200)
+    private String     lastName ;
+    
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String     customerCode ;
+    
+    
+    @Column(name="ADDRESS_3", length=100)
+    private String     address3 ;
+    
 }
 
 
