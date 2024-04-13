@@ -428,7 +428,7 @@ public class JasperCustomServiceImple {
 			response.setCurrency(map.get("currency")==null?"":map.get("currency").toString());
 			response.setDebitNoteNo(map.get("debitNoteNo")==null?"":map.get("debitNoteNo").toString());
 			response.setVrnNumber(map.get("vrnNumber")==null?"":map.get("vrnNumber").toString());
-			response.setTinNumber(map.get("tinNumber")==null?"":map.get("tinNumber").toString());
+			response.setTinNumber(map.get("tinNumber")==null?null:map.get("tinNumber").toString());
 			response.setBrokerName(map.get("brokerName")==null?"":map.get("brokerName").toString());
 			response.setOverAllPremium(new BigDecimal(OverAllPremium).toPlainString());
 			response.setTotSumInsured(map.get("totSumInsured")==null?"":new BigDecimal(Double.valueOf(map.get("totSumInsured").toString())).toString());

@@ -162,7 +162,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vrnNumber"/>
 		<fieldDescription><![CDATA[vrnNumber]]></fieldDescription>
 	</field>
-	<field name="tinNumber" class="java.lang.Integer">
+	<field name="tinNumber" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="tinNumber"/>
 		<fieldDescription><![CDATA[tinNumber]]></fieldDescription>
 	</field>
