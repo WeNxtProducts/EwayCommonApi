@@ -132,6 +132,7 @@ import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.ProductMasterRepository;
+import com.maan.eway.repository.ProductSectionMasterRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
@@ -291,6 +292,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ; 
 	
+	
+	@Autowired
+	private EServiceMotorDetailsRepository eserviceMotorDetailsRepo;
+	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
 		CommonRes commonRes = new CommonRes();
@@ -298,6 +303,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		List<Error> errors = new ArrayList<Error>();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhmmssSS");
 		QuoteThreadReq request = new QuoteThreadReq(); 
+		
+		
 		try {
 		boolean referal = false ;
 		List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
@@ -365,7 +372,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             int threadCount = 2 ;
             int success = 0;
             
-       
+           
             
          // Product Wise Thread Call
             commonRes = productWiseThreadCall( req , request ) ;
@@ -601,9 +608,58 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			commonRes.setErrorMessage(errors);
 			commonRes.setMessage("Failed");	
 		}
+		
+		
 		return commonRes ;
 	}
 	
+	public  void updateSection(NewQuoteReq req) {
+		try {
+
+			if (null != req && null != req.getVehicleIdsList() && !req.getVehicleIdsList().isEmpty()) {
+
+				if (null != req.getVehicleIdsList().get(0)) {
+
+					VehicleIdsReq vehicle = req.getVehicleIdsList().get(0);
+					if (null != vehicle && null != vehicle.getSectionId() && !vehicle.getSectionId().isEmpty()
+
+							&& null != req.getRequestReferenceNo() && !req.getRequestReferenceNo().isEmpty()) {
+
+						List<EserviceMotorDetails> motorList = eserviceMotorDetailsRepo
+								.findByRequestReferenceNo(req.getRequestReferenceNo());
+
+						if (null != motorList && !motorList.isEmpty() && null != motorList.get(0)) {
+
+							EserviceMotorDetails motor = motorList.get(0);
+
+							if (null != motor) {
+
+								if ("104".equals(vehicle.getSectionId())) {
+									motor.setSectionId(vehicle.getSectionId());
+									motor.setSectionName("Comprehensive");
+								} else if ("103".equals(vehicle.getSectionId())) {
+									motor.setSectionId(vehicle.getSectionId());
+									motor.setSectionName("TPl");
+
+								}
+								eserviceMotorDetailsRepo.saveAndFlush(motor);
+							}
+
+						}
+
+					}
+
+				}
+			}
+
+		} catch (Exception e) {
+
+			log.error("Exception Occurs when update section id  " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+	}
+
 	//-------------------------------------------------------------Refrral Checking Block ---------------------------------------------------------------------//
 	@Transactional
 	public CommonRes RefferalChecking(NewQuoteReq req ) {

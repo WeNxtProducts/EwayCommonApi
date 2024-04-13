@@ -29,6 +29,7 @@ import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
+import com.maan.eway.common.service.impl.QuoteThreadServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.res.GetEmployeeCountRes;
@@ -54,6 +55,9 @@ public class QuoteController {
 	
 	@Autowired
 	private FactorRateRequestDetailsRepository facRateRepo ;
+	
+	@Autowired
+	private QuoteThreadServiceImpl quoteThreadimpl;
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/buypolicy")
@@ -87,6 +91,7 @@ public class QuoteController {
 
 		} else {
 		// Save
+		quoteThreadimpl.updateSection(req);
 		 res = entityService.generateNewQuote(req);
 		
 		if (res != null) {
