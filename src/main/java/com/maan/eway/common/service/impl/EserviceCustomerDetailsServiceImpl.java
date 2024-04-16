@@ -3225,7 +3225,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 								errorList.add("2224");
 							}
 						}
-						if(isIdNumberNotSame(req.getCustomerReferenceNo(),req.getIdNumber(),req.getIdType())) {
+						if(isIdNumberNotSame(req.getCustomerReferenceNo(),req.getIdNumber(),req.getPolicyHolderTypeid())) {
 							if(isUniqueIdDublicate(req.getCompanyId(),req.getCreatedBy(),req.getPolicyHolderTypeid(),req.getIdNumber())) {
 								errorList.add("2212");
 							}
