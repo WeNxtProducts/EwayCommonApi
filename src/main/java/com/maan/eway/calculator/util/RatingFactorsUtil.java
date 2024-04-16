@@ -3,6 +3,7 @@ package com.maan.eway.calculator.util;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -870,6 +871,9 @@ public class RatingFactorsUtil {
 			int count= fdRepo.deleteByRequestReferenceNoAndVehicleId(engine.getRequestReferenceNo(),Integer.parseInt(engine.getVehicleId()));
 			List<EwayFactorDetails> fds=new ArrayList<EwayFactorDetails>();
 			int sno=2;
+			String pattern =  "#####0.###" ;
+			DecimalFormat decimalFormat = new DecimalFormat(pattern);
+				
 			for(Entry<String, List<Tuple>> entrySet :queriesResult.entrySet()) {
 				String key=entrySet.getKey();
 				List<Tuple> value = entrySet.getValue();
@@ -887,11 +891,11 @@ public class RatingFactorsUtil {
 							.coverName(t.getCoverName())
 							.createdBy(engine.getCreatedBy())
 							.entryDate(new Date())
-							.fire(value.get(0).get("param19")==null?0D:Double.parseDouble(value.get(0).get("param19").toString()))
-							.thirdParty(value.get(0).get("param20")==null?0D:Double.parseDouble(value.get(0).get("param20").toString()))
-							.theft(value.get(0).get("param18")==null?0D:Double.parseDouble(value.get(0).get("param18").toString()))
-							.windscreen(value.get(0).get("param17")==null?0D:Double.parseDouble(value.get(0).get("param17").toString()))
-							.ownDamage(value.get(0).get("param16")==null?0D:Double.parseDouble(value.get(0).get("param16").toString()))
+							.fire(value.get(0).get("param19")==null?0D:Double.valueOf(decimalFormat.format( Double.parseDouble(value.get(0).get("param19").toString()))))
+							.thirdParty(value.get(0).get("param20")==null?0D:Double.valueOf(decimalFormat.format(Double.parseDouble(value.get(0).get("param20").toString()))))
+							.theft(value.get(0).get("param18")==null?0D:Double.valueOf(decimalFormat.format(Double.parseDouble(value.get(0).get("param18").toString()))))
+							.windscreen(value.get(0).get("param17")==null?0D:Double.valueOf(decimalFormat.format(Double.parseDouble(value.get(0).get("param17").toString()))))
+							.ownDamage(value.get(0).get("param16")==null?0D:Double.valueOf(decimalFormat.format(Double.parseDouble(value.get(0).get("param16").toString()))))
 							.msRefno(engine.getMsrefno())
 							.productId(Integer.parseInt(engine.getProductId()))
 							.requestReferenceNo(engine.getRequestReferenceNo())
@@ -1019,7 +1023,15 @@ public class RatingFactorsUtil {
 
 			 t.setPremiumBeforeDiscount(new BigDecimal(premium));
 			 t.setMinimumPremium(new BigDecimal(minPremium));
-			 t.setRate((Double) premium/(sumInsured==0?1:sumInsured));
+			 
+				try {
+					Double premiumRate=Double.valueOf(decimalFormat.format((Double) premium/(sumInsured==0?1:sumInsured)));
+					t.setRate(premiumRate);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 
 			 t.setCalcType("P");
 			 t.setRegulatoryCode("NA");
 			 /// Referal
@@ -1107,7 +1119,8 @@ public class RatingFactorsUtil {
 			sumtheft=sumtheft.add(theft);
 			sumthirdParty=sumthirdParty.add(thirdParty);
 			sumfire=sumfire.add(fire);
-			
+			String pattern =  "#####0.###" ;
+			DecimalFormat decimalFormat = new DecimalFormat(pattern);
 			EwayFactorDetails fd=EwayFactorDetails.builder()
 					.amendId(0)
 					.cdRefno(engine.getCdRefNo())
@@ -1118,11 +1131,11 @@ public class RatingFactorsUtil {
 					.coverName(t.getCoverName())
 					.createdBy(engine.getCreatedBy())
 					.entryDate(new Date())
-					.fire(sumfire.doubleValue())
-					.thirdParty(sumthirdParty.doubleValue())
-					.theft(sumtheft.doubleValue())
-					.windscreen(sumwindscreen.doubleValue())
-					.ownDamage(sumOwnDamage.doubleValue())
+					.fire(Double.valueOf(decimalFormat.format(sumfire.doubleValue())))
+					.thirdParty(Double.valueOf(decimalFormat.format(sumthirdParty.doubleValue())))
+					.theft(Double.valueOf(decimalFormat.format(sumtheft.doubleValue())))
+					.windscreen(Double.valueOf(decimalFormat.format(sumwindscreen.doubleValue())))
+					.ownDamage(Double.valueOf(decimalFormat.format(sumOwnDamage.doubleValue())))
 					.msRefno(engine.getMsrefno())
 					.productId(Integer.parseInt(engine.getProductId()))
 					.requestReferenceNo(engine.getRequestReferenceNo())
@@ -1225,7 +1238,8 @@ public class RatingFactorsUtil {
 			condtions.add("coverId:"+ coverId);
 			condtions.add("subCoverId:"+subCoverId);
 			condtions.add(todayInString+"~effectiveDateStart&effectiveDateEnd");
-		 
+			if(rateInfos.size()>0)
+				condtions.add("factorTypeId:"+rateInfos.get(0).getFactortypeId());
 					
 			
 			for (RatingInfo r : rateInfos) {
