@@ -17,12 +17,18 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.maan.eway.auth.dto.ClaimLoginResponse;
+import com.maan.eway.auth.dto.CommonLoginRes;
+import com.maan.eway.auth.dto.LoginRequest;
+import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentVendorMaster;
 import com.maan.eway.common.req.PaymentDetailsSaveReq;
+import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.common.service.PaymentService;
+import com.maan.eway.common.service.impl.TiraIntegerationServiceImpl;
 import com.maan.eway.payment.service.SelcomPaymentService;
 import com.maan.eway.payment.util.ApigwClient;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
@@ -51,6 +57,12 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 	private Logger log = LogManager.getLogger(SelcomPaymentImpl.class);
 
 	private JsonArray payments;
+	
+	@Autowired
+	private AuthendicationService authservice;
+	@Autowired
+	private  TiraIntegerationServiceImpl tiraService;
+	
 	@Override
 	public JsonObject createOrderForPayment(String merchantRefernceNo) {
 		try {
@@ -199,7 +211,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		try {
 			List<PaymentDetail> payments = paymentDetailRepo.findByQuoteNo(orderId);
 
-			if(payments!=null  && !payments.isEmpty()) {
+			if(payments!=null  && !payments.isEmpty() ) {
 				List<PaymentVendorMaster> paymentId= paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdOrderByAmendIdDesc(payments.get(0).getCompanyId(),"Y","1");
 				PaymentVendorMaster vendor = paymentId.get(0);		
 				JsonObject response =null;
@@ -223,7 +235,8 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					//get order status
 					JsonObject	responses= client.getFunc(checkstatusLink ,orderStatusDict);
 					System.out.println("PAY ::"+payment.getMerchantReference()+" "+responses );
-					if("SUCCESS".equalsIgnoreCase(responses.get("result").getAsString())) {
+					  
+					if("SUCCESS".equalsIgnoreCase(responses.get("result").getAsString()) ) {
 						JsonArray array = responses.get("data").getAsJsonArray();
 						response = array.get(0).getAsJsonObject();
 
@@ -256,6 +269,16 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 								paymentinforepo.save(paymentInfo);
 
 								if("COMPLETED".equals(response.get("payment_status").getAsString())) {
+									LoginRequest mslogin=new LoginRequest();
+									mslogin.setLoginId("guest");
+									mslogin.setPassword("Admin@01");
+									mslogin.setReLoginKey("Y");
+									CommonLoginRes checkUserLogin = authservice.checkUserLogin(mslogin,null);
+									Map<String,Object> commonResponse =(Map<String,Object>) checkUserLogin.getCommonResponse();
+									String tokeen = commonResponse.get("Token").toString();
+									TiraFrameReqCall tira=new TiraFrameReqCall();
+									tira.setQuoteNo(orderId);
+									tiraService.callTiraIntegeration(tira, tokeen);
 									PaymentDetailsSaveReq req=new PaymentDetailsSaveReq();
 									req.setQuoteNo(payment.getQuoteNo());
 									req.setCreatedBy(payment.getUpdatedBy());

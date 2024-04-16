@@ -214,8 +214,8 @@ public class PolicyCoverCalculator implements Consumer<Cover> {
 				 // Minimium Premium setup.
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0 && !"Y".equals(t.getIsReferral())) {
 					 
-					 t.setPremiumExcluedTax(new BigDecimal(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate(),MathContext.DECIMAL64)))); 
-					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
+				//	 t.setPremiumExcluedTax(new BigDecimal(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate(),MathContext.DECIMAL64)))); 
+				//	 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
 					 t.setMinimumPremiumYn("Y");
 				 }
 				 

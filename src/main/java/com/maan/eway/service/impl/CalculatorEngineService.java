@@ -3585,7 +3585,24 @@ public class CalculatorEngineService implements CalculatorEngine {
 			Comparator<Cover> comp = Comparator.comparing(Cover::getCoverageType);
 			retc.sort(comp);
 		}
-		 
+		//if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
+		BigDecimal totalPremium=retc.stream().filter(x -> (!"N".equals(x.getIsselected()) && !"945".equals(x.getCoverId()) )).map(x -> x.getPremiumExcluedTaxLC()).reduce(BigDecimal.ZERO,BigDecimal::add);
+		if(totalPremium.compareTo(minimumPremium)<0) {
+			List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+					.collect(Collectors.toList());
+			BigDecimal difference=minimumPremium.subtract(totalPremium,MathContext.DECIMAL32);
+			CreateMinimumPremium min=new CreateMinimumPremium(difference, engine, BigDecimal.ZERO, taxey);
+			Cover mini = min.create();
+			List<Cover> minies=new ArrayList<Cover>(1);
+			minies.add(mini);
+			PolicyCoverCalculator calc=new PolicyCoverCalculator(policytbl,ratingutil,engine,decimalFormat,customers,false);
+			//calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
+			minies.stream().forEach(calc);
+			retc.add(mini);
+			
+		}else {
+			retc.removeIf(t -> "945".equals(t.getCoverId()));//.stream().filter(t-> "945".equals(t.getCoverId()).de
+		}
 		
 		 
 		
@@ -3680,6 +3697,16 @@ public class CalculatorEngineService implements CalculatorEngine {
 			search = "cdRefno:" + cdRefno + ";";
 			criteria = crservice.createCriteria(MsCustomerDetails.class, search, "cdRefno");
 			customers = crservice.getResult(criteria, 0, 50);
+			
+			String todayInString = DD_MM_YYYY.format(new Date());
+			
+			search="companyId:"+engine.getInsuranceId()+";status:Y;"+ todayInString+ "~effectiveDateStart&effectiveDateEnd;productId:"+engine.getProductId()+";";
+			criteria = crservice.createCriteria(CompanyProductMaster.class, search, "productId");
+			List<Tuple> result = crservice.getResult(criteria, 0, 50);
+			if(result!=null && result.size()>0) {
+				minimumPremium=result.get(0).get("minimumPremium")==null?BigDecimal.ZERO:new BigDecimal(result.get(0).get("minimumPremium").toString());
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
