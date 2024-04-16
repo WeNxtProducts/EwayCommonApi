@@ -3208,8 +3208,29 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					 if ( StringUtils.isNotBlank(req.getCompanyId()) && req.getCompanyId().length() > 20) {
 							errorList.add("1079");
 						}
-					
-					
+					if(StringUtils.isBlank(req.getCustomerReferenceNo()) && StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getCreatedBy())){	
+						if( StringUtils.isNotBlank(req.getMobileCode1()) && StringUtils.isNotBlank(req.getMobileNo1())) {
+							if(isMoblieNumberDublicate(req.getCompanyId(),req.getCreatedBy(),req.getMobileCode1(),req.getMobileNo1())) {
+								errorList.add("2224");
+							}
+					    }
+						if(StringUtils.isNotBlank(req.getIdType()) && StringUtils.isNotBlank(req.getIdNumber())) {
+							if(isUniqueIdDublicate(req.getCompanyId(),req.getCreatedBy(),req.getIdType(),req.getIdNumber())) {
+								errorList.add("2212");
+							}
+						}
+					}else if(StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getCreatedBy())) {
+						if(isMoblieNumberNotSame(req.getCustomerReferenceNo(),req.getMobileNo1())){
+							if(isMoblieNumberDublicate(req.getCompanyId(),req.getCreatedBy(),req.getMobileCode1(),req.getMobileNo1())) {
+								errorList.add("2224");
+							}
+						}
+						if(isIdNumberNotSame(req.getCustomerReferenceNo(),req.getIdNumber(),req.getIdType())) {
+							if(isUniqueIdDublicate(req.getCompanyId(),req.getCreatedBy(),req.getIdType(),req.getIdNumber())) {
+								errorList.add("2212");
+							}
+						}
+					}
 
 		} else if (null != req.getSaveOrSubmit() && !req.getSaveOrSubmit().isEmpty()
 				&& "Save".equalsIgnoreCase(req.getSaveOrSubmit())) {
@@ -3603,5 +3624,34 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				return res;
 			}
 			return res;
+		}
+		
+		private boolean isMoblieNumberDublicate(String companyId, String createdBy, String mobileCode1, String mobileNo1) {
+			int count = repository.countByCompanyIdAndCreatedByAndMobileCode1AndMobileNo1(companyId,createdBy,mobileCode1,mobileNo1);
+			if(count > 0) {
+				return true;
+			}
+			return false;
+		}
+		private boolean isUniqueIdDublicate(String companyId, String createdBy, String idType, String idNumber) {
+			int count = repository.countByCompanyIdAndCreatedByAndIdTypeAndIdNumber(companyId,createdBy,idType,idNumber);
+			if(count > 0) {
+				return true;
+			}
+			return false;
+		}
+		private boolean isMoblieNumberNotSame(String referanceNumber, String mobileNumber) {
+			EserviceCustomerDetails list = repository.findByCustomerReferenceNo(referanceNumber);
+			if(list.getMobileNo1().equalsIgnoreCase(mobileNumber)) {
+				return false;
+			}
+			return true;
+		}
+		private boolean isIdNumberNotSame(String referanceNumber, String IdNumber, String idType) {
+			EserviceCustomerDetails list = repository.findByCustomerReferenceNo(referanceNumber);
+			if(list.getIdNumber().equalsIgnoreCase(IdNumber) && list.getIdType().equalsIgnoreCase(idType)) {
+				return false;
+			}
+			return true;
 		}
 	}
