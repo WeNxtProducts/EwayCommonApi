@@ -3215,7 +3215,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 							}
 					    }
 						if(StringUtils.isNotBlank(req.getIdType()) && StringUtils.isNotBlank(req.getIdNumber())) {
-							if(isUniqueIdDublicate(req.getCompanyId(),req.getCreatedBy(),req.getIdType(),req.getIdNumber())) {
+							if(isUniqueIdDublicate(req.getCompanyId(),req.getCreatedBy(),req.getPolicyHolderTypeid(),req.getIdNumber())) {
 								errorList.add("2212");
 							}
 						}
@@ -3226,7 +3226,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 							}
 						}
 						if(isIdNumberNotSame(req.getCustomerReferenceNo(),req.getIdNumber(),req.getIdType())) {
-							if(isUniqueIdDublicate(req.getCompanyId(),req.getCreatedBy(),req.getIdType(),req.getIdNumber())) {
+							if(isUniqueIdDublicate(req.getCompanyId(),req.getCreatedBy(),req.getPolicyHolderTypeid(),req.getIdNumber())) {
 								errorList.add("2212");
 							}
 						}
