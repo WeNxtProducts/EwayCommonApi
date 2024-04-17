@@ -1687,8 +1687,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(request.getVehicleId()!= null && request.getVehicleId().equals(99999) ) {
 				
 				List<FactorRateRequestDetails> fleetCovers = covers.stream().filter( o -> o.getVehicleId().equals(99999)  && o.getSectionId().equals(99999)).collect(Collectors.toList());
-				Integer coverId = fleetCovers.size() > 0 ? fleetCovers.get(0).getCoverId() : 99999 ;   
-				Integer subCoverId = fleetCovers.size() > 0 ? fleetCovers.get(0).getSubCoverId() : 0;
+				
+				for (FactorRateRequestDetails f:fleetCovers) {
+				Integer coverId = f.getCoverId()!=null ? f.getCoverId() : 99999 ;   
+				Integer subCoverId = f.getSubCoverId()!=null ? f.getSubCoverId() : 0;
 				
 				CoverIdsReq coverReq = new CoverIdsReq();
 				coverReq.setCoverId(coverId);
@@ -1696,6 +1698,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				coverReq.setSubCoverId(subCoverId.toString() );
 				
 				coverReqList.add(coverReq);
+				}
 				
 			} else if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
@@ -3055,10 +3058,22 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}
 			
 			Integer endtCount = home.getEndtCount() ;
-			Double premiumFc = premiumCovers.stream().filter( o ->    o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();					
-			Double overAllPremiumFc = premiumCovers.stream().filter( o ->  o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
-			Double premiumLc = premiumCovers.stream().filter( o ->  o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()   ).sum();					
-			Double overAllPremiumLc = premiumCovers.stream().filter( o ->  o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
+			Double premiumFc = premiumCovers.stream().filter( o ->  
+					( (o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && !o.getSectionId().equals(99999)) ||
+					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) )) )
+					.mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();	
+			
+			Double overAllPremiumFc = premiumCovers.stream().filter( o ->  ( (o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && !o.getSectionId().equals(99999)) ||
+					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) )) ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
+			
+			Double premiumLc = premiumCovers.stream().filter( o ->  ( (o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D && !o.getSectionId().equals(99999)) ||
+					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) )) )
+					.mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()   ).sum();
+			
+			Double overAllPremiumLc = premiumCovers.stream().filter( o ->  ( (o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D && !o.getSectionId().equals(99999)) ||
+					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) )) )
+					.mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
+			
 			List<PolicyCoverData>  covers2 = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(request.getQuoteNo() ,"D");
 			List<PolicyCoverData>  taxCovers =  covers2.stream().filter( o ->  o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).collect(Collectors.toList());
 		//	Double taxPremium = taxCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
@@ -3099,9 +3114,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 			System.out.println("Home Position OverAllPremiumFc --> "  + overAllPremiumFc );
 			System.out.println("Home Position PremiumLc --> "  + premiumLc );
 			System.out.println("Home Position OverAllPremiumLc --> "  + overAllPremiumLc );
-			Double tax1 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(1) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
-			Double tax2 = premiumCovers.stream().filter( o ->  o.getDiscLoadId().equals(0) && o.getTaxId().equals(2) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
-			Double tax3 = premiumCovers.stream().filter( o ->  o.getDiscLoadId().equals(0) && o.getTaxId().equals(3) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
+			
+			Double tax1 =  premiumCovers.stream().filter( o -> ((o.getDiscLoadId().equals(0) && o.getTaxId().equals(1) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && !o.getSectionId().equals(99999) )
+					|| (o.getDiscLoadId().equals(0) && o.getTaxId().equals(1) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) ) ) )
+					.mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
+			
+			Double tax2 = premiumCovers.stream().filter( o ->  ((o.getDiscLoadId().equals(0) && o.getTaxId().equals(2) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && !o.getSectionId().equals(99999) )
+					|| (o.getDiscLoadId().equals(0) && o.getTaxId().equals(2) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) ) ) ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
+			
+			Double tax3 = premiumCovers.stream().filter( o ->  (o.getDiscLoadId().equals(0) && o.getTaxId().equals(3) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && !o.getSectionId().equals(99999) )
+					|| (o.getDiscLoadId().equals(0) && o.getTaxId().equals(3) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) ) ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
 			
 			// No OF Vehicles
 			String decimalDigits = currencyDecimalFormat(home.getCompanyId() , home.getCurrency() ).toString();
