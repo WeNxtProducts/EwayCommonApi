@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PolicyCoverData;
@@ -98,19 +99,16 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 				
 				int index =1;
 				
-				String minusSign ="";
 				
 				for(ChartParentMaster c : cpm) {
 					
 					List<ChartAccountChildMaster> charAccount =jpqlQuery.getChildChartAccountData(companyId,productId,sectionIds,c);
 					
-					Double premiumLc =null;
 					BigDecimal premiumFc =null;
 					String documentType ="";
 					String docId ="";
 					String  documentNo ="";
 					BigDecimal premiumFcWithT=null;
-					BigDecimal premiumLcWithT=null;
 					String drcrFlag ="";
 					String narration="";
 					Boolean bokerCommiCheck=false;
@@ -318,7 +316,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 							 	
 					}
 					
-					if(bokerCommiCheck) {
+					if(bokerCommiCheck && !"OTHERS".equalsIgnoreCase(c.getAccountType())) {
 					
 						HashMap<String,Object> saveReq =new HashMap<>();
 						saveReq.put("PolicyNo", StringUtils.isBlank(req.getPolicyNo())?hpm.getPolicyNo():req.getPolicyNo());
@@ -346,6 +344,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 				}
 				
 				List<PolicyDrcrDetail> drcrList =saveDRCR(list);
+				System.out.println(new Gson().toJson(list));
 				response.setCommonResponse(drcrList);
 				response.setMessage("Success");
 			}else if("Y".equals(req.getDiscountYn())) {
