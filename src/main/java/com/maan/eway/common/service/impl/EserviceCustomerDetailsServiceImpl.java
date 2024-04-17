@@ -1777,8 +1777,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			Pageable paging = PageRequest.of(limit, offset, Sort.by("updatedDate").descending());
-
+			
 			LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
+			
+			LoginMaster Brokerlogin = loginRepo.findByAgencyCodeAndCompanyId(loginData.getOaCode().toString(),req.getComapanyId());
 			List<EserviceCustomerDetails> custList = new ArrayList<EserviceCustomerDetails>(); 
 			// Get Datas
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1813,15 +1815,20 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
 					loginId.select(ocpm1.get("loginId"));
 					Predicate a1 = cb.equal(ocpm1.get("agencyCode"), loginData.getOaCode());
-					loginId.where(a1);
+					Predicate a2 = cb.equal(ocpm1.get("companyId"),req.getComapanyId());
+
+					loginId.where(a1,a2);
 					n5 = cb.equal(c.get("createdBy"), loginId);
-				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())) {
+				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())&& !"Direct".equalsIgnoreCase(Brokerlogin.getSubUserType())) {
 					Subquery<Long> loginId = query.subquery(Long.class);
 					Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
 					loginId.select(ocpm1.get("loginId"));
 					Predicate a1 = cb.equal(ocpm1.get("agencyCode"), loginData.getOaCode());
-					loginId.where(a1);
+					Predicate a2 = cb.equal(ocpm1.get("companyId"),req.getComapanyId());
+					loginId.where(a1,a2);
 					n5 = cb.equal(c.get("createdBy"), loginId);
+				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())&& "Direct".equalsIgnoreCase(Brokerlogin.getSubUserType())) {
+					n5 = cb.equal(c.get("createdBy"), req.getCreatedBy());
 				}
 			//	n5 = cb.equal(  h.get("loginId"), req.getCreatedBy());
 			} else {
@@ -1842,11 +1849,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			
 			List<EserviceCustomerDetails> totalCustList = new ArrayList<EserviceCustomerDetails>();
 			Page<EserviceCustomerDetails> datas = null ;
-			if (loginData.getUserType().equalsIgnoreCase("Broker")|| loginData.getUserType().equalsIgnoreCase("User")) {
+			if (loginData.getUserType().equalsIgnoreCase("Broker")|| (loginData.getUserType().equalsIgnoreCase("User")&& !"Direct".equalsIgnoreCase(Brokerlogin.getSubUserType()))) {
 //				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedBy(paging,
 //						req.getComapanyId(), req.getBrokerBranchCode(),
 //						req.getCreatedBy());
-				List<LoginMaster> loginlist = loginRepo.findByOaCode(loginData.getOaCode());
+				List<LoginMaster> loginlist = loginRepo.findByOaCodeAndCompanyId(loginData.getOaCode(),req.getComapanyId());
 				List<String> loginIds=loginlist.stream().map(LoginMaster :: getLoginId ).collect(Collectors.toList())  ;
 				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedByIn(paging,
 						req.getComapanyId(), req.getBrokerBranchCode(),loginIds);
@@ -1981,6 +1988,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Pageable paging = PageRequest.of(limit, offset, Sort.by("updatedDate").descending());
 
 			LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
+//			LoginMaster Brokerlogin = loginRepo.findByAgencyCode(loginData.getOaCode().toString());
+			LoginMaster Brokerlogin = loginRepo.findByAgencyCodeAndCompanyId(loginData.getOaCode().toString(),req.getComapanyId());
 			List<EserviceCustomerDetails> custList = new ArrayList<EserviceCustomerDetails>(); 
 			// Get Datas
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2016,15 +2025,19 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
 					loginId.select(ocpm1.get("loginId"));
 					Predicate a1 = cb.equal(ocpm1.get("agencyCode"), loginData.getOaCode());
-					loginId.where(a1);
+					Predicate a2 = cb.equal(ocpm1.get("companyId"), req.getComapanyId());
+					loginId.where(a1,a2);
 					n5 = cb.equal(c.get("createdBy"), loginId);
-				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())) {
+				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())&& !"Direct".equalsIgnoreCase(Brokerlogin.getSubUserType())) {
 					Subquery<Long> loginId = query.subquery(Long.class);
 					Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
 					loginId.select(ocpm1.get("loginId"));
 					Predicate a1 = cb.equal(ocpm1.get("agencyCode"), loginData.getOaCode());
-					loginId.where(a1);
+					Predicate a2 = cb.equal(ocpm1.get("companyId"), req.getComapanyId());
+					loginId.where(a1,a2);
 					n5 = cb.equal(c.get("createdBy"), loginId);
+				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())&& "Direct".equalsIgnoreCase(Brokerlogin.getSubUserType())) {
+					n5 = cb.equal(c.get("createdBy"), req.getCreatedBy());
 				}
 			//	n5 = cb.equal(  h.get("loginId"), req.getCreatedBy());
 			} else {
@@ -2042,8 +2055,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			custList = result.getResultList();
 			
 			Page<EserviceCustomerDetails> datas = null;
-			if (loginData.getUserType().equalsIgnoreCase("Broker")|| loginData.getUserType().equalsIgnoreCase("User")) {
-				List<LoginMaster> loginlist = loginRepo.findByOaCode(loginData.getOaCode());
+
+			if (loginData.getUserType().equalsIgnoreCase("Broker")|| (loginData.getUserType().equalsIgnoreCase("User")&& !"Direct".equalsIgnoreCase(Brokerlogin.getSubUserType()))) {
+//				List<LoginMaster> loginlist = loginRepo.findByOaCode(loginData.getOaCode());
+				List<LoginMaster> loginlist = loginRepo.findByOaCodeAndCompanyId(loginData.getOaCode(),req.getComapanyId());
 				List<String> loginIds=loginlist.stream().map(LoginMaster :: getLoginId ).collect(Collectors.toList())  ;
 				datas = repository.findByCompanyIdAndBrokerBranchCodeAndStatusAndCreatedByIn(paging,req.getComapanyId(), req.getBrokerBranchCode(),"Y",loginIds);
 			} else {

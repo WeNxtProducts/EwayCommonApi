@@ -3406,7 +3406,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);   //
 				Predicate n11 = cb.notEqual(m.get("endtTypeId"),"842");   //policy calcellation
 				Predicate n12 = cb.isNull(m.get("endtTypeId"));     
-				Predicate n13 = cb.or(n11,n12);
+				Predicate n13 = cb.or(n11,n12);     
 				
 				Predicate n5 = null;
 				Predicate n14 = null;
