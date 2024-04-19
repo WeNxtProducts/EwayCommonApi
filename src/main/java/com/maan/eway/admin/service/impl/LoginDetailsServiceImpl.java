@@ -1587,9 +1587,9 @@ this.repository = repo;
 				 menusret.removeIf( o -> o.getId().equalsIgnoreCase("407"));  
 				 }
 				 else {
-					    // For other companies, remove both menu items
-					    menusret.removeIf(o -> o.getId().equalsIgnoreCase("406") || o.getId().equalsIgnoreCase("407"));
-					}
+					 menusret.removeIf(o -> o.getId().equalsIgnoreCase("406") || o.getId().equalsIgnoreCase("407"));
+				 }
+				
 				 
 			return menusret;
 		}catch(Exception e) {
