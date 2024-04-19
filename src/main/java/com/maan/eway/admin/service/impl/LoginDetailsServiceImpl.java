@@ -123,6 +123,7 @@ import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.RegionMasterRepository;
@@ -1585,6 +1586,10 @@ this.repository = repo;
 				 {
 				 menusret.removeIf( o -> o.getId().equalsIgnoreCase("407"));  
 				 }
+				 else {
+					    // For other companies, remove both menu items
+					    menusret.removeIf(o -> o.getId().equalsIgnoreCase("406") || o.getId().equalsIgnoreCase("407"));
+					}
 				 
 			return menusret;
 		}catch(Exception e) {
