@@ -202,7 +202,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="bankaccountName"/>
 		<fieldDescription><![CDATA[bankaccountName]]></fieldDescription>
 	</field>
-	<field name="bankaccountNumber" class="java.lang.Long">
+	<field name="bankaccountNumber" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="bankaccountNumber"/>
 		<fieldDescription><![CDATA[bankaccountNumber]]></fieldDescription>
 	</field>
@@ -232,6 +232,7 @@
 	<field name="premAndVatName" class="java.lang.String">
 		<fieldDescription><![CDATA[premAndVatName]]></fieldDescription>
 	</field>
+	<field name="bankaccountUSD" class="java.lang.String"/>
 	<background>
 		<band height="685" splitType="Stretch">
 			<textField>
@@ -1159,7 +1160,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				</textElement>
 				<textFieldExpression><![CDATA["Swift Code :"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="115" y="33" width="425" height="15" uuid="d82fccbc-a7c1-4aeb-8992-628dfe986dbf"/>
 				<box leftPadding="2">
 					<rightPen lineWidth="0.5"/>
@@ -1169,7 +1170,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{bankaccountName}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="115" y="48" width="425" height="15" uuid="bc6657a3-a293-4be9-b91b-13bd161c68c6"/>
 				<box leftPadding="2">
 					<rightPen lineWidth="0.5"/>
@@ -1179,7 +1180,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{bankaddress}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="115" y="63" width="85" height="15" uuid="94a970c0-c631-4fb3-b19d-5ea51c802ccf"/>
 				<box leftPadding="2">
 					<rightPen lineWidth="0.0"/>
@@ -1201,7 +1202,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				</textElement>
 				<textFieldExpression><![CDATA["and USD Account No :"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="290" y="63" width="250" height="15" uuid="6b8ac791-24b7-492d-a2fb-898c85098260"/>
 				<box leftPadding="2">
 					<rightPen lineWidth="0.5"/>
@@ -1209,9 +1210,9 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{bankaccountUSD}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="115" y="78" width="425" height="15" uuid="0dc18ae2-72d2-49b4-a121-9da555964c1d"/>
 				<box leftPadding="2">
 					<rightPen lineWidth="0.5"/>

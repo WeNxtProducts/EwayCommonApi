@@ -108,6 +108,9 @@ public class TaxInvoiceRes {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	@JsonProperty("BankaccountUSD")
+	private String bankaccountUSD;
+	
 	@JsonProperty("BranchName")
 	private String branchName;
 	

@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.ClausesMaster;
@@ -46,11 +47,13 @@ import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
+import com.maan.eway.bean.MotorMakeMaster;
 import com.maan.eway.bean.MotorMakeModelMaster;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
@@ -157,15 +160,29 @@ public class JasperCustomServiceImple {
 		Root<LoginUserInfo> SubluiRoot = insureName.from(LoginUserInfo.class);
 		insureName.select(cb.upper(SubluiRoot.get("userName"))).where(cb.equal(SubluiRoot.get("loginId"), hpmRoot.get("loginId")));
 		
+		// MAKE MASTER TYPE
+		Subquery<Integer> makeTypeAmd = cq.subquery(Integer.class);
+		Root<MotorMakeMaster> makeAmd = makeTypeAmd.from(MotorMakeMaster.class);
+		makeTypeAmd.select(cb.max(makeAmd.get("amendId"))).where(cb.equal(makeAmd.get("makeId"), mddRoot.get("vehicleMake")),
+				cb.equal(makeAmd.get("status"), "Y"),cb.equal(makeAmd.get("companyId"), hpmRoot.get("companyId")));
+		
+		Subquery<String> makeType = cq.subquery(String.class);
+		Root<MotorMakeMaster> makeRoot = makeType.from(MotorMakeMaster.class);
+		makeType.select(makeRoot.get("makeNameEn")).where(cb.equal(makeRoot.get("makeId"), mddRoot.get("vehicleMake")),
+				cb.equal(makeRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(makeRoot.get("status"), "Y"),
+				cb.equal(makeRoot.get("amendId"), makeTypeAmd));
+		
+		// MODEL MASTER TYPE
 		Subquery<Integer> modelTypeAmd = cq.subquery(Integer.class);
 		Root<MotorMakeModelMaster> SubmmAmd = modelTypeAmd.from(MotorMakeModelMaster.class);
-		modelTypeAmd.select(cb.max(SubmmAmd.get("amendId"))).where(cb.equal(SubmmAmd.get("vehiclemodelcode"), mddRoot.get("modelNumber")),
+		modelTypeAmd.select(cb.max(SubmmAmd.get("amendId"))).where(cb.equal(SubmmAmd.get("vehiclemodelcode"), mddRoot.get("vehcileModel")),
 				cb.equal(SubmmAmd.get("status"), "Y"),cb.equal(SubmmAmd.get("companyId"), hpmRoot.get("companyId")));
 		
 		Subquery<String> modelType = cq.subquery(String.class);
 		Root<MotorMakeModelMaster> Submm = modelType.from(MotorMakeModelMaster.class);
-		modelType.select(Submm.get("modelNameEn")).where(cb.equal(Submm.get("vehiclemodelcode"), mddRoot.get("modelNumber")),
+		modelType.select(Submm.get("modelNameEn")).where(cb.equal(Submm.get("vehiclemodelcode"), mddRoot.get("vehcileModel")),
 				cb.equal(Submm.get("companyId"), hpmRoot.get("companyId")),cb.equal(Submm.get("status"), "Y"),cb.equal(Submm.get("amendId"), modelTypeAmd));
+		
 		
 		Subquery<Integer> icmAmd = cq.subquery(Integer.class);
 		Root<InsuranceCompanyMaster> SubicmAmd = icmAmd.from(InsuranceCompanyMaster.class);
@@ -186,7 +203,8 @@ public class JasperCustomServiceImple {
 						.otherwise(modelType).alias("modelType"),
 				mddRoot.get("colorDesc").alias("colorDesc"),
 				mddRoot.get("cubicCapacity").alias("cubicCapacity"),
-				mddRoot.get("vehicleMakeDesc").alias("vehicleMakeDesc"),
+				//mddRoot.get("vehicleMakeDesc").alias("vehicleMakeDesc"),
+				makeType.alias("vehicleMakeDesc"),
 				mddRoot.get("chassisNumber").alias("chassisNumber"),
 				mddRoot.get("seatingCapacity").alias("seatingCapacity"),
 				mddRoot.get("engineNumber").alias("engineNumber"),
@@ -367,15 +385,38 @@ public class JasperCustomServiceImple {
 				dataset1Res.add(p);
 			});
 			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
-			List<Map<String,Object>> bankDetailsList = listItemValueRepo.getBankDetailsByCompanyId(companyId);
-			List<Map<String,Object>> bankDetails = new ArrayList<>();
+			String branchCode = map.get("branchCode")==null?"":map.get("branchCode").toString();
+			CriteriaQuery<Tuple> bankdetails = cb.createQuery(Tuple.class);
+			Root<ListItemValue> lRoot = bankdetails.from(ListItemValue.class);
+			Subquery<Integer> bankAmd = bankdetails.subquery(Integer.class);
+			Root<ListItemValue> bankAmdRoot = bankAmd.from(ListItemValue.class);
+			Predicate ba1 = cb.equal(bankAmdRoot.get("itemType"), lRoot.get("itemType"));
+			Predicate ba2 = cb.equal(bankAmdRoot.get("companyId"), lRoot.get("companyId"));
+			Predicate ba3 = cb.equal(bankAmdRoot.get("branchCode"), lRoot.get("branchCode"));
+			Predicate ba4 = cb.equal(bankAmdRoot.get("status"), lRoot.get("status"));
+			bankAmd.select(cb.max(bankAmdRoot.get("amendId"))).where(ba1,ba2,ba3,ba4);
+			
+			Predicate b1 = cb.equal(lRoot.get("itemType"), "BANK_DETAILS");
+			Predicate b2 = cb.equal(lRoot.get("companyId"), companyId);
+			Predicate b3 = cb.equal(lRoot.get("status"), "Y");
+			Predicate b4 = cb.equal(lRoot.get("amendId"), bankAmd);
+			bankdetails.multiselect(lRoot.get("itemCode").alias("itemCode"),lRoot.get("itemValue").alias("itemValue"));
+			if("100019".equalsIgnoreCase(companyId)) {
+				Predicate b5 = cb.equal(lRoot.get("branchCode"), branchCode);
+				bankdetails.where(b1,b2,b3,b4,b5);
+			}else {
+				bankdetails.where(b1,b2,b3,b4);
+			}
+			List<Tuple> bankDetailsList = em.createQuery(bankdetails).getResultList();
+			
+			List<Map<String,Object>> bankList = new ArrayList<>();
 			bankDetailsList.forEach(b -> {
 				Map<String,Object> Bmap = new HashMap<>();
-				Bmap.put(b.get("item_code").toString(),b.get("item_value"));
-				bankDetails.add(Bmap);
+				Bmap.put(b.get("itemCode").toString(),b.get("itemValue"));
+				bankList.add(Bmap);
 			});
 			
-			for(Map<String,Object>entry : bankDetails) {
+			for(Map<String,Object>entry : bankList) {
 				if(entry.containsKey("ACCOUNT_NUMBER"))
 					response.setBankaccountNumber(entry.get("ACCOUNT_NUMBER")==null?"":entry.get("ACCOUNT_NUMBER").toString());
 				else if(entry.containsKey("ACCOUNT_NAME"))
@@ -384,6 +425,8 @@ public class JasperCustomServiceImple {
 					response.setBankaddress(entry.get("ADDRESS")==null?"":entry.get("ADDRESS").toString());
 				else if(entry.containsKey("SWIFT CODE"))
 					response.setBankswiftCode(entry.get("SWIFT CODE")==null?"":entry.get("SWIFT CODE").toString());
+				else if(entry.containsKey("ACCOUNT_NUMBER_USD"))
+					response.setBankaccountUSD(entry.get("ACCOUNT_NUMBER_USD")==null?"":entry.get("ACCOUNT_NUMBER_USD").toString());
 			}
 			
 			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
@@ -743,6 +786,7 @@ public class JasperCustomServiceImple {
 					.windScreenSumInsuredLc(k.getWindScreenSumInsured()==null?null:new BigDecimal(Double.parseDouble(k.getWindScreenSumInsured().toString())).toString())
 					.sumInsured(k.getSumInsured()==null?"":new BigDecimal(Double.parseDouble(k.getSumInsured().toString())).toString())
 					.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
+					//.stickerNumber(k.getStickerNo()==null?"":k.getStickerNo())
 					.grossWeight(k.getGrossWeight()==null?null:k.getGrossWeight().toString())
 					.insTypeDesc(k.getInsuranceTypeDesc()==null?"":k.getInsuranceTypeDesc())
 					.engineNumber(k.getEngineNumber()==null?"":k.getEngineNumber())
@@ -758,18 +802,32 @@ public class JasperCustomServiceImple {
 					.build();
 				vehicleDetailsRes.add(t);
 			});
+			String chassisNumber = vehicleDetails.get(0).getChassisNumber()==null?"":vehicleDetails.get(0).getChassisNumber().toString();
 			List<MotorDriverDetails> driverDetails = motordriverRepo.findByQuoteNo(map.get("quoteNo").toString());
-			driverDetails.forEach(d -> {
-					MotorPrivateDriverDetails y = MotorPrivateDriverDetails.builder()
-							.driverId(d.getDriverId()==null?"":d.getDriverId().toString())
-							.driverName(d.getDriverName()==null?"":d.getDriverName().toString())
-							.driverTypeDesc(d.getDriverTypedesc()==null?"":d.getDriverTypedesc().toString())
-							.driverDOB(d.getDriverDob()==null?"":LocalDateTime.parse(d.getDriverDob().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-							.iDNumber(d.getIdNumber()==null?"":d.getIdNumber().toString())
-							.chassisNumber(vehicleDetails.get(0).getChassisNumber()==null?"":vehicleDetails.get(0).getChassisNumber().toString())
-							.build();
-						driverDetailsRes.add(y);
-			});
+			List<MotorPrivateDriverDetails> driverDtls = new ArrayList<>();
+			driverDtls = driverDetails.stream()
+					.map(g -> MotorPrivateDriverDetails.builder()
+								.driverId(g.getDriverId()==null?"":g.getDriverId().toString())
+								.driverName(g.getDriverName()==null?"":g.getDriverName().toString())
+								.driverTypeDesc(g.getDriverTypedesc()==null?"":g.getDriverTypedesc().toString())
+								.driverDOB(g.getDriverDob()==null?"":LocalDateTime.parse(g.getDriverDob().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+								.iDNumber(g.getIdNumber()==null?"":g.getIdNumber().toString())
+								.chassisNumber(chassisNumber)
+								.build())
+					.collect(Collectors.toList());
+			for(MotorPrivateDriverDetails driverDtl : driverDtls) {
+				boolean existingDrivers = driverDetailsRes.stream()
+						.anyMatch(a -> 
+								a.getDriverId().equals(driverDtl.getDriverId()) &&
+								a.getDriverName().equals(driverDtl.getDriverName()) &&
+								a.getDriverTypeDesc().equals(driverDtl.getDriverTypeDesc()) &&
+								a.getDriverDOB().equals(driverDtl.getDriverDOB()) &&
+								a.getIDNumber().equals(driverDtl.getIDNumber()));
+				if(!existingDrivers) {
+					driverDetailsRes.add(driverDtl);
+				}
+			}
+			log.info("DriverDetails ==> "+ new Gson().toJson(driverDetailsRes));
 			
 			List<ContentAndRisk> accessoriesDetails = conAndRiskRepo.findByQuoteNoOrderByRiskIdAsc(map.get("quoteNo").toString());
 			accessoriesDetails.forEach(a -> {
