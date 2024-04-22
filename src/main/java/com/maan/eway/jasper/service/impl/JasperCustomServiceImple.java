@@ -802,32 +802,31 @@ public class JasperCustomServiceImple {
 					.build();
 				vehicleDetailsRes.add(t);
 			});
-			String chassisNumber = vehicleDetails.get(0).getChassisNumber()==null?"":vehicleDetails.get(0).getChassisNumber().toString();
-			List<MotorDriverDetails> driverDetails = motordriverRepo.findByQuoteNo(map.get("quoteNo").toString());
-			List<MotorPrivateDriverDetails> driverDtls = new ArrayList<>();
-			driverDtls = driverDetails.stream()
-					.map(g -> MotorPrivateDriverDetails.builder()
-								.driverId(g.getDriverId()==null?"":g.getDriverId().toString())
-								.driverName(g.getDriverName()==null?"":g.getDriverName().toString())
-								.driverTypeDesc(g.getDriverTypedesc()==null?"":g.getDriverTypedesc().toString())
-								.driverDOB(g.getDriverDob()==null?"":LocalDateTime.parse(g.getDriverDob().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-								.iDNumber(g.getIdNumber()==null?"":g.getIdNumber().toString())
-								.chassisNumber(chassisNumber)
-								.build())
-					.collect(Collectors.toList());
-			for(MotorPrivateDriverDetails driverDtl : driverDtls) {
-				boolean existingDrivers = driverDetailsRes.stream()
-						.anyMatch(a -> 
-								a.getDriverId().equals(driverDtl.getDriverId()) &&
-								a.getDriverName().equals(driverDtl.getDriverName()) &&
-								a.getDriverTypeDesc().equals(driverDtl.getDriverTypeDesc()) &&
-								a.getDriverDOB().equals(driverDtl.getDriverDOB()) &&
-								a.getIDNumber().equals(driverDtl.getIDNumber()));
-				if(!existingDrivers) {
-					driverDetailsRes.add(driverDtl);
-				}
+			
+			CriteriaBuilder dbuilder = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> driverDtl = dbuilder.createQuery(Tuple.class);
+			Root<MotorDriverDetails> dRoot = driverDtl.from(MotorDriverDetails.class);
+			Root<MotorDataDetails> dmdRoot = driverDtl.from(MotorDataDetails.class);
+			
+			driverDtl.multiselect(dRoot.get("driverId").alias("driverId"),dRoot.get("driverName").alias("driverName"),
+					dRoot.get("driverTypedesc").alias("driverTypedesc"),dRoot.get("driverDob").alias("driverDob"),
+					dRoot.get("idNumber").alias("idNumber"),dmdRoot.get("chassisNumber").alias("chassisNumber"))
+			.where(cb.equal(dRoot.get("quoteNo"), map.get("quoteNo").toString()),cb.equal(dRoot.get("quoteNo"), dmdRoot.get("quoteNo")),
+					cb.equal(dmdRoot.get("vehicleId"), dRoot.get("riskId")),cb.equal(dmdRoot.get("companyId"), dRoot.get("companyId")),
+					cb.equal(dmdRoot.get("productId"), dRoot.get("productId")));
+			
+			List<Tuple> driverDetails = em.createQuery(driverDtl).getResultList();
+			if(!driverDetails.isEmpty()) {
+				driverDetails.forEach(k -> 
+				driverDetailsRes.add(MotorPrivateDriverDetails.builder()
+						.driverId(k.get("driverId")==null?"":k.get("driverId").toString())
+						.driverName(k.get("driverName")==null?"":k.get("driverName").toString())
+						.driverTypeDesc(k.get("driverTypedesc")==null?"":k.get("driverTypedesc").toString())
+						.driverDOB(k.get("driverDob")==null?"":sdf.format(k.get("driverDob")))
+						.iDNumber(k.get("idNumber")==null?"":k.get("idNumber").toString())
+						.chassisNumber(k.get("chassisNumber")==null?"":k.get("chassisNumber").toString())
+						.build()));
 			}
-			log.info("DriverDetails ==> "+ new Gson().toJson(driverDetailsRes));
 			
 			List<ContentAndRisk> accessoriesDetails = conAndRiskRepo.findByQuoteNoOrderByRiskIdAsc(map.get("quoteNo").toString());
 			accessoriesDetails.forEach(a -> {
