@@ -642,10 +642,10 @@ public class JasperServiceImpl implements JasperService {
             String branchCode =StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
 			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
 			//Pagination Count
-			List<Map<String,Object>> listcount =branchRepo.getPremiumReportDetailsCount(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
+//			List<Map<String,Object>> listcount =branchRepo.getPremiumReportDetailsCount(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
 			ReportRes res=new ReportRes();
 			
-			Integer count=listcount.size();
+			Integer count=list.size();
 			if(list.size()>0) {
 				List<Map<String,Object>> dataRes =list.parallelStream().map( p->{
 					LinkedHashMap<String,Object> map =new LinkedHashMap<String,Object>();
