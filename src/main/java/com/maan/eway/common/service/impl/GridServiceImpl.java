@@ -2285,14 +2285,27 @@ public class GridServiceImpl implements GridService {
 																														// policy
 			portfolioActiveList = response.getPortfolioList();
 			resp.setCount(response.getCount());
-
+            
 			for (PortfolioGridCriteriaRes data : portfolioActiveList) {
 				PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
 				res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
 				res.setClientName(data.getClientName());
+			    
 				custRes.add(res);
 			}
+			if(!custRes.isEmpty())
+			{
+				for(PortfolioCustomerDetailsRes data:custRes)
+				{
+				if(data.getStickerno()==null)
+				{
+					data.setStickerno(" ");
+				}
+				}
+			}
+			
 			resp.setCustRes(custRes);
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
