@@ -57,6 +57,7 @@ import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.req.PdfJsonReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
+import com.maan.eway.jasper.req.ReportRes;
 import com.maan.eway.jasper.res.AttachMentRes;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
@@ -640,10 +641,11 @@ public class JasperServiceImpl implements JasperService {
 //            Date date2 = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
             String branchCode =StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
 			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
-			//List<Map<String,Object>> listcount =branchRepo.getPremiumReportDetailsCount(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
-			//ReportRes res=new ReportRes();
+			//Pagination Count
+//			List<Map<String,Object>> listcount =branchRepo.getPremiumReportDetailsCount(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
+			ReportRes res=new ReportRes();
 			
-			//Integer count=listcount.size();
+			Integer count=list.size();
 			if(list.size()>0) {
 				List<Map<String,Object>> dataRes =list.parallelStream().map( p->{
 					LinkedHashMap<String,Object> map =new LinkedHashMap<String,Object>();
@@ -667,8 +669,10 @@ public class JasperServiceImpl implements JasperService {
 					map.put("CreditLimit", p.get("CREDIT_LIMIT")==null?"":p.get("CREDIT_LIMIT"));
 					return map;
 				}).collect(Collectors.toList());
-				
-				 response.setCommonResponse(dataRes);
+				//Count
+				 res.setTotalCount(count.toString());
+				 res.setReportList(dataRes);
+				 response.setCommonResponse(res);
 		         response.setIsError(false);
 		         response.setErrorMessage(Collections.emptyList());
 		         response.setMessage("Success");
