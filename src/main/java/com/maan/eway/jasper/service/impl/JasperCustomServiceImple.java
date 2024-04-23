@@ -1474,6 +1474,7 @@ public class JasperCustomServiceImple {
 					m.put("engineNumber", k.getEngineNumber()==null?"":k.getEngineNumber());
 					m.put("vehcileModelDesc", k.getVehcileModelDesc()==null?"":StringUtils.capitalize(k.getVehcileModelDesc()));
 					m.put("sumInsured", k.getSumInsured());
+					m.put("insuranceTypeDesc", k.getInsuranceTypeDesc()==null?"":k.getInsuranceTypeDesc());
 					return m;
 				}).collect(Collectors.toList());
 				
@@ -1501,6 +1502,7 @@ public class JasperCustomServiceImple {
 				result.put("vrTinNo", map.get("vrTinNo")==null?null:map.get("vrTinNo").toString());
 				result.put("expiryDate", map.get("expiryDate")==null?null:map.get("expiryDate").toString());
 				result.put("companyLogo", map.get("companyLogo")==null?"":map.get("companyLogo").toString());
+				result.put("insuranceTypeDesc", vehicleList.get(0).get("insuranceTypeDesc")==null?"":vehicleList.get(0).get("insuranceTypeDesc").toString());
 				result.put("vehicleList", vehicleList);
 			}
 				
