@@ -122,4 +122,10 @@ public class CommonPersonalInforReq {
     @JsonProperty("CustomerName")
     private String    customerName ;
     
+    @JsonProperty("IdNumber")
+    private String idNumber;
+    
+    @JsonProperty("IdType")
+    private String idType;
+    
 }

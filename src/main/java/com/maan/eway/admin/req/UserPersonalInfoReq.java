@@ -107,4 +107,11 @@ public class UserPersonalInfoReq {
     
     @JsonProperty("RegulatoryCode")
     private String    regulatoryCode;
+    
+    @JsonProperty("IdNumber")
+    private String idNumber;
+    
+    @JsonProperty("IdType")
+    private String idType;
+
 }

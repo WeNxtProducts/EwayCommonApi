@@ -35,6 +35,7 @@ import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CityMasterRepository;
 import com.maan.eway.repository.CountryMasterRepository;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.StateMasterRepository;
@@ -61,6 +62,9 @@ public class BasicLoginValidationService {
 	
 	@Autowired
 	private LoginUserInfoRepository userinfoRepo;
+	
+	@Autowired
+	private InsuranceCompanyMasterRepository companyMasterRepo;
 	
 	
 	public List<String>  commonLoginCreationValidation(CommonLoginCreationReq req ) {
@@ -233,6 +237,16 @@ public class BasicLoginValidationService {
 			}  else if( isNotValidMail(personalReq.getUserMail()) ){
 		//		errors.add(new Error("08", "User Mail", "Please Enter Valid User Mail"));
 				errors.add("1739");
+			}  else if(StringUtils.isBlank( loginReq.getAgencyCode()) ) {
+					if(existingMailCheck(personalReq.getUserMail(),req.getLoginInformation().getCompanyId())) {
+						errors.add("2204");
+					}
+			} else if(StringUtils.isNotBlank( loginReq.getAgencyCode()) ){
+				if(isEmailNotSame(loginReq.getLoginId(),personalReq.getUserMail())){
+					if(existingMailCheck(personalReq.getUserMail(),req.getLoginInformation().getCompanyId())) {
+						errors.add("2204");
+					}
+				}
 			}
 			
 			
@@ -271,7 +285,22 @@ public class BasicLoginValidationService {
 				errors.add("1746");
 			}
 			
-			
+			if(StringUtils.isBlank(personalReq.getIdType())){
+				errors.add("2210");
+			}else if(StringUtils.isBlank(personalReq.getIdNumber())) {
+				errors.add("2211");
+			}else if(StringUtils.isBlank( loginReq.getAgencyCode()) ) {
+				  if(checkIdNumberIsDuplicate(personalReq.getIdType(),personalReq.getIdNumber(),req.getLoginInformation().getCompanyId())) {
+					  errors.add("2212");
+				    }
+			}else if(StringUtils.isNotBlank( loginReq.getAgencyCode())) {
+				if(isIdNumberNotSame(loginReq.getLoginId(),personalReq.getIdNumber(),personalReq.getIdType())) {
+					if(checkIdNumberIsDuplicate(personalReq.getIdType(),personalReq.getIdNumber(),req.getLoginInformation().getCompanyId())) {
+						  errors.add("2212");
+					    }
+				}
+			}
+						
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -281,6 +310,10 @@ public class BasicLoginValidationService {
 		return errors;
 	}
 	
+
+
+
+
 	public Long getCountryCount(String countryId) {
 		Long countryCount = 0L ;
 		try {
@@ -665,6 +698,38 @@ public class BasicLoginValidationService {
 		return true;
 	}
 	
+	private boolean existingMailCheck(String userMail, String companyId) {
+		String companyName = companyMasterRepo.findByCompanyIdOrderByAmendIdDesc(companyId).get(0).getCompanyName();
+		int count = userinfoRepo.countByCompanyNameAndUserMail(companyName,userMail);
+		if(count>=1) {
+			return true;
+		}
+		return false;
+	}
 	
+	private boolean checkIdNumberIsDuplicate(String idType, String idNumber, String companyId) {
+		String companyName = companyMasterRepo.findByCompanyIdOrderByAmendIdDesc(companyId).get(0).getCompanyName();
+		int count = userinfoRepo.countByCompanyNameAndIdTypeAndIdNumber(companyName,idType,idNumber);
+		if(count>=1) {
+			return true;
+		}
+		return false;
+	}
 	
+	private boolean isEmailNotSame(String loginId, String userMail) {
+		LoginUserInfo login = userinfoRepo.findByLoginId(loginId);
+		if(login.getUserMail().equalsIgnoreCase(userMail)) {
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean isIdNumberNotSame(String loginId, String idNumber, String idType) {
+		LoginUserInfo login = userinfoRepo.findByLoginId(loginId);
+		if(login.getIdNumber().equalsIgnoreCase(idNumber) && login.getIdType().equalsIgnoreCase(idType)){
+			return false;
+		}
+		return true;
+	}
+
 }

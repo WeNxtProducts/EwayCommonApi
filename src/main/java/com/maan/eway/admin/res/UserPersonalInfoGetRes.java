@@ -110,5 +110,11 @@ public class UserPersonalInfoGetRes {
 	
 	@JsonProperty("CreditLimit")
     private String    creditLimit ;
-   
+	
+	@JsonProperty("IdNumber")
+	private String idNumber;
+	    
+	@JsonProperty("IdType")
+	private String idType;
+  
 }

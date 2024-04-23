@@ -59,10 +59,10 @@ public class ErrorDescMasterSaveReq implements Serializable{
 	@JsonProperty("Language")
 	private String language;
 	
-	@JsonProperty("LocalLanguageErrField")
+	@JsonProperty("LocalLangErrorField")
 	private String localLanguageErrField;
 
-	@JsonProperty("LocalLanguageErrDesc")
+	@JsonProperty("LocalLanguageDesc")
 	private String localLanguageErrDesc;
 
 }

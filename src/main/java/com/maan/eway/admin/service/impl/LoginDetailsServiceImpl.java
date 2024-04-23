@@ -588,7 +588,10 @@ this.repository = repo;
 		      List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(saveLogin.getCompanyId());			
 		      userInfo.setCompanyName(companyname.get(0).getCompanyName());
 		      
-		      
+		      String idTypeDesc = getIdTypeDesc(loginReq.getCompanyId(),personalReq.getIdType());
+		      userInfo.setIdType(personalReq.getIdType());
+		      userInfo.setIdNumber(personalReq.getIdNumber());
+		      userInfo.setIdTypeDesc(idTypeDesc);
 		      
 		      loginUserRepo.saveAndFlush(userInfo);
 			
@@ -866,13 +869,19 @@ this.repository = repo;
 				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode()  , req.getPersonalInformation().getStateCode());
 				
 			//	updateUser.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
-				updateUser.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
+				if(stateCityNames!=null && stateCityNames.size()>0) {
+					updateUser.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
+				}
 			//	updateUser.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());;
 			}
 			
 			List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(updateLogin.getCompanyId());			
 			updateUser.setCompanyName(companyname.get(0).getCompanyName());
-		      
+			
+			String idTypeDesc = getIdTypeDesc(loginReq.getCompanyId(),personalReq.getIdType());
+			updateUser.setIdType(personalReq.getIdType());
+			updateUser.setIdNumber(personalReq.getIdNumber());
+			updateUser.setIdTypeDesc(idTypeDesc);  
 			
 			loginUserRepo.saveAndFlush(updateUser);
 			log.info( "Login User Info Updated Details ---> " + json.toJson(updateUser) );
@@ -1876,6 +1885,45 @@ this.repository = repo;
 		}
 		return resList;
 	}
+	private String getIdTypeDesc(String companyId, String idType) {
+		 String itemDesc = "" ;
+		 List<String> list = new ArrayList<String>();
+			try {			
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<String> query=  cb.createQuery(String.class);
+				Root<ListItemValue> c = query.from(ListItemValue.class);
+				query.select(c.get("itemValue"));
+
+				// AmendId Max Filter
+				Subquery<Integer> amendId = query.subquery(Integer.class);
+				Root<ListItemValue> sub = amendId.from(ListItemValue.class);
+				amendId.select(cb.max(sub.get("amendId")));
+				Predicate a3 = cb.equal(c.get("itemId"),sub.get("itemId"));
+				Predicate a4 = cb.equal(c.get("itemType"),"POLICY_HOLDER_ID_TYPE");
+				Predicate b3= cb.equal(c.get("companyId"),companyId);
+				Predicate b4= cb.equal(c.get("branchCode"),"99999");
+				amendId.where(a3,a4,b3,b4);
+							
+				// Where
+				Predicate n1 = cb.equal(c.get("status"),"Y");
+				Predicate n4 = cb.equal(c.get("companyId"), companyId);
+				Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+				Predicate n10 = cb.equal(c.get("itemType"),"POLICY_HOLDER_ID_TYPE");
+				Predicate n11 = cb.equal(c.get("itemCode"), idType);
+				query.where(n1,n4,n10,n11,n7);
+				// Get Result
+				TypedQuery<String> result = em.createQuery(query);
+				list = result.getResultList();
+				
+				itemDesc = list.size() > 0 ? list.get(0): "" ; 
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return itemDesc ;
+		}
 
 }
 

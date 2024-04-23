@@ -208,6 +208,15 @@ private static final long serialVersionUID = 1L;
     @Column(name ="BROKER_LOGO")
     private String brokerLogo;
     
+    @Column(name="ID_TYPE_DESC", length=100)
+    private String     idTypeDesc ;
+    
+    @Column(name="ID_TYPE", length=2)
+    private String     idType ;
+
+    @Column(name="ID_NUMBER", length=100)
+    private String     idNumber ;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
