@@ -1255,7 +1255,7 @@ public class RatingFactorsUtil {
 			 
 			SpecCriteria specCriteria = crservice.createCriteriaForGroupBy(FactorRateMaster.class, StringUtils.join(condtions,';'), "agencyCode",groupBy);
 			List<Tuple> result = crservice.getResultGroupBy(specCriteria, 0, 1000);
-			if(result.size()>0)
+			if(result.size()>0) {
 				for (RatingInfo r : rateInfos) {
 					if(!"Y".equals(r.getFactorRangeYn())) {
 						Optional<Tuple> findFirst = result.stream().filter(i -> i.get(r.getDiscretCol()).equals(r.getInputColumValue())
@@ -1266,8 +1266,15 @@ public class RatingFactorsUtil {
 							condtions.add(r.getDiscretCol()+":"+r.getInputColumValue());
 					}
 				}
-			
-			
+				
+				Optional<Tuple> findFirst = result.stream().filter(i -> i.get("agencyCode").equals(engine.getAgencyCode())
+						).findFirst();
+				if(findFirst.isEmpty())
+					condtions.add("agencyCode:99999");
+				else
+					condtions.add("agencyCode"+":"+engine.getAgencyCode());
+				
+			}
 			List<Tuple> loadfactorOnlyquery = loadfactorOnlyquery(engine,StringUtils.join(condtions,';'), coverId,subCoverId);
 			return loadfactorOnlyquery;
 		}catch (Exception e) {
