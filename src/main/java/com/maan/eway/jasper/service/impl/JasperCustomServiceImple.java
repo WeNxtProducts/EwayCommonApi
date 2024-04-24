@@ -34,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.ClausesMaster;
@@ -668,8 +667,8 @@ public class JasperCustomServiceImple {
 		return response;
 	}
 
-	public MotorPrivateRes getMotorPrivate(String policyNo,String quoteNo) {
-		log.info("Enter into getMotorPrivate.\nArgument ==> PolicyNo :"+policyNo+" || \t QuoteNo :"+quoteNo);
+	public MotorPrivateRes getMotorPrivate(String policyNo,String quoteNo,String vehicleId) {
+		log.info("Enter into getMotorPrivate.\nArgument ==> PolicyNo :"+policyNo+" || \t QuoteNo :"+quoteNo+" || \t VehicleId :"+vehicleId);
 		MotorPrivateRes response = new MotorPrivateRes();
 		List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
 		Double OverAllPremium = 0d;
@@ -699,7 +698,14 @@ public class JasperCustomServiceImple {
 		
 		Subquery<Long> MotorCount = cq.subquery(Long.class);
 		Root<MotorDataDetails> SubMCRoot = MotorCount.from(MotorDataDetails.class);
-		MotorCount.select(cb.count(SubMCRoot)).where(cb.equal(SubMCRoot.get("policyNo"), hpmRoot.get("policyNo")));
+		MotorCount.select(cb.count(SubMCRoot));
+				Predicate mc1 = cb.equal(SubMCRoot.get("policyNo"), hpmRoot.get("policyNo"));
+				if(StringUtils.isNotBlank(vehicleId)) {
+					Predicate mc2 = cb.equal(SubMCRoot.get("vehicleId"), vehicleId);
+					MotorCount.where(mc1,mc2);
+				}else {
+					MotorCount.where(mc1);
+				}
 		
 		Subquery<String> companyName = cq.subquery(String.class);
 		Root<InsuranceCompanyMaster> companyNameRoot = companyName.from(InsuranceCompanyMaster.class);
@@ -769,6 +775,10 @@ public class JasperCustomServiceImple {
 			Tuple map = list.get(0);
 			List<MotorDataDetails> vehicleDetails = motorRepo.findByQuoteNoOrderByVehicleIdAsc(map.get("quoteNo").toString())
 						.stream().filter(f -> !f.getStatus().equalsIgnoreCase("D")).collect(Collectors.toList());
+			if(StringUtils.isNotBlank(vehicleId)) {
+				vehicleDetails = vehicleDetails.stream().filter(f -> f.getVehicleId()!=null && f.getVehicleId().equalsIgnoreCase(vehicleId))
+						.collect(Collectors.toList());
+			}
 			String vehiclePremiumDesc = map.get("vehiclePremiumDesc")==null?"":map.get("vehiclePremiumDesc").toString();
 			vehicleDetails.forEach(k -> {
 				MotorPrivateVehicleDetails t = MotorPrivateVehicleDetails.builder()

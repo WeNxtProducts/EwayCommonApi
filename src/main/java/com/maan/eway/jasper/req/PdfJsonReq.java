@@ -22,5 +22,8 @@ public class PdfJsonReq {
 	@JsonProperty("EndtSchedule")
 	private String endtSchedule;
 	
+	@JsonProperty("VehicleId")
+	private String vehicleId;
+	
 	
 }
