@@ -407,7 +407,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="AC_EXECUTIVE_ID")
     private Integer    acExecutiveId ;
 
-    @Column(name="APPLICATION_ID", length=20)
+    @Column(name="APPLICATION_ID", length=100)
     private String     applicationId ;
 
     @Column(name="BROKER_CODE", length=20)

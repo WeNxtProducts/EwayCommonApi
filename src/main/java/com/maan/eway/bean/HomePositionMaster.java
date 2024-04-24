@@ -100,7 +100,7 @@ private Long       applicationNo ;
 @Column(name="LOGIN_ID", nullable=false, length=50)
 private String     loginId ;
 
-@Column(name="APPLICATION_ID", length=50)
+@Column(name="APPLICATION_ID", length=100)
 private String     applicationId ;
 
 @Column(name="CUSTOMER_NAME", length=50)
