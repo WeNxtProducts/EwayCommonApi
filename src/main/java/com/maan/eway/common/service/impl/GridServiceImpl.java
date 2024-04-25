@@ -67,6 +67,7 @@ import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingBrokerUserListReq;
@@ -2696,6 +2697,7 @@ public class GridServiceImpl implements GridService {
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("userType"), "Broker"));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
+			predicate.add(cb.equal(l.get("companyId"), h.get("companyId")));
 			if (StringUtils.isNotBlank(req.getLoginId())) {
 				predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
 			}
@@ -2769,7 +2771,7 @@ public class GridServiceImpl implements GridService {
 			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
-
+			Root<PersonalInfo> p = query.from(PersonalInfo.class);
 			// Select
 			query.multiselect(
 					 h.get("creditNo").alias("creditNo"),
@@ -2785,7 +2787,7 @@ public class GridServiceImpl implements GridService {
 					h.get("agencyCode").alias("oaCode"), h.get("loginId").alias("loginId"),
 					h.get("referralDescription").alias("referralRemarks"), h.get("adminRemarks").alias("adminRemarks"),
 					h.get("adminLoginId").alias("adminLoginId"), h.get("status").alias("status"),
-					h.get("endtStatus").alias("endtStatus"), h.get("customerName").alias("customerName"),
+					h.get("endtStatus").alias("endtStatus"), p.get("clientName").alias("clientName"),
 					h.get("inceptionDate").alias("policyStartDate"), h.get("expiryDate").alias("policyEndDate"),
 					h.get("branchCode").alias("branchCode"), h.get("branchName").alias("branchName"),
 					h.get("brokerBranchCode").alias("brokerBranchCode"),
@@ -2816,13 +2818,16 @@ public class GridServiceImpl implements GridService {
 			List<Predicate> predicate = new ArrayList<Predicate>();
 			Expression<String> e0 = h.get("loginId");
 			predicate.add(e0.in(req.getLoginId()));
-			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
-			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+//			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
+//			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("entryDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("entryDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(h.get("productId"), req.getProductId()));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
+			predicate.add(cb.equal(p.get("customerId"), h.get("customerId")));
 
 			// Business Type Condition
 			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();

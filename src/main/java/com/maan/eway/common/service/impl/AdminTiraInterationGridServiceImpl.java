@@ -301,7 +301,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n4 = cb.equal(m.get("status"), "P");
 			Predicate n5 = cb.notEqual(m.get("responseStatusCode"), "TIRA001");
 			Predicate n6 = cb.notEqual(m.get("responseStatusCode"), "TIRA214");
-			Predicate n7 = cb.and(n5,n6);
+			Predicate n7 = cb.or(n5,n6);
 			Predicate n8 = cb.isNotNull(m.get("responseStatusCode"));
 			Predicate n9 = cb.isNotNull(m.get("tiraResponseId"));
 			Predicate n10=cb.between(m.get("entryDate"), startDate, endDate);
