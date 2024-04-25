@@ -285,19 +285,21 @@ public class BasicLoginValidationService {
 				errors.add("1746");
 			}
 			
-			if(StringUtils.isBlank(personalReq.getIdType())){
-				errors.add("2210");
-			}else if(StringUtils.isBlank(personalReq.getIdNumber())) {
-				errors.add("2211");
-			}else if(StringUtils.isBlank( loginReq.getAgencyCode()) ) {
-				  if(checkIdNumberIsDuplicate(personalReq.getIdType(),personalReq.getIdNumber(),req.getLoginInformation().getCompanyId())) {
-					  errors.add("2212");
-				    }
-			}else if(StringUtils.isNotBlank( loginReq.getAgencyCode())) {
-				if(isIdNumberNotSame(loginReq.getLoginId(),personalReq.getIdNumber(),personalReq.getIdType())) {
-					if(checkIdNumberIsDuplicate(personalReq.getIdType(),personalReq.getIdNumber(),req.getLoginInformation().getCompanyId())) {
+			if ( loginReq.getUserType().equalsIgnoreCase("User") ) {
+				if(StringUtils.isBlank(personalReq.getIdType())){
+					errors.add("2210");
+				}else if(StringUtils.isBlank(personalReq.getIdNumber())) {
+					errors.add("2211");
+				}else if(StringUtils.isBlank( loginReq.getAgencyCode()) ) {
+					  if(checkIdNumberIsDuplicate(personalReq.getIdType(),personalReq.getIdNumber(),req.getLoginInformation().getCompanyId())) {
 						  errors.add("2212");
 					    }
+				}else if(StringUtils.isNotBlank( loginReq.getAgencyCode())) {
+					if(isIdNumberNotSame(loginReq.getLoginId(),personalReq.getIdNumber(),personalReq.getIdType())) {
+						if(checkIdNumberIsDuplicate(personalReq.getIdType(),personalReq.getIdNumber(),req.getLoginInformation().getCompanyId())) {
+							  errors.add("2212");
+						    }
+					}
 				}
 			}
 						
