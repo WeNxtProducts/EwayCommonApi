@@ -93,8 +93,15 @@ public class PushedStateChange implements  Function<NotifTransactionDetails,List
 					List<String> tomails=new LinkedList<String>();
 					tomails.add(tomailid);
 					String mailSubject=(String) getContentFrame(t, master.getMailSubject());
+					String filesStr=t.get("attachFilePath")==null?"":t.get("attachFilePath").toString();
 					List<String> files=new LinkedList<String>();
-					files.add(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString());
+					if(StringUtils.isNotBlank(filesStr) && filesStr.indexOf(";")!=-1) {
+						String[] split = filesStr.split(";");
+						for(int i=0;i<split.length;i++)
+						files.add(split[i]);
+					}else if(StringUtils.isNotBlank(filesStr))
+						files.add(filesStr);
+					
 					String templatebody=getTemplateFrame(t, master);
 					 JobCredentials master =JobCredentials.builder()
 							 .address(mailMaster.getAddress())

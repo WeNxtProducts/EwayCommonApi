@@ -9,5 +9,7 @@ public class TiraFrameReqCall {
 
 	@JsonProperty("QuoteNo")
 	private String quoteNo ;
+	@JsonProperty("RiskId")
+	private String riskId;
 	
 }

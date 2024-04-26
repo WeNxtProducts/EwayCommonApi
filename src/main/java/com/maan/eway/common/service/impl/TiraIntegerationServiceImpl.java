@@ -36,11 +36,13 @@ import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.service.IntegrationService;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -63,11 +65,19 @@ public class TiraIntegerationServiceImpl {
 	@Value(value = "${PremiaPushLink}")
 	private String premiaPushLink;
 	
+	@Value(value = "${TiraIntegPushLinkFleet}")
+	private String tiraIntegPushLinkFleet;
+	@Value(value = "${TiraIntegReqFrameLinkFleet}")
+	private String tiraIntegReqFrameLinkFleet;
+	
 	@PersistenceContext
 	private EntityManager em;
 	
 	@Autowired
 	private HomePositionMasterRepository homerepo ;
+	
+	@Autowired
+	private SectionDataDetailsRepository sectionDataRepo;
 	
 	@Autowired
 	private IntegrationService service;
@@ -79,10 +89,12 @@ public class TiraIntegerationServiceImpl {
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
 			
 			String url=nonMotorTiraLink; 
-			if  (  product.getMotorYn().equalsIgnoreCase("M")  && data.getCompanyId().equalsIgnoreCase("100002") ) {
+			if  (  product.getMotorYn().equalsIgnoreCase("M")  && data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()<50 ) {
 				url=tiraIntegPushLink;
 				
 			//	 em.flush();
+			}else if(  product.getMotorYn().equalsIgnoreCase("M")  && data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()>49 ) {
+				url=tiraIntegPushLinkFleet;
 			} 
 				
 				
@@ -92,8 +104,26 @@ public class TiraIntegerationServiceImpl {
 				
 				res.setResponse("Success");
 				
-			} else if( StringUtils.isBlank(data.getCoverNoteReferenceNo()) && data.getCompanyId().equalsIgnoreCase("100002")  ) {
-				Object tiraFramedReq = TiraReqFrame(tiraReq, token);
+			} else if( StringUtils.isBlank(data.getCoverNoteReferenceNo()) && data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()<50   ) {
+				List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(tiraReq.getQuoteNo());
+				for(SectionDataDetails risk:risks) {
+					TiraFrameReqCall request=new TiraFrameReqCall();
+					request.setQuoteNo(risk.getQuoteNo());
+					request.setRiskId(risk.getRiskId()+"");
+					
+					Object tiraFramedReq = TiraReqFrame(request, token);
+					res.setResponse("Success");
+					// Tira Integ Push
+					if(tiraFramedReq!=null) {
+						JSONObject tiraIntegPushRes = TiraIntegPush(tiraFramedReq , token,url);
+						log.info("Tira Response --->"+tiraIntegPushRes);
+					}else {
+						res.setResponse("Failed");
+						log.info("Tira Framed Req --->"+tiraFramedReq);	
+					}
+				}
+			}else if( StringUtils.isBlank(data.getCoverNoteReferenceNo()) && data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()>49   ) {
+				Object tiraFramedReq = TiraReqFrameFleet(tiraReq, token);
 				res.setResponse("Success");
 				// Tira Integ Push
 				if(tiraFramedReq!=null) {
@@ -164,7 +194,36 @@ public class TiraIntegerationServiceImpl {
 		return res;
 	}
 	
-	 public Object pushPremiaIntegration(PremiaRequest premiaReq , String token ) {
+	 private Object TiraReqFrameFleet(TiraFrameReqCall tiraReq, String token) {
+		 try {
+
+				// Frame Tira Req
+
+				RestTemplate temp = new RestTemplate();
+				HttpHeaders header = new HttpHeaders();
+				header.setContentType(MediaType.APPLICATION_JSON);
+				// header.setCharset("UTF-8");
+				header.setBearerAuth(token);
+				String url = tiraIntegReqFrameLinkFleet;
+				HttpEntity<?> requestent = new HttpEntity<>(tiraReq, header);
+
+				System.out.println(new Date() + " Start " + url);
+				ResponseEntity<Object> postEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}) ;
+				Object TiraFramedReq = null;
+				//if(postEntity.getStatusCode()==HttpStatus.ACCEPTED) {
+					TiraFramedReq = postEntity.getBody() ;
+				//}		
+					System.out.println("FLEET"+TiraFramedReq);
+				System.out.println(new Date() + " End " + url);
+
+			return TiraFramedReq;
+		 }catch (Exception e) {
+			 e.printStackTrace();
+		}
+		return null;
+	}
+
+	public Object pushPremiaIntegration(PremiaRequest premiaReq , String token ) {
 		 	Object PremiaRes = null;
 		try {
 			// Frame Tira Req

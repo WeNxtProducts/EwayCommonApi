@@ -62,7 +62,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
            
     
     private static final String[] NOAUTH_MATCHER = {"/authentication/login","/authentication/tokenregenrate","/authentication/logout","/api/changepassword","/api/forgotpassword","/authentication/byipaddress",
-    		"/basicauth/**","/embedded/create/**","post/notification/ack/mail","/authentication/doauth","/selcom/v1/checkout/webhook"};
+    		"/basicauth/**","/embedded/create/**","post/notification/ack/mail","/authentication/doauth","/selcom/v1/checkout/webhook"
+    		,"/post/notification/pushnotification"};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
