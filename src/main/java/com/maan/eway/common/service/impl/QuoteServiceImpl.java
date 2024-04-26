@@ -3,6 +3,7 @@ package com.maan.eway.common.service.impl;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -53,8 +54,10 @@ import com.maan.eway.bean.EserviceNomineeDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
+import com.maan.eway.bean.EwaySharePercentage;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
@@ -103,6 +106,8 @@ import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.controller.ProductGroupDropDownReq;
+import com.maan.eway.master.req.BrokerCompanyListProductReq;
+import com.maan.eway.master.req.CoInsuranceSaveReq;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
 import com.maan.eway.master.res.ProductGroupMasterDropDownRes;
 import com.maan.eway.master.service.ProductGroupMasterService;
@@ -128,6 +133,7 @@ import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceLifeDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
+import com.maan.eway.repository.EwaySharePercentageRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -305,6 +311,9 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	private EserviceLifeDetailsRepository lifeRepo;
+	
+	@Autowired
+	private EwaySharePercentageRepository coInsRepo;
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -4302,7 +4311,7 @@ public class QuoteServiceImpl implements QuoteService {
 				if( StringUtils.isBlank(req.getReferralRemarks()) ) {
 					error.add("1147");
 //					error.add(new Error("01", "ManualReferralRemarks", "Please Enter Manual Referral Remarks "));
-				} else if(req.getReferralRemarks().length() > 200 ) {
+				} else if(req.getReferralRemarks().length() > 1000 ) {
 					error.add("1148");
 //					error.add(new Error("01", "ManualReferralRemarks", "Manual Referral Remarks Less Then 200 Charecter Only Allowed"));
 				}
@@ -5001,7 +5010,171 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 		return backDays;
 	}
-			
 
+	@Override
+	public List<String> validateCoInsurance(List<CoInsuranceSaveReq> reqList) {
+		List<String> error = new ArrayList<String>();
+		try {
+			List<String> yN= new ArrayList<String>();
+			List<String> companyId=new ArrayList<String>();
+			Double percent=0d;
+			if(reqList.size()>0 && reqList!=null) {
+//				List<Integer> companyId =  reqList.stream().map( CoInsuranceSaveReq :: getInsuranceCompanyId ) .collect(Collectors.toList());
+			for(CoInsuranceSaveReq req: reqList) {
+				if(StringUtils.isBlank(req.getQuoteNo()) || req.getQuoteNo()==null ||req.getQuoteNo()=="") {
+					error.add("2183");
+				}else if(StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId()==null ||req.getCompanyId()=="") {
+					error.add("2184");
+				}else if(StringUtils.isBlank(req.getInsuranceCompanyId()) || req.getInsuranceCompanyId()==null ||req.getInsuranceCompanyId()=="") {
+					error.add("2185");
+				}else if (StringUtils.isNotBlank(req.getInsuranceCompanyId())) {
+					List<String> coIns =  companyId.stream().filter( o -> o.equalsIgnoreCase(req.getCompanyId())).collect(Collectors.toList()); 
+					if(coIns.size()<0  ) {
+						error.add("2186");
+					} else {
+						companyId.add(req.getInsuranceCompanyId());
+					}
+				}else if(StringUtils.isBlank(req.getLeaderYn()) || req.getLeaderYn()==null ||req.getLeaderYn()=="") {
+					error.add("");
+				} else if (StringUtils.isNotBlank(req.getLeaderYn())) {
+					if (!("Y".equalsIgnoreCase(req.getLeaderYn()) || "N".equalsIgnoreCase(req.getLeaderYn()))) {
+						error.add("2187");
+					}
+					List<String> leaderYn =  yN.stream().filter( o -> o.equalsIgnoreCase(req.getLeaderYn()) ).collect(Collectors.toList()); 
+					if(leaderYn.size()>0  ) {
+						error.add("2188");
+					} else {
+						yN.add(req.getLeaderYn());
+					}	
+				} else if (req.getSharePercentage() == null ||req.getSharePercentage() <= 0.0 || req.getSharePercentage()>100.0 ) {
+					error.add("2189");
+				}else if(req.getSharePercentage()!=null && req.getSharePercentage() >0.0) {
+					percent=req.getSharePercentage() +percent;					
+					if(percent>100){
+						error.add("2190");
+					}else if(percent<100){
+						error.add("2191");
+					}
+					
+				}
+				
+			}
+			}else {
+				error.add("2182");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			error.add("2181");
+			return null;
+		}
+		return error;
+	}
+	
+
+	@Override
+	public SuccessRes insertCoInsurance(List<CoInsuranceSaveReq> reqList) {
+		SuccessRes res = new SuccessRes();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			String quoteNo = "";
+			String companyId = "";
+			String companyName = "";
+			List<EwaySharePercentage> saveList = new ArrayList<EwaySharePercentage>();
+			if (reqList != null && reqList.size() > 0) {
+				quoteNo = reqList.get(0).getQuoteNo();
+				companyId = reqList.get(0).getCompanyId();
+				List<EwaySharePercentage> list = coInsRepo.findByQuoteNoAndCompanyId(quoteNo, companyId);
+				if (list.size() > 0 && list != null) {
+					coInsRepo.deleteAll(list);
+				}
+				for (CoInsuranceSaveReq req : reqList) {
+					EwaySharePercentage save = new EwaySharePercentage();
+					mapper.map(req, save);
+					save.setEntryDate(new Date());
+					save.setProductId(Integer.valueOf(req.getProductId()));
+					save.setInsuranceCompanyId(Integer.valueOf(req.getInsuranceCompanyId()));
+					companyName = getInscompanyMasterDropdown(req.getCompanyId());
+					save.setInsuranceCompanyName(companyName);
+					saveList.add(save);
+				}
+				coInsRepo.saveAllAndFlush(saveList);
+				res.setResponse("Inserted Successfully");
+				res.setSuccessId(quoteNo);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+			
+	public String getInscompanyMasterDropdown(String companyId ) {
+		String companyName = "" ;
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+			List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+			
+			// Find All
+			Root<InsuranceCompanyMaster>    c = query.from(InsuranceCompanyMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("companyName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			
+		    // Where	
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			companyName  = list.size()> 0 ? list.get(0).getCompanyName() : "";	
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return companyName;
+	}
 	
 }

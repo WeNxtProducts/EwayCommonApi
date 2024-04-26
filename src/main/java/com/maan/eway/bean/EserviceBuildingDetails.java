@@ -207,13 +207,13 @@ public class EserviceBuildingDetails implements Serializable {
 	    @Column(name="ADMIN_LOGIN_ID", length=100)
 	    private String     adminLoginId ;
 
-	    @Column(name="ADMIN_REMARKS", length=100)
+	    @Column(name="ADMIN_REMARKS", length=1000)
 	    private String     adminRemarks ;
 
-	    @Column(name="REJECT_REASON", length=100)
+	    @Column(name="REJECT_REASON", length=1000)
 	    private String     rejectReason ;
 
-	    @Column(name="REFERAL_REMARKS", length=100)
+	    @Column(name="REFERAL_REMARKS", length=1000)
 	    private String     referalRemarks ;
 
 	    @Column(name="PRODUCT_DESC", length=100)

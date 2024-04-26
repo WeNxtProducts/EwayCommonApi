@@ -31,6 +31,8 @@ import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.common.service.impl.QuoteThreadServiceImpl;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BranchMasterSaveReq;
+import com.maan.eway.master.req.CoInsuranceSaveReq;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.res.GetEmployeeCountRes;
 import com.maan.eway.res.GroupSuminsuredDetailsRes;
@@ -76,9 +78,8 @@ public class QuoteController {
 			comErrDescReq.setBranchCode("99999");
 			comErrDescReq.setInsuranceId(companyId);
 			comErrDescReq.setProductId("99999");
-			comErrDescReq.setModuleId("3");
-			comErrDescReq.setModuleName("BUY POLICY");
-			
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
 			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
 		}
 		//// validation
@@ -350,4 +351,51 @@ public class QuoteController {
 
 	}
 
+	// Co-Insurance Insert
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/insertcoinsurance")
+	@ApiOperation(value = "This method is Insert Branch Details")
+	public ResponseEntity<CommonRes> insertCoInsurance(@RequestBody List<CoInsuranceSaveReq> req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = entityService.validateCoInsurance(req);
+		List<Error> validation = null;
+		if (validationCodes != null && validationCodes.size() > 0) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.get(0).getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("35");
+			comErrDescReq.setModuleName("CO INSURANCE");
+
+			validation = errorDescService.getErrorDesc(validationCodes, comErrDescReq);
+		}
+
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+
+			// Get All
+			SuccessRes res = entityService.insertCoInsurance(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+			
 }

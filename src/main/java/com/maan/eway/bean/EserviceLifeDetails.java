@@ -87,7 +87,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ADMIN_LOGIN_ID", length=100)
     private String     adminLoginId ;
 
-    @Column(name="ADMIN_REMARKS", length=100)
+    @Column(name="ADMIN_REMARKS", length=1000)
     private String     adminRemarks ;
 
     @Column(name="AGENCY_CODE", length=20)
@@ -224,10 +224,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="QUOTE_NO", length=20)
     private String     quoteNo ;
 
-    @Column(name="REFERAL_REMARKS", length=500)
+    @Column(name="REFERAL_REMARKS", length=1000)
     private String     referalRemarks ;
 
-    @Column(name="REJECT_REASON", length=100)
+    @Column(name="REJECT_REASON", length=1000)
     private String     rejectReason ;
 
     @Column(name="SECTION_DESC", length=100)

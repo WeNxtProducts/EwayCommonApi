@@ -16,6 +16,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoInsuranceSaveReq;
 import com.maan.eway.res.GetEmployeeCountRes;
 import com.maan.eway.res.GroupSuminsuredDetailsRes;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
@@ -53,6 +54,10 @@ public interface QuoteService {
 	List<Error> validateStartdate(UpdatePolicyStartEndDateReq req);
 
 	SuccessRes updatePolicyStartEndDate(UpdatePolicyStartEndDateReq req);
+
+	List<String> validateCoInsurance(List<CoInsuranceSaveReq> req);
+
+	SuccessRes insertCoInsurance(List<CoInsuranceSaveReq> req);
 
 
 }
