@@ -1583,21 +1583,20 @@ this.repository = repo;
 				 menusret.sort(Comparator.comparing(Menu :: getOrderby));
 				 
 				 // Tira Vehicle Search Menu
-				 if( StringUtils.isBlank(req.getInsuranceId()) || StringUtils.isBlank(req.getProductId()) || ! "100002".equalsIgnoreCase(req.getInsuranceId()) 
-						 ||  ! ( "5".equalsIgnoreCase(req.getProductId()) /*||  "46".equalsIgnoreCase(req.getProductId()) */ )   ) {
-					 menusret.removeIf( o -> o.getId().equalsIgnoreCase("379"));  
-				 } 
-				 if(StringUtils.isBlank(req.getInsuranceId()) || StringUtils.isBlank(req.getProductId()) ||  "100002".equalsIgnoreCase(req.getInsuranceId()))
-				 {
-				 menusret.removeIf( o -> o.getId().equalsIgnoreCase("406"));  
-				 }
-				 else if(StringUtils.isBlank(req.getInsuranceId()) || StringUtils.isBlank(req.getProductId()) ||  "100019".equalsIgnoreCase(req.getInsuranceId()))
-				 {
-				 menusret.removeIf( o -> o.getId().equalsIgnoreCase("407"));  
-				 }
-				 else {
-					 menusret.removeIf(o -> o.getId().equalsIgnoreCase("406") || o.getId().equalsIgnoreCase("407"));
-				 }
+				 /*
+					 * if(StringUtils.isBlank(req.getInsuranceId()) ||
+					 * StringUtils.isBlank(req.getProductId()) ||
+					 * "100002".equalsIgnoreCase(req.getInsuranceId())) { menusret.removeIf( o ->
+					 * o.getId().equalsIgnoreCase("406")); } else
+					 * if(StringUtils.isBlank(req.getInsuranceId()) ||
+					 * StringUtils.isBlank(req.getProductId()) ||
+					 * "100019".equalsIgnoreCase(req.getInsuranceId())) { menusret.removeIf( o ->
+					 * o.getId().equalsIgnoreCase("407")); }
+					 */
+					/*
+					 * else { menusret.removeIf(o -> o.getId().equalsIgnoreCase("406") ||
+					 * o.getId().equalsIgnoreCase("407")); }
+					 */
 				
 				 
 			return menusret;
