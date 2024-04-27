@@ -1,5 +1,6 @@
 package com.maan.eway.jasper.service.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -32,7 +33,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,6 +71,7 @@ import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.thread.GetFileFromPath;
 
+import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -79,8 +80,14 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JsonDataSource;
 import net.sf.jasperreports.engine.design.JRDesignSection;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
 
+@SuppressWarnings("deprecation")
 @Service
 public class JasperServiceImpl implements JasperService {
 
@@ -199,7 +206,7 @@ public class JasperServiceImpl implements JasperService {
 									JasperName = "UgandaMotorSchedule";
 								}
 							}
-						res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- UgandaMotorSchedule.json");
+						res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- "+JasperName+".json");
 					}
 				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
 					Map<String,Object> input2 = new HashMap<>();
@@ -542,6 +549,9 @@ public class JasperServiceImpl implements JasperService {
 	@Override
 	public CommonRes getPremiumReport(PremiumReportReq req) {
 		CommonRes response = new CommonRes();
+		PremiumReportRes preRes = new PremiumReportRes();
+		String fileName="",prefix="";
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		Connection connection=null;
 		try {
 			String classpath = this.getClass().getClassLoader().getResource("").getPath();
@@ -550,7 +560,7 @@ public class JasperServiceImpl implements JasperService {
 			
 			String imagepath = classpath + "report/images/"; //windows system path
 			
-			String jasperPath = policyReportPath+req.getLoginId()+System.currentTimeMillis()+ ".pdf";
+			String jasperPath = policyReportPath+req.getLoginId()+System.currentTimeMillis()+("Y".equalsIgnoreCase(req.getExcelYn())?".xlsx":".pdf");
 
 			HashMap<String, Object> jasperParameter = new HashMap<String, Object>();
 			jasperParameter.put("pvStartDate", getFormattedDate(req.getStartDate()));
@@ -561,31 +571,48 @@ public class JasperServiceImpl implements JasperService {
 			jasperParameter.put("pvProductId", req.getProductId());
 			jasperParameter.put("pvCode", StringUtils.isBlank(req.getCode())?"99999":req.getCode());
 			jasperParameter.put("pvUserType", StringUtils.isBlank(req.getUserType())?"99999":req.getUserType());
-
-			
-
 			connection=config.getDataSourceForJasper().getConnection();
+			if("Y".equalsIgnoreCase(req.getExcelYn())) {
+				fileName ="PremiumRegister.xlsx";
+				prefix="data:application/vnd.ms-excel;base64,";
+				InputStream is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReport.jrxml");
+				JasperDesign design = JRXmlLoader.load(is);
+				design.setPageFooter(null);
+				design.setLeftMargin(0);
+				JasperReport jasperReport = JasperCompileManager.compileReport(design);
+				JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, jasperParameter, connection);
+				SimpleXlsReportConfiguration configuration = new SimpleXlsReportConfiguration();
+				configuration.setRemoveEmptySpaceBetweenRows(true);
+				configuration.setWhitePageBackground(false);
+				configuration.setDetectCellType(true);
+				JRXlsExporter exporter = new JRXlsExporter();
+				exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+				exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(output));
+				exporter.setConfiguration(configuration);
+				exporter.exportReport();
+			}else {
+				fileName ="PremiumRegister.pdf";
+				prefix="data:application/pdf;base64,";
+				InputStream is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReport.jrxml");
+				JasperReport jasperReport = JasperCompileManager.compileReport(is);
+				JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, jasperParameter, connection);
+				JRPdfExporter pdfExporter = new JRPdfExporter();
+				pdfExporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+				pdfExporter.setParameter(JRExporterParameter.OUTPUT_STREAM, output);
+				pdfExporter.exportReport();
+			}
+			byte [] bs = output.toByteArray();
+			String encodeToString = Base64.getEncoder().encodeToString(bs);
+			FileOutputStream fs = new FileOutputStream(new File(jasperPath));
+			fs.write(bs);
+			fs.flush();
+			fs.close();
 			
-			InputStream is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReport.jrxml");
-						
-			JasperReport jr = JasperCompileManager.compileReport(is);
-
-			JasperPrint jp = JasperFillManager.fillReport(jr, jasperParameter, connection);
-
-			JasperExportManager.exportReportToPdfFile(jp, jasperPath);
-			
-			File file = new File(jasperPath);
-			
-			
-			byte[] bytes = FileUtils.readFileToByteArray(file);
-
-			String encodeToString = Base64.getEncoder().encodeToString(bytes);
-			
-            PremiumReportRes preRes = PremiumReportRes.builder()
-            		.base64("data:application/pdf;base64,"+encodeToString)
-            		.fileName("PremiumReport.pdf")
+            preRes = PremiumReportRes.builder()
+            		.base64(prefix+encodeToString)
+            		.fileName(fileName)
             		.filePath(jasperPath)
-            		.build();		
+            		.build();
             response.setCommonResponse(preRes);
             response.setIsError(false);
             response.setErrorMessage(Collections.emptyList());
@@ -713,7 +740,7 @@ public class JasperServiceImpl implements JasperService {
 		return null;
 	}
 	
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings("unchecked")
 	private JasperDocumentRes getCommonJasperPdfFileByJson(String jrxmlPath,String jasperSaveLocation, String jsonString, Map<String, Object> map,String fileNameEnd) {
 		log.info("Enter into getCommonJasperPdfFileByJson");
 		JasperDocumentRes res = new JasperDocumentRes();
@@ -799,7 +826,7 @@ public class JasperServiceImpl implements JasperService {
 		return res;
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
 	public CommonRes getSchedule(JasperScheduleReq req) {
 		CommonRes response = new CommonRes();
 		try {
@@ -807,7 +834,6 @@ public class JasperServiceImpl implements JasperService {
 			String companyId =hpm.getCompanyId();
 			Integer productId =hpm.getProductId();
 			String quoteNo =hpm.getQuoteNo();
-			String policyNo =hpm.getPolicyNo();
 			
 			List<ReportJasperConfigMaster> list =jpqlQueryServiceImpl.getJasperReportConfigMaster(companyId,productId,Integer.valueOf(req.getReportId()));
 			
@@ -844,95 +870,23 @@ public class JasperServiceImpl implements JasperService {
 				jasperParameter.put("pvImagepath",imagepath);
 				jasperParameter.put("pvSubReportPath", classpath+"report/jasper/");
 								
-				Map<String,Object> map = new HashMap<>();
-				
 				JasperDocumentRes reponse = new JasperDocumentRes();
-				
-				if("1".equals(req.getReportId())) { //PolicySchedule pdf
-					Object result = null;
-					if(report.getId().getProductId()==5) {
-						if("100004".equalsIgnoreCase(report.getId().getCompanyId())) {
-							List<Map<String,Object>> reportRes = jasperCustomeImple.getMadisonMotorSchedule(policyNo);
-							result = reportRes;
-						}else {
-							MotorPrivateRes reportRes =jasperCustomeImple.getMotorPrivate(policyNo, req.getQuoteNo(),"");
-							if("100019".equalsIgnoreCase(report.getId().getCompanyId())) {
-								jasperParameter.put("attachMents", reportRes.getAttachmentList());
-								jasperParameter.put("policyNo", reportRes.getPolicyNo());
-							}
-							result = reportRes;
-						}
-					}else if(report.getId().getProductId()==4) {
-						TravelReportRes reportRes = jasperCustomeImple.getTravelReport(policyNo);
-						result = reportRes;
-					}else if(report.getId().getProductId()==42) {
-						Map<String, Object> reportRes = jasperCustomeImple.getCyberInsurance(policyNo);
-						result = reportRes;
-					}else {
-						Map<String, Object> reportRes = jasperCustomeImple.getEwaySchedule(quoteNo);
-						result = reportRes;
-						if("100004".equalsIgnoreCase(report.getId().getCompanyId())) {
-							jasperParameter.put("attachMents", reportRes.get("attachMents"));
-							jasperParameter.put("policyNo", reportRes.get("policyNo"));
-						}
+				Object result = jasperCustomeImple.callReport(quoteNo,req.getReportId(),req.getPremiumRegisterReq());
+				if("100019".equalsIgnoreCase(report.getId().getCompanyId())) {
+					if(result instanceof MotorPrivateRes) {
+				        MotorPrivateRes motorPrivateRes = (MotorPrivateRes) result;
+						jasperParameter.put("attachMents", motorPrivateRes.getAttachmentList());
+						jasperParameter.put("policyNo", motorPrivateRes.getPolicyNo());
 					}
-					String jsonString = gson.toJson(result);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
-					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
-
-				}else if("2".equals(req.getReportId())) {  //CreditNote pdf
-					
-					CreditNoteRes creditNoteRes=jasperCustomeImple.getCreditNoteRes(hpm.getPolicyNo());
-					
-					String jsonString = gson.toJson(creditNoteRes);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
-					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
-
-
-				}else if("3".equals(req.getReportId())) {  // DebitNote pdf
-					
-					TaxInvoiceRes invoiceRes= jasperCustomeImple.getTaxInvoiceRes(hpm.getPolicyNo());
-					
-					String jsonString = gson.toJson(invoiceRes);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
-					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
-
-					
-				}else if("4".equals(req.getReportId())) {  // Broker Quotation pdf
-					
-					map =jasperCustomeImple.getMotorBrokerQuotation(hpm.getPolicyNo());
-					String jsonString = gson.toJson(map);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
-					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
-
-				}else if("5".equals(req.getReportId())) {  // Premium register pdf
-					
-					PremiumReportRes reportRes = (PremiumReportRes)getPremiumReport(req.getPremiumRegisterReq()).getCommonResponse();
-					reponse.setPdfoutfile(reportRes.getBase64());
-					reponse.setPdfoutfilepath(reportRes.getFilePath());
-					
-				}else if("6".equals(req.getReportId())) {  // EndorseMent pdf
-					
-					map =jasperCustomeImple.getMotorEndorsementSchedule(hpm.getPolicyNo());
-					String jsonString = gson.toJson(map);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
-					reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");
-
-				}else if("7".equals(req.getReportId())) {  // Sticker  pdf
-					
-					MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(hpm.getPolicyNo(),quoteNo,"");
-					String JsonString = gson.toJson(motPrivateRes);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
-					reponse = getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, JsonString, jasperParameter, "- "+jasperName+".json");
-					
-				}else if("8".equals(req.getReportId())) { // Illestration Pdf
-					map = jasperCustomeImple.getInalipaSchedule(hpm.getPolicyNo());
-					String JsonString = gson.toJson(map);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
-					reponse = getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, JsonString, jasperParameter, "- "+jasperName+".json");
-				}			
+				}else if("100004".equalsIgnoreCase(report.getId().getCompanyId())) {
+					Map<String,Object> reportRes = (Map<String,Object>) result;
+					jasperParameter.put("attachMents", (List<AttachMentRes>) reportRes.get("attachMents"));
+					jasperParameter.put("policyNo", reportRes.get("policyNo"));
+				}
+				String jsonString = gson.toJson(result);
+				String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+quoteNo.replaceAll("[\\/:*?\"<>|]*", "");
+				reponse= getCommonJasperPdfFileByJson(jasperReportJrxml, jasperSaveLocation, jsonString, jasperParameter, "- "+jasperName+".json");	
 				response.setCommonResponse(reponse);	
-			
 			}
 			
 		}catch (Exception e) {
@@ -998,5 +952,4 @@ public class JasperServiceImpl implements JasperService {
 		}
 		return response;
 	}
-	
 }

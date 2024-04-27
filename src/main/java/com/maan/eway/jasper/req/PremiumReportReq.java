@@ -36,4 +36,7 @@ public class PremiumReportReq {
 	
 	@JsonProperty("Offset")
 	private String offset;
+	
+	@JsonProperty("ExcelYn")
+	private String excelYn;
 }

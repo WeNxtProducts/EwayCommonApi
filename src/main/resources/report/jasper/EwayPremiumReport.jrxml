@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayPremiumReport" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4ebbc096-5982-46d2-96dc-2d4d9556bbc8">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayPremiumReport" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="4ebbc096-5982-46d2-96dc-2d4d9556bbc8">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
@@ -23,6 +23,7 @@
   HPM.LOGIN_ID, 
   HPM.QUOTE_NO, 
   HPM.POLICY_NO, 
+  SDD.STICKER_NUMBER,
   UPPER(
     CONCAT(
       CONCAT(PIF.TITLE_DESC, '.'), 
@@ -112,14 +113,16 @@
       EWAY_INSURANCE_COMPANY_MASTER 
     WHERE 
       HPM.COMPANY_ID = COMPANY_ID
-  ) THEN ROUND(HPM.OVERALL_PREMIUM_LC, 2) ELSE ROUND(HPM.OVERALL_PREMIUM_FC, 2) END AS PERMIUM, 
+  ) THEN ROUND(HPM.OVERALL_PREMIUM_LC) ELSE ROUND(HPM.OVERALL_PREMIUM_FC) END AS PERMIUM, 
   ROUND(HPM.COMMISSION_PERCENTAGE, 1) AS COMMISSION_PERCENTAGE, 
-  ROUND(COMMISSION, 2) AS COMMISSION_AMOUNT 
+  ROUND(COMMISSION) AS COMMISSION_AMOUNT 
 FROM 
   HOME_POSITION_MASTER HPM, 
-  PERSONAL_INFO PIF 
+  PERSONAL_INFO PIF ,
+  SECTION_DATA_DETAILS SDD
 WHERE 
-  HPM.CUSTOMER_ID = PIF.CUSTOMER_ID 
+  HPM.QUOTE_NO=SDD.QUOTE_NO
+  AND HPM.CUSTOMER_ID = PIF.CUSTOMER_ID 
   AND HPM.PRODUCT_ID = $P{pvProductId} 
   AND (
     CASE WHEN '99999' = $P{pvBranch} THEN '1' ELSE HPM.BRANCH_CODE END
@@ -206,6 +209,11 @@ WHERE
 		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
 		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	</field>
+	<field name="STICKER_NUMBER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="STICKER_NUMBER"/>
+		<property name="com.jaspersoft.studio.field.label" value="STICKER_NUMBER"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="section_data_details"/>
 	</field>
 	<field name="CUSTOMER_NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_NAME"/>
@@ -301,7 +309,7 @@ WHERE
 		<groupHeader>
 			<band height="50">
 				<textField>
-					<reportElement mode="Opaque" x="-13" y="0" width="258" height="20" backcolor="#B1B5DE" uuid="af1b134a-0eb0-4303-89f8-3fb06f67b3e2">
+					<reportElement mode="Opaque" x="-13" y="0" width="243" height="20" backcolor="#B1B5DE" uuid="af1b134a-0eb0-4303-89f8-3fb06f67b3e2">
 						<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 						<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					</reportElement>
@@ -520,7 +528,7 @@ WHERE
 					<textFieldExpression><![CDATA["Payment Type"]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Opaque" x="245" y="0" width="571" height="20" backcolor="#B1B5DE" uuid="9917631a-8063-4af1-b1e2-fd0cc83bf6cc">
+					<reportElement mode="Opaque" x="455" y="0" width="361" height="20" backcolor="#B1B5DE" uuid="9917631a-8063-4af1-b1e2-fd0cc83bf6cc">
 						<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 						<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					</reportElement>
@@ -558,12 +566,28 @@ WHERE
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="9" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Product Name"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Sticker No"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement mode="Opaque" x="230" y="0" width="225" height="20" backcolor="#B1B5DE" uuid="a3158ae1-7901-4b3e-a5c2-5d507ed525ab">
+						<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+						<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
+					</reportElement>
+					<box leftPadding="2">
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Product : "+$F{PRODUCT_NAME}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="35">
+			<band height="30">
 				<textField>
 					<reportElement x="603" y="0" width="51" height="30" uuid="5c248eaf-ac5c-485c-9e42-a8506cf8b67b"/>
 					<box>
@@ -610,9 +634,9 @@ WHERE
 		</groupFooter>
 	</group>
 	<title>
-		<band height="60" splitType="Stretch">
+		<band height="53" splitType="Stretch">
 			<textField>
-				<reportElement x="261" y="23" width="280" height="30" uuid="a408ec15-f038-405a-bd9b-d1594fd34c58">
+				<reportElement x="230" y="23" width="225" height="30" uuid="a408ec15-f038-405a-bd9b-d1594fd34c58">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -622,11 +646,11 @@ WHERE
 				<textFieldExpression><![CDATA["Premium Report"]]></textFieldExpression>
 			</textField>
 			<image>
-				<reportElement x="-13" y="0" width="130" height="53" uuid="49b0766a-733e-4613-91a4-e87839d883bc"/>
+				<reportElement x="-13" y="0" width="243" height="53" uuid="49b0766a-733e-4613-91a4-e87839d883bc"/>
 				<imageExpression><![CDATA[$P{pvImagepath}+"Alliancelogo.png"]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="606" y="30" width="110" height="15" uuid="e0a8a79b-69ce-4eab-bfc9-9d14c20f387a">
+				<reportElement x="603" y="23" width="113" height="15" uuid="e0a8a79b-69ce-4eab-bfc9-9d14c20f387a">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -636,7 +660,7 @@ WHERE
 				<textFieldExpression><![CDATA["Start date : "]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="716" y="30" width="100" height="15" uuid="66d14a88-e838-42e2-b957-6c75e9718f07">
+				<reportElement x="716" y="23" width="100" height="15" uuid="66d14a88-e838-42e2-b957-6c75e9718f07">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -647,7 +671,7 @@ WHERE
 				<textFieldExpression><![CDATA[$P{pvStartDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="606" y="45" width="110" height="15" uuid="4c01ba10-8201-4d32-a64e-2127c79af32a">
+				<reportElement x="603" y="38" width="113" height="15" uuid="4c01ba10-8201-4d32-a64e-2127c79af32a">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -657,7 +681,7 @@ WHERE
 				<textFieldExpression><![CDATA["End date : "]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="716" y="45" width="100" height="15" uuid="00c1794c-467b-4e15-af88-f286ab862424">
+				<reportElement x="716" y="38" width="100" height="15" uuid="00c1794c-467b-4e15-af88-f286ab862424">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -671,7 +695,7 @@ WHERE
 	</title>
 	<detail>
 		<band height="30" splitType="Stretch">
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="-13" y="0" width="22" height="30" uuid="e9b44e84-0c84-4fea-82c5-18020fb45d6a">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
@@ -688,7 +712,7 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="9" y="0" width="91" height="30" uuid="f9391605-b786-4d71-99df-274efda29857">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -731,7 +755,7 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{DEBIT_NOTE_NO}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="180" y="0" width="50" height="30" uuid="e37ea879-2346-4a3f-bb69-eb5695da0be7">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
@@ -746,7 +770,7 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{START_DATE}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="230" y="0" width="50" height="30" uuid="f961894e-b8aa-4229-8916-82869630cfdd">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -760,7 +784,7 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{END_DATE}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="280" y="0" width="40" height="30" uuid="290d3b52-6e93-4cb9-b2b8-c2f852defa09">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
@@ -776,7 +800,7 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ISSUE_DATE}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="320" y="0" width="38" height="30" uuid="a09a2836-e628-44d8-96c9-7a9dd2f25344">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
@@ -791,7 +815,7 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="500" y="0" width="55" height="30" uuid="6fd3d726-673d-412c-a0dd-de599b52a8a9">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -818,7 +842,7 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="false">
+			<textField isBlankWhenNull="true">
 				<reportElement x="654" y="0" width="66" height="30" uuid="3391e642-f818-4c58-aa4f-e8882946a65e">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
@@ -865,7 +889,7 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{COMMISSION_AMOUNT}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="358" y="0" width="46" height="30" uuid="a4fbd1ef-971c-44c1-8292-3d6ed8c76bbe"/>
 				<box>
 					<pen lineWidth="0.25"/>
@@ -893,7 +917,7 @@ WHERE
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PRODUCT_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{STICKER_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

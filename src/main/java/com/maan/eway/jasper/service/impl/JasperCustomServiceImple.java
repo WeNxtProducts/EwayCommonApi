@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.ClausesMaster;
@@ -66,6 +67,7 @@ import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.WarrantyMaster;
+import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.AttachMentRes;
 import com.maan.eway.jasper.res.CreditDataSetOne;
 import com.maan.eway.jasper.res.CreditDataSetTwo;
@@ -75,6 +77,7 @@ import com.maan.eway.jasper.res.MotorPrivateAccessoriesDetails;
 import com.maan.eway.jasper.res.MotorPrivateDriverDetails;
 import com.maan.eway.jasper.res.MotorPrivateRes;
 import com.maan.eway.jasper.res.MotorPrivateVehicleDetails;
+import com.maan.eway.jasper.res.PremiumReportRes;
 import com.maan.eway.jasper.res.TaxDataSetOneRes;
 import com.maan.eway.jasper.res.TaxInvoicePremiumDetails;
 import com.maan.eway.jasper.res.TaxInvoiceRes;
@@ -86,10 +89,10 @@ import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
-import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PolicyDrcrDetailRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
@@ -104,9 +107,6 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private MotorDataDetailsRepository motorRepo;
-	
-	@Autowired
-	private MotorDriverDetailsRepository motordriverRepo;
 	
 	@Autowired
 	private ContentAndRiskRepository conAndRiskRepo;
@@ -135,12 +135,72 @@ public class JasperCustomServiceImple {
 	@Autowired
 	private EserviceBuildingDetailsRepository eserviceBuildingDetailsRepo;
 	
+	@Autowired
+	private HomePositionMasterRepository homeRepo;
+	
+	@Autowired
+	private JasperServiceImpl jasperServiceImpl;
+	
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		
 	private String RenewalDate(String Input) {
 		DateTimeFormatter inputformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 		LocalDateTime dateTime = LocalDateTime.parse(Input, inputformatter);
 		return dateTime.toLocalDate().plusDays(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+	}
+	
+	public Object callReport(String quoteNo,String reportId,PremiumReportReq premiumRequest) {
+		log.info("Enter into callReport");
+		Object response = null;
+		try {
+			HomePositionMaster hpm = homeRepo.findByQuoteNo(quoteNo);
+			if("1".equalsIgnoreCase(reportId)) { // SCHEDULE
+				if(hpm.getProductId() == 5) {
+					if("100004".equalsIgnoreCase(hpm.getCompanyId())) {
+						List<Map<String,Object>> resportRes = getMadisonMotorSchedule(hpm.getPolicyNo());
+						response = resportRes;
+					}else {
+						MotorPrivateRes reportRes = getMotorPrivate(hpm.getPolicyNo(), quoteNo,"");
+						response = reportRes;
+					}
+				}else if(hpm.getProductId() == 4) {
+					TravelReportRes reportRes = getTravelReport(hpm.getPolicyNo());
+					response = reportRes;
+				}else if(hpm.getProductId() == 42) {
+					Map<String, Object> reportRes = getCyberInsurance(hpm.getPolicyNo());
+					response = reportRes;
+				}else {
+					Map<String, Object> reportRes = getEwaySchedule(quoteNo);
+					response = reportRes;
+				}
+			}else if("2".equalsIgnoreCase(reportId)) { // CREDIT NOTE
+				CreditNoteRes creditNoteRes = getCreditNoteRes(hpm.getPolicyNo());
+				response = creditNoteRes;
+			}else if("3".equalsIgnoreCase(reportId)) { // DEBIT NOTE
+				TaxInvoiceRes invoiceRes = getTaxInvoiceRes(hpm.getPolicyNo());
+				response = invoiceRes;
+			}else if("4".equalsIgnoreCase(reportId)) { // BROKER QUOTATION
+				Map<String,Object> map = getMotorBrokerQuotation(hpm.getQuoteNo());
+				response = map;
+			}else if("5".equalsIgnoreCase(reportId)) { //PREMIUM REGISTER
+				PremiumReportRes reportRes = (PremiumReportRes) jasperServiceImpl.getPremiumReport(premiumRequest).getCommonResponse();
+				response = reportRes;
+			}else if("6".equalsIgnoreCase(reportId)) { // ENDORSEMENT PDF
+				Map<String,Object> map = getMotorEndorsementSchedule(hpm.getPolicyNo());
+				response = map;
+			}else if("7".equalsIgnoreCase(reportId)) { // STICKER PDF
+				List<MotorPrivateVehicleDetails> motPrivateRes = getMotorPrivate(hpm.getPolicyNo(),quoteNo,"").getVehicleDetails();
+				response = motPrivateRes;
+			}else if("8".equalsIgnoreCase(reportId)) { // ILLESTRATION PDF
+				Map<String,Object> map = getInalipaSchedule(hpm.getPolicyNo());
+				response = map;
+			}
+			log.info("callReport Response ==> "+new Gson().toJson(response));
+		}catch(Exception e) {
+			log.info("Error in callReport ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	public MotorCoverNoteRes getMotorCoverNote(String policyNo) {
@@ -794,9 +854,9 @@ public class JasperCustomServiceImple {
 					.policyTypeDesc(k.getPolicyTypeDesc()==null?"":k.getPolicyTypeDesc().toString())
 					.policyTypeId(k.getPolicyType()==null?"":k.getPolicyType())
 					.windScreenSumInsuredLc(k.getWindScreenSumInsured()==null?null:new BigDecimal(Double.parseDouble(k.getWindScreenSumInsured().toString())).toString())
-					.sumInsured(k.getSumInsured()==null?"":new BigDecimal(Double.parseDouble(k.getSumInsured().toString())).toString())
-					.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
-					//.stickerNumber(k.getStickerNo()==null?"":k.getStickerNo())
+					.sumInsured(k.getSumInsured()==null?null:new BigDecimal(Double.parseDouble(k.getSumInsured().toString())).toString())
+					//.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
+					.stickerNumber(k.getStickerNo()==null?"":k.getStickerNo())
 					.grossWeight(k.getGrossWeight()==null?null:k.getGrossWeight().toString())
 					.insTypeDesc(k.getInsuranceTypeDesc()==null?"":k.getInsuranceTypeDesc())
 					.engineNumber(k.getEngineNumber()==null?"":k.getEngineNumber())
