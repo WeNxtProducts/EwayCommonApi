@@ -97,12 +97,25 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 						 tuple=factors.get(0);
 					 }catch (Exception e) {
 						// TODO: handle exception
-						 discountLoading=false;
-						CoverException build = CoverException.builder().message("No factor found "+t.getCoverDesc())
-						 .isError(true).build();
-						 t.setError(build);
-						 t.setNotsutable(true);
-						 throw build;
+						
+						discountLoading=false;
+						if("B".equals(t.getCoverageType())) {
+							 t.setIsReferral("Y");
+							 t.setReferalDescription("No factor found "+t.getCoverDesc() +" Referral" );
+							 t.setPremiumBeforeDiscount(BigDecimal.ZERO);
+							 t.setRate(0D);
+
+							 t.setMinimumPremium(BigDecimal.ZERO);
+							 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);
+							 t.setCalcType("A");
+							 t.setRegulatoryCode("NA");
+						}else {
+							CoverException build = CoverException.builder().message("No factor found "+t.getCoverDesc())
+							.isError(true).build();
+							 t.setError(build);
+							 t.setNotsutable(true);
+							 throw build;
+						}
 						 /*t.setIsReferral("Y");
 						 t.setReferalDescription("No factor found Referral for "+t.getCoverDesc());
 						 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
