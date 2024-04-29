@@ -3436,14 +3436,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 					.collect(Collectors.toList());
 			List<Discount> discounts = null;
 			List<Loading> loadings = null;
-			if (covers != null && covers.size() > 0) {
+			if (totalcoverstuple != null && totalcoverstuple.size() > 0) {
 				SplitDiscountUtils discountUtil = new SplitDiscountUtils(engine.getEffectiveDate(),
 						engine.getPolicyEndDate() ,promocode);
-				discounts = covers.stream().map(discountUtil).filter(d -> d != null).collect(Collectors.toList());
+				discounts = totalcoverstuple.stream().map(discountUtil).filter(d -> d != null).collect(Collectors.toList());
 				discounts.stream().forEach(t -> t.setEffectiveDate(engine.getEffectiveDate()));
 				SplitLoadingUtils loadingtuils = new SplitLoadingUtils(engine.getEffectiveDate(),
 						engine.getPolicyEndDate());
-				loadings = covers.stream().map(loadingtuils).filter(d -> d != null).collect(Collectors.toList());
+				loadings = totalcoverstuple.stream().map(loadingtuils).filter(d -> d != null).collect(Collectors.toList());
 			}
 
 			SplitSubCoverUtil splitsub = new SplitSubCoverUtil("N", engine.getEffectiveDate(),

@@ -175,7 +175,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							Date periodStart =  effectiveDate;
 							Date periodEnd = t.getPolicyEndDate() ;
 							Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) +1;
 							// Check Leap Year
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 							boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
@@ -214,7 +214,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							Date periodStart =  effectiveDate;
 							Date periodEnd = t.getPolicyEndDate() ;
 							Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;						
+							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) +1 ;						
 							// Check Leap Year
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 							boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
@@ -325,7 +325,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 			 Date periodStart =  effectiveDate;
 					 			 Date periodEnd = t.getPolicyEndDate() ;
 					 			 Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-					 			 Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;						
+					 			 Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) +1 ;						
 					 			 // Check Leap Year
 					 			 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 					 			 boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
@@ -449,7 +449,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 
 					endorsement.setPremiumIncludedTax(totalWithTax);
 					endorsement.setPremiumIncludedTaxLC(totalWithTaxLC);
-					if(("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt()) && !isPolicyPeriod)
+					if(("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt()) /*&&  !isPolicyPeriod*/)
 							||
 							("N".equals(engine.getCoverModification()) && "Y".equals(endorsement.getProRataYn()) && "Y".equals(t.getUserOpt())
 									&& dontGo )	
