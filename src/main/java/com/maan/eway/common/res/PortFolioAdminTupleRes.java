@@ -16,11 +16,11 @@ public class PortFolioAdminTupleRes {
 	private BigDecimal overallPremiumFc ;
 	private Integer productId ; 
 	private String productName ; 
-	private Integer oaCode ;
+	private String agencyCode ;
 	private String brokerName ;
 	private String userType ;
 	private String subUserType ;
-	private String loginId ;
+	private Integer oaCode ;
 	private String customerCode ;
 	private String customerName ;
 	private String sourceType ;
