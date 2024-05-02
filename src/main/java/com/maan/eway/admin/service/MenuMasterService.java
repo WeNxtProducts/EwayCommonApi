@@ -9,6 +9,7 @@ import com.maan.eway.admin.req.MenuDetails;
 import com.maan.eway.admin.req.MenuListReq;
 import com.maan.eway.admin.req.MenuServiceReq;
 import com.maan.eway.admin.res.GetMenuTypeRes;
+import com.maan.eway.admin.res.GetmenuDetailsRes2;
 import com.maan.eway.admin.res.MenuDetailsRes;
 import com.maan.eway.admin.res.MenuServiceRes;
 import com.maan.eway.auth.dto.Menu;
@@ -19,7 +20,7 @@ public interface MenuMasterService {
 
 	MenuDetailsRes savemenu(MenuDetails req);
 
-	Set<MenuDetails> getAllMenuList(GetAllMenuReq req);
+	Set<GetmenuDetailsRes2> getAllMenuList(GetAllMenuReq req);
 
 	List<GetMenuTypeRes> getByUserType(GetMenuTypeReq req);
 	

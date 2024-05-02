@@ -484,10 +484,13 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			List<TiraTrackingDetails> tiraList=tiraRepo.findByPolicyNoOrderByRequestIdAsc(req.getQuoteNo());
+			HomePositionMaster homepositiondetails=homeRepo.findByPolicyNo(req.getQuoteNo());
+
 			for(TiraTrackingDetails data:tiraList) {
 				TiraRes res=new TiraRes();
 				res=dozerMapper.map(data, TiraRes.class);
 				res.setEntryDate(data.getEntryDate()==null?null:data.getEntryDate());
+				res.setStickerNO(homepositiondetails==null?" ":homepositiondetails.getStickerNumber());
 				resList.add(res);
 				}
 			

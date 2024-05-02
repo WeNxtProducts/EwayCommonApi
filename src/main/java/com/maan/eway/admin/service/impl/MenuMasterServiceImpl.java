@@ -1,9 +1,11 @@
 package com.maan.eway.admin.service.impl;
 
 import static java.util.stream.Collectors.collectingAndThen;
+
 import static java.util.stream.Collectors.toCollection;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import com.maan.eway.admin.req.MenuServiceReq;
 import com.maan.eway.admin.req.UserTypeReq;
 import com.maan.eway.admin.res.AdminListRes;
 import com.maan.eway.admin.res.GetMenuTypeRes;
+import com.maan.eway.admin.res.GetmenuDetailsRes2;
 import com.maan.eway.admin.res.MenuDetailsRes;
 import com.maan.eway.admin.res.MenuServiceRes;
 import com.maan.eway.admin.res.UserMenuListRes;
@@ -237,7 +240,7 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 		}
 		
 		  else if(req.getInserttype().equalsIgnoreCase("update")) {
-			 List<MenuMaster> menumaster = menurepo.findByMenuId(menuid);	
+			 List<MenuMaster> menumaster = menurepo.findByMenuIdAndCompanyId(menuid,req.getCompanyId());	
 			  if(!menumaster.isEmpty())
 			  {
 			   //delete the row 
@@ -334,11 +337,11 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 		}
 		return errorList;
 	}
-	public Set<MenuDetails> getAllMenuList(GetAllMenuReq req)
+	public Set<GetmenuDetailsRes2> getAllMenuList(GetAllMenuReq req)
 	{
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
-        Set<MenuDetails> resList = new HashSet<MenuDetails>(); 
+        Set<GetmenuDetailsRes2> resList = new HashSet<GetmenuDetailsRes2>(); 
 		//List<MenuDetails> resList = new ArrayList<MenuDetails>();
 		try {
 			
@@ -350,33 +353,52 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 			if(req.getGetType().equalsIgnoreCase("getById") && a)
 			{
 			Integer menuid=Integer.valueOf(req.getMenuId());	
-		     List<MenuMaster> menumaster = menurepo.findByMenuId(menuid);
-		    
+		     List<MenuMaster> menumaster = menurepo.findByMenuIdAndCompanyId(menuid,req.getCompanyId());
+		    if(!menumaster.isEmpty()) {
 		     List<UserTypeReq> u1= new ArrayList<>();
 		     for(MenuMaster mm: menumaster)
 		     {
 		    	 UserTypeReq usertypelist= new UserTypeReq(); 
+		    	 if(mm.getMenuId().equals(menuid)) {
 		    	 usertypelist.setUserType(mm.getUsertype());
 		    	 u1.add(usertypelist);
+		    	 }
 		     }
 		     
-		     MenuDetails res = dozerMapper.map(menumaster.get(0), MenuDetails.class);
+		     GetmenuDetailsRes2 res = dozerMapper.map(menumaster.get(0), GetmenuDetailsRes2.class);
 		     res.setUsertypelist(u1);
+		     res.setMenuType(menumaster.get(0).getParentMenu().equalsIgnoreCase("99999")?"Parent": "Child");
+		    
 		     resList.add(res);
+		    } 
 			}
 			else {
 		    List<MenuMaster> menumaster = menurepo.findAll();
 	        Integer start=req.getLimit();
 	         for(MenuMaster mm: menumaster)
 		     {
+	        	Date date=mm.getEntryDate()==null? null :mm.getEntryDate(); // Your date string from mm.getEntryDate()
+	        	String entrydate=String.valueOf(date);
+	        	 String parentmenu=mm.getParentMenu()==null ? "99999" :mm.getParentMenu();
+	        	 String menutype="";
 		    	 UserTypeReq usertypelist= new UserTypeReq();
 			     List<UserTypeReq> u1= new ArrayList<>();
-		    	 MenuDetails res = new MenuDetails();
+			     GetmenuDetailsRes2 res = new GetmenuDetailsRes2();
+		    	
+		    	 if(parentmenu.equalsIgnoreCase("99999"))
+		    	 {
+		    		 menutype="Parent";
+		    	 }
+		    	 else{
+		    		 menutype="Child"; 
+		    	 }
 		    	 if(start>req.getOffset()){break;}
 		    	 usertypelist.setUserType(mm.getUsertype());
 		    	 u1.add(usertypelist);
-		    	 res = dozerMapper.map(mm, MenuDetails.class);
+		    	 res = dozerMapper.map(mm, GetmenuDetailsRes2.class);
 		         res.setUsertypelist(u1);
+		         res.setMenuType(menutype);
+		         res.setEntryDate(entrydate.isBlank()?null:entrydate);
 		         resList.add(res);
 		         start++;
 		     }
@@ -394,19 +416,25 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 	}
 
 	@Override
-	public List<GetMenuTypeRes> getByUserType(GetMenuTypeReq req) {
+	public List<GetMenuTypeRes> getByUserType(GetMenuTypeReq req0) {
 		
 		List<GetMenuTypeRes> resList = new ArrayList<GetMenuTypeRes>();
 		List<MenuMaster> getbyusertype = new ArrayList<MenuMaster>();
 		try {
-			String usertype=req.getUsertype();
-			getbyusertype = menurepo.findByParentMenuAndUsertypeAndStatusAndDisplayYn("99999",req.getUsertype(),"Y","Y");		
+			List<String> req1=req0.getUsertype();
+			for(String req:req1)
+			{
+			String usertype=req;
+			getbyusertype = menurepo.findByParentMenuAndUsertypeAndStatusAndDisplayYnAndCompanyId("99999",req,"Y","Y",req0.getCompanyId());		
+			
 			for (MenuMaster data : getbyusertype) {
 				GetMenuTypeRes res = new GetMenuTypeRes();
 				res.setMenuId(data.getMenuId().toString());
 				res.setMenuName(data.getMenuName());
+				res.setUsertype(data.getUsertype());
 	            resList.add(res);
 	        }
+			}
 			
 		}catch(Exception prob)
 		{

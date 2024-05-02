@@ -19,4 +19,7 @@ public class GetAllMenuReq {
   
   @JsonProperty("MenuId")
   private String menuId;
+  
+  @JsonProperty("CompanyId")
+  private String companyId;
 }

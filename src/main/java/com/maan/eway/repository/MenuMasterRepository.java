@@ -15,9 +15,9 @@ public interface MenuMasterRepository  extends JpaRepository<MenuMaster, MenuMas
 
 	Optional<MenuMaster> findFirstByOrderByMenuIdDesc();
     Optional<MenuMaster> findByMenuId(int nextMenuId);
-	List<MenuMaster> findByParentMenuAndUsertypeAndStatusAndDisplayYn(String id,String UserType ,String Status ,String Display);
+	List<MenuMaster> findByParentMenuAndUsertypeAndStatusAndDisplayYnAndCompanyId(String id,String UserType ,String Status ,String Display,String cmp_id);
 	
-	List<MenuMaster>  findByMenuId(Integer id);
+	List<MenuMaster>  findByMenuIdAndCompanyId(Integer id,String comp_id);
 	
 	
                                                                               

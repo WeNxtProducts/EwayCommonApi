@@ -22,6 +22,7 @@ import com.maan.eway.admin.req.MenuIdSaveReq;
 import com.maan.eway.admin.req.MenuListReq;
 import com.maan.eway.admin.req.MenuServiceReq;
 import com.maan.eway.admin.res.GetMenuTypeRes;
+import com.maan.eway.admin.res.GetmenuDetailsRes2;
 import com.maan.eway.admin.res.MenuDetailsRes;
 import com.maan.eway.admin.res.MenuServiceRes;
 import com.maan.eway.admin.service.MenuMasterService;
@@ -109,7 +110,7 @@ public class MenuMasterController {
 	@ApiOperation(value="This method is to Display Menu Service")
 	public ResponseEntity<CommonRes> getAllMenuDetails(@RequestBody GetAllMenuReq req){
 	CommonRes data = new CommonRes();
-	Set<MenuDetails> res = menuservice.getAllMenuList(req);
+	Set<GetmenuDetailsRes2> res = menuservice.getAllMenuList(req);
 	
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());

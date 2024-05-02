@@ -11,5 +11,9 @@ public class GetMenuTypeRes {
 	
 	 @JsonProperty("MenuId")
 	  private String menuId;
+	 
+	 @JsonProperty("UserType")
+	  private String usertype;
+
 
 }
