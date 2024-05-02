@@ -1524,8 +1524,6 @@ this.repository = repo;
 	@Override
 	public List<Menu> getMenuList( MenuListReq req){
 		List<Menu> menusret=new ArrayList<Menu>();
-		String company_id=StringUtils.isBlank(req.getInsuranceId()) ? "99999" : req.getInsuranceId() ;
-		String product_id=StringUtils.isBlank(req.getProductId()) ? "99999" : req.getProductId() ;
 		try {
 			LoginMaster login =loginRepo.findByLoginId(req.getLoginId());
 			// Menu Ids
@@ -1537,22 +1535,22 @@ this.repository = repo;
 				 
 			  }
 			// Get Menus 	  
-			if(req.getSubUserType().equalsIgnoreCase("both")  )	  {  
-				List<MenuMaster> adminmenuList = getMenuListCriteria(asList , "admin" ,company_id,product_id);
+			if(req.getSubUserType().equalsIgnoreCase("both")  )	  {
+				List<MenuMaster> adminmenuList = getMenuListCriteria(asList , "admin" );
 				findBymenuList.addAll(adminmenuList);
-				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType() ,company_id,product_id );
+				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType()  );
 				findBymenuList.addAll(usermenuList);
 			} else if(req.getSubUserType().equalsIgnoreCase("high")  ) {
-				List<MenuMaster> adminmenuList = getMenuListCriteria(asList , "admin",company_id,product_id );
+				List<MenuMaster> adminmenuList = getMenuListCriteria(asList , "admin" );
 				findBymenuList.addAll(adminmenuList);
 			} else if(req.getSubUserType().equalsIgnoreCase("low")  ) {
-				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType(),company_id,product_id);
+				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType()  );
 				findBymenuList.addAll(usermenuList);
 			}  else if(req.getSubUserType().equalsIgnoreCase("SuperAdmin")  ) {
-				List<MenuMaster> usermenuList = getMenuListCriteria(asList , "SuperAdmin",company_id,product_id );
+				List<MenuMaster> usermenuList = getMenuListCriteria(asList , "SuperAdmin" );
 				findBymenuList.addAll(usermenuList);
 			} else  {
-				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType(),company_id,product_id  );
+				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType()  );
 				findBymenuList.addAll(usermenuList);
 			}
 			List<MenuMaster> unique = findBymenuList.stream()
@@ -1583,8 +1581,7 @@ this.repository = repo;
 					 
 				}
 				 menusret.sort(Comparator.comparing(Menu :: getOrderby));
-				
-				
+				 
 				 // Tira Vehicle Search Menu
 				 /*
 					 * if(StringUtils.isBlank(req.getInsuranceId()) ||
@@ -1611,7 +1608,7 @@ this.repository = repo;
 	} 
 	
 	
-	public List<MenuMaster> getMenuListCriteria( List<String> menuids, String usertype ,String company_id ,String product_id ){
+	public List<MenuMaster> getMenuListCriteria( List<String> menuids, String usertype  ){
 		List<MenuMaster> menuList = new ArrayList<MenuMaster>();
 		try {
 			// Criteria
@@ -1630,31 +1627,21 @@ this.repository = repo;
 			
 			Predicate p3 =  cb.like(m.get("usertype"), "%" + usertype + "%" );
 			
-			Predicate p5 = cb.or(
-				    cb.equal(m.get("companyId"), company_id),
-				    cb.equal(m.get("companyId"), "99999")
-				);
-			
-			Predicate p6 = cb.or(
-				    cb.equal(m.get("productId"), company_id),
-				    cb.equal(m.get("productId"), "99999")
-				);
-					
 			if(menuids.size()>0) {
 				Predicate p2 = e0.in(menuids).not();
 				if (usertype.equalsIgnoreCase("admin") ) {
 					Predicate p4 =  cb.notEqual(m.get("usertype"), "SuperAdmin" );
-					query.select(m ).where(p1,p2,p3,p4,p5,p6).orderBy(orderList) ;
+					query.select(m ).where(p1,p2,p3,p4).orderBy(orderList) ;
 				} else {
-					query.select(m ).where(p1,p2,p3,p5,p6).orderBy(orderList) ;
+					query.select(m ).where(p1,p2,p3).orderBy(orderList) ;
 				}
 				
 			} else {
 				if (usertype.equalsIgnoreCase("admin") ) {
 					Predicate p4 =  cb.notEqual(m.get("usertype"), "SuperAdmin" );
-					query.select(m ).where(p1,p3,p4,p5,p6).orderBy(orderList) ;
+					query.select(m ).where(p1,p3,p4).orderBy(orderList) ;
 				} else {
-					query.select(m ).where(p1,p3,p5,p6).orderBy(orderList) ;
+					query.select(m ).where(p1,p3).orderBy(orderList) ;
 				}
 			}
 
