@@ -431,11 +431,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENDT_VAT_PREMIUM")
     private BigDecimal endtVatPremium;
     
-    @Column(name="RATING_RELATION_ID")
-    private String ratingRelationId;
-
-    @Column(name="RATING_RELATION_DESC")
-    private String ratingRelationDesc;
+   
 
 }
 
