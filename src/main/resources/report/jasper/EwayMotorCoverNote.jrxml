@@ -115,7 +115,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="sectionName"/>
 		<fieldDescription><![CDATA[sectionName]]></fieldDescription>
 	</field>
-	<field name="modelNumber" class="java.lang.Integer">
+	<field name="modelNumber" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="modelNumber"/>
 		<fieldDescription><![CDATA[modelNumber]]></fieldDescription>
 	</field>

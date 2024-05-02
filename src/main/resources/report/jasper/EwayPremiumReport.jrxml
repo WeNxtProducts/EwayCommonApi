@@ -57,6 +57,7 @@
     WHERE 
       QUOTE_NO = HPM.QUOTE_NO 
       AND payment_status = 'ACCEPTED'
+      LIMIT 1
   ) AS PAYMENT_ID, 
   HPM.PRODUCT_NAME, 
   CASE WHEN HPM.PRODUCT_ID = '4' THEN (
@@ -636,7 +637,7 @@ WHERE
 	<title>
 		<band height="53" splitType="Stretch">
 			<textField>
-				<reportElement x="230" y="23" width="225" height="30" uuid="a408ec15-f038-405a-bd9b-d1594fd34c58">
+				<reportElement x="230" y="0" width="225" height="53" uuid="a408ec15-f038-405a-bd9b-d1594fd34c58">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>

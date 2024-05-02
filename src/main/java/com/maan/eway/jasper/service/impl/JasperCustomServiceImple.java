@@ -67,7 +67,7 @@ import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.WarrantyMaster;
-import com.maan.eway.jasper.req.PremiumReportReq;
+import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.res.AttachMentRes;
 import com.maan.eway.jasper.res.CreditDataSetOne;
 import com.maan.eway.jasper.res.CreditDataSetTwo;
@@ -149,18 +149,18 @@ public class JasperCustomServiceImple {
 		return dateTime.toLocalDate().plusDays(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 	}
 	
-	public Object callReport(String quoteNo,String reportId,PremiumReportReq premiumRequest) {
+	public Object callReport(JasperScheduleReq req) {
 		log.info("Enter into callReport");
 		Object response = null;
 		try {
-			HomePositionMaster hpm = homeRepo.findByQuoteNo(quoteNo);
-			if("1".equalsIgnoreCase(reportId)) { // SCHEDULE
+			HomePositionMaster hpm = homeRepo.findByQuoteNo(req.getQuoteNo());
+			if("1".equalsIgnoreCase(req.getReportId())) { // SCHEDULE
 				if(hpm.getProductId() == 5) {
 					if("100004".equalsIgnoreCase(hpm.getCompanyId())) {
 						List<Map<String,Object>> resportRes = getMadisonMotorSchedule(hpm.getPolicyNo());
 						response = resportRes;
 					}else {
-						MotorPrivateRes reportRes = getMotorPrivate(hpm.getPolicyNo(), quoteNo,"");
+						MotorPrivateRes reportRes = getMotorPrivate(hpm.getPolicyNo(), req.getQuoteNo(),"");
 						response = reportRes;
 					}
 				}else if(hpm.getProductId() == 4) {
@@ -170,28 +170,28 @@ public class JasperCustomServiceImple {
 					Map<String, Object> reportRes = getCyberInsurance(hpm.getPolicyNo());
 					response = reportRes;
 				}else {
-					Map<String, Object> reportRes = getEwaySchedule(quoteNo);
+					Map<String, Object> reportRes = getEwaySchedule(req.getQuoteNo());
 					response = reportRes;
 				}
-			}else if("2".equalsIgnoreCase(reportId)) { // CREDIT NOTE
+			}else if("2".equalsIgnoreCase(req.getReportId())) { // CREDIT NOTE
 				CreditNoteRes creditNoteRes = getCreditNoteRes(hpm.getPolicyNo());
 				response = creditNoteRes;
-			}else if("3".equalsIgnoreCase(reportId)) { // DEBIT NOTE
+			}else if("3".equalsIgnoreCase(req.getReportId())) { // DEBIT NOTE
 				TaxInvoiceRes invoiceRes = getTaxInvoiceRes(hpm.getPolicyNo());
 				response = invoiceRes;
-			}else if("4".equalsIgnoreCase(reportId)) { // BROKER QUOTATION
+			}else if("4".equalsIgnoreCase(req.getReportId())) { // BROKER QUOTATION
 				Map<String,Object> map = getMotorBrokerQuotation(hpm.getQuoteNo());
 				response = map;
-			}else if("5".equalsIgnoreCase(reportId)) { //PREMIUM REGISTER
-				PremiumReportRes reportRes = (PremiumReportRes) jasperServiceImpl.getPremiumReport(premiumRequest).getCommonResponse();
+			}else if("5".equalsIgnoreCase(req.getReportId())) { //PREMIUM REGISTER
+				PremiumReportRes reportRes = (PremiumReportRes) jasperServiceImpl.getPremiumReport(req.getPremiumRegisterReq()).getCommonResponse();
 				response = reportRes;
-			}else if("6".equalsIgnoreCase(reportId)) { // ENDORSEMENT PDF
+			}else if("6".equalsIgnoreCase(req.getReportId())) { // ENDORSEMENT PDF
 				Map<String,Object> map = getMotorEndorsementSchedule(hpm.getPolicyNo());
 				response = map;
-			}else if("7".equalsIgnoreCase(reportId)) { // STICKER PDF
-				List<MotorPrivateVehicleDetails> motPrivateRes = getMotorPrivate(hpm.getPolicyNo(),quoteNo,"").getVehicleDetails();
+			}else if("7".equalsIgnoreCase(req.getReportId())) { // STICKER PDF
+				List<MotorPrivateVehicleDetails> motPrivateRes = getMotorPrivate(hpm.getPolicyNo(),req.getQuoteNo(),"").getVehicleDetails();
 				response = motPrivateRes;
-			}else if("8".equalsIgnoreCase(reportId)) { // ILLESTRATION PDF
+			}else if("8".equalsIgnoreCase(req.getReportId())) { // ILLESTRATION PDF
 				Map<String,Object> map = getInalipaSchedule(hpm.getPolicyNo());
 				response = map;
 			}
@@ -214,6 +214,7 @@ public class JasperCustomServiceImple {
 		Root<LoginUserInfo> luiRoot = cq.from(LoginUserInfo.class);
 		Root<InsuranceCompanyMaster> icmRoot = cq.from(InsuranceCompanyMaster.class);
 		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
+		Root<SectionDataDetails> sddRoot = cq.from(SectionDataDetails.class);
 		
 		Subquery<String> insureName = cq.subquery(String.class);
 		Root<LoginUserInfo> SubluiRoot = insureName.from(LoginUserInfo.class);
@@ -225,11 +226,11 @@ public class JasperCustomServiceImple {
 		makeTypeAmd.select(cb.max(makeAmd.get("amendId"))).where(cb.equal(makeAmd.get("makeId"), mddRoot.get("vehicleMake")),
 				cb.equal(makeAmd.get("status"), "Y"),cb.equal(makeAmd.get("companyId"), hpmRoot.get("companyId")));
 		
-		Subquery<String> makeType = cq.subquery(String.class);
+		/*Subquery<String> makeType = cq.subquery(String.class);
 		Root<MotorMakeMaster> makeRoot = makeType.from(MotorMakeMaster.class);
 		makeType.select(makeRoot.get("makeNameEn")).where(cb.equal(makeRoot.get("makeId"), mddRoot.get("vehicleMake")),
 				cb.equal(makeRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(makeRoot.get("status"), "Y"),
-				cb.equal(makeRoot.get("amendId"), makeTypeAmd));
+				cb.equal(makeRoot.get("amendId"), makeTypeAmd));*/
 		
 		// MODEL MASTER TYPE
 		Subquery<Integer> modelTypeAmd = cq.subquery(Integer.class);
@@ -254,16 +255,16 @@ public class JasperCustomServiceImple {
 				hpmRoot.get("policyCovertedDate").alias("paymentDate"),
 				hpmRoot.get("inceptionDate").alias("inceptionDate"),
 				hpmRoot.get("expiryDate").alias("expiryDate"),
-				hpmRoot.get("coverNoteReferenceNo").alias("covernoteNo"),
-				hpmRoot.get("stickerNumber").alias("stickerNumber"),
+				//hpmRoot.get("coverNoteReferenceNo").alias("covernoteNo"),
+				//hpmRoot.get("stickerNumber").alias("stickerNumber"),
 				mddRoot.get("registrationNumber").alias("registrationNumber"),
 				mddRoot.get("vehicleTypeDesc").alias("vehicleTypeDesc"),
 				cb.selectCase().when(cb.isNotNull(mddRoot.get("vehcileModelDesc")), mddRoot.get("vehcileModelDesc"))
 						.otherwise(modelType).alias("modelType"),
 				mddRoot.get("colorDesc").alias("colorDesc"),
 				mddRoot.get("cubicCapacity").alias("cubicCapacity"),
-				//mddRoot.get("vehicleMakeDesc").alias("vehicleMakeDesc"),
-				makeType.alias("vehicleMakeDesc"),
+				mddRoot.get("vehicleMakeDesc").alias("vehicleMakeDesc"),
+				//makeType.alias("vehicleMakeDesc"),
 				mddRoot.get("chassisNumber").alias("chassisNumber"),
 				mddRoot.get("seatingCapacity").alias("seatingCapacity"),
 				mddRoot.get("engineNumber").alias("engineNumber"),
@@ -283,7 +284,8 @@ public class JasperCustomServiceImple {
 				cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("vatPremiumLc"))
 						.otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),
 				cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("overallPremiumLc"))
-						.otherwise(hpmRoot.get("overallPremiumFc")).alias("overallPremium"))
+						.otherwise(hpmRoot.get("overallPremiumFc")).alias("overallPremium"),
+						sddRoot.get("coverNoteReferenceNo").alias("covernoteNo"),sddRoot.get("stickerNumber").alias("stickerNumber"))
 		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
 				cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")),
 				cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),
@@ -292,6 +294,8 @@ public class JasperCustomServiceImple {
 				cb.equal(icmRoot.get("amendId"), icmAmd),
 				cb.equal(hpmRoot.get("productId"), "46"),
 				cb.equal(hpmRoot.get("status"), "P"),
+				cb.equal(sddRoot.get("quoteNo"), mddRoot.get("quoteNo")),
+				cb.equal(sddRoot.get("riskId"), mddRoot.get("vehicleId")),
 				cb.equal(hpmRoot.get("policyNo"), policyNo));
 		List<Tuple> list = em.createQuery(cq).getResultList();
 		if(!CollectionUtils.isEmpty(list)) {
@@ -806,14 +810,14 @@ public class JasperCustomServiceImple {
 		attachmentAmd.select(cb.max(attachmentAmdRoot.get("amendId"))).where(cb.equal(attachmentAmdRoot.get("companyId"), attachmentRoot.get("companyId")));
 		attachment.select(attachmentRoot.get("remarks")).where(cb.equal(attachmentRoot.get("companyId"), hpmRoot.get("companyId")),
 				cb.equal(attachmentRoot.get("amendId"), attachmentAmd));
-		
+				
 		cq.multiselect(cpmRoot.get("companyId").alias("companyId"),cpmRoot.get("effectiveDateStart").alias("effectiveDateStart"),cpmRoot.get("effectiveDateEnd").alias("effectiveDateEnd"),
 			hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 			hpmRoot.get("debitNoteNo").alias("debitNoteNo"),cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(piRoot.get("cityName"),
 				cb.concat(" Street", cb.concat(",", cb.concat(piRoot.get("stateName"), cb.concat(",", countryName))))))).alias("address"),
 			cb.selectCase().when(cb.isNotNull(piRoot.get("pinCode")), cb.concat("P.O.BOX ", cb.concat(piRoot.get("pinCode"), cb.concat(",", cb.concat(piRoot.get("cityName"),
 				cb.concat(" Street",cb.concat(",", cb.concat(piRoot.get("stateName"), cb.concat(",", countryName))))))))).otherwise("").alias("postalAddress"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
-			hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("currency").alias("currency"),hpmRoot.get("stickerNumber").alias("stickerNumber"),
+			hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("currency").alias("currency"),
 			mddRoot.get("insuranceTypeDesc").alias("insuranceTypeDesc"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("premiumLc"))
 			.otherwise(hpmRoot.get("premiumFc")).alias("premium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("vatPremiumLc"))
 			.otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("overallPremiumLc"))
@@ -856,7 +860,7 @@ public class JasperCustomServiceImple {
 					.windScreenSumInsuredLc(k.getWindScreenSumInsured()==null?null:new BigDecimal(Double.parseDouble(k.getWindScreenSumInsured().toString())).toString())
 					.sumInsured(k.getSumInsured()==null?null:new BigDecimal(Double.parseDouble(k.getSumInsured().toString())).toString())
 					//.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
-					.stickerNumber(k.getStickerNo()==null?"":k.getStickerNo())
+					.stickerNumber(getStrickerNo(k.getQuoteNo(),k.getVehicleId()))
 					.grossWeight(k.getGrossWeight()==null?null:k.getGrossWeight().toString())
 					.insTypeDesc(k.getInsuranceTypeDesc()==null?"":k.getInsuranceTypeDesc())
 					.engineNumber(k.getEngineNumber()==null?"":k.getEngineNumber())
@@ -1022,7 +1026,7 @@ public class JasperCustomServiceImple {
 			response.setExpiryDate(map.get("expiryDate")==null?"":map.get("expiryDate").toString());
 			response.setRenewalDate(map.get("expiryDate")==null?"":RenewalDate(map.get("expiryDate").toString()));
 			response.setCurrency(map.get("currency")==null?"":map.get("currency").toString());
-			response.setStickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString());
+			//response.setStickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString());
 			response.setInsuranceTypeDesc(map.get("insuranceTypeDesc")==null?"":map.get("insuranceTypeDesc").toString());
 			response.setPremium(map.get("premium")==null?"":new BigDecimal(Double.parseDouble(map.get("premium").toString())).toString());
 			response.setVatPremium(map.get("vatPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("vatPremium").toString())).toString());
@@ -1055,6 +1059,21 @@ public class JasperCustomServiceImple {
 	}
 	log.info("Exit into getMotorPrivate");
 		return response;
+	}
+	
+	private String getStrickerNo(String quoteNo,String vehicleId) {
+		String result = "";
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			Root<SectionDataDetails> stnoRoot = cq.from(SectionDataDetails.class);
+			cq.select(stnoRoot.get("stickerNumber")).where(cb.equal(stnoRoot.get("quoteNo"), quoteNo),
+					cb.equal(stnoRoot.get("riskId"),vehicleId));
+			result = em.createQuery(cq).getSingleResult();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public TravelReportRes getTravelReport(String policyNo) {

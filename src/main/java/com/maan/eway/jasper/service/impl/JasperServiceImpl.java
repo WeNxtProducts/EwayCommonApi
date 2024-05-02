@@ -871,7 +871,7 @@ public class JasperServiceImpl implements JasperService {
 				jasperParameter.put("pvSubReportPath", classpath+"report/jasper/");
 								
 				JasperDocumentRes reponse = new JasperDocumentRes();
-				Object result = jasperCustomeImple.callReport(quoteNo,req.getReportId(),req.getPremiumRegisterReq());
+				Object result = jasperCustomeImple.callReport(req);
 				if("100019".equalsIgnoreCase(report.getId().getCompanyId())) {
 					if(result instanceof MotorPrivateRes) {
 				        MotorPrivateRes motorPrivateRes = (MotorPrivateRes) result;

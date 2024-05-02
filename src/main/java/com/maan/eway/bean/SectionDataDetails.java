@@ -166,6 +166,12 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="ENDT_CATEG_DESC", length=100)
    private String     endtCategDesc ;
+   
+   @Column(name="COVERNOTE_REFERENCENO")
+   private String coverNoteReferenceNo;
+   
+   @Column(name="STICKER_NUMBER")
+   private String stickerNumber;
 }
 
 
