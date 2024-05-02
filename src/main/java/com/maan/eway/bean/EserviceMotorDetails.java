@@ -713,6 +713,11 @@ private static final long serialVersionUID = 1L;
 	@Column(name ="CUST_RENEWAL_YN", length = 5)
 	private String custRenewalYn;
  	
+	@Column(name = "NON_DEPRECIATED_SI"  )
+	private BigDecimal nonDepreciatedSi;
+	
+	@Column(name = "INFLATION_SI"  )
+	private BigDecimal inflationSi;
      
 }
 
