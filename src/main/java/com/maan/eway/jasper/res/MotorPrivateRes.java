@@ -120,6 +120,12 @@ public class MotorPrivateRes {
 	@JsonProperty("BrokerLogo")
 	private String brokerLogo;
 	
+	@JsonProperty("VatPercent")
+	private String vatPercent;
+	
+	@JsonProperty("OverAllPremium")
+	private String overAllPremium;
+	
 	@JsonProperty("AttachmentList")
 	private List<AttachMentRes> attachmentList;
 	

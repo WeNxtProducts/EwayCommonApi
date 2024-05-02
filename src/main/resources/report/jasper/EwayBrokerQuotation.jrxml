@@ -180,6 +180,7 @@
 	</field>
 	<field name="companyLogo" class="java.lang.String"/>
 	<field name="insuranceTypeDesc" class="java.lang.String"/>
+	<field name="brokerLogo" class="java.lang.String"/>
 	<background>
 		<band height="802" splitType="Stretch">
 			<textField>
@@ -196,6 +197,17 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
+			<textField evaluationTime="Page" isBlankWhenNull="true">
+				<reportElement x="12" y="326" width="530" height="150" forecolor="#FC1814" uuid="f2daec4c-94ff-4101-a415-11312df7f6b9">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER}>1]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="22" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Attached to and Forming Part of Quote No."+$F{quoteNo}]]></textFieldExpression>
+			</textField>
 		</band>
 	</background>
 	<pageHeader>
@@ -204,21 +216,24 @@
 			<image hAlign="Left" vAlign="Middle">
 				<reportElement x="0" y="0" width="555" height="69" uuid="6f920235-6b77-4efa-9ebb-0a1d80d6c200">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$F{brokerLogo} ==null && $F{brokerLogo} ==""]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="0" leftPadding="0"/>
 				<imageExpression><![CDATA[$P{pvImagepath}+$F{companyLogo}]]></imageExpression>
 			</image>
-			<textField evaluationTime="Page" isBlankWhenNull="true">
-				<reportElement x="275" y="55" width="274" height="15" forecolor="#FC1814" uuid="ddbb1db7-5001-466e-8300-0f9912b8698b">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<printWhenExpression><![CDATA[$V{PAGE_NUMBER}>1]]></printWhenExpression>
+			<image>
+				<reportElement x="1" y="0" width="419" height="69" uuid="d82458f6-0080-4bb3-adcb-5cd942b05833">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$F{brokerLogo} !=null && $F{brokerLogo} !=""]]></printWhenExpression>
 				</reportElement>
-				<box leftPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Attached to and Forming Part of Quote No."+$F{quoteNo}]]></textFieldExpression>
-			</textField>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="420" y="0" width="134" height="69" uuid="ce6a8d5b-0b75-4739-862f-8a9315bd70a0">
+					<printWhenExpression><![CDATA[$F{brokerLogo} !=null && $F{brokerLogo} !=""]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{brokerLogo}]]></imageExpression>
+			</image>
 		</band>
 	</pageHeader>
 	<detail>
@@ -959,6 +974,371 @@
 			<break>
 				<reportElement x="0" y="95" width="100" height="1" uuid="ba7b4cdd-73d7-4291-8435-267c39b6d3a7"/>
 			</break>
+		</band>
+		<band height="18">
+			<textField>
+				<reportElement mode="Opaque" x="3" y="3" width="277" height="15" forecolor="#000000" backcolor="#D3D3D3" uuid="031c800b-3df2-424e-9d22-b855eec4fac8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Bank Details"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="280" y="3" width="269" height="15" forecolor="#000000" backcolor="#D3D3D3" uuid="3121bf88-b377-4da9-a0a3-b861dd9fca09">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Digital Payment"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="348" splitType="Prevent">
+			<printWhenExpression><![CDATA[$F{companyId} != 100019]]></printWhenExpression>
+			<textField>
+				<reportElement x="3" y="0" width="277" height="24" uuid="5ffcf783-f608-4f3b-a971-9eaee307f6e7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Following are are the bank details for "+$F{companyName}+" for payment via \nbank: "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="35" width="277" height="45" uuid="b3a80021-8254-4880-bbd2-bf8f72dc0b3c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Account Name: " +$F{companyName}+"\nBank: Exim Bank (Tanzania) Limited \nTZS Account No: 0300174027 / USD Account No: 0300174019 \nSwift Code : EXTNTZTZ"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="95" width="277" height="34" uuid="bd2706a1-66df-46d0-9fe6-09306d511afd">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Bank: Stanbic Bank \nTZS Account No : 09120001040276 / USD Account No: 09120001040292 \nSwift Code : SBICTZTXX"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="144" width="277" height="24" uuid="78fb0833-49ed-45fd-8322-8d97e8bab110">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["National Microfinance Bank (NMB) \nTZS A/C NO.20110033789 / USD A/C NO.20110033790"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="183" width="277" height="24" uuid="95b2e8de-e497-4655-bb98-a65899b350d5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Diamond Trust Bank (DTB) \nTZS Account No: 207491001 / USD Account No: 207491002"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="222" width="277" height="24" uuid="b53ae9c2-6b7d-47ad-8ef8-ac3077af6994">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["National Bank of Commerce Limited \nTZS Account No: 11103007477 Swift Code: NLCBTZTX0T3"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="261" width="277" height="36" uuid="52833975-1d0d-4dc7-9b2c-af71dc1d9cba">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CRDB Bank Plc \nTZS Account No : 0150294121000 / USD Account No : 0250294121000 \nSwift Code : CORUTZTZ"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="312" width="277" height="36" uuid="3e8c2323-bf2b-4a90-ba3c-d865918dc1da">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Canara Bank Tanzania Limited \nAccount No- 1012010000071 USD \nAccount No- 1012010000070 TZS"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="269" height="36" uuid="0341a66a-37b8-405d-95e4-77fa7284c643">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For payment through NMB Channels: \nYour NMB payment reference # is SPQ000300971839. \nYour broker shall advise you on the payment guidelines."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="51" width="268" height="48" uuid="0c54d90b-ac35-49f4-a828-25f9570b2f7d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FOR PAYMENT THROUGH SELCOM PAY:Reference number has \nnot been generated, kindly click on 'Digital Payment' button on \nquotation screen &amp; select 'Selcom' option to generate payment \nreference number"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="494">
+			<printWhenExpression><![CDATA[$F{companyId} == 100019]]></printWhenExpression>
+			<textField>
+				<reportElement x="3" y="95" width="277" height="34" uuid="714b9ab0-7491-46d1-bc6d-1d107ad5ff15">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Bank: EXIM BANK U LTD \nUGX Account No : 8100002264 / USD Account No: 8100002265 \nSwift Code : EXTNUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="222" width="277" height="24" uuid="66dca452-070f-4c31-a27d-486c6fe746a4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DFCU BANK \nUGX Account No: O1013616028451 Swift Code: DFCUUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="261" width="277" height="36" uuid="ba748527-d5f7-472e-bc18-6cb056782ce1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ORIENT BANK\nUGX Account No : 4089150201 / USD Account No : 4089150202 \nSwift Code : ORINUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="35" width="277" height="45" uuid="33ad8ddb-fd82-44dd-8768-bb9dd597482c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Account Name: " +$F{companyName}+"\nBank: Exim Bank (Uganda) Limited \nUGX Account No: O116337001 / USD Account No: O116337002 \nSwift Code : DTKEUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="183" width="277" height="24" uuid="9751b0b4-752d-4d4b-91c4-7be62569337b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["BANK OF BARODA \nUGX Account No: 95010200002574 / USD Account No: 95010200002573"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="0" width="277" height="24" uuid="e7078773-f8ca-4993-8d9e-004d65c2db92">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Following are are the bank details for "+$F{companyName}+" for payment via \nbank: "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="312" width="277" height="36" uuid="86ff0da7-3d4e-4600-a2f6-50840ef730c4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["BARCLAYS BANK \nUGX Account No- 6006085987 \nUSD Account No- 6006085979"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="144" width="277" height="24" uuid="51e037ac-b49f-401e-b7be-90c0b605a6c5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["BANK OF AFRICA \nUGX A/C NO.O2740180001 / USD A/C NO.O2740180014"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="269" height="36" uuid="75726e91-33bf-45fc-967a-b3b02f4ec913">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For payment through NMB Channels: \nYour NMB payment reference # is SPQ000300971839. \nYour broker shall advise you on the payment guidelines."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="51" width="269" height="48" uuid="20b45387-f035-427a-8521-5397b49ef1c9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FOR PAYMENT THROUGH SELCOM PAY:Reference number has \nnot been generated, kindly click on 'Digital Payment' button on \nquotation screen &amp; select 'Selcom' option to generate payment \nreference number"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="358" width="277" height="36" uuid="1393253d-32bb-40bf-bc00-7ebb1cf817ca">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["KCB BANK \nUGX Account No- 2202921583 \nUSD Account No- 2202921648"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="403" width="277" height="36" uuid="6f360efc-367d-4823-84a8-23dbff7c9b2c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NCBA BANK \nUGX Account No- 2006660013 \nUSD Account No- 2006660028"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="109" width="269" height="34" uuid="d63dd006-9e06-4321-a51d-68fc40c4ba57">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["STANBIC BANK \nUGX Account No : 9030016062692 / USD Account No: 9030016075417 \nSwift Code : SBICUGKX"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="154" width="269" height="34" uuid="5ee2e813-9cca-4707-9fb4-2f341af013aa">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["GTBANK \nUGX Account No : 218/149518/1/5118/0 / USD Account No: 218/149518/2/5118/0 \nSwift Code : GTBIUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="199" width="269" height="34" uuid="c3e6054b-7952-42d5-9c25-3823b5876ae8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["OPPORTUNITY BANK U LTD\nUGX Account No : 1203067531118 / USD Account No: N/A \nSwift Code : OPUGUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="244" width="269" height="34" uuid="6a678bb9-81b0-4eb1-b45a-bed3075ecd2b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["HOUSING FINANCE BANK LTD\nUGX Account No : N/A / USD Account No: 1100162192\nSwift Code : HFINUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="290" width="269" height="34" uuid="7d143127-9fa5-47fb-ad26-adaafdcb63b0">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["STANDARD CHARTERED BANK\nUGX Account No : O109386499700 / USD Account No: O8709386499700\nSwift Code : SCBLUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="336" width="269" height="34" uuid="808c6f3e-953c-46fc-a1e2-75e5c164968e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["POST BANK (U) LTD\nUGX Account No : 1630039000076 / USD Account No: 61300039000001\nSwift Code : UGPBUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="383" width="269" height="34" uuid="124a2a27-68a1-4717-8165-74074e092ea8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CENTENARY BANK UGANDA LTD\nUGX Account No : 3100077942 / USD Account No: N/A\nSwift Code : CERBUGKA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="428" width="269" height="34" uuid="661cea1c-9673-4470-8e4d-0efb38a9f2c3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["UGAFODE MICROFINANCE LTD (MDI) \nUGX Account No : 11830000269 / USD Account No: N/A\nSwift Code : N/A"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="448" width="277" height="36" uuid="accdb057-4e63-4fe8-a8c4-56510f3b3415">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement markup="styled">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PRIDE MICROFINANCE LTD (MDI) \nUGX Account No- 204219069995301 \nUSD Account No- N/A"]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="165">
 			<textField>
@@ -4954,371 +5334,6 @@
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{companyId} == 100019?"Tel: +256 (0) 392177281 / 282 | Website: www.allianceug.com":"Tel: +255 041120 0104 | Fax: +255 22213 9098 | Website: www.alliancetz.com"]]></textFieldExpression>
-			</textField>
-		</band>
-		<band height="18">
-			<textField>
-				<reportElement mode="Opaque" x="3" y="3" width="277" height="15" forecolor="#000000" backcolor="#D3D3D3" uuid="031c800b-3df2-424e-9d22-b855eec4fac8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Bank Details"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="280" y="3" width="269" height="15" forecolor="#000000" backcolor="#D3D3D3" uuid="3121bf88-b377-4da9-a0a3-b861dd9fca09">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Digital Payment"]]></textFieldExpression>
-			</textField>
-		</band>
-		<band height="348" splitType="Prevent">
-			<printWhenExpression><![CDATA[$F{companyId} != 100019]]></printWhenExpression>
-			<textField>
-				<reportElement x="3" y="0" width="277" height="24" uuid="5ffcf783-f608-4f3b-a971-9eaee307f6e7">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box topPadding="2" leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Following are are the bank details for "+$F{companyName}+" for payment via \nbank: "]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="35" width="277" height="45" uuid="b3a80021-8254-4880-bbd2-bf8f72dc0b3c">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Account Name: " +$F{companyName}+"\nBank: Exim Bank (Tanzania) Limited \nTZS Account No: 0300174027 / USD Account No: 0300174019 \nSwift Code : EXTNTZTZ"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="95" width="277" height="34" uuid="bd2706a1-66df-46d0-9fe6-09306d511afd">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Bank: Stanbic Bank \nTZS Account No : 09120001040276 / USD Account No: 09120001040292 \nSwift Code : SBICTZTXX"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="144" width="277" height="24" uuid="78fb0833-49ed-45fd-8322-8d97e8bab110">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["National Microfinance Bank (NMB) \nTZS A/C NO.20110033789 / USD A/C NO.20110033790"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="183" width="277" height="24" uuid="95b2e8de-e497-4655-bb98-a65899b350d5">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Diamond Trust Bank (DTB) \nTZS Account No: 207491001 / USD Account No: 207491002"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="222" width="277" height="24" uuid="b53ae9c2-6b7d-47ad-8ef8-ac3077af6994">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["National Bank of Commerce Limited \nTZS Account No: 11103007477 Swift Code: NLCBTZTX0T3"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="261" width="277" height="36" uuid="52833975-1d0d-4dc7-9b2c-af71dc1d9cba">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["CRDB Bank Plc \nTZS Account No : 0150294121000 / USD Account No : 0250294121000 \nSwift Code : CORUTZTZ"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="312" width="277" height="36" uuid="3e8c2323-bf2b-4a90-ba3c-d865918dc1da">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Canara Bank Tanzania Limited \nAccount No- 1012010000071 USD \nAccount No- 1012010000070 TZS"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="0" width="269" height="36" uuid="0341a66a-37b8-405d-95e4-77fa7284c643">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box topPadding="2" leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["For payment through NMB Channels: \nYour NMB payment reference # is SPQ000300971839. \nYour broker shall advise you on the payment guidelines."]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="51" width="268" height="48" uuid="0c54d90b-ac35-49f4-a828-25f9570b2f7d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["FOR PAYMENT THROUGH SELCOM PAY:Reference number has \nnot been generated, kindly click on 'Digital Payment' button on \nquotation screen &amp; select 'Selcom' option to generate payment \nreference number"]]></textFieldExpression>
-			</textField>
-		</band>
-		<band height="494">
-			<printWhenExpression><![CDATA[$F{companyId} == 100019]]></printWhenExpression>
-			<textField>
-				<reportElement x="3" y="95" width="277" height="34" uuid="714b9ab0-7491-46d1-bc6d-1d107ad5ff15">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Bank: EXIM BANK U LTD \nUGX Account No : 8100002264 / USD Account No: 8100002265 \nSwift Code : EXTNUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="222" width="277" height="24" uuid="66dca452-070f-4c31-a27d-486c6fe746a4">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["DFCU BANK \nUGX Account No: O1013616028451 Swift Code: DFCUUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="261" width="277" height="36" uuid="ba748527-d5f7-472e-bc18-6cb056782ce1">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["ORIENT BANK\nUGX Account No : 4089150201 / USD Account No : 4089150202 \nSwift Code : ORINUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="35" width="277" height="45" uuid="33ad8ddb-fd82-44dd-8768-bb9dd597482c">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Account Name: " +$F{companyName}+"\nBank: Exim Bank (Uganda) Limited \nUGX Account No: O116337001 / USD Account No: O116337002 \nSwift Code : DTKEUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="183" width="277" height="24" uuid="9751b0b4-752d-4d4b-91c4-7be62569337b">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["BANK OF BARODA \nUGX Account No: 95010200002574 / USD Account No: 95010200002573"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="0" width="277" height="24" uuid="e7078773-f8ca-4993-8d9e-004d65c2db92">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box topPadding="2" leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Following are are the bank details for "+$F{companyName}+" for payment via \nbank: "]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="312" width="277" height="36" uuid="86ff0da7-3d4e-4600-a2f6-50840ef730c4">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["BARCLAYS BANK \nUGX Account No- 6006085987 \nUSD Account No- 6006085979"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="144" width="277" height="24" uuid="51e037ac-b49f-401e-b7be-90c0b605a6c5">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["BANK OF AFRICA \nUGX A/C NO.O2740180001 / USD A/C NO.O2740180014"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="0" width="269" height="36" uuid="75726e91-33bf-45fc-967a-b3b02f4ec913">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box topPadding="2" leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["For payment through NMB Channels: \nYour NMB payment reference # is SPQ000300971839. \nYour broker shall advise you on the payment guidelines."]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="51" width="269" height="48" uuid="20b45387-f035-427a-8521-5397b49ef1c9">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["FOR PAYMENT THROUGH SELCOM PAY:Reference number has \nnot been generated, kindly click on 'Digital Payment' button on \nquotation screen &amp; select 'Selcom' option to generate payment \nreference number"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="358" width="277" height="36" uuid="1393253d-32bb-40bf-bc00-7ebb1cf817ca">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["KCB BANK \nUGX Account No- 2202921583 \nUSD Account No- 2202921648"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="403" width="277" height="36" uuid="6f360efc-367d-4823-84a8-23dbff7c9b2c">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["NCBA BANK \nUGX Account No- 2006660013 \nUSD Account No- 2006660028"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="109" width="269" height="34" uuid="d63dd006-9e06-4321-a51d-68fc40c4ba57">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["STANBIC BANK \nUGX Account No : 9030016062692 / USD Account No: 9030016075417 \nSwift Code : SBICUGKX"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="154" width="269" height="34" uuid="5ee2e813-9cca-4707-9fb4-2f341af013aa">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["GTBANK \nUGX Account No : 218/149518/1/5118/0 / USD Account No: 218/149518/2/5118/0 \nSwift Code : GTBIUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="199" width="269" height="34" uuid="c3e6054b-7952-42d5-9c25-3823b5876ae8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["OPPORTUNITY BANK U LTD\nUGX Account No : 1203067531118 / USD Account No: N/A \nSwift Code : OPUGUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="244" width="269" height="34" uuid="6a678bb9-81b0-4eb1-b45a-bed3075ecd2b">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["HOUSING FINANCE BANK LTD\nUGX Account No : N/A / USD Account No: 1100162192\nSwift Code : HFINUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="290" width="269" height="34" uuid="7d143127-9fa5-47fb-ad26-adaafdcb63b0">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["STANDARD CHARTERED BANK\nUGX Account No : O109386499700 / USD Account No: O8709386499700\nSwift Code : SCBLUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="336" width="269" height="34" uuid="808c6f3e-953c-46fc-a1e2-75e5c164968e">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["POST BANK (U) LTD\nUGX Account No : 1630039000076 / USD Account No: 61300039000001\nSwift Code : UGPBUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="383" width="269" height="34" uuid="124a2a27-68a1-4717-8165-74074e092ea8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["CENTENARY BANK UGANDA LTD\nUGX Account No : 3100077942 / USD Account No: N/A\nSwift Code : CERBUGKA"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="428" width="269" height="34" uuid="661cea1c-9673-4470-8e4d-0efb38a9f2c3">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["UGAFODE MICROFINANCE LTD (MDI) \nUGX Account No : 11830000269 / USD Account No: N/A\nSwift Code : N/A"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="448" width="277" height="36" uuid="accdb057-4e63-4fe8-a8c4-56510f3b3415">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement markup="styled">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["PRIDE MICROFINANCE LTD (MDI) \nUGX Account No- 204219069995301 \nUSD Account No- N/A"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -162,10 +162,14 @@ public class JasperServiceImpl implements JasperService {
 						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
 						res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, input, "- BrokerQuotation.json");
 					}else {
+						String JasperName = "MotorPrivate";
+						if("100019".equalsIgnoreCase(homeData.getCompanyId())) {
+							JasperName = "UgandaMotorSchedule";
+						}
 						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo(),homeData.getQuoteNo(),req.getVehicleId());
 						String JsonString = gson.toJson(motPrivateRes);
 						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-						res = getCommonJasperPdfFileByJson("/report/jasper/MotorPrivate.jrxml", jasperSaveLocation, JsonString, input, "- MotorPrivate.json");
+						res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- MotorPrivate.json");
 					}
 				}else if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
 						Map<String, Object> input2 = new HashMap<String, Object>();
@@ -548,6 +552,7 @@ public class JasperServiceImpl implements JasperService {
 
 	@Override
 	public CommonRes getPremiumReport(PremiumReportReq req) {
+		log.info("Enter into PremiumReport ==> "+gson.toJson(req));
 		CommonRes response = new CommonRes();
 		PremiumReportRes preRes = new PremiumReportRes();
 		String fileName="",prefix="";
@@ -561,7 +566,7 @@ public class JasperServiceImpl implements JasperService {
 			String imagepath = classpath + "report/images/"; //windows system path
 			
 			String jasperPath = policyReportPath+req.getLoginId()+System.currentTimeMillis()+("Y".equalsIgnoreCase(req.getExcelYn())?".xlsx":".pdf");
-
+			log.info("PremiumReport jasperPath ==> "+ jasperPath);
 			HashMap<String, Object> jasperParameter = new HashMap<String, Object>();
 			jasperParameter.put("pvStartDate", getFormattedDate(req.getStartDate()));
 			jasperParameter.put("pvEndDate", getFormattedDate(req.getEndDate()));
@@ -571,9 +576,10 @@ public class JasperServiceImpl implements JasperService {
 			jasperParameter.put("pvProductId", req.getProductId());
 			jasperParameter.put("pvCode", StringUtils.isBlank(req.getCode())?"99999":req.getCode());
 			jasperParameter.put("pvUserType", StringUtils.isBlank(req.getUserType())?"99999":req.getUserType());
+			log.info("PremiumReport jasperParameter ==> "+gson.toJson(jasperParameter));
 			connection=config.getDataSourceForJasper().getConnection();
 			if("Y".equalsIgnoreCase(req.getExcelYn())) {
-				fileName ="PremiumRegister.xlsx";
+				fileName ="PremiumRegister";
 				prefix="data:application/vnd.ms-excel;base64,";
 				InputStream is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReport.jrxml");
 				JasperDesign design = JRXmlLoader.load(is);
@@ -589,9 +595,16 @@ public class JasperServiceImpl implements JasperService {
 				exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 				exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(output));
 				exporter.setConfiguration(configuration);
-				exporter.exportReport();
+				try{
+					exporter.exportReport();
+				}catch(Exception e) {
+					log.info("Error in PremiumReport ==> "+e.getMessage());
+					e.printStackTrace();
+				
+				}
+				log.info("PremiumReport Report Created");
 			}else {
-				fileName ="PremiumRegister.pdf";
+				fileName ="PremiumRegister";
 				prefix="data:application/pdf;base64,";
 				InputStream is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReport.jrxml");
 				JasperReport jasperReport = JasperCompileManager.compileReport(is);
@@ -601,18 +614,21 @@ public class JasperServiceImpl implements JasperService {
 				pdfExporter.setParameter(JRExporterParameter.OUTPUT_STREAM, output);
 				pdfExporter.exportReport();
 			}
+			log.info("PremiumReport byte Part");
 			byte [] bs = output.toByteArray();
 			String encodeToString = Base64.getEncoder().encodeToString(bs);
 			FileOutputStream fs = new FileOutputStream(new File(jasperPath));
 			fs.write(bs);
 			fs.flush();
 			fs.close();
+			log.info("PremiumReport byte Part");
 			
             preRes = PremiumReportRes.builder()
             		.base64(prefix+encodeToString)
             		.fileName(fileName)
             		.filePath(jasperPath)
             		.build();
+            log.info("PremiumReport res set");
             response.setCommonResponse(preRes);
             response.setIsError(false);
             response.setErrorMessage(Collections.emptyList());

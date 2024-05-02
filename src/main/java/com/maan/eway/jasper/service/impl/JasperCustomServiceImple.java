@@ -827,7 +827,7 @@ public class JasperCustomServiceImple {
 			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),
 			imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),piRoot.get("customerId").alias("customerId"),
 			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"),signimageURL.alias("signImg"),
-			attachment.alias("attachment"),hpmRoot.get("loginId").alias("loginId"),luiRoot.get("brokerLogo").alias("brokerLogo"))
+			attachment.alias("attachment"),hpmRoot.get("loginId").alias("loginId"),luiRoot.get("brokerLogo").alias("brokerLogo"),hpmRoot.get("vatPercent").alias("vatPercent"))
 		.where(StringUtils.isBlank(policyNo)?cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")):cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),
 				cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(cpmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cpmRoot.get("status"), "Y"),cb.equal(hpmRoot.get("productId"), cpmRoot.get("productId")),
@@ -1030,7 +1030,7 @@ public class JasperCustomServiceImple {
 			response.setInsuranceTypeDesc(map.get("insuranceTypeDesc")==null?"":map.get("insuranceTypeDesc").toString());
 			response.setPremium(map.get("premium")==null?"":new BigDecimal(Double.parseDouble(map.get("premium").toString())).toString());
 			response.setVatPremium(map.get("vatPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("vatPremium").toString())).toString());
-			//response.setTotalPremium(map.get("totalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("totalPremium").toString())).toString());
+			response.setOverAllPremium(map.get("totalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("totalPremium").toString())).toString());
 			response.setTotalPremium(new BigDecimal(OverAllPremium).toString());
 			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
@@ -1046,6 +1046,7 @@ public class JasperCustomServiceImple {
 			response.setBusiness(map.get("business")==null?"":map.get("business").toString());
 			response.setSignImg(map.get("signImg")==null?"":map.get("signImg").toString());
 			response.setBrokerLogo(map.get("brokerLogo")==null?"":map.get("brokerLogo").toString());
+			response.setVatPercent(map.get("vatPercent")==null?"":map.get("vatPercent").toString());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
@@ -1542,7 +1543,7 @@ public class JasperCustomServiceImple {
 					hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("paymentType").alias("paymentType"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "")
 					.otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),cb.concat(",", countryName)))))))).alias("address"),
-					piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("email1").alias("email1"),piRoot.get("mobileNo1").alias("mobileNo1"),imageURL.alias("companyLogo"))
+					piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("email1").alias("email1"),piRoot.get("mobileNo1").alias("mobileNo1"),imageURL.alias("companyLogo"),luiRoot.alias("brokerLogo"))
 			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId"))/*,cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId"))*/,cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
 					cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("productId"), "5"),cb.equal(hpmRoot.get("quoteNo"), QuoteNo))
 			.orderBy(cb.desc(hpmRoot.get("entryDate")));
@@ -1591,6 +1592,7 @@ public class JasperCustomServiceImple {
 				result.put("vrTinNo", map.get("vrTinNo")==null?null:map.get("vrTinNo").toString());
 				result.put("expiryDate", map.get("expiryDate")==null?null:map.get("expiryDate").toString());
 				result.put("companyLogo", map.get("companyLogo")==null?"":map.get("companyLogo").toString());
+				result.put("brokerLogo", map.get("brokerLogo")==null?"":map.get("brokerLogo").toString());
 				result.put("insuranceTypeDesc", vehicleList.get(0).get("insuranceTypeDesc")==null?"":vehicleList.get(0).get("insuranceTypeDesc").toString());
 				result.put("vehicleList", vehicleList);
 			}
