@@ -490,7 +490,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 				TiraRes res=new TiraRes();
 				res=dozerMapper.map(data, TiraRes.class);
 				res.setEntryDate(data.getEntryDate()==null?null:data.getEntryDate());
-				res.setStickerNO(homepositiondetails==null?" ":homepositiondetails.getStickerNumber());
+			
 				resList.add(res);
 				}
 			
