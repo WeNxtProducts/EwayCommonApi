@@ -369,8 +369,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				for(EserviceMotorDetails data:list) {
 					save=dozermapper.map(data, EserviceMotorDetails.class);
 					save.setEmiYn("Y");
-					save.setInstallmentPeriod(Integer.valueOf(installmentPeriod));
-					save.setNoOfInstallment(Integer.valueOf(noOFIns));
+					save.setInstallmentPeriod(Integer.valueOf(installmentPeriod != null && !installmentPeriod.isEmpty()? installmentPeriod : "0" ));
+					save.setNoOfInstallment(Integer.valueOf(noOFIns != null && !noOFIns.isEmpty() ? noOFIns : "0"));
 					save.setEmiPremium(adv);
 					motorRepo.save(save);
 				}
