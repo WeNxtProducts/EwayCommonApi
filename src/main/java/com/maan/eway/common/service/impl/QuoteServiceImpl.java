@@ -3665,6 +3665,9 @@ public class QuoteServiceImpl implements QuoteService {
 					n.setNotifTemplatename("Referal Reject");
 				}else if("RE".equalsIgnoreCase(req.getStatus())){
 					n.setNotifTemplatename("ReQuote");
+				}else {
+					n.setNotifTemplatename("Quote Action");
+					
 				}
 				//Common Info
 				n.setBroker(brokerReq);
