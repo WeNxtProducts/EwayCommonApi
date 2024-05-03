@@ -136,5 +136,8 @@ public class PortfolioCustomerDetailsRes {
 	
 	@JsonProperty("EndtPremium")
 	private BigDecimal endtPremium;
+	
+	@JsonProperty("StickerNo")
+	private String stickerno;
 
 }
