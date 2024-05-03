@@ -142,8 +142,30 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="VRN_NUMBER", length=100)
     private String     vrnNumber;
-
-
+  
+  //PATTERN ENTITYS---------
+  
+  
+    
+    @Column(name="ALPHABET", length=20)
+    private String  alphabet;
+    
+    @Column(name="NUMERICDIGITS", length=20)
+    private String  numericDigits;
+    
+    @Column(name="SYMBOLS", length=20)
+    private String  symbols;
+    
+    @Column(name="TOTALPSMIN", length=20)
+    private String  Totalmin;
+    
+    @Column(name="TOTALPSMAX", length=20)
+    private String  Totalmax;
+    
+	/*
+	 * @Column(name="MINIMUM_PREMIUM") private Double minimumpremium;
+	 */
+    
 }
 
 

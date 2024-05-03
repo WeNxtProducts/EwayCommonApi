@@ -35,6 +35,8 @@ import com.maan.eway.bean.InsuranceCompanyMasterId;
 public interface InsuranceCompanyMasterRepository  extends JpaRepository<InsuranceCompanyMaster,InsuranceCompanyMasterId > , JpaSpecificationExecutor<InsuranceCompanyMaster> {
 
 	InsuranceCompanyMaster findByCompanyId(String insuranceId);
+	
+	List<InsuranceCompanyMaster> findByCompanyId(Object id);
 
 	List<InsuranceCompanyMaster> findTopByCompanyIdOrderByAmendIdDesc(String companyId);
 
@@ -51,6 +53,6 @@ public interface InsuranceCompanyMasterRepository  extends JpaRepository<Insuran
 	@Query(value = "SELECT * FROM eway_insurance_company_master ew WHERE company_id = ?1 AND amend_id = (SELECT MAX(amend_id) FROM eway_insurance_company_master WHERE company_id = ew.company_id)", nativeQuery=true)
 	List<Map<String,Object>> getCompanyDetailsById(String companyId);
 
-
+	
 
 }

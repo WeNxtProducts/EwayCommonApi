@@ -4,9 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,12 +32,14 @@ import com.maan.eway.auth.service.LoginCriteriaQueryService;
 import com.maan.eway.auth.service.LoginValidatedService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BlockingIpAddress;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.repository.BlockingIpAddressRepository;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.SessionMasterRepository;
@@ -59,6 +63,9 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 
 	@Autowired
 	private NotifTransactionDetailsRepository notifRepo;
+	
+	@Autowired
+	private InsuranceCompanyMasterRepository repository;
 	private Logger log = LogManager.getLogger(LoginValidatedServiceImpl.class);
 
 	public CommonLoginRes loginInputValidation(LoginRequest req) {
@@ -469,9 +476,16 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			if(model !=null ) {
 				if(req.getNewPassword()==null || StringUtils.isBlank(req.getNewPassword())) {
 					list.add(new Error ("", "New Password", "Please Enter New Password"));
-				} else if (!validPassword(req.getNewPassword())) {
+				} 
+				
+				/*
+				 * else if (!validPassword(req.getNewPassword())) { list.add(new
+				 * Error("","New Password","Please Enter Valid Password")); }
+				 */
+				 if (!passwordvaildation(req.getNewPassword(),req.getLoginId())) {
 					list.add(new Error("","New Password","Please Enter Valid Password"));
 				}
+				
 				else {
 					epass = passEnc.crypt(req.getNewPassword().trim());
 				}	
@@ -506,10 +520,54 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	}
 	
 	private boolean validPassword(String newPassword) {
+		
 		Pattern pattern=Pattern.compile("(?=\\S+$).{7,20}");
     	Matcher matcher = pattern.matcher(newPassword);
     	return matcher.matches();
 	}
+	
+	public boolean  passwordvaildation(String Password, String Loginid)
+	{
+		try {
+		String Pattern="";
+     LoginMaster logindetails=loginRepo.findByLoginId(Loginid);
+     Object company_id=logindetails.getCompanyId();
+		
+	     List<InsuranceCompanyMaster> req1= repository.findByCompanyId(company_id);
+	     if(req1!=null )
+	     {
+	    	 InsuranceCompanyMaster req = req1.stream()
+	    	            .max(Comparator.comparing(InsuranceCompanyMaster::getUpdatedDate))
+	    	            .orElseThrow(NoSuchElementException::new);
+	    	 String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
+		  	   String   number=!StringUtils.isBlank(req.getNumericDigits()) ? "(?=.*["+req.getNumericDigits()+"])" : "";//(?=.*\\d --->mean 0-9)
+		  	   String	symbols=!StringUtils.isBlank(req.getSymbols()) ? "(?=.*["+req.getSymbols()+"])" :"";//(?=.*[@#$%^&+=!])
+		  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+req.getTotalmin()+","+req.getTotalmax()+"}" :"";//{8,10}		
+		       String collect="["+aplhabet+number+symbols+"]";//[a-z0-6@#^]
+		  	   Pattern ="^"+(aplhabet)+(number)+(symbols)+(collect)+(length)+"$";
+
+	     }
+	     System.out.print("Generated Pattern is ----------->"+Pattern);
+	     if(company_id==null||Pattern==null||Pattern.equals("^[]$"))
+	     {
+	    	 Pattern="(?=\\S+$).{7,20}"; //default pattern
+	     }
+	     
+	    if(Password.matches(Pattern))
+		   {
+			   return true;
+		   }
+		
+    
+		}catch(Exception ee)
+		{
+			ee.printStackTrace();
+		}
+		return false;
+	
+	}
+	
+	
 
 	@Override
 	public List<Error> forgetPwdValidation(ForgetPasswordReq req) {

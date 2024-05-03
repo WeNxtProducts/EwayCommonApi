@@ -1,10 +1,14 @@
 package com.maan.eway.admin.service.impl;
 
 import java.util.ArrayList;
+
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +33,7 @@ import com.maan.eway.admin.req.CommonLoginInformationReq;
 import com.maan.eway.admin.req.CommonPersonalInforReq;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.StateMaster;
@@ -66,12 +71,23 @@ public class BasicLoginValidationService {
 	@Autowired
 	private InsuranceCompanyMasterRepository companyMasterRepo;
 	
+
+	
+	
 	
 	public List<String>  commonLoginCreationValidation(CommonLoginCreationReq req ) {
 		List<String> errors = new ArrayList<String>();
 		try {
 			// Login Validation
+			List<Error> list = new ArrayList<Error>();
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
+			
+			if (!passwordvaildation(req.getLoginInformation().getPassword(),req.getLoginInformation().getCompanyId())) {
+				errors.add("2205");
+			
+				list.add(new Error("","Password","Please Enter Valid Password"));
+				 System.out.println("Password is invalid.");
+			}
 			
 			if (StringUtils.isBlank(loginReq .getCreatedBy())) {
 			//	errors.add(new Error("01", "Created By", "Please Enter Created By"));
@@ -312,7 +328,45 @@ public class BasicLoginValidationService {
 		return errors;
 	}
 	
-
+	public boolean  passwordvaildation(String Password, Object company_id)
+	{
+		try {
+		String Pattern="";
+		List<InsuranceCompanyMaster> req1= companyMasterRepo.findByCompanyId(company_id);
+		
+		
+		System.out.print("Req details========"+req1);
+	     if(req1!=null)
+	     {
+	    	 InsuranceCompanyMaster req = req1.stream()
+	    	            .max(Comparator.comparing(InsuranceCompanyMaster::getUpdatedDate))
+	    	            .orElseThrow(NoSuchElementException::new);
+	       String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
+	  	   String   number=!StringUtils.isBlank(req.getNumericDigits()) ? "(?=.*["+req.getNumericDigits()+"])" : "";//(?=.*\\d --->mean 0-9)
+	  	   String	symbols=!StringUtils.isBlank(req.getSymbols()) ? "(?=.*["+req.getSymbols()+"])" :"";//(?=.*[@#$%^&+=!])
+	  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+req.getTotalmin()+","+req.getTotalmax()+"}" :"";//{8,10}		
+	       String collect="["+aplhabet+number+symbols+"]";//[a-z0-6@#^]
+	  	   Pattern ="^"+(aplhabet)+(number)+(symbols)+(collect)+(length)+"$";
+	  	        // ^(?=.*[a-z])(?=.*[0-6])(?=.*[@#^])[a-z0-6@#^]{5,8}$
+				// Pattern ="^"+value1+number+symbols+"."+length+"$";
+	     }
+		if(StringUtils.isBlank(Pattern)||company_id==null||Pattern.equals("^[]$"))
+		 {
+					 Pattern="^(?=\\S+$).{7,20}"; 
+		 }
+	     System.out.print("Generated Pattern is ----------->"+Pattern);
+		   if(Password.matches(Pattern))
+		   {
+			   return true;
+		   }
+		}
+		catch(Exception ss)
+		{
+			ss.printStackTrace();
+			
+		}
+       return false;
+	}
 
 
 
