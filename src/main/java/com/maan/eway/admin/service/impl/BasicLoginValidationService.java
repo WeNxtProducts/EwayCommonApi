@@ -253,11 +253,11 @@ public class BasicLoginValidationService {
 			}  else if( isNotValidMail(personalReq.getUserMail()) ){
 		//		errors.add(new Error("08", "User Mail", "Please Enter Valid User Mail"));
 				errors.add("1739");
-			}  else if(StringUtils.isBlank( loginReq.getAgencyCode()) ) {
+			}  else if(StringUtils.isBlank( loginReq.getAgencyCode()) && loginReq.getUserType().equalsIgnoreCase("User") ) {
 					if(existingMailCheck(personalReq.getUserMail(),req.getLoginInformation().getCompanyId())) {
 						errors.add("2204");
 					}
-			} else if(StringUtils.isNotBlank( loginReq.getAgencyCode()) ){
+			} else if(StringUtils.isNotBlank( loginReq.getAgencyCode())  && loginReq.getUserType().equalsIgnoreCase("User") ){
 				if(isEmailNotSame(loginReq.getLoginId(),personalReq.getUserMail())){
 					if(existingMailCheck(personalReq.getUserMail(),req.getLoginInformation().getCompanyId())) {
 						errors.add("2204");
