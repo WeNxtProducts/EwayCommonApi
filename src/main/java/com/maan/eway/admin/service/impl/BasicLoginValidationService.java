@@ -340,7 +340,7 @@ public class BasicLoginValidationService {
 		
 		
 		System.out.print("Req details========"+req1);
-	     if(req1!=null)
+	     if(req1!=null && !req1.isEmpty())
 	     {
 	    	 InsuranceCompanyMaster req = req1.stream()
 	    	            .max(Comparator.comparing(InsuranceCompanyMaster::getUpdatedDate))
@@ -366,7 +366,9 @@ public class BasicLoginValidationService {
 		}
 		catch(Exception ss)
 		{
+			System.out.println("**************Exception in password Expression gneration*****************");
 			ss.printStackTrace();
+			System.out.print(ss.getMessage());
 			
 		}
        return false;
