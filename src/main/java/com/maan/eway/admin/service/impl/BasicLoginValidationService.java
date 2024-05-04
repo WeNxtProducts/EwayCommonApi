@@ -82,12 +82,16 @@ public class BasicLoginValidationService {
 			List<Error> list = new ArrayList<Error>();
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
 			
+			if(!StringUtils.isBlank(req.getLoginInformation().getPassword()))
+			{
 			if (!passwordvaildation(req.getLoginInformation().getPassword(),req.getLoginInformation().getCompanyId())) {
 				errors.add("2205");
 			
 				list.add(new Error("","Password","Please Enter Valid Password"));
 				 System.out.println("Password is invalid.");
-			}
+			
+			}}
+			
 			
 			if (StringUtils.isBlank(loginReq .getCreatedBy())) {
 			//	errors.add(new Error("01", "Created By", "Please Enter Created By"));
