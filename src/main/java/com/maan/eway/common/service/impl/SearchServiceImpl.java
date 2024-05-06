@@ -1271,10 +1271,10 @@ public class SearchServiceImpl implements SearchService {
 				res.setVehicleUsage(vehInfo.getResMotorUsage());	
 				res.setPolicyType(data.getPolicyTypeDesc());
 				res.setSumInsured(data.getSumInsured());
-				res.setStickerNo(StringUtils.isBlank(ss.getStickerNumber()) && ss!=null ? "":ss.getStickerNumber());
-				res.setCovernoterefno(StringUtils.isBlank(ss.getCoverNoteReferenceNo())  && ss!=null? "":ss.getCoverNoteReferenceNo());
-				res.setResponseStatusCode(StringUtils.isBlank(ss.getResponseStatusCode())  && ss!=null? "":ss.getResponseStatusCode());
-				res.setResponseStatusDesc(StringUtils.isBlank(ss.getResponseStatusDesc())  && ss!=null? "":ss.getResponseStatusDesc());
+				res.setStickerNo(ss!=null && StringUtils.isBlank(ss.getStickerNumber())? "":ss.getStickerNumber());
+				res.setCovernoterefno(ss!=null && StringUtils.isBlank(ss.getCoverNoteReferenceNo()) ? "":ss.getCoverNoteReferenceNo());
+				res.setResponseStatusCode(ss!=null && StringUtils.isBlank(ss.getResponseStatusCode())? "":ss.getResponseStatusCode());
+				res.setResponseStatusDesc(ss!=null && StringUtils.isBlank(ss.getResponseStatusDesc())? "":ss.getResponseStatusDesc());
 				resList.add(res);
 				}
 			} else {
@@ -1299,11 +1299,11 @@ public class SearchServiceImpl implements SearchService {
 				res.setVehicleUsage(data.getMotorUsageDesc());	
 				res.setPolicyType(data.getPolicyTypeDesc());
 				res.setSumInsured(data.getSumInsured());
-				res.setStickerNo(StringUtils.isBlank(ss.getStickerNumber()) && ss!=null ? "":ss.getStickerNumber());
-				res.setCovernoterefno(StringUtils.isBlank(ss.getCoverNoteReferenceNo())  && ss!=null? "":ss.getCoverNoteReferenceNo());
-				res.setResponseStatusCode(StringUtils.isBlank(ss.getResponseStatusCode())  && ss!=null? "":ss.getResponseStatusCode());
-				res.setResponseStatusDesc(StringUtils.isBlank(ss.getResponseStatusDesc())  && ss!=null? "":ss.getResponseStatusDesc());
-			
+				res.setStickerNo(ss!=null && StringUtils.isBlank(ss.getStickerNumber())? "":ss.getStickerNumber());
+				res.setCovernoterefno(ss!=null && StringUtils.isBlank(ss.getCoverNoteReferenceNo()) ? "":ss.getCoverNoteReferenceNo());
+				res.setResponseStatusCode(ss!=null && StringUtils.isBlank(ss.getResponseStatusCode())? "":ss.getResponseStatusCode());
+				res.setResponseStatusDesc(ss!=null && StringUtils.isBlank(ss.getResponseStatusDesc())? "":ss.getResponseStatusDesc());
+				
 				resList.add(res);
 			}
 		}
