@@ -68,6 +68,18 @@ public class SearchROPVehicleRes {
 	
 	@JsonProperty("SumInsured")
 	private BigDecimal sumInsured;
+	
+	@JsonProperty("StickerNo")
+	private String stickerNo;
+	
+	@JsonProperty("CoverNoteRefNo")
+	private String covernoterefno;
+	
+	@JsonProperty("ResponseStatusCode")
+	private String responseStatusCode;
+	
+	@JsonProperty("ResponseStatusDesc")
+	private String responseStatusDesc;
 
 
 }

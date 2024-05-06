@@ -55,6 +55,7 @@ import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
@@ -125,6 +126,7 @@ import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubCoverRes;
 
@@ -204,6 +206,9 @@ public class SearchServiceImpl implements SearchService {
 	
 	@Autowired
 	private EserviceCommonDetailsRepository eCommonRepo;
+	
+	@Autowired
+	private SectionDataDetailsRepository sectiondata;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -1225,7 +1230,9 @@ public class SearchServiceImpl implements SearchService {
 	public SearchROPVehicleDetailsRes adminROPVehicleSearch(SearchReq req) {
 		SearchROPVehicleDetailsRes viewRes = new SearchROPVehicleDetailsRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		SectionDataDetails ss= new SectionDataDetails();
 		try {
+			
 		List<EserviceMotorDetails> motorid=null;
 		String chassisNo="";
 		if (StringUtils.isNotBlank(req.getQuoteNo())) {
@@ -1235,8 +1242,10 @@ public class SearchServiceImpl implements SearchService {
 			 }else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
 			 motorid = repo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 		}
+		
 		List<SearchROPVehicleRes> resList=new ArrayList<SearchROPVehicleRes>();
 		for (EserviceMotorDetails data : motorid) { 
+			ss=sectiondata.findByQuoteNoAndSectionIdAndRiskId(req.getQuoteNo(),data.getSectionId(),data.getRiskId());
 			chassisNo=data.getChassisNumber();
 			if(req.getProductId().equalsIgnoreCase("5")){
 				MotorVehicleInfo vehInfo = motVehInfoRepo.findTop1ByResChassisNumberAndCompanyIdOrderByEntryDateDesc(chassisNo, req.getInsuranceId());
@@ -1261,7 +1270,11 @@ public class SearchServiceImpl implements SearchService {
 				res.setTareWeight(vehInfo.getResTareWeight());
 				res.setVehicleUsage(vehInfo.getResMotorUsage());	
 				res.setPolicyType(data.getPolicyTypeDesc());
-				res.setSumInsured(data.getSumInsured());	
+				res.setSumInsured(data.getSumInsured());
+				res.setStickerNo(StringUtils.isBlank(ss.getStickerNumber())? "":ss.getStickerNumber());
+				res.setCovernoterefno(StringUtils.isBlank(ss.getCoverNoteReferenceNo())? "":ss.getCoverNoteReferenceNo());
+				res.setResponseStatusCode(StringUtils.isBlank(ss.getResponseStatusCode())? "":ss.getResponseStatusCode());
+				res.setResponseStatusDesc(StringUtils.isBlank(ss.getResponseStatusDesc())? "":ss.getResponseStatusDesc());
 				resList.add(res);
 				}
 			} else {
@@ -1285,7 +1298,12 @@ public class SearchServiceImpl implements SearchService {
 				res.setTareWeight(data.getTareWeight()==null?0.0: Double.valueOf(data.getTareWeight().toString()));
 				res.setVehicleUsage(data.getMotorUsageDesc());	
 				res.setPolicyType(data.getPolicyTypeDesc());
-				res.setSumInsured(data.getSumInsured());	
+				res.setSumInsured(data.getSumInsured());
+				res.setStickerNo(StringUtils.isBlank(ss.getStickerNumber())? "":ss.getStickerNumber());
+				res.setCovernoterefno(StringUtils.isBlank(ss.getCoverNoteReferenceNo())? "":ss.getCoverNoteReferenceNo());
+				res.setResponseStatusCode(StringUtils.isBlank(ss.getResponseStatusCode())? "":ss.getResponseStatusCode());
+				res.setResponseStatusDesc(StringUtils.isBlank(ss.getResponseStatusDesc())? "":ss.getResponseStatusDesc());
+			
 				resList.add(res);
 			}
 		}

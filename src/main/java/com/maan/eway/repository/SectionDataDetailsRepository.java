@@ -42,6 +42,7 @@ public interface SectionDataDetailsRepository  extends JpaRepository<SectionData
 
 	List<SectionDataDetails> findByQuoteNoAndStatusOrderByRiskIdAsc(String prevQuoteNo, String string);
 
+	
 
 	List<SectionDataDetails> findByQuoteNoAndStatusNot(String quoteNo, String string);
 
@@ -51,5 +52,7 @@ public interface SectionDataDetailsRepository  extends JpaRepository<SectionData
 	@Transactional
 	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
 			String originalPolicyNo);
+	
+	SectionDataDetails findByQuoteNoAndSectionIdAndRiskId(String quoteNo,String sectionId, Integer Riskid);
 
 }
