@@ -93,6 +93,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMPANY_NAME", length=100)
     private String companyName;
     
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
@@ -172,6 +173,18 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="STICKER_NUMBER")
    private String stickerNumber;
+   
+   @Column(name="RESPONSE_STATUS_CODE", length=100)
+   private String responseStatusCode;
+   
+   @Column(name="RESPONSE_STATUS_DESC", length=100)
+   private String responseStatusDesc;
+   
+   @Column(name="PREV_COVERNOTE_REFNO", length=100)
+   private String prevCovernoteRefno;
+   
+   
+   
 }
 
 

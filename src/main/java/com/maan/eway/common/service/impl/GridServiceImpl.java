@@ -2609,7 +2609,7 @@ public class GridServiceImpl implements GridService {
 							brokerRes.setBrokerName(data.getBrokerName());
 //						}
 //						brokerRes.setBrokerLoginId(data.getLoginId());
-						brokerRes.setSubUserType(data.getSubUserType());
+//						brokerRes.setSubUserType(data.getSubUserType());
 						brokerRes.setTotalCount(data.getCount() == null ? 0 : data.getCount());
 						brokerRes.setTotalPremiumLc(data.getOverallPremiumLc() == null ? "0"
 								: df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
@@ -2671,7 +2671,7 @@ public class GridServiceImpl implements GridService {
 					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"), h.get("productId").alias("productId"),
 					h.get("productName").alias("productName"), l.get("agencyCode").alias("agencyCode"),
 					u.get("userName").alias("brokerName"), l.get("userType").alias("userType"),
-					l.get("subUserType").alias("subUserType"),l.get("oaCode").alias("oaCode"),
+					/*l.get("subUserType").alias("subUserType"),*/l.get("oaCode").alias("oaCode"),
 					cb.max(h.get("customerCode")).alias("customerCode"),cb.max(h.get("customerName")).alias("customerName"),
 					h.get("sourceType").alias("sourceType"),cb.max(h.get("bdmCode")).alias("bdmCode"));
 			// Order By
@@ -2699,8 +2699,8 @@ public class GridServiceImpl implements GridService {
 			predicate.add(cb.lessThanOrEqualTo(h.get("entryDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("userType"), "Broker"));
-			Expression<String> e0 = l.get("subUserType");
-			predicate.add(e0.in("broker","direct"));
+//			Expression<String> e0 = l.get("subUserType");
+//			predicate.add(e0.in("broker","direct"));
 //			predicate.add(cb.equal(l.get("subUserType"), "Broker"));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
 			predicate.add(cb.equal(l.get("companyId"), h.get("companyId")));
@@ -2735,7 +2735,7 @@ public class GridServiceImpl implements GridService {
 				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
 
 			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId"), h.get("productName"),
-					l.get("agencyCode"), u.get("userName"), l.get("userType"), l.get("subUserType"),
+					l.get("agencyCode"), u.get("userName"), l.get("userType"),//, l.get("subUserType"),
 					l.get("oaCode"),h.get("sourceType"))
 					.orderBy(orderList);
 
@@ -4580,6 +4580,284 @@ public class GridServiceImpl implements GridService {
 		}
 		return resList;
 	}
+	
+	@Override
+	public List<GetExistingBrokerListRes> getReportBrokerUserList(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		List<Tuple> list = new ArrayList<Tuple>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			String subUserType="";
+			LoginMaster logindata= new LoginMaster();
+			if("1".equalsIgnoreCase(req.getApplicationId())){
+				 logindata=loginRepo.findByLoginId(req.getLoginId());
+					if (logindata != null) {
+						subUserType = logindata.getSubUserType();
+					}
+			}else {
+				 logindata=loginRepo.findByLoginId(req.getApplicationId());
+					if (logindata != null) {
+						subUserType = logindata.getSubUserType();
+					}
+			}
+			if (!("issuer".equalsIgnoreCase(req.getUserType())) ) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+				Root<LoginUserInfo> us = query.from(LoginUserInfo.class);
+				query.multiselect(/*m.get("agencyCode").alias("code"),*/ m.get("loginId").alias("code"),us.get("userName").alias("codeDesc"),
+						m.get("sourceType").alias("type"));
+				// Find All
+				Subquery<Long> agencyCode = query.subquery(Long.class);
+				Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
+				agencyCode.select(ocpm1.get("agencyCode"));
+				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+				agencyCode.where(a1);
+
+//				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//				Predicate n1 = cb.equal(m.get("loginId"), req.getLoginId());
+				// Predicate n2 = cb.isNotNull(m.get("applicationId"));
+				Predicate n3 = cb.equal(m.get("status"), "P");
+				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
+				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
+				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
+				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
+				Predicate n9 = cb.notEqual(m.get("endtTypeId"), "842");
+				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n11 = cb.or(n9, n10);
+				Predicate n12 = null;
+				if ("Broker".equalsIgnoreCase(req.getUserType())) {
+					n12 = cb.equal(m.get("brokerCode"), agencyCode);
+				} else if ("User".equalsIgnoreCase(req.getUserType())) {
+					n12 = cb.equal(m.get("agencyCode"), agencyCode);
+				}
+				Predicate n13 = cb.isNotNull(m.get("sourceType"));
+				Predicate n14 = cb.isNotNull(m.get("loginId"));
+				Predicate us1 = cb.equal(us.get("loginId"), m.get("loginId"));
+
+				query.where(n3, n4, n5, n6, n7, n8, n11, n12, n13, n14,us1);
+				
+				
+				TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
+				list = typedQuery1.getResultList();
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+						.collect(Collectors.toList());
+				if (list != null && list.size() > 0) {
+
+					for (Tuple data : list) {
+						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString().toLowerCase().replaceAll("premia ", ""));
+						resList.add(res);
+
+					}
+				}
+			} else {
+				resList = getReportIssuer(req, today);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	private List<GetExistingBrokerListRes> getReportIssuer(ExistingBrokerUserListReq req, Date today) {
+		List<Tuple> list = new ArrayList<Tuple>();
+		List<Tuple> list1 = new ArrayList<Tuple>();
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		try {
+			LoginMaster logindata = loginRepo.findByLoginId(req.getApplicationId());
+			String subUserType="high";
+			if (logindata != null) {
+				subUserType = logindata.getSubUserType();
+			}
+			if("low".equalsIgnoreCase(subUserType)){
+			{
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+
+				query.multiselect(m.get("bdmCode").alias("code"), m.get("customerName").alias("codeDesc"),
+						m.get("sourceType").alias("type"));
+				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				Predicate n2 = cb.isNotNull(m.get("applicationId"));
+				Predicate n3 = cb.equal(m.get("status"), "P");
+				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
+				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
+				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
+				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
+				Predicate n9 = cb.notEqual(m.get("endtTypeId"), "842");
+				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n11 = cb.or(n9, n10);
+				Predicate n12 = cb.isNotNull(m.get("bdmCode"));
+				query.where(n1, n2, n3, n4, n5, n6, n7, n8, n11, n12);
+
+				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+						.collect(Collectors.toList());
+				if (list != null && list.size() > 0) {
+
+					for (Tuple data : list) {
+						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+			}
+			{
+				CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m1 = query1.from(HomePositionMaster.class);
+				Root<LoginUserInfo> us = query1.from(LoginUserInfo.class);
+				
+				query1.multiselect(/*m1.get("brokerCode").alias("code"),*/ m1.get("loginId").alias("code"),us.get("userName").alias("codeDesc"),
+						m1.get("sourceType").alias("type"));
+
+				Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
+				Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
+				Predicate n3 = cb1.equal(m1.get("status"), "P");
+				Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
+				Predicate n5 = cb1.equal(m1.get("companyId"), req.getCompanyId());
+				Predicate n6 = cb1.equal(m1.get("branchCode"), req.getBranchCode());
+				Predicate n7 = cb1.greaterThanOrEqualTo(m1.get("expiryDate"), today);
+				Predicate n8 = cb1.lessThanOrEqualTo(m1.get("entryDate"), today);
+				Predicate n9 = cb1.notEqual(m1.get("endtTypeId"), "842");
+				Predicate n10 = cb1.isNull(m1.get("endtTypeId"));
+				Predicate n11 = cb1.or(n9, n10);
+				Predicate n12 = cb1.isNull(m1.get("bdmCode"));
+				Predicate us1 = cb1.equal(us.get("loginId"),m1.get("loginId"));
+				query1.where(n1, n2, n3, n4, n5, n6, n7, n8, n11, n12,us1);
+
+				TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+				list1 = typedQuery1.getResultList();
+				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+						.collect(Collectors.toList());
+				if (list1 != null && list1.size() > 0) {
+
+					for (Tuple data : list1) {
+						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+			}
+			}else if("high".equalsIgnoreCase(subUserType) || "both".equalsIgnoreCase(subUserType)){
+				{
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+					Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+
+					query.multiselect(m.get("bdmCode").alias("code"), m.get("customerName").alias("codeDesc"),
+							m.get("sourceType").alias("type"));
+//					Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					Predicate n2 = cb.isNotNull(m.get("applicationId"));
+					Predicate n3 = cb.equal(m.get("status"), "P");
+					Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
+					Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
+					Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+					Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
+					Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
+					Predicate n9 = cb.notEqual(m.get("endtTypeId"), "842");
+					Predicate n10 = cb.isNull(m.get("endtTypeId"));
+					Predicate n11 = cb.or(n9, n10);
+					Predicate n12 = cb.isNotNull(m.get("bdmCode"));
+					query.where( n2, n3, n4, n5, n6, n7, n8, n11, n12);
+
+					TypedQuery<Tuple> typedQuery = em.createQuery(query);
+					list = typedQuery.getResultList();
+					list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+							.collect(Collectors.toList());
+					if (list != null && list.size() > 0) {
+
+						for (Tuple data : list) {
+							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							resList.add(res);
+
+						}
+					}
+				}
+				{
+					CriteriaBuilder cb1 = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+					Root<HomePositionMaster> m1 = query1.from(HomePositionMaster.class);
+					Root<LoginUserInfo> us = query1.from(LoginUserInfo.class);
+					
+					query1.multiselect(/*m1.get("brokerCode").alias("code"),*/ m1.get("loginId").alias("code"),us.get("userName").alias("codeDesc"),
+							m1.get("sourceType").alias("type"));
+
+//					Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
+					Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
+					Predicate n3 = cb1.equal(m1.get("status"), "P");
+					Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
+					Predicate n5 = cb1.equal(m1.get("companyId"), req.getCompanyId());
+					Predicate n6 = cb1.equal(m1.get("branchCode"), req.getBranchCode());
+					Predicate n7 = cb1.greaterThanOrEqualTo(m1.get("expiryDate"), today);
+					Predicate n8 = cb1.lessThanOrEqualTo(m1.get("entryDate"), today);
+					Predicate n9 = cb1.notEqual(m1.get("endtTypeId"), "842");
+					Predicate n10 = cb1.isNull(m1.get("endtTypeId"));
+					Predicate n11 = cb1.or(n9, n10);
+					Predicate n12 = cb1.isNull(m1.get("bdmCode"));
+					Predicate us1 = cb1.equal(us.get("loginId"),m1.get("loginId"));
+					query1.where( n2, n3, n4, n5, n6, n7, n8, n11, n12,us1);
+
+					TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+					list1 = typedQuery1.getResultList();
+					list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+							.collect(Collectors.toList());
+					if (list1 != null && list1.size() > 0) {
+
+						for (Tuple data : list1) {
+							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							resList.add(res);
+
+						}
+					}
+				}
+				
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	
+	
+	
+	
 
 	@Override
 	public List<GetExistingBrokerListRes> getPortfolioBrokerUserList(ExistingBrokerUserListReq req) {
@@ -6233,7 +6511,7 @@ public class GridServiceImpl implements GridService {
 							brokerRes.setBrokerName(data.getCustomerName());
 						} 
 //						brokerRes.setBrokerLoginId(data.getLoginId());
-						brokerRes.setSubUserType(data.getSubUserType());
+//						brokerRes.setSubUserType(data.getSubUserType());
 						brokerRes.setTotalCount(data.getCount() == null ? 0 : data.getCount());
 						brokerRes.setTotalPremiumLc(data.getOverallPremiumLc() == null ? "0"
 								: df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));

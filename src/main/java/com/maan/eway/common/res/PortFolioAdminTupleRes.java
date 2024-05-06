@@ -19,7 +19,7 @@ public class PortFolioAdminTupleRes {
 	private String agencyCode ;
 	private String brokerName ;
 	private String userType ;
-	private String subUserType ;
+//	private String subUserType ;
 	private Integer oaCode ;
 	private String customerCode ;
 	private String customerName ;

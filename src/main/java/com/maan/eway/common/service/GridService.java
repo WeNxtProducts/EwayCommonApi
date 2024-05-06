@@ -151,4 +151,6 @@ public interface GridService {
 
 	List<PortfolioGridRes> getAllPolicyB2cGrid(PortFolioGridReq req);
 
+	List<GetExistingBrokerListRes> getReportBrokerUserList(ExistingBrokerUserListReq req);
+
 }

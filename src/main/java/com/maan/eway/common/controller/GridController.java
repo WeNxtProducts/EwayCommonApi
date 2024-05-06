@@ -668,6 +668,27 @@ public class GridController {
 
 //_____________________________________________PORTFOLIO DROPDOWN___________________________________________
 	
+	//Report 
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+
+	@PostMapping("/reportbrokerdropdown") 
+	public ResponseEntity<CommonRes> getReportBrokerUserList(@RequestBody ExistingBrokerUserListReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetExistingBrokerListRes> res = entityService.getReportBrokerUserList(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
 	//Active
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
 
