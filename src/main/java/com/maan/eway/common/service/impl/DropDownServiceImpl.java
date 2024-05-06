@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -53,6 +54,7 @@ import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.integration.service.impl.OracleQuery;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
+
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.MotDropdownReq;
@@ -3392,6 +3394,31 @@ public class DropDownServiceImpl  implements DropDownService{
 				resList.add(res);
 			}
 			resList = resList.stream().sorted((o1, o2)->Long.valueOf(o1.getCode()).compareTo(Long.valueOf(o2.getCode()))).collect(Collectors.toList());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	
+	public List<DropDownRes> characterType(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		String company_id="99999";
+		
+		try {
+		String itemType = "CHARACTER_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType, company_id);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+			resList = resList.stream().sorted((o1, o2)->o1.getCode().compareTo(o2.getCode())).collect(Collectors.toList());
 			
 		} catch (Exception e) {
 			e.printStackTrace();

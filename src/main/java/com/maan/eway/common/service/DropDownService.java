@@ -2,6 +2,7 @@ package com.maan.eway.common.service;
 
 import java.util.List;
 
+
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.GetPlanBenefitsReq;
@@ -9,6 +10,7 @@ import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.res.GetMachineryContentRes;
 import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
+
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.MotDropdownReq;
@@ -248,5 +250,7 @@ public interface DropDownService {
 	List<DropDownRes> professionalType(LovDropDownReq req);
 
 	List<DropDownRes> indemnityType(LovDropDownReq req);
+
+	List<DropDownRes> characterType(LovDropDownReq req);
 
 }
