@@ -24,8 +24,11 @@ import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.service.PrintReqService;
 
+import io.swagger.annotations.Api;
+
 @RestController
 @RequestMapping("/pdf")
+@Api(tags = "REPORT : Jasper Reports", description = "API's")
 public class JasperController {
 	
 	@Autowired

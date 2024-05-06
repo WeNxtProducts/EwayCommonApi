@@ -30,7 +30,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.common.res.CommonRes;
-
 import com.maan.eway.document.req.DocGetReq;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.req.DocTypeReq;

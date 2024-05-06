@@ -5,20 +5,25 @@
 */
 package com.maan.eway.admin.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.admin.req.BrokerActiveGridReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.BrokerDetailsGetReq;
@@ -47,15 +52,12 @@ import com.maan.eway.admin.res.UserDetailsGetRes;
 import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.auth.dto.Menu;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BrokerDropdownReq;
-import com.maan.eway.master.req.LovDropDownReq;
-import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.service.DepositService;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
-import com.maan.eway.res.DropDownRes;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerDropdownReq;
+import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -96,8 +98,9 @@ public class LoginDetailsController {
 
 	@PostMapping("/createbroker")
 	@ApiOperation(value="This method is to Create Broker Login")
-	public ResponseEntity<CommonRes> createBrokerLogin(@RequestBody  BrokerCreationReq req) {
+	public ResponseEntity<CommonRes> createBrokerLogin(@RequestParam(value = "brokerLogo",required = false) MultipartFile brokerLogo,@RequestParam ("Req") String jsonReq) throws IOException {
 	
+		BrokerCreationReq req = new ObjectMapper().readValue(jsonReq, BrokerCreationReq.class);
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		List<String> validationCodes = validationService.validateBrokerCreation(req);
@@ -112,8 +115,20 @@ public class LoginDetailsController {
 			
 			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
 		}
-		
 	
+		if(brokerLogo != null) {
+			if(!brokerLogo.getContentType().equals("image/jpeg") && !brokerLogo.getContentType().equals("image/png")) {
+				validation.add(new Error("500", "BrokerLogo", "Only Image files (JPEG or PNG) are allowed"));
+			}else {
+				BufferedImage image = ImageIO.read(brokerLogo.getInputStream());
+				Integer width = image.getWidth();
+				Integer height = image.getHeight();
+				if(width>300 && width<=350 && height>100 && height<=150) {
+					validation.add(new Error("500", "BrokerLogo", "Image Size must be 335x111 pixels."));
+				}
+			}
+		}
+		
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
@@ -124,7 +139,7 @@ public class LoginDetailsController {
 
 		} else {
 			/////// save
-			LoginCreationRes res = entityService.createBroker(req);
+			LoginCreationRes res = entityService.createBroker(req,brokerLogo);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

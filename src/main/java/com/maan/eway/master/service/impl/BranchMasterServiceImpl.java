@@ -282,7 +282,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			createBrokerReq.setLoginInformation(loginReq)	;
 			createBrokerReq.setPersonalInformation(personalInfo);
 			
-			LoginCreationRes loginRes = loginService.createBroker(createBrokerReq) ;
+			LoginCreationRes loginRes = loginService.createBroker(createBrokerReq,null) ;
 			saveData.setBrokerAgencyCode(loginRes.getAgencyCode());
 			branchRepo.saveAndFlush(saveData);
 			

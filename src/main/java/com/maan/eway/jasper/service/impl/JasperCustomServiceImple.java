@@ -25,6 +25,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -203,7 +204,8 @@ public class JasperCustomServiceImple {
 		return response;
 	}
 
-	public MotorCoverNoteRes getMotorCoverNote(String policyNo) {
+	@SuppressWarnings("rawtypes")
+	public MotorCoverNoteRes getMotorCoverNote(String policyNo,String vehicleId) {
 	  log.info("Enter into getMotorCoverNote.\nArgument ==> PolicyNo :"+policyNo);
 		MotorCoverNoteRes response = new  MotorCoverNoteRes();
   try {
@@ -248,15 +250,14 @@ public class JasperCustomServiceImple {
 		Root<InsuranceCompanyMaster> SubicmAmd = icmAmd.from(InsuranceCompanyMaster.class);
 		icmAmd.select(cb.max(SubicmAmd.get("amendId"))).where(cb.equal(SubicmAmd.get("companyId"), icmRoot.get("companyId")));
 		
-		cq.multiselect(mddRoot.get("vehicleId").alias("vehicleId"),
+			List<Selection> selectionList = 	Arrays.asList(
+				mddRoot.get("vehicleId").alias("vehicleId"),
 				cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 				cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
 						.otherwise(insureName).alias("insurerName"),
 				hpmRoot.get("policyCovertedDate").alias("paymentDate"),
 				hpmRoot.get("inceptionDate").alias("inceptionDate"),
 				hpmRoot.get("expiryDate").alias("expiryDate"),
-				//hpmRoot.get("coverNoteReferenceNo").alias("covernoteNo"),
-				//hpmRoot.get("stickerNumber").alias("stickerNumber"),
 				mddRoot.get("registrationNumber").alias("registrationNumber"),
 				mddRoot.get("vehicleTypeDesc").alias("vehicleTypeDesc"),
 				cb.selectCase().when(cb.isNotNull(mddRoot.get("vehcileModelDesc")), mddRoot.get("vehcileModelDesc"))
@@ -264,7 +265,6 @@ public class JasperCustomServiceImple {
 				mddRoot.get("colorDesc").alias("colorDesc"),
 				mddRoot.get("cubicCapacity").alias("cubicCapacity"),
 				mddRoot.get("vehicleMakeDesc").alias("vehicleMakeDesc"),
-				//makeType.alias("vehicleMakeDesc"),
 				mddRoot.get("chassisNumber").alias("chassisNumber"),
 				mddRoot.get("seatingCapacity").alias("seatingCapacity"),
 				mddRoot.get("engineNumber").alias("engineNumber"),
@@ -279,24 +279,40 @@ public class JasperCustomServiceImple {
 				hpmRoot.get("currency").alias("currency"),
 				mddRoot.get("sectionName").alias("sectionName"),
 				mddRoot.get("vehcileModel").alias("vehcileModel"),
-				cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")),hpmRoot.get("premiumLc"))
-						.otherwise(hpmRoot.get("vatPremiumFc")).alias("premium"),
-				cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("vatPremiumLc"))
-						.otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),
-				cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("overallPremiumLc"))
-						.otherwise(hpmRoot.get("overallPremiumFc")).alias("overallPremium"),
-						sddRoot.get("coverNoteReferenceNo").alias("covernoteNo"),sddRoot.get("stickerNumber").alias("stickerNumber"))
-		.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
-				cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")),
-				cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),
-				cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),
-				cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
-				cb.equal(icmRoot.get("amendId"), icmAmd),
-				cb.equal(hpmRoot.get("productId"), "46"),
-				cb.equal(hpmRoot.get("status"), "P"),
-				cb.equal(sddRoot.get("quoteNo"), mddRoot.get("quoteNo")),
-				cb.equal(sddRoot.get("riskId"), mddRoot.get("vehicleId")),
-				cb.equal(hpmRoot.get("policyNo"), policyNo));
+				sddRoot.get("coverNoteReferenceNo").alias("covernoteNo"),sddRoot.get("stickerNumber").alias("stickerNumber"));
+			List<Selection> selections = selectionList.stream().collect(Collectors.toList());
+		if(StringUtils.isNotBlank(vehicleId)) {
+			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), mddRoot.get("actualPremiumLc"))
+					.otherwise(mddRoot.get("actualPremiumFc")).alias("premium"));
+			selections.add(mddRoot.get("vatPremium").alias("vatPremium"));
+			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), mddRoot.get("overallPremiumLc"))
+					.otherwise(mddRoot.get("overallPremiumFc")).alias("overallPremium"));
+		}else {
+			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")),hpmRoot.get("premiumLc"))
+					.otherwise(hpmRoot.get("vatPremiumFc")).alias("premium"));
+			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("vatPremiumLc"))
+					.otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"));
+			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("overallPremiumLc"))
+					.otherwise(hpmRoot.get("overallPremiumFc")).alias("overallPremium"));
+		}
+		
+		Selection [] selectionArray = new Selection[selections.size()];
+		selections.toArray(selectionArray);
+				
+	  cq.multiselect(selectionArray)
+	  .where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),
+					cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")),
+					cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),
+					cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),
+					cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
+					cb.equal(icmRoot.get("amendId"), icmAmd),
+					cb.equal(hpmRoot.get("productId"), "46"),
+					cb.equal(hpmRoot.get("status"), "P"),
+					cb.equal(sddRoot.get("quoteNo"), mddRoot.get("quoteNo")),
+					cb.equal(sddRoot.get("riskId"), mddRoot.get("vehicleId")),
+					cb.equal(hpmRoot.get("policyNo"), policyNo),
+					StringUtils.isNotBlank(vehicleId)?cb.equal(mddRoot.get("vehicleId"), vehicleId):
+						cb.conjunction());
 		List<Tuple> list = em.createQuery(cq).getResultList();
 		if(!CollectionUtils.isEmpty(list)) {
 			Tuple map = list.get(0);
@@ -731,6 +747,7 @@ public class JasperCustomServiceImple {
 		return response;
 	}
 
+	@SuppressWarnings("serial")
 	public MotorPrivateRes getMotorPrivate(String policyNo,String quoteNo,String vehicleId) {
 		log.info("Enter into getMotorPrivate.\nArgument ==> PolicyNo :"+policyNo+" || \t QuoteNo :"+quoteNo+" || \t VehicleId :"+vehicleId);
 		MotorPrivateRes response = new MotorPrivateRes();
@@ -827,7 +844,10 @@ public class JasperCustomServiceImple {
 			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),
 			imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),piRoot.get("customerId").alias("customerId"),
 			cb.selectCase().when(cb.equal(hpmRoot.get("endtCount"), "0"), "NEW BUSINESS").otherwise("ENDORSEMENT").alias("business"),signimageURL.alias("signImg"),
-			attachment.alias("attachment"),hpmRoot.get("loginId").alias("loginId"),luiRoot.get("brokerLogo").alias("brokerLogo"),hpmRoot.get("vatPercent").alias("vatPercent"))
+			attachment.alias("attachment"),hpmRoot.get("loginId").alias("loginId"),luiRoot.get("brokerLogo").alias("brokerLogo"),hpmRoot.get("vatPercent").alias("vatPercent"),
+			cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), mddRoot.get("actualPremiumLc"))
+			.otherwise(mddRoot.get("actualPremiumFc")).alias("vehiclePremium"),mddRoot.get("vatPremium").alias("vehicleVatPremium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), mddRoot.get("overallPremiumLc"))
+			.otherwise(mddRoot.get("overallPremiumFc")).alias("vehicelTotalPremium"))
 		.where(StringUtils.isBlank(policyNo)?cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")):cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),
 				cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(cpmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cpmRoot.get("status"), "Y"),cb.equal(hpmRoot.get("productId"), cpmRoot.get("productId")),
@@ -884,11 +904,19 @@ public class JasperCustomServiceImple {
 			
 			driverDtl.multiselect(dRoot.get("driverId").alias("driverId"),dRoot.get("driverName").alias("driverName"),
 					dRoot.get("driverTypedesc").alias("driverTypedesc"),dRoot.get("driverDob").alias("driverDob"),
-					dRoot.get("idNumber").alias("idNumber"),dmdRoot.get("chassisNumber").alias("chassisNumber"))
-			.where(cb.equal(dRoot.get("quoteNo"), map.get("quoteNo").toString()),cb.equal(dRoot.get("quoteNo"), dmdRoot.get("quoteNo")),
-					cb.equal(dmdRoot.get("vehicleId"), dRoot.get("riskId")),cb.equal(dmdRoot.get("companyId"), dRoot.get("companyId")),
-					cb.equal(dmdRoot.get("productId"), dRoot.get("productId")));
-			
+					dRoot.get("idNumber").alias("idNumber"),dmdRoot.get("chassisNumber").alias("chassisNumber"));
+			List<Predicate> dPredicate = new ArrayList<Predicate>();
+			dPredicate.add(cb.equal(dRoot.get("quoteNo"), map.get("quoteNo").toString()));
+			dPredicate.add(cb.equal(dRoot.get("quoteNo"), dmdRoot.get("quoteNo")));
+			dPredicate.add(cb.equal(dmdRoot.get("vehicleId"), dRoot.get("riskId")));
+			dPredicate.add(cb.equal(dmdRoot.get("companyId"), dRoot.get("companyId")));
+			dPredicate.add(cb.equal(dmdRoot.get("productId"), dRoot.get("productId")));
+			if(StringUtils.isNotBlank(vehicleId)) {
+				dPredicate.add(cb.equal(dRoot.get("riskId"), Integer.parseInt(vehicleId)));
+			}
+			Predicate dPredicateArray  [] = new Predicate[dPredicate.size()];
+			dPredicate.toArray(dPredicateArray);
+			driverDtl.where(dPredicateArray);
 			List<Tuple> driverDetails = em.createQuery(driverDtl).getResultList();
 			if(!driverDetails.isEmpty()) {
 				driverDetails.forEach(k -> 
@@ -968,18 +996,43 @@ public class JasperCustomServiceImple {
 				tearmsAndConditionRes.add(tearms);
 			});
 		}
-		
-				List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
-				List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
-				listByRiskId.forEach(h ->{
-					TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
-						.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
-						.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
-					.build();
-					premiumDetailsRes.add(u);
-			});
-			
+		if(StringUtils.isNotBlank(vehicleId)) {
+			List<LinkedHashMap<String, Object>> vehiclePremiumList = new ArrayList<LinkedHashMap<String,Object>>(4);
+			vehiclePremiumList.add(new LinkedHashMap<String,Object>(){{
+				put("Premium",map.get("vehiclePremium")==null?"":new BigDecimal(Double.parseDouble(map.get("vehiclePremium").toString())));
+			}});
+			vehiclePremiumList.add(new LinkedHashMap<String,Object>(){{
+				put("Vat Premium @ "+(map.get("vatPercent")==null?"":map.get("vatPercent").toString())+" %",
+						map.get("vehicleVatPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("vehicleVatPremium").toString())));			
+			}});
+			vehiclePremiumList.add(new LinkedHashMap<String,Object>(){{
+				put("Total Premium",map.get("vehicelTotalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("vehicelTotalPremium").toString())));
+			}});
+			for (LinkedHashMap<String,Object> k : vehiclePremiumList) {
+			    TaxInvoicePremiumDetails v = TaxInvoicePremiumDetails.builder()
+			            .amount(k.values().stream().map(m -> {
+			            	return BigDecimal.valueOf(Double.parseDouble(m.toString())).toString();
+			            }).collect(Collectors.joining(", ")))
+			            .narration(String.join(", ", k.keySet()))
+			            .build();
+			    premiumDetailsRes.add(v);
+			}
+
+		}else {
+			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
+			List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
+			listByRiskId.forEach(h ->{
+				TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
+					.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
+					.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+				.build();
+				premiumDetailsRes.add(u);
+		});
 			OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+		}
+		
+		
+			
 		
 			String loginId = map.get("loginId")==null?"":map.get("loginId").toString();
 			if(StringUtils.isNotBlank(loginId)) {
@@ -1012,12 +1065,15 @@ public class JasperCustomServiceImple {
 						});
 					}
 				}
-			
+			String polNo = map.get("policyNo")==null?"":map.get("policyNo").toString();
+			if(StringUtils.isNotBlank(vehicleId)) {
+				polNo+="/"+vehicleId;
+			}
 			response.setCustomerId(map.get("customerId")==null?"":map.get("customerId").toString());
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
 			response.setEffectiveDateStart(map.get("effectiveDateStart")==null?"":map.get("effectiveDateStart").toString());
 			response.setEffectiveDateEnd(map.get("effectiveDateEnd")==null?"":map.get("effectiveDateEnd").toString());
-			response.setPolicyNo(map.get("policyNo")==null?"":map.get("policyNo").toString());
+			response.setPolicyNo(polNo);
 			response.setQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			response.setCustomerName(map.get("customerName")==null?"":map.get("customerName").toString());
 			response.setDebitNoteNo(map.get("debitNoteNo")==null?"":map.get("debitNoteNo").toString());
@@ -1543,9 +1599,9 @@ public class JasperCustomServiceImple {
 					hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("paymentType").alias("paymentType"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "")
 					.otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),cb.concat(",", countryName)))))))).alias("address"),
-					piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("email1").alias("email1"),piRoot.get("mobileNo1").alias("mobileNo1"),imageURL.alias("companyLogo"),luiRoot.alias("brokerLogo"))
+					piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("email1").alias("email1"),piRoot.get("mobileNo1").alias("mobileNo1"),imageURL.alias("companyLogo"),luiRoot.get("brokerLogo").alias("brokerLogo"))
 			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId"))/*,cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId"))*/,cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
-					cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("productId"), "5"),cb.equal(hpmRoot.get("quoteNo"), QuoteNo))
+					cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.in(hpmRoot.get("productId")).value(Arrays.asList("5","46")),cb.equal(hpmRoot.get("quoteNo"), QuoteNo))
 			.orderBy(cb.desc(hpmRoot.get("entryDate")));
 			
 			List<Tuple> list = em.createQuery(cq).getResultList();

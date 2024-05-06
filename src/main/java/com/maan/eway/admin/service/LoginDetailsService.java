@@ -6,6 +6,8 @@
 package com.maan.eway.admin.service;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachIssuerReferalReq;
@@ -54,7 +56,7 @@ LoginMaster update(LoginMaster d);
  List<LoginMaster> getAll();
 long getTotal();
 //boolean delete(long id);
-LoginCreationRes createBroker(BrokerCreationReq req);
+LoginCreationRes createBroker(BrokerCreationReq req, MultipartFile brokerLogo);
 LoginCreationRes createIssuerLogin(IssuerCraeationReq req);
 LoginCreationRes createUserLogin(UserCreationReq req);
 

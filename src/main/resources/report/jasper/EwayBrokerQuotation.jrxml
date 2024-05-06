@@ -197,17 +197,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField evaluationTime="Page" isBlankWhenNull="true">
-				<reportElement x="12" y="326" width="530" height="150" forecolor="#FC1814" uuid="f2daec4c-94ff-4101-a415-11312df7f6b9">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<printWhenExpression><![CDATA[$V{PAGE_NUMBER}>1]]></printWhenExpression>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="22" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Attached to and Forming Part of Quote No."+$F{quoteNo}]]></textFieldExpression>
-			</textField>
 		</band>
 	</background>
 	<pageHeader>
@@ -226,7 +215,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<printWhenExpression><![CDATA[$F{brokerLogo} !=null && $F{brokerLogo} !=""]]></printWhenExpression>
 				</reportElement>
-				<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{companyLogo}]]></imageExpression>
 			</image>
 			<image>
 				<reportElement x="420" y="0" width="134" height="69" uuid="ce6a8d5b-0b75-4739-862f-8a9315bd70a0">

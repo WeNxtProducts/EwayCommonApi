@@ -14,6 +14,9 @@ public class CommonLoginCreationReq {
 	@JsonProperty("PersonalInformation")
     private CommonPersonalInforReq     personalInformation;
 	
+	@JsonProperty("BrokerLogo")
+	private String brokerLogo;
+	
 	
 	
 

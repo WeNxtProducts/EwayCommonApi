@@ -10,6 +10,9 @@ import static java.util.stream.Collectors.toCollection;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -21,9 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,6 +50,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachBrokerBranchReq;
@@ -94,9 +97,6 @@ import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.token.passwordEnc;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CityMaster;
-import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.DepositcbcMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -108,22 +108,17 @@ import com.maan.eway.bean.LoginUserInfoArch;
 import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.SeqAgencycode;
-import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.common.req.SaveDepositeMasterReq;
-import com.maan.eway.common.req.SavePaymentDepositReq;
 import com.maan.eway.common.service.DepositService;
 import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.master.req.BrokerProductReq;
-import com.maan.eway.master.req.LovDropDownReq;
-import com.maan.eway.master.req.RegionMasterDropDownReq;
 import com.maan.eway.repository.DepositcbcMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
-import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.RegionMasterRepository;
@@ -273,13 +268,19 @@ this.repository = repo;
   
     @Transactional
 	@Override
-	public LoginCreationRes createBroker(BrokerCreationReq req) {
+	public LoginCreationRes createBroker(BrokerCreationReq req,MultipartFile brokerLogo) {
 		LoginCreationRes res = new LoginCreationRes();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {	
 			
 			CommonLoginCreationReq commonReq = dozerMapper.map(req, CommonLoginCreationReq.class );
-			LoginMaster loginData  = loginRepo.findByLoginId(req.getLoginInformation().getLoginId()  );
+			LoginMaster loginData  = loginRepo.findByLoginId(req.getLoginInformation().getLoginId());
+			
+			if(brokerLogo!= null) {
+				commonReq.setBrokerLogo(req.getLoginInformation().getLoginId()+"_logo."+FilenameUtils.getExtension(brokerLogo.getOriginalFilename()));
+				Path path = Paths.get(this.getClass().getClassLoader().getResource("report/images/").toURI());
+				Files.copy(brokerLogo.getInputStream(), path.resolve(commonReq.getBrokerLogo()));
+			}
 			
 			String saveRes = "";
 			if (loginData ==null) {
@@ -307,10 +308,6 @@ this.repository = repo;
 				}
 				
 			}
-			
-			
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -552,6 +549,7 @@ this.repository = repo;
 			userInfo.setContactPersonName(StringUtils.isBlank(personalReq.getContactPersonName()) ? "" :personalReq.getContactPersonName());
 			userInfo.setRemarks(StringUtils.isBlank(personalReq.getRemarks()) ? "" :personalReq.getRemarks());
 			userInfo.setUserMail(StringUtils.isBlank(personalReq.getUserMail()) ? "" :personalReq.getUserMail());
+			userInfo.setBrokerLogo(req.getBrokerLogo());
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				userInfo.setOaCode(saveLogin.getOaCode().toString());
 				userInfo.setAgencyCode(saveLogin.getAgencyCode());
@@ -842,6 +840,7 @@ this.repository = repo;
 			dozerMapper.map(personalReq , updateUser);
 			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
 			updateUser.setLoginId(loginReq.getLoginId());
+			updateUser.setBrokerLogo(req.getBrokerLogo());
 			updateUser.setOaCode(updateLogin.getOaCode().toString());
 			updateUser.setAgencyCode(updateLogin.getAgencyCode());
 			updateUser.setUpdatedDate(new Date());
