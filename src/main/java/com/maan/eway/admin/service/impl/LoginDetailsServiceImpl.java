@@ -543,7 +543,8 @@ this.repository = repo;
 			userInfo.setAddress1(StringUtils.isBlank(personalReq.getAddress1())?null:personalReq.getAddress1());
 			userInfo.setAddress2(StringUtils.isBlank(personalReq.getAddress2())?null:personalReq.getAddress2());
 			userInfo.setAddress3(StringUtils.isBlank(personalReq.getAddress3())?null:personalReq.getAddress3());
-			userInfo.setCityCode(Integer.valueOf(personalReq.getCityCode()));
+			userInfo.setCityCode(null != personalReq && personalReq.getCityCode() != null && !personalReq.getCityCode().isEmpty()
+					&& personalReq.getCityCode().matches("[0-9]+") ? Integer.valueOf(personalReq.getCityCode()) : 0);
 			userInfo.setCityName(personalReq.getCityName());
 			userInfo.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : personalReq.getMobileCode()); // mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			userInfo.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : personalReq.getWhatsappCode());// mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
