@@ -893,9 +893,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			javax.persistence.criteria.Predicate a3 = cb.equal(b.get("loginId"), ocpm1.get("loginId"));
 			javax.persistence.criteria.Predicate a4 = cb.equal(b.get("productId"), ocpm1.get("productId"));
-			javax.persistence.criteria.Predicate a11 = cb.equal(b.get("policyType"), ocpm1.get("policyType"));
-			javax.persistence.criteria.Predicate a12 = cb.equal(b.get("id"), ocpm1.get("id"));
-			effectiveDate.where(a1, a2, a3,a4,a11,a12);
+//			javax.persistence.criteria.Predicate a11 = cb.equal(b.get("policyType"), ocpm1.get("policyType"));
+//			javax.persistence.criteria.Predicate a12 = cb.equal(b.get("id"), ocpm1.get("id"));
+			effectiveDate.where(a1, a2, a3,a4);
 			
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -905,9 +905,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			javax.persistence.criteria.Predicate a8 = cb.equal(b.get("productId"), ocpm2.get("productId"));
 			javax.persistence.criteria.Predicate a9 = cb.equal(b.get("loginId"), ocpm2.get("loginId"));
 			javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			javax.persistence.criteria.Predicate a13 = cb.equal(b.get("policyType"), ocpm2.get("policyType"));
-			javax.persistence.criteria.Predicate a14 = cb.equal(b.get("id"), ocpm2.get("id"));
-			effectiveDate2.where(a6,  a8, a9, a10,a13,a14);
+//			javax.persistence.criteria.Predicate a13 = cb.equal(b.get("policyType"), ocpm2.get("policyType"));
+//			javax.persistence.criteria.Predicate a14 = cb.equal(b.get("id"), ocpm2.get("id"));
+			effectiveDate2.where(a6,  a8, a9, a10);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -919,9 +919,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n5 = cb.equal(b.get("loginId"),  req.getLoginId());
-			Predicate n6 = cb.equal(b.get("policyType"),"99999");
-			Predicate n7 = cb.equal(b.get("id"),"99999");
-			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+//			Predicate n6 = cb.equal(b.get("policyType"),"99999");
+//			Predicate n7 = cb.equal(b.get("id"),"99999");
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
