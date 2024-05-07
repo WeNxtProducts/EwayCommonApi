@@ -16,6 +16,8 @@ package com.maan.eway.bean;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -616,6 +618,18 @@ private static final long serialVersionUID = 1L;
 
    @Column(name="PAYMENT_FREQUENCY", length=20)
    private Integer     paymentFrequency ;
+   
+	@Column(name = "MILEAGE")
+	private Integer mileage;
+
+	@Column(name = "NO_OF_TRAILERS")
+	private Integer noOfTrailers;
+
+	@Column(name = "NO_OF_PASSENGERS")
+	private Integer noOfPassengers;
+
+	@Column(name = "NO_CLAIM_YEARS")
+	private Integer noClaimYears;
 }
 
 

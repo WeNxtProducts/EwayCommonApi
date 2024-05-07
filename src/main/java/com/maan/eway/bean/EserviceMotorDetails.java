@@ -718,6 +718,18 @@ private static final long serialVersionUID = 1L;
 	
 	@Column(name = "INFLATION_SI"  )
 	private BigDecimal inflationSi;
+	
+	@Column(name = "MILEAGE")
+	private Integer mileage;
+	
+	@Column(name ="NO_CLAIM_YEARS")
+	private Integer noClaimYears;
+	
+	@Column(name ="NO_OF_TRAILERS")
+	private Integer noOfTrailers;
+
+	@Column(name ="NO_OF_PASSENGERS")
+	private Integer noOfPassengers;
      
 }
 
