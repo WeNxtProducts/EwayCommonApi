@@ -205,7 +205,7 @@
 			<image hAlign="Left" vAlign="Middle">
 				<reportElement x="0" y="0" width="555" height="69" uuid="6f920235-6b77-4efa-9ebb-0a1d80d6c200">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{brokerLogo} ==null && $F{brokerLogo} ==""]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{brokerLogo} ==null || $F{brokerLogo} ==""]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="0" leftPadding="0"/>
 				<imageExpression><![CDATA[$P{pvImagepath}+$F{companyLogo}]]></imageExpression>
