@@ -48,6 +48,12 @@ public class EserviceCustomerSaveReq {
 
 	@JsonProperty("ClientName")
 	private String clientName;
+	
+	@JsonProperty("MiddleName")
+	private String middleName;
+	
+	@JsonProperty("LastName")
+	private String lastName;
 
 	@JsonProperty("Address1")
 	private String address1;

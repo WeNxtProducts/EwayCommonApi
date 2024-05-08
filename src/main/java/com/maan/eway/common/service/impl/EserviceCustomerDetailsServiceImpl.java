@@ -1105,6 +1105,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //				saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 //			}
 			saveData.setTitleDesc(title);
+			saveData.setMiddleName(req.getMiddleName());
+			saveData.setLastName(req.getLastName());
 			saveData.setPreferredNotification(req.getPreferredNotification());
 			saveData.setIsTaxExempted(req.getIsTaxExempted());
 			saveData.setRegionCode(req.getRegionCode());

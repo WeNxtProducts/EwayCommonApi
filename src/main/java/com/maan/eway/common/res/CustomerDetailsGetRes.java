@@ -228,5 +228,12 @@ public class CustomerDetailsGetRes {
 	    @JsonProperty("OtherOccupation")
 	    private String otherOccupation;
 	    
+	  
+	    
+	    @JsonProperty("MiddleName")
+		private String middleName;
+		
+		@JsonProperty("LastName")
+		private String lastName;
 
 }
