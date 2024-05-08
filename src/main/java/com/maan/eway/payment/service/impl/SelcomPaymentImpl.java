@@ -269,16 +269,22 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 								paymentinforepo.save(paymentInfo);
 
 								if("COMPLETED".equals(response.get("payment_status").getAsString())) {
-									LoginRequest mslogin=new LoginRequest();
-									mslogin.setLoginId("guest");
-									mslogin.setPassword("Admin@01");
-									mslogin.setReLoginKey("Y");
-									CommonLoginRes checkUserLogin = authservice.checkUserLogin(mslogin,null);
-									Map<String,Object> commonResponse =(Map<String,Object>) checkUserLogin.getCommonResponse();
-									String tokeen = commonResponse.get("Token").toString();
-									TiraFrameReqCall tira=new TiraFrameReqCall();
-									tira.setQuoteNo(orderId);
-									tiraService.callTiraIntegeration(tira, tokeen);
+									try {
+										LoginRequest mslogin=new LoginRequest();
+										mslogin.setLoginId("guest");
+										mslogin.setPassword("Admin@01");
+										mslogin.setReLoginKey("Y");
+										CommonLoginRes checkUserLogin = authservice.checkUserLogin(mslogin,null);
+										Map<String,Object> commonResponse =(Map<String,Object>) checkUserLogin.getCommonResponse();
+										if(commonResponse!=null) {
+											String tokeen = commonResponse.get("Token").toString();
+											TiraFrameReqCall tira=new TiraFrameReqCall();
+											tira.setQuoteNo(orderId);
+											tiraService.callTiraIntegeration(tira, tokeen);
+										}
+									}catch(Exception e) {
+										e.printStackTrace();
+									}
 									PaymentDetailsSaveReq req=new PaymentDetailsSaveReq();
 									req.setQuoteNo(payment.getQuoteNo());
 									req.setCreatedBy(payment.getUpdatedBy());

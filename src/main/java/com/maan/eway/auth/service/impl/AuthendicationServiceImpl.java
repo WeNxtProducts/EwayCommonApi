@@ -171,7 +171,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			}
 			
 			if (login != null ) {
-				http.getSession().removeAttribute(mslogin.getLoginId());
+				if(http!=null)
+					http.getSession().removeAttribute(mslogin.getLoginId());
 				String token = jwtTokenUtil.doGenerateToken(mslogin.getLoginId());
 				log.info("-----token------" + token);
 				SessionMaster session = new SessionMaster();
