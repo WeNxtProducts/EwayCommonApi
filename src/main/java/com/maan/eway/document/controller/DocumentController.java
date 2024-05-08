@@ -135,9 +135,10 @@ public class DocumentController {
 		}
 
 		CommonRes res = documentservice.fileuploadOCR(req);
-		if(res.getIsError()) {
-			res.setErrorMessage(List.of(new Error("01","File","Please Enter Correct Id Value")));
-		}
+		/*
+		 * if(res.getIsError()) { res.setErrorMessage(List.of(new
+		 * Error("01","File","Please Enter Correct Id Value"))); }
+		 */
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 
 	}
