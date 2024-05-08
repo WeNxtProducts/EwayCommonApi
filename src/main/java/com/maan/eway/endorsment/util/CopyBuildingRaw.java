@@ -563,15 +563,20 @@ public class CopyBuildingRaw {
 	}
 	
 	private BuildingRiskDetails buildingRiskDetailsEndtStatus(ChangeEndoStatusReq req) {
-		BuildingRiskDetails savedata = new BuildingRiskDetails();
+		BuildingRiskDetails savedata=null;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			List<BuildingRiskDetails> commonData = buildRiskRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			
 			if (commonData != null&& commonData.size()>0) {
-				savedata = dozerMapper.map(commonData, BuildingRiskDetails.class);
-				savedata.setEndtStatus("C");
-				savedata.setStatus("P");
-				buildRiskRepo.saveAndFlush(savedata);
+				for(BuildingRiskDetails data: commonData ) {
+					 savedata = new BuildingRiskDetails();
+					savedata = dozerMapper.map(data, BuildingRiskDetails.class);
+					savedata.setEndtStatus("C");
+					savedata.setStatus("P");
+					buildRiskRepo.saveAndFlush(savedata);
+				}
+				
 			}
 
 		} catch (Exception e) {
