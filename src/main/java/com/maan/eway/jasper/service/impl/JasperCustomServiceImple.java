@@ -1613,7 +1613,7 @@ public class JasperCustomServiceImple {
 					.otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),cb.concat(",", countryName)))))))).alias("address"),
 					piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("email1").alias("email1"),piRoot.get("mobileNo1").alias("mobileNo1"),imageURL.alias("companyLogo"),luiRoot.get("brokerLogo").alias("brokerLogo"))
 			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId"))/*,cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId"))*/,cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
-					cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.in(hpmRoot.get("productId")).value(Arrays.asList("5","46")),cb.equal(hpmRoot.get("quoteNo"), QuoteNo))
+					cb.equal(luiRoot.get("loginId"), hpmRoot.get("loginId")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.in(hpmRoot.get("productId")).value(Arrays.asList(5,46)),cb.equal(hpmRoot.get("quoteNo"), QuoteNo))
 			.orderBy(cb.desc(hpmRoot.get("entryDate")));
 			
 			List<Tuple> list = em.createQuery(cq).getResultList();
