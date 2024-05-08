@@ -1,9 +1,9 @@
 package com.maan.eway.jasper.service.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -764,11 +764,7 @@ public class JasperServiceImpl implements JasperService {
 		int count = 0;
 		log.info(fileNameEnd.substring(2).replaceAll(".json", " ")+"JsonResponse ==> "+jsonString);
 		try {
-			FileWriter fileWriter = new FileWriter(jasperSaveLocation+fileNameEnd, false);
-			fileWriter.write(jsonString);
-			fileWriter.close();
-			File file = new File(jasperSaveLocation+fileNameEnd);
-			JsonDataSource dataSource = new JsonDataSource(file);
+			JsonDataSource dataSource = new JsonDataSource(new ByteArrayInputStream(jsonString.getBytes()));
 			inputStream = this.getClass().getResourceAsStream(jrxmlPath);
 			JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map,dataSource);

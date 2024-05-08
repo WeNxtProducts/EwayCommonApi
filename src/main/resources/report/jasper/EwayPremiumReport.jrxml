@@ -157,14 +157,14 @@ WHERE
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('both') THEN '1' WHEN (
+      ) IN ('both','high') THEN '1' WHEN (
         SELECT 
           SUB_USER_TYPE 
         FROM 
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('low', 'high') THEN HPM.Application_id END
+      ) IN ('low') THEN HPM.Application_id END
     ) = (
       CASE WHEN (
         SELECT 
@@ -173,7 +173,7 @@ WHERE
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('both') THEN '1' ELSE $P{pvLoginId} END
+      ) IN ('both','high') THEN '1' ELSE $P{pvLoginId} END
     ) 
     OR (
       CASE WHEN (
@@ -208,7 +208,7 @@ WHERE
         LOGIN_ID = $P{pvLoginId}
     )
   )
-  ORDER BY BRANCH_NAME,BROKER_NAME,USER_NAME DESC;]]>
+  ORDER BY BRANCH_NAME,BROKER_NAME,USER_NAME DESC]]>
 	</queryString>
 	<field name="LOGIN_ID" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="LOGIN_ID"/>

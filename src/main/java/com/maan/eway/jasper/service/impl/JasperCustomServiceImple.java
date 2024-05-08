@@ -139,6 +139,9 @@ public class JasperCustomServiceImple {
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
 	
+//	@Autowired
+//	private MultiplePolicyDrCrDetailRepository multiPolicyDrCrDtlRepo;
+	
 	@Autowired
 	private JasperServiceImpl jasperServiceImpl;
 	
@@ -847,7 +850,7 @@ public class JasperCustomServiceImple {
 			attachment.alias("attachment"),hpmRoot.get("loginId").alias("loginId"),luiRoot.get("brokerLogo").alias("brokerLogo"),hpmRoot.get("vatPercent").alias("vatPercent"),
 			cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), mddRoot.get("actualPremiumLc"))
 			.otherwise(mddRoot.get("actualPremiumFc")).alias("vehiclePremium"),mddRoot.get("vatPremium").alias("vehicleVatPremium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), mddRoot.get("overallPremiumLc"))
-			.otherwise(mddRoot.get("overallPremiumFc")).alias("vehicelTotalPremium"))
+			.otherwise(mddRoot.get("overallPremiumFc")).alias("vehicelTotalPremium"),hpmRoot.get("subUserType").alias("subUserType"))
 		.where(StringUtils.isBlank(policyNo)?cb.equal(mddRoot.get("quoteNo"), hpmRoot.get("quoteNo")):cb.equal(mddRoot.get("policyNo"), hpmRoot.get("policyNo")),
 				cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(hpmRoot.get("loginId"), luiRoot.get("loginId")),
 				cb.equal(cpmRoot.get("companyId"), hpmRoot.get("companyId")),cb.equal(cpmRoot.get("status"), "Y"),cb.equal(hpmRoot.get("productId"), cpmRoot.get("productId")),
@@ -1017,7 +1020,17 @@ public class JasperCustomServiceImple {
 			            .build();
 			    premiumDetailsRes.add(v);
 			}
-
+		/*	List<MultiplePolicyDrCrDetail> vehiclePremiumDetails = multiPolicyDrCrDtlRepo.findByQuoteNoAndRiskId(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),Integer.parseInt(vehicleId));
+			if(!vehiclePremiumDetails.isEmpty()) {
+				vehiclePremiumDetails = vehiclePremiumDetails.stream().filter(f -> f.getChargeCode().compareTo(new BigDecimal(1003)) !=0 && f.getChargeCode().compareTo(new BigDecimal(1004)) !=0).sorted(Comparator.comparing(MultiplePolicyDrCrDetail::getDisplayOrder)).collect(Collectors.toList());
+				vehiclePremiumDetails.forEach(h ->{
+					TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
+						.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
+						.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+					.build();
+					premiumDetailsRes.add(u);
+			});
+			}*/
 		}else {
 			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
 			List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
@@ -1028,11 +1041,8 @@ public class JasperCustomServiceImple {
 				.build();
 				premiumDetailsRes.add(u);
 		});
-			OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
-		}
-		
-		
-			
+	}
+		OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 		
 			String loginId = map.get("loginId")==null?"":map.get("loginId").toString();
 			if(StringUtils.isNotBlank(loginId)) {
@@ -1069,6 +1079,7 @@ public class JasperCustomServiceImple {
 			if(StringUtils.isNotBlank(vehicleId)) {
 				polNo+="/"+vehicleId;
 			}
+			String subUserType = map.get("subUserType")==null?"":map.get("subUserType").toString();
 			response.setCustomerId(map.get("customerId")==null?"":map.get("customerId").toString());
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
 			response.setEffectiveDateStart(map.get("effectiveDateStart")==null?"":map.get("effectiveDateStart").toString());
@@ -1090,7 +1101,8 @@ public class JasperCustomServiceImple {
 			response.setTotalPremium(new BigDecimal(OverAllPremium).toString());
 			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
 			response.setApprovedBy(map.get("approvedBy")==null?"":map.get("approvedBy").toString());
-			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
+			response.setUserName(subUserType.toLowerCase().contains("b2c")?map.get("customerName")==null?"":map.get("customerName").toString():
+					map.get("userName")==null?"":map.get("userName").toString());
 			response.setNoOfVehicle(map.get("noOfVehicle")==null?"":map.get("noOfVehicle").toString());
 			response.setPostalAddress(map.get("postalAddress")==null?"":map.get("postalAddress").toString());
 			response.setBorrowerType(collateralDetails.isEmpty()?"":collateralDetails.get(0).getBorrowerTypeDesc());
