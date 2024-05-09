@@ -545,7 +545,7 @@ public List<String> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 		}
 		
 
-		if(StringUtils.isBlank(req.getStatus()) && !req.getStatus().equalsIgnoreCase("N"))
+		if(StringUtils.isBlank(req.getStatus()) && req.getStatus().equalsIgnoreCase("Y"))
 		{
 		if(checkBranch(req.getBranchCode(),req.getLoginId(),req.getCompanyId(),req.getBrokerBranchName()))
 		{
@@ -677,7 +677,7 @@ public boolean checkBranch(String branchcode,String login_id,String company_id,S
 	List<LoginBranchMaster> findBranch=null;
 if(StringUtils.isBlank(branchcode)||StringUtils.isBlank(login_id)||StringUtils.isBlank(brokerbranchname)||StringUtils.isBlank(company_id) )return false;
 
-findBranch = loginBranchRepo. findByLoginIdAndCompanyIdAndBranchCodeAndBranchNameNot(login_id,company_id,branchcode,brokerbranchname);
+findBranch = loginBranchRepo. findByLoginIdAndCompanyIdAndBranchCodeAndBranchNameNotAndStatus(login_id,company_id,branchcode,brokerbranchname,"Y");
 if(!findBranch.isEmpty()) return true;
 return false;
 
