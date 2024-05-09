@@ -545,11 +545,12 @@ public List<String> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 		}
 		
 
-		
+		if(StringUtils.isBlank(req.getStatus()) && !req.getStatus().equalsIgnoreCase("N"))
+		{
 		if(checkBranch(req.getBranchCode(),req.getLoginId(),req.getCompanyId(),req.getBrokerBranchName()))
 		{
 		errors.add("2241");
-		}
+		}}
 			
 		
 		//Login  Data
