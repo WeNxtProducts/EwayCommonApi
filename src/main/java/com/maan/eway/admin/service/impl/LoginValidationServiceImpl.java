@@ -68,6 +68,8 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 	@Autowired
 	private LoginBranchMasterRepository  loginBranchRepo ;
 	
+	
+	
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -541,6 +543,15 @@ public List<String> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 //				errors.add(new Error("01", "LoginId", "Please Enter LoginId" ));
 			errors.add("1786");
 		}
+		
+
+		
+		if(checkBranch(req.getBranchCode(),req.getLoginId(),req.getCompanyId(),req.getBrokerBranchName()))
+		{
+		errors.add("2241");
+		}
+			
+		
 		//Login  Data
 //		LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
 //		if (loginData.getBrokerCompanyYn() != null && !loginData.getBrokerCompanyYn().equals("N")) {
@@ -660,7 +671,16 @@ public List<String> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 	}
 	return errors;
 }
+public boolean checkBranch(String branchcode,String login_id,String company_id,String brokerbranchname)
+{
+	List<LoginBranchMaster> findBranch=null;
+if(StringUtils.isBlank(branchcode)||StringUtils.isBlank(login_id)||StringUtils.isBlank(brokerbranchname)||StringUtils.isBlank(company_id) )return false;
 
+findBranch = loginBranchRepo. findByLoginIdAndCompanyIdAndBranchCodeAndBranchNameNot(login_id,company_id,branchcode,brokerbranchname);
+if(!findBranch.isEmpty()) return true;
+return false;
+
+}
 public List<LoginBranchMaster> getBrokerBranchNameExistDetails(String brokerBranchName , String loginId ) {
 	List<LoginBranchMaster> list = new ArrayList<LoginBranchMaster>();
 	try {
