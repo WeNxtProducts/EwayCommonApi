@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -111,6 +112,7 @@ import com.maan.eway.bean.SeqAgencycode;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.common.req.SaveDepositeMasterReq;
 import com.maan.eway.common.service.DepositService;
+import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.repository.DepositcbcMasterRepository;
@@ -1429,6 +1431,7 @@ this.repository = repo;
 			res.setLoginInformation(loginInfo);
 			res.setPersonalInformation(personalInfo);
 			res.setDepositCbcInformation(depoReslist);
+			res.setBrokerLogo(userData.getBrokerLogo());
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1934,6 +1937,28 @@ this.repository = repo;
 			}
 			return itemDesc ;
 		}
+
+
+	@Override
+	public JasperDocumentRes getBrokerLogo(String loginId) {
+		log.info("Enter into BrokerLogo");
+		JasperDocumentRes res = new JasperDocumentRes();
+		try {
+			LoginUserInfo info = loginUserRepo.findByLoginId(loginId);
+			Path path = Paths.get(this.getClass().getClassLoader().getResource("report/images/"+info.getBrokerLogo()).toURI());
+			byte [] imageByte = Files.readAllBytes(path);
+			String imgStr = Base64.getEncoder().encodeToString(imageByte);
+			String mimeType = Files.probeContentType(path);
+			String imgData ="data:"+mimeType+";base64,"+imgStr;
+			res.setPdfoutfilepath(path.toString());
+			res.setPdfoutfile(imgData);
+			return res;
+		}catch(Exception e) {
+			log.info("Error in BrokerLogo ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }
 

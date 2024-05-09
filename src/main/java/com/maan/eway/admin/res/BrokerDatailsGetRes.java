@@ -19,4 +19,7 @@ public class BrokerDatailsGetRes {
 	
 	@JsonProperty("DepositCbc")
     private List<BrokerDepositCbcDetailsGetRes> depositCbcInformation     ;
+	
+	@JsonProperty("BrokerLogo")
+	private String brokerLogo;
 }

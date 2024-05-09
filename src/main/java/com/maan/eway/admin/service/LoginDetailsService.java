@@ -8,11 +8,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.maan.eway.admin.req.AttachCompaniesReq;
-import com.maan.eway.admin.req.AttachCompnayProductRequest;
-import com.maan.eway.admin.req.AttachIssuerReferalReq;
 import com.maan.eway.admin.req.BrokerActiveGridReq;
-import com.maan.eway.admin.req.BrokerBranchGetReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.BrokerDetailsGetReq;
 import com.maan.eway.admin.req.BrokerLoginGridReq;
@@ -28,7 +24,6 @@ import com.maan.eway.admin.req.UserActiveGridReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.req.UserDetailsGetReq;
 import com.maan.eway.admin.req.UserLoginGridReq;
-import com.maan.eway.admin.res.BrokerCompanyGetRes;
 import com.maan.eway.admin.res.BrokerDatailsGetRes;
 import com.maan.eway.admin.res.IssuerDatailsGetRes;
 import com.maan.eway.admin.res.LoginBrokerDetailsGetRes;
@@ -40,10 +35,9 @@ import com.maan.eway.admin.res.MenuIdGetRes;
 import com.maan.eway.admin.res.UserDetailsGetRes;
 import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.master.req.BrokerDropdownReq;
-import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.res.BrokerDropDownRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>LoginMasterServiceimpl</h2>
@@ -81,6 +75,7 @@ MenuIdGetRes getmenuids(MenuIdGetReq req);
 
 List<BrokerDropDownRes> getBrokerIds();
 List<BrokerDropDownRes> getBrokerIdsByCompany(BrokerDropdownReq req);
+JasperDocumentRes getBrokerLogo(String loginId);
 
 
 

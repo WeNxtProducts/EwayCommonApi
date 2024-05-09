@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +58,7 @@ import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
+import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -554,4 +557,14 @@ public class LoginDetailsController {
 			}
 		}
 
+	@GetMapping("/getBrokerLogo/{loginId}")
+	public ResponseEntity<?> GetBrokerLogo(@PathVariable ("loginId") String loginId){
+		JasperDocumentRes res = entityService.getBrokerLogo(loginId);
+		if(res != null) {
+			return new ResponseEntity<JasperDocumentRes>(res,HttpStatus.ACCEPTED);
+		}else {
+			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+		}
+	}
+	
 }
