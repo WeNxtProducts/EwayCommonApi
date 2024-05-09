@@ -577,7 +577,7 @@ this.repository = repo;
 					city=regrepo.findByRegionCode(personalReq.getStateCode());
 				} 
 //				userInfo.setCityName(cityNames.get(0).get("regionName") == null ? "" :  cityNames.get(0).get("regionName").toString());
-				userInfo.setCityName(city!=null && city.size() > 0 ? ( city.get(0).getRegionName() == null ? "" :  city.get(0).getRegionName()) :"");
+				userInfo.setCityName(city!=null && city.size() > 0 ? ( city.get(0).getRegionName() == null ? "" :  city.get(0).getRegionName()) : personalReq.getCityName() != null ? personalReq.getCityName() : "" );
 				userInfo.setStateName(state!=null && state.size() > 0 ? ( state.get(0).getStateName() == null ? "" : state.get(0).getStateName()) :"" );
 //				userInfo.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
 				//userInfo.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());
