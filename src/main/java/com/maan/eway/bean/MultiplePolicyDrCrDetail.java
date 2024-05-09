@@ -90,7 +90,7 @@ public class MultiplePolicyDrCrDetail implements Serializable {
 	private String drcrFlag;
 	
 	@Column(name = "AMOUNT_FC",nullable = false)
-	private Double amountFc;
+	private BigDecimal amountFc;
 	
 	@Id
 	@Column(name = "STATUS")

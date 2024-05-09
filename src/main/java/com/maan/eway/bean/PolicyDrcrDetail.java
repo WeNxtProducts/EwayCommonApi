@@ -125,6 +125,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="DISPLAY_ORDER", length=5)
     private Integer     displayOrder ; 
     
+    @Column(name="VEHICLE_TYPE ", length=5)
+    private String     vehicleType ;
+    
+    @Column(name="VEHICLE_TYPE_DESC", length=5)
+    private String     vehiclelTypeDesc ; 
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

@@ -61,4 +61,8 @@ public class ChartParentMaster {
 	@Column(name = "UPDATED_BY")
 	private String updatedBy;
 	
+	
+	@Column(name = "TYPE")
+	private String type;
+	
 }

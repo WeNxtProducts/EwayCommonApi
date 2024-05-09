@@ -184,6 +184,12 @@ private static final long serialVersionUID = 1L;
    private String prevCovernoteRefno;
    
    
+   @Column(name="COMMISSION_PERCENTAGE", length=100)
+   private BigDecimal commsissionPercentage;
+   
+   @Column(name="COMMISSION_AMOUNT", length=100)
+   private BigDecimal commissionAmount;
+   
    
 }
 
