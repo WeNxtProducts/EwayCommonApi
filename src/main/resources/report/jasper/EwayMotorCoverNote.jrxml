@@ -3,6 +3,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayMotorCoverNote" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8d1467b8-4c0f-4241-b2bf-6ba278d799c9">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayMotorCoverNote"/>
+	<property name="net.sf.jasperreports.print.create.bookmarks" value="false"/>
 	<parameter name="pvImagepath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[]]>
@@ -138,16 +139,16 @@
 	<background>
 		<band splitType="Stretch"/>
 	</background>
-	<title>
-		<band height="69" splitType="Stretch">
+	<pageHeader>
+		<band height="69">
 			<image>
-				<reportElement x="5" y="0" width="249" height="69" uuid="4c824dcd-942c-4524-9fd7-541f4b062eba">
+				<reportElement x="5" y="0" width="249" height="69" uuid="99db24c7-0390-4c6c-aca2-917936c94593">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<imageExpression><![CDATA[$P{pvImagepath}+"Alliancelogo.png"]]></imageExpression>
 			</image>
 		</band>
-	</title>
+	</pageHeader>
 	<detail>
 		<band height="30" splitType="Stretch">
 			<textField>
@@ -162,6 +163,9 @@
 				</textElement>
 				<textFieldExpression><![CDATA["MOTOR INSURANCE COVER NOTE"]]></textFieldExpression>
 			</textField>
+			<break>
+				<reportElement x="0" y="3" width="100" height="1" uuid="ccca2616-297e-4eef-b4b9-5acfc8c14902"/>
+			</break>
 		</band>
 		<band height="30">
 			<textField>
@@ -1216,7 +1220,7 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="53">
+		<band height="25">
 			<textField>
 				<reportElement x="5" y="10" width="108" height="15" uuid="ef65b709-bc7e-4d04-b997-2327ce660bc1">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>

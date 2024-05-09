@@ -208,9 +208,9 @@ public class JasperCustomServiceImple {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public MotorCoverNoteRes getMotorCoverNote(String policyNo,String vehicleId) {
+	public List<MotorCoverNoteRes> getMotorCoverNote(String policyNo,String vehicleId) {
 	  log.info("Enter into getMotorCoverNote.\nArgument ==> PolicyNo :"+policyNo);
-		MotorCoverNoteRes response = new  MotorCoverNoteRes();
+	  List<MotorCoverNoteRes> response = new  ArrayList<MotorCoverNoteRes>();
   try {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
@@ -318,38 +318,42 @@ public class JasperCustomServiceImple {
 						cb.conjunction());
 		List<Tuple> list = em.createQuery(cq).getResultList();
 		if(!CollectionUtils.isEmpty(list)) {
-			Tuple map = list.get(0);
-			response.setVehicleId(map.get("vehicleId")==null?"":map.get("vehicleId").toString());
-			response.setCustomerName(map.get("customerName")==null?"":map.get("customerName").toString());
-			response.setInsurerName(map.get("insurerName")==null?"":map.get("insurerName").toString());
-			response.setPaymentDate(map.get("paymentDate")==null?"":map.get("paymentDate").toString());
-			response.setDateofIssue(map.get("paymentDate")==null?"":map.get("paymentDate").toString());
-			response.setStartDate(map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
-			response.setEndDate(map.get("expiryDate")==null?"":map.get("expiryDate").toString());
-			response.setCovernoteNo(map.get("covernoteNo")==null?"":map.get("covernoteNo").toString());
-			response.setStickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString());
-			response.setRegistrationNumber(map.get("registrationNumber")==null?"":map.get("registrationNumber").toString());
-			response.setVehicleTypeDesc(map.get("vehicleTypeDesc")==null?"":map.get("vehicleTypeDesc").toString());
-			response.setModelType(map.get("modelType")==null?"":map.get("modelType").toString());
-			response.setColorDesc(map.get("colorDesc")==null?"":map.get("colorDesc").toString());
-			response.setCubicCapacity(map.get("cubicCapacity")==null?"":map.get("cubicCapacity").toString());
-			response.setVehicleMakeDesc(map.get("vehicleMakeDesc")==null?"":map.get("vehicleMakeDesc").toString());
-			response.setChassisNumber(map.get("chassisNumber")==null?"":map.get("chassisNumber").toString());
-			response.setSeatingCapacity(map.get("seatingCapacity")==null?"":map.get("seatingCapacity").toString());
-			response.setEngineNumber(map.get("engineNumber")==null?"":map.get("engineNumber").toString());
-			response.setFuelType(map.get("fuelType")==null?"":map.get("fuelType").toString());
-			response.setPolicyTypeDesc(map.get("policyTypeDesc")==null?"":map.get("policyTypeDesc").toString());
-			response.setManufactureYear(map.get("manufactureYear")==null?"":map.get("manufactureYear").toString());
-			response.setAgentMobile(map.get("agentMobile")==null?"":map.get("agentMobile").toString());
-			response.setMotorUsageDesc(map.get("motorUsageDesc")==null?"":map.get("motorUsageDesc").toString());
-			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
-			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
-			response.setCurrency(map.get("currency")==null?"":map.get("currency").toString());
-			response.setSectionName(map.get("sectionName")==null?"":map.get("sectionName").toString());
-			response.setModelNumber(map.get("vehcileModel")==null?"":map.get("vehcileModel").toString());
-			response.setPremium(map.get("premium")==null?"":map.get("premium").toString());
-			response.setVatPremium(map.get("vatPremium")==null?"":map.get("vatPremium").toString());
-			response.setOverallPremium(map.get("overallPremium")==null?"":map.get("overallPremium").toString());
+			list.forEach(map -> {
+				MotorCoverNoteRes m = MotorCoverNoteRes.builder()
+						.vehicleId(map.get("vehicleId")==null?"":map.get("vehicleId").toString())
+						.customerName(map.get("customerName")==null?"":map.get("customerName").toString())
+						.insurerName(map.get("insurerName")==null?"":map.get("insurerName").toString())
+						.paymentDate(map.get("paymentDate")==null?"":map.get("paymentDate").toString())
+						.dateofIssue(map.get("paymentDate")==null?"":map.get("paymentDate").toString())
+						.startDate(map.get("inceptionDate")==null?"":map.get("inceptionDate").toString())
+						.endDate(map.get("expiryDate")==null?"":map.get("expiryDate").toString())
+						.covernoteNo(map.get("covernoteNo")==null?"":map.get("covernoteNo").toString())
+						.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
+						.registrationNumber(map.get("registrationNumber")==null?"":map.get("registrationNumber").toString())
+						.vehicleTypeDesc(map.get("vehicleTypeDesc")==null?"":map.get("vehicleTypeDesc").toString())
+						.modelType(map.get("modelType")==null?"":map.get("modelType").toString())
+						.colorDesc(map.get("colorDesc")==null?"":map.get("colorDesc").toString())
+						.cubicCapacity(map.get("cubicCapacity")==null?"":map.get("cubicCapacity").toString())
+						.vehicleMakeDesc(map.get("vehicleMakeDesc")==null?"":map.get("vehicleMakeDesc").toString())
+						.chassisNumber(map.get("chassisNumber")==null?"":map.get("chassisNumber").toString())
+						.seatingCapacity(map.get("seatingCapacity")==null?"":map.get("seatingCapacity").toString())
+						.engineNumber(map.get("engineNumber")==null?"":map.get("engineNumber").toString())
+						.fuelType(map.get("fuelType")==null?"":map.get("fuelType").toString())
+						.policyTypeDesc(map.get("policyTypeDesc")==null?"":map.get("policyTypeDesc").toString())
+						.manufactureYear(map.get("manufactureYear")==null?"":map.get("manufactureYear").toString())
+						.agentMobile(map.get("agentMobile")==null?"":map.get("agentMobile").toString())
+						.motorUsageDesc(map.get("motorUsageDesc")==null?"":map.get("motorUsageDesc").toString())
+						.companyName(map.get("companyName")==null?"":map.get("companyName").toString())
+						.branchName(map.get("branchName")==null?"":map.get("branchName").toString())
+						.currency(map.get("currency")==null?"":map.get("currency").toString())
+						.sectionName(map.get("sectionName")==null?"":map.get("sectionName").toString())
+						.modelNumber(map.get("vehcileModel")==null?"":map.get("vehcileModel").toString())
+						.premium(map.get("premium")==null?"":map.get("premium").toString())
+						.vatPremium(map.get("vatPremium")==null?"":map.get("vatPremium").toString())
+						.overallPremium(map.get("overallPremium")==null?"":map.get("overallPremium").toString())
+						.build();
+				response.add(m);
+			});
 		}
   }catch(Exception e) {
 	  log.info("Error in getMotorCoverNote ==> "+e.getMessage());
