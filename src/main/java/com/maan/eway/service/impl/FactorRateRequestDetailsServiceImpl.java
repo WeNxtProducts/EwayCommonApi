@@ -1549,20 +1549,82 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());			
 			for (EserviceSectionDetails sec :  sectionDatas) {
 				
-				if (null != sec && StringUtils.isNotBlank(sec.getSectionId()) && sec.getSectionId().equals("3")) {
+				
+				try {
 
-					List<EserviceBuildingDetails> buildData = eserBuildRepo
-							.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(req.getRequestReferenceNo(), "Y");
+					if (null != sec && StringUtils.isNotBlank(sec.getSectionId())
+							&& StringUtils.isNotBlank(req.getRequestReferenceNo())) {
 
-					if (null != buildData && !buildData.isEmpty()) {
+						EserviceBuildingDetails building = eserBuildRepo
+								.findByRequestReferenceNoAndSectionId(req.getRequestReferenceNo(), sec.getSectionId());
 
-						List<EserviceBuildingDetails> data = buildData.stream()
-								.filter(a -> a.getSectionId().equals("3")).collect(Collectors.toList());
+						if (null == building) {
 
-						if (data == null || data.isEmpty()) {
-							continue;
+							EserviceCommonDetails common = eserCommonRepo.findAllByRequestReferenceNoAndSectionId(
+									req.getRequestReferenceNo(), sec.getSectionId());
+
+							if (null != common) {
+
+								if (null == common.getSumInsured() && StringUtils.isNotBlank(common.getSectionId())
+										&& common.getSectionId().equals("35")) {
+
+									continue;
+								} else if (null == common.getSumInsured()
+										&& StringUtils.isNotBlank(common.getSectionId())
+										&& common.getSectionId().equals("36")) {
+
+									continue;
+								}
+							}
+
+						} else {
+
+							if (null == building.getBuildingSuminsured()
+									&& StringUtils.isNotBlank(building.getSectionId())
+									&& building.getSectionId().equals("1")) {
+
+								continue;
+							} else if (null == building.getContentSuminsured()
+									&& StringUtils.isNotBlank(building.getSectionId())
+									&& building.getSectionId().equals("47")) {
+
+								continue;
+							} else if (null == building.getAllriskSuminsured()
+									&& StringUtils.isNotBlank(building.getSectionId())
+									&& building.getSectionId().equals("3")) {
+
+								continue;
+							}
 						}
+
 					}
+					
+						if (null != sec && StringUtils.isNotBlank(sec.getSectionId())
+								&& sec.getSectionId().equals("3")) {
+
+							List<EserviceBuildingDetails> buildData = eserBuildRepo
+									.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(req.getRequestReferenceNo(),
+											"Y");
+
+							if (null != buildData && !buildData.isEmpty()) {
+
+								List<EserviceBuildingDetails> data = buildData.stream()
+										.filter(a -> a.getSectionId().equals("3")).collect(Collectors.toList());
+
+								if (data == null || data.isEmpty()) {
+									continue;
+								}
+							}
+						}
+
+				} catch (Exception e) {
+
+					log.error("Exception occurs When Skip The data In View Calc" + e.getMessage());
+
+					e.printStackTrace();
+
+					// throw
+
 				}
 
 				if ( sec.getProductType().equalsIgnoreCase("H")) {

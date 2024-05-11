@@ -92,6 +92,8 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 		List<EserviceCommonDetails> findByOriginalPolicyNoAndStatusNot(String policyNo, String string);
 
+		EserviceCommonDetails findAllByRequestReferenceNoAndSectionId(String requestReferenceNo, String sectionId);
+
 
 
 
