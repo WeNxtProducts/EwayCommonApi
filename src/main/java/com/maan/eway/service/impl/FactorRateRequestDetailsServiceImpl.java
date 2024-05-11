@@ -1546,15 +1546,17 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 		 try {
 			// Building Product Details
 			List<EserviceSectionDetails>    sectionDatas = eserSecRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
-			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(req.getRequestReferenceNo() , "Y");
-			
+			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());			
 			for (EserviceSectionDetails sec :  sectionDatas) {
 				
 				if (null != sec && StringUtils.isNotBlank(sec.getSectionId()) && sec.getSectionId().equals("3")) {
 
-					if (null != buildDatas && !buildDatas.isEmpty()) {
+					List<EserviceBuildingDetails> buildData = eserBuildRepo
+							.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(req.getRequestReferenceNo(), "Y");
 
-						List<EserviceBuildingDetails> data = buildDatas.stream()
+					if (null != buildData && !buildData.isEmpty()) {
+
+						List<EserviceBuildingDetails> data = buildData.stream()
 								.filter(a -> a.getSectionId().equals("3")).collect(Collectors.toList());
 
 						if (data == null || data.isEmpty()) {
