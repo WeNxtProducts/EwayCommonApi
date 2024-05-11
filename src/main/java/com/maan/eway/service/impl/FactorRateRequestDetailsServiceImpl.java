@@ -1546,7 +1546,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 		 try {
 			// Building Product Details
 			List<EserviceSectionDetails>    sectionDatas = eserSecRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
-			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(req.getRequestReferenceNo() , "Y");
 			
 			for (EserviceSectionDetails sec :  sectionDatas) {
 				
