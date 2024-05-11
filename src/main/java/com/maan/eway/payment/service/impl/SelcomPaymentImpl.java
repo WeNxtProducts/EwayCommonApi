@@ -275,9 +275,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 										mslogin.setPassword("Admin@01");
 										mslogin.setReLoginKey("Y");
 										CommonLoginRes checkUserLogin = authservice.checkUserLogin(mslogin,null);
-										Map<String,Object> commonResponse =(Map<String,Object>) checkUserLogin.getCommonResponse();
+										ClaimLoginResponse commonResponse =(ClaimLoginResponse) checkUserLogin.getCommonResponse();
 										if(commonResponse!=null) {
-											String tokeen = commonResponse.get("Token").toString();
+											String tokeen = commonResponse.getToken();
 											TiraFrameReqCall tira=new TiraFrameReqCall();
 											tira.setQuoteNo(orderId);
 											tiraService.callTiraIntegeration(tira, tokeen);
