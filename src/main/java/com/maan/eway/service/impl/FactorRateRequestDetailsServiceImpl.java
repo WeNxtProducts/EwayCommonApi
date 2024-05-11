@@ -1550,6 +1550,19 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 			for (EserviceSectionDetails sec :  sectionDatas) {
 				
+				if (null != sec && StringUtils.isNotBlank(sec.getSectionId()) && sec.getSectionId().equals("3")) {
+
+					if (null != buildDatas && !buildDatas.isEmpty()) {
+
+						List<EserviceBuildingDetails> data = buildDatas.stream()
+								.filter(a -> a.getSectionId().equals("3")).collect(Collectors.toList());
+
+						if (data == null || data.isEmpty()) {
+							continue;
+						}
+					}
+				}
+
 				if ( sec.getProductType().equalsIgnoreCase("H")) {
 					
 					List<EserviceCommonDetails> personalDatas = eserCommonRepo.findByRequestReferenceNoAndSectionId(req.getRequestReferenceNo() , sec.getSectionId() );
@@ -1605,9 +1618,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					}
 					
 				} else {
-						EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(1) && o.getSectionId().equalsIgnoreCase(sec.getSectionId())).collect(Collectors.toList()).get(0);
-						
-						// Response 
+					   EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(1) && o.getSectionId().equalsIgnoreCase(sec.getSectionId())).collect(Collectors.toList()).get(0);
+					
+					// Response 
 						EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
 						dozerMapper.map(buildData,res);
 						res.setInsuranceId(buildData.getCompanyId());
