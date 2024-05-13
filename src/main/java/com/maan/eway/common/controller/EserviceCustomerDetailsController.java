@@ -58,7 +58,7 @@ public class EserviceCustomerDetailsController {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		List<String> validationCodes = new ArrayList<>();
-	//	 validationCodes = entityService.validateCustomerDetails(req);
+		 validationCodes = entityService.validateCustomerDetails(req);
 		List<Error> validation = null;
 		if(validationCodes!=null && validationCodes.size() > 0 ) {
 			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
