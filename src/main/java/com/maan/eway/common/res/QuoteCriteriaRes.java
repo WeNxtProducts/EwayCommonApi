@@ -37,6 +37,7 @@ public class QuoteCriteriaRes {
 	private BigDecimal overallPremiumLc;
 	private BigDecimal overallPremiumFc;
 	private String currency;
+	private String savedFrom;
 	
 
 	

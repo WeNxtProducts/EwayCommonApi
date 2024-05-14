@@ -392,8 +392,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 					overallPremiumLc.alias("overallPremiumLc"), 
 					overallPremiumFc.alias("overallPremiumFc"),
-					m.get("currency").alias("currency")
-					
+					m.get("currency").alias("currency"),
+					m.get("savedFrom").alias("savedFrom")
 				
 
 					);
@@ -573,7 +573,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 					overallPremiumLc.alias("overallPremiumLc"), 
 					overallPremiumFc.alias("overallPremiumFc"),
-					m.get("currency").alias("currency")
+					m.get("currency").alias("currency"),
+					m.get("savedFrom").alias("savedFrom")
 					);
 	
 

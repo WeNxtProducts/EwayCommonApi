@@ -103,7 +103,8 @@ public class LifeGridServiceImple implements LifeGridService {
 
 					overallPremiumLc.as(BigDecimal.class).alias("overallPremiumLc"), 
 					overallPremiumFc.as(BigDecimal.class).alias("overallPremiumFc"),
-					m.get("currency").alias("currency")
+					m.get("currency").alias("currency"),
+					cb.selectCase().when(m.get("companyId").isNotNull(), "").alias("savedFrom")
 					
 					);
 
@@ -622,7 +623,9 @@ public class LifeGridServiceImple implements LifeGridService {
 
 					overallPremiumLc.as(BigDecimal.class).alias("overallPremiumLc"), 
 					overallPremiumFc.as(BigDecimal.class).alias("overallPremiumFc"),
-					m.get("currency").alias("currency")
+					m.get("currency").alias("currency"),
+					//This Line is for empty string
+					cb.selectCase().when(m.get("companyId").isNotNull(), "").alias("savedFrom")
 					);
 	
 

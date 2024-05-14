@@ -342,7 +342,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 		QuoteCriteriaResponse resp = new QuoteCriteriaResponse();
 		List<QuoteCriteriaRes> existingQuotes = new ArrayList<QuoteCriteriaRes>();
 		try {
-
+			String empty="";
 			// Get Datas
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<QuoteCriteriaRes> query = cb.createQuery(QuoteCriteriaRes.class);
@@ -366,6 +366,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate a2 = cb.equal(m.get("quoteNo"),ocpm2.get("quoteNo") );
 			overAllPremiumLc.where(a2);
 			
+		
+			
 			// Select
 			query.multiselect(
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
@@ -379,7 +381,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					overAllPremiumLc.alias("overallPremiumLc"), 
 					overAllPremiumFc.alias("overallPremiumFc"),
-					m.get("currency").alias("currency")
+					m.get("currency").alias("currency"),
+					// This Line is For Empty String
+					cb.selectCase().when(m.get("companyId").isNotNull(), "").alias("savedFrom")
 					);
 
 			// Order By
@@ -426,6 +430,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			existingQuotes = result.getResultList();
 			
 			resp.setQuoteRes(existingQuotes);
+			
 			resp.setTotalCount(totalcountexisting(req, startDate, endDate, "Y"));
 			
 			
@@ -539,7 +544,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					overAllPremiumLc.alias("overallPremiumLc"), 
 					overAllPremiumFc.alias("overallPremiumFc"),
-					m.get("currency").alias("currency"));
+					m.get("currency").alias("currency"),
+					//This Line is for empty string
+					cb.selectCase().when(m.get("companyId").isNotNull(), "").alias("savedFrom")
+					);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

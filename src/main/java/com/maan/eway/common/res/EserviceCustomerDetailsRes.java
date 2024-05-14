@@ -72,6 +72,9 @@ public class EserviceCustomerDetailsRes {
 	@JsonProperty("Currency")
 	private String currency;
 	
+	@JsonProperty("SavedFrom")
+	private String savedFrom;
+	
 	@JsonProperty("EndorsementType")
 	private String endorsementType;
 	@JsonProperty("EndorsementTypeDesc")

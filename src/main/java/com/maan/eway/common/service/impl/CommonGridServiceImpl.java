@@ -361,7 +361,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					overallPremiumLc.alias("overallPremiumLc"), 
 					overallPremiumFc.alias("overallPremiumFc"),
-					m.get("currency").alias("currency")
+					m.get("currency").alias("currency"),
+					cb.selectCase().when(m.get("companyId").isNotNull(), "").alias("savedFrom")
 					);
 			
 
@@ -547,7 +548,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					overallPremiumLc.alias("overallPremiumLc"), 
 					overallPremiumFc.alias("overallPremiumFc"),
-					m.get("currency").alias("currency")
+					m.get("currency").alias("currency"),
+					//This Line is for empty string
+					cb.selectCase().when(m.get("companyId").isNotNull(), "").alias("savedFrom")
 					);
 			
 
