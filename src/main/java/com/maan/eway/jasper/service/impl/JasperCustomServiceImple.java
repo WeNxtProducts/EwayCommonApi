@@ -284,20 +284,20 @@ public class JasperCustomServiceImple {
 				mddRoot.get("vehcileModel").alias("vehcileModel"),
 				sddRoot.get("coverNoteReferenceNo").alias("covernoteNo"),sddRoot.get("stickerNumber").alias("stickerNumber"));
 			List<Selection> selections = selectionList.stream().collect(Collectors.toList());
-		if(StringUtils.isNotBlank(vehicleId)) {
+		//if(StringUtils.isNotBlank(vehicleId)) {
 			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), mddRoot.get("actualPremiumLc"))
 					.otherwise(mddRoot.get("actualPremiumFc")).alias("premium"));
 			selections.add(mddRoot.get("vatPremium").alias("vatPremium"));
 			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), mddRoot.get("overallPremiumLc"))
 					.otherwise(mddRoot.get("overallPremiumFc")).alias("overallPremium"));
-		}else {
+		/*}else {
 			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")),hpmRoot.get("premiumLc"))
 					.otherwise(hpmRoot.get("vatPremiumFc")).alias("premium"));
 			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("vatPremiumLc"))
 					.otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"));
 			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("overallPremiumLc"))
 					.otherwise(hpmRoot.get("overallPremiumFc")).alias("overallPremium"));
-		}
+		}*/
 		
 		Selection [] selectionArray = new Selection[selections.size()];
 		selections.toArray(selectionArray);
@@ -516,7 +516,8 @@ public class JasperCustomServiceImple {
 			}
 			
 			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
-				List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
+				List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))
+						&& !r.getChargeCode().equals(new BigDecimal(1005))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
 				listByRiskId.forEach(h ->{
 					TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
 						.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
@@ -689,7 +690,7 @@ public class JasperCustomServiceImple {
 			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
 			if(!drcrDetails.isEmpty()) {
 				if("100019".equalsIgnoreCase(map.get("companyId")==null?"":map.get("companyId").toString())) {
-					List<PolicyDrcrDetail> drcrList = drcrDetails.stream().filter(f -> f.getDrcrFlag().equalsIgnoreCase("CR")).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
+					List<PolicyDrcrDetail> drcrList = drcrDetails.stream().filter(f -> f.getDrcrFlag().equalsIgnoreCase("CR")&& !f.getChargeCode().equals(new BigDecimal(1005))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
 					drcrList.forEach(h -> {
 						TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
 								.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
@@ -705,7 +706,7 @@ public class JasperCustomServiceImple {
 							.map(BigDecimal::doubleValue).findFirst().get();
 					OverAllPremium = (Commission - WHTLevy) + VAT;
 				}else {
-					List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("CR") && !r.getChargeCode().equals(new BigDecimal(1007))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
+					List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("CR") && !r.getChargeCode().equals(new BigDecimal(1007)) && !r.getChargeCode().equals(new BigDecimal(1005))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
 					listByRiskId.forEach(h ->{
 						TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
 							.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
@@ -1037,7 +1038,8 @@ public class JasperCustomServiceImple {
 			}*/
 		}else {
 			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
-			List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
+			List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))
+					&& !r.getChargeCode().equals(new BigDecimal(1005))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
 			listByRiskId.forEach(h ->{
 				TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
 					.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
@@ -1931,7 +1933,7 @@ public class JasperCustomServiceImple {
 			}
 			
 			List<EserviceBuildingDetails> buildingDtl = eserviceBuildingDetailsRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(QuoteNo, "Y");
-			String buildingOwnerYn = buildingDtl.get(0).getBuildingOwnerYn()==null?"":buildingDtl.get(0).getBuildingOwnerYn();
+			String buildingOwnerYn = buildingDtl.isEmpty()?"":buildingDtl.get(0).getBuildingOwnerYn()==null?"":buildingDtl.get(0).getBuildingOwnerYn();
 			List<Map<String,Object>> domesticKeyFactor = listItemValueRepo.getDomesticKeyFactor(buildingOwnerYn.equalsIgnoreCase("Y")?"1":"2");
 			if(!domesticKeyFactor.isEmpty()) {
 				String attachmentloc = this.getClass().getClassLoader().getResource("").getPath().replaceAll("%20", "")+"report/attachments/";

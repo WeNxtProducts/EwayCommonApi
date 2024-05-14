@@ -120,14 +120,15 @@
       AND DISC_LOAD_ID = '0' 
       AND COVERAGE_TYPE = 'B'
   ) AS SUM_INSURED, 
-  CASE WHEN HPM.CURRENCY IN (
+CASE WHEN HPM.CURRENCY IN (
     SELECT 
       CURRENCY_ID 
     FROM 
       EWAY_INSURANCE_COMPANY_MASTER 
     WHERE 
       HPM.COMPANY_ID = COMPANY_ID
-  ) THEN ROUND(HPM.OVERALL_PREMIUM_LC) ELSE ROUND(HPM.OVERALL_PREMIUM_FC) END AS PERMIUM, 
+  ) THEN (CASE WHEN HPM.PRODUCT_ID IN ('5','46') THEN MDD.OVERALL_PREMIUM_LC  ELSE ROUND(HPM.OVERALL_PREMIUM_LC )END)
+    ELSE (CASE WHEN HPM.PRODUCT_ID IN ('5','46') THEN MDD.OVERALL_PREMIUM_FC  ELSE ROUND(HPM.OVERALL_PREMIUM_FC )END) END AS PERMIUM,
   ROUND(HPM.COMMISSION_PERCENTAGE, 1) AS COMMISSION_PERCENTAGE, 
   ROUND(COMMISSION) AS COMMISSION_AMOUNT 
 FROM 
@@ -157,7 +158,7 @@ WHERE
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('both','high') THEN '1' WHEN (
+      ) IN ('both', 'high') THEN '1' WHEN (
         SELECT 
           SUB_USER_TYPE 
         FROM 
@@ -173,7 +174,7 @@ WHERE
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('both','high') THEN '1' ELSE $P{pvLoginId} END
+      ) IN ('both', 'high') THEN '1' ELSE $P{pvLoginId} END
     ) 
     OR (
       CASE WHEN (
@@ -208,7 +209,7 @@ WHERE
         LOGIN_ID = $P{pvLoginId}
     )
   )
-  ORDER BY BRANCH_NAME,BROKER_NAME,USER_NAME DESC]]>
+  ORDER BY BRANCH_NAME,BROKER_NAME,USER_NAME DESC;]]>
 	</queryString>
 	<field name="LOGIN_ID" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="LOGIN_ID"/>
@@ -791,8 +792,8 @@ WHERE
 	</title>
 	<detail>
 		<band height="30" splitType="Stretch">
-			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="22" height="30" uuid="e9b44e84-0c84-4fea-82c5-18020fb45d6a">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="22" height="30" uuid="e9b44e84-0c84-4fea-82c5-18020fb45d6a">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -808,8 +809,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="22" y="0" width="91" height="30" uuid="f9391605-b786-4d71-99df-274efda29857">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="22" y="0" width="91" height="30" uuid="f9391605-b786-4d71-99df-274efda29857">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
@@ -822,8 +823,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{POLICY_NO}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="113" y="0" width="80" height="30" uuid="c02aada1-6ca6-4128-9507-b7d751f3cd34">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="113" y="0" width="80" height="30" uuid="c02aada1-6ca6-4128-9507-b7d751f3cd34">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -836,8 +837,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="752" y="0" width="48" height="30" uuid="22360070-ad6a-4694-8e59-bbc9cdcb6ef9">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="752" y="0" width="48" height="30" uuid="22360070-ad6a-4694-8e59-bbc9cdcb6ef9">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -851,8 +852,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{DEBIT_NOTE_NO}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="193" y="0" width="50" height="30" uuid="e37ea879-2346-4a3f-bb69-eb5695da0be7">
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="193" y="0" width="50" height="30" uuid="e37ea879-2346-4a3f-bb69-eb5695da0be7">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -866,8 +867,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{START_DATE}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="243" y="0" width="50" height="30" uuid="f961894e-b8aa-4229-8916-82869630cfdd">
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="243" y="0" width="50" height="30" uuid="f961894e-b8aa-4229-8916-82869630cfdd">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
@@ -880,8 +881,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{END_DATE}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="293" y="0" width="40" height="30" uuid="290d3b52-6e93-4cb9-b2b8-c2f852defa09">
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="293" y="0" width="40" height="30" uuid="290d3b52-6e93-4cb9-b2b8-c2f852defa09">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -896,8 +897,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ISSUE_DATE}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="333" y="0" width="38" height="30" uuid="a09a2836-e628-44d8-96c9-7a9dd2f25344">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="333" y="0" width="38" height="30" uuid="a09a2836-e628-44d8-96c9-7a9dd2f25344">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -911,8 +912,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="697" y="0" width="55" height="30" uuid="6fd3d726-673d-412c-a0dd-de599b52a8a9">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="697" y="0" width="55" height="30" uuid="6fd3d726-673d-412c-a0dd-de599b52a8a9">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -925,8 +926,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{POLICY_TYPE_DESC}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0" isBlankWhenNull="true">
-				<reportElement x="800" y="0" width="51" height="30" uuid="e0cfcf61-5904-4843-8aad-cc62867e8217"/>
+			<textField textAdjust="StretchHeight" pattern="#,##0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="800" y="0" width="51" height="30" uuid="e0cfcf61-5904-4843-8aad-cc62867e8217"/>
 				<box rightPadding="2">
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.0"/>
@@ -938,8 +939,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="851" y="0" width="66" height="30" uuid="3391e642-f818-4c58-aa4f-e8882946a65e">
+			<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="851" y="0" width="66" height="30" uuid="3391e642-f818-4c58-aa4f-e8882946a65e">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -954,8 +955,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PERMIUM}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="917" y="0" width="40" height="30" uuid="76d1a035-dfeb-40b1-95ce-3b9e85acca86">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="917" y="0" width="40" height="30" uuid="76d1a035-dfeb-40b1-95ce-3b9e85acca86">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -970,8 +971,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{COMMISSION_PERCENTAGE}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="957" y="0" width="56" height="30" uuid="47b42963-d44a-44b1-bd35-9e6428e32959">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="957" y="0" width="56" height="30" uuid="47b42963-d44a-44b1-bd35-9e6428e32959">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 				</reportElement>
@@ -985,8 +986,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{COMMISSION_AMOUNT}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="371" y="0" width="46" height="30" uuid="a4fbd1ef-971c-44c1-8292-3d6ed8c76bbe"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="371" y="0" width="46" height="30" uuid="a4fbd1ef-971c-44c1-8292-3d6ed8c76bbe"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -995,8 +996,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PAYMENT_TYPE}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="652" y="0" width="45" height="30" uuid="aeffad81-1237-4a56-bc7e-7125dc438512"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="652" y="0" width="45" height="30" uuid="aeffad81-1237-4a56-bc7e-7125dc438512"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -1005,8 +1006,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PAYMENT_ID}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="601" y="0" width="51" height="30" uuid="26661b25-8edb-404a-b5fd-4d90cbb785f7"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="601" y="0" width="51" height="30" uuid="26661b25-8edb-404a-b5fd-4d90cbb785f7"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -1015,8 +1016,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{STICKER_NUMBER}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="417" y="0" width="46" height="30" uuid="37bc88c7-bdca-44e7-9fcc-b44996cbc5c3"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="417" y="0" width="46" height="30" uuid="37bc88c7-bdca-44e7-9fcc-b44996cbc5c3"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -1025,8 +1026,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{MAKE}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="463" y="0" width="46" height="30" uuid="ce773d91-d740-4ad8-bbb0-37a932949c7c"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="463" y="0" width="46" height="30" uuid="ce773d91-d740-4ad8-bbb0-37a932949c7c"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -1035,8 +1036,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{MODEL}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="509" y="0" width="46" height="30" uuid="94c37ea4-3cea-46c7-a44e-aeac3ec000a7"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="509" y="0" width="46" height="30" uuid="94c37ea4-3cea-46c7-a44e-aeac3ec000a7"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -1045,8 +1046,8 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CHASSIS_NUMBER}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="555" y="0" width="46" height="30" uuid="52aa7e8a-5e82-463f-a056-dc94ed106b55"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="555" y="0" width="46" height="30" uuid="52aa7e8a-5e82-463f-a056-dc94ed106b55"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
