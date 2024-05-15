@@ -1412,10 +1412,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 				refinedBuilding.setFurnitureSiLC(refinedBuilding.getFurnitureSi()==null ? null : refinedBuilding.getFurnitureSi().multiply(exchangeRate) );
 				refinedBuilding.setApplianceSiLC(refinedBuilding.getApplianceSi()==null ? null : refinedBuilding.getApplianceSi().multiply(exchangeRate) );
 				refinedBuilding.setCashValuablesSiLC(refinedBuilding.getCashValueablesSi()==null ? null : refinedBuilding.getCashValueablesSi().multiply(exchangeRate) );	
-				refinedBuilding.setBuildingSumInsuredLC(refinedBuilding.getBuildingSuminsured()==null ? null : refinedBuilding.getBuildingSuminsured().multiply(exchangeRate) );
+				refinedBuilding.setBuildingSumInsuredLC(refinedBuilding.getBuildingSumInsuredLC()==null ? null : refinedBuilding.getBuildingSumInsuredLC().multiply(exchangeRate) );
 				refinedBuilding.setFirePlantSiLc(refinedBuilding.getFirePlantSi()==null ? null : refinedBuilding.getFirePlantSi().multiply(exchangeRate) );
 				refinedBuilding.setStockInTradeSiLC(refinedBuilding.getStockInTradeSi()==null ? null : refinedBuilding.getStockInTradeSi().multiply(exchangeRate) );
-				refinedBuilding.setBuildingSumInsuredLC(refinedBuilding.getBuildingSuminsured()==null ? null : refinedBuilding.getBuildingSuminsured().multiply(exchangeRate) );
+				refinedBuilding.setBuildingSuminsured(refinedBuilding.getBuildingSumInsuredLC()==null ? null : refinedBuilding.getBuildingSumInsuredLC().multiply(exchangeRate) );
 				refinedBuilding.setEquipmentSiLC(refinedBuilding.getEquipmentSi()==null ? null : refinedBuilding.getEquipmentSi().multiply(exchangeRate) );
 				refinedBuilding.setBoilerPlantsSiLC(refinedBuilding.getBoilerPlantsSi()==null ? null : refinedBuilding.getBoilerPlantsSi().multiply(exchangeRate) );
 				refinedBuilding.setElecMachinesSiLC(refinedBuilding.getElecMachinesSi()==null ? null : refinedBuilding.getElecMachinesSi().multiply(exchangeRate) );
@@ -1425,7 +1425,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				refinedBuilding.setManuUnitsSiLC(refinedBuilding.getManuUnitsSi()==null ? null : refinedBuilding.getManuUnitsSi().multiply(exchangeRate) );
 				refinedBuilding.setPowerPlantSiLC(refinedBuilding.getPowerPlantSi()==null ? null : refinedBuilding.getPowerPlantSi().multiply(exchangeRate) );
 				refinedBuilding.setPlateGlassSiLC(refinedBuilding.getPlateGlassSi()==null ? null : refinedBuilding.getPlateGlassSi().multiply(exchangeRate) );
-				refinedBuilding.setContentSumInsuredLC(refinedBuilding.getContentSuminsured()==null ? null : refinedBuilding.getContentSuminsured().multiply(exchangeRate) );
+				refinedBuilding.setContentSumInsuredLC(refinedBuilding.getContentSumInsuredLC()==null ? null : refinedBuilding.getContentSumInsuredLC().multiply(exchangeRate) );
 				refinedBuilding.setElecEquipSumInsuredLC(refinedBuilding.getElecEquipSuminsured()==null ? null : refinedBuilding.getElecEquipSuminsured().multiply(exchangeRate) );
 	
 				// New Input
