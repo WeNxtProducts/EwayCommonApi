@@ -153,4 +153,10 @@ public interface GridService {
 
 	List<GetExistingBrokerListRes> getReportBrokerUserList(ExistingBrokerUserListReq req);
 
+	GetallExistingRejectedLapsedRes getallExistingQuoteSQ(ExistingQuoteReq req);
+
+	GetallExistingRejectedLapsedRes getallLapsedQuoteDetailSQ(ExistingQuoteReq req);
+
+	GetallExistingRejectedLapsedRes getallRejectedQuoteSQ(ExistingQuoteReq req);
+
 }

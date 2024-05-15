@@ -6855,5 +6855,254 @@ public class GridServiceImpl implements GridService {
 		return list;
 	}
 
+
+	@Override
+	public GetallExistingRejectedLapsedRes getallExistingQuoteSQ(ExistingQuoteReq req) {
+		GetallExistingRejectedLapsedRes resp = new GetallExistingRejectedLapsedRes();
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		QuoteCriteriaResponse cres = new QuoteCriteriaResponse();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date before30 = cal.getTime();
+
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			List<QuoteCriteriaRes> extingQuoteList = new ArrayList<QuoteCriteriaRes>();
+
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
+					req.getProductId().toString());
+
+			// Product Wise Get
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				cres = motService.getMotorExistingQuoteDetailsSQ(req, before30, today, limit, offset);
+
+				extingQuoteList = cres.getQuoteRes();
+			}
+//			} else if (product.getMotorYn().equalsIgnoreCase("H")
+//					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+//
+//				TravelQuoteCriteriaResponse tcres = traService.getTravelExistingQuoteDetails(req, before30, today,
+//						limit, offset);
+//				List<TravelQuoteCriteriaRes> textingQuoteList = new ArrayList<TravelQuoteCriteriaRes>();
+//				textingQuoteList = tcres.getQuoteRes();
+//
+//				for (TravelQuoteCriteriaRes data : textingQuoteList) {
+//					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+//					dozerMapper.map(data, res);
+//					res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+//					custRes.add(res);
+//				}
+//				resp.setCustomerDetailsRes(custRes);
+//				resp.setTotalCount(tcres.getTotalCount());
+//
+//			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+//				cres = buiService.getBuildingExistingQuoteDetails(req, before30, today, limit, offset);
+//
+//				extingQuoteList = cres.getQuoteRes();
+//				// Common
+//			}else if (product.getMotorYn().equalsIgnoreCase("L")) {
+//				
+//				cres = lifeService.getLifeExistingQuoteDetails(req, before30, today, limit, offset);
+//
+//				extingQuoteList = cres.getQuoteRes();
+//				// Common
+//			}
+//			else {
+//				cres = commonService.getCommonExistingQuoteDetails(req, before30, today, limit, offset);
+//				extingQuoteList = cres.getQuoteRes();
+//			}
+
+			if (!req.getProductId().equalsIgnoreCase(travelProductId)) {
+
+				for (QuoteCriteriaRes data : extingQuoteList) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					dozerMapper.map(data, res);
+					custRes.add(res);
+				}
+				resp.setCustomerDetailsRes(custRes);
+				resp.setTotalCount(cres.getTotalCount());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resp;
+	}
+
+	
+	@Override
+	public GetallExistingRejectedLapsedRes getallLapsedQuoteDetailSQ(ExistingQuoteReq req) {
+		GetallExistingRejectedLapsedRes resp = new GetallExistingRejectedLapsedRes();
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		QuoteCriteriaResponse cres = new QuoteCriteriaResponse();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date before30 = cal.getTime();
+
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
+					req.getProductId().toString());
+
+			// Product Wise Get
+			List<QuoteCriteriaRes> lapsedQuoteList = new ArrayList<QuoteCriteriaRes>();
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				cres = motService.getMotorLapsedQuoteDetailsSQ(req, before30, limit, offset);
+				lapsedQuoteList = cres.getQuoteRes();
+
+			}
+//				else if (product.getMotorYn().equalsIgnoreCase("H")
+//					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+//
+//				TravelQuoteCriteriaResponse tcres = traService.getTravelLapsedQuoteDetails(req, before30, limit,
+//						offset);
+//				List<TravelQuoteCriteriaRes> textingQuoteList = new ArrayList<TravelQuoteCriteriaRes>();
+//				textingQuoteList = tcres.getQuoteRes();
+//
+//				for (TravelQuoteCriteriaRes data : textingQuoteList) {
+//					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+//					dozerMapper.map(data, res);
+//					res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+//					custRes.add(res);
+//				}
+//				resp.setCustomerDetailsRes(custRes);
+//				resp.setTotalCount(tcres.getTotalCount());
+//
+//			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+//
+//				cres = buiService.getBuildingLapsedQuoteDetails(req, before30, limit, offset);
+//				lapsedQuoteList = cres.getQuoteRes();
+//
+//			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+//				cres = lifeService.getLifeLapsedQuoteDetails(req, before30, limit, offset);
+//				lapsedQuoteList = cres.getQuoteRes();
+//
+//			}
+//			else {
+//				cres = commonService.getCommonLapsedQuoteDetails(req, before30, limit, offset);
+//				lapsedQuoteList = cres.getQuoteRes();
+//			}
+
+			if (!req.getProductId().equalsIgnoreCase(travelProductId)) {
+				for (QuoteCriteriaRes data : lapsedQuoteList) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
+					custRes.add(res);
+				}
+				resp.setCustomerDetailsRes(custRes);
+				resp.setTotalCount(cres.getTotalCount());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resp;
+	}
+
+	
+	@Override
+	public GetallExistingRejectedLapsedRes getallRejectedQuoteSQ(ExistingQuoteReq req) {
+		GetallExistingRejectedLapsedRes resp = new GetallExistingRejectedLapsedRes();
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		GetRejectedQuoteDetailsRes cres = new GetRejectedQuoteDetailsRes();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date before30 = cal.getTime();
+
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
+					req.getProductId().toString());
+
+			List<RejectCriteriaRes> rejectedQuoteList = new ArrayList<RejectCriteriaRes>();
+			List<TravelRejectCriteriaRes> trejectedQuoteList = new ArrayList<TravelRejectCriteriaRes>();
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				cres = motService.getMotorRejectedQuoteSQ(req, before30, today, limit, offset);
+				rejectedQuoteList = cres.getQuoteRes();
+
+			} 
+//			else if (product.getMotorYn().equalsIgnoreCase("H")
+//					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+//
+//				GetTravelRejectedQuoteDetailsRes tcres = traService.getTravelRejectedQuoteDetails(req, before30, today,
+//						limit, offset);
+//				trejectedQuoteList = tcres.getQuoteRes();
+//				for (TravelRejectCriteriaRes data : trejectedQuoteList) {
+//					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+//					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+//					res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+//					custRes.add(res);
+//				}
+//				resp.setCustomerDetailsRes(custRes);
+//				resp.setTotalCount(tcres.getTotalCount());
+//
+//			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+//				cres = buiService.getBuildingRejectedQuoteDetails(req, before30, today, limit, offset);
+//				rejectedQuoteList = cres.getQuoteRes();
+//			} 
+//			else if (product.getMotorYn().equalsIgnoreCase("L")) {
+//			
+//				cres = lifeService.getLifeRejectedQuoteDetails(req, before30, today, limit, offset);
+//				rejectedQuoteList = cres.getQuoteRes();
+//
+//			} 
+//			else {
+//				cres = commonService.getCommonRejectedQuoteDetails(req, before30, today, limit, offset);
+//				rejectedQuoteList = cres.getQuoteRes();
+//			}
+
+			if (!req.getProductId().equalsIgnoreCase(travelProductId)) {
+
+				for (RejectCriteriaRes data : rejectedQuoteList) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+					custRes.add(res);
+				}
+				resp.setCustomerDetailsRes(custRes);
+				resp.setTotalCount(cres.getTotalCount());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resp;
+	}
+
 }
 

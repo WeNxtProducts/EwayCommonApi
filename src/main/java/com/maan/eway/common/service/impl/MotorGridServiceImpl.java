@@ -6045,6 +6045,510 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 		}
 		return resList;
 	}
+	@Override
+	public QuoteCriteriaResponse getMotorExistingQuoteDetailsSQ(ExistingQuoteReq req, Date startDate, Date endDate,Integer limit, Integer offset) {
+		
+		QuoteCriteriaResponse resp = new QuoteCriteriaResponse();
+		List<QuoteCriteriaRes> existingQuotes = new ArrayList<QuoteCriteriaRes>();
+		
+		try {
+			
+			// Get Datas
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<QuoteCriteriaRes> query = cb.createQuery(QuoteCriteriaRes.class);
+
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+			
+			//overallPremiumLc
+			Subquery<Long> overallPremiumLc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocpm1 = overallPremiumLc.from(EserviceMotorDetails.class);
+			overallPremiumLc.select(cb.sum(ocpm1.get("overallPremiumLc")));
+			Predicate a1 = cb.equal(ocpm1.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumLc.where(a1);
+			
+			//overallPremiumFc
+			Subquery<Long> overallPremiumFc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> oc = overallPremiumFc.from(EserviceMotorDetails.class);
+			overallPremiumFc.select(cb.sum(oc.get("overallPremiumFc")));
+			Predicate a2 = cb.equal(oc.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumFc.where(a2);
+		
+
+			// Select
+			query.multiselect(
+					
+					// Customer Info
+					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+					c.get("clientName").alias("clientName"),
+					// Vehicle Info
+					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+					 m.get("productName").alias("productName"),
+					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
+					m.get("quoteNo").alias("quoteNo"),
+					m.get("customerId").alias("customerId"),
+					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+
+					overallPremiumLc.alias("overallPremiumLc"), 
+					overallPremiumFc.alias("overallPremiumFc"),
+					m.get("currency").alias("currency"),
+					m.get("savedFrom").alias("savedFrom")
+				
+
+					);
 			
 
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(m.get("updatedDate")));
+
+			// Where
+			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(m.get("status"), "Y");
+			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
+			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+			Predicate n9 = cb.isNull(m.get("endorsementType"));
+			Predicate n7 = null;
+			Predicate n11 = null;
+			 
+			n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			if(StringUtils.isNotBlank(req.getBdmCode())){
+				
+				n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+				
+			}else {
+				
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
+			}
+
+			Predicate n8 = null;
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
+			} else {
+			
+				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
+			}
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
+			riskId.select(cb.max(ocp.get("riskId")));
+			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			riskId.where(a3);
+			
+			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
+			Predicate n12 = cb.equal(m.get("savedFrom"),  "SQ" );
+		
+			query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10,n12).orderBy(orderList);	
+		
+			// Get Result
+			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			existingQuotes = result.getResultList();
+		
+			resp.setQuoteRes(existingQuotes);
+			resp.setTotalCount(totalcountexistingSQ(req, startDate,endDate, "Y"));
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
 		}
+		return resp;
+	}
+
+	private Long totalcountexistingSQ(ExistingQuoteReq req, Date startDate, Date endDate, String status) {
+		Long count = 0l;
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+			
+			// Select
+			query.multiselect(cb.count(m));			
+			
+
+			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(m.get("status"), status);
+			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
+			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+			Predicate n9 = cb.isNull(m.get("endorsementType"));
+			Predicate n7 = null;
+			Predicate n11 = null;
+
+			
+
+			n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			if(StringUtils.isNotBlank(req.getBdmCode())){
+				
+				n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+				
+			}else {
+				
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
+			}
+
+			Predicate n8 = null;
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
+			} else {
+			
+				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
+			}
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
+			riskId.select(cb.max(ocp.get("riskId")));
+			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			riskId.where(a3);
+			
+			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
+			Predicate n12 = cb.equal(m.get("savedFrom"),  "SQ" );
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11,n12);
+
+
+		
+			TypedQuery<Long> result = em.createQuery(query);
+			List<Long> list = result.getResultList();
+			
+			if(list.size()>0)
+				count = list.get(0);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return count;
+	}
+
+
+	@Override
+	public QuoteCriteriaResponse getMotorLapsedQuoteDetailsSQ(ExistingQuoteReq req,  Date before30,int limit, int offset) {
+		QuoteCriteriaResponse resp = new QuoteCriteriaResponse();
+		List<QuoteCriteriaRes> lapsedQuotes = new ArrayList<QuoteCriteriaRes>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<QuoteCriteriaRes> query = cb.createQuery(QuoteCriteriaRes.class);
+
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+			
+			//overallPremiumLc
+			Subquery<Long> overallPremiumLc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocpm1 = overallPremiumLc.from(EserviceMotorDetails.class);
+			overallPremiumLc.select(cb.sum(ocpm1.get("overallPremiumLc")));
+			Predicate a1 = cb.equal(ocpm1.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumLc.where(a1);
+			
+			//overallPremiumFc
+			Subquery<Long> overallPremiumFc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> oc = overallPremiumFc.from(EserviceMotorDetails.class);
+			overallPremiumFc.select(cb.sum(oc.get("overallPremiumFc")));
+			Predicate a2 = cb.equal(oc.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumFc.where(a2);
+		
+			// Select
+			query.multiselect(
+					
+					// Customer Info
+					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+					c.get("clientName").alias("clientName"),
+					// Vehicle Info
+					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+					 m.get("productName").alias("productName"),
+					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
+					m.get("quoteNo").alias("quoteNo"),
+					m.get("customerId").alias("customerId"),
+					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+
+					overallPremiumLc.alias("overallPremiumLc"), 
+					overallPremiumFc.alias("overallPremiumFc"),
+					m.get("currency").alias("currency"),
+					m.get("savedFrom").alias("savedFrom")
+					);
+	
+
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(m.get("updatedDate")));
+
+			// Where
+			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(m.get("status"), "Y");
+			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), before30);
+			Predicate n9 = cb.isNull(m.get("endorsementType"));
+			Predicate n7 = null;
+			Predicate n11 = null;
+			
+			n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			if (StringUtils.isNotBlank(req.getBdmCode())) {
+
+				n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+
+			} else {
+
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
+			}
+
+			Predicate n8 = null;
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
+			} else {
+			
+				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
+			}
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
+			riskId.select(cb.max(ocp.get("riskId")));
+			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			riskId.where(a3);
+			
+			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
+			Predicate n12 = cb.equal(m.get("savedFrom"),  "SQ" );
+			query.where(n1, n2, n3, n4, n5,  n7, n8,n9,n10,n11,n12).orderBy(orderList);
+			
+
+			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			lapsedQuotes = result.getResultList();
+		
+			resp.setQuoteRes(lapsedQuotes);
+			resp.setTotalCount(totalcountlapsedQuotesSQ(req, before30));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resp;
+	}
+
+	private Long totalcountlapsedQuotesSQ(ExistingQuoteReq req, Date before30) {
+		Long count = 0l;
+		try {
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+			
+			//overallPremiumLc
+			Subquery<Long> overallPremiumLc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocpm1 = overallPremiumLc.from(EserviceMotorDetails.class);
+			overallPremiumLc.select(cb.sum(ocpm1.get("overallPremiumLc")));
+			Predicate a1 = cb.equal(ocpm1.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumLc.where(a1);
+			
+			//overallPremiumFc
+			Subquery<Long> overallPremiumFc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> oc = overallPremiumFc.from(EserviceMotorDetails.class);
+			overallPremiumFc.select(cb.sum(oc.get("overallPremiumFc")));
+			Predicate a2 = cb.equal(oc.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumFc.where(a2);
+		
+			// Select
+			query.multiselect(cb.count(m));
+
+			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(m.get("status"), "Y");
+			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), before30);
+			Predicate n9 = cb.isNull(m.get("endorsementType"));
+			Predicate n7 = null;
+			Predicate n11 = null;
+			
+			if (req.getApplicationId().equalsIgnoreCase("1")) {
+				n7 = cb.equal(m.get("loginId"), req.getLoginId());
+				n11 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				
+			} else {
+				if(StringUtils.isNotBlank(req.getBdmCode())){
+					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+				}else {
+					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					n11 = cb.equal(m.get("loginId"), req.getLoginId());
+				}
+			}
+
+			Predicate n8 = null;
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
+			} else {
+			
+				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
+			}
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
+			riskId.select(cb.max(ocp.get("riskId")));
+			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			riskId.where(a3);
+			
+			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
+			Predicate n12 = cb.equal(m.get("savedFrom"),  "SQ" );
+			query.where(n1, n2, n3, n4, n5,  n7, n8,n9,n10,n11,n12);
+
+			TypedQuery<Long> result = em.createQuery(query);
+			List<Long> val = result.getResultList();
+				
+					if(val.size()>0)
+						count = val.get(0);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return count;
+	}
+
+	
+	@Override
+	public GetRejectedQuoteDetailsRes getMotorRejectedQuoteSQ(ExistingQuoteReq req, Date startDate ,Date  endDate , int limit,int offset) {
+		GetRejectedQuoteDetailsRes resp = new GetRejectedQuoteDetailsRes();
+		List<RejectCriteriaRes> rejectedQuotes = new ArrayList<RejectCriteriaRes>();
+		try {
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RejectCriteriaRes> query = cb.createQuery(RejectCriteriaRes.class);
+
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+			
+			//overallPremiumLc
+			Subquery<Long> overallPremiumLc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocpm1 = overallPremiumLc.from(EserviceMotorDetails.class);
+			overallPremiumLc.select(cb.sum(ocpm1.get("overallPremiumLc")));
+			Predicate a1 = cb.equal(ocpm1.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumLc.where(a1);
+			
+			//overallPremiumFc
+			Subquery<Long> overallPremiumFc = query.subquery(Long.class);
+			Root<EserviceMotorDetails> oc = overallPremiumFc.from(EserviceMotorDetails.class);
+			overallPremiumFc.select(cb.sum(oc.get("overallPremiumFc")));
+			Predicate a2 = cb.equal(oc.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			overallPremiumFc.where(a2);
+		
+
+			// Select
+			query.multiselect(
+					
+					c.get("customerReferenceNo").alias("customerReferenceNo"), 
+					c.get("idNumber").alias("idNumber"),
+					c.get("clientName").alias("clientName"),
+					// Vehicle Info
+					m.get("companyId").alias("companyId"),
+					m.get("productId").alias("productId"),
+					m.get("branchCode").alias("branchCode"),
+					m.get("requestReferenceNo").alias("requestReferenceNo"),
+					m.get("quoteNo").alias("quoteNo"),
+					m.get("customerId").alias("customerId"),
+					m.get("policyStartDate").alias("policyStartDate"),
+					m.get("policyEndDate").alias("policyEndDate"),
+					m.get("rejectReason").alias("rejectReason"),
+
+					overallPremiumLc.alias("overallPremiumLc"), 
+					overallPremiumFc.alias("overallPremiumFc"),
+					m.get("currency").alias("currency"));
+
+
+
+
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(m.get("updatedDate")));
+
+			// Where
+			
+			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(m.get("status"), "R");
+			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
+			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+			Predicate n9 = cb.isNull(m.get("endorsementType"));
+			Predicate n7 = null;
+			Predicate n11 = null;
+			
+//			if (req.getApplicationId().equalsIgnoreCase("1")) {
+//				n7 = cb.equal(m.get("loginId"), req.getLoginId());
+//				n11 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//			} else {
+//				if(StringUtils.isNotBlank(req.getBdmCode())){
+//					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//					n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+//				}else {
+//					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//					n11 = cb.equal(m.get("loginId"), req.getLoginId());
+//				}
+//			}
+			
+			n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			if(StringUtils.isNotBlank(req.getBdmCode())){
+				n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+			}else {
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
+			}
+			
+			
+
+			Predicate n8 = null;
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
+			} else {
+			
+				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
+			}
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
+			riskId.select(cb.max(ocp.get("riskId")));
+			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			riskId.where(a3);
+			
+			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
+			Predicate n12 = cb.equal(m.get("savedFrom"),  "SQ" );
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11,n12).orderBy(orderList);
+
+			TypedQuery<RejectCriteriaRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset); 
+			result.setMaxResults(offset);
+			rejectedQuotes = result.getResultList();
+			
+			resp.setQuoteRes(rejectedQuotes);
+			resp.setTotalCount(totalcountexistingSQ(req, startDate,endDate, "R"));
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resp;
+	}
+
+}

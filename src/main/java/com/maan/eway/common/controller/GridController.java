@@ -90,6 +90,7 @@ public class GridController {
 		}
 	}
 
+
 	// EXISTING DROPDOWN
 	// *****************
 	// Broker-->User1,User2... List Of User
@@ -984,4 +985,60 @@ public class GridController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	//********************************************QUOTE REGISTER FOR SQ-Short Quote*********************************
+	//Existing quote
+
+	//@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/sqexistingquotedetails")
+	public ResponseEntity<CommonRes> getallExistingQuoteSQ(@RequestBody ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		GetallExistingRejectedLapsedRes res = entityService.getallExistingQuoteSQ(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/sqlapsedquotedetails")
+	public ResponseEntity<CommonRes> getallLapsedQuoteSQ(@RequestBody ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		GetallExistingRejectedLapsedRes res = entityService.getallLapsedQuoteDetailSQ(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/sqrejectedquotedetails")
+	public ResponseEntity<CommonRes> getallRejectedQuoteSQ(@RequestBody ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		GetallExistingRejectedLapsedRes res = entityService.getallRejectedQuoteSQ(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+
 }
+

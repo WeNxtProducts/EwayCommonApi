@@ -90,4 +90,13 @@ public interface MotorGridService {
 
 	List<GetExistingBrokerListRes> getMotorAdminReferalDropdown(ExistingBrokerUserListReq req, Date today,String status);
 
+	QuoteCriteriaResponse getMotorExistingQuoteDetailsSQ(ExistingQuoteReq req , Date startDate ,Date  endDate , Integer limit , Integer offset );
+
+	QuoteCriteriaResponse getMotorLapsedQuoteDetailsSQ(ExistingQuoteReq req, Date before30, int limit, int offset);
+
+	GetRejectedQuoteDetailsRes getMotorRejectedQuoteSQ(ExistingQuoteReq req, Date before30, Date today, int limit,
+			int offset);
+	
+
+
 }
