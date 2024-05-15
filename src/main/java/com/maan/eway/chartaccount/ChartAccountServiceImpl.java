@@ -119,8 +119,10 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 				
 				List<PolicyCoverData> pcd_list = pccdRepo.findByQuoteNo(hpm.getQuoteNo());
 				
-				String vehicle_type=pcd_list.stream().collect(Collectors.groupingBy(p ->p.getVehicleId())).size()>1?"M":"S";
+				String vehicle_type=pcd_list.stream().filter(p-> p.getVehicleId()!=99999)
+						.collect(Collectors.groupingBy(p ->p.getVehicleId())).size()>1?"M":"S";
 				
+				log.info("drcrEntry || quoteno = "+req.getQuoteNo()+" vehicle_type = "+vehicle_type+" ");
 				mpcrdrRepo.deleteByQuoteNo(req.getQuoteNo());
 				
 				
