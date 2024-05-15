@@ -78,7 +78,7 @@ public class QuoteController {
 			comErrDescReq.setBranchCode("99999");
 			comErrDescReq.setInsuranceId(companyId);
 			comErrDescReq.setProductId("99999");
-			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleId("3");
 			comErrDescReq.setModuleName("MASTERS");
 			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
 		}
