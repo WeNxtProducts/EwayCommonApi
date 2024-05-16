@@ -732,22 +732,25 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //				}
 				
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
-				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
+				if ((StringUtils.isNotBlank(req.getAddress1())) 
+					//	&& (StringUtils.isNotBlank(req.getAddress2()))
 						&& (StringUtils.isNotBlank(req.getBranchCode()))
-						&& (StringUtils.isNotBlank(req.getBusinessType()))
+					//	&& (StringUtils.isNotBlank(req.getBusinessType()))
 						&& (StringUtils.isNotBlank(req.getCityCode())) && (StringUtils.isNotBlank(req.getCityName()))
 						&& (StringUtils.isNotBlank(req.getClientName()))
 						&& (StringUtils.isNotBlank(req.getClientStatus()))
 						&& (StringUtils.isNotBlank(req.getCompanyId())) && (StringUtils.isNotBlank(req.getCreatedBy()))
 						// && (StringUtils.isNotBlank(req.getCustomerReferenceNo()))
-						&& (StringUtils.isNotBlank(req.getEmail1())) && (StringUtils.isNotBlank(req.getEmail2()))
-						&& (StringUtils.isNotBlank(req.getEmail3())) && (StringUtils.isNotBlank(req.getFax()))
+						&& (StringUtils.isNotBlank(req.getEmail1())) 
+					//	&& (StringUtils.isNotBlank(req.getEmail2()))
+					//	&& (StringUtils.isNotBlank(req.getEmail3())) && (StringUtils.isNotBlank(req.getFax()))
 						&& (StringUtils.isNotBlank(req.getGender())) && (StringUtils.isNotBlank(req.getIdNumber()))
 						&& (StringUtils.isNotBlank(req.getIsTaxExempted()))
 						&& (StringUtils.isNotBlank(req.getLanguage()))
-						&& (StringUtils.isNotBlank(req.getLanguageDesc()))
-						&& (StringUtils.isNotBlank(req.getMobileNo1())) && (StringUtils.isNotBlank(req.getMobileNo2()))
-						&& (StringUtils.isNotBlank(req.getMobileNo3()))
+					//	&& (StringUtils.isNotBlank(req.getLanguageDesc()))
+						&& (StringUtils.isNotBlank(req.getMobileNo1()))
+					//	&& (StringUtils.isNotBlank(req.getMobileNo2()))
+					//	&& (StringUtils.isNotBlank(req.getMobileNo3()))
 						&& (StringUtils.isNotBlank(req.getNationality()))
 						&& (StringUtils.isNotBlank(req.getOccupation()))
 						&& (StringUtils.isNotBlank(req.getPlaceOfBirth()))
@@ -755,16 +758,17 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						&& (StringUtils.isNotBlank(req.getPolicyHolderTypeid()))
 						&& (StringUtils.isNotBlank(req.getProductId())) && (StringUtils.isNotBlank(req.getRegionCode()))
 						&& (StringUtils.isNotBlank(req.getStateCode())) && (StringUtils.isNotBlank(req.getStateName()))
-						&& (StringUtils.isNotBlank(req.getStatus())) && (StringUtils.isNotBlank(req.getStreet()))
-						&& (StringUtils.isNotBlank(req.getTaxExemptedId()))
-						&& (StringUtils.isNotBlank(req.getTelephoneNo1()))
-						&& (StringUtils.isNotBlank(req.getTelephoneNo2()))
-						&& (StringUtils.isNotBlank(req.getTelephoneNo3())) && (StringUtils.isNotBlank(req.getTitle()))
+						&& (StringUtils.isNotBlank(req.getStatus()))
+					//	&& (StringUtils.isNotBlank(req.getStreet()))
+					//	&& (StringUtils.isNotBlank(req.getTaxExemptedId()))
+					//	&& (StringUtils.isNotBlank(req.getTelephoneNo1()))
+					//	&& (StringUtils.isNotBlank(req.getTelephoneNo2()))
+					//  && (StringUtils.isNotBlank(req.getTelephoneNo3())) && (StringUtils.isNotBlank(req.getTitle()))
 						&& (req.getDobOrRegDate()!=null)
 						&& (StringUtils.isNotBlank(req.getIsTaxExempted()))
-						&& (StringUtils.isNotBlank(req.getTaxExemptedId()))
+					//	&& (StringUtils.isNotBlank(req.getTaxExemptedId()))
 						&& (StringUtils.isNotBlank(req.getPreferredNotification()))
-						&& (req.getAppointmentDate()!=null)
+					//	&& (req.getAppointmentDate()!=null)
 						
 						){
 
@@ -777,10 +781,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					// Where
 
 					Predicate n1 = (cb.like(cb.lower(b.get("address1")), req.getAddress1().toLowerCase()));
-					Predicate n2 = (cb.like(cb.lower(b.get("address2")), req.getAddress2().toLowerCase()));
+				//	Predicate n2 = (cb.like(cb.lower(b.get("address2")), req.getAddress2().toLowerCase()));
 					Predicate n3 = (cb.like(cb.lower(b.get("branchCode")), req.getBranchCode().toLowerCase()));
-					Predicate n4 = (cb.like(cb.lower(b.get("businessType")), req.getBusinessType().toLowerCase()));
-					Predicate n5 = (cb.like(cb.lower(b.get("cityCode")), req.getCityCode().toLowerCase()));
+				//	Predicate n4 = (cb.like(cb.lower(b.get("businessType")), req.getBusinessType().toLowerCase()));
+				//	Predicate n5 = (cb.like(cb.lower(b.get("cityCode")), req.getCityCode().toLowerCase()));
+					Predicate n5 =	(cb.equal(b.get("cityCode") ,  null != req.getCityCode() && 
+							req.getCityCode().matches("[0-9]+") ? Integer.valueOf(req.getCityCode()) : 0 ));
 					Predicate n6 = (cb.like(cb.lower(b.get("cityName")), req.getCityName().toLowerCase()));
 					Predicate n7 = (cb.like(cb.lower(b.get("clientName")), req.getClientName().toLowerCase()));
 					Predicate n8 = (cb.like(cb.lower(b.get("clientStatus")), req.getClientStatus().toLowerCase()));
@@ -790,42 +796,45 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					// (cb.like(cb.lower(b.get("customerReferenceNo")),req.getCustomerReferenceNo().toLowerCase()));
 					Predicate n12 = (cb.equal(b.get("dobOrRegDate"), req.getDobOrRegDate()));
 					Predicate n13 = (cb.like(cb.lower(b.get("email1")), req.getEmail1().toLowerCase()));
-					Predicate n14 = (cb.like(cb.lower(b.get("email2")), req.getEmail2().toLowerCase()));
-					Predicate n15 = (cb.like(cb.lower(b.get("email3")), req.getEmail3().toLowerCase()));
-					Predicate n16 = (cb.equal(b.get("fax"), req.getFax().toLowerCase()));
+				//	Predicate n14 = (cb.like(cb.lower(b.get("email2")), req.getEmail2().toLowerCase()));
+				//	Predicate n15 = (cb.like(cb.lower(b.get("email3")), req.getEmail3().toLowerCase()));
+				//	Predicate n16 = (cb.equal(b.get("fax"), req.getFax().toLowerCase()));
 					Predicate n17 = (cb.like(cb.lower(b.get("gender")), req.getGender().toLowerCase()));
 					Predicate n18 = (cb.like(cb.lower(b.get("idNumber")), req.getIdNumber().toLowerCase()));
 					Predicate n19 = (cb.like(cb.lower(b.get("isTaxExempted")), req.getIsTaxExempted().toLowerCase()));
 					Predicate n20 = (cb.like(cb.lower(b.get("language")), req.getLanguage().toLowerCase()));
-					Predicate n21 = (cb.like(cb.lower(b.get("languageDesc")), req.getLanguageDesc().toLowerCase()));
+				//	Predicate n21 = (cb.like(cb.lower(b.get("languageDesc")), req.getLanguageDesc().toLowerCase()));
 					Predicate n22 = (cb.equal(b.get("mobileNo1"), req.getMobileNo1()));
-					Predicate n23 = (cb.equal(b.get("mobileNo2"), req.getMobileNo2()));
-					Predicate n24 = (cb.equal(b.get("mobileNo3"), req.getMobileNo3()));
+				//	Predicate n23 = (cb.equal(b.get("mobileNo2"), req.getMobileNo2()));
+				//	Predicate n24 = (cb.equal(b.get("mobileNo3"), req.getMobileNo3()));
 					Predicate n25 = (cb.like(cb.lower(b.get("nationality")), req.getNationality().toLowerCase()));
 					Predicate n26 = (cb.like(cb.lower(b.get("occupation")), req.getOccupation().toLowerCase()));
 					Predicate n27 = (cb.like(cb.lower(b.get("placeOfBirth")), req.getPlaceOfBirth().toLowerCase()));
 					Predicate n28 = (cb.like(cb.lower(b.get("policyHolderType")),
 							req.getPolicyHolderType().toLowerCase()));
-					Predicate n29 = (cb.like(cb.lower(b.get("policyHolderTypeId")),
-							req.getPolicyHolderTypeid().toLowerCase()));
-					Predicate n30 = (cb.like(cb.lower(b.get("productId")), req.getProductId().toLowerCase()));
+				//	Predicate n29 = (cb.like(cb.lower(b.get("policyHolderTypeId")),
+				//			req.getPolicyHolderTypeid().toLowerCase()));
+				//	Predicate n30 = (cb.like(cb.lower(b.get("productId")), req.getProductId()));
+					
+					Predicate n30 = (cb.equal(b.get("productId") ,  null != req.getProductId() && 
+							req.getProductId().matches("[0-9]+") ? Integer.valueOf(req.getProductId()) : 0 ));
 					Predicate n31 = (cb.like(cb.lower(b.get("regionCode")), req.getRegionCode().toLowerCase()));
-					Predicate n32 = (cb.like(cb.lower(b.get("stateCode")), req.getStateCode().toLowerCase()));
+				//	Predicate n32 = (cb.like(cb.lower(b.get("stateCode")), req.getStateCode().toLowerCase()));
 					Predicate n33 = (cb.like(cb.lower(b.get("stateName")), req.getStateName().toLowerCase()));
 					Predicate n34 = (cb.like(cb.lower(b.get("status")), req.getStatus().toLowerCase()));
 				//	Predicate n35 = (cb.like(cb.lower(b.get("street")), req.getStreet().toLowerCase()));
-					Predicate n36 = (cb.like(cb.lower(b.get("taxExemptedId")), req.getTaxExemptedId().toLowerCase()));
-					Predicate n37 = (cb.equal(b.get("telephoneNo1"), req.getTelephoneNo1()));
-					Predicate n38 = (cb.equal(b.get("telephoneNo2"), req.getTelephoneNo2()));
-					Predicate n39 = (cb.equal(b.get("telephoneNo3"), req.getTelephoneNo3()));
-					Predicate n40 = (cb.like(cb.lower(b.get("title")), req.getTitle().toLowerCase()));
-					Predicate n41 = (cb.equal(b.get("appointmentDate"), req.getAppointmentDate()));
+				//	Predicate n36 = (cb.like(cb.lower(b.get("taxExemptedId")), req.getTaxExemptedId().toLowerCase()));
+				//	Predicate n37 = (cb.equal(b.get("telephoneNo1"), req.getTelephoneNo1()));
+				//	Predicate n38 = (cb.equal(b.get("telephoneNo2"), req.getTelephoneNo2()));
+				//	Predicate n39 = (cb.equal(b.get("telephoneNo3"), req.getTelephoneNo3()));
+				//	Predicate n40 = (cb.like(cb.lower(b.get("title")), req.getTitle().toLowerCase()));
+				//	Predicate n41 = (cb.equal(b.get("appointmentDate"), req.getAppointmentDate()));
 					Predicate n42 = (cb.like(cb.lower(b.get("preferredNotification")), req.getPreferredNotification().toLowerCase()));
 
-					query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10,
+					query.where(n1,  n3,  n6, n7, n8, n9, n10,
 							// n11,
-							n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24, n25, n26, n27, n28, n29,
-							n30, n31, n32, n33, n34, /*n35,*/ n36, n37, n38, n39, n40,n41,n42);
+							n12, n13,  n17, n18, n19, n20,  n22, n25, n26, n27, n28,
+							n30, n31,  n33, n34, /*n35,*/  n42);
 					// Get Result 
 					TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
 					list = result.getResultList();
