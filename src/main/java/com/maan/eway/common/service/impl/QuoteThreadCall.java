@@ -777,7 +777,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			
-			// Save Motro Details
+			// Save Motor Data Detais Details
+			System.out.println("*************Buy policy Motor Data Details************ ");
 			MotorDataDetails motorData  = new MotorDataDetails();
 			dozerMapper.map(eserMotors, motorData);
 			motorData.setEntryDate(new Date());	
@@ -859,6 +860,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						saveContList.add(content);
 					}
 					contentRepo.saveAllAndFlush(saveContList);
+					System.out.println("*************Buy policy Content And Risk Saved************ ");
 					
 					
 				}
@@ -866,6 +868,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			} 
 			eserMotRepo.saveAndFlush(eserMotors);			
 			motorRepo.saveAndFlush(refinedMotor);
+			System.out.println("*************Buy policy Motor Data Details Saved************ ");
 			   
 			log.error("Save Motor Info is ---> " + json.toJson(motorData));
 			
@@ -908,6 +911,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					saveDri.setRiskId(Integer.valueOf(motorData.getVehicleId()));
 					saveDri.setStatus("Y");
 					driverRepo.saveAndFlush(saveDri);
+					System.out.println("*************Buy policy MotorDriverDetails Saved************ ");
 				}
 			}
 			
@@ -3032,7 +3036,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
 					} else if(request.getMotorYn().equalsIgnoreCase("A")) {
 						 
-						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
+						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(99999) && o.getVehicleId().equals(99999)  && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
+						 if(filterNonDefaultCovers==null) {
+						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
+						 }
 					
 					} else  {
 						
@@ -3060,18 +3067,18 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Integer endtCount = home.getEndtCount() ;
 			Double premiumFc = premiumCovers.stream().filter( o ->  
 					( (o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && !o.getSectionId().equals(99999)) ||
-					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) )) )
+					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && o.getSectionId().equals(99999) /*&& o.getCoverId().equals(945) */)) )
 					.mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();	
 			
 			Double overAllPremiumFc = premiumCovers.stream().filter( o ->  ( (o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && !o.getSectionId().equals(99999)) ||
-					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) )) ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
+					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && o.getSectionId().equals(99999) /*&& o.getCoverId().equals(945) */)) ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
 			
 			Double premiumLc = premiumCovers.stream().filter( o ->  ( (o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D && !o.getSectionId().equals(99999)) ||
-					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) )) )
+					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D && o.getSectionId().equals(99999)/* && o.getCoverId().equals(945) */)) )
 					.mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()   ).sum();
 			
 			Double overAllPremiumLc = premiumCovers.stream().filter( o ->  ( (o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D && !o.getSectionId().equals(99999)) ||
-					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D && o.getSectionId().equals(99999) && o.getCoverId().equals(945) )) )
+					(o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D && o.getSectionId().equals(99999) /*&& o.getCoverId().equals(945)*/ )) )
 					.mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
 			
 			List<PolicyCoverData>  covers2 = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(request.getQuoteNo() ,"D");
