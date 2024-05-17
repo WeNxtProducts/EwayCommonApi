@@ -14,8 +14,6 @@ package com.maan.eway.repository;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -44,7 +42,7 @@ public interface PolicyCoverDataRepository  extends JpaRepository<PolicyCoverDat
 			String endtPrevQuoteNo, int parseInt, String insuranceId, int parseInt2, int parseInt3, String string);
 
 	List<PolicyCoverData> findByQuoteNoAndStatusAndCoverageTypeIn(String endtPrevQuoteNo, String string, List<String> coverageTypes);
-
+	
 //	List<PolicyCoverData> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);
 //
 //	Long countByQuoteNo(String quoteNo);

@@ -111,6 +111,33 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
+	<style name="Table 4_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 4_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 4_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
 	<subDataset name="TableDataSet 1" uuid="2dfcad32-0f3a-4426-ab2d-d52922456687">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -119,7 +146,7 @@
 		<queryString language="JSON">
 			<![CDATA[vehicleDetails]]>
 		</queryString>
-		<field name="vehicleId" class="java.lang.Integer">
+		<field name="vehicleId" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="vehicleId"/>
 			<fieldDescription><![CDATA[vehicleId]]></fieldDescription>
 		</field>
@@ -143,11 +170,11 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="cubicCapacity"/>
 			<fieldDescription><![CDATA[cubicCapacity]]></fieldDescription>
 		</field>
-		<field name="manufactureYear" class="java.lang.Integer">
+		<field name="manufactureYear" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="manufactureYear"/>
 			<fieldDescription><![CDATA[manufactureYear]]></fieldDescription>
 		</field>
-		<field name="seatingCapacity" class="java.lang.Integer">
+		<field name="seatingCapacity" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="seatingCapacity"/>
 			<fieldDescription><![CDATA[seatingCapacity]]></fieldDescription>
 		</field>
@@ -179,7 +206,7 @@
 		<queryString language="JSON">
 			<![CDATA[driverDetails]]>
 		</queryString>
-		<field name="driverId" class="java.lang.Integer">
+		<field name="driverId" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="driverId"/>
 			<fieldDescription><![CDATA[driverId]]></fieldDescription>
 		</field>
@@ -209,7 +236,7 @@
 		<queryString language="json">
 			<![CDATA[accessoriesDetails]]>
 		</queryString>
-		<field name="itemNo" class="java.lang.Integer">
+		<field name="itemNo" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="itemNo"/>
 			<fieldDescription><![CDATA[itemNo]]></fieldDescription>
 		</field>
@@ -217,7 +244,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="itemDesc"/>
 			<fieldDescription><![CDATA[itemDesc]]></fieldDescription>
 		</field>
-		<field name="sumInsured" class="java.lang.Integer">
+		<field name="sumInsured" class="java.math.BigDecimal">
 			<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
 			<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
 		</field>
@@ -243,6 +270,22 @@
 		</queryString>
 		<field name="amount" class="java.math.BigDecimal"/>
 		<field name="narration" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="coverDetails" uuid="de6ebc9d-c2c2-4c75-b74a-1dd525642bd4">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
+		<queryString language="json">
+			<![CDATA[]]>
+		</queryString>
+	</subDataset>
+	<subDataset name="additionalCoverDetails" uuid="99068b7b-aa7e-4513-ae11-f96234319a3f">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="coverName" class="java.lang.String"/>
+		<field name="sumInsured" class="java.math.BigDecimal"/>
+		<field name="premiumAfterDiscount" class="java.math.BigDecimal"/>
+		<field name="premiumIncludedTax" class="java.math.BigDecimal"/>
 	</subDataset>
 	<parameter name="pvImagepath" class="java.lang.String"/>
 	<queryString language="JSON">
@@ -296,23 +339,19 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="currency"/>
 		<fieldDescription><![CDATA[currency]]></fieldDescription>
 	</field>
-	<field name="stickerNumber" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression" value="stickerNumber"/>
-		<fieldDescription><![CDATA[stickerNumber]]></fieldDescription>
-	</field>
 	<field name="insuranceTypeDesc" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="insuranceTypeDesc"/>
 		<fieldDescription><![CDATA[insuranceTypeDesc]]></fieldDescription>
 	</field>
-	<field name="premium" class="java.lang.Integer">
+	<field name="premium" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
 		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="vatPremium" class="java.lang.Integer">
+	<field name="vatPremium" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="vatPremium"/>
 		<fieldDescription><![CDATA[vatPremium]]></fieldDescription>
 	</field>
-	<field name="totalPremium" class="java.lang.Integer">
+	<field name="totalPremium" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="totalPremium"/>
 		<fieldDescription><![CDATA[totalPremium]]></fieldDescription>
 	</field>
@@ -368,18 +407,50 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
 		<fieldDescription><![CDATA[companyName]]></fieldDescription>
 	</field>
+	<field name="tearmsAndConditions" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="tearmsAndConditions"/>
+		<fieldDescription><![CDATA[tearmsAndConditions]]></fieldDescription>
+	</field>
 	<field name="coverNoteReferenceNo" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="coverNoteReferenceNo"/>
 		<fieldDescription><![CDATA[coverNoteReferenceNo]]></fieldDescription>
 	</field>
-	<field name="tearmsAndConditions" class="java.lang.String">
-		<fieldDescription><![CDATA[tearmsAndConditions]]></fieldDescription>
+	<field name="customerId" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerId"/>
+		<fieldDescription><![CDATA[customerId]]></fieldDescription>
 	</field>
-	<field name="motorWaterMark" class="java.lang.String">
-		<fieldDescription><![CDATA[motorWaterMark]]></fieldDescription>
+	<field name="premiumDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="premiumDetails"/>
+		<fieldDescription><![CDATA[premiumDetails]]></fieldDescription>
 	</field>
-	<field name="vatPercent" class="java.lang.String"/>
-	<field name="overAllPremium" class="java.math.BigDecimal"/>
+	<field name="business" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="business"/>
+		<fieldDescription><![CDATA[business]]></fieldDescription>
+	</field>
+	<field name="signImg" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="signImg"/>
+		<fieldDescription><![CDATA[signImg]]></fieldDescription>
+	</field>
+	<field name="brokerLogo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="brokerLogo"/>
+		<fieldDescription><![CDATA[brokerLogo]]></fieldDescription>
+	</field>
+	<field name="vatPercent" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="vatPercent"/>
+		<fieldDescription><![CDATA[vatPercent]]></fieldDescription>
+	</field>
+	<field name="overAllPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="overAllPremium"/>
+		<fieldDescription><![CDATA[overAllPremium]]></fieldDescription>
+	</field>
+	<field name="attachmentList" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="attachmentList"/>
+		<fieldDescription><![CDATA[attachmentList]]></fieldDescription>
+	</field>
+	<field name="coverDetailsList" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="coverDetailsList"/>
+		<fieldDescription><![CDATA[coverDetailsList]]></fieldDescription>
+	</field>
 	<background>
 		<band height="802" splitType="Stretch">
 			<textField>
@@ -394,11 +465,22 @@
 		</band>
 	</background>
 	<pageHeader>
-		<band height="64">
+		<band height="84">
 			<image>
 				<reportElement x="0" y="0" width="555" height="64" uuid="2e66645b-7b3e-40a7-a8d7-b0f7367a85c1"/>
 				<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}]]></imageExpression>
 			</image>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="35" y="69" width="520" height="15" uuid="49586fb2-0bbe-4979-9ab7-8bf27fcdfe81">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} >1]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="0" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{policyNo}==null || $F{policyNo}==""?"Attached to and Forming Part of Quote No."+$F{quoteNo}:"Attached to and Forming Part of "+$F{policyNo})]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<detail>
@@ -1954,6 +2036,56 @@
 				<textFieldExpression><![CDATA["As per attached schedule I"]]></textFieldExpression>
 			</textField>
 		</band>
+		<band height="22">
+			<printWhenExpression><![CDATA[!$F{coverDetailsList}.isEmpty()]]></printWhenExpression>
+			<componentElement>
+				<reportElement x="0" y="7" width="555" height="15" uuid="4bad09c9-012f-4934-aa96-848ec6b33f1a">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 4_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 4_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 4_TD"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="additionalCoverDetails" uuid="ee8f8fe4-2c74-493f-8a9c-30854fbcf207">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverDetailsList")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="555" uuid="8946819c-4f74-45cd-b508-332b9ad32ebb">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:columnHeader style="Table 4_TD" height="15" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<box>
+								<pen lineWidth="0.0"/>
+							</box>
+							<textField>
+								<reportElement x="0" y="0" width="555" height="15" uuid="074123bb-351d-4efa-9bc9-a0e84181574a"/>
+								<box leftPadding="2"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Cover Included"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 4_TD" height="20">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<box>
+								<pen lineWidth="0.0"/>
+							</box>
+							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="555" height="20" uuid="b553d4eb-119b-4e51-95dd-3227caa92e1b"/>
+								<box leftPadding="2"/>
+								<textElement verticalAlignment="Middle" markup="styled">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA["<li>"+$F{coverName}+"</li>"]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
 		<band height="12">
 			<textField>
 				<reportElement x="0" y="0" width="120" height="12" uuid="5268b499-fda7-45c0-bb62-47d0a245ebe6"/>
@@ -1995,13 +2127,13 @@
 							<box>
 								<pen lineWidth="0.0"/>
 							</box>
-							<textField>
+							<textField textAdjust="StretchHeight">
 								<reportElement x="0" y="0" width="555" height="15" uuid="ef255ede-e835-4b22-a33d-656f0b5416fd"/>
 								<box leftPadding="2"/>
-								<textElement verticalAlignment="Middle">
+								<textElement verticalAlignment="Middle" markup="html">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA["* "+$F{allConditions}]]></textFieldExpression>
+								<textFieldExpression><![CDATA["<ul style='list-style-type:square;'> <li>"+$F{allConditions}+"</li></ul>"]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

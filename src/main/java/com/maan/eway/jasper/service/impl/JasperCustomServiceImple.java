@@ -70,6 +70,7 @@ import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.res.AttachMentRes;
+import com.maan.eway.jasper.res.CoverDetailsRes;
 import com.maan.eway.jasper.res.CreditDataSetOne;
 import com.maan.eway.jasper.res.CreditDataSetTwo;
 import com.maan.eway.jasper.res.CreditNoteRes;
@@ -767,6 +768,7 @@ public class JasperCustomServiceImple {
 		List<MotorPrivateAccessoriesDetails> accessoriesDetailsRes = new ArrayList<>();
 		List<TearmsAndCondition> tearmsAndConditionRes = new ArrayList<>();
 		List<AttachMentRes> attachments = new ArrayList<>();
+		List<CoverDetailsRes> coverDetailsRes = new ArrayList<>();
 		CriteriaBuilder cb = em.getCriteriaBuilder();	
 		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
@@ -936,6 +938,37 @@ public class JasperCustomServiceImple {
 						.iDNumber(k.get("idNumber")==null?"":k.get("idNumber").toString())
 						.chassisNumber(k.get("chassisNumber")==null?"":k.get("chassisNumber").toString())
 						.build()));
+			}
+			if(StringUtils.isNotBlank(vehicleId) && StringUtils.isNotBlank(policyNo)) {
+				CriteriaBuilder coverdtl = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> pcd = coverdtl.createQuery(Tuple.class);
+				Root<PolicyCoverData> pcdRoot = pcd.from(PolicyCoverData.class);
+				Root<HomePositionMaster> phpmRoot = pcd.from(HomePositionMaster.class);
+				Root<CompanyProductMaster> pcpmRoot = pcd.from(CompanyProductMaster.class);
+				
+				pcd.multiselect(pcdRoot.get("coverName").alias("coverName"),pcdRoot.get("sumInsured").alias("sumInsured"),
+						cb.selectCase().when(cb.in(phpmRoot.get("currency")).value(pcpmRoot.get("currencyIds")), pcdRoot.get("premiumAfterDiscountLc"))
+						.otherwise(pcdRoot.get("premiumExcludedTaxFc")).alias("premiumAfterDiscount"),
+						cb.selectCase().when(cb.in(phpmRoot.get("currency")).value(pcpmRoot.get("currencyIds")), pcdRoot.get("premiumIncludedTaxLc"))
+						.otherwise(pcdRoot.get("premiumIncludedTaxFc")).alias("premiumIncludedTax"),pcdRoot.get("vehicleId").alias("vehicleId"))
+				.where(cb.equal(pcpmRoot.get("companyId"), phpmRoot.get("companyId")),cb.equal(pcpmRoot.get("status"),"Y"),
+						cb.equal(phpmRoot.get("productId"), pcpmRoot.get("productId")),cb.between(cb.literal(new Date()), pcpmRoot.get("effectiveDateStart"), pcpmRoot.get("effectiveDateEnd")),
+						cb.equal(pcdRoot.get("policyNo"), phpmRoot.get("policyNo")),cb.equal(pcdRoot.get("taxId"), 0),cb.equal(pcdRoot.get("discLoadId"), 0),
+						cb.notEqual(pcdRoot.get("coverageType"), "B"),cb.equal(phpmRoot.get("policyNo"), policyNo));
+				
+				List<Tuple> coverDetailsList = em.createQuery(pcd).getResultList();
+				if(!coverDetailsList.isEmpty()) {
+					coverDetailsList.forEach(k -> {
+						CoverDetailsRes m = CoverDetailsRes.builder()
+								.coverName(k.get("coverName")==null?"":k.get("coverName").toString())
+								.sumInsured(k.get("sumInsured")==null?null:k.get("sumInsured").toString())
+								.premiumAfterDiscount(k.get("premiumAfterDiscount")==null?null:k.get("premiumAfterDiscount").toString())
+								.premiumIncludedTax(k.get("premiumIncludedTax")==null?null:k.get("premiumIncludedTax").toString())
+								.vehicleId(k.get("vehicleId")==null?"":k.get("vehicleId").toString())
+								.build();
+						coverDetailsRes.add(m);
+					});
+				}
 			}
 			
 			List<ContentAndRisk> accessoriesDetails = conAndRiskRepo.findByQuoteNoOrderByRiskIdAsc(map.get("quoteNo").toString());
@@ -1127,6 +1160,7 @@ public class JasperCustomServiceImple {
 			response.setTearmsAndConditions(tearmsAndConditionRes);
 			response.setPremiumDetails(premiumDetailsRes);
 			response.setAttachmentList(attachments);
+			response.setCoverDetailsList(coverDetailsRes);
 		}
 	}catch(Exception e) {
 		log.info("Error in getMotorPrivate ==>"+e.getMessage());
