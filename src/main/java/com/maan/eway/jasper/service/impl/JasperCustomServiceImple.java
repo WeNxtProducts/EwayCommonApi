@@ -948,7 +948,7 @@ public class JasperCustomServiceImple {
 				
 				pcd.multiselect(pcdRoot.get("coverName").alias("coverName"),pcdRoot.get("sumInsured").alias("sumInsured"),
 						cb.selectCase().when(cb.in(phpmRoot.get("currency")).value(pcpmRoot.get("currencyIds")), pcdRoot.get("premiumAfterDiscountLc"))
-						.otherwise(pcdRoot.get("premiumExcludedTaxFc")).alias("premiumAfterDiscount"),
+						.otherwise(pcdRoot.get("premiumAfterDiscountFc")).alias("premiumAfterDiscount"),
 						cb.selectCase().when(cb.in(phpmRoot.get("currency")).value(pcpmRoot.get("currencyIds")), pcdRoot.get("premiumIncludedTaxLc"))
 						.otherwise(pcdRoot.get("premiumIncludedTaxFc")).alias("premiumIncludedTax"),pcdRoot.get("vehicleId").alias("vehicleId"))
 				.where(cb.equal(pcpmRoot.get("companyId"), phpmRoot.get("companyId")),cb.equal(pcpmRoot.get("status"),"Y"),
