@@ -592,8 +592,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				cal.set(Calendar.HOUR_OF_DAY, 23);
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
-				
-				if(StringUtils.isNotBlank(req.getCompanyId()) && ! req.getCompanyId().equalsIgnoreCase("100019") ) {
+				if(StringUtils.isNotBlank(req.getCompanyId()) && ! (req.getCompanyId().equalsIgnoreCase("100019")|| req.getCompanyId().equalsIgnoreCase("100027"))) {
+
 					// DOB Validation	
 					if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
 						if( StringUtils.isNotBlank(req.getIdType()) && req.getIdType().equalsIgnoreCase("1")) {
