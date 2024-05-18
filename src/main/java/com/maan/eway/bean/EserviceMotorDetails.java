@@ -731,6 +731,11 @@ private static final long serialVersionUID = 1L;
 	@Column(name ="NO_OF_PASSENGERS")
 	private Integer noOfPassengers;
      
+	@Column(name = "LOSS_RATIO")
+	private Double previousLossRatio;
+	
+	@Column(name = "PREVIOUS_INSURANCE_YN")
+	private String previousInsuranceYN;
 }
 
 

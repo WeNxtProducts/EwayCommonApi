@@ -659,6 +659,12 @@ private static final long serialVersionUID = 1L;
    @Column(name="ENGINE_TYPE", length=100)
    private String   enginetype ; 
    
+	@Column(name = "LOSS_RATIO")
+	private Double previousLossRatio;
+
+	@Column(name = "PREVIOUS_INSURANCE_YN")
+	private String previousInsuranceYN;
+   
 }
 
 
