@@ -189,7 +189,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
 					errorList.add("1015");
 					//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
-				} 
+				} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
+					
+					errorList.add("1015");
+				}
 //				else if(!containsOnlyNumbers(req.getIdNumber()))
 //				{
 //					errorList.add("1015");
