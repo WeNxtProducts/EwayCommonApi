@@ -329,7 +329,10 @@ private static final long serialVersionUID = 1L;
 	
 	@Column(name ="CUST_RENEWAL_YN", length = 5)
 	private String custRenewalYn;
-    
+
+
+	@Column(name="LOSS_RATIO")
+	private Double lossRatio;
 }
 
 

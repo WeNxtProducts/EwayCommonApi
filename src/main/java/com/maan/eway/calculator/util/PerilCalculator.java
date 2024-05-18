@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.persistence.Column;
 import javax.persistence.Tuple;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +74,7 @@ public class PerilCalculator {
 			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+56+";";
 				 */
 				String NumberOfVehicles="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+96+";"+vehicles.get(0).get("noOfVehicles").toString()+"~param1&param2;";
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+96+";"+vehicles.get(0).get("noOfVehicles").toString()+"~param1&param2;param10:"+customers.get(0).get("policyHolderType").toString()+";";
 
 				String VehicleAge="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+105+";"+vehicles.get(0).get("manufactureAge").toString()+"~param1&param2;";
@@ -108,14 +109,14 @@ public class PerilCalculator {
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+73+";param9:"+vehicles.get(0).get("motorUsage").toString()+";";
 
 				String DriveClaimNum_12m_0m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+4+";param9:"+vehicles.get(0).get("claimNum12m0m").toString()+";";
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+4+";"+vehicles.get(0).get("claimNum12m0m").toString()+"~param1&param2;";
 
-				countBody =crservice.getCountFromRating(DriveClaimNum_12m_0m);
+				/*countBody =crservice.getCountFromRating(DriveClaimNum_12m_0m);
 				if(countBody<=0) {
 					DriveClaimNum_12m_0m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 					+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+4+";param9:99999;";
 				}
-
+				
 				String DriveClaimNum_24m_12m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+11+";param9:"+vehicles.get(0).get("claimNum24m12m").toString()+";";
 				countBody =crservice.getCountFromRating(DriveClaimNum_24m_12m);
@@ -131,6 +132,8 @@ public class PerilCalculator {
 					DriveClaimNum_36m_24m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 					+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+12+";param9:99999;";
 				}
+				
+				*/
 
 				String DriverAge="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+40+";param9:"+drivers.get(0).get("gender")+";param10:"+drivers.get(0).get("age")+";";
@@ -148,6 +151,10 @@ public class PerilCalculator {
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+68+";"+drivers.get(0).get("areaGroup")+"~param21&param22;";
 				//  23
 
+				String LossRatio="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+229+";"+vehicles.get(0).get("lossRatio")+"~param1&param2;";
+				 
+				
 				Map<String,String> queries=new HashMap<String,String>();
 				queries.put("VehicleGroup",VehicleGroup);
 				queries.put("DriverAgeXGender",DriverAge);
@@ -161,13 +168,14 @@ public class PerilCalculator {
 				queries.put("MaritalStatus",MaritalStatus);
 				queries.put("LicenseDuration",LicenseDuration);
 				queries.put("NoClaims0to1",DriveClaimNum_12m_0m);
-				queries.put("NoClaims1to2",DriveClaimNum_24m_12m);
-				queries.put("NoClaims2to3",DriveClaimNum_36m_24m); 
+				/*queries.put("NoClaims1to2",DriveClaimNum_24m_12m);
+				queries.put("NoClaims2to3",DriveClaimNum_36m_24m);*/ 
 				queries.put("FuelType",FuelType);
 				queries.put("VehBodyType",VehBodyType);
 				queries.put("AreaGroup",AreaGroup);
 				queries.put("NumberOfVehicles",NumberOfVehicles);
 				queries.put("CoverType",CoverType);
+				queries.put("3YearLossRatio",LossRatio);
 				queries.put("Base",SumInsured);
 
 				for(Entry<String, String> entrySet : queries.entrySet()) {
