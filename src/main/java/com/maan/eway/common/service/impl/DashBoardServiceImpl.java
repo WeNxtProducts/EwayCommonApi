@@ -112,9 +112,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 		 
 		try {
 			
-			Date startDate=null;
-			Date endDate = null;
-			if (StringUtils.isBlank(req.getStartDate()) && StringUtils.isBlank(req.getEndDate())) {
+			Date startDate=req.getStartDate();
+			Date endDate = req.getEndDate();
+			/*if (StringUtils.isBlank(req.getStartDate()) && StringUtils.isBlank(req.getEndDate())) {
 				Date date1 = new Date();
 				Calendar cal = new GregorianCalendar();
 				cal.setTime(date1);
@@ -136,7 +136,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 			//	cal.add(Calendar.HOUR , +23);
 				cal.add(Calendar.DAY_OF_MONTH, 0);cal.set(Calendar.HOUR_OF_DAY,23 );cal.set(Calendar.MINUTE, 59);
 				endDate = cal.getTime() ;
-			}
+			}*/
 /*			  CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		        CriteriaQuery<DasboardCountRes> criteriaQuery = criteriaBuilder.createQuery(DasboardCountRes.class);
 		        Root<HomePositionMaster> root = criteriaQuery.from(HomePositionMaster.class);
@@ -300,9 +300,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 		 
 		try {
 
-			Date startDate = null;
-			Date endDate = null;
-			if (StringUtils.isBlank(req.getStartDate()) && StringUtils.isBlank(req.getEndDate())) {
+			Date startDate = req.getStartDate();
+			Date endDate = req.getEndDate();
+		/*	if (StringUtils.isBlank(req.getStartDate()) && StringUtils.isBlank(req.getEndDate())) {
 				Date date1 = new Date();
 				Calendar cal = new GregorianCalendar();
 				cal.setTime(date1);
@@ -332,7 +332,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				cal.set(Calendar.HOUR_OF_DAY, 23);
 				cal.set(Calendar.MINUTE, 59);
 				endDate = cal.getTime();
-			}
+			}*/
 
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
@@ -490,9 +490,9 @@ return reslist;
 		 
 		try {
 			
-			Date startDate=null;
-			Date endDate = null;
-			if (StringUtils.isBlank(req.getStartDate()) && StringUtils.isBlank(req.getEndDate())) {
+			Date startDate=req.getStartDate();
+			Date endDate = req.getEndDate();
+			/*if (StringUtils.isBlank(req.getStartDate()) && StringUtils.isBlank(req.getEndDate())) {
 				Date date1 = new Date();
 				Calendar cal = new GregorianCalendar();
 				cal.setTime(date1);
@@ -514,7 +514,7 @@ return reslist;
 			//	cal.add(Calendar.HOUR , +23);
 				cal.add(Calendar.DAY_OF_MONTH, 0);cal.set(Calendar.HOUR_OF_DAY,23 );cal.set(Calendar.MINUTE, 59);
 				endDate = cal.getTime() ;
-			}
+			}*/
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
@@ -617,9 +617,9 @@ return reslist;
 
 		try {
 
-			Date startDate = null;
-			Date endDate = null;
-			if (StringUtils.isBlank(req.getStartDate()) && StringUtils.isBlank(req.getEndDate())) {
+			Date startDate = req.getStartDate();
+			Date endDate = req.getEndDate();
+			/*if (StringUtils.isBlank(req.getStartDate()) && StringUtils.isBlank(req.getEndDate())) {
 				Date date1 = new Date();
 				Calendar cal = new GregorianCalendar();
 				cal.setTime(date1);
@@ -649,7 +649,7 @@ return reslist;
 				cal.set(Calendar.HOUR_OF_DAY, 23);
 				cal.set(Calendar.MINUTE, 59);
 				endDate = cal.getTime();
-			}
+			}*/
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 

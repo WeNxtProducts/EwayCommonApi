@@ -481,4 +481,105 @@ public class DashBoardServiceV1 {
 	
 	}
 
+	public CommonRes getChartModelV2(DashBoardGetReq req) {
+		Class<EserviceMotorDetails> tableName=EserviceMotorDetails.class;
+
+		try {
+			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+			 //CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			 CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+			 
+			    Root<EserviceMotorDetails> motorDetailsRoot = cq.from(EserviceMotorDetails.class);
+			    Root<InsuranceCompanyMaster> cpm=cq.from(InsuranceCompanyMaster.class);
+			    //Join<EserviceMotorDetails, InsuranceCompanyMaster> companyJoin = motorDetailsRoot.join("companyId");
+			    Predicate companyIdJoin = cb.equal(motorDetailsRoot.get("companyId"), cpm.get("companyId"));
+			    Expression<Date> dateAsLocalDate = cb.function("DATE", Date.class, motorDetailsRoot.get("entryDate"));
+/*
+ * 
+ * Expression<BigDecimal> policyPremium = cb.sum(cb.<BigDecimal>selectCase()
+					.when(cb.equal(hpm.get("status"), "P"), hpm.get("overallPremiumLc"))
+					.otherwise(cb.nullLiteral(BigDecimal.class)));
+ */
+			    cq.multiselect(
+			    		dateAsLocalDate.alias("date"),
+			            cb.sum(cb.<Integer>selectCase()
+			                    .when(cb.and(cb.equal(motorDetailsRoot.get("status"), "Y"), cb.isNull(motorDetailsRoot.get("renewalDateYn"))), 1)
+			                    .otherwise(0)).alias("quoteCount"),
+			            cb.sum(cb.<Integer>selectCase()
+			                    .when(cb.and(cb.equal(motorDetailsRoot.get("status"), "Y"), cb.equal(motorDetailsRoot.get("renewalDateYn"), "Y")), 1)
+			                    .otherwise(0)).alias("renewalQuoteCount"),
+			            cb.<BigDecimal>selectCase()
+			                    .when(cb.and(cb.equal(motorDetailsRoot.get("status"), "Y"), cb.isNull(motorDetailsRoot.get("renewalDateYn"))),
+			                            cb.sum(motorDetailsRoot.get("overallPremiumLc")))
+			                    .otherwise(cb.nullLiteral(BigDecimal.class)).alias("quotePremium"),
+			            cb.<BigDecimal>selectCase()
+			                    .when(cb.and(cb.equal(motorDetailsRoot.get("status"), "Y"), cb.equal(motorDetailsRoot.get("renewalDateYn"), "Y")),
+			                            cb.sum(motorDetailsRoot.get("overallPremiumLc")))
+			                    .otherwise(cb.nullLiteral(BigDecimal.class)).alias("renewalQuotePremium"),
+			            cb.max(cpm.get("currencyId")).alias("currencyCode")
+			    );
+
+			    Predicate companyIdPredicate = cb.equal(motorDetailsRoot.get("companyId"), req.getInsuranceId());
+			    Predicate productIdPredicate = cb.equal(motorDetailsRoot.get("productId"), req.getProductId());
+			    Predicate statusPredicate = motorDetailsRoot.get("status").in("Y");
+			   // Predicate datePredicate = cb.between(motorDetailsRoot.get("entryDate"), java.sql.Date.valueOf("2024-01-01"), java.sql.Date.valueOf("2024-03-05"));
+			   
+			    Date date1 = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(date1);
+				cal.add(Calendar.DATE, -30);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+				Date startDate = cal.getTime();
+				
+				Predicate datePredicate = cb.between(dateAsLocalDate, cb.literal(req.getStartDate()), cb.literal(req.getEndDate()));
+				
+			 /*   Subquery<Long> sub = cq.subquery(Long.class); // <-- call subquery on cq, not cb
+				sub.select(cb.max(cpm.get("amendId")));
+				sub.from(InsuranceCompanyMaster.class);
+				sub.where(cb.equal(cpm.get("companyId"), hpm.get("companyId")));
+				
+				Predicate amendIdPredicate = cb.equal(cpm.get("amendId"), sub);
+				*/
+				Subquery<Long> sub = cq.subquery(Long.class);
+				sub.select(cb.max(cpm.get("amendId")));
+				sub.from(InsuranceCompanyMaster.class);
+			    sub.where(cb.equal(cpm.get("companyId"), motorDetailsRoot.get("companyId")));
+			    Predicate amendIdPredicate = cb.equal(cpm.get("amendId"),sub);
+			   
+			   
+			    Predicate applicationIdPredicate = cb.equal(cb.<String>selectCase()
+						.when(cb.equal(cb.literal("Issuer"), req.getUserType()), motorDetailsRoot.get("applicationId"))
+						.otherwise(motorDetailsRoot.get("loginId")), req.getLoginId());
+
+			    cq.where(companyIdPredicate, productIdPredicate, statusPredicate, datePredicate, amendIdPredicate, applicationIdPredicate,companyIdJoin);
+
+			    cq.groupBy(motorDetailsRoot.get("status"), motorDetailsRoot.get("renewalDateYn"), dateAsLocalDate);
+			    cq.orderBy(cb.desc(dateAsLocalDate));
+
+			    List<Tuple> results = entityManager.createQuery(cq).getResultList();
+			    
+			    System.out.println( "out put "+results);
+				List<DashBoardChart> total=new ArrayList<DashBoardChart>();
+				for (int i = 0; i < results.size(); i++) {
+					Tuple objects = results.get(i);
+					DashBoardChart res=DashBoardChart.builder()
+							.date(objects.get(0).toString())
+							.quoteCount(new BigDecimal(objects.get(1)==null?"0":objects.get(1).toString()))
+							.policyCount(new BigDecimal(objects.get(2)==null?"0":objects.get(2).toString()))
+							.quotePremium(new BigDecimal(objects.get(3)==null?"0":objects.get(3).toString()))
+							.policyPremium(new BigDecimal(objects.get(4)==null?"0":objects.get(4).toString()))
+							.currency(objects.get(5)==null?"0":objects.get(5).toString())
+							.build();
+					
+					 
+					total.add(res);
+				}
+				CommonRes res=new CommonRes();
+				res.setCommonResponse(total);
+				return res;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;	
+	}
+
 }

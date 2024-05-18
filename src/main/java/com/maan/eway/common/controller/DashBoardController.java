@@ -156,4 +156,13 @@ public class DashBoardController {
 		}
 	}
 
+	@PostMapping("/dashboard/v2/chart")
+	public ResponseEntity<CommonRes> getChartDataV2(@RequestBody  DashBoardGetReq req) {
+		CommonRes data =dashbordService.getChartModelV2(req);
+		if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

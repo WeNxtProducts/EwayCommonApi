@@ -1,5 +1,7 @@
 package com.maan.eway.common.req;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -22,7 +24,7 @@ public class DashBoardGetReq {
 	   @JsonProperty("SubUserType")
 	   private String     subUserType     ;
 	   @JsonProperty("StartDate")
-	   private String     startDate     ;
+	   private Date     startDate     ;
 	   @JsonProperty("EndDate")
-	   private String     endDate ;
+	   private Date     endDate ;
 }
