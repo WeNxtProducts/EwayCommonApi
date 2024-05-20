@@ -1249,7 +1249,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
 				savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
 				savePersonalInfo.setIdTypeDesc(policyHolderTypeId);
-				
+				 
 				savePersonalInfo.setMobileCode1(req.getMobileCode1());
 				savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 				savePersonalInfo.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
