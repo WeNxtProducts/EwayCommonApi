@@ -995,6 +995,8 @@ public class RatingFactorsUtil {
 			
 			premium= (premium>calcMinRate)?premium:calcMinRate;
 			
+			pattern =  "#####0.#####" ;
+			decimalFormat = new DecimalFormat(pattern);
 			EwayFactorResultDetail efResult=EwayFactorResultDetail.builder()
 					.cdRefno(engine.getCdRefNo())
 					.companyId(engine.getInsuranceId())
@@ -1013,10 +1015,10 @@ public class RatingFactorsUtil {
 					.minPremium(minPremium)
 					.minRate(minRate)
 					.finalPremiumAmtExclTax(premium)
-					.finalPremiumRateExclTax((Double) (premium/(sumInsured==0?1:sumInsured)))
+					.finalPremiumRateExclTax(Double.valueOf(decimalFormat.format((Double) (premium/(sumInsured==0?1:sumInsured)))))
 					//.proRataPremiumAmtExclTax(sumInsured)					
 					.riskPremiumAmt(riskPremiumAmt)
-					.riskPremiumRate((Double) (riskPremiumAmt)/(sumInsured.doubleValue()>0?sumInsured:1D))
+					.riskPremiumRate(Double.valueOf(decimalFormat.format( (Double) (riskPremiumAmt)/(sumInsured.doubleValue()>0?sumInsured:1D))))
 					.build();
 			
 			fdResultRepo.save(efResult);			
