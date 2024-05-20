@@ -974,7 +974,9 @@ public class RatingFactorsUtil {
 			String todayInString = DD_MM_YYYY.format(new Date());
 			String minRateQuery="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+115+";param10:"+vehicles.get(0).get("vehicleClass").toString()
-			+";param11:"+vehicles.get(0).get("insuranceClass").toString()+";";
+			+";param11:"+vehicles.get(0).get("insuranceClass").toString()+";"
+			+(vehicles.get(0).get("sumInsured")==null?0:vehicles.get(0).get("sumInsured"))+"~param1&param2;";
+			;
 			
 			List<Tuple> queryResult = getResult(minRateQuery);
 			Double minPremium=Double.parseDouble(queryResult.get(0).get("minPremium").toString());
