@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -483,7 +484,9 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 				 * Error("","New Password","Please Enter Valid Password")); }
 				 */
 				 if (!passwordvaildation(req.getNewPassword(),req.getLoginId())) {
-					list.add(new Error("","New Password","Please Enter Valid Password"));
+					 String errormsg=geterrormsg(req.getLoginId());
+						
+						list.add(new Error("","New Password",errormsg));
 				}
 				
 				else {
@@ -521,36 +524,79 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	
 	private boolean validPassword(String newPassword) {
 		
-		Pattern pattern=Pattern.compile("(?=\\S+$).{7,20}");
+		Pattern pattern=Pattern.compile("(?=\\S+$).{5,20}");
     	Matcher matcher = pattern.matcher(newPassword);
     	return matcher.matches();
 	}
-	
+	public String geterrormsg(String Loginid)
+	{
+		String character=null,symbols=null,error="",max=null,min=null;
+		int numbg=-1,numend=-1;
+	try {
+      if (Loginid != null) {
+	  LoginMaster logindetails = loginRepo.findByLoginId(Loginid);
+	  String company_id = logindetails.getCompanyId();
+	  List<InsuranceCompanyMaster> req1 = repository.findTopByCompanyIdOrderByAmendIdDesc(company_id);
+	  if(req1!=null)
+	  {
+		  InsuranceCompanyMaster req = req1.stream()
+  			    .filter(record -> "Y".equalsIgnoreCase(record.getPatternstatus() != null ? record.getPatternstatus().trim() : null))
+  			    .findFirst()
+  			    .orElse(null); // Throw exception if no matching record is found
+
+		  if(req!=null) {
+		  character=req.getAlphabet();
+		  numbg=req.getNumericDigitsStart()==null?numbg:Integer.valueOf(req.getNumericDigitsStart());
+		  numend=req.getNumericDigitsEnd()==null?numbg:Integer.valueOf(req.getNumericDigitsEnd());
+		  symbols=req.getSymbols();
+		 max =req.getTotalmax();
+		  min=req.getTotalmin();
+		  if(character!=null && numbg!=-1 && numend!=-1 && symbols!=null && max!= null && min!=null)
+		    error ="The password should contains character "+req.getAlphabet()+", numberic digit from "+numbg+" to "+numend+", symbols should contain "+ symbols +" , minimum password length is "+min +" and  maximum Password length is "+max +"...";
+		  
+		  else   error ="The passwords should contain a combination of characters and password length between 5 to 20 characters  long.."; 
+		   
+		 }
+		  else error ="The passwords should contain a combination of characters and password length between 5 to 20 characters  long.."; 
+		   
+	  }
+	  else  error ="The passwords should contain a combination of characters and password length between 5 to 20 characters  long...";   
+	  
+			}
+		} catch (Exception ex) {
+			ex.getMessage();
+			return "Please Enter Valid Password";
+		}
+	return error;
+	}
 	public boolean  passwordvaildation(String Password, String Loginid)
 	{
 		try {
 		String Pattern="";
      LoginMaster logindetails=loginRepo.findByLoginId(Loginid);
-     Object company_id=logindetails.getCompanyId();
+     String company_id=logindetails.getCompanyId();
 		
-	     List<InsuranceCompanyMaster> req1= repository.findByCompanyId(company_id);
+	     List<InsuranceCompanyMaster> req1= repository.findTopByCompanyIdOrderByAmendIdDesc(company_id);
 	     if(req1!=null )
 	     {
 	    	 InsuranceCompanyMaster req = req1.stream()
-	    	            .max(Comparator.comparing(InsuranceCompanyMaster::getUpdatedDate))
-	    	            .orElseThrow(NoSuchElementException::new);
+	    			    .filter(record -> "Y".equalsIgnoreCase(record.getPatternstatus() != null ? record.getPatternstatus().trim() : null))
+	    			    .findFirst()
+	    			    .orElse(null);
+	    			System.out.println("Found record: " + req);
+	    if(req!=null) {
 	    	 String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
-		  	   String   number=!StringUtils.isBlank(req.getNumericDigits()) ? "(?=.*["+req.getNumericDigits()+"])" : "";//(?=.*\\d --->mean 0-9)
+		  	   String   number=!StringUtils.isBlank(req.getNumericDigitsStart()) && !StringUtils.isBlank(req.getNumericDigitsEnd())? "(?=.*["+req.getNumericDigitsStart()+"-"+req.getNumericDigitsEnd()+"])" : "";//(?=.*\\d --->mean 0-9)
 		  	   String	symbols=!StringUtils.isBlank(req.getSymbols()) ? "(?=.*["+req.getSymbols()+"])" :"";//(?=.*[@#$%^&+=!])
 		  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+req.getTotalmin()+","+req.getTotalmax()+"}" :"";//{8,10}		
 		       String collect="["+aplhabet+number+symbols+"]";//[a-z0-6@#^]
 		  	   Pattern ="^"+(aplhabet)+(number)+(symbols)+(collect)+(length)+"$";
-
+	    }else Pattern=null;
 	     }
 	     System.out.print("Generated Pattern is ----------->"+Pattern);
 	     if(company_id==null||Pattern==null||Pattern.equals("^[]$"))
 	     {
-	    	 Pattern="(?=\\S+$).{7,20}"; //default pattern
+	    	 Pattern="(?=\\S+$).{5,20}"; //default pattern
 	     }
 	     
 	    if(Password.matches(Pattern))

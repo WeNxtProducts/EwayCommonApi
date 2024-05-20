@@ -36,7 +36,7 @@ public interface InsuranceCompanyMasterRepository  extends JpaRepository<Insuran
 
 	InsuranceCompanyMaster findByCompanyId(String insuranceId);
 	
-	List<InsuranceCompanyMaster> findByCompanyId(Object id);
+	//List<InsuranceCompanyMaster> findTopByCompanyIdOrderByAmendIdDescAndPatternStatus(Object string,String pp);
 
 	List<InsuranceCompanyMaster> findTopByCompanyIdOrderByAmendIdDesc(String companyId);
 
