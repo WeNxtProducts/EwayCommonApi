@@ -3,6 +3,8 @@ package com.maan.eway.calculator.util;
 import java.math.BigDecimal;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.res.calc.Tax;
 
@@ -21,7 +23,15 @@ public class TaxFromFactor  implements Function<FactorRateRequestDetails,Tax>{
 					.taxRate(t.getTaxRate()==null?0D: t.getTaxRate().doubleValue() )				 	
 					.calcType(t.getTaxCalcType()==null?"":t.getTaxCalcType())
 					.endtTypeId(t.getDiscLoadId().toString())
+					.endtTypeCount(t.getEndtCount())							 
+ 					.regulatoryCode(t.getRegulatoryCode())
 					.endtTypeCount(t.getEndtCount())
+					.dependentYn(t.getDependentCoverYn())
+					.taxExemptedAllowed(t.getIsTaxExtempted())
+					.minimumTaxAmountLc(t.getTaxAmountLc())
+					.minimumTaxAmount(t.getTaxAmount())
+					.taxAmountLc(BigDecimal.ZERO)
+					.taxFor("")					
 					.build();
 			return d;
 		}catch (Exception e) {

@@ -75,6 +75,7 @@ import com.maan.eway.calculator.util.SplitDiscountUtils;
 import com.maan.eway.calculator.util.SplitLoadingUtils;
 import com.maan.eway.calculator.util.SplitSubCoverUtil;
 import com.maan.eway.calculator.util.SubCoverCreationUtil;
+import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.SequenceGenerateReq;
@@ -1109,9 +1110,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 							Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
 
 			// TaxFromFactor tzx=new TaxFromFactor();
-			List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
+			/*List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
 			TaxUtils tzx = new TaxUtils(BigDecimal.ZERO	,"");
-
+		*/
+			TaxFromFactor tzx=new TaxFromFactor();
 			for (String dependcover : dependedcovers) {
 				List<Cover> totalcovers = new ArrayList<Cover>();
 				List<FactorRateRequestDetails> covers = factors.stream()
@@ -1155,7 +1157,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					if (!noncovers.isEmpty()) {
 						for (Cover c : noncovers) { 
 							if(!c.getCoverageType().equals("A") && !c.getIsTaxExcempted().equals("Y")) {
-							List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+							List<Tax> taxey = factors.stream().filter(d ->( d.getCoverId().toString().equals(c.getCoverId()) && d.getCoverageType().equalsIgnoreCase("T"))).map(tzx)
 									.collect(Collectors.toList());
 							c.setTaxes(taxey);
 							}
@@ -1199,9 +1201,16 @@ public class CalculatorEngineService implements CalculatorEngine {
 					if (!noncovers.isEmpty()) {
 						for (Cover c : noncovers) { 
 							if(!c.getCoverageType().equals("A") && !c.getIsTaxExcempted().equals("Y")) {
-								List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+								/*List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
 										.collect(Collectors.toList());
 								c.setTaxes(taxey);
+								*/
+								 
+								List<Tax> taxey = factors.stream().filter(d ->( d.getCoverId().toString().equals(c.getCoverId()) && d.getCoverageType().equalsIgnoreCase("T"))).map(tzx)
+										.collect(Collectors.toList());
+								c.setTaxes(taxey);
+								
+							
 							}
 						}
 					}
@@ -1253,8 +1262,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 			//if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
 			BigDecimal totalPremium=retc.stream().filter(x -> (!"N".equals(x.getIsselected()) && !"945".equals(x.getCoverId()) )).map(x -> x.getPremiumExcluedTaxLC()).reduce(BigDecimal.ZERO,BigDecimal::add);
 			if(totalPremium.compareTo(minimumPremium)<0) {
-				List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
-						.collect(Collectors.toList());
+				
+				List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
+				TaxUtils tzxx = new TaxUtils(BigDecimal.ZERO	,"");
+				List<Tax> taxey = taxes.stream().map(tzxx).filter(d->d!=null).collect(Collectors.toList());
 				BigDecimal difference=minimumPremium.subtract(totalPremium,MathContext.DECIMAL32);
 				CreateMinimumPremium min=new CreateMinimumPremium(difference, request,factors.get(0).getEndtCount() , taxey);
 				Cover mini = min.create();
