@@ -137,6 +137,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 					BigDecimal premiumFcWithT=null;
 					String drcrFlag ="";
 					String narration="";
+					String status ="Y";
 					Boolean bokerCommiCheck=false;
 				
 					List<Integer> coverIds =charAccount.stream().map(c1 -> c1.getId().getCoverId()).collect(Collectors.toList());
@@ -215,6 +216,14 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 									 .map(p ->p.getTaxAmount())
 									 .reduce(new BigDecimal(0),(a,b) ->a==null?BigDecimal.ZERO: a.add( b==null?BigDecimal.ZERO:b));
 							 
+							 status = pcdList.stream().filter(p ->p.getTaxId()!=0)
+									 .filter(p ->p.getVehicleId()!=99999)
+									 .filter(p ->p.getDiscLoadId()!=0)
+									 .filter(p ->p.getCoverageType().equals("T"))
+									 .filter(p -> "Y".equalsIgnoreCase(p.getIsTaxExtempted()))
+									 .map(m -> "CV")
+									 .findFirst().orElse("Y");
+							 
 							 
 						 }else {
 							 
@@ -224,7 +233,6 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 									 .filter(p ->p.getCoverageType().equals("T"))
 									 .map(p ->p.getTaxAmount())
 									 .reduce(new BigDecimal(0), (a,b) ->a==null?BigDecimal.ZERO: a.add( b==null?BigDecimal.ZERO:b)).abs();
-									
 						 }
 						
 						 if(endtPremium.doubleValue()<0) {
@@ -354,6 +362,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 						saveReq.put("Narration", narration);
 						saveReq.put("DisplayOrder",c.getDisplayOrder());
 						saveReq.put("vehicle_type", vehicle_type);
+						saveReq.put("status", status);
 						list.add(saveReq);
 						
 						index++;
@@ -850,7 +859,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 						.quoteNo(p.get("QuoteNo")==null?null:p.get("QuoteNo").toString())
 						.vehicleType(vehicle_type)
 						.vehiclelTypeDesc("M".equals(vehicle_type)?"MULTIPLE":"SINGLE")
-						.status("Y")
+						.status(p.get("status")==null?null:p.get("status").toString())
 						.build();
 				
 				return policyDRCRRepo.save(drcrDetail);

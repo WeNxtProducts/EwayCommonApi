@@ -270,6 +270,7 @@
 		</queryString>
 		<field name="amount" class="java.math.BigDecimal"/>
 		<field name="narration" class="java.lang.String"/>
+		<field name="status" class="java.lang.String"/>
 	</subDataset>
 	<subDataset name="coverDetails" uuid="de6ebc9d-c2c2-4c75-b74a-1dd525642bd4">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
@@ -970,7 +971,7 @@
 								<pen lineWidth="0.0"/>
 								<rightPen lineWidth="0.5"/>
 							</box>
-							<textField pattern="#,##0.00" isBlankWhenNull="true">
+							<textField isBlankWhenNull="true">
 								<reportElement mode="Opaque" x="0" y="0" width="115" height="15" backcolor="#B3B3B3" uuid="79eed184-89ef-4dfa-9851-f72a2be5d13d"/>
 								<box leftPadding="0" rightPadding="2">
 									<topPen lineWidth="0.5"/>
@@ -980,7 +981,7 @@
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+								<textFieldExpression><![CDATA["CV".equalsIgnoreCase($F{status})?"TAX EXEMPTION OPTED.":new DecimalFormat("#,##0.00").format($F{amount})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

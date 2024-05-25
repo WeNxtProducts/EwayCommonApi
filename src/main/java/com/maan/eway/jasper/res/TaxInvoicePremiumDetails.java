@@ -17,4 +17,7 @@ public class TaxInvoicePremiumDetails {
 	@JsonProperty("Narration")
 	private String narration;
 	
+	@JsonProperty("Status")
+	private String status;
+	
 }

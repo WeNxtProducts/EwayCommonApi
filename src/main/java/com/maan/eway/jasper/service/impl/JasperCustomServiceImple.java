@@ -1077,6 +1077,7 @@ public class JasperCustomServiceImple {
 				TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
 					.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
 					.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+					.status(h.getStatus())
 				.build();
 				premiumDetailsRes.add(u);
 		});
