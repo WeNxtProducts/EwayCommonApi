@@ -14,6 +14,7 @@ import com.maan.eway.bean.PolicyDrcrDetail;
 import com.maan.eway.service.PolicyDrcrDetailService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -132,7 +133,7 @@ this.repository = repo;
 
         try {
             
-        	List<PolicyDrcrDetail> list=repository.findByQuoteNoAndStatus(quoteno,"Y");
+        	List<PolicyDrcrDetail> list=repository.findByQuoteNoAndStatusIn(quoteno,Arrays.asList("Y"));
         	if(list.size()>0) {
         		list.stream().forEach(t->t.setStatus("N"));
         		repository.saveAllAndFlush(list);

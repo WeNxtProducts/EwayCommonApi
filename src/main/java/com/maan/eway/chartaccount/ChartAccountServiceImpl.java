@@ -218,8 +218,7 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 							 
 							 status = pcdList.stream().filter(p ->p.getTaxId()!=0)
 									 .filter(p ->p.getVehicleId()!=99999)
-									 .filter(p ->p.getDiscLoadId()!=0)
-									 .filter(p ->p.getCoverageType().equals("T"))
+									 .filter(p ->p.getDiscLoadId()==0)
 									 .filter(p -> "Y".equalsIgnoreCase(p.getIsTaxExtempted()))
 									 .map(m -> "CV")
 									 .findFirst().orElse("Y");

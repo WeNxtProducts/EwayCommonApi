@@ -516,13 +516,14 @@ public class JasperCustomServiceImple {
 					response.setBankaccountUSD(entry.get("ACCOUNT_NUMBER_USD")==null?"":entry.get("ACCOUNT_NUMBER_USD").toString());
 			}
 			
-			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
+			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatusIn(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),Arrays.asList("Y","CV"));
 				List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))
 						&& !r.getChargeCode().equals(new BigDecimal(1005))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
 				listByRiskId.forEach(h ->{
 					TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
 						.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
 						.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+						.status(h.getStatus())
 					.build();
 					premiumDetailsRes.add(u);
 			});
@@ -688,7 +689,7 @@ public class JasperCustomServiceImple {
 					.build();
 				DataSetTwoRes.add(q);
 			});
-			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
+			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatusIn(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),Arrays.asList("Y","CV"));
 			if(!drcrDetails.isEmpty()) {
 				if("100019".equalsIgnoreCase(map.get("companyId")==null?"":map.get("companyId").toString())) {
 					List<PolicyDrcrDetail> drcrList = drcrDetails.stream().filter(f -> f.getDrcrFlag().equalsIgnoreCase("CR")&& !f.getChargeCode().equals(new BigDecimal(1005))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
@@ -696,6 +697,7 @@ public class JasperCustomServiceImple {
 						TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
 								.amount(h.getAmountFc()==null?"":new BigDecimal(Double.parseDouble(h.getAmountFc().toString())).toPlainString())
 								.narration(h.getNarration()==null?"":h.getNarration().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+								.status(h.getStatus())
 							.build();
 							premiumDetailsRes.add(u);
 					});
@@ -1070,7 +1072,7 @@ public class JasperCustomServiceImple {
 			});
 			}*/
 		}else {
-			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatus(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),"Y");
+			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatusIn(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),Arrays.asList("Y","CV"));
 			List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))
 					&& !r.getChargeCode().equals(new BigDecimal(1005))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
 			listByRiskId.forEach(h ->{

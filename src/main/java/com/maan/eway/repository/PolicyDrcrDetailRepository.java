@@ -34,7 +34,7 @@ public interface PolicyDrcrDetailRepository  extends JpaRepository<PolicyDrcrDet
 
 	Long countByQuoteNoAndStatus(String quoteno, String status);
 
-	List<PolicyDrcrDetail> findByQuoteNoAndStatus(String quoteno, String status);
+	List<PolicyDrcrDetail> findByQuoteNoAndStatusIn(String quoteno, List<String> status);
 
 	@Query(value = "SELECT SUM(Premium) FROM(SELECT (CASE WHEN pcd.currency IN (cm.currency_id) THEN premium_excluded_tax_lc ELSE premium_excluded_tax_fc END) AS Premium FROM policy_cover_data pcd INNER JOIN eway_insurance_company_master cm  WHERE cover_id NOT IN ('118','119') AND  tax_id='0' AND coverage_type IN ('B','O') AND policy_no=?1 AND cm.company_id=pcd.company_id AND SYSDATE() BETWEEN effective_date_start AND effective_date_end)X",nativeQuery = true)
 	String getPremiumForUganda(String policyNo);
