@@ -78,4 +78,11 @@ public class EwayFactorResultRes {
 
     @JsonProperty("CreatedBy")
     private String     createdBy ;
+    
+
+    @JsonProperty("MinRateWithLoading")
+    private Double     minRateLoad ;
+
+    @JsonProperty("MinPremiumWithLoading")
+    private Double     minPremiumLoad ;
 }

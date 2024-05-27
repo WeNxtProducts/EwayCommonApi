@@ -866,13 +866,21 @@ public class RatingFactorsUtil {
 	private EwayFactorDetailsRepository fdRepo;
 	@Autowired
 	private EwayFactorResultDetailRepository fdResultRepo;
-	public List<EwayFactorDetails> saveFactorDetails(Map<String, List<Tuple>> queriesResult, CalcEngine engine, List<Tuple> result, List<Tuple> vehicles, List<Tuple> customers, Cover t) {
+	public List<EwayFactorDetails> saveFactorDetails(Map<String, List<Tuple>> queriesResult, CalcEngine engine, List<Tuple> result, List<Tuple> vehicles,
+			List<Tuple> customers, Cover t, Map<String, List<Tuple>> minRateLoadingResult) {
 		try {
 			int count= fdRepo.deleteByRequestReferenceNoAndVehicleId(engine.getRequestReferenceNo(),Integer.parseInt(engine.getVehicleId()));
 			List<EwayFactorDetails> fds=new ArrayList<EwayFactorDetails>();
 			int sno=2;
 			String pattern =  "#####0.###" ;
 			DecimalFormat decimalFormat = new DecimalFormat(pattern);
+			List<Double> minPremiumRates=new ArrayList<Double>();
+			for(Entry<String, List<Tuple>> entrySet :minRateLoadingResult.entrySet()) {
+				String key=entrySet.getKey();
+				List<Tuple> value = entrySet.getValue();
+				Double rate=value.get(0).get("minPremium")==null?0D:Double.valueOf(decimalFormat.format( Double.parseDouble(value.get(0).get("minPremium").toString())));
+				minPremiumRates.add(rate);
+			}
 				
 			for(Entry<String, List<Tuple>> entrySet :queriesResult.entrySet()) {
 				String key=entrySet.getKey();
@@ -978,9 +986,21 @@ public class RatingFactorsUtil {
 			+(vehicles.get(0).get("sumInsured")==null?0:vehicles.get(0).get("sumInsured"))+"~param1&param2;";
 			;
 			
+			
+			pattern =  "#####0.#####" ;
+			decimalFormat = new DecimalFormat(pattern);
+			
 			List<Tuple> queryResult = getResult(minRateQuery);
-			Double minPremium=Double.parseDouble(queryResult.get(0).get("minPremium").toString());
-			Double minRate=Double.parseDouble(queryResult.get(0).get("rate").toString());
+			Double minPremium=0D;
+			Double minRate=0D;
+			
+			Double minPremiumOrg=Double.parseDouble(queryResult.get(0).get("minPremium").toString());
+			Double minRateOrg=Double.parseDouble(queryResult.get(0).get("rate").toString());
+			
+			Double minRateLoading=minPremiumRates.stream().reduce((a,b)->a*b).get();
+			minPremium=Double.valueOf(decimalFormat.format( minPremiumOrg*minRateLoading));
+			minRate=Double.valueOf(decimalFormat.format( minRateOrg*minRateLoading));
+			
 			Double totalLossRatio= (Double) 60d/100;
 			Double riskPremiumAmt=(Double) (fd.getOwnDamage()+fd.getFire()+fd.getTheft()+fd.getThirdParty()+fd.getWindscreen());
 			if("2".equals(vehicles.get(0).get("insuranceClass").toString())) {
@@ -995,8 +1015,7 @@ public class RatingFactorsUtil {
 			
 			premium= (premium>calcMinRate)?premium:calcMinRate;
 			
-			pattern =  "#####0.#####" ;
-			decimalFormat = new DecimalFormat(pattern);
+			
 			EwayFactorResultDetail efResult=EwayFactorResultDetail.builder()
 					.cdRefno(engine.getCdRefNo())
 					.companyId(engine.getInsuranceId())
@@ -1012,8 +1031,10 @@ public class RatingFactorsUtil {
 					.targetLossRatio(60D)
 					.vdRefno(engine.getVdRefNo())
 					.vehicleId(Integer.parseInt(engine.getVehicleId()))
-					.minPremium(minPremium)
-					.minRate(minRate)
+					.minPremium(minPremiumOrg)
+					.minRate(minRateOrg)
+					.minPremiumLoad(minPremium)
+					.minRateLoad(minRate)
 					.finalPremiumAmtExclTax(premium)
 					.finalPremiumRateExclTax(Double.valueOf(decimalFormat.format((Double) (premium/(sumInsured==0?1:sumInsured)))))
 					//.proRataPremiumAmtExclTax(sumInsured)					

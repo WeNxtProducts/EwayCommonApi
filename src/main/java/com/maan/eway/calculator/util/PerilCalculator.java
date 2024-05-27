@@ -178,31 +178,17 @@ public class PerilCalculator {
 				queries.put("3YearLossRatio",LossRatio);
 				queries.put("Base",SumInsured);
 
-				for(Entry<String, String> entrySet : queries.entrySet()) {
-					String key = entrySet.getKey();
-					String dataquery = entrySet.getValue();
-
-					Long count =crservice.getCountFromRating(dataquery+"agencyCode:"+engine.getAgencyCode()+";");
-					if(count>0) {
-						queries.put(key, dataquery+"agencyCode:"+engine.getAgencyCode()+";"); 
-					}else {
-						queries.put(key, dataquery+"agencyCode:99999;"); 
-					}
-
-				}
-				Map<String,List<Tuple>> queriesResult=new HashMap<String, List<Tuple>>();
-				for(Entry<String, String> entrySet : queries.entrySet()) {
-					String key = entrySet.getKey();
-					String dataquery = entrySet.getValue();
-					List<Tuple> queryResult = crservice.getResult(dataquery);
-					if(queryResult!=null && queryResult.size()>0) {
-						queriesResult.put(key, queryResult);	
-					}else {
-						System.out.println("No Factor Found for "+key +"\nquery:"+dataquery);
-					}
-				}
-
-				List<EwayFactorDetails> data = crservice.saveFactorDetails(queriesResult,engine,result,vehicles,customers,t);
+				Map<String, List<Tuple>> queriesResult = queryExecuting(queries);
+				
+				Map<String, List<Tuple>> minRateLoadingResult=new HashMap<String, List<Tuple>>();
+				minRateLoadingResult.put("VehicleGroup", queriesResult.get("VehicleGroup"));
+				minRateLoadingResult.put("DriverAgeXGender", queriesResult.get("DriverAgeXGender"));
+				minRateLoadingResult.put("VehicleAge", queriesResult.get("VehicleAge"));
+				minRateLoadingResult.put("LicenseDuration", queriesResult.get("LicenseDuration"));
+				
+				
+					
+				List<EwayFactorDetails> data = crservice.saveFactorDetails(queriesResult,engine,result,vehicles,customers,t,minRateLoadingResult);
 
 				// for(EwayFactorDetails f :data)
 			}catch (Exception e) {
@@ -343,6 +329,38 @@ public class PerilCalculator {
 				 }
 			}
 		}
+	}
+	
+	private Map<String,List<Tuple>> queryExecuting(Map<String,String> queries) {
+		Map<String,List<Tuple>> queriesResult=new HashMap<String, List<Tuple>>();
+		try {
+			for(Entry<String, String> entrySet : queries.entrySet()) {
+				String key = entrySet.getKey();
+				String dataquery = entrySet.getValue();
+
+				Long count =crservice.getCountFromRating(dataquery+"agencyCode:"+engine.getAgencyCode()+";");
+				if(count>0) {
+					queries.put(key, dataquery+"agencyCode:"+engine.getAgencyCode()+";"); 
+				}else {
+					queries.put(key, dataquery+"agencyCode:99999;"); 
+				}
+
+			}
+			
+			for(Entry<String, String> entrySet : queries.entrySet()) {
+				String key = entrySet.getKey();
+				String dataquery = entrySet.getValue();
+				List<Tuple> queryResult = crservice.getResult(dataquery);
+				if(queryResult!=null && queryResult.size()>0) {
+					queriesResult.put(key, queryResult);	
+				}else {
+					System.out.println("No Factor Found for "+key +"\nquery:"+dataquery);
+				}
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return queriesResult;
 	}
 	
 }

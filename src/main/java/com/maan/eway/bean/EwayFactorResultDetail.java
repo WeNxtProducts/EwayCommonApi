@@ -123,6 +123,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
 
+    
+    @Column(name="MIN_RATE_LOAD")
+    private Double     minRateLoad ;
+
+    @Column(name="MIN_PREMIUM_LOAD")
+    private Double     minPremiumLoad ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
