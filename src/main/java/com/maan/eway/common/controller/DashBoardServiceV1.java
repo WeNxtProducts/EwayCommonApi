@@ -42,6 +42,9 @@ import com.maan.eway.common.req.DashBoardGetReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DasboardCountRes;
 import com.maan.eway.common.res.DashBoardChart;
+import com.maan.eway.common.res.DashBoardGetRes;
+import com.maan.eway.notification.bean.NotifTransactionDetails;
+import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.req.calcengine.CalcEngine;
 
 @Service
@@ -52,6 +55,9 @@ public class DashBoardServiceV1 {
 	
 	@Autowired
 	private RatingFactorsUtil ratingutil;
+	
+	@Autowired
+	private NotifTransactionDetailsRepository notifyrepo;
 	
 	
 	//SELECT TYPE,SUM(COUNT) AS COUNT,SUM(PREMIUM) AS PREMIUM,CURRENCY_CODE FROM( SELECT (CASE WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN IS NULL) THEN 'QUOTE' WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN='Y') THEN 'RENEWAL QUOTE' END) AS TYPE, COUNT(*) AS COUNT, ROUND(SUM(OVERALL_PREMIUM_LC),0) AS PREMIUM, MAX(CPM.CURRENCY_ID) AS CURRENCY_CODE FROM ESERVICE_BUILDING_DETAILS HPM,EWAY_INSURANCE_COMPANY_MASTER CPM WHERE HPM.COMPANY_ID=? AND HPM.PRODUCT_ID=? AND HPM.STATUS IN ('Y') AND (CASE WHEN 'Issuer'='Issuer' THEN HPM.APPLICATION_ID ELSE HPM.LOGIN_ID END) IN () AND HPM.entry_date >= ? AND HPM.ENTRY_DATE <=? AND CPM.COMPANY_ID=HPM.COMPANY_ID AND CPM.AMEND_ID=(SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER WHERE CPM.COMPANY_ID=COMPANY_ID) GROUP BY HPM.STATUS,HPM.RENEWAL_DATE_YN UNION ALL SELECT (CASE WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN IS NULL) THEN 'QUOTE' WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN='Y') THEN 'RENEWAL QUOTE' END) AS TYPE, COUNT(*) AS COUNT, ROUND(SUM(OVERALL_PREMIUM_LC),0) AS PREMIUM, MAX(CPM.CURRENCY_ID) AS CURRENCY_CODE FROM ESERVICE_COMMON_DETAILS HPM,EWAY_INSURANCE_COMPANY_MASTER CPM WHERE HPM.COMPANY_ID=? AND HPM.PRODUCT_ID=? AND HPM.STATUS IN ('Y') AND CPM.COMPANY_ID=HPM.COMPANY_ID and (CASE WHEN 'Issuer'='Issuer' THEN HPM.APPLICATION_ID ELSE HPM.LOGIN_ID END) IN () AND HPM.entry_date >= ? AND HPM.ENTRY_DATE <=? AND CPM.AMEND_ID=(SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER WHERE CPM.COMPANY_ID=COMPANY_ID) GROUP BY HPM.STATUS,HPM.RENEWAL_DATE_YN)X GROUP BY TYPE,CURRENCY_CODE
@@ -438,7 +444,8 @@ public class DashBoardServiceV1 {
 		}
 		return null;
 	}
-
+ 
+	
 	private CommonRes getChartModelCorporatePlus(DashBoardGetReq req) {
 
 		List<DashBoardChart> total=new ArrayList<DashBoardChart>();
@@ -582,6 +589,49 @@ public class DashBoardServiceV1 {
 		}
 		return null;	
 	}
+	
+	public CommonRes getChartModelV3(DashBoardGetReq req) {
+		List<DashBoardGetRes> res = new ArrayList<>();
+		CommonRes res1 = new CommonRes();
+		try {
+		String loginid=req.getLoginId();
+	
+		if(loginid!=null && req.getStartDate()!=null && req.getEndDate()!=null)
+		{
+			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+	        CriteriaQuery<NotifTransactionDetails> cq = cb.createQuery(NotifTransactionDetails.class);
+	        Root<NotifTransactionDetails> root = cq.from(NotifTransactionDetails.class);
+
+	        
+	        Predicate predicateUwLoginId = cb.equal(root.get("uwloginId"), loginid);
+	        Predicate predicatePushDate = cb.greaterThanOrEqualTo(root.get("notifcationPushDate"), req.getStartDate());
+	        Predicate predicateEndDate = cb.lessThanOrEqualTo(root.get("notifcationEndDate"), req.getEndDate());
+             Predicate finalPredicate = cb.and(predicateUwLoginId, predicatePushDate, predicateEndDate);
+            cq.where(finalPredicate);
+	        cq.orderBy(cb.desc(root.get("entryDate")));
+	        
+	        List<NotifTransactionDetails> data1=entityManager.createQuery(cq).getResultList();
+	        for(NotifTransactionDetails data:data1)
+	        {
+	        	DashBoardGetRes d= new DashBoardGetRes();
+	        	d.setEmail(data.getCustomerMailid());
+	        	d.setStatusmessage(data.getStatusMessage());
+	        	d.setMobileCode(String.valueOf(data.getBrokerPhoneCode()));
+	        	d.setPhoneno(String.valueOf(data.getBrokerPhoneNo()));
+	        	d.setStartDate(data.getNotifcationPushDate());
+	        	d.setEndDate(data.getNotifcationEndDate());
+	        	res.add(d);	
+	        }
+	        res1.setCommonResponse(res);
+		}
+		}catch(Exception Ex)
+		{
+		System.out.println("*********Exception in getcharmodelv3************");
+		Ex.printStackTrace();
+		}
+		return res1;
+	}
+	
 
 	public CommonRes getgetEndormentV1(DashBoardGetReq req) {
 		try {
