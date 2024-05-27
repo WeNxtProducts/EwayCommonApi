@@ -165,4 +165,13 @@ public class DashBoardController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	@PostMapping("/dashboard/v1/endorsement")
+	public ResponseEntity<CommonRes> getEndorment(@RequestBody  DashBoardGetReq req) {
+		CommonRes data =dashbordService.getgetEndormentV1(req);
+		if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

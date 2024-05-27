@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -580,6 +581,48 @@ public class DashBoardServiceV1 {
 			e.printStackTrace();
 		}
 		return null;	
+	}
+
+	public CommonRes getgetEndormentV1(DashBoardGetReq req) {
+		try {
+			CriteriaBuilder cb = entityManager.getCriteriaBuilder();			 
+			 CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+			 Root<HomePositionMaster> hm = cq.from(HomePositionMaster.class);
+			 
+			 cq.multiselect(hm.get("endtTypeId").alias("ENDT_TYPEID"),hm.get("endtTypeDesc").alias("Endorsement Desc"), cb.count(hm).alias("Count")
+					 );
+			 Expression<Date> dateAsLocalDate = cb.function("DATE", Date.class, hm.get("entryDate"));
+			 
+			 Predicate datePredicate = cb.between(dateAsLocalDate, cb.literal(req.getStartDate()), cb.literal(req.getEndDate()));
+			 Predicate applicationIdPredicate = cb.equal(cb.<String>selectCase()
+						.when(cb.equal(cb.literal("Issuer"), req.getUserType()), hm.get("applicationId"))
+						.otherwise(hm.get("loginId")), req.getLoginId());
+			 Predicate companyIdPredicate = cb.equal(hm.get("companyId"), req.getInsuranceId());
+			 Predicate productIdPredicate = cb.equal(hm.get("productId"), req.getProductId());
+			 Predicate statusPredicate = hm.get("status").in("P","E");
+			 Predicate endttypeIdPredicate = cb.or((hm.get("endtTypeId").isNotNull()), cb.equal(hm.get("endtTypeId"),""));
+			 Predicate endttypeDescPredicate = cb.or((hm.get("endtTypeDesc").isNotNull()), cb.equal(hm.get("endtTypeDesc"),""));
+			 
+			 cq.where(datePredicate,applicationIdPredicate,companyIdPredicate,productIdPredicate,statusPredicate,endttypeIdPredicate,endttypeDescPredicate);
+			 cq.groupBy(hm.get("endtTypeId"),hm.get("endtTypeDesc"));
+			 cq.orderBy(cb.asc(cb.count(hm)));
+			 List<Tuple> results = entityManager.createQuery(cq).getResultList();
+			 List<Map<String,Object>> rspone=new ArrayList<Map<String,Object>>();
+			 for (int i = 0; i < results.size(); i++) {
+				 Tuple tuple = results.get(i);
+				 Map<String,Object> a=new HashMap<String, Object>();
+				 a.put("EndtTypeId", tuple.get(0));
+				 a.put("EndorsementDesc", tuple.get(1));
+				 a.put("Count", tuple.get(2));
+				 rspone.add(a);
+			 }
+			CommonRes res=new CommonRes();
+			res.setCommonResponse(rspone);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
