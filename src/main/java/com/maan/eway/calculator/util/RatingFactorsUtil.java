@@ -1050,7 +1050,7 @@ public class RatingFactorsUtil {
 			 t.setMinimumPremium(new BigDecimal(minPremium));
 			 
 				try {
-					Double premiumRate=Double.valueOf(decimalFormat.format((Double) premium/(sumInsured==0?1:sumInsured)));
+					Double premiumRate=Double.valueOf(decimalFormat.format(((Double) premium/(sumInsured==0?1:sumInsured))*100));
 					t.setRate(premiumRate);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
