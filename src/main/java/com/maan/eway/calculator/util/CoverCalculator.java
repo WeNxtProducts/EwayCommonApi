@@ -73,13 +73,13 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
 				 if(t.getSumInsured().compareTo(t.getCoverageLimit())>0) {
 					 t.setIsReferral("Y");
-					 t.setReferalDescription("CoverageLimit Referral Limits Upto"+t.getCoverageLimit());
+					 t.setReferalDescription("CoverageLimit Referral Limits Upto "+t.getCoverageLimit().toPlainString());
 					 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
 					 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);
 					 t.setCalcType("P");
 				 }else if(t.getSumInsured().compareTo(t.getMinSumInsured())<0) {
 					    discountLoading=false;
-						CoverException build = CoverException.builder().message(t.getCoverName()+ "Min SumInsured is:"+t.getMinSumInsured()+ " & SumInsured:"+t.getSumInsured())
+						CoverException build = CoverException.builder().message(t.getCoverName()+ "Min SumInsured is:"+t.getMinSumInsured().toPlainString()+ " & SumInsured:"+t.getSumInsured().toPlainString())
 						.isError(true).build();
 						t.setError(build);
 						t.setNotsutable(true);
