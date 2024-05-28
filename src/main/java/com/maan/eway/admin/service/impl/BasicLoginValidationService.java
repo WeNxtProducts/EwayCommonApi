@@ -85,11 +85,12 @@ public class BasicLoginValidationService {
 			if(!StringUtils.isBlank(req.getLoginInformation().getPassword()))
 			{
 			if (!passwordvaildation(req.getLoginInformation().getPassword(),req.getLoginInformation().getCompanyId())) {
-				 String errormsg=geterrormsg(req.getLoginInformation().getLoginId());
-					
-					list.add(new Error("","New Password",errormsg));
 			
-			}}
+				String errormsg=geterrormsg(req.getLoginInformation().getCompanyId());
+					
+				//errors.add(new Error("","New Password",errormsg));
+				errors.add("2257");
+	         }}
 			
 			
 			if (StringUtils.isBlank(loginReq .getCreatedBy())) {
@@ -336,8 +337,8 @@ public class BasicLoginValidationService {
 		int numbg=-1,numend=-1;
 	try {
       if (Loginid != null) {
-	  LoginMaster logindetails = loginRepo.findByLoginId(Loginid);
-	  String company_id = logindetails.getCompanyId();
+	
+	  String company_id = Loginid;
 	  List<InsuranceCompanyMaster> req1 = companyMasterRepo.findTopByCompanyIdOrderByAmendIdDesc(company_id);
 	  if(req1!=null)
 	  {
@@ -355,7 +356,7 @@ public class BasicLoginValidationService {
 		  min=req.getTotalmin();
 		  if(character!=null && numbg!=-1 && numend!=-1 && symbols!=null && max!= null && min!=null)
 		    error ="The password should contains character "+req.getAlphabet()+", numberic digit from "+numbg+" to "+numend+", symbols should contain "+ symbols +" , minimum password length is "+min +" and  maximum Password length is "+max +"...";
-		  
+		
 		  else   error ="The passwords should contain a combination of characters and password length between 5 to 20 characters  long.."; 
 		   
 		 }
@@ -391,8 +392,8 @@ public class BasicLoginValidationService {
 	       String   number=!StringUtils.isBlank(req.getNumericDigitsStart()) && !StringUtils.isBlank(req.getNumericDigitsEnd())? "(?=.*["+req.getNumericDigitsStart()+"-"+req.getNumericDigitsEnd()+"])" : "";//(?=.*\\d --->mean 0-9)
 		  	   String	symbols=!StringUtils.isBlank(req.getSymbols()) ? "(?=.*["+req.getSymbols()+"])" :"";//(?=.*[@#$%^&+=!])
 	  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+req.getTotalmin()+","+req.getTotalmax()+"}" :"";//{8,10}		
-	       String collect="["+aplhabet+number+symbols+"]";//[a-z0-6@#^]
-	  	   Pattern ="^"+(aplhabet)+(number)+(symbols)+(collect)+(length)+"$";
+	       //String collect="["+aplhabet+number+symbols+"]";//[a-z0-6@#^]
+	  	   Pattern ="^"+(aplhabet)+(number)+(symbols)+(length)+"$";
 	  	        // ^(?=.*[a-z])(?=.*[0-6])(?=.*[@#^])[a-z0-6@#^]{5,8}$
 				// Pattern ="^"+value1+number+symbols+"."+length+"$";
 	    	 }else Pattern=null;
