@@ -20,6 +20,7 @@ import javax.crypto.SecretKey;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -69,6 +70,8 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	private InsuranceCompanyMasterRepository repository;
 	private Logger log = LogManager.getLogger(LoginValidatedServiceImpl.class);
 
+	private int LOCK_CNT=3;
+	
 	public CommonLoginRes loginInputValidation(LoginRequest req) {
 		CommonLoginRes commonRes = new CommonLoginRes();
 		List<Error> list = new ArrayList<Error>();
@@ -141,20 +144,34 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 						if (! loginData.getStatus().equalsIgnoreCase("Y") ) {
 							list.add(new Error("", "UserId", "This Login Id is Deactivated"));
 						} else {
-							LoginMaster loginData1 = loginRepo.findByLoginId(req.getLoginId());
+							//LoginMaster loginData1 = loginRepo.findByLoginId(req.getLoginId());
 							
-							if (loginData1 !=null && loginData1.getEffectiveDateStart().after(new Date())) {
+							if (loginData !=null && loginData.getEffectiveDateStart().after(new Date())) {
 								list.add(new Error("", "UserId", "Your  Login Id Date is not started"));
 							} 
 							if(list.size()<=0) {
-							data = criteriaQuery.isvalidUser(req);
-							if (CollectionUtils.isEmpty(data) ) {
-								list.add(new Error("", "User", "Please enter valid username/password"));
-							}else if(!"b2c".equalsIgnoreCase(data.get(0).getSubUserType()) &&   isExpired(data.get(0).getLpassDate())) {
-								list.add(new Error("", "User", "Password Expired Please Change Your Password"));
-								changePwd = "Y";
-							}
-							
+								data = criteriaQuery.isvalidUser(req);
+								if (CollectionUtils.isEmpty(data) ) {
+									String loginPasswordCnt=StringUtil.isBlank(loginData.getPwdCount())?"0":loginData.getPwdCount();
+
+									
+
+									if(Integer.parseInt(loginPasswordCnt)>=LOCK_CNT) {
+										loginData.setPwdCount(String.valueOf(Integer.parseInt(loginPasswordCnt)+1));
+										loginData.setStatus("T");
+										loginRepo.save(loginData);
+										list.add(new Error("", "User", "Your Accout is Locked.due to "+LOCK_CNT+" failed attempt." ));
+									} else {
+										loginData.setPwdCount(String.valueOf(Integer.parseInt(loginPasswordCnt)+1));
+										loginRepo.save(loginData);
+										list.add(new Error("", "User", "Please enter valid Password"+((Integer.parseInt(loginPasswordCnt)==LOCK_CNT-1)?",Your Accout will be Lock.for one more Invalid attempt.":"" )));
+									}
+										
+								}else if(!"b2c".equalsIgnoreCase(data.get(0).getSubUserType()) &&   isExpired(data.get(0).getLpassDate())) {
+									list.add(new Error("", "User", "Password Expired Please Change Your Password"));
+									changePwd = "Y";
+								}
+
 							}
 						}
 						
