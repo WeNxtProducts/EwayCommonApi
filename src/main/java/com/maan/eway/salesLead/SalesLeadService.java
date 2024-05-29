@@ -8,4 +8,8 @@ public interface SalesLeadService {
 
 	CommonRes getAllSales();
 
+	CommonRes insertEnquiry(EnquiryDetailsDTO req);
+
+	CommonRes getAllEnquiry();
+
 }

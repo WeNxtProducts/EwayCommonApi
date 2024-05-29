@@ -10,6 +10,7 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
 
+import com.maan.eway.bean.EnquiryDetails;
 import com.maan.eway.bean.SalesLead;
 
 @Repository
@@ -30,6 +31,20 @@ public class SalesLeadCustomRepositryImpl implements SalesLeadCustomRepositry {
 		TypedQuery<Integer> query = em.createQuery(cq);
 		Integer value = query.getSingleResult();
 		return "L-" + value;
+	}
+
+	@Override
+	public String getMaxEnquiryId() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<EnquiryDetails> enRoot = cq.from(EnquiryDetails.class);
+		Expression<Integer> startIndex = cb.literal(3);
+		cq.multiselect(cb.coalesce(cb.sum(cb.max(
+				cb.substring(enRoot.get("enquiryId"), startIndex, cb.length(enRoot.get("enquiryId"))).as(Integer.class)), 1),
+				500));
+		TypedQuery<Integer> query = em.createQuery(cq);
+		Integer value = query.getSingleResult();
+		return "E-" + value;
 	}
 
 }

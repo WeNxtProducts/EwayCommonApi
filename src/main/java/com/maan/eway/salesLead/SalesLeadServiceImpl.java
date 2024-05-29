@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.EnquiryDetails;
 import com.maan.eway.bean.SalesLead;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.repository.EnquiryDetailsRepository;
 import com.maan.eway.repository.SalesLeadRepository;
 
 @Service
@@ -25,6 +27,9 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	
 	@Autowired
 	private SalesLeadRepository salesLeadRepo;
+	
+	@Autowired
+	private EnquiryDetailsRepository enquiryDetailsRepo;
 	
 	private Gson gson = new Gson();
 	
@@ -120,6 +125,89 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 			return res;
 		}catch(Exception e) {
 			logger.info("Error in getAllSales ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public CommonRes insertEnquiry(EnquiryDetailsDTO req) {
+		logger.info("Enter into insertEnquiry.\n Argument ==> "+gson.toJson(req));
+		CommonRes res = new CommonRes();
+		try {
+			Optional<EnquiryDetails> enquiryData = enquiryDetailsRepo.findById(req.getEnquiryId()==null?"":req.getEnquiryId());
+			EnquiryDetails existingList=null;
+			if(enquiryData.isPresent()) {
+				existingList = enquiryData.get();
+			}
+			EnquiryDetails e = EnquiryDetails.builder()
+					.enquiryId(enquiryData.isPresent()?existingList.getEnquiryId():salesLeadCustomRepo.getMaxEnquiryId())
+					.leadId(req.getLeadId())
+					.enquiryDescription(req.getEnquiryDescription())
+	                .lobId(req.getLobId())
+	                .productId(req.getProductId())
+	                .sumInsured(req.getSumInsured())
+	                .suggestPremium(req.getSuggestPremium())
+	                .entryDate(req.getEntryDate())
+	                .createdBy(req.getCreatedBy())
+	                .updatedDate(req.getUpdatedDate())
+	                .updatedBy(req.getUpdatedBy())
+	                .rejectedDate(req.getRejectedDate())
+	                .rejectedReason(req.getRejectedReason())
+	                .status(req.getStatus())
+	                .quoteNo(req.getQuoteNo())
+					.build();
+			enquiryDetailsRepo.save(e);
+			res.setCommonResponse(e);
+			res.setMessage("SUCCESS");
+			res.setIsError(false);
+			res.setErrorMessage(Collections.emptyList());
+		logger.info("Exist into insertEnquiry");
+		return res;
+		}catch(Exception e) {
+			logger.info("Error in insertEnquiry ==> "+e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public CommonRes getAllEnquiry() {
+		logger.info("Enter into getAllEnquiry.");
+		CommonRes res = new CommonRes();
+		List<EnquiryDetailsDTO> resList = new ArrayList<EnquiryDetailsDTO>();
+		try {
+			List<EnquiryDetails> enquiryList = enquiryDetailsRepo.findAll();
+			if(!enquiryList.isEmpty()) {
+				enquiryList.forEach(k -> {
+					EnquiryDetailsDTO e = EnquiryDetailsDTO.builder()
+				            .enquiryId(k.getEnquiryId()==null?"":k.getEnquiryId())
+							.leadId(k.getLeadId()==null?"":k.getLeadId())
+							.enquiryDescription(k.getEnquiryDescription() == null ? "" : k.getEnquiryDescription())
+	                        .lobId(k.getLobId() == null ? "" : k.getLobId())
+	                        .productId(k.getProductId() == null ? "" : k.getProductId())
+	                        .sumInsured(k.getSumInsured())
+	                        .suggestPremium(k.getSuggestPremium())
+	                        .entryDate(k.getEntryDate())
+	                        .createdBy(k.getCreatedBy() == null ? "" : k.getCreatedBy())
+	                        .updatedDate(k.getUpdatedDate())
+	                        .updatedBy(k.getUpdatedBy() == null ? "" : k.getUpdatedBy())
+	                        .rejectedDate(k.getRejectedDate())
+	                        .rejectedReason(k.getRejectedReason() == null ? "" : k.getRejectedReason())
+	                        .status(k.getStatus() == null ? "" : k.getStatus())
+	                        .quoteNo(k.getQuoteNo() == null ? "" : k.getQuoteNo())
+							.build();
+					resList.add(e);
+				});
+				res.setMessage("SUCCESS");
+				res.setCommonResponse(resList);
+				res.setIsError(false);
+				res.setErrorMessage(Collections.emptyList());
+			}
+			logger.info("Exit into getAllEnquiry.");
+			return res;
+		}catch(Exception e) {
+			logger.info("Error in getAllEnquiry ==> "+e.getMessage());
 			e.printStackTrace();
 		}
 		return null;

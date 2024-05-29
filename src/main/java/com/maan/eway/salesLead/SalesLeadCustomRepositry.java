@@ -4,4 +4,6 @@ public interface SalesLeadCustomRepositry {
 
 	String getMaxLeadId();
 
+	String getMaxEnquiryId();
+
 }

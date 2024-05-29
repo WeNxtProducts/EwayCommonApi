@@ -37,5 +37,24 @@ public class SalesLeadController {
 			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
 		}
 	}
-
+	
+	@PostMapping("/insertEnquiry")
+	public ResponseEntity<?> insertEnquiry(@RequestBody EnquiryDetailsDTO req){
+		CommonRes res = service.insertEnquiry(req);
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(res,HttpStatus.ACCEPTED);
+		}else {
+			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+		}
+	}
+	
+	@GetMapping("/getAllEnquiry")
+	public ResponseEntity<?> getAllEnquiry(){
+		CommonRes res = service.getAllEnquiry();
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(res,HttpStatus.ACCEPTED);
+		}else {
+			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+		}
+	}
 }
