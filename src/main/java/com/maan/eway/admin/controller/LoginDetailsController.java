@@ -108,6 +108,7 @@ public class LoginDetailsController {
 		CommonRes data = new CommonRes();
 		List<String> validationCodes = validationService.validateBrokerCreation(req);
 		List<Error> validation = null;
+		String msg=null;
 		if(validationCodes!=null && validationCodes.size() > 0 ) {
 			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
 			comErrDescReq.setBranchCode("99999");
@@ -115,10 +116,20 @@ public class LoginDetailsController {
 			comErrDescReq.setProductId("99999");
 			comErrDescReq.setModuleId("31");
 			comErrDescReq.setModuleName("MASTERS");
-			
+			// password pattern dynamic error response
+			{
+			for (String a : validationCodes) {
+					if (a.contains("555-")) {
+						msg=a.replaceAll("^\\d{3}-", "");
+					    validationCodes.remove(a);
+					    break;
+					}}
+			 }
 			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
 		}
-	
+
+        if(msg!=null) {validation.add(new Error("555", "New Password", msg));  }
+		  
 		if(brokerLogo != null) {
 			if(!brokerLogo.getContentType().equals("image/jpeg") && !brokerLogo.getContentType().equals("image/png")) {
 				validation.add(new Error("500", "BrokerLogo", "Only Image files (JPEG or PNG) are allowed"));

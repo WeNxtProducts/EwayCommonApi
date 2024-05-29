@@ -2,6 +2,7 @@ package com.maan.eway.admin.service.impl;
 
 import java.util.ArrayList;
 
+
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -89,7 +90,8 @@ public class BasicLoginValidationService {
 				String errormsg=geterrormsg(req.getLoginInformation().getCompanyId());
 					
 				//errors.add(new Error("","New Password",errormsg));
-				errors.add("2257");
+				//errors.add("2257");
+				errors.add("555-"+errormsg);
 	         }}
 			
 			
@@ -378,7 +380,6 @@ public class BasicLoginValidationService {
 		String Pattern="";
 		List<InsuranceCompanyMaster> req1= companyMasterRepo.findTopByCompanyIdOrderByAmendIdDesc(company_id);
 		
-		
 		System.out.print("Req details========"+req1);
 	     if(req1!=null && !req1.isEmpty())
 	     {
@@ -391,11 +392,11 @@ public class BasicLoginValidationService {
 	       String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
 	       String   number=!StringUtils.isBlank(req.getNumericDigitsStart()) && !StringUtils.isBlank(req.getNumericDigitsEnd())? "(?=.*["+req.getNumericDigitsStart()+"-"+req.getNumericDigitsEnd()+"])" : "";//(?=.*\\d --->mean 0-9)
 		  	   String	symbols=!StringUtils.isBlank(req.getSymbols()) ? "(?=.*["+req.getSymbols()+"])" :"";//(?=.*[@#$%^&+=!])
-	  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+req.getTotalmin()+","+req.getTotalmax()+"}" :"";//{8,10}		
-	       //String collect="["+aplhabet+number+symbols+"]";//[a-z0-6@#^]
-	  	   Pattern ="^"+(aplhabet)+(number)+(symbols)+(length)+"$";
-	  	        // ^(?=.*[a-z])(?=.*[0-6])(?=.*[@#^])[a-z0-6@#^]{5,8}$
+	  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+req.getTotalmin()+","+req.getTotalmax()+"}" :"";//{8,10}	
+	       String collect="["+aplhabet+number+symbols+"]";
+	  	   Pattern ="^"+(aplhabet)+(number)+(symbols)+(collect)+(length)+"$"; // ^(?=.*[a-z])(?=.*[0-6])(?=.*[@#^])[a-z0-6@#^]{5,8}$
 				// Pattern ="^"+value1+number+symbols+"."+length+"$";
+	  	
 	    	 }else Pattern=null;
 	     }
 		if(StringUtils.isBlank(Pattern)||company_id==null||Pattern.equals("^[]$"))
@@ -403,7 +404,7 @@ public class BasicLoginValidationService {
 					 Pattern="^(?=\\S+$).{5,20}"; 
 		 }
 	     System.out.print("Generated Pattern is ----------->"+Pattern);
-		   if(Password.matches(Pattern))
+	    if(Password.matches(Pattern))
 		   {
 			   return true;
 		   }
