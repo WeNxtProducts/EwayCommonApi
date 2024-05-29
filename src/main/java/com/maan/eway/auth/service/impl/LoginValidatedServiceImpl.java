@@ -646,10 +646,10 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			if(model ==null ) {
 				list.add(new Error("", "ForgotPassword", "You are not authorized user..!"));
 				 	
-			} else if( ! model.getStatus().equalsIgnoreCase("Y") ) {
+			} /*else if( ! model.getStatus().equalsIgnoreCase("Y") ) {
 				list.add(new Error("", "ForgotPassword", " Login Id is Deactive"));
 				
-			} else if(StringUtils.isBlank(req.getEmailId())) {
+			} */else if(StringUtils.isBlank(req.getEmailId())) {
 				list.add(new Error("", "EmailId", "Please Enter Email Id"));
 			}  else  {
 				LoginUserInfo userInfo =  loginUserRepo.findByLoginId(req.getLoginId());

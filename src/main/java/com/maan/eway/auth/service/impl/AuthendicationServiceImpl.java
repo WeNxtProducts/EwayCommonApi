@@ -168,6 +168,10 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				 if(login==null) {
 					 login =loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),mslogin.getPassword().trim());
 				 }
+				 if(login.getPwdCount() !=null && Integer.parseInt(login.getPwdCount())>0) {
+					 login.setPwdCount("0");
+					 loginRepo.save(login);
+				 }
 			}
 			
 			if (login != null ) {
@@ -1127,7 +1131,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			passwordEnc passEnc = new passwordEnc();
 			String password = passEnc.crypt(temppwd.trim());
 			log.info("newpwd ==>" + password + ":userId ==>" + loginId + ":Temppassword==>" + temppwd);
-			Integer count = Integer.valueOf(loginRepo.findByLoginId(loginId).getPwdCount()) + 1   ;
+			//Integer count = Integer.valueOf(loginRepo.findByLoginId(loginId).getPwdCount()) + 1   ;
 			LoginMaster loginData = loginRepo.findByLoginId(loginId);
 			
 			if (loginData !=null) {
@@ -1138,7 +1142,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				model.setLpass2(loginData.getLpass1());
 				model.setLpass1(loginData.getPassword()); 
 				model.setStatus("Y");
-				model.setPwdCount(count.toString() );;
+				model.setPwdCount("0");
 				Instant now = Instant.now();
 				Instant after = now.plus(Duration.ofDays(1));
 				Date dateAfter = Date.from(after);
