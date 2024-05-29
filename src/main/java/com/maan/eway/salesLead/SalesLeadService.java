@@ -6,10 +6,10 @@ public interface SalesLeadService {
 
 	CommonRes insertSales(InsertSalesReq req);
 
-	CommonRes getAllSales();
+	CommonRes getSalesLead(String leadId);
 
 	CommonRes insertEnquiry(EnquiryDetailsDTO req);
 
-	CommonRes getAllEnquiry();
+	CommonRes getEnquirys(String enquiryId);
 
 }

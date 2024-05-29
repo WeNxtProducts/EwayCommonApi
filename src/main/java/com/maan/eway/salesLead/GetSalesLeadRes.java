@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class GetAllSalesRes {
+public class GetSalesLeadRes {
 
 	@JsonProperty("LeadId")
 	private String leadId;

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 		logger.info("Enter into insertSales.\n Argument ==> "+gson.toJson(req));
 		CommonRes res = new CommonRes();
 		try {
-			Optional<SalesLead> salesLead = salesLeadRepo.findById(req.getLeadId());
+			Optional<SalesLead> salesLead = salesLeadRepo.findById(StringUtils.isBlank(req.getLeadId())?"":req.getLeadId());
 			SalesLead existingList=null;
 			if(salesLead.isPresent()) {
 				existingList = salesLead.get();
@@ -84,15 +85,21 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	}
 
 	@Override
-	public CommonRes getAllSales() {
+	public CommonRes getSalesLead(String leadId) {
 		logger.info("Enter into getAllSales.");
 		CommonRes res = new CommonRes();
-		List<GetAllSalesRes> resList = new ArrayList<GetAllSalesRes>();
+		List<GetSalesLeadRes> resList = new ArrayList<GetSalesLeadRes>();
 		try {
-			List<SalesLead> salesList = salesLeadRepo.findAll();
+			List<SalesLead> salesList = new ArrayList<SalesLead>();
+			if(StringUtils.isBlank(leadId)) {
+				salesList = salesLeadRepo.findAll();
+			}else {
+				SalesLead salesById = salesLeadRepo.findById(leadId).get();
+				salesList.add(salesById);
+			}
 			if(!salesList.isEmpty()) {
 				salesList.forEach(k -> {
-					GetAllSalesRes m = GetAllSalesRes.builder()
+					GetSalesLeadRes m = GetSalesLeadRes.builder()
 							.leadId(k.getLeadId()==null?"":k.getLeadId())
 							.firstName(k.getFirstName()==null?"":k.getFirstName())
 							.lastName(k.getLastName()==null?"":k.getLastName())
@@ -172,12 +179,18 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	}
 
 	@Override
-	public CommonRes getAllEnquiry() {
+	public CommonRes getEnquirys(String enquiryId) {
 		logger.info("Enter into getAllEnquiry.");
 		CommonRes res = new CommonRes();
 		List<EnquiryDetailsDTO> resList = new ArrayList<EnquiryDetailsDTO>();
 		try {
-			List<EnquiryDetails> enquiryList = enquiryDetailsRepo.findAll();
+			List<EnquiryDetails> enquiryList = new ArrayList<EnquiryDetails>();
+			if(StringUtils.isBlank(enquiryId)) {
+				enquiryList = enquiryDetailsRepo.findAll();
+			}else {
+				EnquiryDetails enquiry = enquiryDetailsRepo.findByEnquiryId(enquiryId);
+				enquiryList.add(enquiry);
+			}
 			if(!enquiryList.isEmpty()) {
 				enquiryList.forEach(k -> {
 					EnquiryDetailsDTO e = EnquiryDetailsDTO.builder()
