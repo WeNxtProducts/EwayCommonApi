@@ -190,7 +190,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="brokerName"/>
 		<fieldDescription><![CDATA[brokerName]]></fieldDescription>
 	</field>
-	<field name="coreAppBrokerCode" class="java.lang.Integer">
+	<field name="coreAppBrokerCode" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="coreAppBrokerCode"/>
 		<fieldDescription><![CDATA[coreAppBrokerCode]]></fieldDescription>
 	</field>
