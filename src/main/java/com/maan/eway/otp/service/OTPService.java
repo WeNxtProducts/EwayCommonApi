@@ -224,12 +224,12 @@ public class OTPService {
 					}
 				}
 				CommonLoginRes res =null;
-				if(errorlist.size()==0) {
+				if(errorlist==null || errorlist.size()==0) {
 					LoginRequest mslogin=new LoginRequest();
 					mslogin.setReLoginKey("Y");
 					mslogin.setLoginId(otpData.getMobileCode().concat(otpData.getMobileNo()));
 					mslogin.setPassword("Admin@01");
-					 authservice.checkUserLogin(mslogin,null);
+					res= authservice.checkUserLogin(mslogin,null);
 				}
 				OtpConfirm c=OtpConfirm.builder()
 						.isError((errorlist !=null && errorlist.size()>0)?true:false)
