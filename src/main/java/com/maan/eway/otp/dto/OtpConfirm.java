@@ -3,6 +3,7 @@ package com.maan.eway.otp.dto;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.error.Error;
 
 import lombok.Builder;
@@ -23,4 +24,6 @@ public class OtpConfirm {
 	
 	@JsonProperty("OTP")
 	private String otp;
+	@JsonProperty("LoginResponse")
+	private CommonLoginRes res;
 }

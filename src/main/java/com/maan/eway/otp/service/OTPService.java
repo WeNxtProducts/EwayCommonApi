@@ -28,6 +28,9 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginProductService;
+import com.maan.eway.auth.dto.CommonLoginRes;
+import com.maan.eway.auth.dto.LoginRequest;
+import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -78,6 +81,9 @@ public class OTPService {
 	
 	@Autowired
 	private LoginMasterRepository loginMasterRepo;
+	
+	@Autowired
+	private AuthendicationService authservice;
 	
 	public OtpConfirm generate(UserOtp otp) {
 		try {
@@ -217,10 +223,19 @@ public class OTPService {
 						errorlist.add(new Error("10","OTP","User is Not Valid"));
 					}
 				}
+				CommonLoginRes res =null;
+				if(errorlist.size()==0) {
+					LoginRequest mslogin=new LoginRequest();
+					mslogin.setReLoginKey("Y");
+					mslogin.setLoginId(otpData.getMobileCode().concat(otpData.getMobileNo()));
+					mslogin.setPassword("Admin@01");
+					 authservice.checkUserLogin(mslogin,null);
+				}
 				OtpConfirm c=OtpConfirm.builder()
 						.isError((errorlist !=null && errorlist.size()>0)?true:false)
 						.errorlist(errorlist)
 						.otpToken(otp.getOtpToken())
+						.res(res)
 						.build();
 				return c;
 			}catch (Exception e) {
