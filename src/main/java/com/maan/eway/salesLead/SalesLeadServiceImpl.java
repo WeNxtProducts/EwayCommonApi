@@ -15,10 +15,15 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.EnquiryDetails;
+import com.maan.eway.bean.IplcmsListItemValue;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.SalesLead;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.repository.EnquiryDetailsRepository;
+import com.maan.eway.repository.IplcmsListItemValueRepository;
 import com.maan.eway.repository.SalesLeadRepository;
+import com.maan.eway.res.DropDownRes;
 
 @Service
 public class SalesLeadServiceImpl implements SalesLeadService {
@@ -31,6 +36,9 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	
 	@Autowired
 	private EnquiryDetailsRepository enquiryDetailsRepo;
+	
+	@Autowired
+	private IplcmsListItemValueRepository iplcmsListItemValueRepo;
 	
 	private Gson gson = new Gson();
 	
@@ -225,5 +233,222 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 		}
 		return null;
 	}
+
+	@Override
+	public List<DropDownRes> contactType(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "CONTACT_TYPE" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType(itemType);
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getId().toString());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+//				if(!data.getParam1().isEmpty()) {
+//				res.setTitletype(data.getParam1());
+//				}
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> customerType(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "CUSTOMER_TYPE" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType(itemType);
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getId().toString());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+//				if(!data.getParam1().isEmpty()) {
+//				res.setTitletype(data.getParam1());
+//				}
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> sectionType(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "SECTION_TYPE" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType(itemType);
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getId().toString());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+//				if(!data.getParam1().isEmpty()) {
+//				res.setTitletype(data.getParam1());
+//				}
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> typeOfBusiness(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "TYPE_OF_BUSINESS" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType(itemType);
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getId().toString());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+//				if(!data.getParam1().isEmpty()) {
+//				res.setTitletype(data.getParam1());
+//				}
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> currentInsurer(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "INS_COMP" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType(itemType);
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getId().toString());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+//				if(!data.getParam1().isEmpty()) {
+//				res.setTitletype(data.getParam1());
+//				}
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> lineOfBusiness(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "LINE_OF_BUSINESS" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType(itemType);
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getId().toString());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+//				if(!data.getParam1().isEmpty()) {
+//				res.setTitletype(data.getParam1());
+//				}
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> product(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "PRODUCT" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemTypeAndParam1(itemType,req.getProductId());
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getId().toString());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+//				if(!data.getParam1().isEmpty()) {
+//				res.setTitletype(data.getParam1());
+//				}
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> businessType(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "BUSINESS_TYPE" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType(itemType);
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getId().toString());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+//				if(!data.getParam1().isEmpty()) {
+//				res.setTitletype(data.getParam1());
+//				}
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> probabilityOfSuccess(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "POS" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType(itemType);
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getId().toString());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+//				if(!data.getParam1().isEmpty()) {
+//				res.setTitletype(data.getParam1());
+//				}
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
 
 }
