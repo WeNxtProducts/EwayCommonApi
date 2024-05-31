@@ -61,7 +61,7 @@ public class ContentAndRisk implements Serializable {
 	@Column(name = "ITEM_ID", nullable = false)
 	private Integer itemId;	
 	
-	@Id	
+	/* @Id */
 	@Column(name = "QUOTE_NO", length = 20)
 	private String quoteNo;
 		@Id	
