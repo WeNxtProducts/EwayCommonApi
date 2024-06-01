@@ -264,6 +264,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="CBC_NO", length=100)
     private String     cbcNo;
+    
+    @Column(name="WHATSAPP_CODE")
+    private String whatsappCode;
+    @Column(name="WHATSAPP_NO")
+    private String whatsappNo;
+    
 }
 
 

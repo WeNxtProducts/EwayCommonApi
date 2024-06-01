@@ -337,9 +337,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		try {
 			
 			Map<String,Object> request=new HashMap<String, Object>();
-			request.put("whatsapp_no",payment.getReqBillToPhone() );
+			request.put("whatsapp_no",payment.getWhatsappNo() );
 			request.put("message_type", "Text");
-			request.put("whatsapp_code", "");
+			request.put("whatsapp_code", payment.getWhatsappCode());
 			request.put("payment_response", j.toString());
 			
 			RestTemplate restTemplate = new RestTemplate();

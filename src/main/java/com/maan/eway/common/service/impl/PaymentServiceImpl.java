@@ -2081,7 +2081,15 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setReqBillToAddrPostalCode(null);
 			paymentDetail.setReqBillToEmail(personaldata.getEmail1());;
 			paymentDetail.setReqBillToForename(personaldata.getClientName());
-			paymentDetail.setReqBillToPhone(personaldata.getMobileCode1()+""+personaldata.getMobileNo1());
+			
+			String personalInfoMobile=personaldata.getMobileCode1()+""+personaldata.getMobileNo1();
+			String requestMobile=req.getMobileCode1()+""+req.getMobileNo1();
+			
+			paymentDetail.setReqBillToPhone(StringUtils.isBlank(requestMobile)?personalInfoMobile:requestMobile);
+			
+			paymentDetail.setWhatsappCode(StringUtils.isBlank(req.getWhatsappCode())?personaldata.getMobileCode1():req.getWhatsappCode());			
+			paymentDetail.setWhatsappNo(StringUtils.isBlank(req.getWhatsappNo())?personaldata.getMobileNo1():req.getWhatsappNo());
+			
 			paymentDetail.setReqBillToSurname(personaldata.getClientName());
 			paymentDetail.setReqCardExpiryDate(null);
 			paymentDetail.setReqBillToCompanyName(companyName);

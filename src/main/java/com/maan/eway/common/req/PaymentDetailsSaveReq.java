@@ -71,4 +71,15 @@ public class PaymentDetailsSaveReq {
 
 	@JsonProperty("EmiYn")
 	private String emiYn;
+	
+
+	@JsonProperty("WhatsappCode")
+	private String whatsappCode;
+	@JsonProperty("WhatsappNo")
+	private String whatsappNo;
+	
+	@JsonProperty("MobileNo1")
+	private String mobileNo1;
+	@JsonProperty("MobileCode1")
+	private String mobileCode1;
 }
