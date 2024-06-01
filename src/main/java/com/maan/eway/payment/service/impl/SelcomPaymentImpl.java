@@ -1,8 +1,10 @@
 package com.maan.eway.payment.service.impl;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +14,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -62,6 +70,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 	private AuthendicationService authservice;
 	@Autowired
 	private  TiraIntegerationServiceImpl tiraService;
+	
+	@Value("${whatsapp.post.url}")
+	private String whatsappUrl;
 	
 	@Override
 	public JsonObject createOrderForPayment(String merchantRefernceNo) {
@@ -298,16 +309,20 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 						}
 					}
 					j.addProperty("result",isPaymentdone?"COMPLETED":"FAIL");
-					j.addProperty("message",responses.toString());		
+					j.addProperty("message",responses.toString());
+					System.out.println("Push whatsapp call for "+payment.getMerchantReference()+"--"+payment.getPaymentStatus());
+					if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus()))
+						postCall(j,payment);
 				} 		
 
-
+				
 
 				return j;
 			}else {
 				JsonObject j=new JsonObject();
 				j.addProperty("result","FAIL");
 				j.addProperty("message","No Data found");
+				//postCall(j,);
 				return j;
 
 			}
@@ -318,6 +333,30 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 
+	private void postCall(JsonObject j, PaymentDetail payment) {
+		try {
+			
+			Map<String,Object> request=new HashMap<String, Object>();
+			request.put("whatsapp_no",payment.getReqBillToPhone() );
+			request.put("message_type", "Text");
+			request.put("whatsapp_code", "");
+			request.put("payment_response", j.toString());
+			
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			//headers.set("Authorization", "Basic dmlzaW9uOnZpc2lvbkAxMjMj");
+			HttpEntity<Object> entityReq = new HttpEntity<>(request, headers);
+			System.out.println(entityReq.getBody());
+			 ResponseEntity<Object> response = restTemplate.postForEntity(whatsappUrl, entityReq, Object.class);
+			System.out.println(response.getBody());
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/*
 	@PersistenceContext
     private EntityManager em;

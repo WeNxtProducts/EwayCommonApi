@@ -111,7 +111,7 @@ public class ApigwClient {
 
             HttpEntity httpEntity = hresp.getEntity();
             String apiOutput = EntityUtils.toString(httpEntity);
-           
+            System.out.println("output"+ apiOutput.toString());
 
             return new Gson().fromJson(apiOutput, JsonObject.class);
         } catch (Exception ex) {
