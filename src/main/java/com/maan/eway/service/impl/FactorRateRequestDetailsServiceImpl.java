@@ -1555,10 +1555,10 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					if (null != sec && StringUtils.isNotBlank(sec.getSectionId())
 							&& StringUtils.isNotBlank(req.getRequestReferenceNo())) {
 
-						EserviceBuildingDetails building = eserBuildRepo
+						List<EserviceBuildingDetails> building = eserBuildRepo
 								.findByRequestReferenceNoAndSectionId(req.getRequestReferenceNo(), sec.getSectionId());
 
-						if (null == building) {
+						if (null == building || building .size()<=0) {
 
 							EserviceCommonDetails common = eserCommonRepo.findAllByRequestReferenceNoAndSectionId(
 									req.getRequestReferenceNo(), sec.getSectionId());
@@ -1579,19 +1579,19 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 
 						} else {
 
-							if (null == building.getBuildingSuminsured()
-									&& StringUtils.isNotBlank(building.getSectionId())
-									&& building.getSectionId().equals("1")) {
+							if (null == building.get(0).getBuildingSuminsured()
+									&& StringUtils.isNotBlank(building.get(0).getSectionId())
+									&& building.get(0).getSectionId().equals("1")) {
 
 								continue;
-							} else if (null == building.getContentSuminsured()
-									&& StringUtils.isNotBlank(building.getSectionId())
-									&& building.getSectionId().equals("47")) {
+							} else if (null == building.get(0).getContentSuminsured()
+									&& StringUtils.isNotBlank(building.get(0).getSectionId())
+									&& building.get(0).getSectionId().equals("47")) {
 
 								continue;
-							} else if (null == building.getAllriskSuminsured()
-									&& StringUtils.isNotBlank(building.getSectionId())
-									&& building.getSectionId().equals("3")) {
+							} else if (null == building.get(0).getAllriskSuminsured()
+									&& StringUtils.isNotBlank(building.get(0).getSectionId())
+									&& building.get(0).getSectionId().equals("3")) {
 
 								continue;
 							}
@@ -1682,15 +1682,15 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					}
 					
 				} else {
-					   EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(1) && o.getSectionId().equalsIgnoreCase(sec.getSectionId())).collect(Collectors.toList()).get(0);
-					
+					   List<EserviceBuildingDetails> buildData1 = buildDatas.stream().filter( o ->o.getSectionId().equalsIgnoreCase(sec.getSectionId())).collect(Collectors.toList());
+					   for(EserviceBuildingDetails buildData :buildData1 ) {
 					// Response 
 						EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
 						dozerMapper.map(buildData,res);
 						res.setInsuranceId(buildData.getCompanyId());
 						res.setSectionId(sec.getSectionId());
-						res.setVehicleId(sec.getRiskId().toString());
-						res.setVehicleId(sec.getRiskId().toString());
+						res.setVehicleId(buildData.getRiskId().toString());
+//						res.setVehicleId(sec.getRiskId().toString());
 						res.setOverallPremiumFc(buildData.getOverallPremiumFc()==null?"0": buildData.getOverallPremiumFc().toPlainString());
 						res.setOverallPremiumLc(buildData.getOverallPremiumLc()==null?"0":buildData.getOverallPremiumLc().toPlainString());
 						res.setActualPremiumFc(buildData.getActualPremiumFc()==null?"0":buildData.getActualPremiumFc().toPlainString());
@@ -1723,6 +1723,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 							res.setEndtType(ddto);
 						}
 						viewBuildingList.add(res);
+					   }
 					}
 			}	
 	
