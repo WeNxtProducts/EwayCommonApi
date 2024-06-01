@@ -3388,7 +3388,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBrokerCode(motorData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
 		    home.setCustomerCode(motorData.getCustomerCode());
-		    home.setCustomerName(motorData.getCustomerName() );
+//		    home.setCustomerName(motorData.getCustomerName() );
 		    home.setBdmCode(motorData.getBdmCode());
 			home.setBrokerBranchCode(motorData.getBrokerBranchCode() );
 			home.setBrokerBranchName(motorData.getBrokerBranchName() );
