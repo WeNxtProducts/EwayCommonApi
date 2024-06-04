@@ -1,6 +1,9 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+
+
+
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -118,7 +121,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private Logger log = LogManager.getLogger(getClass());
 	
 	Gson json = new Gson();
-	
 	private String type;
 	private QuoteThreadReq request ;
 	private EntityManager em;
@@ -1339,7 +1341,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// Find Building
-			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() ,1 ,request.getSectionId());
+			List<EserviceBuildingDetails> eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndSectionId(request.getRequestReferenceNo() ,request.getSectionId());
+			for(EserviceBuildingDetails section:eserBuild1) { 
+			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() , section.getRiskId(),request.getSectionId());
 			eserBuild.setQuoteNo(request.getQuoteNo());
 			eserBuild.setCustomerId(request.getCustomerId());
 			
@@ -1482,6 +1486,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 		    eserBuildRepo.saveAndFlush(eserBuild);
 			
+		}
 			
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
@@ -3250,6 +3255,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private synchronized Map<String,Object> call_SectionSave(QuoteThreadReq  request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		ModelMapper mapper = new ModelMapper();
+		String quoteno="";
+		String product_id="";
 		try {
 			
 			List<EserviceSectionDetails> eserSec = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(request.getRequestReferenceNo());
@@ -3275,6 +3282,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 					SectionDataDetails  saveSec = new  SectionDataDetails();
 					mapper.map(filterSec, saveSec)	;
 					saveSec.setQuoteNo(request.getQuoteNo());
+					quoteno=request.getQuoteNo();
+					product_id=request.getProductId();
 					saveSec.setUpdatedDate(new Date());
 					saveSec.setSectionDesc(filterSec.getSectionName());
 					List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
@@ -3290,6 +3299,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
 						EserviceSectionDetails filterSec = eserSec.stream().filter( o ->   o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
 						filterSec.setUserOpt("Y");
+						quoteno=request.getQuoteNo();
+						product_id=request.getProductId();
 						filterSec.setQuoteNo(request.getQuoteNo());
 						filterSec.setUpdatedDate(new Date());
 						updateEserSec.add(filterSec);
@@ -3311,6 +3322,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
 			secRepo.saveAllAndFlush(secList);
 			eserSecRepo.saveAllAndFlush(updateEserSec);
+			updateAdditionalInfo(quoteno,product_id);
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
 			
@@ -3322,7 +3334,61 @@ public class QuoteThreadCall implements Callable<Object>  {
 		}
 		return res;
 	}
+	public void updateAdditionalInfo(String quoteno,String productid) 
+	{
+		
+	String requestrefno="";
+	
+	List<ContentAndRisk> content =null;
+    List<BuildingDetails>  building = null;
+    List<ProductEmployeeDetails> personalaccident =null; 
+	
 
+	try {
+	
+	if(productid.equals("59")) {
+		List<EserviceSectionDetails> selecteddata = eserSecRepo.findByQuoteNoAndUserOpt(quoteno,"Y");
+		List<String> sectionIds = selecteddata.stream().map(EserviceSectionDetails::getSectionId).collect(Collectors.toList());
+		requestrefno=selecteddata.get(0).getRequestReferenceNo();
+          content=contentRepo.findByRequestReferenceNo(requestrefno);
+         //building = locRepo.findByQuoteNoOrderByRiskIdAsc("AICQ12207");
+         building = locRepo.findByRequestReferenceNo(requestrefno);
+ 		
+	      personalaccident=pacRepo.findByRequestReferenceNo(requestrefno);
+	    if(content!=null && (content.size()>0)) {
+	    List<ContentAndRisk> matchedContent = content.stream().filter(cc -> sectionIds.contains(cc.getSectionId())).collect(Collectors.toList());
+	    List<ContentAndRisk> unmatchedContent = content.stream() .filter(cc -> !sectionIds.contains(cc.getSectionId())) .collect(Collectors.toList());
+	    matchedContent.forEach(cc -> { cc.setQuoteNo(quoteno);  contentRepo.save(cc);});
+	    unmatchedContent.forEach(cc -> contentRepo.delete(cc));
+		}
+		
+		if(building!=null && (building.size()>0)) {
+	   List<BuildingDetails> matchedContent = building.stream().filter(cc ->sectionIds.contains(cc.getSectionId())).collect(Collectors.toList());
+       List<BuildingDetails> unmatchedContent = building.stream() .filter(cc ->!sectionIds.contains(cc.getSectionId())) .collect(Collectors.toList());
+	   matchedContent.forEach(cc -> { cc.setQuoteNo(quoteno); locRepo.save(cc);});
+	   unmatchedContent.forEach(cc -> locRepo.delete(cc)); }
+		 
+	    if(personalaccident!=null && (personalaccident.size()>0)) {
+		   List<ProductEmployeeDetails> matchedContent = personalaccident.stream().filter(cc -> sectionIds.contains(cc.getSectionId())).collect(Collectors.toList());
+		    List<ProductEmployeeDetails> unmatchedContent = personalaccident.stream() .filter(cc -> !sectionIds.contains(cc.getSectionId())) .collect(Collectors.toList());
+		    matchedContent.forEach(cc -> { cc.setQuoteNo(quoteno);  pacRepo.save(cc);});
+		    unmatchedContent.forEach(cc -> pacRepo.delete(cc));
+	    }
+	    
+	
+	}
+	    
+	
+	}catch(Exception ex) {
+		System.out.println("Exception  in additional info ");
+		
+		ex.printStackTrace();
+	}
+	
+	}
+
+	
+	
 	private HomePositionMaster setMotorDetails(QuoteThreadReq  request) {
 		HomePositionMaster home = new HomePositionMaster();
 		try {

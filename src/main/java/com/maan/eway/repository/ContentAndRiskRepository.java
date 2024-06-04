@@ -72,4 +72,7 @@ public interface ContentAndRiskRepository  extends JpaRepository<ContentAndRisk,
 	List<ContentAndRisk> findByQuoteNoAndSectionId(String QuoteNo, String sectionId);
 
 
+	List<ContentAndRisk> findByRequestReferenceNo(String requestrefno);
+
+
 }
