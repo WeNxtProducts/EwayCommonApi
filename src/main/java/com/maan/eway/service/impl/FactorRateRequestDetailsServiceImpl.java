@@ -49,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -1546,22 +1547,24 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 		 try {
 			// Building Product Details
 			List<EserviceSectionDetails>    sectionDatas = eserSecRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
-			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());			
-			for (EserviceSectionDetails sec :  sectionDatas) {
+			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			Map<String, List<EserviceSectionDetails>> sectionGroup =null;
+			sectionGroup = sectionDatas.stream().filter( o -> o.getSectionId() !=null  ).collect( Collectors.groupingBy(EserviceSectionDetails :: getSectionId )) ;
+			for (String sec :  sectionGroup.keySet()) {
 				
-				
+				List<EserviceSectionDetails> filterData = sectionDatas.stream().filter( o ->  o.getSectionId().equalsIgnoreCase(sec) ).collect(Collectors.toList());	
 				try {
 
-					if (null != sec && StringUtils.isNotBlank(sec.getSectionId())
+					if (null != sec && StringUtils.isNotBlank(sec)
 							&& StringUtils.isNotBlank(req.getRequestReferenceNo())) {
 
 						List<EserviceBuildingDetails> building = eserBuildRepo
-								.findByRequestReferenceNoAndSectionId(req.getRequestReferenceNo(), sec.getSectionId());
+								.findByRequestReferenceNoAndSectionId(req.getRequestReferenceNo(), sec);
 
 						if (null == building || building .size()<=0) {
 
 							EserviceCommonDetails common = eserCommonRepo.findAllByRequestReferenceNoAndSectionId(
-									req.getRequestReferenceNo(), sec.getSectionId());
+									req.getRequestReferenceNo(), sec);
 
 							if (null != common) {
 
@@ -1599,8 +1602,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 
 					}
 					
-						if (null != sec && StringUtils.isNotBlank(sec.getSectionId())
-								&& sec.getSectionId().equals("3")) {
+						if (null != sec && StringUtils.isNotBlank(sec)
+								&& sec.equals("3")) {
 
 							List<EserviceBuildingDetails> buildData = eserBuildRepo
 									.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(req.getRequestReferenceNo(),
@@ -1627,24 +1630,24 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 
 				}
 
-				if ( sec.getProductType().equalsIgnoreCase("H")) {
+				if ( filterData.get(0).getProductType().equalsIgnoreCase("H")) {
 					
-					List<EserviceCommonDetails> personalDatas = eserCommonRepo.findByRequestReferenceNoAndSectionId(req.getRequestReferenceNo() , sec.getSectionId() );
+					List<EserviceCommonDetails> personalDatas = eserCommonRepo.findByRequestReferenceNoAndSectionId(req.getRequestReferenceNo() , sec );
 					for (EserviceCommonDetails acc : personalDatas ) {
 						
 						// Response 
 						EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
 						dozerMapper.map(acc,res);
 						res.setInsuranceId(acc.getCompanyId());
-						res.setSectionId(sec.getSectionId());
+						res.setSectionId(filterData.get(0).getSectionId());
 						res.setVehicleId(acc.getRiskId().toString());
 						
 						if (StringUtils.isNotBlank(acc.getOccupationDesc()))
-							res.setSectionName(sec.getSectionName() + "~" + acc.getOccupationDesc());
+							res.setSectionName(filterData.get(0).getSectionName() + "~" + acc.getOccupationDesc());
 						else if (StringUtils.isNotBlank(acc.getPersonalLiabilityOccupation()))
-							res.setSectionName(sec.getSectionName() + "~" + acc.getPersonalLiabilityOccupation());
+							res.setSectionName(filterData.get(0).getSectionName() + "~" + acc.getPersonalLiabilityOccupation());
 						else
-							res.setSectionName(sec.getSectionName());
+							res.setSectionName(filterData.get(0).getSectionName());
 						
 						res.setGroupId(acc.getRiskId()==null?null:acc.getRiskId());
 						res.setOverallPremiumFc(acc.getOverallPremiumFc()==null?"0": acc.getOverallPremiumFc().toPlainString());
@@ -1682,13 +1685,13 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					}
 					
 				} else {
-					   List<EserviceBuildingDetails> buildData1 = buildDatas.stream().filter( o ->o.getSectionId().equalsIgnoreCase(sec.getSectionId())).collect(Collectors.toList());
+					   List<EserviceBuildingDetails> buildData1 = buildDatas.stream().filter( o ->o.getSectionId().equalsIgnoreCase(filterData.get(0).getSectionId())).collect(Collectors.toList());
 					   for(EserviceBuildingDetails buildData :buildData1 ) {
 					// Response 
 						EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
 						dozerMapper.map(buildData,res);
 						res.setInsuranceId(buildData.getCompanyId());
-						res.setSectionId(sec.getSectionId());
+						res.setSectionId(filterData.get(0).getSectionId());
 						res.setVehicleId(buildData.getRiskId().toString());
 //						res.setVehicleId(sec.getRiskId().toString());
 						res.setOverallPremiumFc(buildData.getOverallPremiumFc()==null?"0": buildData.getOverallPremiumFc().toPlainString());
@@ -1697,7 +1700,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setActualPremiumLc(buildData.getActualPremiumLc()==null?"0":buildData.getActualPremiumLc().toPlainString());
 						res.setHavepromocode(buildData.getHavepromocode());
 						res.setPromocode(buildData.getPromocode());
-						res.setSectionName( sec.getSectionName() );
+						res.setSectionName( filterData.get(0).getSectionName() );
 						res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
 						res.setEffectiveDate(buildData.getEndorsementEffdate()==null?null:buildData.getEndorsementEffdate() );
 						res.setCommissionPercentage(buildData.getCommissionPercentage()==null?"" :buildData.getCommissionPercentage().toPlainString());
