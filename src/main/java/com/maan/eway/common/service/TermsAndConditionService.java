@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import org.springframework.http.ResponseEntity;
+
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
@@ -14,6 +16,7 @@ import com.maan.eway.common.req.TermsAndConditionGetBySubIdReq;
 import com.maan.eway.common.req.TermsAndConditionGetReq;
 import com.maan.eway.common.req.TermsAndConditionInsertReq;
 import com.maan.eway.common.req.TermsAndConditionReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.TermsAndConditionGetBySubIdRes;
@@ -34,5 +37,9 @@ public interface TermsAndConditionService {
 	TermsAndConditionGetRes getTermsAndCondition(TermsAndConditionGetReq req);
 
 	TermsAndConditionGetBySubIdRes getTermsAndConditionSubId(TermsAndConditionGetBySubIdReq req);
+
+	ResponseEntity<CommonRes> fetchTermsAndCondition(TermsAndConditionReq req);
+
+	ResponseEntity<CommonRes> fetchSectionsBasedOnRisk(String requestReferenceNo, Integer riskId);
 	
 }

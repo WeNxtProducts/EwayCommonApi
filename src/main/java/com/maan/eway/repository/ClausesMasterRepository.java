@@ -27,4 +27,14 @@ public interface ClausesMasterRepository  extends JpaRepository<ClausesMaster,Cl
 			String companyId, String branchCode, String string, String productId, String sectionId,String string3, String termsId,
 			Date date, Date date2, String string2);
 
+
+	List<ClausesMaster> findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndCoverIdInAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+			String companyId, String branchCode, String productId, String sectionId, List<String> coverIds, Date today,
+			Date todayEnd, String string);
+
+
+	List<ClausesMaster> findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+			String companyId, String branchCode, String productId, String sectionId, Date today, Date todayEnd,
+			String string);
+
 }

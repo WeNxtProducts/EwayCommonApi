@@ -25,5 +25,10 @@ public interface WarrantyMasterRepository  extends JpaRepository<WarrantyMaster,
 			String companyId, String branchCode, String productId, String sectionId, String string, Date date, Date date2, String string2);
 
 
+	List<WarrantyMaster> findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+			String companyId, String branchCode, String productId, String sectionId, Date today, Date todayEnd,
+			String string);
+
+
 	
 }

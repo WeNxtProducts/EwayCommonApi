@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.TermsAndConditionGetBySubIdReq;
@@ -61,6 +62,26 @@ private PrintReqService reqPrinter;
 		}
 	}
 
+
+	@RequestMapping("/viewtermsbasedonsection")
+	@ApiOperation(value = "This method for view the terms and conditions based on sec and cover ids")
+	public ResponseEntity<CommonRes> fetchTermsAndCondition(@RequestBody TermsAndConditionReq req) {
+
+		return service.fetchTermsAndCondition(req);
+	}
+	
+	@RequestMapping("/sectionlistbasedonriskid")
+	@ApiOperation(value = "Fetch section Based On Risk Ids" , notes = "Section drop down to Terms and conditions" )
+	public ResponseEntity<CommonRes> fetchSectionsBasedOnRisk(@RequestParam(value = "requestReferenceNo")  String requestReferenceNo ,
+			@RequestParam(value = "riskId" , required = true ) Integer  riskId ){
+		
+		
+		return service.fetchSectionsBasedOnRisk(requestReferenceNo , riskId);
+		
+		
+	}
+	
+	
 	
 	// Insert Terms And Condition
 	

@@ -42,4 +42,10 @@ private String documentId;
 @JsonProperty("TypeId")
 private String typeId;
 
+@JsonProperty("SectionId")
+private String sectionId;
+
+@JsonProperty("CoverId")
+private String coverId;
+
 }

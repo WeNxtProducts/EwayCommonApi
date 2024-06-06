@@ -1,9 +1,11 @@
 package com.maan.eway.common.service.impl;
 
+import java.rmi.UnexpectedException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -27,11 +29,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.ClausesMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -39,12 +46,14 @@ import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.WarrantyMaster;
+import com.maan.eway.common.req.SectionDataRes;
 import com.maan.eway.common.req.TermsAndConditionGetBySubIdReq;
 import com.maan.eway.common.req.TermsAndConditionGetReq;
 import com.maan.eway.common.req.TermsAndConditionInsertReq;
 import com.maan.eway.common.req.TermsAndConditionListReq;
 import com.maan.eway.common.req.TermsAndConditionReq;
 import com.maan.eway.common.res.ClausesRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ExclusionRes;
 import com.maan.eway.common.res.TermsAndConditionGetBySubIdRes;
 import com.maan.eway.common.res.TermsAndConditionGetRes;
@@ -55,6 +64,8 @@ import com.maan.eway.common.service.TermsAndConditionService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.ClausesMasterRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.ExclusionMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
@@ -103,6 +114,12 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 	@Autowired
 	private ListItemValueRepository listRepo;
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository buildRepo;
+	
+	@Autowired
+	private EserviceCommonDetailsRepository commonRepo;
 
 	@Override
 	public TermsAndConditionRes viewTermsAndCondition(TermsAndConditionReq req) {
@@ -134,6 +151,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						warrantyres.setDocRefNo(data.getDocRefNo());
 						warrantyres.setDocumentId("16");
 						warrantyres.setTypeId(data.getTypeId() );
+						warrantyres.setSectionId(data.getSectionId() != null ? data.getSectionId() : ""  );
 						warrantyresList.add(warrantyres);
 						res.setWarrantyRes(warrantyresList);
 					 
@@ -152,6 +170,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						warrantyres.setDocRefNo(warranties.getDocRefNo());
 						warrantyres.setDocumentId("16");
 						warrantyres.setTypeId(warranties.getTypeId());
+						warrantyres.setSectionId(warranties.getSectionId() != null ? warranties.getSectionId() : ""  );
 
 						warrantyresList.add(warrantyres);
 						res.setWarrantyRes(warrantyresList);
@@ -169,6 +188,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						clausesres.setDocRefNo(data.getDocRefNo());
 						clausesres.setDocumentId("18");
 						clausesres.setTypeId(data.getTypeId());
+						clausesres.setSectionId(data.getSectionId() != null ?  data.getSectionId() :  "" );
 						clausesresList.add(clausesres);
 						res.setClausesRes(clausesresList);
 					 
@@ -184,6 +204,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					clausesres.setSubIdDesc(clauses.getClausesDescription());
 					clausesres.setDocRefNo(clauses.getDocRefNo());
 					clausesres.setDocumentId("18");
+					clausesres.setSectionId(clauses.getSectionId() != null ?  clauses.getSectionId() :  "" );
 					clausesres.setTypeId(clauses.getTypeId());
 					clausesresList.add(clausesres);
 					res.setClausesRes(clausesresList);
@@ -202,6 +223,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						exclusionres.setDocRefNo(data.getDocRefNo());
 						exclusionres.setDocumentId("19");
 						exclusionres.setTypeId(data.getTypeId());
+						exclusionres.setSectionId(data.getSectionId() != null ? data.getSectionId() : "" );
 						exclusionresList.add(exclusionres);
 						res.setExclusionRes(exclusionresList);
 					 
@@ -220,6 +242,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						exclusionres.setDocRefNo(exclusions.getDocRefNo());
 						exclusionres.setDocumentId("19");
 						exclusionres.setTypeId(exclusions.getTypeId());
+						exclusionres.setSectionId(exclusions.getSectionId() != null ? exclusions.getSectionId() : "" );
 
 						exclusionresList.add(exclusionres);
 						res.setExclusionRes(exclusionresList);
@@ -729,5 +752,270 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		}
 		return res;
 	}
+	
+	
+	@Override
+	public ResponseEntity<CommonRes> fetchTermsAndCondition(TermsAndConditionReq req){
+		
+		
+		CommonRes data = new CommonRes();		
+		TermsAndConditionRes res = new TermsAndConditionRes();
 
+		try {
+			
+			if(req == null ||  StringUtils.isBlank(req.getCompanyId()) ||  StringUtils.isBlank(req.getProductId()) 
+					||  StringUtils.isBlank(req.getSectionId()) ) {
+				
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			
+			List<WarrantyRes> warrantyresList = new ArrayList<WarrantyRes>();
+			List<ExclusionRes> exclusionresList = new ArrayList<ExclusionRes>();
+			List<ClausesRes> clausesresList = new ArrayList<ClausesRes>();
+			 
+
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
+
+			  
+			// Warranty 
+						 			 
+			 List<ClausesMaster>  list = null;
+			 List<ExclusionMaster> list2 = null ;
+			 List<WarrantyMaster> list3 = null ;
+			
+			   if(null != req && null != req.getCoverIds() && !req.getCoverIds().isEmpty() ) {
+				   
+				  // warranty and Exclusion Not based On cover Ids 
+					   
+				   list3 = warrantyRepo
+							.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
+									today, todayEnd, "Y");
+
+					list = clausesRepo
+							.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndCoverIdInAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+									req.getCompanyId(),  "99999", req.getProductId(), req.getSectionId(), req.getCoverIds() , 
+									today, todayEnd, "Y");
+
+					list2 = exclusionRepo
+							.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+									req.getCompanyId(),  "99999", req.getProductId(), req.getSectionId(),
+									today, todayEnd, "Y");
+				
+					   
+				 
+				   
+				} else {
+
+					list3 = warrantyRepo
+							.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+									req.getCompanyId(),  "99999", req.getProductId(), req.getSectionId(),
+									today, todayEnd, "Y");
+
+					list = clausesRepo
+							.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+									req.getCompanyId(),  "99999", req.getProductId(), req.getSectionId(),
+									today, todayEnd, "Y");
+
+					list2 = exclusionRepo
+							.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+									req.getCompanyId(),  "99999", req.getProductId(), req.getSectionId(),
+									today, todayEnd, "Y");
+
+				}
+						
+							if (null != list3 && !list3.isEmpty() ) {
+								
+								for (WarrantyMaster warranties : list3) {
+									WarrantyRes warrantyres = new WarrantyRes();
+									warrantyres.setId("4");
+
+									warrantyres.setSubId(warranties.getWarrantyId().toString());
+									warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
+									warrantyres.setDocRefNo(warranties.getDocRefNo());
+									warrantyres.setDocumentId("16");
+									warrantyres.setTypeId(warranties.getTypeId());
+									warrantyres.setSectionId(warranties.getSectionId() != null ? warranties.getSectionId() : ""  );
+									warrantyres.setCoverId(null);
+
+									warrantyresList.add(warrantyres);
+									
+								}
+								
+								res.setWarrantyRes(warrantyresList);
+							}
+						
+						
+							if (null != list && !list.isEmpty() ) {
+							
+							for (ClausesMaster clauses : list) {
+								ClausesRes clausesres = new ClausesRes();
+								clausesres.setId("6");
+
+								clausesres.setSubId(clauses.getClausesId().toString());
+								clausesres.setSubIdDesc(clauses.getClausesDescription());
+								clausesres.setDocRefNo(clauses.getDocRefNo());
+								clausesres.setDocumentId("18");
+								clausesres.setSectionId(clauses.getSectionId() != null ?  clauses.getSectionId() :  "" );
+								clausesres.setTypeId(clauses.getTypeId());
+								clausesres.setCoverId(clauses.getCoverId() != null ? clauses.getCoverId().toString() : "" );
+								clausesresList.add(clausesres);
+								
+							
+							
+						}res.setClausesRes(clausesresList);
+						
+							}
+						
+							if (null != list2 && !list2.isEmpty() ) {
+								
+								for (ExclusionMaster exclusions : list2) {
+									ExclusionRes exclusionres = new ExclusionRes();
+									exclusionres.setId("7");
+
+									exclusionres.setSubId(exclusions.getExclusionId().toString());
+									exclusionres.setSubIdDesc(exclusions.getExclusionDescription());
+									exclusionres.setDocRefNo(exclusions.getDocRefNo());
+									exclusionres.setDocumentId("19");
+									exclusionres.setTypeId(exclusions.getTypeId());
+									exclusionres.setSectionId(exclusions.getSectionId() != null ? exclusions.getSectionId() : "" );
+									exclusionres.setCoverId(null);
+									exclusionresList.add(exclusionres);
+									
+
+								
+							}
+								
+								res.setExclusionRes(exclusionresList);
+						}
+							
+							
+							
+							data.setCommonResponse(res);
+							data.setErrorMessage(Collections.emptyList());
+							data.setIsError(false);
+							data.setMessage("Success");
+							
+							return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+
+					} catch (Exception e) {
+			
+			log.error("Exception Occurs When User Fetch The Records From Terms and Conditions Master Table **** "  + e.getMessage() );
+			e.printStackTrace();
+		//	thorw new 			
+			return new ResponseEntity<> (null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
+	
+	@Override
+	public ResponseEntity<CommonRes> fetchSectionsBasedOnRisk(String requestReferenceNo  , Integer riskId){
+		
+		CommonRes res = new CommonRes();
+		List<SectionDataRes> sectionDataList = new ArrayList<>();
+		
+		try {
+			
+			List<EserviceBuildingDetails> list = buildRepo
+					.findAllByRequestReferenceNoAndRiskId(requestReferenceNo, riskId);
+
+			if (riskId != null && riskId == 1) {
+
+				List<EserviceCommonDetails> commonList = commonRepo.findByRequestReferenceNo(requestReferenceNo);
+
+				if (null != commonList && !commonList.isEmpty()) {
+					
+					
+					DozerBeanMapper mapper = new DozerBeanMapper();
+
+					for (EserviceCommonDetails data : commonList) {
+
+						if (StringUtils.isNotBlank(data.getSectionId())) {
+
+							
+						     if ((data.getSectionId().equals("35") && data.getSumInsured() == null)
+									|| (data.getSectionId().equals("36") && data.getSumInsured() == null)) {
+
+								continue;
+							}
+						}
+						
+
+						SectionDataRes secRes = new SectionDataRes();
+
+						mapper.map(data, secRes);
+
+						sectionDataList.add(secRes);
+					}
+					
+
+				}
+			}
+			
+			
+
+			if (null != list && !list.isEmpty()) {
+
+				DozerBeanMapper mapper = new DozerBeanMapper();
+
+				for (EserviceBuildingDetails data : list) {
+
+					if (StringUtils.isNotBlank(data.getSectionId())) {
+
+						if (data.getSectionId().equals("0")) {
+							continue;
+						} else if ((data.getSectionId().equals("1") && data.getBuildingSuminsured() == null)
+								|| (data.getSectionId().equals("3") && data.getAllriskSuminsured() == null)
+								|| data.getSectionId().equals("47") && data.getContentSuminsured() == null) {
+
+							continue;
+
+						}
+					}
+					
+
+					SectionDataRes secRes = new SectionDataRes();
+
+					mapper.map(data, secRes);
+
+					sectionDataList.add(secRes);
+				}
+				
+				res.setCommonResponse(sectionDataList);
+				res.setErrorMessage(null);
+				res.setIsError(false);
+				res.setMessage("Success");
+				
+				return new ResponseEntity<CommonRes>(res, HttpStatus.CREATED );
+
+			}
+			res.setCommonResponse(sectionDataList);
+			res.setErrorMessage(null);
+			res.setIsError(false);
+			res.setMessage("Failure-Data Not found In Table");
+		
+		
+			return new ResponseEntity<CommonRes>(res, HttpStatus.NOT_FOUND );
+
+		
+		}catch(Exception e) {
+			
+			log.error("Exception Occurs When Fetch Section Data Based On Section Id *******" +  e.getMessage() );
+			e.printStackTrace();
+		//	 throw new UnexpectedException("");
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 }
