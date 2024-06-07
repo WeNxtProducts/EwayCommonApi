@@ -152,7 +152,7 @@ public class PerilCalculator {
 				//  23
 
 				String LossRatio="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+229+";"+vehicles.get(0).get("lossRatio")+"~param1&param2;";
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+229+";param10:"+vehicles.get(0).get("previousInsuranceYN")+";"+vehicles.get(0).get("lossRatio")+"~param1&param2;";
 				 
 				
 				Map<String,String> queries=new HashMap<String,String>();
