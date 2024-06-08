@@ -48,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
+import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CurrencyMaster;
@@ -92,6 +93,7 @@ import com.maan.eway.common.res.EwayFactorResultRes;
 import com.maan.eway.common.res.FdFactorCalcRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
@@ -132,7 +134,8 @@ import com.maan.eway.service.impl.referal.ReferalServiceImpl;
 @Service
 @Transactional 
 public class FactorRateRequestDetailsServiceImpl implements FactorRateRequestDetailsService {
-
+	@Autowired
+	private BuildingDetailsRepository BuildingRepo;
 @Autowired
 private FactorRateRequestDetailsRepository repository;
 
@@ -1708,7 +1711,13 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setPolicyNo(buildData.getPolicyNo());
 						res.setOriginalPolicyNo(buildData.getOriginalPolicyNo());
 						res.setSourceType(buildData.getSourceType());
-						
+						BuildingDetails buildingList =new BuildingDetails();
+						buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(buildData.getRequestReferenceNo(),buildData.getRiskId(),"1");
+						String LocationName="";
+						if(buildingList!=null) {
+							LocationName=buildingList.getLocationName();
+						}
+						res.setLocationName(LocationName);
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(buildData, buildRes);

@@ -662,14 +662,19 @@ public class QuoteServiceImpl implements QuoteService {
 			// Section Details
 			// Document
 			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();			
-			
+			List<Object> totalList =new ArrayList<Object>(); 
 			List<PaccGetRes> paccGetResList = new ArrayList<PaccGetRes>(); 
 			List<EserviceBuildingsDetailsRes>   buildList = new ArrayList<EserviceBuildingsDetailsRes>();
-			EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
 			
+			
+		
+			Map<Integer, List<SectionDataDetails>> riskGroup =null;
+			riskGroup = secDatas.stream().filter( o -> o.getRiskId()!=null  ).collect( Collectors.groupingBy(SectionDataDetails :: getRiskId )) ;
+			for (Integer risk :  riskGroup.keySet()) {
+			List<SectionDataDetails> filterData = secDatas.stream().filter( o -> o.getRiskId().equals(risk)).collect(Collectors.toList());
 			List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
-			
-			for (SectionDataDetails sec :  secDatas) {
+			EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
+			for (SectionDataDetails sec :  filterData) {
 				
 				if( sec.getProductType().equalsIgnoreCase("H") ) {
 					List<SectionDetails>  pacSectionList = new ArrayList<SectionDetails>();
@@ -756,10 +761,11 @@ public class QuoteServiceImpl implements QuoteService {
 					buildingSectionList.add(buildSec);
 				
 			} 
-			buildingRes.setSectionDetails(buildingSectionList);
+			
 		}
+			buildingRes.setSectionDetails(buildingSectionList);
 		// Default Entry
-		List<BuildingRiskDetails> filterDefaultBuilding = buildings.stream().filter( o -> "0".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+		List<BuildingRiskDetails> filterDefaultBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk) ).collect(Collectors.toList());
 		if(filterDefaultBuilding.size() > 0 ) {
 			BuildingRiskDetails buildData = filterDefaultBuilding.get(0);
 			dozerMapper.map(buildData, buildingRes);
@@ -781,7 +787,13 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			buildingRes.setDocumentsTitle(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
 			buildingRes.setLocationId(buildData.getRiskId().toString());
-			buildingRes.setLocationName(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
+			BuildingDetails buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(buildData.getRequestReferenceNo(),risk,"1");
+			String LocationName="";
+			if(buildingList!=null) {
+				LocationName=buildingList.getLocationName();
+			}
+			buildingRes.setLocationName(LocationName);
+//			buildingRes.setLocationName(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
 			buildingRes.setRiskId(buildData.getRiskId().toString());
 			buildingRes.setSuminsured(buildData.getBuildingSuminsured()==null?"" : buildData.getBuildingSuminsured().toPlainString());
 			buildingRes.setSectionId(StringUtils.isNotBlank(buildData.getSectionId() ) ?  buildData.getSectionId() :  "99999"  );
@@ -816,7 +828,7 @@ public class QuoteServiceImpl implements QuoteService {
 			// (i) Asset Related Sections
 			
 			// Building
-			List<BuildingRiskDetails> filterBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+			List<BuildingRiskDetails> filterBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId())).collect(Collectors.toList());
 			if(filterBuilding.size() > 0 ) {
 				BuildingRiskDetails build = filterBuilding.get(0);
 				buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
@@ -832,7 +844,7 @@ public class QuoteServiceImpl implements QuoteService {
 			} 
 			
 			// Content
-			List<BuildingRiskDetails> filterContent = buildings.stream().filter( o -> "47".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+			List<BuildingRiskDetails> filterContent = buildings.stream().filter( o -> "47".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk) ).collect(Collectors.toList());
 			if(filterContent.size() > 0 ) {
 				BuildingRiskDetails build = filterContent.get(0);
 				buildingRes.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
@@ -841,7 +853,7 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			
 			// All Risk , Plant All Risk , Business All Risk
-			List<BuildingRiskDetails> filterAllRisk = buildings.stream().filter( o -> "3".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+			List<BuildingRiskDetails> filterAllRisk = buildings.stream().filter( o -> "3".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk) ).collect(Collectors.toList());
 			if(filterAllRisk.size() > 0 ) {
 				BuildingRiskDetails build = filterAllRisk.get(0);
 				buildingRes.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
@@ -858,7 +870,7 @@ public class QuoteServiceImpl implements QuoteService {
 			} 
 			
 			// Accidental Damage
-			List<BuildingRiskDetails> filterAccidental = buildings.stream().filter( o -> "56".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+			List<BuildingRiskDetails> filterAccidental = buildings.stream().filter( o -> "56".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk) ).collect(Collectors.toList());
 			if(filterAccidental.size() > 0 ) {
 				BuildingRiskDetails build = filterAccidental.get(0);
 				//res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
@@ -866,7 +878,7 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 			
 			// Burgalry
-			List<BuildingRiskDetails> filterBurglary = buildings.stream().filter( o -> "52".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+			List<BuildingRiskDetails> filterBurglary = buildings.stream().filter( o -> "52".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk) ).collect(Collectors.toList());
 			if(filterBurglary.size() > 0 ) {
 				BuildingRiskDetails build = filterBurglary.get(0);
 				buildingRes.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());
@@ -913,7 +925,7 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 			
 			// Fire And Material Damage
-			List<BuildingRiskDetails> filterFire = buildings.stream().filter( o -> "40".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+			List<BuildingRiskDetails> filterFire = buildings.stream().filter( o -> "40".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk)).collect(Collectors.toList());
 			if(filterFire.size() > 0 ) {
 				BuildingRiskDetails build = filterFire.get(0);
 				buildingRes.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());
@@ -924,7 +936,7 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 			
 			// Electronic Equipment
-			List<BuildingRiskDetails> filterElecEquip = buildings.stream().filter( o -> "39".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+			List<BuildingRiskDetails> filterElecEquip = buildings.stream().filter( o -> "39".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk)  ).collect(Collectors.toList());
 			if(filterElecEquip.size() > 0 ) {
 				BuildingRiskDetails build = filterElecEquip.get(0);
 				buildingRes.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?BigDecimal.ZERO :build.getElecEquipSuminsured());
@@ -964,10 +976,10 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			
 			buildList.add(buildingRes);
-			List<Object> totalList = new ArrayList<Object>(); 
+			
+			}
 			totalList.addAll(buildList);
 			totalList.addAll(paccGetResList);
-			
 			// Location Wise Details
 		//	List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
 			
