@@ -1643,7 +1643,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						dozerMapper.map(acc,res);
 						res.setInsuranceId(acc.getCompanyId());
 						res.setSectionId(filterData.get(0).getSectionId());
-						res.setVehicleId(acc.getRiskId().toString());
+//						res.setVehicleId(acc.getRiskId().toString());
+						res.setVehicleId(acc.getOriginalRiskId()!= null ? acc.getOriginalRiskId().toString() :  acc.getRiskId().toString()  );
 						
 						if (StringUtils.isNotBlank(acc.getOccupationDesc()))
 							res.setSectionName(filterData.get(0).getSectionName() + "~" + acc.getOccupationDesc());

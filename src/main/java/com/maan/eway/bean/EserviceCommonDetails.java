@@ -67,6 +67,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SECTION_ID", length=20)
     private String  sectionId ;
+    
+    @Id
+    @Column(name="ORIGINAL_RISK_ID" )
+    private Integer    originalRiskId ;
   
     @Column(name="OCCUPATION_TYPE", length=100)
     private String occupationType ;
