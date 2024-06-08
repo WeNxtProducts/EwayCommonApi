@@ -719,7 +719,13 @@ public class QuoteServiceImpl implements QuoteService {
 						
 						pacRes.setDocumentsTitle(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
 						pacRes.setLocationId(acc.getRiskId().toString());
-						pacRes.setLocationName(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
+//						pacRes.setLocationName(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
+						BuildingDetails buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(acc.getRequestReferenceNo(),risk,"1");
+						String LocationName="";
+						if(buildingList!=null) {
+							LocationName=buildingList.getLocationName();
+						}
+						buildingRes.setLocationName(LocationName);
 						pacRes.setRiskId(acc.getRiskId().toString());
 						pacRes.setSuminsured(acc.getSumInsured()==null?"" : acc.getSumInsured().toPlainString());
 						pacRes.setSectionId(StringUtils.isNotBlank(acc.getSectionId() ) ?  acc.getSectionId() :  "99999"  );

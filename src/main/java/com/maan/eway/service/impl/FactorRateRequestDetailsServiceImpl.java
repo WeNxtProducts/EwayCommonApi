@@ -1665,7 +1665,13 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setOriginalPolicyNo(acc.getOriginalPolicyNo());
 						res.setSourceType(acc.getSourceType());
 						res.setFinalizeYn(acc.getFinalizeYn());
-						
+						BuildingDetails buildingList =new BuildingDetails();
+						buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(buildData.getRequestReferenceNo(),buildData.getRiskId(),"1");
+						String LocationName="";
+						if(buildingList!=null) {
+							LocationName=buildingList.getLocationName();
+						}
+						res.setLocationName(LocationName);
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(acc, buildRes);
