@@ -52,8 +52,8 @@ public class ProductEmployeeDetails implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="QUOTE_NO", nullable=false, length=20)
+	/* @Id */
+    @Column(name="QUOTE_NO")
     private String     quoteNo ;
     
     @Id

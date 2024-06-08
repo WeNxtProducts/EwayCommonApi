@@ -29,7 +29,7 @@ public class ProductEmployeeDetailsId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private String     quoteNo ;
+  //  private String     quoteNo ;
 
     private Integer    riskId ;
 
