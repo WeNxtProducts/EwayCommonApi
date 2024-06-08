@@ -1763,7 +1763,7 @@ public class JasperCustomServiceImple {
 			imageURL.select(imageURLRoot.get("companyLogo")).where(cb.equal(imageURLRoot.get("companyId"), hpmRoot.get("companyId")),
 					cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
 			
-			cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+			cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("requestReferenceNo").alias("requestReferenceNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "")
 							.when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),
 									cb.concat(",", countryName)))))))).alias("address"),
@@ -1781,7 +1781,7 @@ public class JasperCustomServiceImple {
 			List<Tuple> list = em.createQuery(cq).getResultList();
 			if(!CollectionUtils.isEmpty(list)) {
 				Tuple map = list.get(0);
-				List<BuildingDetails> Blist = buildingDetRepo.findByQuoteNo(map.get("quoteNo").toString());
+				List<BuildingDetails> Blist = buildingDetRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
 				List<Map<String,Object>> locationDetails = Blist.stream().map(k ->{
 					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 					lmap.put("riskId", k.getRiskId());
