@@ -3351,7 +3351,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		List<String> sectionIds = selecteddata.stream().map(EserviceSectionDetails::getSectionId).collect(Collectors.toList());
 		requestrefno=selecteddata.get(0).getRequestReferenceNo();
           content=contentRepo.findByRequestReferenceNo(requestrefno);
-         //building = locRepo.findByQuoteNoOrderByRiskIdAsc("AICQ12207");
+         
          building = locRepo.findByRequestReferenceNo(requestrefno);
  		
 	      personalaccident=pacRepo.findByRequestReferenceNo(requestrefno);
@@ -3366,7 +3366,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 	   List<BuildingDetails> matchedContent = building.stream().filter(cc ->sectionIds.contains(cc.getSectionId())).collect(Collectors.toList());
        List<BuildingDetails> unmatchedContent = building.stream() .filter(cc ->!sectionIds.contains(cc.getSectionId())) .collect(Collectors.toList());
 	   matchedContent.forEach(cc -> { cc.setQuoteNo(quoteno); locRepo.save(cc);});
-	   unmatchedContent.forEach(cc -> locRepo.delete(cc)); }
+	   if(content==null || content.size()<0) {
+	   unmatchedContent.forEach(cc -> locRepo.delete(cc)); 
+	   }
+	   }
 		 
 	    if(personalaccident!=null && (personalaccident.size()>0)) {
 		   List<ProductEmployeeDetails> matchedContent = personalaccident.stream().filter(cc -> sectionIds.contains(cc.getSectionId())).collect(Collectors.toList());
