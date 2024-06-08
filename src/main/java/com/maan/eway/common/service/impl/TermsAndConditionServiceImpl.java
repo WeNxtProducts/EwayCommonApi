@@ -955,6 +955,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						SectionDataRes secRes = new SectionDataRes();
 
 						mapper.map(data, secRes);
+						secRes.setSectionName(data.getSectionName() != null ? data.getSectionName() : "" );
 
 						sectionDataList.add(secRes);
 					}

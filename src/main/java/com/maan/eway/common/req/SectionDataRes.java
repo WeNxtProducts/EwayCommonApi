@@ -12,7 +12,7 @@ public class SectionDataRes {
 	private String sectionId;
 	
 	@JsonProperty("SectionName")
-	private String sectionDesc;
+	private String sectionName;
 	
 	@JsonProperty("RiskId")
 	private String riskId;
