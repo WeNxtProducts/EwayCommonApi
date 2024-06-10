@@ -89,7 +89,7 @@ private static final long serialVersionUID = 1L;
     private String     nationalityId ;
     
     //--- ENTITY DATA FIELDS
-    
+    @Id
     @Column(name="REQUEST_REFERENCE_NO",  length=20)
     private String     requestReferenceNo;
     
@@ -114,7 +114,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS")
     private String status;
     
-    @Column(name="SALARY")
+    @Column(name="SALARY",updatable = false)
     private BigDecimal salary;
     
     @Temporal(TemporalType.TIMESTAMP)

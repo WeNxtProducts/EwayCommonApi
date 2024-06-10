@@ -44,4 +44,6 @@ public class ProductEmployeeDetailsId implements Serializable {
     private String     sectionId ;
     
     private Integer     locationId ;
+    
+    private String     requestReferenceNo ;
 }
