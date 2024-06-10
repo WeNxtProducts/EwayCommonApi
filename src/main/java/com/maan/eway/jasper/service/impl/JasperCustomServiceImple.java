@@ -1774,7 +1774,7 @@ public class JasperCustomServiceImple {
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("premiumLc")).otherwise(hpmRoot.get("premiumFc")).alias("premium"),
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),
-					icmRoot.get("signature").alias("signature"),lbmRoot.get("branchName").alias("place"),companyName.alias("companyName"),imageURL.alias("companylogo"),hpmRoot.get("companyId").alias("companyId"))
+					icmRoot.get("signature").alias("signature"),lbmRoot.get("branchName").alias("place"),companyName.alias("companyName"),imageURL.alias("companylogo"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("productId").alias("productId"))
 			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("agencyCode"), luiRoot.get("agencyCode")),cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
 					cb.equal(hpmRoot.get("loginId"), lbmRoot.get("loginId")),cb.equal(hpmRoot.get("companyId"), lbmRoot.get("companyId")),cb.equal(hpmRoot.get("branchCode"), lbmRoot.get("branchCode")),cb.equal(lbmRoot.get("status"), "Y"),
 					cb.equal(icmRoot.get("status"), "Y"),cb.between(cb.literal(new Date()), icmRoot.get("effectiveDateStart"), icmRoot.get("effectiveDateEnd")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("quoteNo"), QuoteNo));
@@ -1874,21 +1874,38 @@ public class JasperCustomServiceImple {
 			}
 			List<Map<String,Object>> sectionList = new ArrayList<Map<String,Object>>();
 			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
-			if("100004".equalsIgnoreCase(companyId)) {
-				sectList.forEach(k -> {
-					Map<String,Object> Smap = new HashMap<String,Object>();
-					Smap.put("sectionDesc", k.get("sectionDesc"));
-					Smap.put("coverDesc", k.get("coverDesc"));
-					Smap.put("sumInsured", k.get("sumInsured"));
-					Smap.put("rate", k.get("rate"));
-					Smap.put("premiumIncludedTaxLc", k.get("premiumIncludedTaxLc"));
-					Smap.put("premiumIncludedTaxFc", k.get("premiumIncludedTaxFc"));
-					Smap.put("premiumExcludedTaxLc", k.get("premiumExcludedTaxLc"));
-					Smap.put("premiumExcludedTaxFc", k.get("premiumExcludedTaxFc"));
-					sectionList.add(Smap);
-					result.put("occupationDesc", sectList.stream().filter(f -> f.get("occupationDesc") != null).map(m -> m.get("occupationDesc"))
-							.map(Object::toString).findAny().orElse(null));
-				});
+			if("100002".equalsIgnoreCase(companyId)) {
+				if("59".equals(map.get("productId").toString())) {
+					List<Map<String,Object>> secList = buildingDetRepo.getSectionDetails(QuoteNo);
+					if(secList!=null && secList.size()>0) {
+						secList.forEach(k -> {
+							LinkedHashMap<String,Object> Smap = new LinkedHashMap<String,Object>();
+							Smap.put("coverDesc", k.get("COVER_DESC")==null?"":k.get("COVER_DESC").toString());
+							Smap.put("locationName", k.get("LOCATION_NAME")==null?"":k.get("LOCATION_NAME").toString());
+							Smap.put("description", k.get("DESCRIPTION")==null?"":k.get("DESCRIPTION").toString());
+							Smap.put("rate", k.get("RATE")==null?null:k.get("RATE"));
+							Smap.put("sumInsured", k.get("SUM_INSURED")==null?null:k.get("SUM_INSURED"));
+							Smap.put("premiumExcludedTaxLc", k.get("PREMIUM_EXCLUDED_TAX_LC")==null?null:k.get("PREMIUM_EXCLUDED_TAX_LC"));
+							sectionList.add(Smap);
+						});
+					}
+				}
+				}else if("100004".equalsIgnoreCase(companyId)){
+					sectList.forEach(k -> {
+						Map<String,Object> Smap = new HashMap<String,Object>();
+						Smap.put("sectionDesc", k.get("sectionDesc"));
+						Smap.put("coverDesc", k.get("coverDesc"));
+						Smap.put("sumInsured", k.get("sumInsured"));
+						Smap.put("rate", k.get("rate"));
+						Smap.put("premiumIncludedTaxLc", k.get("premiumIncludedTaxLc"));
+						Smap.put("premiumIncludedTaxFc", k.get("premiumIncludedTaxFc"));
+						Smap.put("premiumExcludedTaxLc", k.get("premiumExcludedTaxLc"));
+						Smap.put("premiumExcludedTaxFc", k.get("premiumExcludedTaxFc"));
+						Smap.put("vehicleId",k.get("vehicleId"));
+						sectionList.add(Smap);
+						result.put("occupationDesc", sectList.stream().filter(f -> f.get("occupationDesc") != null).map(m -> m.get("occupationDesc"))
+								.map(Object::toString).findAny().orElse(null));
+					});
 			}else {
 				Map<Object, List<Map<String,Object>>> sectionRes = sectList.stream().collect(Collectors.groupingBy(g -> g.get("sectionDesc"),Collectors.mapping(v ->{
 					Map<String,Object> Smap = new HashMap<String,Object>();
@@ -1967,6 +1984,8 @@ public class JasperCustomServiceImple {
 				coverMap.put("coverValue", CDEntry.getValue());
 				coverMap.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 				coverMap.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
+				coverMap.put("productId", map.get("productId")==null?"":map.get("productId").toString());
+				coverMap.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
 				coverageDetails.add(coverMap);
 			}
 			
@@ -2008,6 +2027,8 @@ public class JasperCustomServiceImple {
 			result.put("place", map.get("place")==null?"":map.get("place").toString());
 			result.put("companyName", map.get("companyName")==null?"":map.get("companyName").toString());
 			result.put("companylogo", map.get("companylogo")==null?"":map.get("companylogo").toString());
+			result.put("productId", map.get("productId")==null?"":map.get("productId").toString());
+			result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
 			result.put("taxName", map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":"Vat");
 			result.put("sectionDetails", sectionList);
 			result.put("locationDetails", locationDetails);
