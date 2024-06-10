@@ -1675,7 +1675,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(acc, buildRes);
-						buildRes.setPolicyNo(StringUtils.isBlank(acc.getOriginalPolicyNo()) ? acc.getPolicyNo() : acc.getOriginalPolicyNo() ); 
+						buildRes.setPolicyNo(StringUtils.isBlank(acc.getOriginalPolicyNo()) ? acc.getPolicyNo() : acc.getOriginalPolicyNo() );
+						buildRes.setLocationName(LocationName);
 						//	buildRes.setSectionName(sec.getSectionDesc());
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
@@ -1730,6 +1731,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						dozerMapper.map(buildData, buildRes);
 						buildRes.setPolicyNo(StringUtils.isBlank(buildData.getOriginalPolicyNo()) ? buildData.getPolicyNo() : buildData.getOriginalPolicyNo() ); 
 					//	buildRes.setSectionName(sec.getSectionDesc());
+						buildRes.setLocationName(LocationName);
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
 						if(buildData.getEndorsementType()!=null) {
