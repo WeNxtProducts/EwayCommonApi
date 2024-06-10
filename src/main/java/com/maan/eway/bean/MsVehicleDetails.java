@@ -333,6 +333,10 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name="LOSS_RATIO")
 	private Double lossRatio;
+	
+
+	@Column(name = "PREVIOUS_INSURANCE_YN")
+	private String previousInsuranceYN;
 }
 
 
