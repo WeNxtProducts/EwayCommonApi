@@ -9,8 +9,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -764,7 +766,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		try {
 			
 			if(req == null ||  StringUtils.isBlank(req.getCompanyId()) ||  StringUtils.isBlank(req.getProductId()) 
-					||  StringUtils.isBlank(req.getSectionId()) ) {
+					||  StringUtils.isBlank(req.getSectionId()) ||   StringUtils.isBlank(req.getRequestReferenceNo())  ||   StringUtils.isBlank(req.getBranchCode())  ) {
 				
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
@@ -793,10 +795,84 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			 List<ExclusionMaster> list2 = null ;
 			 List<WarrantyMaster> list3 = null ;
 			 
-			 
+				
+				List<TermsAndCondition> datas1 = termsRepo
+						.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRequestReferenceNoOrderBySnoAsc(req.getCompanyId(),
+								req.getBranchCode(), req.getProductId(), req.getSectionId(), req.getRequestReferenceNo() );
+				
+				if(null != datas1 &&  !datas1.isEmpty()) {
+				
+					
+					List<TermsAndCondition> filterWarrantyList = datas1.stream().filter( o -> o.getId().equals(4) ).collect(Collectors.toList());
+					List<TermsAndCondition> filterClausesList = datas1.stream().filter( o -> o.getId().equals(6) ).collect(Collectors.toList());
+					List<TermsAndCondition> filterExclusionList = datas1.stream().filter( o -> o.getId().equals(7) ).collect(Collectors.toList());
+	
+								
+					if (null != filterWarrantyList && !filterWarrantyList.isEmpty() ) {
+						
+						for (TermsAndCondition warranties : filterWarrantyList) {
+							WarrantyRes warrantyres = new WarrantyRes();
+							warrantyres.setId(null != warranties.getId() ? warranties.getId().toString() : "");
+							warrantyres.setSubId(null != warranties.getSubId() ? warranties.getSubId().toString() : "");
+							warrantyres.setSubIdDesc(warranties.getSubIdDesc());
+							warrantyres.setDocRefNo(warranties.getDocRefNo());
+							warrantyres.setDocumentId("16");
+							warrantyres.setTypeId(warranties.getTypeId());
+							warrantyres.setSectionId(warranties.getSectionId() != null ? warranties.getSectionId() : ""  );
+							warrantyres.setCoverId(null);
+
+							warrantyresList.add(warrantyres);
+							
+						}
+						
+						res.setWarrantyRes(warrantyresList);
+					}
+				
+				
+					if (null != filterClausesList && !filterClausesList.isEmpty() ) {
+					
+					for (TermsAndCondition clauses : filterClausesList) {
+						ClausesRes clausesres = new ClausesRes();
+						clausesres.setId(clauses.getId() != null ? clauses.getId().toString() : "" );
+
+						clausesres.setSubId(null != clauses.getId() ? clauses.getId().toString() : "");
+						clausesres.setSubIdDesc(clauses.getSubIdDesc());
+						clausesres.setDocRefNo(clauses.getDocRefNo());
+						clausesres.setDocumentId("18");
+						clausesres.setSectionId(clauses.getSectionId() != null ?  clauses.getSectionId() :  "" );
+						clausesres.setTypeId(clauses.getTypeId());
+						clausesres.setCoverId(null );
+						clausesresList.add(clausesres);
+						
+					
+					
+				}res.setClausesRes(clausesresList);
+				
+					}
+				
+					if (null != filterExclusionList && !filterExclusionList.isEmpty() ) {
+						
+						for (TermsAndCondition exclusions : filterExclusionList) {
+							ExclusionRes exclusionres = new ExclusionRes();
+							exclusionres.setId(exclusions.getId() != null ? exclusions.getId().toString() : "" );
+							exclusionres.setSubId(exclusions.getSubId() != null ?  exclusions.getSubId().toString() : "");
+							exclusionres.setSubIdDesc(exclusions.getSubIdDesc());
+							exclusionres.setDocRefNo(exclusions.getDocRefNo());
+							exclusionres.setDocumentId("19");
+							exclusionres.setTypeId(exclusions.getTypeId());
+							exclusionres.setSectionId(exclusions.getSectionId() != null ? exclusions.getSectionId() : "" );
+							exclusionres.setCoverId(null);
+							exclusionresList.add(exclusionres);
+							
+
+						
+					}
+						
+						res.setExclusionRes(exclusionresList);
+				}
 		
 			
-			 
+				}else {
 			
 			   if(null != req && null != req.getCoverIds() && !req.getCoverIds().isEmpty() ) {
 				   
@@ -932,7 +1008,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 								res.setExclusionRes(exclusionresList);
 						}
 							
-							
+				}	
 							
 							data.setCommonResponse(res);
 							data.setErrorMessage(Collections.emptyList());
@@ -955,6 +1031,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 	@Override
 	public ResponseEntity<CommonRes> fetchSectionsBasedOnRisk(String requestReferenceNo  , Integer riskId){
 		
+
+		
 		CommonRes res = new CommonRes();
 		List<SectionDataRes> sectionDataList = new ArrayList<>();
 		
@@ -962,28 +1040,32 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			
 			List<EserviceBuildingDetails> list = buildRepo
 					.findAllByRequestReferenceNoAndRiskId(requestReferenceNo, riskId);
+			
 
 			if (riskId != null && riskId == 1) {
-
+							
 				List<EserviceCommonDetails> commonList = commonRepo.findByRequestReferenceNo(requestReferenceNo);
-
+			
 				if (null != commonList && !commonList.isEmpty()) {
 					
-					
-					DozerBeanMapper mapper = new DozerBeanMapper();
+					Set<String> sectionList = new HashSet<String>();
+
+					DozerBeanMapper mapper = new DozerBeanMapper();					
 
 					for (EserviceCommonDetails data : commonList) {
-
+												
 						if (StringUtils.isNotBlank(data.getSectionId())) {
-
+							
+							
 							
 						     if ((data.getSectionId().equals("35") && data.getSumInsured() == null)
 									|| (data.getSectionId().equals("36") && data.getSumInsured() == null)) {
 
 								continue;
 							}
-						}
 						
+						
+					if (sectionList.add(data.getSectionId())) {
 
 						SectionDataRes secRes = new SectionDataRes();
 
@@ -992,9 +1074,10 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 						sectionDataList.add(secRes);
 					}
-					
-
 				}
+			}
+
+		}
 			}
 			
 			
@@ -1002,10 +1085,13 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			if (null != list && !list.isEmpty()) {
 
 				DozerBeanMapper mapper = new DozerBeanMapper();
+				
+				Set<String> sectionList = new HashSet<String>();
 
 				for (EserviceBuildingDetails data : list) {
 
 					if (StringUtils.isNotBlank(data.getSectionId())) {
+						
 
 						if (data.getSectionId().equals("0")) {
 							continue;
@@ -1016,8 +1102,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							continue;
 
 						}
-					}
 					
+					if (sectionList.add(data.getSectionId())) {
 
 					SectionDataRes secRes = new SectionDataRes();
 
@@ -1025,7 +1111,10 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					secRes.setSectionName(data.getSectionDesc() != null ? data.getSectionDesc() : "" );
 
 					sectionDataList.add(secRes);
+
 				}
+					}
+			}
 				
 				res.setCommonResponse(sectionDataList);
 				res.setErrorMessage(null);
