@@ -792,11 +792,21 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			 List<ClausesMaster>  list = null;
 			 List<ExclusionMaster> list2 = null ;
 			 List<WarrantyMaster> list3 = null ;
+			 
+			 
+		
+			
+			 
 			
 			   if(null != req && null != req.getCoverIds() && !req.getCoverIds().isEmpty() ) {
 				   
 				  // warranty and Exclusion Not based On cover Ids 
 					   
+				   if("99999".equals( req.getSectionId())  ) {             // Hold 				 
+						
+					 }
+				   
+				   
 				   list3 = warrantyRepo
 							.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
 									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
@@ -816,6 +826,27 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				 
 				   
 				} else {
+					
+					
+					
+					 if("99999".equals( req.getSectionId())  ) {
+						 
+						 list3 = warrantyRepo
+									.findAllByCompanyIdAndBranchCodeAndProductIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+											req.getCompanyId(),  "99999", req.getProductId(), 
+											today, todayEnd, "Y");
+
+							list = clausesRepo
+									.findAllByCompanyIdAndBranchCodeAndProductIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+											req.getCompanyId(),  "99999", req.getProductId(),
+											today, todayEnd, "Y");
+
+							list2 = exclusionRepo
+									.findAllByCompanyIdAndBranchCodeAndProductIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+											req.getCompanyId(),  "99999", req.getProductId(), 
+											today, todayEnd, "Y"); 
+							
+					 }else {
 
 					list3 = warrantyRepo
 							.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
@@ -831,6 +862,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
 									req.getCompanyId(),  "99999", req.getProductId(), req.getSectionId(),
 									today, todayEnd, "Y");
+					
+					 }
 
 				}
 						
@@ -989,6 +1022,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					SectionDataRes secRes = new SectionDataRes();
 
 					mapper.map(data, secRes);
+					secRes.setSectionName(data.getSectionDesc() != null ? data.getSectionDesc() : "" );
 
 					sectionDataList.add(secRes);
 				}

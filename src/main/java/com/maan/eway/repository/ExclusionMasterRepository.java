@@ -31,4 +31,8 @@ public interface ExclusionMasterRepository extends JpaRepository<ExclusionMaster
 			String companyId, String branchCode, String productId, String sectionId, Date today, Date todayEnd,
 			String string);
 
+
+	List<ExclusionMaster> findAllByCompanyIdAndBranchCodeAndProductIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+			String companyId, String string, String productId, Date today, Date todayEnd, String string2);
+
 }
