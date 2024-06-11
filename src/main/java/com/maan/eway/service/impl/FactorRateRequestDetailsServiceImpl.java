@@ -1666,7 +1666,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setSourceType(acc.getSourceType());
 						res.setFinalizeYn(acc.getFinalizeYn());
 						BuildingDetails buildingList =new BuildingDetails();
-						buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(acc.getRequestReferenceNo(),acc.getRiskId(),"1");
+						buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(acc.getRequestReferenceNo(),acc.getOriginalRiskId(),"1");
 						String LocationName="";
 						if(buildingList!=null) {
 							LocationName=buildingList.getLocationName();
