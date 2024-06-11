@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import com.maan.eway.bean.SeqPolicyno;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import java.math.BigDecimal;
 /**
  * <h2>SeqPolicynoRepository</h2>
  *
