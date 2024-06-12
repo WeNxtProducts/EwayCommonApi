@@ -249,7 +249,8 @@ public class JasperServiceImpl implements JasperService {
 					}else {
 						String obj[] =new String[2];
 						obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
-						obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";		 // for linux system
+						obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
+						obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml"; // for linux system
 						for(String s :obj) {
 							String jrxml_path=s.replace(".jasper", ".jrxml");
 							String path = JasperCompileManager.compileReportToFile(jrxml_path);
