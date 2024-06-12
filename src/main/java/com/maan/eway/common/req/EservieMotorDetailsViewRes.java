@@ -167,4 +167,7 @@ public class EservieMotorDetailsViewRes {
 	 
 	 @JsonProperty("FinalizeYn")
 	 private String finalizeYn;
+	 
+	 @JsonProperty("OriginalRiskId")
+	 private String originalRiskId;
 }

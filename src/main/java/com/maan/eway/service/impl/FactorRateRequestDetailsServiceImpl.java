@@ -1205,7 +1205,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 			// Find Covers
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
-		
+			
+			
 			// Master Referals
 			List<MasterReferralDetails> findMasterRefrals = masReferralRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			// Uw Referals
@@ -1213,7 +1214,6 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 			//Response 
 			for (EservieMotorDetailsViewRes res : resList ) {
-				
 			
 				// Set Covers
 				List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
@@ -1257,7 +1257,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				res.setCoverList(coverListRes);
 				res.setUwList(uwReferals);
 				res.setReferals(masterreferrals);
-				
+				res.setVehicleId(res.getOriginalRiskId() != null ? res.getOriginalRiskId() :  res.getVehicleId() );			
 				// Emi Details 
 				List<HomePositionMaster> homeData  =  homeRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 				if(homeData!=null && homeData.size()>0) {
@@ -1649,6 +1649,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setInsuranceId(acc.getCompanyId());
 						res.setSectionId(filterData.get(0).getSectionId());
 						res.setVehicleId(acc.getRiskId().toString());
+						res.setOriginalRiskId(acc.getOriginalRiskId()!= null ? acc.getOriginalRiskId().toString() :  "" );
 					//	res.setVehicleId(acc.getOriginalRiskId()!= null ? acc.getOriginalRiskId().toString() :  acc.getRiskId().toString()  );
 						
 						if (StringUtils.isNotBlank(acc.getOccupationDesc()))
