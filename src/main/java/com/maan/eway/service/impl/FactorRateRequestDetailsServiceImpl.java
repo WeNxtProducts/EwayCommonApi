@@ -1205,6 +1205,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 			// Find Covers
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+		
 			// Master Referals
 			List<MasterReferralDetails> findMasterRefrals = masReferralRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			// Uw Referals
@@ -1213,6 +1214,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			//Response 
 			for (EservieMotorDetailsViewRes res : resList ) {
 				
+			
 				// Set Covers
 				List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
 						o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId()) ).collect(Collectors.toList());
@@ -1566,10 +1568,12 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 
 						if (null == building || building .size()<=0) {
 
-							EserviceCommonDetails common = eserCommonRepo.findAllByRequestReferenceNoAndSectionId(
+							List<EserviceCommonDetails> commonList = eserCommonRepo.findByRequestReferenceNoAndSectionId(
 									req.getRequestReferenceNo(), sec);
 
-							if (null != common) {
+							if (null != commonList && !commonList.isEmpty()){
+								
+								for( EserviceCommonDetails  common :  commonList) {
 
 								if (null == common.getSumInsured() && StringUtils.isNotBlank(common.getSectionId())
 										&& common.getSectionId().equals("35")) {
@@ -1582,6 +1586,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 									continue;
 								}
 							}
+						}
 
 						} else {
 
@@ -1643,8 +1648,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						dozerMapper.map(acc,res);
 						res.setInsuranceId(acc.getCompanyId());
 						res.setSectionId(filterData.get(0).getSectionId());
-//						res.setVehicleId(acc.getRiskId().toString());
-						res.setVehicleId(acc.getOriginalRiskId()!= null ? acc.getOriginalRiskId().toString() :  acc.getRiskId().toString()  );
+						res.setVehicleId(acc.getRiskId().toString());
+					//	res.setVehicleId(acc.getOriginalRiskId()!= null ? acc.getOriginalRiskId().toString() :  acc.getRiskId().toString()  );
 						
 						if (StringUtils.isNotBlank(acc.getOccupationDesc()))
 							res.setSectionName(filterData.get(0).getSectionName() + "~" + acc.getOccupationDesc());
