@@ -1873,23 +1873,33 @@ public class JasperCustomServiceImple {
 				}
 			}
 			List<Map<String,Object>> sectionList = new ArrayList<Map<String,Object>>();
+			List<Map<String,Object>> domsticSecList = new ArrayList<Map<String,Object>>();
 			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
 			if("100002".equalsIgnoreCase(companyId)) {
 				if("59".equals(map.get("productId").toString())) {
 					List<Map<String,Object>> secList = buildingDetRepo.getSectionDetails(QuoteNo);
 					if(secList!=null && secList.size()>0) {
-						secList.forEach(k -> {
-							LinkedHashMap<String,Object> Smap = new LinkedHashMap<String,Object>();
-							Smap.put("coverDesc", k.get("COVER_DESC")==null?"":k.get("COVER_DESC").toString());
-							Smap.put("locationName", k.get("LOCATION_NAME")==null?"":k.get("LOCATION_NAME").toString());
-							Smap.put("description", k.get("DESCRIPTION")==null?"":k.get("DESCRIPTION").toString());
-							Smap.put("rate", k.get("RATE")==null?null:k.get("RATE"));
-							Smap.put("sumInsured", k.get("SUM_INSURED")==null?null:k.get("SUM_INSURED"));
-							Smap.put("premiumExcludedTaxLc", k.get("PREMIUM_EXCLUDED_TAX_LC")==null?null:k.get("PREMIUM_EXCLUDED_TAX_LC"));
-							sectionList.add(Smap);
-						});
+					Map<Object, List<Map<String,Object>>> groupSecList = secList.stream().collect(Collectors.groupingBy(d -> d.get("SECTION_ID"),Collectors.mapping(k-> {
+						Map<String,Object> Smap = new HashMap<String,Object>();
+						Smap.put("coverDesc", k.get("SECTION_DESC")==null?"":k.get("SECTION_DESC").toString());
+						Smap.put("locationName", k.get("LOCATION_NAME")==null?"":k.get("LOCATION_NAME").toString());
+						Smap.put("description", k.get("DESCRIPTION")==null?"":k.get("DESCRIPTION").toString());
+						Smap.put("rate", k.get("RATE")==null?null:k.get("RATE"));
+						Smap.put("sumInsured", k.get("SUM_INSURED")==null?null:k.get("SUM_INSURED"));
+						Smap.put("premiumExcludedTaxLc", k.get("PREMIUM")==null?null:k.get("PREMIUM"));
+						return Smap;
+					},Collectors.toList())));
+
+					for (Map.Entry<Object, List<Map<String, Object>>> entry : groupSecList.entrySet()) {
+						Map<String, Object> sectionMap = new HashMap<String, Object>();
+						sectionMap.put("sectionKey", entry.getKey().equals(1)?"Building":entry.getKey().equals(47)?"Content":entry.getKey().equals(3)?"ALL Risk":entry.getKey());
+						sectionMap.put("sectionValue", entry.getValue());
+						sectionMap.put("productId", map.get("productId")==null?"":map.get("productId").toString());
+						sectionMap.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
+						sectionList.add(sectionMap);
 					}
 				}
+			}
 				}else if("100004".equalsIgnoreCase(companyId)){
 					sectList.forEach(k -> {
 						Map<String,Object> Smap = new HashMap<String,Object>();
@@ -1967,12 +1977,39 @@ public class JasperCustomServiceImple {
 				//WARRANTY
 				List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 				
-				List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
-				coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
-				coverMap.put("contentList", contentList);
-				coverMap.put("employeeList", employeeList);
-				coverMap.put("termsAndconditions", termsAndconditions);
-				coverageList.add(coverMap);
+				if("100002".equalsIgnoreCase(companyId) && "59".equals(map.get("productId").toString())) {
+					List<Map<String,Object>> dsectionList = new ArrayList<Map<String,Object>>();
+					String sectionDesc = sectionId.equals("1")?"Building":sectionId.equals("3")?"ALL Risk":sectionId.equals("47")?"Content":sectionId;
+					Map<String,Object> Smap = new HashMap<String,Object>();
+					Smap.put("Condition : "+sectionDesc, conditionList);
+					Smap.put("Exclusion : "+sectionDesc, exclusionList);
+					Smap.put("Warranty : "+sectionDesc, warrantyList);
+					
+					for(Map.Entry<String, Object> q: Smap.entrySet()) {
+						Map<String,Object> qmap = new HashMap<>();
+						qmap.put("conditionKey", q.getKey());
+						qmap.put("conditionValue", q.getValue());
+						dsectionList.add(qmap);
+					}
+					
+					
+						domsticSecList.addAll(sectionList.stream()
+								.filter(f -> f.get("sectionKey").toString().toLowerCase().trim().contains(sectionDesc.toLowerCase().trim()))
+								.map(m -> {
+									Map<String,Object> cfmap = new HashMap<>(m);
+									if(m.get("sectionKey").toString().toLowerCase().trim().contains(sectionDesc.toLowerCase().trim())) {
+										cfmap.put("sectionCondition", dsectionList);
+									}
+									return cfmap;
+								}).collect(Collectors.toList()));
+				}else {
+					List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+					coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
+					coverMap.put("contentList", contentList);
+					coverMap.put("employeeList", employeeList);
+					coverMap.put("termsAndconditions", termsAndconditions);
+					coverageList.add(coverMap);
+				}
 			}
 			
 			Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream().collect(Collectors.groupingBy(k -> k.get("sectionDesc"), Collectors.toList()));
@@ -2030,7 +2067,11 @@ public class JasperCustomServiceImple {
 			result.put("productId", map.get("productId")==null?"":map.get("productId").toString());
 			result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
 			result.put("taxName", map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":"Vat");
-			result.put("sectionDetails", sectionList);
+			if ("100002".equalsIgnoreCase(companyId) && "59".equals(map.get("productId").toString())) {
+			    result.put("sectionDetails", domsticSecList);
+			} else {
+			    result.put("sectionDetails", sectionList);
+			}
 			result.put("locationDetails", locationDetails);
 			result.put("coverageDetails", coverageDetails);
 			result.put("attachMents", attachments);

@@ -27,7 +27,7 @@ public interface BuildingDetailsRepository extends JpaRepository<BuildingDetails
 
 	List<BuildingDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 
-	@Query(value = "SELECT PD.COVER_DESC, BD.LOCATION_NAME, ( SELECT CONTENT_RISK_DESC FROM content_and_risk WHERE REQUEST_REFERENCE_NO = PD.REQUEST_REFERENCE_NO AND RISK_ID = PD.VEHICLE_ID AND SECTION_ID = PD.SECTION_ID ) AS DESCRIPTION, PD.RATE, PD.SUM_INSURED,PD.PREMIUM_EXCLUDED_TAX_LC FROM POLICY_COVER_DATA PD, building_details BD WHERE PD.TAX_ID = '0' AND PD.DISC_LOAD_ID = '0' AND PD.SUB_COVER_ID = '0' AND PD.VEHICLE_ID = BD.RISK_ID AND PD.Request_reference_no = BD.Request_reference_no AND PD.QUOTE_NO = ?1",nativeQuery = true)
+	@Query(value = "SELECT   PD.section_id,   PD.COVER_DESC AS SECTION_DESC,   BD.LOCATION_NAME,   NULL AS DESCRIPTION,   PD.RATE,   PD.SUM_INSURED,   PD.PREMIUM_EXCLUDED_TAX_LC AS PREMIUM FROM   POLICY_COVER_DATA PD   INNER JOIN building_details BD ON PD.VEHICLE_ID = BD.RISK_ID   AND PD.Request_reference_no = BD.Request_reference_no WHERE   PD.TAX_ID = '0'   AND PD.DISC_LOAD_ID = '0'   AND PD.SUB_COVER_ID = '0'   AND PD.SECTION_ID NOT IN ('47', '3')   AND PD.QUOTE_NO = ?1 UNION ALL SELECT   PD.section_id,   cr.SECTION_DESC,   cr.location_name,   cr.content_risk_desc AS DESCRIPTION,   pd.rate,   cr.sum_insured,   PD.PREMIUM_EXCLUDED_TAX_LC AS PREMIUM FROM   CONTENT_AND_RISK cr CROSS   JOIN policy_cover_data pd WHERE   cr.QUOTE_NO = ?1   AND cr.risk_id = pd.vehicle_id   AND cr.section_id = pd.section_id   AND cr.request_reference_no = pd.request_reference_no   AND pd.tax_id = '0'   AND pd.disc_load_id = '0'",nativeQuery = true)
 	List<Map<String, Object>> getSectionDetails(String quoteNo);
 	
 
