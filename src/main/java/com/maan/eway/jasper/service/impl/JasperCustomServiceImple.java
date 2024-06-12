@@ -1873,7 +1873,7 @@ public class JasperCustomServiceImple {
 				}
 			}
 			List<Map<String,Object>> sectionList = new ArrayList<Map<String,Object>>();
-			List<Map<String,Object>> domsticSecList = new ArrayList<Map<String,Object>>();
+			List<Map<String,Object>> coverageDetails = new ArrayList<Map<String,Object>>();
 			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
 			if("100002".equalsIgnoreCase(companyId)) {
 				if("59".equals(map.get("productId").toString())) {
@@ -1991,9 +1991,12 @@ public class JasperCustomServiceImple {
 						qmap.put("conditionValue", q.getValue());
 						dsectionList.add(qmap);
 					}
+					coverMap.put("AllConditions", dsectionList);
+					coverMap.put("productId", map.get("productId")==null?"":map.get("productId").toString());
+					coverMap.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
+					coverageDetails.add(coverMap);
 					
-					
-						domsticSecList.addAll(sectionList.stream()
+						/*domsticSecList.addAll(sectionList.stream()
 								.filter(f -> f.get("sectionKey").toString().toLowerCase().trim().contains(sectionDesc.toLowerCase().trim()))
 								.map(m -> {
 									Map<String,Object> cfmap = new HashMap<>(m);
@@ -2001,7 +2004,7 @@ public class JasperCustomServiceImple {
 										cfmap.put("sectionCondition", dsectionList);
 									}
 									return cfmap;
-								}).collect(Collectors.toList()));
+								}).collect(Collectors.toList()));*/
 				}else {
 					List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
 					coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
@@ -2013,7 +2016,6 @@ public class JasperCustomServiceImple {
 			}
 			
 			Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream().collect(Collectors.groupingBy(k -> k.get("sectionDesc"), Collectors.toList()));
-			List<Map<String,Object>> coverageDetails = new ArrayList<Map<String,Object>>();
 			for(Map.Entry<Object, List<Map<String,Object>>> CDEntry : groupBycoverageDetails.entrySet()) {
 				LinkedHashMap<String, Object> coverMap = new LinkedHashMap<String, Object>();
 				coverMap.put("coverId", Slist.stream().filter(f -> f.get("sectionDesc").equals(CDEntry.getKey())).map(m -> m.get("sectionId")).findFirst().orElse(""));
@@ -2067,11 +2069,7 @@ public class JasperCustomServiceImple {
 			result.put("productId", map.get("productId")==null?"":map.get("productId").toString());
 			result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
 			result.put("taxName", map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":"Vat");
-			if ("100002".equalsIgnoreCase(companyId) && "59".equals(map.get("productId").toString())) {
-			    result.put("sectionDetails", domsticSecList);
-			} else {
-			    result.put("sectionDetails", sectionList);
-			}
+			result.put("sectionDetails", sectionList);
 			result.put("locationDetails", locationDetails);
 			result.put("coverageDetails", coverageDetails);
 			result.put("attachMents", attachments);

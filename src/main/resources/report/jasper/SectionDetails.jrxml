@@ -546,15 +546,5 @@
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="15">
-			<printWhenExpression><![CDATA[($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
-			<subreport>
-				<reportElement x="0" y="0" width="555" height="15" uuid="2fc332df-bf7c-4847-b0c3-9b8503bb6376">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("sectionCondition")]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{pvSubReportPath}+"DomesticConditions.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
 	</detail>
 </jasperReport>

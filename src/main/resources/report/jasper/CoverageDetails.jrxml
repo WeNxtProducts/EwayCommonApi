@@ -102,6 +102,7 @@
 			<fieldDescription><![CDATA[conditionTerms]]></fieldDescription>
 		</field>
 	</subDataset>
+	<parameter name="pvSubReportPath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[coverageDetails]]>
 	</queryString>
@@ -125,8 +126,18 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
 		<fieldDescription><![CDATA[policyNo]]></fieldDescription>
 	</field>
-	<field name="companyId" class="java.lang.String"/>
-	<field name="productId" class="java.lang.String"/>
+	<field name="companyId" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyId"/>
+		<fieldDescription><![CDATA[companyId]]></fieldDescription>
+	</field>
+	<field name="productId" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="productId"/>
+		<fieldDescription><![CDATA[productId]]></fieldDescription>
+	</field>
+	<field name="AllConditions" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="AllConditions"/>
+		<fieldDescription><![CDATA[AllConditions]]></fieldDescription>
+	</field>
 	<detail>
 		<band height="11">
 			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
@@ -405,8 +416,11 @@
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="19"/>
+		<band height="19">
+			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
+		</band>
 		<band height="25">
+			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
 			<textField>
 				<reportElement x="0" y="-10" width="400" height="15" uuid="a5c99c2a-2cb2-4cbf-aa7d-3153345c09ad">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -446,6 +460,16 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
+		</band>
+		<band height="15">
+			<printWhenExpression><![CDATA[($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="528" height="15" uuid="c70a4c70-72ce-41c7-812f-f4af6102685d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("AllConditions")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{pvSubReportPath}+"DomesticConditions.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</detail>
 </jasperReport>

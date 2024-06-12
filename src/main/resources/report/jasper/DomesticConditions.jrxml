@@ -85,7 +85,7 @@
 		</field>
 	</subDataset>
 	<queryString language="json">
-		<![CDATA[sectionDetails.sectionCondition]]>
+		<![CDATA[coverageDetails.AllConditions]]>
 	</queryString>
 	<field name="conditionKey" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="conditionKey"/>
