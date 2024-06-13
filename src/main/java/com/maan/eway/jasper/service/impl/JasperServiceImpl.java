@@ -247,10 +247,10 @@ public class JasperServiceImpl implements JasperService {
 						input2.put("policyNo", EwaySchedule.get("policyNo"));
 						res = getCommonJasperPdfFileByJson("/report/jasper/MadisonSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- MadisonSchedule.json");
 					}else {
-						String obj[] =new String[2];
+						String obj[] =new String[3];
 						obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
 						obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
-						obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml"; // for linux system
+						obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml"; // for linux system
 						for(String s :obj) {
 							String jrxml_path=s.replace(".jasper", ".jrxml");
 							String path = JasperCompileManager.compileReportToFile(jrxml_path);
