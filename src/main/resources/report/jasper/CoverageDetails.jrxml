@@ -140,13 +140,11 @@
 	</field>
 	<detail>
 		<band height="11">
-			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
 			<break>
 				<reportElement x="0" y="10" width="595" height="1" uuid="f5f85b99-61f6-4e97-ba5e-6635f4b3a61f"/>
 			</break>
 		</band>
 		<band height="15" splitType="Stretch">
-			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
 			<textField>
 				<reportElement x="0" y="0" width="555" height="15" uuid="cdc52cc7-a606-416a-b6c6-606c93ffd1b2">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -164,7 +162,6 @@
 			</textField>
 		</band>
 		<band height="15">
-			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
 			<textField>
 				<reportElement x="279" y="0" width="276" height="15" uuid="bbf6f914-68ed-4cf6-90c3-9d6eabf057e7">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -195,7 +192,6 @@
 			</textField>
 		</band>
 		<band height="15">
-			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="45" y="0" width="449" height="15" uuid="320b42d3-eff7-4605-951a-085be1e82f3e">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -306,7 +302,6 @@
 			</componentElement>
 		</band>
 		<band height="15">
-			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="45" y="0" width="449" height="15" uuid="5affe143-59d1-4e12-8f4c-3790c9b717d7">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -416,11 +411,8 @@
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="19">
-			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
-		</band>
+		<band height="19"/>
 		<band height="25">
-			<printWhenExpression><![CDATA[!($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
 			<textField>
 				<reportElement x="0" y="-10" width="400" height="15" uuid="a5c99c2a-2cb2-4cbf-aa7d-3153345c09ad">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -460,16 +452,6 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
-		</band>
-		<band height="15">
-			<printWhenExpression><![CDATA[($F{companyId}.equalsIgnoreCase("100002") && $F{productId}.equalsIgnoreCase("59"))]]></printWhenExpression>
-			<subreport>
-				<reportElement x="0" y="0" width="528" height="15" uuid="c70a4c70-72ce-41c7-812f-f4af6102685d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("AllConditions")]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{pvSubReportPath}+"DomesticConditions.jasper"]]></subreportExpression>
-			</subreport>
 		</band>
 	</detail>
 </jasperReport>

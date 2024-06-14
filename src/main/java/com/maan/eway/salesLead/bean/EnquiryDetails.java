@@ -1,4 +1,4 @@
-package com.maan.eway.bean;
+package com.maan.eway.salesLead.bean;
 
 import java.io.Serializable;
 import java.util.Date;

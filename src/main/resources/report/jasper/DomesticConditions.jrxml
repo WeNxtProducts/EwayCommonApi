@@ -1,43 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomesticConditions" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0f95842a-f4ed-4742-aecb-922dffa23d86">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomesticConditions" pageWidth="185" pageHeight="842" columnWidth="185" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0f95842a-f4ed-4742-aecb-922dffa23d86">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
-	<property name="com.jaspersoft.studio.unit." value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
 	<style name="Crosstab_CH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.0" lineColor="#FFFFFF"/>
@@ -74,14 +38,45 @@
 			<rightPen lineWidth="0.0" lineColor="#FFFFFF"/>
 		</box>
 	</style>
-	<subDataset name="AllConditions" uuid="f9802e40-ede1-4ef9-86bd-497f3bfb03bb">
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="condition" uuid="c69b3419-4054-4d66-ac58-4b1055e01f82">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 		<queryString language="json">
-			<![CDATA[sectionDetails.sectionCondition.conditionValue]]>
+			<![CDATA[DomesticsectionList.SectionConsition.ConditionList.conditionValue]]>
 		</queryString>
 		<field name="conditionTerms" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="conditionTerms"/>
 			<fieldDescription><![CDATA[conditionTerms]]></fieldDescription>
+		</field>
+		<field name="SectionId" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="SectionId"/>
+			<fieldDescription><![CDATA[SectionId]]></fieldDescription>
 		</field>
 	</subDataset>
 	<queryString language="json">
@@ -101,48 +96,41 @@
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="555" height="20" uuid="d805a169-9bfe-4b5c-8ddf-b09371794925">
+				<reportElement x="0" y="0" width="185" height="20" uuid="5a594bb0-da30-4c48-98ed-1a3bcf74f97a">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<box leftPadding="2">
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{conditionKey}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
 			<componentElement>
-				<reportElement x="0" y="0" width="555" height="15" uuid="a893f8ed-2bc2-46fa-8572-14ac0d26ef24">
+				<reportElement x="0" y="0" width="185" height="15" uuid="30ffd821-694a-4acd-aa89-d3854a1a4adc">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="AllConditions" uuid="0172b267-bfc0-405f-8b18-88cfe896ebd3">
+					<datasetRun subDataset="condition" uuid="f66bf534-1f39-46aa-9cec-77367bb0cc9b">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("conditionValue")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="555" uuid="fa4baf88-7190-4876-8834-7e0da8680bf1">
+					<jr:column width="185" uuid="138803e0-3320-4636-8453-6d4323f95603">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 						<jr:detailCell style="Table_TD" height="15">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<box>
 								<pen lineWidth="0.0"/>
-								<leftPen lineWidth="0.5"/>
-								<rightPen lineWidth="0.5"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="555" height="15" uuid="33c6649e-3809-4a2f-b9b2-7d7f3c4b0868">
-									<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-								</reportElement>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="15" uuid="fcbc8f33-39f6-434d-95e8-e54c8a172921"/>
 								<box leftPadding="2"/>
-								<textElement textAlignment="Left" verticalAlignment="Middle" markup="styled">
+								<textElement verticalAlignment="Middle" markup="styled">
 									<font fontName="Arial" size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA["<li>"+$F{conditionTerms}+"</li>"]]></textFieldExpression>

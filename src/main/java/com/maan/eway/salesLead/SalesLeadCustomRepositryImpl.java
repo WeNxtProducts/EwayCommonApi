@@ -10,8 +10,8 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
 
-import com.maan.eway.bean.EnquiryDetails;
-import com.maan.eway.bean.SalesLead;
+import com.maan.eway.salesLead.bean.EnquiryDetails;
+import com.maan.eway.salesLead.bean.SalesLead;
 
 @Repository
 public class SalesLeadCustomRepositryImpl implements SalesLeadCustomRepositry {

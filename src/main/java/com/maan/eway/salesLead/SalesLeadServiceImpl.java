@@ -14,16 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.EnquiryDetails;
 import com.maan.eway.bean.IplcmsListItemValue;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.SalesLead;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.master.req.LovDropDownReq;
-import com.maan.eway.repository.EnquiryDetailsRepository;
 import com.maan.eway.repository.IplcmsListItemValueRepository;
-import com.maan.eway.repository.SalesLeadRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.salesLead.Repository.EnquiryDetailsRepository;
+import com.maan.eway.salesLead.Repository.SalesLeadRepository;
+import com.maan.eway.salesLead.bean.EnquiryDetails;
+import com.maan.eway.salesLead.bean.SalesLead;
 
 @Service
 public class SalesLeadServiceImpl implements SalesLeadService {
@@ -448,6 +447,17 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 			return null;
 		}
 		return resList;
+	}
+
+	@Override
+	public CommonRes insertPersonalInfo(String enquiryId) {
+		logger.info("Enter into InsertPersonalInfo.\nArgument => "+enquiryId);
+		try {
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 

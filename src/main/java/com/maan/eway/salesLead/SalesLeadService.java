@@ -34,4 +34,6 @@ public interface SalesLeadService {
 
 	List<DropDownRes> probabilityOfSuccess(LovDropDownReq req);
 
+	CommonRes insertPersonalInfo(String enquiryId);
+
 }
