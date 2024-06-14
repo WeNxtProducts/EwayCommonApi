@@ -389,12 +389,17 @@ public class BasicLoginValidationService {
 	    			    .orElse(null);; 
 
 	    	 if(req!=null) {
+	    	String firstchar=!StringUtils.isBlank(req.getAlphabet()) ? "["+req.getAlphabet()+"]" : ""; 
 	       String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
+	       if(aplhabet.equals("(?=.*[a-zA-Z])"))
+	       {
+	    	   aplhabet="(?=.*[a-z])(?=.*[A-Z])" ;
+	       }
 	       String   number=!StringUtils.isBlank(req.getNumericDigitsStart()) && !StringUtils.isBlank(req.getNumericDigitsEnd())? "(?=.*["+req.getNumericDigitsStart()+"-"+req.getNumericDigitsEnd()+"])" : "";//(?=.*\\d --->mean 0-9)
 		  	   String	symbols=!StringUtils.isBlank(req.getSymbols()) ? "(?=.*["+req.getSymbols()+"])" :"";//(?=.*[@#$%^&+=!])
 	  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+req.getTotalmin()+","+req.getTotalmax()+"}" :"";//{8,10}	
 	       String collect="["+aplhabet+number+symbols+"]";
-	  	   Pattern ="^"+(aplhabet)+(number)+(symbols)+(collect)+(length)+"$"; // ^(?=.*[a-z])(?=.*[0-6])(?=.*[@#^])[a-z0-6@#^]{5,8}$
+	  	   Pattern ="^"+(firstchar)+(aplhabet)+(number)+(symbols)+(collect)+(length)+"$"; // ^([a-z])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-6])(?=.*[@#^])[a-z0-6@#^]{5,8}$
 				// Pattern ="^"+value1+number+symbols+"."+length+"$";
 	  	
 	    	 }else Pattern=null;
