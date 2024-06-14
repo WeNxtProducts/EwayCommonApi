@@ -602,12 +602,17 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	    			    .orElse(null);
 	    			System.out.println("Found record: " + req);
 	    if(req!=null) {
-	    	 String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
-		  	   String   number=!StringUtils.isBlank(req.getNumericDigitsStart()) && !StringUtils.isBlank(req.getNumericDigitsEnd())? "(?=.*["+req.getNumericDigitsStart()+"-"+req.getNumericDigitsEnd()+"])" : "";//(?=.*\\d --->mean 0-9)
+	    	String firstchar=!StringUtils.isBlank(req.getAlphabet()) ? "["+req.getAlphabet()+"]" : ""; 
+		       String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
+		       if(aplhabet.equals("(?=.*[A-Za-z])"))
+		       {
+		    	   aplhabet="(?=.*[A-Z])(?=.*[a-z])" ;
+		       }   String   number=!StringUtils.isBlank(req.getNumericDigitsStart()) && !StringUtils.isBlank(req.getNumericDigitsEnd())? "(?=.*["+req.getNumericDigitsStart()+"-"+req.getNumericDigitsEnd()+"])" : "";//(?=.*\\d --->mean 0-9)
 		  	   String	symbols=!StringUtils.isBlank(req.getSymbols()) ? "(?=.*["+req.getSymbols()+"])" :"";//(?=.*[@#$%^&+=!])
 		  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+req.getTotalmin()+","+req.getTotalmax()+"}" :"";//{8,10}		
 		       String collect="["+aplhabet+number+symbols+"]";//[a-z0-6@#^]
-		  	   Pattern ="^"+(aplhabet)+(number)+(symbols)+(collect)+(length)+"$";
+		       Pattern ="^"+(firstchar)+(aplhabet)+(number)+(symbols)+(collect)+(length)+"$"; // ^([a-z])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-6])(?=.*[@#^])[a-z0-6@#^]{5,8}$
+				
 	    }else Pattern=null;
 	     }
 	     System.out.print("Generated Pattern is ----------->"+Pattern);
