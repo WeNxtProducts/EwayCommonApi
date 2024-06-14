@@ -191,6 +191,25 @@ public class OccupationMasterController {
 			}
 
 		}	
+	@PostMapping(value="/dp/occupation",produces = "application/json")
+	@ApiOperation(value = "This method is get Occupation Master Drop Down Based On CATEGORY ID")
+
+	public ResponseEntity<IndustryDropDownCommonRes> getOccupationDetails(@RequestBody OccupationDropDownReq req) {
+		IndustryDropDownCommonRes data = new IndustryDropDownCommonRes();
+		List<IndustryDropDownRes> res = service.getOccupationDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<IndustryDropDownCommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}	
+	}
+
+	
 	/*	
 		// Occupation Master Drop Down Type
 		@GetMapping("/dropdown/occupation")

@@ -274,6 +274,8 @@ try {
 	 req.getTitletype().equals(item.getOccupationType()))
 	 .collect(Collectors.toList()); }
 	 
+	 
+	
 	for (OccupationMaster data : list) {
 		// Response 
 		IndustryDropDownRes res = new IndustryDropDownRes();
@@ -294,6 +296,92 @@ try {
 	return resList;
 }
 
+public List<IndustryDropDownRes> getOccupationDetails(OccupationDropDownReq req) {
+	List<IndustryDropDownRes> resList = new ArrayList<IndustryDropDownRes>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		today = cal.getTime();
+		Date todayEnd = cal.getTime();
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<OccupationMaster> query=  cb.createQuery(OccupationMaster.class);
+		List<OccupationMaster> list = new ArrayList<OccupationMaster>();
+		// Find All
+		Root<OccupationMaster> c = query.from(OccupationMaster.class);
+		//Select
+		query.select(c);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchCode")));
+		
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+		Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+		Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+		Predicate a10 = cb.equal(c.get("categoryId"),ocpm1.get("categoryId"));
+		effectiveDate.where(a1,a2,a5,a6,a9,a10);
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
+		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+		Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+		Predicate a11 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+		Predicate a12 = cb.equal(c.get("categoryId"),ocpm2.get("categoryId"));
+		effectiveDate2.where(a3,a4,a7,a8,a11,a12);
+		// Where
+		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n11 = cb.equal(c.get("status"),"R");
+		Predicate n12 = cb.or(n1,n11);
+
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+		Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
+		Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
+		Predicate n6 = cb.equal(c.get("branchCode"),"99999");
+		Predicate n7 = cb.or(n5,n6);
+			Predicate n8= cb.equal(c.get("productId"),req.getProductId());
+			Predicate n44= cb.equal(c.get("categoryId"),req.getCategoryid());
+		Predicate n9= cb.equal(c.get("productId"),"99999");
+		Predicate n10 = cb.or(n8,n9);
+		query.where(n12,n2,n3,n4,n7,n10,n44).orderBy(orderList);
+			
+		
+		TypedQuery<OccupationMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationName()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
+		
+		// Get Result
+		for (OccupationMaster data : list) {
+			// Response 
+			IndustryDropDownRes res = new IndustryDropDownRes();
+			res.setCode(data.getOccupationId().toString());
+			res.setCodeDesc(data.getOccupationName());
+			res.setStatus(data.getStatus());
+			res.setCategoryId(data.getCategoryId());
+			res.setCategoryDesc("Category " + data.getCategoryId());
+			res.setTitletype(data.getOccupationType());
+			resList.add(res);
+		}	
+	}catch(Exception EX)
+	{
+		EX.printStackTrace();
+		log.info("Exception is --->"+EX.getMessage());
+		return null;	
+	}
+	return resList;
+}
 public List<OccupationMaster> getOccupationNameExistDetails(String occupationName , String InsuranceId , String branchCode, String productId, String categoryId) {
 	List<OccupationMaster> list = new ArrayList<OccupationMaster>();
 	try {

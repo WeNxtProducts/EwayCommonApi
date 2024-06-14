@@ -40,4 +40,6 @@ public interface OccupationMasterService  {
 
 	List<DropDownRes> getAcExecutivesDropdown(AcExecutiveDropDownReq req);
 
+	List<IndustryDropDownRes> getOccupationDetails(OccupationDropDownReq req);
+
 }
