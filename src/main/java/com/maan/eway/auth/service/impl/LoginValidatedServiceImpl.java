@@ -602,11 +602,13 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	    			    .orElse(null);
 	    			System.out.println("Found record: " + req);
 	    if(req!=null) {
-	    	int lengthmin=0;
-	        if(!StringUtils.isBlank(req.getTotalmin()))
-	        {
-	        	lengthmin =Integer.valueOf(req.getTotalmin())-1;	
-	        }
+	    	int lengthmin=5;
+			int max=20;
+    if(!StringUtils.isBlank(req.getTotalmin()) &&!StringUtils.isBlank(req.getTotalmax()))
+    {
+    	lengthmin =Integer.valueOf(req.getTotalmin())-1;
+    	 max=Integer.valueOf(req.getTotalmax())-1;
+    }
 	    	String collect2=!StringUtils.isBlank(req.getAlphabet()) ?req.getAlphabet(): "";
 		       String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
 		       if(aplhabet.equals("(?=.*[A-Za-z])"))

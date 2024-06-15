@@ -389,11 +389,14 @@ public class BasicLoginValidationService {
 	    			    .orElse(null);; 
 
 	    	 if(req!=null) {
-	    			int lengthmin=0;
-	        if(!StringUtils.isBlank(req.getTotalmin()))
+	    			int lengthmin=5;
+	    			int max=20;
+	        if(!StringUtils.isBlank(req.getTotalmin()) &&!StringUtils.isBlank(req.getTotalmax()))
 	        {
-	        	lengthmin =Integer.valueOf(req.getTotalmin())-1;	
+	        	lengthmin =Integer.valueOf(req.getTotalmin())-1;
+	        	 max=Integer.valueOf(req.getTotalmax())-1;
 	        }
+	        
 	        	
 	    	String collect2=!StringUtils.isBlank(req.getAlphabet()) ?req.getAlphabet(): "";
 	       String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
@@ -403,7 +406,7 @@ public class BasicLoginValidationService {
 	       }
 	       String   number=!StringUtils.isBlank(req.getNumericDigitsStart()) && !StringUtils.isBlank(req.getNumericDigitsEnd())? req.getNumericDigitsStart()+"-"+req.getNumericDigitsEnd() : "";//0-9
 		  	   String	symbols=!StringUtils.isBlank(req.getSymbols()) ? req.getSymbols() :"";//@#$%^&+=!
-	  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+lengthmin+","+req.getTotalmax()+"}" :"";//{8,10}	
+	  	   String length=!StringUtils.isBlank(req.getTotalmin())&&!StringUtils.isBlank(req.getTotalmax()) ? "{"+lengthmin+","+max+"}" :"";//{8,10}	
 	       String collect="["+collect2+number+symbols+"^]";//
 	      Pattern ="^"+(aplhabet)+("(?=.*["+number+"])")+("(?=.*["+symbols+"^])")+("["+collect2+"]")+(collect)+(length)+"$";//^(?=.*[A-Za-z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#^])[A-Za-z][A-Za-z0-9@#^]{7,19}$
 				
