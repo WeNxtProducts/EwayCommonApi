@@ -32,5 +32,7 @@ public interface JasperService {
 
 	public CommonRes PdfJsonResponse(PdfJsonReq req);
 
+	public JasperDocumentRes GetReportByRequestRefNo(String requestRefNo);
+
 
 }

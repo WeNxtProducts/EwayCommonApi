@@ -965,4 +965,29 @@ public class JasperServiceImpl implements JasperService {
 		}
 		return response;
 	}
+
+	@Override
+	public JasperDocumentRes GetReportByRequestRefNo(String requestRefNo) {
+		log.info("Enter Into GetReportByRequestRefNo \n Argument ==> "+ requestRefNo);
+		JasperDocumentRes res = new JasperDocumentRes();
+		try {
+			Map<String,Object> resMap = jasperCustomeImple.GetReportByRequestRefNo(requestRefNo);
+			if(resMap!=null) {
+				Map<String,Object> map = new HashMap<String,Object>();
+				log.info("OS Using ==> "+System.getProperty("os.name").toLowerCase());
+				if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+					map.put("pvImagepath",  config.getImagePath().substring(1, config.getImagePath().length()-0));
+				}else {
+					map.put("pvImagepath",config.getImagePath().replaceAll("\\\\", "/"));
+				}
+				String jsonString = gson.toJson(resMap);
+				String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+requestRefNo.replaceAll("[\\/:*?\"<>|]*", "");
+				res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, map, "- BrokerQuotation.json");
+				return res;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

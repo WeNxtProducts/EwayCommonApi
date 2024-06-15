@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -32,6 +33,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +48,8 @@ import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.DocumentUniqueDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -2544,6 +2549,113 @@ public class JasperCustomServiceImple {
 			}else if(quarter > 9 && quarter <=12) {
 				result = quarter+"/4";
 			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> GetReportByRequestRefNo(String requestRefNo) {
+		log.info("Enter Into GetReportByRequestRefNoImple \n Argument ==> "+requestRefNo);
+		Map<String,Object> result = new HashMap<String,Object>();
+		List<Map<String,Object>> vehicleList = new ArrayList<Map<String,Object>>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+			Root<EserviceCustomerDetails> ecdRoot = cq.from(EserviceCustomerDetails.class);
+			Root<EserviceMotorDetails> emdRoot = cq.from(EserviceMotorDetails.class);
+			Root<InsuranceCompanyMaster> icmRoot = cq.from(InsuranceCompanyMaster.class);
+			Root<LoginUserInfo> luiRoot = cq.from(LoginUserInfo.class);
+			
+			Subquery<Integer> countryNameAmd = cq.subquery(Integer.class);
+			Root<CountryMaster> SubCnAd = countryNameAmd.from(CountryMaster.class);
+			countryNameAmd.select(cb.max(SubCnAd.get("amendId"))).where(cb.equal(SubCnAd.get("countryId"), ecdRoot.get("nationality")),
+					cb.equal(SubCnAd.get("companyId"), emdRoot.get("companyId")),cb.equal(SubCnAd.get("status"), "Y"));
+			
+			Subquery<String> countryName = cq.subquery(String.class);
+			Root<CountryMaster> SubCm = countryName.from(CountryMaster.class);
+			countryName.select(SubCm.get("countryName")).where(cb.equal(SubCm.get("countryId"), ecdRoot.get("nationality")),
+						cb.equal(SubCm.get("companyId"), emdRoot.get("companyId")),cb.equal(SubCm.get("status"), "Y"),cb.equal(SubCm.get("amendId"), countryNameAmd));
+			
+			Subquery<Integer> icmAmd = cq.subquery(Integer.class);
+			Root<InsuranceCompanyMaster> icmAmdRoot = icmAmd.from(InsuranceCompanyMaster.class);
+			icmAmd.select(cb.max(icmAmdRoot.get("amendId"))).where(cb.equal(icmAmdRoot.get("companyId"), icmRoot.get("companyId")));
+			
+			Subquery<String> companyName = cq.subquery(String.class);
+			Root<InsuranceCompanyMaster> companyNameRoot = companyName.from(InsuranceCompanyMaster.class);
+			//AMD MAX
+			Subquery<Integer> companyNameAmd = cq.subquery(Integer.class);
+			Root<InsuranceCompanyMaster> companyNameAmdRoot = companyNameAmd.from(InsuranceCompanyMaster.class);
+			companyNameAmd.select(cb.max(companyNameAmdRoot.get("amendId"))).where(cb.equal(companyNameAmdRoot.get("companyId"), companyNameRoot.get("companyId")));
+			companyName.select(companyNameRoot.get("companyName")).where(cb.equal(companyNameRoot.get("companyId"), emdRoot.get("companyId")),
+					cb.equal(companyNameRoot.get("amendId"), companyNameAmd));
+			
+			Subquery<String> imageURL = cq.subquery(String.class);
+			Root<InsuranceCompanyMaster> imageURLRoot = imageURL.from(InsuranceCompanyMaster.class);
+			//AMD MAX
+			Subquery<Integer> imageURLAmd = cq.subquery(Integer.class);
+			Root<InsuranceCompanyMaster> imageURLAmdRoot = imageURLAmd.from(InsuranceCompanyMaster.class);
+			imageURLAmd.select(cb.max(imageURLAmdRoot.get("amendId"))).where(cb.equal(imageURLAmdRoot.get("companyId"), imageURLRoot.get("companyId")));
+			imageURL.select(imageURLRoot.get("companyLogo")).where(cb.equal(imageURLRoot.get("companyId"), emdRoot.get("companyId")),
+					cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
+			
+			cq.multiselect(luiRoot.get("userName").alias("userName"),emdRoot.get("requestReferenceNo").alias("requestReferenceNo"),emdRoot.get("companyId").alias("companyId"),
+					emdRoot.get("currency").alias("currency"),emdRoot.get("policyStartDate").alias("inceptionDate"),emdRoot.get("branchName").alias("branchName"),
+					emdRoot.get("policyEndDate").alias("expiryDate"),
+					cb.concat(ecdRoot.get("titleDesc"), cb.concat(".", ecdRoot.get("clientName"))).alias("customerName"),companyName.alias("companyName"),
+					cb.concat(ecdRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(ecdRoot.get("pinCode"), ""),cb.concat(cb.selectCase().when(cb.isNull(ecdRoot.get("pinCode")), "").when(cb.equal(ecdRoot.get("pinCode"), ""), "")
+					.otherwise(",").as(String.class), cb.concat(ecdRoot.get("stateName"), cb.concat(",", cb.concat(ecdRoot.get("cityName"),cb.concat(",", countryName)))))))).alias("address"),
+					ecdRoot.get("vrTinNo").alias("vrTinNo"),ecdRoot.get("email1").alias("email1"),ecdRoot.get("mobileNo1").alias("mobileNo1"),imageURL.alias("companyLogo"),luiRoot.get("brokerLogo").alias("brokerLogo"))
+			.where(cb.equal(emdRoot.get("customerReferenceNo"), ecdRoot.get("customerReferenceNo")),cb.equal(emdRoot.get("companyId"), icmRoot.get("companyId")),
+					cb.equal(luiRoot.get("loginId"), emdRoot.get("loginId")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.in(emdRoot.get("productId")).value(Arrays.asList("5","46")),cb.equal(emdRoot.get("requestReferenceNo"), requestRefNo))
+			.orderBy(cb.desc(emdRoot.get("entryDate")));
+			
+			List<Tuple> list = em.createQuery(cq).getResultList();
+			Tuple map = list.get(0);
+			String sql = "SELECT MD.INSURANCE_TYPE_DESC, MD.POLICY_TYPE_DESC, MD.REGISTRATION_NUMBER, MD.VEHICLE_MAKE_DESC, MD.VEHCILE_MODEL_DESC, MD.CHASSIS_NUMBER, MD.VEHICLE_TYPE_DESC, (SELECT COLOR_DESC FROM MOTOR_COLOR_MASTER WHERE COLOR_ID = MD.COLOR AND COMPANY_ID = MD.COMPANY_ID AND AMEND_ID = (SELECT MAX(AMEND_ID) FROM MOTOR_COLOR_MASTER WHERE COLOR_ID = MD.COLOR AND COMPANY_ID = MD.COMPANY_ID)) AS COLOR_DESC, MD.MANUFACTURE_YEAR, FD.SUM_INSURED, FD.RATE, FD.PREMIUM_INCLUDED_TAX_FC, FD.PREMIUM_INCLUDED_TAX_LC, (SELECT TAX_RATE FROM FACTOR_RATE_REQUEST_DETAILS WHERE TAX_ID !='0' AND COVERAGE_TYPE = 'T' AND REQUEST_REFERENCE_NO = FD.REQUEST_REFERENCE_NO AND VEHICLE_ID = FD.VEHICLE_ID AND SECTION_ID = FD.SECTION_ID) AS TAX_RATE FROM ESERVICE_MOTOR_DETAILS MD, FACTOR_RATE_REQUEST_DETAILS FD WHERE MD.REQUEST_REFERENCE_NO = FD.REQUEST_REFERENCE_NO AND MD.RISK_ID = FD.VEHICLE_ID AND MD.SECTION_ID = FD.SECTION_ID AND FD.TAX_ID = '0' AND FD.DISC_LOAD_ID = '0' AND MD.REQUEST_REFERENCE_NO = :requestRefNo";
+			Query query = em.createNativeQuery(sql);
+			query.setParameter("requestRefNo", requestRefNo);
+			query.unwrap(NativeQueryImpl.class).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			List<Map<String,Object>> vehicleDetails = query.getResultList();
+			if(vehicleDetails!=null && !vehicleDetails.isEmpty()) {
+				vehicleDetails.forEach(k -> {
+					Map<String,Object> m = new HashMap<String,Object>();
+					m.put("InsuranceType", k.get("INSURANCE_TYPE_DESC")==null?"":k.get("INSURANCE_TYPE_DESC").toString());
+					m.put("PolicyType", k.get("POLICY_TYPE_DESC")==null?"":k.get("POLICY_TYPE_DESC").toString());
+					m.put("RegistrationNumber", k.get("REGISTRATION_NUMBER")==null?"":k.get("REGISTRATION_NUMBER").toString());
+					m.put("Make", k.get("VEHICLE_MAKE_DESC")==null?"":k.get("VEHICLE_MAKE_DESC").toString());
+					m.put("Model", k.get("VEHCILE_MODEL_DESC")==null?"":k.get("VEHCILE_MODEL_DESC").toString());
+					m.put("ChassisNo", k.get("CHASSIS_NUMBER")==null?"":k.get("CHASSIS_NUMBER").toString());
+					m.put("BodyType", k.get("VEHICLE_TYPE_DESC")==null?"":k.get("VEHICLE_TYPE_DESC").toString());
+					m.put("Color", k.get("COLOR_DESC")==null?"":k.get("COLOR_DESC").toString());
+					m.put("Year", k.get("MANUFACTURE_YEAR")==null?"":k.get("MANUFACTURE_YEAR").toString());
+					m.put("SumInsured", k.get("SUM_INSURED")==null?null:k.get("SUM_INSURED"));
+					m.put("Rate", k.get("RATE")==null?null:k.get("RATE").toString());
+					m.put("PremiumIncludedTaxFc", k.get("PREMIUM_INCLUDED_TAX_FC")==null?null:k.get("PREMIUM_INCLUDED_TAX_FC"));
+					m.put("PremiumIncludedTaxLc", k.get("PREMIUM_INCLUDED_TAX_LC")==null?null:k.get("PREMIUM_INCLUDED_TAX_LC"));
+					m.put("TaxRate", k.get("TAX_RATE")==null?"":k.get("TAX_RATE").toString()+" % ");
+					vehicleList.add(m);
+				});
+			}
+			
+			result.put("userName", map.get("userName")==null?"":map.get("userName").toString());
+			result.put("requestReferenceNo", map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString());
+			result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
+			result.put("companyName", map.get("companyName")==null?"":map.get("companyName").toString());
+			result.put("branchName", map.get("branchName")==null?"":map.get("branchName").toString());
+			result.put("inceptionDate", map.get("inceptionDate")==null?null:map.get("inceptionDate").toString());
+			result.put("expiryDate", map.get("expiryDate")==null?null:map.get("expiryDate").toString());
+			result.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
+			result.put("address", map.get("address")==null?"":map.get("address").toString());
+			result.put("vrTinNo", map.get("vrTinNo")==null?"":map.get("vrTinNo").toString());
+			result.put("email1", map.get("email1")==null?"":map.get("email1").toString());
+			result.put("mobileNo1", map.get("mobileNo1")==null?"":map.get("mobileNo1").toString());
+			result.put("companyLogo", map.get("companyLogo")==null?"":map.get("companyLogo").toString());
+			result.put("brokerLogo", map.get("brokerLogo")==null?"":map.get("brokerLogo").toString());
+			result.put("vehicleDetails", vehicleList);
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

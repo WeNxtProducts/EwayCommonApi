@@ -167,6 +167,21 @@ public class JasperController {
 		return jasper.PdfJsonResponse(req);
 	}
 	
+	@GetMapping("/getReportByRequestRefNo")
+	public ResponseEntity<?> GetReportByRequestRefNo(@RequestParam(value = "requestRefNo",required = true) String requestRefNo){
+		CommonRes data = new CommonRes();
+		JasperDocumentRes res = jasper.GetReportByRequestRefNo(requestRefNo);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if(res !=null) {
+			return new ResponseEntity<CommonRes>(data,HttpStatus.CREATED);
+		}else {
+			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 	
 }
