@@ -392,7 +392,7 @@ public class BasicLoginValidationService {
 	    			int lengthmin=0;
 	        if(!StringUtils.isBlank(req.getTotalmin()))
 	        {
-	        	lengthmin =Integer.valueOf(req.getTotalmin())+1;	
+	        	lengthmin =Integer.valueOf(req.getTotalmin())-1;	
 	        }
 	        	
 	    	String collect2=!StringUtils.isBlank(req.getAlphabet()) ?req.getAlphabet(): "";
