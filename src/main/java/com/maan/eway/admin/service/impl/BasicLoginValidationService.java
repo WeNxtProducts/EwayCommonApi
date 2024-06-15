@@ -393,7 +393,7 @@ public class BasicLoginValidationService {
 	       String aplhabet= !StringUtils.isBlank(req.getAlphabet()) ? "(?=.*["+req.getAlphabet()+"])" : ""; //^(?=.*[a-zA-Z])or null
 	       if(aplhabet.equals("(?=.*[A-Za-z])"))
 	       {
-	    	   aplhabet="(?=.*[A-Za-z])(?=.*[a-z])" ;//(?=.*[A-Za-z])(?=.*[a-z])
+	    	   aplhabet="(?=.*[A-Za-z])(?=.*[A-Z])(?=.*[a-z])" ;//(?=.*[A-Za-z])(?=.*[a-z])
 	       }
 	       String   number=!StringUtils.isBlank(req.getNumericDigitsStart()) && !StringUtils.isBlank(req.getNumericDigitsEnd())? req.getNumericDigitsStart()+"-"+req.getNumericDigitsEnd() : "";//0-9
 		  	   String	symbols=!StringUtils.isBlank(req.getSymbols()) ? req.getSymbols() :"";//@#$%^&+=!
