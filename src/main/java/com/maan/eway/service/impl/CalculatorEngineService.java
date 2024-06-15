@@ -464,7 +464,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				}
 				
 				
-				totalcovers.parallelStream().forEach(taxRemov);
+				totalcovers.stream().forEach(taxRemov);
 				/*
 				 * if(StringUtils.isNotBlank(engine.getVdRefNo()) &&
 				 * StringUtils.isNotBlank(engine.getCdRefNo())) { //calc.setEngine(engine,
@@ -1264,7 +1264,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			if(totalPremium.compareTo(minimumPremium)<0) {
 				
 				List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
-				TaxUtils tzxx = new TaxUtils(BigDecimal.ZERO	,"");
+				TaxUtils tzxx = new TaxUtils(BigDecimal.ZERO,"");
 				List<Tax> taxey = taxes.stream().map(tzxx).filter(d->d!=null).collect(Collectors.toList());
 				BigDecimal difference=minimumPremium.subtract(totalPremium,MathContext.DECIMAL32);
 				CreateMinimumPremium min=new CreateMinimumPremium(difference, request,factors.get(0).getEndtCount() , taxey);
