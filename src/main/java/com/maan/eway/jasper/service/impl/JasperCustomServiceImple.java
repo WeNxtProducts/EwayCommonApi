@@ -101,6 +101,7 @@ import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
+import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.PolicyDrcrDetailRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 
@@ -144,6 +145,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
+	
+	@Autowired
+	private PolicyCoverDataRepository coverDataRepository;
 	
 //	@Autowired
 //	private MultiplePolicyDrCrDetailRepository multiPolicyDrCrDtlRepo;
@@ -446,7 +450,7 @@ public class JasperCustomServiceImple {
 				hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("currency").alias("currency"),hpmRoot.get("debitNoteNo").alias("debitNoteNo"),
 				vrnNumber.alias("vrnNumber"),tinNumber.alias("tinNumber"),cb.selectCase().when(cb.equal(hpmRoot.get("subUserType"), "b2c"), "DIRECT")
 				.when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
-					.otherwise(brokerName).alias("brokerName"),
+					.otherwise(brokerName).alias("brokerName"),hpmRoot.get("productId").alias("productId"),
 //				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("premiumLc")).otherwise(hpmRoot.get("premiumFc")))
 //					.otherwise(hpmRoot.get("endtPremium")).alias("premium"),
 //				cb.selectCase().when(cb.isNull(hpmRoot.get("endtTypeId")), cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")))
@@ -522,7 +526,8 @@ public class JasperCustomServiceImple {
 					response.setBankaccountUSD(entry.get("ACCOUNT_NUMBER_USD")==null?"":entry.get("ACCOUNT_NUMBER_USD").toString());
 			}
 			
-			List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatusIn(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),Arrays.asList("Y","CV"));
+			if(Arrays.asList(5,46).contains(map.get("productId"))) {
+				List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatusIn(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),Arrays.asList("Y","CV"));
 				List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))
 						&& !r.getChargeCode().equals(new BigDecimal(1005))).sorted(Comparator.comparing(PolicyDrcrDetail::getDisplayOrder)).collect(Collectors.toList());
 				listByRiskId.forEach(h ->{
@@ -533,6 +538,50 @@ public class JasperCustomServiceImple {
 					.build();
 					premiumDetailsRes.add(u);
 			});
+			}else {
+				List<PolicyCoverData> coverData = coverDataRepository.findByQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
+				if(coverData!=null && !coverData.isEmpty()) {
+					Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T"))
+							.map(m -> m.getTaxRate()).map(BigDecimal::doubleValue)
+							.findAny().orElse(0.0);
+					
+					Double taxAmount = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T") && f.getSectionId()!=99999)
+							.map(i -> i.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+					
+					List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999)
+							.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverDesc(),Collectors.reducing(
+								BigDecimal.ZERO, PolicyCoverData::getPremiumIncludedTaxLc, BigDecimal::add))))
+							.entrySet().stream()
+							.flatMap((Map.Entry<Integer,Map<String,BigDecimal>> s ) -> {
+								Integer sectionId = s.getKey();
+								return s.getValue().entrySet().stream()
+										.map((Map.Entry<String,BigDecimal> g )-> {
+											String coverDesc = g.getKey();
+											BigDecimal totPremium = g.getValue();
+											Map<String,Object> secMap = new HashMap<String,Object>();
+											secMap.put("SectionId", sectionId);
+											secMap.put("CoverDesc", coverDesc);
+											secMap.put("TotPremium", totPremium);
+											return secMap;
+										});
+							}).sorted(Comparator.comparing(p -> (String) p.get("CoverDesc")))
+							.collect(Collectors.toList());
+					sectionPremium.forEach(k -> {
+						TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
+								.amount(new BigDecimal(Double.valueOf(k.get("TotPremium").toString())).toString())
+								.narration(k.get("CoverDesc")==null?"":k.get("CoverDesc").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+							.build();
+							premiumDetailsRes.add(u);
+					});
+					TaxInvoicePremiumDetails h = TaxInvoicePremiumDetails.builder()
+							.amount(taxAmount.toString())
+							.narration("Vat Output (Premium) - "+taxRate.toString()+" %")
+						.build();
+						premiumDetailsRes.add(h);
+					
+				}
+			}
+			
 			
 			OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 			String amtInWords="";
@@ -2613,7 +2662,7 @@ public class JasperCustomServiceImple {
 			
 			List<Tuple> list = em.createQuery(cq).getResultList();
 			Tuple map = list.get(0);
-			String sql = "SELECT MD.INSURANCE_TYPE_DESC, MD.POLICY_TYPE_DESC, MD.REGISTRATION_NUMBER, MD.VEHICLE_MAKE_DESC, MD.VEHCILE_MODEL_DESC, MD.CHASSIS_NUMBER, MD.VEHICLE_TYPE_DESC, (SELECT COLOR_DESC FROM MOTOR_COLOR_MASTER WHERE COLOR_ID = MD.COLOR AND COMPANY_ID = MD.COMPANY_ID AND AMEND_ID = (SELECT MAX(AMEND_ID) FROM MOTOR_COLOR_MASTER WHERE COLOR_ID = MD.COLOR AND COMPANY_ID = MD.COMPANY_ID)) AS COLOR_DESC, MD.MANUFACTURE_YEAR, FD.SUM_INSURED, FD.RATE, FD.PREMIUM_INCLUDED_TAX_FC, FD.PREMIUM_INCLUDED_TAX_LC, (SELECT TAX_RATE FROM FACTOR_RATE_REQUEST_DETAILS WHERE TAX_ID !='0' AND COVERAGE_TYPE = 'T' AND REQUEST_REFERENCE_NO = FD.REQUEST_REFERENCE_NO AND VEHICLE_ID = FD.VEHICLE_ID AND SECTION_ID = FD.SECTION_ID AND COVER_ID = FD.COVER_ID) AS TAX_RATE FROM ESERVICE_MOTOR_DETAILS MD, FACTOR_RATE_REQUEST_DETAILS FD WHERE MD.REQUEST_REFERENCE_NO = FD.REQUEST_REFERENCE_NO AND MD.RISK_ID = FD.VEHICLE_ID AND MD.SECTION_ID = FD.SECTION_ID AND FD.TAX_ID = '0' AND FD.DISC_LOAD_ID = '0' AND MD.REQUEST_REFERENCE_NO = :requestRefNo";
+			String sql = "SELECT MD.RISK_ID, MD.INSURANCE_TYPE_DESC, MD.POLICY_TYPE_DESC, MD.REGISTRATION_NUMBER, MD.VEHICLE_MAKE_DESC, MD.VEHCILE_MODEL_DESC, MD.CHASSIS_NUMBER, MD.VEHICLE_TYPE_DESC, ( SELECT COLOR_DESC FROM MOTOR_COLOR_MASTER WHERE COLOR_ID = MD.COLOR AND COMPANY_ID = MD.COMPANY_ID AND AMEND_ID = ( SELECT MAX(AMEND_ID) FROM MOTOR_COLOR_MASTER WHERE COLOR_ID = MD.COLOR AND COMPANY_ID = MD.COMPANY_ID ) ) AS COLOR_DESC, MD.MANUFACTURE_YEAR, MD.SUM_INSURED FROM ESERVICE_MOTOR_DETAILS MD WHERE MD.REQUEST_REFERENCE_NO = :requestRefNo";
 			Query query = em.createNativeQuery(sql);
 			query.setParameter("requestRefNo", requestRefNo);
 			query.unwrap(NativeQueryImpl.class).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -2621,6 +2670,7 @@ public class JasperCustomServiceImple {
 			if(vehicleDetails!=null && !vehicleDetails.isEmpty()) {
 				vehicleDetails.forEach(k -> {
 					Map<String,Object> m = new HashMap<String,Object>();
+					m.put("vehicleId", k.get("RISK_ID")==null?"":k.get("RISK_ID").toString());
 					m.put("InsuranceType", k.get("INSURANCE_TYPE_DESC")==null?"":k.get("INSURANCE_TYPE_DESC").toString());
 					m.put("PolicyType", k.get("POLICY_TYPE_DESC")==null?"":k.get("POLICY_TYPE_DESC").toString());
 					m.put("RegistrationNumber", k.get("REGISTRATION_NUMBER")==null?"":k.get("REGISTRATION_NUMBER").toString());
@@ -2631,10 +2681,6 @@ public class JasperCustomServiceImple {
 					m.put("Color", k.get("COLOR_DESC")==null?"":k.get("COLOR_DESC").toString());
 					m.put("Year", k.get("MANUFACTURE_YEAR")==null?"":k.get("MANUFACTURE_YEAR").toString());
 					m.put("SumInsured", k.get("SUM_INSURED")==null?null:k.get("SUM_INSURED"));
-					m.put("Rate", k.get("RATE")==null?null:k.get("RATE").toString());
-					m.put("PremiumIncludedTaxFc", k.get("PREMIUM_INCLUDED_TAX_FC")==null?null:k.get("PREMIUM_INCLUDED_TAX_FC"));
-					m.put("PremiumIncludedTaxLc", k.get("PREMIUM_INCLUDED_TAX_LC")==null?null:k.get("PREMIUM_INCLUDED_TAX_LC"));
-					m.put("TaxRate", k.get("TAX_RATE")==null?"":k.get("TAX_RATE").toString()+" % ");
 					vehicleList.add(m);
 				});
 			}

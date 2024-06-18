@@ -828,8 +828,8 @@
 							<box>
 								<pen lineWidth="0.0"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="80" height="15" uuid="5566d45d-9c43-432c-a121-3d7ecb49d429"/>
+							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="80" height="15" uuid="5566d45d-9c43-432c-a121-3d7ecb49d429"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
@@ -844,8 +844,8 @@
 							<box>
 								<pen lineWidth="0.0"/>
 							</box>
-							<textField pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="73" height="15" uuid="133bdf1d-139f-4175-bdd2-807f6d49a32c"/>
+							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="73" height="15" uuid="133bdf1d-139f-4175-bdd2-807f6d49a32c"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -964,7 +964,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{overAllPremium}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="15" y="46" width="165" height="1" uuid="a1f67e31-98c0-4e30-9a8c-f1c67022143d">
