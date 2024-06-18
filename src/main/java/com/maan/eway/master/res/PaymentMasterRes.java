@@ -38,6 +38,9 @@ public class PaymentMasterRes {
 	@JsonProperty("CreditYn")
 	private String creditYn;
 	
+	@JsonProperty("MobilePaymentYn")
+	private String mobilePaymentYn;
+	
 	@JsonProperty("AmendId")
 	private String amendId;
 	

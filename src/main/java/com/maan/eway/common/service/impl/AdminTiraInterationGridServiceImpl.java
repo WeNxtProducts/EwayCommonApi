@@ -159,7 +159,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 					m.get("debitNoteNo").alias("debitNoteNo"),m.get("creditNo").alias("creditNo"),
 					m.get("tiraCoverNoteNo").alias("tiraCoverNoteNo"),m.get("tiraRequestId").alias("tiraRequestId"),
 					m.get("tiraResponseId").alias("tiraResponseId"),m.get("stickerNumber").alias("stickerNumber"),
-					m.get("responseStatusCode").alias("responseStatusCode"),m.get("responseStatusDesc").alias("responseStatusDesc"),
+					s.get("responseStatusCode").alias("responseStatusCode"),s.get("responseStatusDesc").alias("responseStatusDesc"),
 					m.get("bdmCode").alias("bdmCode"),m.get("branchName").alias("branchName"),
 					m.get("productName").alias("productName"),m.get("brokerCode").alias("brokerCode"),
 					m.get("customerCode").alias("customerCode"),m.get("customerId").alias("customerId"),
@@ -285,7 +285,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 					m.get("debitNoteNo").alias("debitNoteNo"),m.get("creditNo").alias("creditNo"),
 					m.get("tiraCoverNoteNo").alias("tiraCoverNoteNo"),m.get("tiraRequestId").alias("tiraRequestId"),
 					m.get("tiraResponseId").alias("tiraResponseId"),m.get("stickerNumber").alias("stickerNumber"),
-					m.get("responseStatusCode").alias("responseStatusCode"),m.get("responseStatusDesc").alias("responseStatusDesc"),
+					s.get("responseStatusCode").alias("responseStatusCode"),s.get("responseStatusDesc").alias("responseStatusDesc"),
 					m.get("bdmCode").alias("bdmCode"),m.get("branchName").alias("branchName"),
 					m.get("productName").alias("productName"),m.get("brokerCode").alias("brokerCode"),
 					m.get("customerCode").alias("customerCode"),m.get("customerId").alias("customerId"),
@@ -305,7 +305,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n4 = cb.equal(m.get("status"), "P");
 			Predicate n5 = cb.notEqual(s.get("responseStatusCode"), "TIRA001");
 			Predicate n6 = cb.notEqual(s.get("responseStatusCode"), "TIRA214");
-			Predicate n7 = cb.or(n5,n6);
+			Predicate n7 = cb.and(n5,n6);
 			Predicate n8 = cb.isNotNull(s.get("responseStatusCode"));
 //			Predicate n9 = cb.isNotNull(s.get("tiraResponseId"));
 			Predicate n10=cb.between(m.get("entryDate"), startDate, endDate);
@@ -404,7 +404,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 					m.get("debitNoteNo").alias("debitNoteNo"),m.get("creditNo").alias("creditNo"),
 					m.get("tiraCoverNoteNo").alias("tiraCoverNoteNo"),m.get("tiraRequestId").alias("tiraRequestId"),
 					m.get("tiraResponseId").alias("tiraResponseId"),m.get("stickerNumber").alias("stickerNumber"),
-					m.get("responseStatusCode").alias("responseStatusCode"),m.get("responseStatusDesc").alias("responseStatusDesc"),
+					s.get("responseStatusCode").alias("responseStatusCode"),s.get("responseStatusDesc").alias("responseStatusDesc"),
 					m.get("bdmCode").alias("bdmCode"),m.get("branchName").alias("branchName"),
 					m.get("productName").alias("productName"),m.get("brokerCode").alias("brokerCode"),
 					m.get("customerCode").alias("customerCode"),m.get("customerId").alias("customerId"),

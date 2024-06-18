@@ -69,6 +69,9 @@ public class PaymentMaster {
 	@Column(name="ONLINE_YN",length=20)
 	private String onlineYn;
 	
+	@Column(name="MOBILE_PAYMENT_YN",length=20)
+	private String mobilePaymentYn;
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="EFFECTIVE_DATE_START",nullable=false)
 	private Date effectiveDateStart;

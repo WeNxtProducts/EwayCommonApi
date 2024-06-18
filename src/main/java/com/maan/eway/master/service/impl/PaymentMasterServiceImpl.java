@@ -353,7 +353,7 @@ public List<PaymentMasterRes> getallPayment(PaymentMasterGetallReq req) {
 		Predicate n15 = cb.or(n13, n14);
 		if(StringUtils.isNotBlank(req.getAgencyCode())) {
 			Predicate n16 = cb.equal(b.get("userType"),req.getUserType());
-			Predicate n17 = cb.equal(b.get("subUserType"),req.getUserType());
+			Predicate n17 = cb.equal(b.get("subUserType"),req.getSubUserType());
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("amendId")));
 
