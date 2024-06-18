@@ -51,6 +51,7 @@ import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ExclusionMaster;
+import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -95,6 +96,7 @@ import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
@@ -148,6 +150,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private PolicyCoverDataRepository coverDataRepository;
+	
+	@Autowired
+	private FactorRateRequestDetailsRepository factorRateRequestDetailsRepo;
 	
 //	@Autowired
 //	private MultiplePolicyDrCrDetailRepository multiPolicyDrCrDtlRepo;
@@ -2606,6 +2611,8 @@ public class JasperCustomServiceImple {
 		log.info("Enter Into GetReportByRequestRefNoImple \n Argument ==> "+requestRefNo);
 		Map<String,Object> result = new HashMap<String,Object>();
 		List<Map<String,Object>> vehicleList = new ArrayList<Map<String,Object>>();
+		List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
+		Double OverAllPremium=0.0;
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
@@ -2682,6 +2689,58 @@ public class JasperCustomServiceImple {
 				});
 			}
 			
+
+			List<FactorRateRequestDetails> coverData = factorRateRequestDetailsRepo.findByRequestReferenceNo(map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString());
+			if(coverData!=null && !coverData.isEmpty()) {
+				Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T")
+						&& (f.getCoverageType().equals("O") && (f.getIsSelected().equalsIgnoreCase("Y")?"Y":"N").equalsIgnoreCase("Y") 
+								|| !f.getCoverageType().equalsIgnoreCase("O")))
+						.map(m -> m.getTaxRate()).map(BigDecimal::doubleValue)
+						.findAny().orElse(0.0);
+				
+				Double taxAmount = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T") && f.getSectionId()!=99999
+						&& (f.getCoverageType().equals("O") && (f.getIsSelected().equalsIgnoreCase("Y")?"Y":"N").equalsIgnoreCase("Y") 
+								|| !f.getCoverageType().equalsIgnoreCase("O")))
+						.map(i -> i.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+				
+				
+				List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999
+						&& (f.getCoverageType().equals("O") && (f.getIsSelected().equalsIgnoreCase("Y")?"Y":"N").equalsIgnoreCase("Y") 
+						|| !f.getCoverageType().equalsIgnoreCase("O")))
+						.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverDesc(),Collectors.reducing(
+							BigDecimal.ZERO, FactorRateRequestDetails::getPremiumIncludedTaxLc, BigDecimal::add))))
+						.entrySet().stream()
+						.flatMap((Map.Entry<Integer,Map<String,BigDecimal>> s ) -> {
+							Integer sectionId = s.getKey();
+							return s.getValue().entrySet().stream()
+									.map((Map.Entry<String,BigDecimal> g )-> {
+										String coverDesc = g.getKey();
+										BigDecimal totPremium = g.getValue();
+										Map<String,Object> secMap = new HashMap<String,Object>();
+										secMap.put("SectionId", sectionId);
+										secMap.put("CoverDesc", coverDesc);
+										secMap.put("TotPremium", totPremium);
+										return secMap;
+									});
+						}).sorted(Comparator.comparing(p -> (String) p.get("CoverDesc")))
+						.collect(Collectors.toList());
+				sectionPremium.forEach(k -> {
+					TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
+							.amount(new BigDecimal(Double.valueOf(k.get("TotPremium").toString())).toString())
+							.narration(k.get("CoverDesc")==null?"":k.get("CoverDesc").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+						.build();
+						premiumDetailsRes.add(u);
+				});
+				TaxInvoicePremiumDetails h = TaxInvoicePremiumDetails.builder()
+						.amount(new BigDecimal(Double.valueOf(taxAmount.toString())).toString())
+						.narration("Vat Output (Premium) - "+taxRate+"%")
+					.build();
+					premiumDetailsRes.add(h);
+					
+					OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+			}
+		
+			
 			result.put("userName", map.get("userName")==null?"":map.get("userName").toString());
 			result.put("requestReferenceNo", map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString());
 			result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
@@ -2698,6 +2757,8 @@ public class JasperCustomServiceImple {
 			result.put("companyLogo", map.get("companyLogo")==null?"":map.get("companyLogo").toString());
 			result.put("brokerLogo", map.get("brokerLogo")==null?"":map.get("brokerLogo").toString());
 			result.put("vehicleDetails", vehicleList);
+			result.put("PremiumDetails", premiumDetailsRes);
+			result.put("PremiumTotal", OverAllPremium);
 			
 		}catch(Exception e) {
 			e.printStackTrace();

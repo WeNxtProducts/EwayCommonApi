@@ -256,9 +256,11 @@
 		</band>
 	</background>
 	<pageHeader>
-		<band height="80" splitType="Stretch">
+		<band height="60" splitType="Stretch">
 			<image>
-				<reportElement x="0" y="10" width="555" height="70" uuid="d45886ab-e3c3-4abc-89cf-c1a6c9d76416"/>
+				<reportElement x="0" y="0" width="555" height="60" uuid="d45886ab-e3c3-4abc-89cf-c1a6c9d76416">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<box topPadding="5" leftPadding="2">
 					<pen lineWidth="0.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid"/>
@@ -270,10 +272,11 @@
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="30" splitType="Stretch">
+		<band height="15" splitType="Stretch">
 			<textField>
-				<reportElement x="15" y="0" width="525" height="30" uuid="56601408-b98e-4ed5-9a01-f6ae9bdeadbf">
+				<reportElement x="15" y="0" width="525" height="15" uuid="56601408-b98e-4ed5-9a01-f6ae9bdeadbf">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
 					<bottomPen lineWidth="0.25"/>
@@ -1184,7 +1187,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				</graphicElement>
 			</line>
 		</band>
-		<band height="179">
+		<band height="139">
 			<textField>
 				<reportElement x="15" y="0" width="185" height="15" uuid="505830a1-fcd4-453f-9884-aa90e28856ed">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
