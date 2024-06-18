@@ -548,6 +548,9 @@ public class JasperCustomServiceImple {
 					Double taxAmount = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T") && f.getSectionId()!=99999)
 							.map(i -> i.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 					
+					response.setVatPercent(taxRate.toString());
+					response.setVatAmount(taxAmount.toString());
+					
 					List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999)
 							.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverDesc(),Collectors.reducing(
 								BigDecimal.ZERO, PolicyCoverData::getPremiumIncludedTaxLc, BigDecimal::add))))
@@ -573,12 +576,6 @@ public class JasperCustomServiceImple {
 							.build();
 							premiumDetailsRes.add(u);
 					});
-					TaxInvoicePremiumDetails h = TaxInvoicePremiumDetails.builder()
-							.amount(taxAmount.toString())
-							.narration("Vat Output (Premium) - "+taxRate.toString()+" %")
-						.build();
-						premiumDetailsRes.add(h);
-					
 				}
 			}
 			

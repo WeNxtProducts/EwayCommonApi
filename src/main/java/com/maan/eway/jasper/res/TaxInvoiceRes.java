@@ -125,5 +125,11 @@ public class TaxInvoiceRes {
 	
 	@JsonProperty("Dataset1List")
 	private List<TaxDataSetOneRes> dataset1List;
+
+	@JsonProperty("VatPercent")
+	private String vatPercent;
+	
+	@JsonProperty("VatAmount")
+	private String vatAmount;
 	
 }
