@@ -349,21 +349,25 @@ public List<PaymentMasterRes> getallPayment(PaymentMasterGetallReq req) {
 		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 =  cb.equal(b.get("productId"), req.getProductId());
-		Predicate n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
-		Predicate n14 = cb.equal(b.get("agencyCode"),"99999" );
-		Predicate n15 = cb.or(n13, n14);
+		Predicate n13=null;
+		if(StringUtils.isNotBlank(req.getAgencyCode())) {
+		    n13 = cb.equal(b.get("agencyCode"),req.getAgencyCode());
+		}else {
+			n13 = cb.equal(b.get("agencyCode"),"99999");
+		}
+//		Predicate n15 = cb.or(n13, n14);
 		if(StringUtils.isNotBlank(req.getAgencyCode())) {
 			Predicate n16 = cb.equal(b.get("userType"),req.getUserType());
 			Predicate n17 = cb.equal(b.get("subUserType"),req.getSubUserType());
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("amendId")));
 
-			query.where(n1,n2,n5,n6,n15,n16,n17).orderBy(orderList);
+			query.where(n1,n2,n5,n6,n13,n16,n17).orderBy(orderList);
 		} else {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
 
-			query.where(n1,n2,n5,n6,n15).orderBy(orderList);
+			query.where(n1,n2,n5,n6,n13).orderBy(orderList);
 				
 		}
 		
