@@ -295,11 +295,11 @@
 				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="20">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<printWhenExpression><![CDATA["2".equals("3")]]></printWhenExpression>
 			<textField>
-				<reportElement x="0" y="0" width="90" height="15" uuid="76fb4708-0a07-4895-aee1-1cadecd47694">
+				<reportElement x="0" y="0" width="90" height="20" uuid="76fb4708-0a07-4895-aee1-1cadecd47694">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -316,8 +316,7 @@
 				<textFieldExpression><![CDATA[$F{policyNo}==null?"Quote No":"Policy No:"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="90" y="0" width="465" height="15" uuid="7261fe12-96e0-4709-bf95-713ec1a0495d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<reportElement x="90" y="0" width="465" height="20" uuid="7261fe12-96e0-4709-bf95-713ec1a0495d">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -333,9 +332,10 @@
 				<textFieldExpression><![CDATA[$F{policyNo}==null?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="20">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
-				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="15" uuid="3ab0d9ff-caea-42c6-9cf1-01b15a1d49d0">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="20" uuid="3ab0d9ff-caea-42c6-9cf1-01b15a1d49d0">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -350,9 +350,7 @@
 				<textFieldExpression><![CDATA["Insured Name :"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="90" y="0" width="465" height="15" uuid="03066ff1-69ee-47a3-bd93-d3d3811cfeda">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement stretchType="RelativeToTallestObject" x="90" y="0" width="465" height="20" uuid="03066ff1-69ee-47a3-bd93-d3d3811cfeda"/>
 				<box leftPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -365,10 +363,9 @@
 				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="20">
 			<textField>
-				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="15" uuid="3f04184b-6ec6-4763-9e34-b49d149292cb">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="20" uuid="3f04184b-6ec6-4763-9e34-b49d149292cb">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -383,9 +380,7 @@
 				<textFieldExpression><![CDATA["Address :"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="90" y="0" width="465" height="15" uuid="045da025-2b74-4857-874e-0e6cddb2982d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement x="90" y="0" width="465" height="20" uuid="045da025-2b74-4857-874e-0e6cddb2982d"/>
 				<box leftPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -398,43 +393,9 @@
 				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
-			<textField isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="90" y="0" width="465" height="15" uuid="56fc748b-e4f5-4a3f-a572-20a77d4b2dd0">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box leftPadding="2">
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{coreAppBrokerCode}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="15" uuid="4f477e52-adb0-4968-b0bc-0c59b951eb54">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box leftPadding="2">
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Broker Code :"]]></textFieldExpression>
-			</textField>
-		</band>
-		<band height="15">
+		<band height="20">
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="90" y="0" width="465" height="15" uuid="d156f6ab-8559-4f69-9e4b-2f3cd95178f8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement x="90" y="0" width="465" height="20" uuid="d156f6ab-8559-4f69-9e4b-2f3cd95178f8"/>
 				<box leftPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -447,7 +408,7 @@
 				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="0" width="90" height="15" uuid="742c2d20-c347-46be-af84-8ed600b69442">
+				<reportElement x="0" y="0" width="90" height="20" uuid="742c2d20-c347-46be-af84-8ed600b69442">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -462,11 +423,9 @@
 				<textFieldExpression><![CDATA["Period From :"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="20">
 			<textField>
-				<reportElement x="0" y="0" width="90" height="15" uuid="bbfbf2d8-d1c2-43a9-9efd-af66fff374b6">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement x="0" y="0" width="90" height="20" uuid="bbfbf2d8-d1c2-43a9-9efd-af66fff374b6"/>
 				<box leftPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
@@ -479,9 +438,7 @@
 				<textFieldExpression><![CDATA["Period To :"]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="90" y="0" width="465" height="15" uuid="498ee51d-4bae-4ad8-b0ea-8962b662bd17">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement x="90" y="0" width="465" height="20" uuid="498ee51d-4bae-4ad8-b0ea-8962b662bd17"/>
 				<box leftPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -494,11 +451,9 @@
 				<textFieldExpression><![CDATA[$F{expiryDate}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="20">
 			<textField>
-				<reportElement x="0" y="0" width="90" height="15" uuid="83cefa18-6172-4778-9582-666274ef2a5e">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement x="0" y="0" width="90" height="20" uuid="83cefa18-6172-4778-9582-666274ef2a5e"/>
 				<box leftPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
@@ -511,9 +466,7 @@
 				<textFieldExpression><![CDATA["Renewal Date :"]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="90" y="0" width="465" height="15" uuid="549a8d83-fd72-4617-adc0-8f435317a42f">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement x="90" y="0" width="465" height="20" uuid="549a8d83-fd72-4617-adc0-8f435317a42f"/>
 				<box leftPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>

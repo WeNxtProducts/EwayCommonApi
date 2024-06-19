@@ -50,15 +50,11 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="itemId"/>
 			<fieldDescription><![CDATA[itemId]]></fieldDescription>
 		</field>
-		<field name="itemDesc" class="java.lang.String">
-			<property name="net.sf.jasperreports.json.field.expression" value="itemDesc"/>
-			<fieldDescription><![CDATA[itemDesc]]></fieldDescription>
-		</field>
 		<field name="contentRiskDesc" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="contentRiskDesc"/>
 			<fieldDescription><![CDATA[contentRiskDesc]]></fieldDescription>
 		</field>
-		<field name="sumInsured" class="java.lang.Integer">
+		<field name="sumInsured" class="java.math.BigDecimal">
 			<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
 			<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
 		</field>
@@ -66,6 +62,8 @@
 		<field name="employeeName" class="java.lang.String"/>
 		<field name="occupationDesc" class="java.lang.String"/>
 		<field name="salary" class="java.math.BigDecimal"/>
+		<field name="Rate" class="java.lang.Double"/>
+		<field name="Premium" class="java.math.BigDecimal"/>
 	</subDataset>
 	<queryString language="json">
 		<![CDATA[coverageDetails.coverValue.contentList]]>
@@ -82,7 +80,7 @@
 		<band height="15" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
-				<reportElement x="0" y="0" width="430" height="15" uuid="22db59c7-520e-4c6f-b910-1c1dfda3a9b4">
+				<reportElement x="0" y="0" width="431" height="15" uuid="22db59c7-520e-4c6f-b910-1c1dfda3a9b4">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -99,7 +97,7 @@
 		</band>
 		<band height="15">
 			<componentElement>
-				<reportElement x="0" y="0" width="430" height="15" uuid="792230f4-78cb-4698-8c22-e9db778e6b3b">
+				<reportElement x="0" y="0" width="431" height="15" uuid="792230f4-78cb-4698-8c22-e9db778e6b3b">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -110,11 +108,12 @@
 					<datasetRun subDataset="ContentInfo" uuid="e4bc388c-c06b-4ecf-9585-eb151d323697">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("sectionValue")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="100" uuid="166f251b-389f-4591-9367-406c77a66305">
-						<jr:columnHeader style="Table_TD" height="20">
+					<jr:column width="60" uuid="166f251b-389f-4591-9367-406c77a66305">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:columnHeader style="Table_TD" height="20" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<staticText>
-								<reportElement x="0" y="0" width="100" height="20" uuid="50750a97-e389-445a-b171-82ff815be085"/>
+								<reportElement x="0" y="0" width="60" height="20" uuid="50750a97-e389-445a-b171-82ff815be085"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
 								</textElement>
@@ -123,8 +122,8 @@
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="100" height="15" uuid="69552da8-7e70-4fef-a807-b04115658c80"/>
+							<textField isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="60" height="15" uuid="69552da8-7e70-4fef-a807-b04115658c80"/>
 								<box leftPadding="2"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -133,32 +132,11 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="110" uuid="22d306f9-5540-42c8-87f3-6c0a755a1162">
-						<jr:columnHeader style="Table_TD" height="20">
+					<jr:column width="119" uuid="22d306f9-5540-42c8-87f3-6c0a755a1162">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:columnHeader style="Table_TD" height="20" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="110" height="20" uuid="96140ad5-69ca-4fc1-96c8-f398fac5dfd2"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="true"/>
-								</textElement>
-								<text><![CDATA[itemDesc]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="15">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="110" height="15" uuid="1a5d098a-b536-419d-88ee-a44e5def1a5b"/>
-								<box leftPadding="2"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{itemDesc}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="100" uuid="3732b63b-3c63-4458-8260-121f92b3e314">
-						<jr:columnHeader style="Table_TD" height="20">
-							<staticText>
-								<reportElement x="0" y="0" width="100" height="20" uuid="5e227691-1333-40a6-84a8-e3bec910306c"/>
+								<reportElement x="0" y="0" width="119" height="20" uuid="96140ad5-69ca-4fc1-96c8-f398fac5dfd2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
 								</textElement>
@@ -167,8 +145,8 @@
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="100" height="15" uuid="99233d17-d3c2-40e3-8263-252a7a8f3d69"/>
+							<textField isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="119" height="15" uuid="1a5d098a-b536-419d-88ee-a44e5def1a5b"/>
 								<box leftPadding="2"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -177,10 +155,11 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="120" uuid="8931d55a-6ddb-4ae2-a184-a59b0e83df2b">
-						<jr:columnHeader style="Table_TD" height="20">
+					<jr:column width="81" uuid="3732b63b-3c63-4458-8260-121f92b3e314">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:columnHeader style="Table_TD" height="20" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="120" height="20" uuid="5dd88bde-ed6a-4778-b755-e85dcbd711a3"/>
+								<reportElement x="0" y="0" width="81" height="20" uuid="5e227691-1333-40a6-84a8-e3bec910306c"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
 								</textElement>
@@ -189,13 +168,60 @@
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="120" height="15" uuid="0c9a0e7b-ef4d-4693-96c3-0908d1bf2433"/>
-								<box leftPadding="0" rightPadding="2"/>
+							<textField pattern="#,##0.00" isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="81" height="15" uuid="99233d17-d3c2-40e3-8263-252a7a8f3d69"/>
+								<box leftPadding="2" rightPadding="2">
+									<pen lineWidth="0.0"/>
+								</box>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{sumInsured}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="8931d55a-6ddb-4ae2-a184-a59b0e83df2b">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:columnHeader style="Table_TD" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="20" uuid="5dd88bde-ed6a-4778-b755-e85dcbd711a3"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Rate]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="15">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="15" uuid="0c9a0e7b-ef4d-4693-96c3-0908d1bf2433"/>
+								<box leftPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{Rate}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="81" uuid="6727f54f-a9a0-4f08-aa71-8078efa3526d">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:columnHeader style="Table_TD" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="81" height="20" uuid="9ecd8bbc-d4c7-4175-a746-adc5140ff0ee"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Premium]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="15">
+							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="81" height="15" uuid="813ddb19-d88c-4bc7-b357-68a52b5884f5"/>
+								<box leftPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{Premium}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -237,7 +263,7 @@
 								<pen lineWidth="0.75"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="30" height="20" uuid="00dbd9d2-61bc-4388-b318-7363375017f5"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="30" height="20" uuid="00dbd9d2-61bc-4388-b318-7363375017f5"/>
 								<box leftPadding="2"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -246,14 +272,14 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145" uuid="c2937731-eca1-4a22-a631-612ac46b17a1">
+					<jr:column width="99" uuid="c2937731-eca1-4a22-a631-612ac46b17a1">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
 						<jr:tableHeader height="20" rowSpan="1">
 							<box>
 								<pen lineWidth="0.75"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="145" height="20" uuid="8dfe9392-a32a-4f5f-a134-614841d3604d"/>
+								<reportElement x="0" y="0" width="99" height="20" uuid="8dfe9392-a32a-4f5f-a134-614841d3604d"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
@@ -266,7 +292,7 @@
 								<pen lineWidth="0.75"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="145" height="20" uuid="c0eb400d-1252-4018-b573-d40d56ee77cf"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="99" height="20" uuid="c0eb400d-1252-4018-b573-d40d56ee77cf"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -275,14 +301,14 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="155" uuid="a92254b9-667c-4bb8-b97e-bce992c6397a">
+					<jr:column width="101" uuid="a92254b9-667c-4bb8-b97e-bce992c6397a">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:tableHeader height="20" rowSpan="1">
 							<box>
 								<pen lineWidth="0.75"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="155" height="20" uuid="c5dc91de-e239-4f6b-97f7-572b82c5ff3e"/>
+								<reportElement x="0" y="0" width="101" height="20" uuid="c5dc91de-e239-4f6b-97f7-572b82c5ff3e"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
@@ -295,7 +321,7 @@
 								<pen lineWidth="0.75"/>
 							</box>
 							<textField textAdjust="StretchHeight">
-								<reportElement x="0" y="0" width="155" height="20" uuid="d570efb5-df0e-426b-8b2e-f604f2143ab5"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="101" height="20" uuid="d570efb5-df0e-426b-8b2e-f604f2143ab5"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -304,14 +330,14 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="101" uuid="891997ec-9e59-4fd5-9ef3-858b4f3d5d89">
+					<jr:column width="69" uuid="891997ec-9e59-4fd5-9ef3-858b4f3d5d89">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
 						<jr:tableHeader height="20" rowSpan="1">
 							<box>
 								<pen lineWidth="0.5"/>
 							</box>
 							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="101" height="20" uuid="640be37f-4726-4b70-8410-f1ae71c8b0b7"/>
+								<reportElement x="0" y="0" width="69" height="20" uuid="640be37f-4726-4b70-8410-f1ae71c8b0b7"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
@@ -324,12 +350,58 @@
 								<pen lineWidth="0.75"/>
 							</box>
 							<textField pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="101" height="20" uuid="7087ba68-d259-4251-a171-43d6215343d9"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="69" height="20" uuid="7087ba68-d259-4251-a171-43d6215343d9"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{salary}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="70" uuid="146d0320-9681-41e5-9b91-46b81fe948e8">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:tableHeader style="Table_TD" height="20" rowSpan="1">
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="70" height="20" uuid="f23b1ba6-0718-47f9-b0f6-7b701f916f25"/>
+								<box leftPadding="2" rightPadding="0"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Rate"]]></textFieldExpression>
+							</textField>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField pattern="#,##0.00" isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="70" height="20" uuid="28ee5318-de8d-4181-a70c-8fc105408e1a"/>
+								<box rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{Rate}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="62" uuid="d7bacf84-7078-43fd-a7e8-004a6362ad65">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+						<jr:tableHeader style="Table_TD" height="20" rowSpan="1">
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="62" height="20" uuid="b939cb26-38e6-4a55-93c9-cce1af440113"/>
+								<box leftPadding="2" rightPadding="0"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Premium"]]></textFieldExpression>
+							</textField>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="62" height="20" uuid="7ebfc95d-42d6-47b4-900f-5d1cd70f36c0"/>
+								<box rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{Premium}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

@@ -1933,8 +1933,8 @@ public class JasperCustomServiceImple {
 			List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
 			Double OverAllPremium=0.0;
 			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
+			List<PolicyCoverData> coverData = coverDataRepository.findByQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			if("100002".equalsIgnoreCase(companyId)) {
-					List<PolicyCoverData> coverData = coverDataRepository.findByQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 					if(coverData!=null && !coverData.isEmpty()) {
 						Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T"))
 								.map(m -> m.getTaxRate()).map(BigDecimal::doubleValue)
@@ -2023,9 +2023,14 @@ public class JasperCustomServiceImple {
 						Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(m -> {
 							LinkedHashMap<String, Object> contentMap = new LinkedHashMap<String, Object>();
 							contentMap.put("itemId", m.getItemId());
-							contentMap.put("itemDesc", m.getItemDesc());
 							contentMap.put("contentRiskDesc", m.getContentRiskDesc());
 							contentMap.put("sumInsured", m.getSumInsured());
+							contentMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+									&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(m.getSectionId())
+									&& f.getVehicleId()==m.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
+							contentMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+									&& f.getSectionId()==Integer.parseInt(m.getSectionId())
+									&& f.getVehicleId()==m.getRiskId()).map(u -> u.getPremiumIncludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
 							return contentMap;
 						}, Collectors.toList()))).entrySet()
 						.stream().map(l -> {
@@ -2044,6 +2049,12 @@ public class JasperCustomServiceImple {
 							empMap.put("employeeName", o.getEmployeeName());
 							empMap.put("occupationDesc", o.getOccupationDesc());
 							empMap.put("salary", new BigDecimal(Double.parseDouble(o.getSalary().toString())).toString());
+							empMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+									&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(o.getSectionId())
+									&& f.getVehicleId()==o.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
+							empMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+									&& f.getSectionId()==Integer.parseInt(o.getSectionId())
+									&& f.getVehicleId()==o.getRiskId()).map(u -> u.getPremiumIncludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
 							return empMap;
 						}, Collectors.toList()))).entrySet()
 						.stream().map(g -> {
@@ -2085,6 +2096,8 @@ public class JasperCustomServiceImple {
 					coverMap.put("contentList", contentList);
 					coverMap.put("employeeList", employeeList);
 					coverMap.put("termsAndconditions", termsAndconditions);
+					coverMap.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
+					coverMap.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
 					coverageList.add(coverMap);
 			}
 			
