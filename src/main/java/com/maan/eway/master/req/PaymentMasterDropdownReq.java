@@ -26,4 +26,7 @@ public class PaymentMasterDropdownReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
 }

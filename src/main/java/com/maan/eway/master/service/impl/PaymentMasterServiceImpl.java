@@ -243,6 +243,7 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 		saveData.setAmendId(amendId);
 		saveData.setBranchCode(req.getBranchCode()==null?"99999":req.getBranchCode());
 		saveData.setCompanyId(req.getCompanyId()==null?"99999": req.getCompanyId());
+		saveData.setOaCode(StringUtils.isBlank(req.getOaCode())?"99999": req.getOaCode());
 		saveData.setAgencyCode(StringUtils.isBlank(req.getAgencyCode())?"99999": req.getAgencyCode());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
@@ -674,12 +675,12 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		Predicate n9 = cb.equal(cb.lower(c.get("subUserType")),req.getSubUserType().toLowerCase() );
 		Predicate n10 = cb.equal(c.get("productId"),req.getProductId());
 		
-		String agencyCode = "99999" ;
-		if(StringUtils.isNotBlank(req.getCreatedBy()) ) {
-			LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
-			if(loginData !=null  )
-				agencyCode = loginData.getAgencyCode() ;
-		}
+		String agencyCode = StringUtils.isBlank(req.getAgencyCode())? "99999" :req.getAgencyCode() ;
+//		if(StringUtils.isNotBlank(req.getCreatedBy()) ) {
+//			LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
+//			if(loginData !=null  )
+//				agencyCode = loginData.getAgencyCode() ;
+//		}
 		  
 		Predicate n13 = cb.equal(c.get("agencyCode"),agencyCode );
 		Predicate n14 = cb.equal(c.get("agencyCode"),"99999" );

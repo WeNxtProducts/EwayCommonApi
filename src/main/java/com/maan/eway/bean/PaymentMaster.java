@@ -56,6 +56,11 @@ public class PaymentMaster {
 	@Column(name="AGENCY_CODE",length=100)
 	private String agencyCode;
 	
+	
+//	@Id
+	@Column(name="OA_CODE",length=100)
+	private String oaCode;
+	
 	@Column(name="CASH_YN",length=20)
 	private String cashYn;
 	
