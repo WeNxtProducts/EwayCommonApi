@@ -65,6 +65,7 @@
 		<field name="Rate" class="java.lang.Double"/>
 		<field name="Premium" class="java.math.BigDecimal"/>
 	</subDataset>
+	<parameter name="coverId" class="java.lang.String"/>
 	<queryString language="json">
 		<![CDATA[coverageDetails.coverValue.contentList]]>
 	</queryString>
@@ -96,6 +97,7 @@
 			</textField>
 		</band>
 		<band height="15">
+			<printWhenExpression><![CDATA[!Arrays.asList("45","36").contains($P{coverId})]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="0" y="0" width="431" height="15" uuid="792230f4-78cb-4698-8c22-e9db778e6b3b">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -229,6 +231,7 @@
 			</componentElement>
 		</band>
 		<band height="15">
+			<printWhenExpression><![CDATA[Arrays.asList("45","36").contains($P{coverId})]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="0" y="0" width="431" height="15" uuid="e7b1b700-2713-4e09-af16-4a1d56f1a9d1">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -238,8 +241,8 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="ContentInfo" uuid="1aa0291a-fdbe-485a-9603-1565980294ec">
-						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.employeeList")]]></dataSourceExpression>
+					<datasetRun subDataset="ContentInfo" uuid="0e40bcb7-3b61-4d78-ba30-e0cbbf0205e7">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("sectionValue")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="30" uuid="36325618-946e-4d78-bf5e-82b5cd2f7418">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>

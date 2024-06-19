@@ -1837,13 +1837,19 @@ public class JasperCustomServiceImple {
 			List<Tuple> list = em.createQuery(cq).getResultList();
 			if(!CollectionUtils.isEmpty(list)) {
 				Tuple map = list.get(0);
-					List<BuildingDetails> Blist = buildingDetRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
+				List<PolicyCoverData> coverData = coverDataRepository.findByQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
+				List<BuildingDetails> Blist = buildingDetRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
 				List<Map<String,Object>> locationDetails = Blist.stream().map(k ->{
 					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 					lmap.put("riskId", k.getRiskId());
 					lmap.put("locationName", k.getLocationName()==null?"":StringUtils.capitalize(k.getLocationName()));
-					lmap.put("buildingAddress", k.getBuildingAddress()==null?"":k.getBuildingAddress());
 					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
+					lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+							&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
+							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
+					lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+							&& f.getSectionId()==Integer.parseInt(k.getSectionId())
+							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumIncludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
 					return lmap;
 				}).collect(Collectors.toList());
 				
@@ -1933,7 +1939,6 @@ public class JasperCustomServiceImple {
 			List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
 			Double OverAllPremium=0.0;
 			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
-			List<PolicyCoverData> coverData = coverDataRepository.findByQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			if("100002".equalsIgnoreCase(companyId)) {
 					if(coverData!=null && !coverData.isEmpty()) {
 						Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T"))
