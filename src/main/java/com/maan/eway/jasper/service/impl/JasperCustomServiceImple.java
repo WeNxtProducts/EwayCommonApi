@@ -2096,8 +2096,6 @@ public class JasperCustomServiceImple {
 					coverMap.put("contentList", contentList);
 					coverMap.put("employeeList", employeeList);
 					coverMap.put("termsAndconditions", termsAndconditions);
-					coverMap.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
-					coverMap.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
 					coverageList.add(coverMap);
 			}
 			
@@ -2111,6 +2109,8 @@ public class JasperCustomServiceImple {
 				coverMap.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
 				coverMap.put("productId", map.get("productId")==null?"":map.get("productId").toString());
 				coverMap.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
+				coverMap.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
+				coverMap.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
 				coverageDetails.add(coverMap);
 			}
 			
