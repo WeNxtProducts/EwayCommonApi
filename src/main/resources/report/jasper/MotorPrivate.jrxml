@@ -1720,6 +1720,7 @@
 					</jr:column>
 					<jr:column width="80" uuid="eaaa1abf-29dd-4301-b6ec-be424dc99c2c">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<printWhenExpression><![CDATA["1".equalsIgnoreCase("2")]]></printWhenExpression>
 						<jr:columnHeader style="Table_TD" height="15" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>

@@ -313,7 +313,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{policyNo}==null?"Quote No":"Policy No:"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""?"Quote No":"Policy No:"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="90" y="0" width="465" height="20" uuid="7261fe12-96e0-4709-bf95-713ec1a0495d">
@@ -329,7 +329,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{policyNo}==null?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="20">
@@ -476,8 +476,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date($F{expiryDate}.getTime() + 24*60*60*1000)
-]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.util.Date($F{expiryDate}.getTime() + 24*60*60*1000)]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="50">

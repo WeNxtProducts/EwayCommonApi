@@ -150,7 +150,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{policyNo}==null?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="279" height="15" uuid="5acdae5f-92f8-4dc7-8430-a1d15fa09947">
@@ -164,7 +164,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{policyNo}==null?"SCHEDULE FORMING PART AND ATTACHED TO QUOTE  NO:-":"SCHEDULE FORMING PART AND ATTACHED TO POLICY NO:-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""?"SCHEDULE FORMING PART AND ATTACHED TO QUOTE  NO:-":"SCHEDULE FORMING PART AND ATTACHED TO POLICY NO:-"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">

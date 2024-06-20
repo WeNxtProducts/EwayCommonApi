@@ -232,7 +232,8 @@ public class JasperServiceImpl implements JasperService {
 					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
 					Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
 					String jsonString = gson.toJson(EwaySchedule);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+(StringUtils.isBlank(homeData.getPolicyNo())?homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "")
+							:homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", ""));
 					if("100004".equalsIgnoreCase(homeData.getCompanyId())) {
 						String obj[] =new String[1];
 						obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
