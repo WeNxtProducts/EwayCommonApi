@@ -78,10 +78,10 @@
 		<fieldDescription><![CDATA[sectionValue]]></fieldDescription>
 	</field>
 	<detail>
-		<band height="15" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
-				<reportElement x="0" y="0" width="431" height="15" uuid="22db59c7-520e-4c6f-b910-1c1dfda3a9b4">
+				<reportElement x="0" y="5" width="431" height="15" uuid="22db59c7-520e-4c6f-b910-1c1dfda3a9b4">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -375,7 +375,7 @@
 							</textField>
 						</jr:tableHeader>
 						<jr:detailCell style="Table_TD" height="20">
-							<textField pattern="#,##0.00" isBlankWhenNull="true">
+							<textField isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="70" height="20" uuid="28ee5318-de8d-4181-a70c-8fc105408e1a"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">

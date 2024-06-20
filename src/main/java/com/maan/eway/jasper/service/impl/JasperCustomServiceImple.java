@@ -531,6 +531,7 @@ public class JasperCustomServiceImple {
 					response.setBankaccountUSD(entry.get("ACCOUNT_NUMBER_USD")==null?"":entry.get("ACCOUNT_NUMBER_USD").toString());
 			}
 			
+			Double taxAmount=0.0;
 			if(Arrays.asList(5,46).contains(map.get("productId"))) {
 				List<PolicyDrcrDetail> drcrDetails = drcrdetail.findByQuoteNoAndStatusIn(map.get("quoteNo")==null?"":map.get("quoteNo").toString(),Arrays.asList("Y","CV"));
 				List<PolicyDrcrDetail> listByRiskId = drcrDetails.stream().filter(r -> r.getDrcrFlag().equalsIgnoreCase("DR") && !r.getChargeCode().equals(new BigDecimal(1007))
@@ -550,7 +551,7 @@ public class JasperCustomServiceImple {
 							.map(m -> m.getTaxRate()).map(BigDecimal::doubleValue)
 							.findAny().orElse(0.0);
 					
-					Double taxAmount = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T") && f.getSectionId()!=99999)
+					taxAmount = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T") && f.getSectionId()!=99999)
 							.map(i -> i.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 					
 					response.setVatPercent(taxRate.toString());
@@ -558,7 +559,7 @@ public class JasperCustomServiceImple {
 					
 					List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999)
 							.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverDesc(),Collectors.reducing(
-								BigDecimal.ZERO, PolicyCoverData::getPremiumIncludedTaxLc, BigDecimal::add))))
+								BigDecimal.ZERO, PolicyCoverData::getPremiumExcludedTaxLc, BigDecimal::add))))
 							.entrySet().stream()
 							.flatMap((Map.Entry<Integer,Map<String,BigDecimal>> s ) -> {
 								Integer sectionId = s.getKey();
@@ -585,7 +586,7 @@ public class JasperCustomServiceImple {
 			}
 			
 			
-			OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+			OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue))+taxAmount;
 			String amtInWords="";
 			if(OverAllPremium!=null) {
 				amtInWords = motorRepo.getAmountByWords(OverAllPremium);
@@ -1953,7 +1954,7 @@ public class JasperCustomServiceImple {
 								&& (f.getCoverageType().equals("O") && (f.getIsSelected().equalsIgnoreCase("Y")?"Y":"N").equalsIgnoreCase("Y") 
 								|| !f.getCoverageType().equalsIgnoreCase("O")))
 								.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverDesc(),Collectors.reducing(
-									BigDecimal.ZERO, PolicyCoverData::getPremiumIncludedTaxLc, BigDecimal::add))))
+									BigDecimal.ZERO, PolicyCoverData::getPremiumExcludedTaxLc, BigDecimal::add))))
 								.entrySet().stream()
 								.flatMap((Map.Entry<Integer,Map<String,BigDecimal>> s ) -> {
 									Integer sectionId = s.getKey();

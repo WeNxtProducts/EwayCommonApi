@@ -336,7 +336,7 @@
 							<box>
 								<pen lineWidth="0.5"/>
 							</box>
-							<textField pattern="#,##0.00" isBlankWhenNull="true">
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="95" height="20" uuid="260ee589-c97f-407c-99f0-85d56c3ea0a9"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -386,8 +386,7 @@
 				<subreportParameter name="coverId">
 					<subreportParameterExpression><![CDATA[$F{coverId}]]></subreportParameterExpression>
 				</subreportParameter>
-				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.contentList")
-]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.contentList")]]></dataSourceExpression>
 				<subreportExpression><![CDATA["NonMotorContent.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
