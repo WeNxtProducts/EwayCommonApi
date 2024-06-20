@@ -12,6 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -68,6 +69,7 @@ import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingBrokerUserListReq;
@@ -86,6 +88,7 @@ import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.AdminPendingGridListRes;
 import com.maan.eway.common.res.AdminPendingGridRes;
+import com.maan.eway.common.res.CountRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
@@ -105,6 +108,8 @@ import com.maan.eway.common.res.GetallPortfolioPendingRes;
 import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
 import com.maan.eway.common.res.GetallReferralDetailsCommonRes;
 import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
+import com.maan.eway.common.res.LoginPolicyCountTupleRes;
+import com.maan.eway.common.res.LoginQuoteCriteriaResponse;
 import com.maan.eway.common.res.PaymentStausRes;
 import com.maan.eway.common.res.PortFolioAdminTupleRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
@@ -126,6 +131,7 @@ import com.maan.eway.common.res.TravelQuoteCriteriaRes;
 import com.maan.eway.common.res.TravelQuoteCriteriaResponse;
 import com.maan.eway.common.res.TravelRejectCriteriaRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
+import com.maan.eway.common.res.ViewLoginDetailsRes;
 import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.common.service.CommonGridService;
 import com.maan.eway.common.service.GridService;
@@ -144,6 +150,7 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
+import com.maan.eway.repository.SessionMasterRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
@@ -195,6 +202,9 @@ public class GridServiceImpl implements GridService {
 	
 	@Autowired
 	private LoginMasterRepository loginRepo;
+	
+	@Autowired
+	private SessionMasterRepository sessionRepo;
 	
 	@Autowired
 	private PaymentDetailRepository paymentdetailrepo;
@@ -7104,5 +7114,306 @@ public class GridServiceImpl implements GridService {
 		return resp;
 	}
 
-}
+	@Override
+	public ViewLoginDetailsRes viewLoginDetails(ExistingQuoteReq req) {
+		ViewLoginDetailsRes resp = new ViewLoginDetailsRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		QuoteCriteriaResponse cres = new QuoteCriteriaResponse();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		List<CountRes> countResList = new ArrayList<CountRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date loginCreatedDate=null;
+			Date lastLoginDate=null;
+			
+			CountRes count =new CountRes();
+			LoginMaster loginData=loginRepo.findByLoginId(req.getLoginId());
+			if(loginData!=null) {
+				loginCreatedDate=loginData.getEntryDate();
+			}
+			List<SessionMaster> sessionList=sessionRepo.findByLoginIdOrderByEntryDateDesc(req.getLoginId());
+			if(sessionList!=null && sessionList.size()>0) {
+				lastLoginDate=sessionList.get(0).getEntryDate();
+			}
+			System.out.println("Entering into Thread");
+			// Thread Call Setup To Fetch List From 4 tables
+			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			MyTaskList taskList = new MyTaskList(queue);
+			ViewLoginExistingQuoteThreadCall motorexisting = new ViewLoginExistingQuoteThreadCall("getMotorExistingQuote", req, em,loginCreatedDate,today);
+			ViewLoginExistingQuoteThreadCall travelexisting = new ViewLoginExistingQuoteThreadCall("getTravelExistingQuote", req,em,loginCreatedDate,today);
+			ViewLoginExistingQuoteThreadCall buildingexisting = new ViewLoginExistingQuoteThreadCall("getAssetExistingQuote",req, em,loginCreatedDate,today);
+			ViewLoginExistingQuoteThreadCall humanexisting = new ViewLoginExistingQuoteThreadCall("getHummanExistingQuote", req, em,loginCreatedDate,today);
+			System.out.println("Adding to Queue");
+			queue.add(motorexisting);
+			queue.add(travelexisting);
+			queue.add(buildingexisting);
+			queue.add(humanexisting);
+			int threadCount = 4;
+			int success = 0;
+			ForkJoinPool forkjoin = new ForkJoinPool(threadCount);
+			ConcurrentLinkedQueue<Future<Object>> invoke = (ConcurrentLinkedQueue<Future<Object>>) forkjoin
+					.invoke(taskList);
+			System.out.println("Declaring list");
+			List<LoginQuoteCriteriaResponse  > motorList = new ArrayList<LoginQuoteCriteriaResponse >();
+			List<LoginQuoteCriteriaResponse > travelList = new ArrayList<LoginQuoteCriteriaResponse >();
+			List<LoginQuoteCriteriaResponse > buildingList = new ArrayList<LoginQuoteCriteriaResponse >();
+			List<LoginQuoteCriteriaResponse > humanList = new ArrayList<LoginQuoteCriteriaResponse >();
+			List<Date> lastQuoteDate=new ArrayList<Date>();
+			List<Date> lastPolicyDate=new ArrayList<Date>();
+			List<Double> totalPremium=new ArrayList<Double>();
+			List<LoginPolicyCountTupleRes> filterProduct1 =null;
+			List<LoginPolicyCountTupleRes> filterProduct2 = null;
+			Long poicyCount ,endtCount;
+			for (Future<Object> callable : invoke) {
+
+				log.info(callable.getClass() + "," + callable.isDone());
+
+				if (callable.isDone()) {
+					Map<String, Object> map = (Map<String, Object>) callable.get();
+
+					for (Entry<String, Object> future : map.entrySet()) {
+
+						if ("getMotorExistingQuote".equalsIgnoreCase(future.getKey())) {
+							motorList = (List<LoginQuoteCriteriaResponse>) future.getValue();
+							System.out.println("MotorList "+motorList);
+							lastQuoteDate.add(dateFormat.parse(motorList.get(0).getLastQuoteDate()));
+						} else if ("getTravelExistingQuote".equalsIgnoreCase(future.getKey())) {
+							travelList = (List<LoginQuoteCriteriaResponse>) future.getValue();
+							lastQuoteDate.add(dateFormat.parse(travelList.get(0).getLastQuoteDate()));
+						} else if ("getAssetExistingQuote".equalsIgnoreCase(future.getKey())) {
+							buildingList = (List<LoginQuoteCriteriaResponse>) future.getValue();
+							lastQuoteDate.add(dateFormat.parse(buildingList.get(0).getLastQuoteDate()));
+						} else if ("getHummanExistingQuote".equalsIgnoreCase(future.getKey())) {
+							humanList = (List<LoginQuoteCriteriaResponse>) future.getValue();
+							lastQuoteDate.add(dateFormat.parse(humanList.get(0).getLastQuoteDate()));
+						}
+					}
+
+					success++;
+				}
+			}
+			List<CompanyProductMaster> productList = getCompanyProductList(req.getInsuranceId());
+			productList.sort(Comparator.comparing(CompanyProductMaster :: getProductId));
+			//Policy 
+			PortFolioDashBoardReq policyReq =new PortFolioDashBoardReq();
+			policyReq.setBranchCode("99999");
+			policyReq.setLoginId(req.getLoginId());
+			policyReq.setInsuranceId(req.getInsuranceId());
+			policyReq.setStartDate(loginCreatedDate);
+			policyReq.setEndDate(today);
+			policyReq.setBusinessType("N");
+			List<LoginPolicyCountTupleRes> list = getLoginPolicyCount(policyReq);
+			
+			//Endt 
+			PortFolioDashBoardReq policyReq1 =new PortFolioDashBoardReq();
+			policyReq1.setBranchCode("99999");
+			policyReq1.setLoginId(req.getLoginId());
+			policyReq1.setInsuranceId(req.getInsuranceId());
+			policyReq1.setStartDate(loginCreatedDate);
+			policyReq1.setEndDate(today);
+			policyReq1.setBusinessType("E");
+			List<LoginPolicyCountTupleRes> list1 = getLoginPolicyCount(policyReq1);
+			// Group By Product Id
+			for (CompanyProductMaster product : productList) {
+				poicyCount = 0l;
+				endtCount=0l;
+				String productId=product.getProductId().toString();
+				if (StringUtils.isBlank(req.getProductId()) || "99999".equalsIgnoreCase(req.getProductId())
+						|| product.getProductId().equals(Integer.valueOf(req.getProductId()))) {
+
+					String productType = StringUtils.isBlank(product.getMotorYn()) ? "M" : product.getMotorYn();
+					List<LoginQuoteCriteriaResponse> filterProduct = new ArrayList<LoginQuoteCriteriaResponse>();
+					
+					filterProduct1 = list.stream()
+							.filter(o -> o.getProductId() != null && o.getProductId().equals(Integer.valueOf(productId)))
+							.collect(Collectors.toList());
+					if (filterProduct1.size() > 0 && filterProduct1 != null) {
+						lastPolicyDate.add(filterProduct1.get(0).getEntryDate());
+						totalPremium.add(Double.valueOf(filterProduct1.get(0).getOverallPremiumLc().toString()));
+						poicyCount = filterProduct1.get(0).getCount();
+					}
+					filterProduct2 = list1.stream()
+							.filter(o -> o.getProductId() != null && o.getProductId().equals(Integer.valueOf(productId)))
+							.collect(Collectors.toList());
+					if(filterProduct2.size()>0 && filterProduct2!=null) {
+						endtCount=filterProduct2.get(0).getCount();
+						}
+					if ("H".equalsIgnoreCase(productType) && product.getProductId().equals(4))
+						filterProduct = travelList; 
+
+					 if ("M".equalsIgnoreCase(productType))
+						filterProduct = motorList.stream().filter( o -> o.getProductId()!=null &&o.getProductId().equals(productId )
+													).collect(Collectors.toList());
+
+					else if ("A".equalsIgnoreCase(productType))
+						filterProduct = buildingList.stream().filter(
+								o -> o.getProductId() != null && o.getProductId().equals(productId))
+								.collect(Collectors.toList());
+
+					else if ("H".equalsIgnoreCase(productType))
+						filterProduct = humanList.stream().filter(
+								o -> o.getProductId() != null && o.getProductId().equals(productId))
+								.collect(Collectors.toList());
+
+					// Map
+					if (filterProduct != null && filterProduct.size() > 0) {
+						for (LoginQuoteCriteriaResponse data : filterProduct) {
+							CountRes countRes = new CountRes();
+							countRes.setProductId(data.getProductId());
+							countRes.setProductName(data.getProductName());
+							countRes.setQuotetotalCount(data.getQuoteCount());
+							countRes.setPolicytotalCount(poicyCount);
+							countRes.setEndttotalCount(endtCount);
+							countResList.add(countRes);
+						}
+					}else {
+						CountRes countRes = new CountRes();
+						countRes.setProductId(productId);
+						countRes.setProductName(product.getProductDesc());
+						countRes.setQuotetotalCount(0l);
+						countRes.setPolicytotalCount(poicyCount);
+						countRes.setEndttotalCount(endtCount);
+						countResList.add(countRes);
+					}
+				}
+
+			}
+				Double totalPre= totalPremium.stream().mapToDouble(Double::doubleValue).sum();
+				 // Finding the maximum (latest) date using Collectors.maxBy
+		        Optional<Date> lastQuote = lastQuoteDate.stream().collect(Collectors.maxBy(Comparator.naturalOrder()));
+		        Optional<Date> lastPolicy = lastPolicyDate.stream().collect(Collectors.maxBy(Comparator.naturalOrder()));
+		        DecimalFormat decimalFormatter = new DecimalFormat("#.#");
+				resp.setProductDetails(countResList);
+				resp.setLastLoginDate(lastLoginDate);	
+				resp.setLastPolicyDate(lastPolicy.get());
+				resp.setLastQuoteDate(lastQuote.get());
+				resp.setCollectedPremium(decimalFormatter.format(totalPre).toString());
+				resp.setPolicyCommission(null);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resp;
+	}
+	public List<LoginPolicyCountTupleRes> getLoginPolicyCount(PortFolioDashBoardReq req) {
+		List<LoginPolicyCountTupleRes> list = new ArrayList<LoginPolicyCountTupleRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+
+			Date startDate = req.getStartDate();
+			cal.setTime(startDate);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			startDate = cal.getTime();
+
+			Date endDate = req.getEndDate();
+			cal.setTime(endDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			endDate = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginPolicyCountTupleRes> query = cb.createQuery(LoginPolicyCountTupleRes.class);
+
+			// Find All
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+
+			// Select
+			query.multiselect(cb.count(h).alias("count"), cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"), h.get("productId").alias("productId"),
+					h.get("productName").alias("productName"), l.get("agencyCode").alias("agencyCode"),
+					u.get("userName").alias("brokerName"), l.get("userType").alias("userType"),
+					/*l.get("subUserType").alias("subUserType"),*/l.get("oaCode").alias("oaCode"),
+					cb.max(h.get("customerCode")).alias("customerCode"),cb.max(h.get("customerName")).alias("customerName"),
+					h.get("sourceType").alias("sourceType"),cb.max(h.get("bdmCode")).alias("bdmCode")
+					,cb.max(h.get("entryDate")).alias("entryDate"));
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(h.get("productId")));
+
+			// Broker condition
+			Subquery<Long> loginId = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
+			loginId.select(ocpm1.get("loginId"));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("loginId"), h.get("loginId"));
+			Predicate a3 = cb.equal(ocpm1.get("oaCode"), l.get("agencyCode"));
+			loginId.where(a1, a2, a3);
+
+			
+
+			// Where
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.equal(h.get("loginId"), loginId));
+			
+//			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
+//			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("entryDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("entryDate"), endDate));
+			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(l.get("userType"), "Broker"));
+//			Expression<String> e0 = l.get("subUserType");
+//			predicate.add(e0.in("broker","direct"));
+//			predicate.add(cb.equal(l.get("subUserType"), "Broker"));
+			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
+			predicate.add(cb.equal(l.get("companyId"), h.get("companyId")));
+			if (StringUtils.isNotBlank(req.getLoginId())) {
+				predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
+			}
+
+			// Business Type Condition
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+
+			if ("N".equalsIgnoreCase(businessType)) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				Predicate n1 = cb.isNull(h.get("endtStatus"));
+				Predicate n2 = cb.equal(h.get("endtStatus"), "");
+				predicate.add(cb.or(n1, n2));
+
+			} else if ("E".equalsIgnoreCase(businessType)) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+				predicate.add(cb.notEqual(h.get("endtTypeId"), "842"));
+
+			} else if ("C".equalsIgnoreCase(businessType)) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+				predicate.add(cb.equal(h.get("endtTypeId"), "842"));
+			}
+
+			// Product & Branch Condition
+			if (StringUtils.isNotBlank(req.getProductId()))
+				predicate.add(cb.equal(h.get("productId"), req.getProductId()));
+			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
+				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
+
+			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId"), h.get("productName"),
+					l.get("agencyCode"), u.get("userName"), l.get("userType"),//, l.get("subUserType"),
+					l.get("oaCode"),h.get("sourceType"))
+					.orderBy(orderList);
+
+			// Get Result
+			TypedQuery<LoginPolicyCountTupleRes> result = em.createQuery(query);
+			list = result.getResultList();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+
+		}
+		return list;
+	}
+
+	}
 

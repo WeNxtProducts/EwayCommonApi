@@ -36,6 +36,7 @@ import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.RegNumberRes;
 import com.maan.eway.common.res.RevertGridRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
+import com.maan.eway.common.res.ViewLoginDetailsRes;
 import com.maan.eway.common.service.impl.PortFolioSearchGridRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
@@ -158,5 +159,7 @@ public interface GridService {
 	GetallExistingRejectedLapsedRes getallLapsedQuoteDetailSQ(ExistingQuoteReq req);
 
 	GetallExistingRejectedLapsedRes getallRejectedQuoteSQ(ExistingQuoteReq req);
+
+	ViewLoginDetailsRes viewLoginDetails(ExistingQuoteReq req);
 
 }

@@ -47,6 +47,7 @@ import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.RegNumberRes;
 import com.maan.eway.common.res.RevertGridRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
+import com.maan.eway.common.res.ViewLoginDetailsRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.impl.PortFolioSearchGridRes;
 import com.maan.eway.error.Error;
@@ -1039,6 +1040,22 @@ public class GridController {
 		}
 	}
 
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/viewlogindetails")
+	public ResponseEntity<CommonRes> viewLoginDetails(@RequestBody ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		ViewLoginDetailsRes res = entityService.viewLoginDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }
 
