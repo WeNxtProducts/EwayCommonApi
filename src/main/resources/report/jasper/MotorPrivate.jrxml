@@ -1639,9 +1639,9 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="35">
+		<band height="40">
 			<componentElement>
-				<reportElement x="0" y="0" width="555" height="35" isRemoveLineWhenBlank="true" uuid="49cba749-92ee-469f-b0a2-96af8a0f9c7a">
+				<reportElement x="10" y="0" width="529" height="35" isRemoveLineWhenBlank="true" uuid="49cba749-92ee-469f-b0a2-96af8a0f9c7a">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -1763,12 +1763,12 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="115" uuid="468d3561-ddc5-4575-8673-857591cfbe01">
+					<jr:column width="89" uuid="468d3561-ddc5-4575-8673-857591cfbe01">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
 						<jr:columnHeader style="Table_TD" height="15" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>
-								<reportElement x="0" y="0" width="115" height="15" uuid="aeb9c1fd-a952-4827-a5bc-5c7fb8e997aa"/>
+								<reportElement x="0" y="0" width="89" height="15" uuid="aeb9c1fd-a952-4827-a5bc-5c7fb8e997aa"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
 								</textElement>
@@ -1777,7 +1777,7 @@
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="20">
 							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="115" height="20" uuid="9b54943d-44ec-472c-9d1a-029034649c13"/>
+								<reportElement x="0" y="0" width="89" height="20" uuid="9b54943d-44ec-472c-9d1a-029034649c13"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
@@ -1787,6 +1787,25 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="554" y="0" width="1" height="40" uuid="9cdc693d-a585-4951-8db7-23cdd63c59be">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="1" height="40" uuid="4a397139-c539-4973-80fe-f452170e2f5d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="12">
 			<textField>
