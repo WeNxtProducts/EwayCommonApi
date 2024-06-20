@@ -3,8 +3,6 @@ package com.maan.eway.common.req;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -13,12 +11,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EserviceCustomerSaveReq {
+public class CustomerChangesSaveReq {
 
-	
-	@JsonProperty("SaveOrSubmit")
-	private String saveOrSubmit;
 
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
 	
 	@JsonProperty("CustomerReferenceNo")
 	private String customerReferenceNo;
@@ -50,12 +47,6 @@ public class EserviceCustomerSaveReq {
 
 	@JsonProperty("ClientName")
 	private String clientName;
-	
-	@JsonProperty("MiddleName")
-	private String middleName;
-	
-	@JsonProperty("LastName")
-	private String lastName;
 
 	@JsonProperty("Address1")
 	private String address1;
@@ -101,35 +92,7 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("IdType")
 	private String idType;
 	
-/*
-	@JsonProperty("IdTypeDesc")
-	private String idTypeDesc;
 
-
-
-	@JsonProperty("Age")
-	private String age;
-
-
-	@JsonProperty("TitleDesc")
-	private String titleDesc;
-
-	
-	@JsonProperty("ClientStatusDesc")
-	private String clientStatusDesc;
-
-	@JsonProperty("GenderDesc")
-	private String genderDesc;
-
-	@JsonProperty("OccupationDesc")
-	private String occupationDesc;
-
-	@JsonProperty("BusinessTypeDesc")
-	private String businessTypeDesc;
-
-	@JsonProperty("Vrngst")
-	private String vrnGst;
-*/
 	@JsonProperty("StateCode")
 	private String stateCode;
 
@@ -206,34 +169,7 @@ public class EserviceCustomerSaveReq {
 
 	@JsonProperty("VrTinNo")
 	private String vrTinNo;
-	@JsonProperty("EndorsementDate") // EndorsementDate
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	private Date endorsementDate;
-	@JsonProperty("EndorsementRemarks") // EndorsementRemarks
-	private String endorsementRemarks;
-	@JsonProperty("EndorsementEffectiveDate") // EndorsementEffectiveDate
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	private Date endorsementEffdate;
-	@JsonProperty("OrginalPolicyNo") // OrginalPolicyNo
-	private String originalPolicyNo;
-	@JsonProperty("EndtPrevPolicyNo") // EndtPrevPolicyNo
-	private String endtPrevPolicyNo;
-	@JsonProperty("EndtPrevQuoteNo") // EndtPrevQuoteNo
-	private String endtPrevQuoteNo;
-	@JsonProperty("EndtCount") // EndtCount
-	private BigDecimal endtCount;
-	@JsonProperty("EndtStatus") // EndtStatus
-	private String endtStatus;
-	@JsonProperty("IsFinanceEndt") // IsFinanceEndt
-	private String isFinaceYn;
-	@JsonProperty("EndtCategoryDesc") // EndtCategoryDesc
-	private String endtCategDesc;
-	@JsonProperty("EndorsementType") // EndorsementType
-	private Integer endorsementType;
 
-	@JsonProperty("EndorsementTypeDesc") // EndorsementTypeDesc
-	private String endorsementTypeDesc;
-	
 	@JsonProperty("PinCode") 
 	private String pinCode;
 	
@@ -242,14 +178,5 @@ public class EserviceCustomerSaveReq {
 	
 	@JsonProperty("OtherOccupation")
 	private String otherOccupation;
-	
-	@JsonProperty("FirstName")
-	private String firstName;
-
-	@JsonProperty("CustomerCode")
-	private String customerCode;
-
-	@JsonProperty("Address3")
-	private String address3;
 
 }

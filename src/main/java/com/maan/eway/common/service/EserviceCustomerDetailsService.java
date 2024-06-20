@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.common.req.CustomerChangesSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
@@ -54,7 +55,11 @@ public interface EserviceCustomerDetailsService {
 	CommonRes validateEmail(String email, String companyId, String saveOrSubmit);
 
 
-	CommonRes validateDate(Date date, String policyHolderType, String idType, String companyId, String saveOrSubmit, String gender);	
+	CommonRes validateDate(Date date, String policyHolderType, String idType, String companyId, String saveOrSubmit, String gender);
+
+	List<Error> validate(CustomerChangesSaveReq req);
+
+	SuccessRes customerChanges(CustomerChangesSaveReq req);	
 	
 
 }

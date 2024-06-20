@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.common.req.CommonErrorModuleReq;
+import com.maan.eway.common.req.CustomerChangesSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
@@ -358,4 +359,34 @@ public class EserviceCustomerDetailsController {
 			return entityService.validateDate(date,policyHolderType , idType ,  companyId, saveOrSubmit, gender);
 
 		}
+		@PostMapping(value = "/customerchanges")
+		public ResponseEntity<CommonRes> customerChanges(@RequestBody CustomerChangesSaveReq  req) {
+			CommonRes data = new CommonRes();
+			// Validation
+			List<Error> validation = entityService.validate(req);
+			if (validation != null && validation.size() != 0) {
+
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+			} else {
+				// Save
+				SuccessRes res = entityService.customerChanges(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+	    }
+		
 }

@@ -3684,4 +3684,348 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			}
 			return true;
 		}
+		
+		@Override
+		public List<Error> validate(CustomerChangesSaveReq req) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public SuccessRes customerChanges(CustomerChangesSaveReq req) {
+
+			SuccessRes res = new SuccessRes();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+
+				if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+					List<HomePositionMaster> homeData = homePosistionRepo
+							.findByRequestReferenceNo(req.getRequestReferenceNo());
+
+					if (homeData != null && homeData.size() > 0) {
+						String companyId = homeData.get(0).getCompanyId();
+						String productId = homeData.get(0).getProductId().toString();
+						String customerId = homeData.get(0).getCustomerId();
+						
+						// From List Item Value
+						String gender = getListItem (req.getCompanyId() , req.getBranchCode() ,"GENDER",req.getGender());// listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
+						String title = getListItem (req.getCompanyId() , req.getBranchCode() ,"NAME_TITLE",req.getTitle());//listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
+						String language = getListItem (req.getCompanyId() , req.getBranchCode() ,"LANGUAGE",req.getLanguage());//listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
+						String policyHolderType = getListItem ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
+						String policyHolderTypeId = getListItem (req.getCompanyId(), req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+						
+						if(StringUtils.isNotBlank(req.getMobileCode1())){		        
+							String mobileCode1 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode1());
+//						saveData.setMobileCodeDesc1(mobileCode1);
+
+						}
+				        if(StringUtils.isNotBlank(req.getMobileCode2())){
+				        	String mobileCode2 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode2());
+//				        	saveData.setMobileCodeDesc2(mobileCode2);
+
+				        }
+				       
+				        
+				        if(StringUtils.isNotBlank(req.getMobileCode3())){		        
+				        	String mobileCode3 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode3());
+//						saveData.setMobileCodeDesc3(mobileCode3);
+
+				        }
+				        if(StringUtils.isNotBlank(req.getWhatsappCode())){		        
+				        	String whatsappCode = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getWhatsappCode());
+//						saveData.setWhatsappCodeDesc(whatsappCode);
+
+				        }			
+						
+						if (StringUtils.isNotBlank(req.getBusinessType())) {
+							String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+//							saveData.setBusinessTypeDesc(businessType);
+						}
+			 			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
+			 		// Age Calculation
+						int age = 0 ;
+						Date dob = null;
+						if (req.getDobOrRegDate() !=null) {
+							dob = req.getDobOrRegDate();
+							Date today = new Date();
+							age = today.getYear() - dob.getYear();
+						}
+//						CompanyProductMaster product = getCompanyProductMasterDropdown(companyId, productId);
+//
+//						HomePositionMaster savehomeData = new HomePositionMaster();
+//						dozerMapper.map(homeData, savehomeData);
+//						savehomeData.setCustomerName(null);
+//						if (product.getMotorYn().equalsIgnoreCase("M")) {
+//							List<EserviceMotorDetails> motorData=motorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+//							if(motorData!=null && motorData.size()>0) {
+//								EserviceMotorDetails savemotor=new EserviceMotorDetails();
+//								dozerMapper.map(motorData,savemotor);
+//							}
+//
+//						} else if (product.getMotorYn().equalsIgnoreCase("H")
+//								&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+//							
+//						} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+//
+//						} else if (product.getMotorYn().equalsIgnoreCase("L")) {
+//
+//						}
+						PersonalInfo perData=personalInforepo.findByCustomerId(customerId);
+						if(perData!=null) {
+							PersonalInfo savePersonalInfo=new PersonalInfo();
+							dozerMapper.map(perData, savePersonalInfo);
+							savePersonalInfo.setPinCode(req.getPinCode());
+							savePersonalInfo.setIdNumber(req.getIdNumber());
+							savePersonalInfo.setUpdatedDate(new Date());
+							savePersonalInfo.setUpdatedBy(req.getCreatedBy());
+							savePersonalInfo.setAddress1(req.getAddress1());
+							savePersonalInfo.setAddress2(req.getAddress2());
+							savePersonalInfo.setAge(age);
+							savePersonalInfo.setBranchCode(req.getBranchCode());
+							savePersonalInfo.setBusinessType(req.getBusinessType());
+							savePersonalInfo.setOtherOccupation(req.getOtherOccupation());
+							if (StringUtils.isNotBlank(req.getBusinessType())) {
+								String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+								savePersonalInfo.setBusinessTypeDesc(businessType);
+									
+							}
+							
+							
+							savePersonalInfo.setRegionCode(req.getRegionCode());
+							savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
+							savePersonalInfo.setCityCode(req.getCityCode());
+							savePersonalInfo.setCityName(req.getCityName());
+							savePersonalInfo.setClientName(req.getClientName());
+							savePersonalInfo.setClientStatus(req.getClientStatus());
+							savePersonalInfo.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
+							savePersonalInfo.setCompanyId(req.getCompanyId());
+							savePersonalInfo.setCreatedBy(req.getCreatedBy());
+							savePersonalInfo.setCustomerReferenceNo(req.getCustomerReferenceNo());
+			 				savePersonalInfo.setDobOrRegDate(dob);
+			  				savePersonalInfo.setEmail1(req.getEmail1());
+							savePersonalInfo.setEmail2(req.getEmail2());
+							savePersonalInfo.setEmail3(req.getEmail3());
+							savePersonalInfo.setEntryDate(new Date());
+							savePersonalInfo.setFax(req.getFax());
+							savePersonalInfo.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
+							savePersonalInfo.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
+							savePersonalInfo.setGenderDesc(gender);
+							savePersonalInfo.setTitleDesc(title);
+							savePersonalInfo.setLanguageDesc(language);
+							savePersonalInfo.setOccupationDesc(occupationDesc);
+							
+									
+							// Induvidual / Corporate
+							savePersonalInfo.setPolicyHolderType(req.getPolicyHolderType());
+							savePersonalInfo.setPolicyHolderTypeDesc(policyHolderType);
+							
+							// Possport or etc
+							savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
+							savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
+							savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
+							savePersonalInfo.setIdTypeDesc(policyHolderTypeId);
+							
+							savePersonalInfo.setMobileCode1(req.getMobileCode1());
+							savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+							savePersonalInfo.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+							savePersonalInfo.setMobileNo1(req.getMobileNo1());
+							savePersonalInfo.setMobileNo2(req.getMobileNo2());
+							savePersonalInfo.setMobileNo3(req.getMobileNo3());
+							savePersonalInfo.setWhatsappCode(req.getWhatsappCode());
+							if (StringUtils.isNotBlank(req.getMobileCode1())) {
+			 					ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode1(),req.getCompanyId());
+								savePersonalInfo.setMobileCodeDesc1(mobiledesc1.getItemValue());
+
+							}
+							if (StringUtils.isNotBlank(req.getMobileCode2())) {
+								ListItemValue mobiledesc2 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode2(),req.getCompanyId());
+								savePersonalInfo.setMobileCodeDesc2(mobiledesc2.getItemValue());
+
+							}
+							if (StringUtils.isNotBlank(req.getMobileCode3())) {
+								ListItemValue mobiledesc3 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode3(),req.getCompanyId());
+								savePersonalInfo.setMobileCodeDesc3(mobiledesc3.getItemValue());
+
+							}
+							if (StringUtils.isNotBlank(req.getWhatsappCode())) {
+								ListItemValue whatsappCode = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE",
+										req.getWhatsappCode(),req.getCompanyId());
+								savePersonalInfo.setWhatsappcodeDesc(whatsappCode.getItemValue());
+
+							}
+							savePersonalInfo.setRegionCode(req.getRegionCode());
+							savePersonalInfo.setStateCode(req.getStateCode());
+							savePersonalInfo.setStateName(req.getStateName());
+							savePersonalInfo.setStatus(req.getStatus());
+							savePersonalInfo.setNationality(req.getNationality());
+							savePersonalInfo.setVrTinNo(req.getVrTinNo());
+							savePersonalInfo.setVrnGst(req.getVrTinNo());
+							personalInforepo.save(savePersonalInfo);
+						}
+						
+						EserviceCustomerDetails escustDetails=repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());
+						if(escustDetails!=null) {
+							EserviceCustomerDetails saveData=new EserviceCustomerDetails();
+							dozerMapper.map(escustDetails, saveData);
+							saveData.setClientName(req.getClientName());
+							saveData.setUpdatedDate(new Date());
+							saveData.setUpdatedBy(req.getCreatedBy());
+							saveData.setStatus(req.getStatus());
+							saveData.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
+							saveData.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
+							saveData.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
+							saveData.setBrokerBranchCode(req.getBrokerBranchCode());
+							
+							
+							if(StringUtils.isNotBlank(req.getMobileCode1())){		        
+								String mobileCode1 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode1());
+							saveData.setMobileCodeDesc1(mobileCode1);
+
+							}
+					        if(StringUtils.isNotBlank(req.getMobileCode2())){
+					        	String mobileCode2 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode2());
+							saveData.setMobileCodeDesc2(mobileCode2);
+
+					        }
+					       
+					        
+					        if(StringUtils.isNotBlank(req.getMobileCode3())){		        
+					        	String mobileCode3 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode3());
+							saveData.setMobileCodeDesc3(mobileCode3);
+
+					        }
+					        if(StringUtils.isNotBlank(req.getWhatsappCode())){		        
+					        	String whatsappCode = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getWhatsappCode());
+							saveData.setWhatsappCodeDesc(whatsappCode);
+
+					        }			
+							
+							if (StringUtils.isNotBlank(req.getBusinessType())) {
+								String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+								saveData.setBusinessTypeDesc(businessType);
+							}
+							
+//							
+							saveData.setTitleDesc(title);
+							saveData.setPreferredNotification(req.getPreferredNotification());
+							saveData.setIsTaxExempted(req.getIsTaxExempted());
+							saveData.setRegionCode(req.getRegionCode());
+							saveData.setStatus(req.getStatus());
+							saveData.setBusinessType(req.getBusinessType());
+							saveData.setVrTinNo(req.getVrTinNo());
+							saveData.setVrnGst(req.getVrTinNo());
+							saveData.setMobileCode1(req.getMobileCode1());
+							saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+							saveData.setGenderDesc(gender);
+							saveData.setTitleDesc(title);
+							saveData.setLanguageDesc(language);
+							saveData.setOccupationDesc(occupationDesc);
+							saveData.setOtherOccupation(req.getOtherOccupation());
+							saveData.setPolicyHolderTypeDesc(policyHolderType);
+							saveData.setPolicyHolderTypeIdDesc(policyHolderTypeId);
+							saveData.setIdType(req.getPolicyHolderTypeid());
+							saveData.setIdTypeDesc(policyHolderTypeId);
+							saveData.setVrTinNo(req.getVrTinNo());
+							saveData.setVrnGst(req.getVrTinNo());
+							saveData.setAge(age);
+							saveData.setMobileCode1(req.getMobileCode1());
+							saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+							saveData.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+							saveData.setWhatsappCode(req.getWhatsappCode());
+							saveData.setRegionCode(req.getStateCode());
+							saveData.setStateCode(StringUtils.isBlank(req.getStateCode()) ?null :Integer.valueOf(req.getStateCode()));
+							saveData.setStateName(req.getStateName());
+							saveData.setCityCode(StringUtils.isBlank(req.getCityCode())?null :Integer.valueOf(req.getCityCode()));
+							saveData.setCityName(req.getCityName());
+							saveData.setRegionCode(req.getRegionCode());
+							
+							// Kenya Rating Fields
+							saveData.setMaritalStatus(StringUtils.isBlank(req.getMaritalStatus()) ?"Single" : req.getMaritalStatus() );
+							if (req.getLicenseIssuedDate()!=null ) {
+								saveData.setLicenseIssuedDate(req.getLicenseIssuedDate());
+								Date licenceIssued = req.getDobOrRegDate();
+								Date today = new Date();
+								int licenseDuration = today.getYear() - licenceIssued.getYear();
+								saveData.setLicenseDuration(licenseDuration);
+								
+							} else {
+								saveData.setLicenseIssuedDate(new Date());
+								saveData.setLicenseDuration(20);
+							}
+							
+							repository.save(saveData);
+						}
+						res.setSuccessId(req.getCustomerReferenceNo());
+						res.setResponse("Updated");
+					}
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+			}
+			return res;
+
+		}
+		public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+			CompanyProductMaster product = new CompanyProductMaster();
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				;
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				Date todayEnd = cal.getTime();
+
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+				List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+				// Find All
+				Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+				// Select
+				query.select(c);
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(c.get("productName")));
+
+				// Effective Date Start Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+				Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				effectiveDate.where(a1, a2, a3);
+				// Effective Date End Max Filter
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+				Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+				Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				effectiveDate2.where(a4, a5, a6);
+
+				// Where
+				Predicate n1 = cb.equal(c.get("status"), "Y");
+				Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+				Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+				Predicate n4 = cb.equal(c.get("companyId"), companyId);
+				Predicate n5 = cb.equal(c.get("productId"), productId);
+				query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+				// Get Result
+				TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				product = list.size() > 0 ? list.get(0) : null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return product;
+		}
 	}
