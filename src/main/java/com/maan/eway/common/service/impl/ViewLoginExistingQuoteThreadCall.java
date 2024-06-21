@@ -189,7 +189,7 @@ public class ViewLoginExistingQuoteThreadCall implements Callable<Object>  {
 			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEntryDate()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(EserviceMotorDetails :: getEntryDate ).reversed());
-			
+			if(list!=null &&list.size()>0) {
 //			List<HomePositionMaster> policyList= getProtfolioActive(req,endDate,"P") ;
 			Date entryDate=list.get(0).getEntryDate();	
 			String productName=list.get(0).getProductName();
@@ -205,6 +205,7 @@ public class ViewLoginExistingQuoteThreadCall implements Callable<Object>  {
 //			resp1.setTotalCommission(null);
 //			resp1.setPremium(null);	
 			resp.add(resp1);
+			}
 			} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -484,7 +485,7 @@ public class ViewLoginExistingQuoteThreadCall implements Callable<Object>  {
 
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEntryDate()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(EserviceTravelDetails :: getEntryDate ).reversed());
-			
+			if(list!=null &&list.size()>0) {
 //			List<HomePositionMaster> policyList= getProtfolioActive(req,endDate,"P") ;
 			Date entryDate=list.get(0).getEntryDate();	
 			String productName=list.get(0).getProductName();
@@ -500,7 +501,7 @@ public class ViewLoginExistingQuoteThreadCall implements Callable<Object>  {
 //			resp1.setTotalCommission(null);
 //			resp1.setPremium(null);	
 			resp.add(resp1);
-			
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -611,7 +612,7 @@ public synchronized  List<LoginQuoteCriteriaResponse> getBuildingExistingQuote(E
 			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEntryDate()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(EserviceBuildingDetails :: getEntryDate ).reversed());
-			
+			if(list!=null &&list.size()>0) {
 //			List<HomePositionMaster> policyList= getProtfolioActive(req,endDate,"P") ;
 			Date entryDate=list.get(0).getEntryDate();	
 			String productName=list.get(0).getProductDesc();
@@ -627,7 +628,7 @@ public synchronized  List<LoginQuoteCriteriaResponse> getBuildingExistingQuote(E
 //			resp1.setTotalCommission(null);
 //			resp1.setPremium(null);	
 			resp.add(resp1);
-			
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -760,7 +761,7 @@ public synchronized  List<LoginQuoteCriteriaResponse> getBuildingExistingQuote(E
 			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEntryDate()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(EserviceCommonDetails :: getEntryDate ));
-			
+			if(list!=null &&list.size()>0) {
 //			List<HomePositionMaster> policyList= getProtfolioActive(req,endDate,"P") ;
 			Date entryDate=list.get(0).getEntryDate();	
 			String productName=list.get(0).getProductDesc();
@@ -776,7 +777,7 @@ public synchronized  List<LoginQuoteCriteriaResponse> getBuildingExistingQuote(E
 //			resp1.setTotalCommission(null);
 //			resp1.setPremium(null);	
 			resp.add(resp1);
-			
+			}
 		
 		} catch (Exception e) {
 			e.printStackTrace();

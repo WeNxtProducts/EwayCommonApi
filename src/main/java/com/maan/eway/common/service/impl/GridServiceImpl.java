@@ -139,6 +139,7 @@ import com.maan.eway.common.service.LifeGridService;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerCompanyListProductReq;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -7183,26 +7184,41 @@ public class GridServiceImpl implements GridService {
 
 						if ("getMotorExistingQuote".equalsIgnoreCase(future.getKey())) {
 							motorList = (List<LoginQuoteCriteriaResponse>) future.getValue();
-							System.out.println("MotorList "+motorList);
-							lastQuoteDate.add(dateFormat.parse(motorList.get(0).getLastQuoteDate()));
+							if(motorList!=null && motorList.size()>0) {
+								System.out.println("MotorList " + motorList);
+								lastQuoteDate.add(dateFormat.parse(motorList.get(0).getLastQuoteDate()));
+							}
 						} else if ("getTravelExistingQuote".equalsIgnoreCase(future.getKey())) {
 							travelList = (List<LoginQuoteCriteriaResponse>) future.getValue();
-							lastQuoteDate.add(dateFormat.parse(travelList.get(0).getLastQuoteDate()));
+							if (travelList != null && travelList.size()>0) {
+								lastQuoteDate.add(dateFormat.parse(travelList.get(0).getLastQuoteDate()));
+							}
 						} else if ("getAssetExistingQuote".equalsIgnoreCase(future.getKey())) {
 							buildingList = (List<LoginQuoteCriteriaResponse>) future.getValue();
-							lastQuoteDate.add(dateFormat.parse(buildingList.get(0).getLastQuoteDate()));
+							if (buildingList != null && buildingList.size()>0) {
+								lastQuoteDate.add(dateFormat.parse(buildingList.get(0).getLastQuoteDate()));
+							}
 						} else if ("getHummanExistingQuote".equalsIgnoreCase(future.getKey())) {
 							humanList = (List<LoginQuoteCriteriaResponse>) future.getValue();
-							lastQuoteDate.add(dateFormat.parse(humanList.get(0).getLastQuoteDate()));
+							if (humanList != null && humanList.size()>0) {
+								lastQuoteDate.add(dateFormat.parse(humanList.get(0).getLastQuoteDate()));
+							}
 						}
 					}
 
 					success++;
 				}
 			}
-			List<CompanyProductMaster> productList = getCompanyProductList(req.getInsuranceId());
-			productList.sort(Comparator.comparing(CompanyProductMaster :: getProductId));
-			//Policy 
+
+			List<String> companyIds = new ArrayList<String>();
+			companyIds.add(req.getInsuranceId());
+			List<LoginProductMaster> brokerProduct = getBrokerProducts(req.getLoginId(), companyIds, today);
+			brokerProduct.sort(Comparator.comparing(LoginProductMaster::getProductId));
+			List<Integer> productIds = brokerProduct.stream().map(LoginProductMaster::getProductId)
+					.collect(Collectors.toList());
+			List<CompanyProductMaster> productList = getFilterProductList(req.getInsuranceId(), productIds);
+ 
+			 //Policy 
 			PortFolioDashBoardReq policyReq =new PortFolioDashBoardReq();
 			policyReq.setBranchCode("99999");
 			policyReq.setLoginId(req.getLoginId());
@@ -7231,21 +7247,26 @@ public class GridServiceImpl implements GridService {
 
 					String productType = StringUtils.isBlank(product.getMotorYn()) ? "M" : product.getMotorYn();
 					List<LoginQuoteCriteriaResponse> filterProduct = new ArrayList<LoginQuoteCriteriaResponse>();
-					
-					filterProduct1 = list.stream()
-							.filter(o -> o.getProductId() != null && o.getProductId().equals(Integer.valueOf(productId)))
-							.collect(Collectors.toList());
-					if (filterProduct1.size() > 0 && filterProduct1 != null) {
-						lastPolicyDate.add(filterProduct1.get(0).getEntryDate());
-						totalPremium.add(Double.valueOf(filterProduct1.get(0).getOverallPremiumLc().toString()));
-						poicyCount = filterProduct1.get(0).getCount();
-					}
-					filterProduct2 = list1.stream()
-							.filter(o -> o.getProductId() != null && o.getProductId().equals(Integer.valueOf(productId)))
-							.collect(Collectors.toList());
-					if(filterProduct2.size()>0 && filterProduct2!=null) {
-						endtCount=filterProduct2.get(0).getCount();
+					System.out.println("**********************PolicyCount");
+					if (list != null && list.size() > 0) {
+						filterProduct1 = list.stream().filter(
+								o -> o.getProductId() != null && o.getProductId().equals(Integer.valueOf(productId)))
+								.collect(Collectors.toList());
+						if (filterProduct1.size() > 0 && filterProduct1 != null) {
+							lastPolicyDate.add(filterProduct1.get(0).getEntryDate());
+							totalPremium.add(Double.valueOf(filterProduct1.get(0).getOverallPremiumLc().toString()));
+							poicyCount = filterProduct1.get(0).getCount();
 						}
+					}
+					System.out.println("**********************EndtCount");
+					if (list != null && list.size() > 0) {
+						filterProduct2 = list1.stream().filter(
+								o -> o.getProductId() != null && o.getProductId().equals(Integer.valueOf(productId)))
+								.collect(Collectors.toList());
+						if (filterProduct2.size() > 0 && filterProduct2 != null) {
+							endtCount = filterProduct2.get(0).getCount();
+						}
+					}
 					if ("H".equalsIgnoreCase(productType) && product.getProductId().equals(4))
 						filterProduct = travelList; 
 
@@ -7414,6 +7435,157 @@ public class GridServiceImpl implements GridService {
 		}
 		return list;
 	}
+	public List<LoginProductMaster> getBrokerProducts(String loginId , List<String> companyIds , Date today ) {
+		List<LoginProductMaster> list = new ArrayList<LoginProductMaster>(); 
+		try {
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+		
+			// Find All
+			Root<LoginProductMaster>    c = query.from(LoginProductMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+			
+			
+			
+			// Effective Date Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm1 = amendId.from(LoginProductMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			Predicate a3 = cb.equal(c.get("loginId"),ocpm1.get("loginId") );
+			amendId.where(a1,a2,a3);
+			
+			// Filer Product IDs
+			Subquery<Long> productIds = query.subquery(Long.class);
+			Root<CompanyProductMaster> cm = productIds.from(CompanyProductMaster.class);
+			
+			
+			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm4 = effectiveDate3.from(CompanyProductMaster.class);
+			effectiveDate3.select(cb.max(ocpm4.get("effectiveDateStart")));
+			Predicate a9 = cb.equal(cm.get("productId"),ocpm4.get("productId") );
+			Predicate a10 = cb.equal(cm.get("companyId"),ocpm4.get("companyId") );
+			Predicate a11 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
+			effectiveDate3.where(a9,a10,a11);
+			
+			Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm5 = effectiveDate4.from(CompanyProductMaster.class);
+			effectiveDate4.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			Predicate a12 = cb.equal(cm.get("productId"),ocpm5.get("productId") );
+			Predicate a13 = cb.equal(cm.get("companyId"),ocpm5.get("companyId") );
+			Predicate a14 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
+			effectiveDate4.where(a12,a13,a14);
+			
+			
+			productIds.select(cm.get("productId"));
+			Predicate a15 = cb.equal(cm.get("companyId"),companyIds.get(0));
+			Predicate a16 = cb.equal(cm.get("status"),"Y" );
+			Predicate a17 = cb.equal(cm.get("effectiveDateStart"), effectiveDate3);
+			Predicate a18 = cb.equal(cm.get("effectiveDateEnd"), effectiveDate4);
+			productIds.where(a15,a16,a17,a18);
+			
+			//In 
+			Expression<String>e0=c.get("productId");
+			
+		    // Where	
+			Predicate n2 = cb.equal(c.get("amendId"), amendId);
+			Predicate n4 = cb.equal(c.get("companyId"), companyIds.get(0));
+			Predicate n5 = cb.equal(c.get("loginId"), loginId);
+			Predicate n6 = e0.in(productIds);
+			query.where(n2,n4,n5,n6).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);			
+			list =  result.getResultList(); 
+			
+		} catch(Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list  ; 
+	}
+	public synchronized List<CompanyProductMaster> getFilterProductList(String companyId,List<Integer> peoductIds) {
+		List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Expression<String> e0 = c.get("productId");
+			Predicate n5 = (e0.in(peoductIds));
+			query.where(n1, n2, n3, n4,n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+
 
 	}
 
