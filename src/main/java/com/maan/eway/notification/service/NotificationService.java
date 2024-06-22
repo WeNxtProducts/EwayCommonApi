@@ -617,7 +617,7 @@ public class NotificationService {
 				 companyName=cusRefNo.get(0).getCompanyName();
 				 policyNo=cusRefNo.get(0).getPolicyNo();
 				 sectionName=cusRefNo.get(0).getSectionName();
-				 quoteNo=StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString();
+				 quoteNo=(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
 				 productName= cusRefNo.get(0).getProductDesc();
 			}
 			

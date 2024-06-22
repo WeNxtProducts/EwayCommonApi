@@ -677,7 +677,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 			}else {
 				//***EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
-				EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId(),sectionid);
+//				EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId(),sectionid);
+				EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndOriginalRiskIdAndSectionId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId(),sectionid);
+				
 				customerRefNo = commonData.getCustomerReferenceNo();
 				
 			}
@@ -3691,7 +3693,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			String sectionid=request.getVehicleIdsList().get(0).getSectionId();
 			//EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
 			//***
-			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() , request.getVehicleId(),sectionid) ;
+			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndOriginalRiskIdAndSectionId(request.getRequestReferenceNo() , request.getVehicleId(),sectionid) ;
 			Long commonCount =  eserCommonRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(eserCommonData.getCustomerReferenceNo());
 			

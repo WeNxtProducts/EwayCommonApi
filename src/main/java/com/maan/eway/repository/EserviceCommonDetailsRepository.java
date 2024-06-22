@@ -94,6 +94,9 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 		EserviceCommonDetails findAllByRequestReferenceNoAndSectionId(String requestReferenceNo, String sectionId);
 
+		EserviceCommonDetails findByRequestReferenceNoAndOriginalRiskIdAndSectionId(String requestReferenceNo,
+				Integer vehicleId, String sectionid);
+
 
 
 
