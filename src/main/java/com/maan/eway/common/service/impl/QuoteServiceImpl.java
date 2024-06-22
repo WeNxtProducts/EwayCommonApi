@@ -716,7 +716,7 @@ public class QuoteServiceImpl implements QuoteService {
 						dozerMapper.map(acc, pacRes);		
 						pacSectionList.add(buildSec);
 						pacRes.setSectionDetails(pacSectionList);	
-						
+						buildingSectionList.add(buildSec);
 						pacRes.setDocumentsTitle(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
 						pacRes.setLocationId(acc.getRiskId().toString());
 //						pacRes.setLocationName(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
@@ -767,6 +767,7 @@ public class QuoteServiceImpl implements QuoteService {
 					buildingSectionList.add(buildSec);
 				
 			} 
+				
 			
 		}
 			buildingRes.setSectionDetails(buildingSectionList);
@@ -986,7 +987,7 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			}
 			totalList.addAll(buildList);
-			totalList.addAll(paccGetResList);
+//			totalList.addAll(paccGetResList);
 			// Location Wise Details
 		//	List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
 			
