@@ -730,7 +730,7 @@ public class QuoteServiceImpl implements QuoteService {
 						pacRes.setSuminsured(acc.getSumInsured()==null?"" : acc.getSumInsured().toPlainString());
 						pacRes.setSectionId(StringUtils.isNotBlank(acc.getSectionId() ) ?  acc.getSectionId() :  "99999"  );
 						paccGetResList.add(pacRes);
-						
+						;
 						
 					}
 					
@@ -765,9 +765,12 @@ public class QuoteServiceImpl implements QuoteService {
 					buildSec.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
 					buildSec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
 					buildingSectionList.add(buildSec);
-					buildingRes.setSectionDetails(buildingSectionList);
-					buildingRes.setRiskId(risk.toString());
+				
+			} 
 			
+		}
+			buildingRes.setSectionDetails(buildingSectionList);
+			buildingRes.setLocationId(risk.toString());
 		// Default Entry
 		List<BuildingRiskDetails> filterDefaultBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk) ).collect(Collectors.toList());
 		if(filterDefaultBuilding.size() > 0 ) {
@@ -798,7 +801,7 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 			buildingRes.setLocationName(LocationName);
 //			buildingRes.setLocationName(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
-//			buildingRes.setRiskId(buildData.getRiskId().toString());
+			buildingRes.setRiskId(buildData.getRiskId().toString());
 			buildingRes.setSuminsured(buildData.getBuildingSuminsured()==null?"" : buildData.getBuildingSuminsured().toPlainString());
 			buildingRes.setSectionId(StringUtils.isNotBlank(buildData.getSectionId() ) ?  buildData.getSectionId() :  "99999"  );
 		
@@ -980,9 +983,6 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			
 			buildList.add(buildingRes);
-			
-			}
-			} 
 			
 			}
 			totalList.addAll(buildList);
