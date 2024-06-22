@@ -772,6 +772,14 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 			buildingRes.setSectionDetails(buildingSectionList);
 			buildingRes.setLocationId(risk.toString());
+			BuildingDetails buildingList=null;
+			buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(buildings.get(0).getRequestReferenceNo(),risk,"1");
+			String LocationName="";
+			if(buildingList!=null) {
+				LocationName=buildingList.getLocationName();
+			}
+			buildingRes.setLocationName(LocationName);
+			buildingRes.setRiskId(risk.toString());
 		// Default Entry
 		List<BuildingRiskDetails> filterDefaultBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk) ).collect(Collectors.toList());
 		if(filterDefaultBuilding.size() > 0 ) {
@@ -795,8 +803,8 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			buildingRes.setDocumentsTitle(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
 			buildingRes.setLocationId(buildData.getRiskId().toString());
-			BuildingDetails buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(buildData.getRequestReferenceNo(),risk,"1");
-			String LocationName="";
+			buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(buildData.getRequestReferenceNo(),risk,"1");
+			LocationName="";
 			if(buildingList!=null) {
 				LocationName=buildingList.getLocationName();
 			}
