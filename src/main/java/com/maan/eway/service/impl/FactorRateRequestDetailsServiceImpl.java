@@ -1775,7 +1775,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				dozerMapper.map(comData,res);
 				
 				res.setInsuranceId(comData.getCompanyId());
-				res.setVehicleId(comData.getRiskId().toString());
+//				res.setVehicleId(comData.getRiskId().toString())
+				res.setVehicleId(comData.getOriginalRiskId().toString());
 				res.setGroupId(1);
 				res.setGroupMember(0);
 				res.setOverallPremiumFc(comData.getOverallPremiumFc()==null?"0": comData.getOverallPremiumFc().toPlainString());
