@@ -339,7 +339,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			commonData.setCreatedBy(request.getCreatedBy());
 			commonData.setQuoteNo(request.getQuoteNo());
 			commonData.setCustomerId(request.getCustomerId());
-			commonData.setRiskId(eserCommonData.getRiskId());
+			commonData.setRiskId(eserCommonData.getOriginalRiskId());
 			commonData.setStatus(eserCommonData.getStatus());
 			commonData.setSectionDesc(eserCommonData.getSectionName());		
 			
