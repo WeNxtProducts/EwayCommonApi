@@ -18,10 +18,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.PgithPolRiskAddlInfo;
+import com.maan.eway.bean.PgithPolRiskAddlInfoId;
 
 
  
-public interface PgitPolRiskAddlInfoRepository  extends JpaRepository<PgithPolRiskAddlInfo,String > , JpaSpecificationExecutor<PgithPolRiskAddlInfo> {
+public interface PgitPolRiskAddlInfoRepository  extends JpaRepository<PgithPolRiskAddlInfo,PgithPolRiskAddlInfoId > , JpaSpecificationExecutor<PgithPolRiskAddlInfo> {
 
 	List<PgithPolRiskAddlInfo> findByQuotationPolicyNo(String policyNo);
 

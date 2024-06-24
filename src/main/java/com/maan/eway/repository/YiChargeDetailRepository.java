@@ -12,19 +12,17 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
-
-
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.YiChargeDetail;
+import com.maan.eway.bean.YiChargeDetailId;
  
  
  
-public interface YiChargeDetailRepository  extends JpaRepository<YiChargeDetail,String > , JpaSpecificationExecutor<YiChargeDetail> {
+public interface YiChargeDetailRepository  extends JpaRepository<YiChargeDetail,YiChargeDetailId > , JpaSpecificationExecutor<YiChargeDetail> {
 
 	List<YiChargeDetail> findByQuotationPolicyNo(String policyNo);
 

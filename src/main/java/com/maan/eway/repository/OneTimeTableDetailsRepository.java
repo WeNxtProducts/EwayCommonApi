@@ -12,14 +12,13 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
-
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OneTimeTableDetails;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.OneTimeTableDetails;
+import com.maan.eway.bean.OneTimeTableDetailsId;
 /**
  * <h2>ListItemValueRepository</h2>
  *
@@ -30,7 +29,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  
  
  
-public interface OneTimeTableDetailsRepository  extends JpaRepository<OneTimeTableDetails,Integer > , JpaSpecificationExecutor<OneTimeTableDetails> {
+public interface OneTimeTableDetailsRepository  extends JpaRepository<OneTimeTableDetails,OneTimeTableDetailsId > , JpaSpecificationExecutor<OneTimeTableDetails> {
 
 
 	List<OneTimeTableDetails> findByItemTypeAndStatusOrderByItemCodeAsc(String string, String string2);
