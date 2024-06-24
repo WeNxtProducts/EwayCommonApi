@@ -7314,8 +7314,8 @@ public class GridServiceImpl implements GridService {
 		        DecimalFormat decimalFormatter = new DecimalFormat("#.#");
 				resp.setProductDetails(countResList);
 				resp.setLastLoginDate(lastLoginDate);	
-				resp.setLastPolicyDate(lastPolicy.get());
-				resp.setLastQuoteDate(lastQuote.get());
+				resp.setLastPolicyDate(lastPolicy.isEmpty()?null:lastPolicy.get());
+				resp.setLastQuoteDate(lastQuote.isEmpty()?null:lastQuote.get());
 				resp.setCollectedPremium(decimalFormatter.format(totalPre).toString());
 				resp.setPolicyCommission(null);
 
