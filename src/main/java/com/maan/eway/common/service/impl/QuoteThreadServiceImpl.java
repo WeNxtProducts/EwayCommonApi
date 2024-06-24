@@ -1649,8 +1649,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			List<Callable<Object>> coverQueue = new ArrayList<Callable<Object>>();
 			
 			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
-			List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoAndStatusNotAndRiskIdInOrderByRiskIdAsc(req.getRequestReferenceNo(),"D",vehicleIds );
-			List<Integer> activeVehicleIds = commonDatas.stream().map(EserviceCommonDetails :: getRiskId).collect(Collectors.toList());
+			List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoAndStatusNotAndOriginalRiskIdInOrderByOriginalRiskIdAsc(req.getRequestReferenceNo(),"D",vehicleIds );
+			List<Integer> activeVehicleIds = commonDatas.stream().map(EserviceCommonDetails :: getOriginalRiskId).collect(Collectors.toList());
 			
 			for (Integer vehId : activeVehicleIds) {
 				threadCount = threadCount + 2;
