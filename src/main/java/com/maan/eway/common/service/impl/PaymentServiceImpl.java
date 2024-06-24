@@ -746,10 +746,10 @@ public class PaymentServiceImpl implements PaymentService {
 			if(reqList!=null && reqList.size()> 0 && StringUtils.isNotBlank(quoteNo)  ) {
 				commonDatas = commonRepo.findByQuoteNoAndSectionId(quoteNo,sectionId);
 				commonDatas = commonDatas.stream().filter( o ->  ! o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
-			}  else {
+			}  /*else {
 				error.add("1113");
 //				error.add(new Error("01", "QuoteNo", "Please Enter Atleat one Employee Details "));
-			}	
+			}*/
 			
 			
 			empCount = commonDatas.stream().mapToInt(o ->  o.getCount().intValue()).sum(); 
