@@ -366,7 +366,7 @@ this.repository = repo;
 				productReq.setProductIds(req.getLoginInformation().getProductIds());
 				productReq.setReferralIds(req.getLoginInformation().getReferralIds());
 				
-				if((req.getLoginInformation().getSubUserType().equalsIgnoreCase("low")) ) {
+				if((req.getLoginInformation().getSubUserType().equalsIgnoreCase("low")) || (req.getLoginInformation().getSubUserType().equalsIgnoreCase("both"))  ) {
 					
 					LoginCreationRes productRes = loginProductService.saveIssuerProductDetails(productReq) ;
 				}
