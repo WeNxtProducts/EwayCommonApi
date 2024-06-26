@@ -262,8 +262,8 @@ try {
 	
 	TypedQuery<OccupationMaster> result = em.createQuery(query);
 	list = result.getResultList();
-	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
-	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationName()))).collect(Collectors.toList());
+//	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
+//	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationName()))).collect(Collectors.toList());
 	list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
 	
 	// Get Result
@@ -273,8 +273,10 @@ try {
 	 list = list.stream() .filter(item ->
 	 req.getTitletype().equals(item.getOccupationType()))
 	 .collect(Collectors.toList()); }
-	 
-	 
+	 if(req.getInsuranceId().equals("100002") && req.getProductId().equals("14"))
+	 {
+		 list=list.stream().filter(s->s.getProductId().equals("14")).collect(Collectors.toList());
+	 }
 	
 	for (OccupationMaster data : list) {
 		// Response 

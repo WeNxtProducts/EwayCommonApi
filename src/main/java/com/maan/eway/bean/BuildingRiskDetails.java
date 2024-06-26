@@ -806,6 +806,13 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="GROUND_UNDERGROUND_SI")
       private 	BigDecimal groundUndergroundSi;
+      
+      
+      @Column(name="COVERING_DETAILS")
+      private String coveringDetails;
+      
+      @Column(name="DESCRIPTION_OF_RISK")
+      private String descriptionOfRisk;
      
 }
 
