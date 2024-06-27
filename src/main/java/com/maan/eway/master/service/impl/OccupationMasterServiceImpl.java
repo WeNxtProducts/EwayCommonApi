@@ -246,8 +246,9 @@ try {
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
 		Predicate n8= cb.equal(c.get("productId"),req.getProductId());
-	Predicate n9= cb.equal(c.get("productId"),"99999");
-	Predicate n10 = cb.or(n8,n9);
+	//Predicate n9= cb.equal(c.get("productId"),"99999");
+	//Predicate n10 = cb.or(n8,n9);
+		Predicate n10 = cb.or(n8);
 	/*
 	 * Predicate n8=null; if(StringUtils.isNotBlank(req.getProductId())) { n8 =
 	 * cb.equal(c.get("productId"),req.getProductId()); } else { n8 =
@@ -262,8 +263,8 @@ try {
 	
 	TypedQuery<OccupationMaster> result = em.createQuery(query);
 	list = result.getResultList();
-//	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
-//	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationName()))).collect(Collectors.toList());
+	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
+	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationName()))).collect(Collectors.toList());
 	list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
 	
 	// Get Result
