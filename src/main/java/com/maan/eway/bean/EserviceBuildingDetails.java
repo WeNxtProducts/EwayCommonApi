@@ -827,4 +827,17 @@ public class EserviceBuildingDetails implements Serializable {
 	     
 	      @Column(name="RENEWAL_DATE_YN", length=20)
 	      private String renewalDateYn;
+	      
+	    //Bond
+	      @Column(name="BOND_SUMINSURED_LC")
+	      private BigDecimal bondSuminsuredLc;
+	      
+	      @Column(name="BOND_SUMINSURED_FC")
+	      private BigDecimal bondSuminsuredFc;
+	      
+	      @Column(name="BOND_TYPE")
+	      private String bondType;
+	      
+	      @Column(name="BOND_YEAR")
+	      private String bondYear;
 }
