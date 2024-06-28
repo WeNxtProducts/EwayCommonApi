@@ -813,6 +813,15 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="DESCRIPTION_OF_RISK")
       private String descriptionOfRisk;
+      
+        @Column(name="BOND_SUMINSURED")
+	  private BigDecimal bondSuminsured;
+	      
+       @Column(name="BOND_TYPE")
+      private String bondType;
+      
+      @Column(name="BOND_YEAR")
+      private String bondYear;
      
 }
 
