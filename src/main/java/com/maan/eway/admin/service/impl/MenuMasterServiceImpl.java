@@ -1,24 +1,14 @@
 package com.maan.eway.admin.service.impl;
 
-import static java.util.stream.Collectors.collectingAndThen;
-
-import static java.util.stream.Collectors.toCollection;
-
-import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -31,35 +21,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Optional;
 import com.maan.eway.admin.req.GetAllMenuReq;
 import com.maan.eway.admin.req.GetMenuTypeReq;
 import com.maan.eway.admin.req.MenuDetails;
-import com.maan.eway.admin.req.MenuListReq;
 import com.maan.eway.admin.req.MenuServiceReq;
 import com.maan.eway.admin.req.UserTypeReq;
-import com.maan.eway.admin.res.AdminListRes;
 import com.maan.eway.admin.res.GetMenuTypeRes;
 import com.maan.eway.admin.res.GetmenuDetailsRes2;
 import com.maan.eway.admin.res.MenuDetailsRes;
 import com.maan.eway.admin.res.MenuServiceRes;
-import com.maan.eway.admin.res.UserMenuListRes;
 import com.maan.eway.admin.service.MenuMasterService;
 import com.maan.eway.auth.dto.Menu;
-import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.MenuMaster;
-import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.SeqErrorCode;
-import com.maan.eway.master.req.ProductMasterSaveReq;
 import com.maan.eway.repository.MenuMasterRepository;
-import com.maan.eway.res.CustomerDetailsSearchRes;
-import com.maan.eway.res.SuccessRes;
 
 @Service
 @Transactional
@@ -141,12 +120,14 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 
 			// User Menu List
 			for (MenuMaster menuMaster : otherMenulist) {
-				Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl())
-						.id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
-						.icon(menuMaster.getMenuLogo()).isdesti(false)
-						.orderby(menuMaster.getDisplayOrder() == null ? 0 : menuMaster.getDisplayOrder().longValue())
-						.build();
-				userMenus.add(menu);
+				if(menuMaster.getCompanyId().equalsIgnoreCase(req.getInsuranceId())) {
+					Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl())
+							.id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+							.icon(menuMaster.getMenuLogo()).isdesti(false)
+							.orderby(menuMaster.getDisplayOrder() == null ? 0 : menuMaster.getDisplayOrder().longValue())
+							.build();
+					userMenus.add(menu);
+				}
 			}
 			List<Menu> collect = userMenus.stream().filter(i -> "99999".equals(i.getParent()))
 					.collect(Collectors.toList());

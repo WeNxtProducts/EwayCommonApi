@@ -13,4 +13,7 @@ public class MenuServiceReq {
 
 	@JsonProperty("SubUserType")
 	private String subUserType;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
 }
