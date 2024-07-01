@@ -7298,7 +7298,7 @@ public class GridServiceImpl implements GridService {
 					}else {
 						CountRes countRes = new CountRes();
 						countRes.setProductId(productId);
-						countRes.setProductName(product.getProductDesc());
+						countRes.setProductName(product.getProductName());
 						countRes.setQuotetotalCount(0l);
 						countRes.setPolicytotalCount(poicyCount);
 						countRes.setEndttotalCount(endtCount);

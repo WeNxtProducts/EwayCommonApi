@@ -106,7 +106,7 @@ private static final long serialVersionUID = 1L;
     private Integer    cityCode ;
 
     @Column(name="STATE_CODE")
-    private Integer    stateCode ;
+    private String    stateCode ;
 
     @Column(name="COUNTRY_CODE")
     private String    countryCode ;

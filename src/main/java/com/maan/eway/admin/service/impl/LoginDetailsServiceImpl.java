@@ -536,7 +536,7 @@ this.repository = repo;
 			userInfo.setStatus(saveLogin.getStatus());
 			userInfo.setCountryCode(personalReq.getCountryCode());
 //			userInfo.setCityCode(StringUtils.isNotBlank(personalReq.getCityName()) && personalReq.getCityName().matches("[0-9]+") ? Integer.valueOf(personalReq.getCityName()) :null );
-			userInfo.setStateCode(StringUtils.isBlank(personalReq.getStateCode())?null:Integer.valueOf(personalReq.getStateCode()));
+			userInfo.setStateCode(StringUtils.isBlank(personalReq.getStateCode())?null:personalReq.getStateCode());
 			userInfo.setTaxExemptedYn(StringUtils.isBlank(personalReq.getTaxExemptedYn())?"N":personalReq.getTaxExemptedYn() );
 			userInfo.setCreditLimit(StringUtils.isBlank(personalReq.getCreditLimit())?BigDecimal.ZERO : new BigDecimal(personalReq.getCreditLimit()) );
 			userInfo.setAddress1(StringUtils.isBlank(personalReq.getAddress1())?null:personalReq.getAddress1());
