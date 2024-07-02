@@ -2354,6 +2354,11 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				eserTraRepo.save(findTra);
 			} else if(    productType.equalsIgnoreCase("A") ) {
 				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() , 1 , req.getSectionId());
+			    if(req.getProductId().equals("6"))
+			    {
+			    	 findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()), req.getSectionId());
+						
+			    }
 				agencyCode = findBuild.getBrokerCode();
 				branchCode = findBuild.getBranchCode();
 				currencyId = findBuild.getCurrency();
