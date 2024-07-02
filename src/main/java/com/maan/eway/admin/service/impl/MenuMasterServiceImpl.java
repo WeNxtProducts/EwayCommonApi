@@ -142,12 +142,14 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 
 			// Admin Menu List
 			for (MenuMaster menuMaster : adminMenulist) {
-				Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl())
-						.id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
-						.icon(menuMaster.getMenuLogo()).isdesti(false)
-						.orderby(menuMaster.getDisplayOrder() == null ? 0 : menuMaster.getDisplayOrder().longValue())
-						.build();
-				adminMenus.add(menu);
+				if (menuMaster.getCompanyId().equalsIgnoreCase(req.getInsuranceId())) {
+					Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl())
+							.id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+							.icon(menuMaster.getMenuLogo()).isdesti(false)
+							.orderby(menuMaster.getDisplayOrder() == null ? 0 : menuMaster.getDisplayOrder().longValue())
+							.build();
+					adminMenus.add(menu);
+				}
 			}
 			List<Menu> collect2 = adminMenus.stream().filter(i -> "99999".equals(i.getParent()))
 					.collect(Collectors.toList());
@@ -159,9 +161,16 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 						.collect(Collectors.toList()));
 				adminReslist.add(menu);
 			}
-
-			response.setAdminlist(adminReslist);
-			response.setUserList(userResList);
+			List<Menu> menuReslist = new ArrayList<Menu>();
+			if("both".equalsIgnoreCase(req.getSubUserType().toLowerCase())) {
+				menuReslist.addAll(userResList);
+				menuReslist.addAll(adminReslist);
+			}else if("high".equalsIgnoreCase(req.getSubUserType().toLowerCase()) || "superadmin".equalsIgnoreCase(req.getSubUserType().toLowerCase())) {
+				menuReslist.addAll(adminReslist);
+			}else {
+				menuReslist.addAll(userResList);
+			}
+			response.setMenuList(menuReslist);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());

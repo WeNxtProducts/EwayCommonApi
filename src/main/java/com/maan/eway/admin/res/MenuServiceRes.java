@@ -11,10 +11,7 @@ import lombok.Data;
 public class MenuServiceRes {
 
 
-	@JsonProperty("UserList")
-	private List<Menu> userList;
-	
-	@JsonProperty("AdminList")
-	private List<Menu> adminlist;
+	@JsonProperty("MenuList")
+	private List<Menu> menuList;
 	
 }
