@@ -129,6 +129,18 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 					userMenus.add(menu);
 				}
 			}
+			if(userMenus.isEmpty()) {
+				for (MenuMaster menuMaster : otherMenulist) {
+					if(menuMaster.getCompanyId().equalsIgnoreCase("99999")) {
+						Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl())
+								.id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+								.icon(menuMaster.getMenuLogo()).isdesti(false)
+								.orderby(menuMaster.getDisplayOrder() == null ? 0 : menuMaster.getDisplayOrder().longValue())
+								.build();
+						userMenus.add(menu);
+					}
+				}
+			}
 			List<Menu> collect = userMenus.stream().filter(i -> "99999".equals(i.getParent()))
 					.collect(Collectors.toList());
 			log.info("collect" + collect);
@@ -151,6 +163,20 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 					adminMenus.add(menu);
 				}
 			}
+			
+			if(adminMenus.isEmpty()) {
+				for (MenuMaster menuMaster : adminMenulist) {
+					if (menuMaster.getCompanyId().equalsIgnoreCase("99999")) {
+						Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl())
+								.id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+								.icon(menuMaster.getMenuLogo()).isdesti(false)
+								.orderby(menuMaster.getDisplayOrder() == null ? 0 : menuMaster.getDisplayOrder().longValue())
+								.build();
+						adminMenus.add(menu);
+					}
+				}
+			}
+			
 			List<Menu> collect2 = adminMenus.stream().filter(i -> "99999".equals(i.getParent()))
 					.collect(Collectors.toList());
 			log.info("collect" + collect2);
