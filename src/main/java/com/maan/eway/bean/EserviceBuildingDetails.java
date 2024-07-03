@@ -828,8 +828,13 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="RENEWAL_DATE_YN", length=20)
 	      private String renewalDateYn;
 	      
-	    //Bond
-	     
+	      @Column(name="COVERING_DETAILS")
+	      private String coveringDetails;
+	      
+	      @Column(name="DESCRIPTION_OF_RISK")
+	      private String descriptionOfRisk;
+	      
+	      //Bond
 	      @Column(name="BOND_SUMINSURED")
 	      private BigDecimal bondSuminsured;
 	      
@@ -838,4 +843,16 @@ public class EserviceBuildingDetails implements Serializable {
 	      
 	      @Column(name="BOND_YEAR")
 	      private String bondYear;
+	      
+	      
+	      //Electronic Equipment
+	      @Column(name="CONTENT_ID")
+	      private String contentId;
+	      
+	      @Column(name="CONTENT_DESC")
+	      private String contentDesc;
+	      
+	      @Column(name="LOCATION_NAME")
+	      private String locationName;
+	      
 }
