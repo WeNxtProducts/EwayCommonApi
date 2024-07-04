@@ -27,7 +27,7 @@ public class UserPersonalInfoGetRes {
     @JsonProperty("Address3")
     private String    address3 ;
     
-    @JsonProperty("CityCode;")
+    @JsonProperty("CityCode")
     private String    cityCode;
     
     @JsonProperty("CityName")
