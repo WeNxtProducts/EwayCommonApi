@@ -337,6 +337,12 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "PREVIOUS_INSURANCE_YN")
 	private String previousInsuranceYN;
+	
+	@Column(name = "HORSE_POWER")
+	private Double horsePower;
+	
+	@Column(name = "ZONE")
+	private Double zone;
 }
 
 
