@@ -3645,82 +3645,102 @@ List<Error> errorList = new ArrayList<Error>();
 			//Product Details
 		//	List<CompanyProductMaster> products =   getCompanyProducts(req.getInsuranceId() );
 			List<CompanyProductMaster> products =   getCompanyProducts1(req.getInsuranceId() );
-			
-			// Map
-			for (BrokerCommissionDetails data : companyComList ) {
-				BrokerCompanyListProductsGetAllRes productRes = new BrokerCompanyListProductsGetAllRes();
-				
-				List<BrokerCommissionDetails> filterBrokerComlist = brokerComlist.stream().filter( o -> o.getLoginId().equalsIgnoreCase(req.getLoginId())
-						&& o.getProductId().equalsIgnoreCase(data.getProductId()) && o.getPolicyType().equalsIgnoreCase(data.getPolicyType()) ).collect(Collectors.toList());
-				
-//				List<BrokerCommissionDetails> filterBrokerComlist = brokerComlist.stream().filter( o -> o.getLoginId().equalsIgnoreCase(req.getLoginId())
-//						).collect(Collectors.toList());
-				
-				if( filterBrokerComlist.size() > 0) {
-					BrokerCommissionDetails brokerCom = filterBrokerComlist.get(0);
-					productRes = dozerMapper.map(brokerCom, BrokerCompanyListProductsGetAllRes.class);
-					productRes.setSelectedYn("Y");
-					String pattern = "#####0.00";
-					DecimalFormat df = new DecimalFormat(pattern);
-					String pattern1 = "#####0";
-					DecimalFormat df1 = new DecimalFormat(pattern1);
-					productRes.setProductId(brokerCom.getProductId()==null?"" :brokerCom.getProductId().toString());
-					productRes.setCompanyId(brokerCom.getCompanyId()==null?"" :brokerCom.getCompanyId());
-					productRes.setSumInsuredStart(brokerCom.getSuminsuredStart()==null?"" : df.format(brokerCom.getSuminsuredStart()) );
-					productRes.setSumInsuredEnd(brokerCom.getSuminsuredEnd()==null?"" :df.format(brokerCom.getSuminsuredEnd()) );
-					productRes.setStatus(brokerCom.getStatus()==null?"" :brokerCom.getStatus());
-					productRes.setCreatedBy(brokerCom.getCreatedBy()==null?"" :brokerCom.getCreatedBy());
-					productRes.setEffectiveDateStart(brokerCom.getEffectiveDateStart()==null?null : brokerCom.getEffectiveDateStart());
-					productRes.setEffectiveDateEnd(brokerCom.getEffectiveDateEnd()==null?null : brokerCom.getEffectiveDateEnd());
-					productRes.setBackDays(brokerCom.getBackDays()==null?"" :brokerCom.getBackDays().toString());
-					productRes.setCommissionPercent(brokerCom.getCommissionPercentage()==null?"" :brokerCom.getCommissionPercentage().toString());
-					productRes.setCheckerYn(brokerCom.getCheckerYn()==null?"" :brokerCom.getCheckerYn());
-					//productRes.setMakerYn(brokerCom.getMakerYn());
-					productRes.setPolicyTypeDesc(brokerCom.getPolicyTypeDesc()==null?"" :brokerCom.getPolicyTypeDesc());
-					productRes.setPolicyTypeId(brokerCom.getPolicyType()==null?"" :brokerCom.getPolicyType());
-					productRes.setRemarks(brokerCom.getRemarks()==null?"" :brokerCom.getRemarks());
-					productRes.setLoginId(brokerCom.getLoginId()==null?"" :brokerCom.getLoginId());
-					productRes.setCreditYn(brokerCom.getCreditYn()==null?"" :brokerCom.getCreditYn());
-				} else {
+			BrokerCompanyListProductsGetAllRes productRes = new BrokerCompanyListProductsGetAllRes();
+			if(!companyComList.isEmpty()) {
+				// Map
+				for (BrokerCommissionDetails data : companyComList ) {
+					
+					List<BrokerCommissionDetails> filterBrokerComlist = brokerComlist.stream().filter( o -> o.getLoginId().equalsIgnoreCase(req.getLoginId())
+							&& o.getProductId().equalsIgnoreCase(data.getProductId()) && o.getPolicyType().equalsIgnoreCase(data.getPolicyType()) ).collect(Collectors.toList());
+					
+//					List<BrokerCommissionDetails> filterBrokerComlist = brokerComlist.stream().filter( o -> o.getLoginId().equalsIgnoreCase(req.getLoginId())
+//							).collect(Collectors.toList());
+					if( filterBrokerComlist.size() > 0) {
+						BrokerCommissionDetails brokerCom = filterBrokerComlist.get(0);
+						productRes = dozerMapper.map(brokerCom, BrokerCompanyListProductsGetAllRes.class);
+						productRes.setSelectedYn("Y");
+						String pattern = "#####0.00";
+						DecimalFormat df = new DecimalFormat(pattern);
+						String pattern1 = "#####0";
+						DecimalFormat df1 = new DecimalFormat(pattern1);
+						productRes.setProductId(brokerCom.getProductId()==null?"" :brokerCom.getProductId().toString());
+						productRes.setCompanyId(brokerCom.getCompanyId()==null?"" :brokerCom.getCompanyId());
+						productRes.setSumInsuredStart(brokerCom.getSuminsuredStart()==null?"" : df.format(brokerCom.getSuminsuredStart()) );
+						productRes.setSumInsuredEnd(brokerCom.getSuminsuredEnd()==null?"" :df.format(brokerCom.getSuminsuredEnd()) );
+						productRes.setStatus(brokerCom.getStatus()==null?"" :brokerCom.getStatus());
+						productRes.setCreatedBy(brokerCom.getCreatedBy()==null?"" :brokerCom.getCreatedBy());
+						productRes.setEffectiveDateStart(brokerCom.getEffectiveDateStart()==null?null : brokerCom.getEffectiveDateStart());
+						productRes.setEffectiveDateEnd(brokerCom.getEffectiveDateEnd()==null?null : brokerCom.getEffectiveDateEnd());
+						productRes.setBackDays(brokerCom.getBackDays()==null?"" :brokerCom.getBackDays().toString());
+						productRes.setCommissionPercent(brokerCom.getCommissionPercentage()==null?"" :brokerCom.getCommissionPercentage().toString());
+						productRes.setCheckerYn(brokerCom.getCheckerYn()==null?"" :brokerCom.getCheckerYn());
+						//productRes.setMakerYn(brokerCom.getMakerYn());
+						productRes.setPolicyTypeDesc(brokerCom.getPolicyTypeDesc()==null?"" :brokerCom.getPolicyTypeDesc());
+						productRes.setPolicyTypeId(brokerCom.getPolicyType()==null?"" :brokerCom.getPolicyType());
+						productRes.setRemarks(brokerCom.getRemarks()==null?"" :brokerCom.getRemarks());
+						productRes.setLoginId(brokerCom.getLoginId()==null?"" :brokerCom.getLoginId());
+						productRes.setCreditYn(brokerCom.getCreditYn()==null?"" :brokerCom.getCreditYn());
+					} else {
+						productRes = dozerMapper.map(data, BrokerCompanyListProductsGetAllRes.class);
+						productRes.setSelectedYn("N");
+						String pattern = "#####0.00";
+						DecimalFormat df = new DecimalFormat(pattern);
+						String pattern1 = "#####0";
+						DecimalFormat df1 = new DecimalFormat(pattern1);
+						productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString());
+						productRes.setCompanyId(data.getCompanyId()==null?"" :data.getCompanyId());
+						productRes.setSumInsuredStart(data.getSuminsuredStart()==null?"" : df.format(data.getSuminsuredStart()) );
+						productRes.setSumInsuredEnd(data.getSuminsuredEnd()==null?"" :df.format(data.getSuminsuredEnd()) );
+						productRes.setStatus(data.getStatus()==null?"" :data.getStatus());
+						productRes.setCreatedBy(data.getCreatedBy()==null?"" :data.getCreatedBy());
+						productRes.setEffectiveDateStart(data.getEffectiveDateStart()==null?null : data.getEffectiveDateStart());
+						productRes.setEffectiveDateEnd(data.getEffectiveDateEnd()==null?null : data.getEffectiveDateEnd());
+						productRes.setBackDays(data.getBackDays()==null?"" :data.getBackDays().toString());
+						productRes.setCommissionPercent(data.getCommissionPercentage()==null?"" :data.getCommissionPercentage().toString());
+						productRes.setCheckerYn(data.getCheckerYn()==null?"" :data.getCheckerYn());
+						//productRes.setMakerYn(data.getMakerYn());
+						productRes.setPolicyTypeDesc(data.getPolicyTypeDesc()==null?"" :data.getPolicyTypeDesc());
+						productRes.setPolicyTypeId(data.getPolicyType()==null?"" :data.getPolicyType());
+						productRes.setRemarks(data.getRemarks()==null?"" :data.getRemarks());
+						productRes.setLoginId(data.getLoginId()==null?"" :data.getLoginId());
+						productRes.setCreditYn(data.getCreditYn()==null?"" :data.getCreditYn());
+					}
+					
+					// Product Name
+					List<CompanyProductMaster> filterProducts =  products.stream().filter( o -> o.getProductId().equals(Integer.valueOf(data.getProductId())) ).collect(Collectors.toList());
+					if(filterProducts.size() > 0 ) {
+						CompanyProductMaster product = filterProducts.get(0);
+						productRes.setProductName(product.getProductName());
+						productRes.setProductDesc(product.getProductDesc());
+					} else {
+						productRes.setProductName("");
+						productRes.setProductDesc("");
+					}
+					
+					resList.add(productRes);	
+
+				}
+			} else {
+				for (CompanyProductMaster data : products) {
+					List<PolicyTypeMaster> p = policyName1(req.getInsuranceId(),Integer.parseInt(data.getProductId().toString()));
 					productRes = dozerMapper.map(data, BrokerCompanyListProductsGetAllRes.class);
 					productRes.setSelectedYn("N");
-					String pattern = "#####0.00";
-					DecimalFormat df = new DecimalFormat(pattern);
-					String pattern1 = "#####0";
-					DecimalFormat df1 = new DecimalFormat(pattern1);
 					productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString());
 					productRes.setCompanyId(data.getCompanyId()==null?"" :data.getCompanyId());
-					productRes.setSumInsuredStart(data.getSuminsuredStart()==null?"" : df.format(data.getSuminsuredStart()) );
-					productRes.setSumInsuredEnd(data.getSuminsuredEnd()==null?"" :df.format(data.getSuminsuredEnd()) );
 					productRes.setStatus(data.getStatus()==null?"" :data.getStatus());
 					productRes.setCreatedBy(data.getCreatedBy()==null?"" :data.getCreatedBy());
 					productRes.setEffectiveDateStart(data.getEffectiveDateStart()==null?null : data.getEffectiveDateStart());
 					productRes.setEffectiveDateEnd(data.getEffectiveDateEnd()==null?null : data.getEffectiveDateEnd());
-					productRes.setBackDays(data.getBackDays()==null?"" :data.getBackDays().toString());
-					productRes.setCommissionPercent(data.getCommissionPercentage()==null?"" :data.getCommissionPercentage().toString());
 					productRes.setCheckerYn(data.getCheckerYn()==null?"" :data.getCheckerYn());
-					//productRes.setMakerYn(data.getMakerYn());
-					productRes.setPolicyTypeDesc(data.getPolicyTypeDesc()==null?"" :data.getPolicyTypeDesc());
-					productRes.setPolicyTypeId(data.getPolicyType()==null?"" :data.getPolicyType());
 					productRes.setRemarks(data.getRemarks()==null?"" :data.getRemarks());
-					productRes.setLoginId(data.getLoginId()==null?"" :data.getLoginId());
-					productRes.setCreditYn(data.getCreditYn()==null?"" :data.getCreditYn());
+					productRes.setProductName(data.getProductName());
+					productRes.setProductDesc(data.getProductDesc());
+					productRes.setPolicyTypeId(p.get(0).getPolicyTypeId()==null?"":p.get(0).getPolicyTypeId().toString());
+					productRes.setPolicyTypeDesc(p.get(0).getPolicyTypeName()==null?"":p.get(0).getPolicyTypeName());
+					resList.add(productRes);
 				}
-				
-				// Product Name
-				List<CompanyProductMaster> filterProducts =  products.stream().filter( o -> o.getProductId().equals(Integer.valueOf(data.getProductId())) ).collect(Collectors.toList());
-				if(filterProducts.size() > 0 ) {
-					CompanyProductMaster product = filterProducts.get(0);
-					productRes.setProductName(product.getProductName());
-					productRes.setProductDesc(product.getProductDesc());
-				} else {
-					productRes.setProductName("");
-					productRes.setProductDesc("");
-				}
-				
-				resList.add(productRes);	
-
 			}
+
 			resList.sort(Comparator.comparing(BrokerCompanyListProductsGetAllRes :: getProductName));
 		
 	} catch (Exception e) {
@@ -3899,7 +3919,7 @@ List<Error> errorList = new ArrayList<Error>();
 			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
 			Predicate n3 = cb.equal(b.get("status"), "Y");
 			Predicate n4 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n5 = cb.equal(b.get("loginId"),"99999" );
+			Predicate n5 = cb.equal(b.get("loginId"),req.getLoginId());
 			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 	
 			// Get Result
