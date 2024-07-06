@@ -486,7 +486,14 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId());
-			Predicate n3 =  cb.equal(b.get("subCoverId"), "0" );  
+			Predicate n3;
+		    if(req.getCompanyId().equals("100040") && !req.getSubCoverId().isBlank())
+		    {
+		    	 n3 =  cb.equal(b.get("subCoverId"), req.getSubCoverId());
+		    }
+		    else {
+		 n3 =  cb.equal(b.get("subCoverId"), "0" );  
+		    }
 			query.where(n1,n2,n3).orderBy(orderList);
 
 			// Get Result
