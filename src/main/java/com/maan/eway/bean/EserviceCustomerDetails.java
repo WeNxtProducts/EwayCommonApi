@@ -351,6 +351,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="ADDRESS_3", length=100)
     private String     address3 ;
     
+    @Column(name = "ZONE")
+	private Integer zone;
+    
 }
 
 

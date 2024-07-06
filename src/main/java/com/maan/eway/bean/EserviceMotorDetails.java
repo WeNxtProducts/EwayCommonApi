@@ -738,10 +738,10 @@ private static final long serialVersionUID = 1L;
 	private String previousInsuranceYN;
 	
 	@Column(name = "HORSE_POWER")
-	private Double horsePower;
+	private Integer horsePower;
 	
-	@Column(name = "ZONE")
-	private Double zone;
+	 @Column(name = "ZONE")
+	private Integer zone;
 }
 
 
