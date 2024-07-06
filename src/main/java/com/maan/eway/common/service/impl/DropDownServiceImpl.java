@@ -2651,6 +2651,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getOccupationType());
 				res.setCodeDesc(data.getOccupationDesc());
 				res.setStatus(data.getStatus());
+				res.setRiskId(data.getRiskId().toString());
 				resList.add(res);
 			}
 		} catch (Exception e) {

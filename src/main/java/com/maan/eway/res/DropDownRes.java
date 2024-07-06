@@ -27,5 +27,7 @@ public class DropDownRes {
 	private String status;
 	@JsonProperty("BodyType")
 	private String bodyType;
+	@JsonProperty("RiskId")
+	private String riskId;
 	
 }
