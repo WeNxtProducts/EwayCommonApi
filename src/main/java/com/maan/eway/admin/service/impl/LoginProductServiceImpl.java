@@ -3723,21 +3723,23 @@ List<Error> errorList = new ArrayList<Error>();
 			} else {
 				for (CompanyProductMaster data : products) {
 					List<PolicyTypeMaster> p = policyName1(req.getInsuranceId(),Integer.parseInt(data.getProductId().toString()));
-					productRes = dozerMapper.map(data, BrokerCompanyListProductsGetAllRes.class);
-					productRes.setSelectedYn("N");
-					productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString());
-					productRes.setCompanyId(data.getCompanyId()==null?"" :data.getCompanyId());
-					productRes.setStatus(data.getStatus()==null?"" :data.getStatus());
-					productRes.setCreatedBy(data.getCreatedBy()==null?"" :data.getCreatedBy());
-					productRes.setEffectiveDateStart(data.getEffectiveDateStart()==null?null : data.getEffectiveDateStart());
-					productRes.setEffectiveDateEnd(data.getEffectiveDateEnd()==null?null : data.getEffectiveDateEnd());
-					productRes.setCheckerYn(data.getCheckerYn()==null?"" :data.getCheckerYn());
-					productRes.setRemarks(data.getRemarks()==null?"" :data.getRemarks());
-					productRes.setProductName(data.getProductName());
-					productRes.setProductDesc(data.getProductDesc());
-					productRes.setPolicyTypeId(p.get(0).getPolicyTypeId()==null?"":p.get(0).getPolicyTypeId().toString());
-					productRes.setPolicyTypeDesc(p.get(0).getPolicyTypeName()==null?"":p.get(0).getPolicyTypeName());
-					resList.add(productRes);
+					if(!p.isEmpty()) {
+						productRes = dozerMapper.map(data, BrokerCompanyListProductsGetAllRes.class);
+						productRes.setSelectedYn("N");
+						productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString());
+						productRes.setCompanyId(data.getCompanyId()==null?"" :data.getCompanyId());
+						productRes.setStatus(data.getStatus()==null?"" :data.getStatus());
+						productRes.setCreatedBy(data.getCreatedBy()==null?"" :data.getCreatedBy());
+						productRes.setEffectiveDateStart(data.getEffectiveDateStart()==null?null : data.getEffectiveDateStart());
+						productRes.setEffectiveDateEnd(data.getEffectiveDateEnd()==null?null : data.getEffectiveDateEnd());
+						productRes.setCheckerYn(data.getCheckerYn()==null?"" :data.getCheckerYn());
+						productRes.setRemarks(data.getRemarks()==null?"" :data.getRemarks());
+						productRes.setProductName(data.getProductName());
+						productRes.setProductDesc(data.getProductDesc());
+						productRes.setPolicyTypeId(p.get(0).getPolicyTypeId()==null?"":p.get(0).getPolicyTypeId().toString());
+						productRes.setPolicyTypeDesc(p.get(0).getPolicyTypeName()==null?"":p.get(0).getPolicyTypeName());
+						resList.add(productRes);
+					}
 				}
 			}
 
