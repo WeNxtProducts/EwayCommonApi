@@ -251,5 +251,8 @@ public class EserviceCustomerSaveReq {
 
 	@JsonProperty("Address3")
 	private String address3;
+	
+	@JsonProperty("ZONE")
+	private String zone;
 
 }

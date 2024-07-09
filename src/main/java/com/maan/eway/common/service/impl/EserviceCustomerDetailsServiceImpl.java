@@ -1042,6 +1042,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCustomerReferenceNo(custRefNo);
 			saveData.setStatus(req.getStatus());
+			
+			saveData.setZone(StringUtils.isBlank(req.getZone())? 0:Integer.valueOf(req.getZone()));
 			saveData.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
 			saveData.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
 			saveData.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
@@ -1769,6 +1771,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			List<EserviceCustomerDetails> data = repository.findByCustomerReferenceNoOrderByEntryDateDesc(req.getCustomerReferenceNo());
 	
 			res = dozerMapper.map(data.get(0), CustomerDetailsGetRes.class);
+			
 			res.setMobileCodeDesc1(data.get(0).getMobileCodeDesc1()==null?"":data.get(0).getMobileCodeDesc1());
 			res.setMobileCodeDesc2(data.get(0).getMobileCodeDesc2()==null?"":data.get(0).getMobileCodeDesc2());
 			res.setMobileCodeDesc3(data.get(0).getMobileCodeDesc3()==null?"":data.get(0).getMobileCodeDesc3());
