@@ -66,6 +66,24 @@ else {
 	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 }  
 }	
+
+@PostMapping("/getInsuranceTypeById")
+@ApiOperation(value="This method is to Display Menu Service")
+public ResponseEntity<CommonRes> getInsuranceMaster(@RequestBody GetProductMasterReq req){
+CommonRes data = new CommonRes();
+
+ProductStructureMasterReq res= entityService.getInsuranceMaster(req);
+data.setCommonResponse(res);
+data.setErrorMessage(Collections.emptyList());
+data.setIsError(false);
+data.setMessage("Success");
+if(res!=null) {
+	return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+}
+else {
+	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+}  
+}	
 @PostMapping("/getByIndsutryType")
 @ApiOperation(value="This method is to Industry Type")
 public ResponseEntity<CommonRes> getByIndutryType(@RequestBody GetProductMasterReq req){

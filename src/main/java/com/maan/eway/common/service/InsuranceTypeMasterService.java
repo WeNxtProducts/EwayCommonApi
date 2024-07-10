@@ -18,6 +18,8 @@ public interface InsuranceTypeMasterService {
 	
 	List<ProductStructureMasterReq> getAllProductStructureMaster(GetProductMasterReq req);
 	
+	ProductStructureMasterReq getInsuranceMaster(GetProductMasterReq req);
+	
 	List<ProductStructureMasterRes> getByIndustryTypeId(GetProductMasterReq req);
 	
 	CommonRes DeleteproductStructureMaster(GetProductMasterReq req);

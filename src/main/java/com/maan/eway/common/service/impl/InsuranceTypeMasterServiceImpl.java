@@ -69,7 +69,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			res.setMessage("Success");
 		}catch(Exception in)
 		{
-		System.out.println("**********The Exception Occured in ProductStructureMAster Save****************");
+		System.out.println("**********The Exception Occured in   Insurance Type MasterSave****************");
 		in.printStackTrace();
 		
 		res.setCommonResponse("Oops Something Went Wrong......");
@@ -96,13 +96,28 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			
 		}catch(Exception cc)
 		{
-		System.out.println("The Exception Occured in get All Product Structure Master");	
+		System.out.println("The Exception Occured in get All  get Insurance Type Master");	
 		return null;
 		}
 		return result;
 		
 	}
-	
+	public ProductStructureMasterReq getInsuranceMaster(GetProductMasterReq req)
+	{
+	ProductStructureMasterReq result=null;
+		try {
+			
+		    InsuranceTypeMaster data =ProductStructureRepo.findByIndsutryTypeIdAndSectionId(req.getIndsutryTypeId(),Integer.valueOf(req.getSectionId()));
+		    result=new DozerBeanMapper().map(data, ProductStructureMasterReq.class);
+		    result.setCompanyid(data.getCompanyId());
+		}catch(Exception cc)
+		{
+		System.out.println("The Exception Occured in get Insurance Type Master");	
+		return null;
+		}
+		return result;
+		
+	}
 	public List<ProductStructureMasterRes> getByIndustryTypeId(GetProductMasterReq sneha)
 	{
 		List<ProductStructureMasterRes> result=null;
@@ -121,7 +136,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			result=result1;
 		}catch(Exception cc)
 		{
-		 System.out.println("***************Exception Occured in GetIndustryType****************");
+		 System.out.println("***************Exception Occured in  get Insurance Type Master****************");
         cc.printStackTrace();
         return null;
 		}
@@ -152,7 +167,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			
 		}catch(Exception dd)
 		{
-			System.out.println("**************The Exception Occured in Delete Product Structure Master *************");
+			System.out.println("**************The Exception Occured in Delete  Insurance Type Master*************");
 			dd.printStackTrace();
 			res.setCommonResponse(result);
 			res.setMessage("Success");
