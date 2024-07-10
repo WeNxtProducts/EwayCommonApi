@@ -21,7 +21,7 @@ import com.maan.eway.common.req.ProductStructureMasterReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ProductStructureMasterRes;
 import com.maan.eway.common.service.InsuranceTypeMasterService;
-
+import com.maan.eway.error.Error;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.ApiOperation;
@@ -40,13 +40,24 @@ public class InsuranceTypeMasterController {
 @PostMapping(value="/SaveProductStructure",produces = "application/json")
 public  ResponseEntity<CommonRes> insertProductStructure(@RequestBody  ProductStructureMasterReq req){
 	reqPrinter.reqPrint(req);
+	CommonRes data= new CommonRes();
+	List<Error> validation = entityService.validationInsuranceTypeMaster(req);
+	if (validation != null && validation.size() != 0) {
+		data.setCommonResponse(null);
+		data.setIsError(true);
+		data.setErrorMessage(validation);
+		data.setMessage("Failed");
+		return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-	CommonRes data=entityService.saveproductMaster(req);
+	} else {
+		//save
+     data=entityService.saveproductMaster(req);
 	if (data != null) {
 	return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 	} else {
 		
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
 	}
 }
 @PostMapping("/getAllProductStructureMaster")
@@ -72,11 +83,8 @@ else {
 public ResponseEntity<CommonRes> getInsuranceMaster(@RequestBody GetProductMasterReq req){
 CommonRes data = new CommonRes();
 
-ProductStructureMasterReq res= entityService.getInsuranceMaster(req);
-data.setCommonResponse(res);
-data.setErrorMessage(Collections.emptyList());
-data.setIsError(false);
-data.setMessage("Success");
+CommonRes res= entityService.getInsuranceMaster(req);
+
 if(res!=null) {
 	return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 }

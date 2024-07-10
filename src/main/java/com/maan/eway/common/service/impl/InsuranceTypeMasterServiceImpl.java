@@ -18,6 +18,7 @@ import com.maan.eway.common.req.ProductStructureMasterReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ProductStructureMasterRes;
 import com.maan.eway.common.service.InsuranceTypeMasterService;
+import com.maan.eway.error.Error;
 import com.maan.eway.repository.InsuranceTypeMasterRepository;
 @Service
 @Transactional
@@ -25,6 +26,47 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 
 	@Autowired
 	InsuranceTypeMasterRepository ProductStructureRepo;
+
+	
+	@Override
+	public List<Error> validationInsuranceTypeMaster(ProductStructureMasterReq req) {
+		// TODO Auto-generated method stub
+		List<Error> errors = new ArrayList<Error>();
+		try {
+		if (StringUtils.isBlank(req.getCompanyid())) {
+			 errors.add(new Error("01", "Company Id" , "Please Enter CompanyId"));
+		 }
+		if (StringUtils.isBlank(req.getIndustryTypeId())) {
+			 errors.add(new Error("02", "Insurance Type Id" , "Please select  the insurance type"));
+		 }
+		if(StringUtils.isBlank(req.getSectionId()))
+		{
+			 errors.add(new Error("03", "Section Id" , "Please select  the section"));	
+		}
+		if(StringUtils.isBlank(req.getSectionName()))
+		{
+			 errors.add(new Error("04", "Section Name" , "Please enter the section name"));	
+		}
+		if(StringUtils.isBlank(req.getRemarks()))
+		{
+			 errors.add(new Error("05", "Remark" , "Please enter the remark"));	
+		}
+		if(StringUtils.isBlank(req.getDisplayOrder()))
+		{
+			 errors.add(new Error("06", "Display Order" , "Please enter the display order"));	
+		}
+		if(StringUtils.isBlank(req.getProductId()))
+		{
+			 errors.add(new Error("06", "Product Id" , "Please enter the product id"));	
+		}
+		}catch(Exception cc)
+		{
+			System.out.println("The Exception Occured in ValidationnsuranceTypeMaster ");
+			cc.printStackTrace();
+		}
+		return errors;
+	}
+	
 	
 	@Override
 	public CommonRes saveproductMaster(ProductStructureMasterReq req) {
@@ -36,8 +78,9 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			//delete Block
 			{
 				InsuranceTypeMaster Exsisting =ProductStructureRepo.findByIndsutryTypeIdAndSectionId(req.getIndustryTypeId(),Integer.valueOf(req.getSectionId()));	
-				AmendId=Exsisting.getAmendId();
-				ProductStructureRepo.delete(Exsisting);
+			if(Exsisting!=null) {
+				AmendId=Exsisting.getAmendId()+1;
+				ProductStructureRepo.delete(Exsisting);}
 			}
 			//insert block
 		   
@@ -102,20 +145,32 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		return result;
 		
 	}
-	public ProductStructureMasterReq getInsuranceMaster(GetProductMasterReq req)
+	public CommonRes getInsuranceMaster(GetProductMasterReq req)
 	{
+		CommonRes res = new CommonRes();
 	ProductStructureMasterReq result=null;
 		try {
 			
 		    InsuranceTypeMaster data =ProductStructureRepo.findByIndsutryTypeIdAndSectionId(req.getIndsutryTypeId(),Integer.valueOf(req.getSectionId()));
+		    if(data!=null)
+		    {
 		    result=new DozerBeanMapper().map(data, ProductStructureMasterReq.class);
 		    result.setCompanyid(data.getCompanyId());
+		    res.setCommonResponse(result);
+		    res.setIsError(false);
+		    res.setMessage("Success");
+		    }
+		    else {
+		    	  res.setCommonResponse(null);
+				   res.setIsError(true);
+				   res.setMessage("failed");
+		    }
 		}catch(Exception cc)
 		{
 		System.out.println("The Exception Occured in get Insurance Type Master");	
-		return null;
+		return res;
 		}
-		return result;
+		return res;
 		
 	}
 	public List<ProductStructureMasterRes> getByIndustryTypeId(GetProductMasterReq sneha)
@@ -176,4 +231,6 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		}
 		return null;
 	}
+
+	
 }
