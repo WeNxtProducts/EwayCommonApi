@@ -956,7 +956,13 @@ this.repository = repo;
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemId()))).collect(Collectors.toList());
+			if (StringUtils.isNotBlank(req.getItemType()) && ("BOND_YEAR".equalsIgnoreCase(req.getItemType())
+					|| "BURGLARY_FIRST_LOSS".equalsIgnoreCase(req.getItemType())
+					|| "FIDELITY_SI".equalsIgnoreCase(req.getItemType()))) {
+				list = list.stream().sorted((o1, o2)->Long.valueOf(o1.getItemCode()).compareTo(Long.valueOf(o2.getItemCode()))).collect(Collectors.toList());
+			}else {
 			list.sort(Comparator.comparing(ListItemValue :: getItemValue ));
+			}
 			// Map
 			if(!StringUtils.isBlank(req.getTitletype()))
 			{
