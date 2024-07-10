@@ -1,0 +1,22 @@
+package com.maan.eway.repository;
+
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.InsuranceTypeMaster;
+import com.maan.eway.bean.InsuranceTypeMasterId;
+
+public interface InsuranceTypeMasterRepository   extends JpaRepository<InsuranceTypeMaster,InsuranceTypeMasterId > , JpaSpecificationExecutor<InsuranceTypeMaster> {
+
+
+	InsuranceTypeMaster findByIndsutryTypeIdAndSectionId(String indsutryid,Integer Section_Id);
+	
+    List<InsuranceTypeMaster> findByCompanyIdAndProductIdAndStatus(String CompanyId,Integer Product_id,String status);
+
+    List<InsuranceTypeMaster> findByIndsutryTypeIdAndStatus(String indsutryid,String status);
+}
