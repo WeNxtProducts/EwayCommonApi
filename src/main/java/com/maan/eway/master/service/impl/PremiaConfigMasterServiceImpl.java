@@ -555,9 +555,10 @@ public List<PremiaConfigMasterRes> getallPremiaConfig(PremiaConfigMasterGetAllRe
 		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
-			
+		Predicate n7 = cb.equal(b.get("productId"),"99999");
+		Predicate n8 = cb.or(n6,n7);
 		if((StringUtils.isNotBlank(req.getProductId()))) {
-		query.where(n1,n2,n5,n6).orderBy(orderList);
+		query.where(n1,n2,n5,n8).orderBy(orderList);
 		}
 		
 		else {
