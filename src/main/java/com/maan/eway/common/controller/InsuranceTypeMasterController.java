@@ -81,12 +81,12 @@ else {
 @PostMapping("/getInsuranceTypeById")
 @ApiOperation(value="This method is to Display Menu Service")
 public ResponseEntity<CommonRes> getInsuranceMaster(@RequestBody GetProductMasterReq req){
-CommonRes data = new CommonRes();
+
 
 CommonRes res= entityService.getInsuranceMaster(req);
 
 if(res!=null) {
-	return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	return new ResponseEntity<CommonRes>(res, HttpStatus.CREATED);
 }
 else {
 	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

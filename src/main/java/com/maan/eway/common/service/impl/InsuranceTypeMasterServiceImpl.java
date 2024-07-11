@@ -156,7 +156,10 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		    {
 		    result=new DozerBeanMapper().map(data, ProductStructureMasterReq.class);
 		    result.setCompanyid(data.getCompanyId());
+		    result.setIndustryTypeId(data.getIndsutryTypeId());
+		    result.setIndustryTypeDesc(data.getIndsutryTypeDesc());
 		    res.setCommonResponse(result);
+		  
 		    res.setIsError(false);
 		    res.setMessage("Success");
 		    }
@@ -229,7 +232,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			res.setIsError(false);
 			
 		}
-		return null;
+		return res;
 	}
 
 	
