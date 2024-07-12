@@ -19,6 +19,9 @@ public class ProductBenefitGetAllReq {
 	@JsonProperty("CoverId")
 	private String coverId;
 	
+	@JsonProperty("SubCoverId")
+	private String subcoverid;
+	
 //	@JsonProperty("TypeId")
 //	private String typeId;
 	

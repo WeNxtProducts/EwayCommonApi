@@ -893,7 +893,8 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			Predicate n3 = cb.equal(b.get("sectionId"),req.getSectionId() );
 			Predicate n4 = cb.equal(b.get("amendId"), amendId);
 			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			Predicate n6 = cb.equal(b.get("subCoverId"), req.getSubcoverid());
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ProductBenefitMaster> result = em.createQuery(query);
