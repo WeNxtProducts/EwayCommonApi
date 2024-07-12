@@ -1183,8 +1183,13 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			Predicate n8 = cb.equal(c.get("productId"), req.getProductId());
 			Predicate n11 = cb.equal(c.get("sectionId"), req.getSectionId());
 			Predicate n14 = cb.equal(c.get("coverId"), req.getCoverId());
-		
+			if(req.getSubcoverid()!=null) {
+				Predicate n15 = cb.equal(c.get("subCoverId"), req.getSubcoverid());
+				query.where(n13,n2,n3,n4,n8,n11,n14,n15).orderBy(orderList);
+			}else
+			{
 			query.where(n13,n2,n3,n4,n8,n11,n14).orderBy(orderList);
+			}
 			// Get Result
 			TypedQuery<ProductBenefitMaster> result = em.createQuery(query);
 			list = result.getResultList();
@@ -1222,6 +1227,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 				res.setBenefitId(data.getBenefitId().toString());
 				res.setBenefitDescription(data.getBenefitDescription().toString());
 				res.setSectionDesc(data.getSectionDesc());
+				
 				res.setLongDesc(data.getLongDesc());
 				res.setCalcType(data.getCalcTypeDesc());
 				res.setValue(data.getValue()==null?null: data.getValue().toString());
