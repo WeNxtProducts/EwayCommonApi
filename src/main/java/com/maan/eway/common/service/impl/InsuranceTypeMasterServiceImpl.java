@@ -132,6 +132,8 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			{
 				ProductStructureMasterReq records=new DozerBeanMapper().map(dd,ProductStructureMasterReq.class);
 				records.setIndustryTypeId(dd.getIndsutryTypeId());
+				records.setIndustryTypeDesc(dd.getIndsutryTypeDesc());
+				records.setIndustryTypeLocalDesc(dd.getIndsutryTypeLocalDesc());
 				records.setCompanyid(dd.getCompanyId());
 				result1.add(records);
 			}
