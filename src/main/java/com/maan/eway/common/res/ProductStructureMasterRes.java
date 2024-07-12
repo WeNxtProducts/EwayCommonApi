@@ -6,10 +6,10 @@ import lombok.Data;
 @Data
 public class ProductStructureMasterRes {
 	
-	@JsonProperty("SectionId")
+	@JsonProperty("Code")
 	private Integer sectionid;
 
-	@JsonProperty("SectionName")
+	@JsonProperty("CodeDesc")
 	private String sectionName;
 	
 	@JsonProperty("Status")
