@@ -16,7 +16,7 @@ public interface InsuranceTypeMasterRepository   extends JpaRepository<Insurance
 
 	InsuranceTypeMaster findByIndsutryTypeIdAndSectionId(String indsutryid,Integer Section_Id);
 	
-    List<InsuranceTypeMaster> findByCompanyIdAndProductIdAndStatus(String CompanyId,Integer Product_id,String status);
+    List<InsuranceTypeMaster> findByCompanyIdAndProductId(String CompanyId,Integer Product_id);
 
     List<InsuranceTypeMaster> findByIndsutryTypeIdAndStatus(String indsutryid,String status);
 }

@@ -127,7 +127,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		List<ProductStructureMasterReq> result=null;
 		try {
 			List<ProductStructureMasterReq> result1 = new ArrayList<>();
-			List<InsuranceTypeMaster> data =ProductStructureRepo.findByCompanyIdAndProductIdAndStatus(req.getCompanyId(),Integer.valueOf(req.getProductid()),"Y");
+			List<InsuranceTypeMaster> data =ProductStructureRepo.findByCompanyIdAndProductId(req.getCompanyId(),Integer.valueOf(req.getProductid()));
 			for(InsuranceTypeMaster dd:data)
 			{
 				ProductStructureMasterReq records=new DozerBeanMapper().map(dd,ProductStructureMasterReq.class);
