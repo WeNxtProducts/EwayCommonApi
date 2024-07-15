@@ -3414,7 +3414,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setAdminReferralStatus(motorData.getStatus());	
 		
 			home.setReferralDescription(motorData.getReferalRemarks());
-			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
+//			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
+			home.setAdminLoginId(StringUtils.isBlank(motorData.getAdminLoginId()) ? request.getAdminLoginId() : motorData.getAdminLoginId() );
 			home.setApprCanDt(motorData.getUpdatedDate());
 			}
 			home.setStatus(motorData.getStatus());
@@ -3536,10 +3537,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setExpiryDate(travelData.getTravelEndDate());
 			home.setAdminRemarks(travelData.getAdminRemarks());
 			if(travelData.getStatus().equalsIgnoreCase("RP") || travelData.getStatus().equalsIgnoreCase("RA") ||travelData.getStatus().equalsIgnoreCase("RR") ||
-					travelData.getStatus().equalsIgnoreCase("RE") ||travelData.getStatus().equalsIgnoreCase("REV") )		
+					travelData.getStatus().equalsIgnoreCase("RE") ||travelData.getStatus().equalsIgnoreCase("REV") )	{		
 				home.setAdminReferralStatus(travelData.getStatus());	
-			home.setReferralDescription(travelData.getReferalRemarks());
-			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? travelData.getAdminLoginId() : request.getAdminLoginId() );
+				
+				home.setReferralDescription(travelData.getReferalRemarks());
+//				home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
+				home.setAdminLoginId(StringUtils.isBlank(travelData.getAdminLoginId()) ? request.getAdminLoginId() : travelData.getAdminLoginId() );
+				home.setApprCanDt(travelData.getUpdatedDate());
+				}
 			home.setStatus(travelData.getStatus());
 			home.setQuoteCreatedDate(new Date());
 			home.setEntryDate(new Date());
@@ -3622,10 +3627,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setExpiryDate(buildingData.getPolicyEndDate());
 			home.setAdminRemarks(buildingData.getAdminRemarks());
 			if(buildingData.getStatus().equalsIgnoreCase("RP") || buildingData.getStatus().equalsIgnoreCase("RA") ||buildingData.getStatus().equalsIgnoreCase("RR") ||
-					buildingData.getStatus().equalsIgnoreCase("RE") ||buildingData.getStatus().equalsIgnoreCase("REV") )		
-				home.setAdminReferralStatus(buildingData.getStatus());			
+					buildingData.getStatus().equalsIgnoreCase("RE") ||buildingData.getStatus().equalsIgnoreCase("REV") ) {		
+			home.setAdminReferralStatus(buildingData.getStatus());	
+		
 			home.setReferralDescription(buildingData.getReferalRemarks());
-			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? buildingData.getAdminLoginId() : request.getAdminLoginId() );
+//			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
+			home.setAdminLoginId(StringUtils.isBlank(buildingData.getAdminLoginId()) ? request.getAdminLoginId() : buildingData.getAdminLoginId() );
+			home.setApprCanDt(buildingData.getUpdatedDate());
+			}
 			home.setStatus(buildingData.getStatus());
 			home.setQuoteCreatedDate(new Date());
 			home.setEntryDate(new Date());
@@ -3711,10 +3720,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setExpiryDate(eserCommonData.getPolicyEndDate());
 			home.setAdminRemarks(eserCommonData.getAdminRemarks());
 			if(eserCommonData.getStatus().equalsIgnoreCase("RP") || eserCommonData.getStatus().equalsIgnoreCase("RA") ||eserCommonData.getStatus().equalsIgnoreCase("RR") ||
-					eserCommonData.getStatus().equalsIgnoreCase("RE") ||eserCommonData.getStatus().equalsIgnoreCase("REV") )		
-				home.setAdminReferralStatus(eserCommonData.getStatus());			
+					eserCommonData.getStatus().equalsIgnoreCase("RE") ||eserCommonData.getStatus().equalsIgnoreCase("REV") ) {		
+			home.setAdminReferralStatus(eserCommonData.getStatus());	
+		
 			home.setReferralDescription(eserCommonData.getReferalRemarks());
-			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? eserCommonData.getAdminLoginId() : request.getAdminLoginId() );
+//			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
+			home.setAdminLoginId(StringUtils.isBlank(eserCommonData.getAdminLoginId()) ? request.getAdminLoginId() : eserCommonData.getAdminLoginId() );
+			home.setApprCanDt(eserCommonData.getUpdatedDate());
+			}
 			home.setStatus(eserCommonData.getStatus());
 			home.setQuoteCreatedDate(new Date());
 			home.setEntryDate(new Date());
