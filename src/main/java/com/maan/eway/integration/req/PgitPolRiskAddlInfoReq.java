@@ -992,4 +992,8 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 
 	@JsonProperty("REQUEST_REFERENCE_NO")
 	private String requestReferenceNo;
+	
+	@JsonProperty("PolDsCode")
+	private String polDsCode;
+	
 }

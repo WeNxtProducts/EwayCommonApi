@@ -98,5 +98,32 @@ public class YiCoverDetailReq {
 	
 	@JsonProperty("RiskId")
     private Integer riskId;
+	
+	@JsonProperty("PrcCode")
+	private String prcCode;
+
+	@JsonProperty("PrcDesc")
+	private String prcDesc;
+
+	@JsonProperty("PrcRate")
+	private String prcRate;
+
+	@JsonProperty("PrcRatePer")
+	private String prcRatePer;
+
+	@JsonProperty("PrcCvrType")
+	private String prcCvrType;
+
+	@JsonProperty("PrcSiFc")
+	private String prcSiFc;
+
+	@JsonProperty("PrcSiLc1")
+	private String prcSiLc1;
+
+	@JsonProperty("PrcPremFc")
+	private String prcPremFc;
+
+	@JsonProperty("PrcPremLc1")
+	private String prcPremLc1;
 
 }

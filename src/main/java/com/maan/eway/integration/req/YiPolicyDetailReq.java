@@ -342,7 +342,53 @@ public class YiPolicyDetailReq implements Serializable {
 
 	@JsonProperty("CompanyId")
 	private String companyId;
-    
+	
+	@JsonProperty("PolSrcType")
+	private String polSrcType;
 
+	@JsonProperty("PolSrcCode")
+	private String polSrcCode;
+
+	@JsonProperty("PolBusType")
+	private String polBusType;
+
+	@JsonProperty("PolAssrCode")
+	private String polAssrCode;
+
+	@JsonProperty("PolTelNo")
+	private String polTelNo;
+
+	@JsonProperty("PolEmailId")
+	private String polEmailId;
+
+	@JsonProperty("PolNo")
+	private String polNo;
+
+	@JsonProperty("PolPremLc1")
+	private String polPremLc1;
+
+	@JsonProperty("PolCatg")
+	private String polCatg;
+
+	@JsonProperty("PolPremCalcType")
+	private String polPremCalcType;
+
+	@JsonProperty("PolApprDt")
+	private String polApprDt;
+
+	@JsonProperty("PolApprUid")
+	private String polApprUid;
+
+	@JsonProperty("PolExchgRate")
+	private String polExchgRate;
+
+	@JsonProperty("PolCustNationalId")
+	private String polCustNationalId;
+
+	@JsonProperty("PolCustNationalIdType")
+	private String polCustNationalIdType;
+
+	@JsonProperty("PolTypeOfCustomer")
+	private String polTypeOfCustomer;
 
 }

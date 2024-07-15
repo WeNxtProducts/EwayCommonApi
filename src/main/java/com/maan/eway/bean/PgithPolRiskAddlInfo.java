@@ -1047,17 +1047,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="P_WS_ERROR")
     private String     pWsError ;
-
-    
-
-
-
     @Column(name="SERVICE_ACTION")
     private String     serviceAction ;
-
     @Column(name="REQUEST_REFERENCE_NO")
     private String     requestReferenceNo ;
 
+    @Column(name = "POL_DS_CODE", length = 200)
+    private String polDsCode;
   
 }
 

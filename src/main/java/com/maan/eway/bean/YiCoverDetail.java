@@ -62,87 +62,104 @@ private Double cvrId;
 @Column(name = "RISK_ID", nullable = false)
 private Integer riskId;
 
-    //--- ENTITY DATA FIELDS 
-    @Column(name="SERVICE_ID", length=100)
-    private String     serviceId ;
+// --- ENTITY DATA FIELDS
+@Column(name = "SERVICE_ID", length = 100)
+private String serviceId;
 
-    @Column(name="SERVICE_ACTION", length=100)
-    private String     serviceAction ;
+@Column(name = "SERVICE_ACTION", length = 100)
+private String serviceAction;
 
-    @Column(name="SEC_CODE", length=100)
-    private String     secCode ;
+@Column(name = "SEC_CODE", length = 100)
+private String secCode;
 
-    @Column(name="L1S1_ID")
-    private Double l1s1Id;
+@Column(name = "L1S1_ID")
+private Double l1s1Id;
 
-   
+@Column(name = "COVER_CODE", length = 100)
+private String coverCode;
 
-    @Column(name="COVER_CODE", length=100)
-    private String     coverCode ;
+@Column(name = "SUM_INSURED", length = 100)
+private String sumInsured;
 
-    @Column(name="SUM_INSURED", length=100)
-    private String   sumInsured;
-    
-    @Column(name="ITERATION_NO", length=100)
-    private String iterationNo;
-    
-    @Column(name="SI_MODIFIED_YN", length=1)
-    private String siModifiedYn;
-    
-    @Column(name="RATE")
-    private Double rate;
-    
-    @Column(name="RATE_MODIFIED_YN", length=1)
-    private String rateModifiedYn;
-    
-    @Column(name="PREMIUM")
-    private Double premium;
-    
-    @Column(name="PREMIUM_MODIFIED_YN", length=1)
-    private String premiumModifiedYn;
-    
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="RESPONSE_TIME")
-    private Date       responseTime ;
+@Column(name = "ITERATION_NO", length = 100)
+private String iterationNo;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="REQUEST_TIME")
-    private Date       requestTime ;
+@Column(name = "SI_MODIFIED_YN", length = 1)
+private String siModifiedYn;
 
+@Column(name = "RATE")
+private Double rate;
 
-    @Column(name="STATUS", length=10)
-    private String     status ;
+@Column(name = "RATE_MODIFIED_YN", length = 1)
+private String rateModifiedYn;
 
-    @Column(name="P_WS_RESPONSE_TYPE", length=100)
-    private String     pWsResponseType ;
+@Column(name = "PREMIUM")
+private Double premium;
 
-    @Column(name="P_WS_ERROR", length=500)
-    private String     pWsError ;
-    
-    @Column(name="REQUESTREFERENCENO", length=15)
-    private String     requestreferenceno ;
+@Column(name = "PREMIUM_MODIFIED_YN", length = 1)
+private String premiumModifiedYn;
 
-    @Column(name="RENEWAL_POLICY_NO", length=100)
-    private String    renewalPolicyNo ;
-    
-    
-    @Column(name="RENEWAL_CURRENT_STATUS", length=100)
-    private String     renewalCurrentStatus ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name = "RESPONSE_TIME")
+private Date responseTime;
 
-    @Column(name="PROD_CODE", length=50)
-    private String    prodCode;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name = "REQUEST_TIME")
+private Date requestTime;
 
-    @Column(name="SERVICE_TYPE", length=100)
-    private String  serviceType;
-    
-    @Column(name="COVER_DESC", length=225)
-    private String coverDesc;
-    
-   
-    
-    
-    
+@Column(name = "STATUS", length = 10)
+private String status;
+
+@Column(name = "P_WS_RESPONSE_TYPE", length = 100)
+private String pWsResponseType;
+
+@Column(name = "P_WS_ERROR", length = 500)
+private String pWsError;
+
+@Column(name = "REQUESTREFERENCENO", length = 15)
+private String requestreferenceno;
+
+@Column(name = "RENEWAL_POLICY_NO", length = 100)
+private String renewalPolicyNo;
+
+@Column(name = "RENEWAL_CURRENT_STATUS", length = 100)
+private String renewalCurrentStatus;
+
+@Column(name = "PROD_CODE", length = 50)
+private String prodCode;
+
+@Column(name = "SERVICE_TYPE", length = 100)
+private String serviceType;
+
+@Column(name = "COVER_DESC", length = 225)
+private String coverDesc;
+
+@Column(name = "PRC_CODE", length = 200)
+private String prcCode;
+
+@Column(name = "PRC_DESC", length = 200)
+private String prcDesc;
+
+@Column(name = "PRC_RATE", length = 200)
+private String prcRate;
+
+@Column(name = "PRC_RATE_PER", length = 200)
+private String prcRatePer;
+
+@Column(name = "PRC_CVR_TYPE", length = 200)
+private String prcCvrType;
+
+@Column(name = "PRC_SI_FC", length = 200)
+private String prcSiFc;
+
+@Column(name = "PRC_SI_LC_1", length = 200)
+private String prcSiLc1;
+
+@Column(name = "PRC_PREM_FC", length = 200)
+private String prcPremFc;
+
+@Column(name = "PRC_PREM_LC_1", length = 200)
+private String prcPremLc1;
 
 }
 

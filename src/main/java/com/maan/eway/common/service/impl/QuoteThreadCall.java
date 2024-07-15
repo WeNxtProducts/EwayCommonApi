@@ -3410,11 +3410,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setExpiryDate(motorData.getPolicyEndDate());
 			home.setAdminRemarks(motorData.getAdminRemarks());
 			if(motorData.getStatus().equalsIgnoreCase("RP") || motorData.getStatus().equalsIgnoreCase("RA") ||motorData.getStatus().equalsIgnoreCase("RR") ||
-					motorData.getStatus().equalsIgnoreCase("RE") ||motorData.getStatus().equalsIgnoreCase("REV") )		
-				home.setAdminReferralStatus(motorData.getStatus());	
+					motorData.getStatus().equalsIgnoreCase("RE") ||motorData.getStatus().equalsIgnoreCase("REV") ) {		
+			home.setAdminReferralStatus(motorData.getStatus());	
 		
 			home.setReferralDescription(motorData.getReferalRemarks());
 			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
+			home.setApprCanDt(motorData.getUpdatedDate());
+			}
 			home.setStatus(motorData.getStatus());
 			home.setQuoteCreatedDate(new Date());
 			home.setEntryDate(new Date());
@@ -3426,7 +3428,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setHavepromoYn(motorData.getHavepromocode());
 			home.setPromocode(motorData.getPromocode());
 			home.setManualReferalYn(motorData.getManualReferalYn());
-			
+			home.setApprCanDt(motorData.getUpdatedDate());
 			home.setProductName(motorData.getProductName());
 			home.setCompanyName(motorData.getCompanyName());
 			home.setCommissionType(motorData.getCommissionType());

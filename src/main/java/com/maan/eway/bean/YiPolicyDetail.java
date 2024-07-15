@@ -371,7 +371,53 @@ private static final long serialVersionUID = 1L;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
   
+    @Column(name = "POL_SRC_TYPE", length = 200)
+    private String polSrcType;
 
+    @Column(name = "POL_SRC_CODE", length = 200)
+    private String polSrcCode;
+
+    @Column(name = "POL_BUS_TYPE", length = 200)
+    private String polBusType;
+
+    @Column(name = "POL_ASSR_CODE", length = 200)
+    private String polAssrCode;
+
+    @Column(name = "POL_TEL_NO", length = 200)
+    private String polTelNo;
+
+    @Column(name = "POL_EMAIL_ID", length = 200)
+    private String polEmailId;
+
+    @Column(name = "POL_NO", length = 200)
+    private String polNo;
+
+    @Column(name = "POL_PREM_LC_1", length = 200)
+    private String polPremLc1;
+
+    @Column(name = "POL_CATG", length = 200)
+    private String polCatg;
+
+    @Column(name = "POL_PREM_CALC_TYPE", length = 200)
+    private String polPremCalcType;
+
+    @Column(name = "POL_APPR_DT", length = 200)
+    private String polApprDt;
+
+    @Column(name = "POL_APPR_UID", length = 200)
+    private String polApprUid;
+
+    @Column(name = "POL_EXCHG_RATE", length = 200)
+    private String polExchgRate;
+
+    @Column(name = "POL_CUST_NATIONAL_ID", length = 200)
+    private String polCustNationalId;
+    
+    @Column(name = "POL_CUST_NATIONAL_ID_TYPE", length = 200)
+    private String polCustNationalIdType;
+    
+    @Column(name = "POL_TYPE_OF_CUSTOMER", length = 200)
+    private String polTypeOfCustomer;
 
 }
 
