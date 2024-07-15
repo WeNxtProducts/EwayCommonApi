@@ -3,6 +3,7 @@ package com.maan.eway.admin.req;
 import java.sql.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -44,6 +45,7 @@ public class MenuDetails {
      @JsonProperty("DisplayOrder")
      private String displayOrder;
      
+     @JsonFormat(pattern = "dd/MM/yyyy")
      @JsonProperty("EntryDate")
      private Date entryDate;
      
