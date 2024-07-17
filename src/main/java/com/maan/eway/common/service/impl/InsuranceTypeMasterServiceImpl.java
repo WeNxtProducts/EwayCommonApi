@@ -182,7 +182,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 	{
 		List<ProductStructureMasterRes> result=null;
 		try {
-			List<InsuranceTypeMaster> getdata=	ProductStructureRepo.findByIndsutryTypeIdAndStatus(sneha.getIndsutryTypeId(),"Y");
+			List<InsuranceTypeMaster> getdata=	ProductStructureRepo.findByIndsutryTypeIdAndStatusAndCompanyIdAndProductId(sneha.getIndsutryTypeId(),"Y",sneha.getCompanyId(),Integer.valueOf(sneha.getProductid()));
 			List<ProductStructureMasterRes> result1 = new ArrayList<>();
 			for(InsuranceTypeMaster dd:getdata)
 			{
