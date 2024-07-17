@@ -61,7 +61,7 @@ private static final long serialVersionUID = 1L;
     
     @Id
     @Column(name="RISK_ID")
-    private Integer     RiskId ;
+    private Integer     riskId ;
     
     @Id
     @Column(name="CVR_ID")

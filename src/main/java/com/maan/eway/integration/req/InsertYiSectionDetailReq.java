@@ -64,4 +64,7 @@ public class InsertYiSectionDetailReq implements Serializable {
 
 	@JsonProperty("SchemeDesc")
 	private String schemeDesc;
+	
+	@JsonProperty("RiskId")
+    private String riskId;
 }

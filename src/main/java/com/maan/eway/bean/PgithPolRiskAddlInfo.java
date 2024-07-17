@@ -1055,6 +1055,9 @@ private static final long serialVersionUID = 1L;
     @Column(name = "POL_DS_CODE", length = 200)
     private String polDsCode;
   
+
+    @Column(name="PRAI_SYS_ID")
+    private String     praiSysId ;
 }
 
 

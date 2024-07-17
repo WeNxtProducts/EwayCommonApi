@@ -14,7 +14,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -42,6 +41,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
+@IdClass(YiSectionDetailId.class)
 @Table(name="yi_section_detail")
 
 
@@ -53,6 +53,9 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="REQUESTREFERENCENO", nullable=false, length=15)
     private String     requestreferenceno ;
+    @Id
+    @Column(name = "RISK_ID", nullable = false)
+    private String riskId;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="SERVICE_ID", length=100)
