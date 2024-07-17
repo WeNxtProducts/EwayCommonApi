@@ -2005,7 +2005,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 					Expression<String> e0 = m.get("branchCode");
 					n6 = e0.in(branches);
 				}
-				query.where(n1, n2, n3, n4, n5, n6,n9).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));		
+				Predicate n10 = (n9==null)?cb.isTrue(cb.literal(true)):n9;
+				query.where(n1, n2, n3, n4, n5, n6,n10).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));		
 					
 				
 				TypedQuery<Long> result = em.createQuery(query);
