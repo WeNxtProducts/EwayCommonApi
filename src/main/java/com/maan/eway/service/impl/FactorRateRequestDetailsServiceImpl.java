@@ -1557,6 +1557,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			sectionGroup = sectionDatas.stream().filter( o -> o.getSectionId() !=null  ).collect( Collectors.groupingBy(EserviceSectionDetails :: getSectionId )) ;
 			for (String sec :  sectionGroup.keySet()) {
 				
+				
 				List<EserviceSectionDetails> filterData = sectionDatas.stream().filter( o ->  o.getSectionId().equalsIgnoreCase(sec) ).collect(Collectors.toList());	
 				try {
 
@@ -1595,7 +1596,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 									&& building.get(0).getSectionId().equals("1")) {
 
 								continue;
-							} else if (null == building.get(0).getContentSuminsured()
+							} else if (null == building.get(0).getContentSuminsured() && building.get(0).getRiskId() != 1
 									&& StringUtils.isNotBlank(building.get(0).getSectionId())
 									&& building.get(0).getSectionId().equals("47")) {
 
