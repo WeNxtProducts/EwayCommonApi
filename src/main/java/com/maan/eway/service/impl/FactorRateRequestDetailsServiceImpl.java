@@ -1590,26 +1590,44 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						}
 
 						} else {
+							
+							for(EserviceBuildingDetails data : building) {
+								
+								
+								if (null != data && StringUtils.isNotBlank(data.getSectionId())
+										&& data.getSectionId().equals("1") && data.getBuildingSuminsured() == null) {
 
-							if (null == building.get(0).getBuildingSuminsured()
-									&& StringUtils.isNotBlank(building.get(0).getSectionId())
-									&& building.get(0).getSectionId().equals("1")) {
+									continue;
+								}else if (null != data && StringUtils.isNotBlank(data.getSectionId())
+										&& data.getSectionId().equals("47") && data.getContentSuminsured() == null) {
 
-								continue;
-							} else if (null == building.get(0).getContentSuminsured() && building.get(0).getRiskId() != 1
-									&& StringUtils.isNotBlank(building.get(0).getSectionId())
-									&& building.get(0).getSectionId().equals("47")) {
+									continue;
+								}else if (null != data && StringUtils.isNotBlank(data.getSectionId())
+										&& data.getSectionId().equals("3") && data.getAllriskSuminsured() == null) {
 
-								continue;
-							} else if (null == building.get(0).getAllriskSuminsured()
-									&& StringUtils.isNotBlank(building.get(0).getSectionId())
-									&& building.get(0).getSectionId().equals("3")) {
+									continue;
+								}
 
-								continue;
-							}
+//							if (null == building.get(0).getBuildingSuminsured()
+//									&& StringUtils.isNotBlank(building.get(0).getSectionId())
+//									&& building.get(0).getSectionId().equals("1")) {
+//
+//								continue;
+//							} else if (null == building.get(0).getContentSuminsured() && building.get(0).getRiskId() != 1
+//									&& StringUtils.isNotBlank(building.get(0).getSectionId())
+//									&& building.get(0).getSectionId().equals("47")) {
+//
+//								continue;
+//							} else if (null == building.get(0).getAllriskSuminsured()
+//									&& StringUtils.isNotBlank(building.get(0).getSectionId())
+//									&& building.get(0).getSectionId().equals("3")) {
+//
+//								continue;
+//							}
 						}
-
 					}
+
+				}
 					
 						if (null != sec && StringUtils.isNotBlank(sec)
 								&& sec.equals("3")) {
