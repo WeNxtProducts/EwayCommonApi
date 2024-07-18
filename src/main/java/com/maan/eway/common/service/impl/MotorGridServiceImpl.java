@@ -3330,9 +3330,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				endtCount2.where(a5,a6);
 				
 				// Quote No Filter
-				Subquery<String> quoteNo = query.subquery(String.class);
+				Subquery<Long> quoteNo = query.subquery(Long.class);
 				Root<HomePositionMaster> ocpm2 = quoteNo.from(HomePositionMaster.class);
-				quoteNo.select(ocpm2.get("quoteNo"));
+				quoteNo.select(cb.max(ocpm2.get("quoteNo")));
 				Predicate a3 = cb.equal(ocpm2.get("originalPolicyNo"), m.get("originalPolicyNo"));
 				Predicate a4 = cb.equal(ocpm2.get("status"),m.get("status"));
 				Predicate a7 = cb.equal(ocpm2.get("endtCount"), endtCount2);  
