@@ -1549,14 +1549,16 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 	public  List<EservieMotorDetailsViewRes> getBuildingDetails(FactorRateDetailsGetReq req) {
 		 List<EservieMotorDetailsViewRes> viewBuildingList  = new ArrayList<EservieMotorDetailsViewRes>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		 List<Integer> skipRiskIds = null;
 		 try {
 			// Building Product Details
+			 			
+			 
 			List<EserviceSectionDetails>    sectionDatas = eserSecRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			Map<String, List<EserviceSectionDetails>> sectionGroup =null;
 			sectionGroup = sectionDatas.stream().filter( o -> o.getSectionId() !=null  ).collect( Collectors.groupingBy(EserviceSectionDetails :: getSectionId )) ;
 			for (String sec :  sectionGroup.keySet()) {
-				
 				
 				List<EserviceSectionDetails> filterData = sectionDatas.stream().filter( o ->  o.getSectionId().equalsIgnoreCase(sec) ).collect(Collectors.toList());	
 				try {
@@ -1590,52 +1592,41 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						}
 
 						} else {
-							boolean isContinue = false; 
+
+							if (null == building.get(0).getBuildingSuminsured()
+									&& StringUtils.isNotBlank(building.get(0).getSectionId())
+									&& building.get(0).getSectionId().equals("1")) {
+
+								continue;
+							} else if (StringUtils.isNotBlank(building.get(0).getSectionId())
+									&& building.get(0).getSectionId().equals("47")) {
+								
+								skipRiskIds = building.stream()
+										.filter(a -> a.getSectionId().equals( "47" ) && a.getContentSuminsured() == null)
+										.map(a -> a.getRiskId()).collect(Collectors.toList());
+
+							}
 							
-							for(EserviceBuildingDetails data : building) {
-								
-								
-								if (null != data && StringUtils.isNotBlank(data.getSectionId())
-										&& data.getSectionId().equals("1") && data.getBuildingSuminsured() == null) {
-
-									 isContinue = true;
-									 continue;
-									
-								}else if (null != data && StringUtils.isNotBlank(data.getSectionId())
-										&& data.getSectionId().equals("47") && data.getContentSuminsured() == null) {
-									
-									isContinue = true;
-
-									continue;
-								}else if (null != data && StringUtils.isNotBlank(data.getSectionId())
-										&& data.getSectionId().equals("3") && data.getAllriskSuminsured() == null) {
-									isContinue = true;
-									continue;
-								}
-
-//							if (null == building.get(0).getBuildingSuminsured()
-//									&& StringUtils.isNotBlank(building.get(0).getSectionId())
-//									&& building.get(0).getSectionId().equals("1")) {
-//
-//								continue;
-//							} else if (null == building.get(0).getContentSuminsured() && building.get(0).getRiskId() != 1
+//							(null == building.get(0).getContentSuminsured()
 //									&& StringUtils.isNotBlank(building.get(0).getSectionId())
 //									&& building.get(0).getSectionId().equals("47")) {
+//								
+//								
 //
 //								continue;
-//							} else if (null == building.get(0).getAllriskSuminsured()
-//									&& StringUtils.isNotBlank(building.get(0).getSectionId())
-//									&& building.get(0).getSectionId().equals("3")) {
-//
-//								continue;
+//								
+//								
 //							}
-						}
-							if(isContinue) {
+																				
+							else if (null == building.get(0).getAllriskSuminsured()
+									&& StringUtils.isNotBlank(building.get(0).getSectionId())
+									&& building.get(0).getSectionId().equals("3")) {
+
 								continue;
 							}
-					}
+						}
 
-				}
+					}
 					
 						if (null != sec && StringUtils.isNotBlank(sec)
 								&& sec.equals("3")) {
@@ -1731,7 +1722,17 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				} else {
 					   List<EserviceBuildingDetails> buildData1 = buildDatas.stream().filter( o ->o.getSectionId().equalsIgnoreCase(filterData.get(0).getSectionId())).collect(Collectors.toList());
 					   for(EserviceBuildingDetails buildData :buildData1 ) {
-					// Response 
+						   
+							if (buildData != null && StringUtils.isNotBlank(buildData.getSectionId())
+									&& buildData.getSectionId().equals("47") && null != buildData.getRiskId()
+									&& skipRiskIds != null
+									&& skipRiskIds.stream().anyMatch(a -> buildData.getRiskId() == a)) {
+
+								continue;
+							}
+							   
+						   // Response 
+						   
 						EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
 						dozerMapper.map(buildData,res);
 						res.setInsuranceId(buildData.getCompanyId());
