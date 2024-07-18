@@ -1590,6 +1590,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						}
 
 						} else {
+							boolean isContinue = false; 
 							
 							for(EserviceBuildingDetails data : building) {
 								
@@ -1597,14 +1598,18 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 								if (null != data && StringUtils.isNotBlank(data.getSectionId())
 										&& data.getSectionId().equals("1") && data.getBuildingSuminsured() == null) {
 
-									continue;
+									 isContinue = true;
+									 continue;
+									
 								}else if (null != data && StringUtils.isNotBlank(data.getSectionId())
 										&& data.getSectionId().equals("47") && data.getContentSuminsured() == null) {
+									
+									isContinue = true;
 
 									continue;
 								}else if (null != data && StringUtils.isNotBlank(data.getSectionId())
 										&& data.getSectionId().equals("3") && data.getAllriskSuminsured() == null) {
-
+									isContinue = true;
 									continue;
 								}
 
@@ -1625,6 +1630,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 //								continue;
 //							}
 						}
+							if(isContinue) {
+								continue;
+							}
 					}
 
 				}
