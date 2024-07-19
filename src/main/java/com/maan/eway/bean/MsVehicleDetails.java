@@ -343,6 +343,15 @@ private static final long serialVersionUID = 1L;
 	
 	@Column(name = "ZONE")
 	private Integer zone;
+	
+	@Column(name = "CLASS")
+	private String clasS;
+
+	@Column(name = "NO_OF_CARDS")
+	private Integer noOfCards;
+
+	@Column(name = "PAYLOAD")
+	private BigDecimal payload;
 }
 
 
