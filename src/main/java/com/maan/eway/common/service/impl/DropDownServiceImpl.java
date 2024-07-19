@@ -1,7 +1,8 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
-
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -3530,6 +3531,26 @@ public class DropDownServiceImpl  implements DropDownService{
 			}
 		}catch(Exception e) {
 			log.info("Error in brokerlist :: "+e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
+	@Override
+	public List<DropDownRes> policyEndDateList(String policyStartDate) {
+		List<DropDownRes> result = new ArrayList<DropDownRes>();
+		try {
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			LocalDate endDate = LocalDate.parse(policyStartDate,dateTimeFormatter);
+			Arrays.asList(91,181,272,365).forEach(k -> {
+				DropDownRes d = new DropDownRes();
+				d.setCode(endDate.plusDays(k).format(dateTimeFormatter)+"("+k+" Days)");
+				d.setCodeDesc(endDate.plusDays(k).format(dateTimeFormatter)+"("+k+" Days)");
+				result.add(d);
+			});
+			return result;
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		return null;

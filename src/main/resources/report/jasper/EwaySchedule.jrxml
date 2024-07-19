@@ -290,7 +290,7 @@
 					<pen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="14" isBold="true" isUnderline="true"/>
+					<font fontName="Arial" size="12" isBold="true" isUnderline="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 			</textField>
@@ -541,7 +541,7 @@
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="419" height="15" uuid="b89b85ea-804c-4a74-8940-14245327518d"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{narration}]]></textFieldExpression>
 							</textField>
@@ -558,7 +558,7 @@
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="99" height="15" uuid="e41150ec-346c-4aba-859a-a7108dabdb0f"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 							</textField>
@@ -678,7 +678,7 @@
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["In witness where of the undersigned being duly authorised by the Insurers and on behalf of the Insurers has/have here unto set his/their hand(s)"]]></textFieldExpression>
 			</textField>
@@ -690,7 +690,7 @@
 					<leftPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Place :"+($F{place}==null?"":$F{place})]]></textFieldExpression>
 			</textField>
@@ -702,7 +702,7 @@
 					<leftPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Agent :"]]></textFieldExpression>
 			</textField>
@@ -712,7 +712,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
@@ -722,7 +722,7 @@
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
@@ -733,7 +733,7 @@
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Printed By : "]]></textFieldExpression>
 			</textField>
@@ -743,7 +743,7 @@
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
@@ -756,7 +756,7 @@
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" Authorized Signatory"]]></textFieldExpression>
 			</textField>
@@ -768,7 +768,7 @@
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -779,7 +779,7 @@
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Prepared By :  "]]></textFieldExpression>
 			</textField>
@@ -789,7 +789,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
@@ -801,7 +801,7 @@
 					<leftPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Date :"]]></textFieldExpression>
 			</textField>

@@ -253,4 +253,6 @@ public interface DropDownService {
 
 	List<DropDownRes> characterType(LovDropDownReq req);
 
+	List<DropDownRes> policyEndDateList(String policyStartDate);
+
 }

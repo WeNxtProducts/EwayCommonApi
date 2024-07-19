@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.GetMachineryContentReq;
@@ -2026,6 +2027,22 @@ public class DropDownController {
 	public ResponseEntity<CommonRes> brokerlist(@PathVariable ("companyId") String companyId){
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.brokerlist(companyId);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if(res != null) {
+			return new ResponseEntity<CommonRes>(data,HttpStatus.ACCEPTED);
+		}else {
+			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@GetMapping("/policyEndDate")
+	public ResponseEntity<?> policyEndDateList(@RequestParam ("policyStartDate") String policyStartDate){
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.policyEndDateList(policyStartDate);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

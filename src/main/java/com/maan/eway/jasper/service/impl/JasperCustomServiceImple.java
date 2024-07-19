@@ -2,6 +2,7 @@
 
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -1844,13 +1845,14 @@ public class JasperCustomServiceImple {
 					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 					lmap.put("riskId", k.getRiskId());
 					lmap.put("locationName", k.getLocationName()==null?"":StringUtils.capitalize(k.getLocationName()));
+					lmap.put("buildingAddress", k.getBuildingAddress()==null?"":k.getBuildingAddress()+", "+StringUtils.capitalize(k.getLocationName()));
 					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
 					lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
 							&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
 							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
 					lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 							&& f.getSectionId()==Integer.parseInt(k.getSectionId())
-							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumIncludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
 					return lmap;
 				}).collect(Collectors.toList());
 				
@@ -1885,7 +1887,7 @@ public class JasperCustomServiceImple {
 						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
 				
 				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
-						pcdRoot.get("coverId").alias("coverId"),pcdRoot.get("coverageType").alias("coverageType"),
+						pcdRoot.get("coverId").alias("coverId"),pcdRoot.get("coverageType").alias("coverageType"),sddRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),
 						 pcdRoot.get("sumInsured").alias("sumInsured"),pcdRoot.get("rate").alias("rate"),pcdRoot.get("premiumIncludedTaxLc").alias("premiumIncludedTaxLc"),
 						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"),occDesc.alias("occupationDesc"),
 						 pcdRoot.get("premiumExcludedTaxLc").alias("premiumExcludedTaxLc"),pcdRoot.get("premiumExcludedTaxFc").alias("premiumExcludedTaxFc"))
@@ -2029,45 +2031,53 @@ public class JasperCustomServiceImple {
 						Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(m -> {
 							LinkedHashMap<String, Object> contentMap = new LinkedHashMap<String, Object>();
 							contentMap.put("itemId", m.getItemId());
-							contentMap.put("contentRiskDesc", m.getContentRiskDesc());
+							contentMap.put("contentRiskDesc", m.getContentRiskDesc()+":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(m.getSumInsured())+"</span>");
 							contentMap.put("sumInsured", m.getSumInsured());
 							contentMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
 									&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(m.getSectionId())
 									&& f.getVehicleId()==m.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
 							contentMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(m.getSectionId())
-									&& f.getVehicleId()==m.getRiskId()).map(u -> u.getPremiumIncludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+									&& f.getVehicleId()==m.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
 							return contentMap;
 						}, Collectors.toList()))).entrySet()
 						.stream().map(l -> {
 							LinkedHashMap<String, Object> cMap = new LinkedHashMap<String, Object>();
-							cMap.put("sectionKey", locationDetails.stream().filter(f -> Integer.parseInt(f.get("riskId").toString())==l.getKey())
-									.map(m -> m.get("locationName").toString()).findAny().orElse(""));
-							cMap.put("sectionValue", l.getValue());
+							cMap.put("locationName", locationDetails.stream().filter(f -> Integer.parseInt(f.get("riskId").toString())==l.getKey())
+									.map(m -> m.get("buildingAddress").toString()).findAny().orElse(""));
+							cMap.put("contentRiskDesc", l.getValue().stream().map(q -> String.valueOf(q.get("contentRiskDesc"))).collect(Collectors.joining("<br>")));
+							cMap.put("sumInsured", l.getValue().stream().map(g -> (BigDecimal) g.get("sumInsured")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+							cMap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+							cMap.put("premium", l.getValue().stream().map(g -> g.get("Premium")).findFirst().get());
+							cMap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 							return cMap;
 						}).collect(Collectors.toList());
-					
 				List<ProductEmployeeDetails> empDetails = productEmpDetRepo.findByQuoteNoAndSectionId(map.get("quoteNo").toString(),sectionId);
 				List<Map<String,Object>> employeeList = empDetails.stream()
 						.collect(Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(o -> {
 							LinkedHashMap<String,Object> empMap = new LinkedHashMap<String,Object>();
 							empMap.put("employeeId", o.getEmployeeId());
 							empMap.put("employeeName", o.getEmployeeName());
-							empMap.put("occupationDesc", o.getOccupationDesc());
-							empMap.put("salary", new BigDecimal(Double.parseDouble(o.getSalary().toString())).toString());
+							empMap.put("occupationDesc", o.getOccupationDesc()+":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(o.getSalary())+"</span>");
 							empMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
 									&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(o.getSectionId())
 									&& f.getVehicleId()==o.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
 							empMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(o.getSectionId())
-									&& f.getVehicleId()==o.getRiskId()).map(u -> u.getPremiumIncludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+									&& f.getVehicleId()==o.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+							empMap.put("salary", o.getSalary());
 							return empMap;
 						}, Collectors.toList()))).entrySet()
 						.stream().map(g -> {
 							LinkedHashMap<String,Object> eMap = new LinkedHashMap<String,Object>();
-							eMap.put("sectionKey", locationDetails.stream().filter(f -> Integer.parseInt(f.get("riskId").toString())==g.getKey())
-									.map(m -> m.get("locationName").toString()).findAny().orElse(""));
-							eMap.put("sectionValue", g.getValue());
+							eMap.put("locationName", locationDetails.stream().filter(f -> Integer.parseInt(f.get("riskId").toString())==g.getKey())
+									.map(m -> m.get("buildingAddress").toString()).findAny().orElse(""));
+							eMap.put("employeeName", g.getValue().stream().map(t -> t.get("employeeName")).findFirst().orElse(""));
+							eMap.put("occupationDesc", g.getValue().stream().map(t -> String.valueOf(t.get("occupationDesc"))).collect(Collectors.joining("<br>")));
+							eMap.put("Rate", g.getValue().stream().map(t -> t.get("Rate")).findFirst().get());
+							eMap.put("premium", g.getValue().stream().map(h -> h.get("Premium")).findFirst().get());
+							eMap.put("salary", g.getValue().stream().map(h -> (BigDecimal) h.get("salary")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 							return eMap;
 						}).collect(Collectors.toList());
 												
@@ -2109,7 +2119,7 @@ public class JasperCustomServiceImple {
 			for(Map.Entry<Object, List<Map<String,Object>>> CDEntry : groupBycoverageDetails.entrySet()) {
 				LinkedHashMap<String, Object> coverMap = new LinkedHashMap<String, Object>();
 				coverMap.put("coverId", Slist.stream().filter(f -> f.get("sectionDesc").equals(CDEntry.getKey())).map(m -> m.get("sectionId")).findFirst().orElse(""));
-				coverMap.put("coverKey", CDEntry.getKey());
+				coverMap.put("coverKey", CDEntry.getKey().toString().toUpperCase()+" "+(map.get("policyNo")==null?"QUOTE SCHEDULE":"POLICY SCHEDULE"));
 				coverMap.put("coverValue", CDEntry.getValue());
 				coverMap.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 				coverMap.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
@@ -2142,7 +2152,7 @@ public class JasperCustomServiceImple {
 			result.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
 			result.put("branchName", map.get("branchName")==null?"":map.get("branchName").toString());
 			result.put("brokerBranchName", map.get("brokerBranchName")==null?"":map.get("brokerBranchName").toString());
-			result.put("productName", map.get("productName")==null?"":map.get("productName").toString());
+			result.put("productName", map.get("productName")==null?"":map.get("productName").toString().toUpperCase()+" "+(map.get("policyNo")==null?"QUOTE SCHEDULE":"POLICY SCHEDULE"));
 			result.put("stateName", map.get("stateName")==null?"":map.get("stateName").toString());
 			result.put("cityName", map.get("cityName")==null?"":map.get("cityName").toString());
 			result.put("mobileNo", map.get("mobileNo")==null?"":map.get("mobileNo").toString());
