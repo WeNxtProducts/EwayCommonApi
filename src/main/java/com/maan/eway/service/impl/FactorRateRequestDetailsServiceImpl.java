@@ -1602,7 +1602,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 									&& building.get(0).getSectionId().equals("47")) {
 								
 								skipRiskIds = building.stream()
-										.filter(a -> a.getSectionId().equals( "47" ) && a.getContentSuminsured() == null)
+										.filter(a -> a.getSectionId().equals("47") && a.getContentSuminsured() == null)
 										.map(a -> a.getRiskId()).collect(Collectors.toList());
 
 							}
@@ -1618,11 +1618,13 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 //								
 //							}
 																				
-							else if (null == building.get(0).getAllriskSuminsured()
-									&& StringUtils.isNotBlank(building.get(0).getSectionId())
+							else if ( StringUtils.isNotBlank(building.get(0).getSectionId())
 									&& building.get(0).getSectionId().equals("3")) {
 
-								continue;
+								skipRiskIds = building.stream()
+										.filter(a -> a.getSectionId().equals("3") && a.getAllriskSuminsured() == null)
+										.map(a -> a.getRiskId()).collect(Collectors.toList());
+
 							}
 						}
 
@@ -1724,7 +1726,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					   for(EserviceBuildingDetails buildData :buildData1 ) {
 						   
 							if (buildData != null && StringUtils.isNotBlank(buildData.getSectionId())
-									&& buildData.getSectionId().equals("47") && null != buildData.getRiskId()
+									&& (buildData.getSectionId().equals("47") ||  buildData.getSectionId().equals("3") )  && null != buildData.getRiskId()
 									&& skipRiskIds != null
 									&& skipRiskIds.stream().anyMatch(a -> buildData.getRiskId() == a)) {
 
