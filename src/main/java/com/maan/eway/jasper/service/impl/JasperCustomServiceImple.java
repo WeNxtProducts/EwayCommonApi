@@ -42,6 +42,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
+import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
@@ -95,6 +96,7 @@ import com.maan.eway.jasper.res.TravelDataSetOneRes;
 import com.maan.eway.jasper.res.TravelDataSetTwoRes;
 import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.repository.BuildingDetailsRepository;
+import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
@@ -124,6 +126,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private BuildingDetailsRepository buildingDetRepo;
+	
+	@Autowired
+	private BuildingRiskDetailsRepository buildingRiskDetailsRepo;
 	
 	@Autowired
 	private ProductEmployeesDetailsRepository productEmpDetRepo;
@@ -1841,11 +1846,13 @@ public class JasperCustomServiceImple {
 				Tuple map = list.get(0);
 				List<PolicyCoverData> coverData = coverDataRepository.findByQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 				List<BuildingDetails> Blist = buildingDetRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
-				List<Map<String,Object>> locationDetails = Blist.stream().map(k ->{
+				List<BuildingRiskDetails> buildingdtl = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionId(map.get("requestReferenceNo").toString(),"1");
+				List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
 					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 					lmap.put("riskId", k.getRiskId());
-					lmap.put("locationName", k.getLocationName()==null?"":StringUtils.capitalize(k.getLocationName()));
-					lmap.put("buildingAddress", k.getBuildingAddress()==null?"":k.getBuildingAddress()+", "+StringUtils.capitalize(k.getLocationName()));
+					lmap.put("locationName", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getLocationName().toString())).findAny().orElse(""));
+					lmap.put("buildingAddress", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getBuildingAddress().toString()))
+							.findAny().orElse("")+", "+StringUtils.capitalize(lmap.get("locationName").toString()));
 					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
 					lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
 							&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
