@@ -2089,6 +2089,9 @@ public class JasperCustomServiceImple {
 							eMap.put("occupationDesc", g.getValue().stream().map(t -> String.valueOf(t.get("occupationDesc"))).collect(Collectors.joining("<br>")));
 							eMap.put("Rate", g.getValue().stream().map(t -> t.get("Rate")).findFirst().get());
 							eMap.put("premium", g.getValue().stream().map(h -> h.get("Premium")).findFirst().get());
+							eMap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
+							eMap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 							eMap.put("salary", g.getValue().stream().map(h -> (BigDecimal) h.get("salary")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 							return eMap;
 						}).collect(Collectors.toList());

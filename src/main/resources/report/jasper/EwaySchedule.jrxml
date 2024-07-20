@@ -704,7 +704,7 @@
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="82">
+		<band height="97">
 			<textField>
 				<reportElement x="0" y="0" width="555" height="24" uuid="0c0acffb-bd99-4c03-b8f3-df96f6d381f7">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -757,7 +757,7 @@
 			<textField textAdjust="StretchHeight">
 				<reportElement stretchType="RelativeToTallestObject" x="251" y="62" width="130" height="20" forecolor="#7A7373" backcolor="#E8E8E8" uuid="2b5c83c8-df64-4bf8-b345-a21bd2a1fd34"/>
 				<box leftPadding="2">
-					<bottomPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
@@ -768,7 +768,7 @@
 				<reportElement x="191" y="62" width="60" height="20" forecolor="#7A7373" backcolor="#787373" uuid="05b8de7b-8bf5-450c-bb83-74ef07aec814"/>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
@@ -778,7 +778,7 @@
 			<textField textAdjust="StretchHeight">
 				<reportElement x="60" y="62" width="131" height="20" uuid="ed356e7f-a3eb-4d7c-a027-49033c5f7492"/>
 				<box leftPadding="2">
-					<bottomPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
@@ -790,7 +790,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
-					<bottomPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -814,7 +814,7 @@
 				<reportElement x="0" y="62" width="60" height="20" uuid="aa0aa86b-1fa0-452b-94ac-806b748cf773"/>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
@@ -842,6 +842,30 @@
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Date :"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="477" y="82" width="50" height="15" uuid="829c7505-2de2-4681-88c7-729b12bd9eec">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="0"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="527" y="82" width="28" height="15" uuid="ab6915e0-f85e-47fd-a3ab-f9a8c6066f08">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
