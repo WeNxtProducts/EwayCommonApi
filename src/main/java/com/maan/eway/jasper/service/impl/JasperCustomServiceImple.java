@@ -1837,7 +1837,8 @@ public class JasperCustomServiceImple {
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("premiumLc")).otherwise(hpmRoot.get("premiumFc")).alias("premium"),
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),
-					icmRoot.get("signature").alias("signature"),lbmRoot.get("branchName").alias("place"),companyName.alias("companyName"),imageURL.alias("companylogo"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("productId").alias("productId"))
+					icmRoot.get("signature").alias("signature"),lbmRoot.get("branchName").alias("place"),companyName.alias("companyName"),imageURL.alias("companylogo"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("productId").alias("productId"),
+					hpmRoot.get("debitNoteNo").alias("debitNoteNo"))
 			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("agencyCode"), luiRoot.get("agencyCode")),cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
 					cb.equal(hpmRoot.get("loginId"), lbmRoot.get("loginId")),cb.equal(hpmRoot.get("companyId"), lbmRoot.get("companyId")),cb.equal(hpmRoot.get("branchCode"), lbmRoot.get("branchCode")),cb.equal(lbmRoot.get("status"), "Y"),
 					cb.equal(icmRoot.get("status"), "Y"),cb.between(cb.literal(new Date()), icmRoot.get("effectiveDateStart"), icmRoot.get("effectiveDateEnd")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("quoteNo"), QuoteNo));
@@ -1845,23 +1846,6 @@ public class JasperCustomServiceImple {
 			if(!CollectionUtils.isEmpty(list)) {
 				Tuple map = list.get(0);
 				List<PolicyCoverData> coverData = coverDataRepository.findByQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
-				List<BuildingDetails> Blist = buildingDetRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
-				List<BuildingRiskDetails> buildingdtl = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionId(map.get("requestReferenceNo").toString(),"1");
-				List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
-					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
-					lmap.put("riskId", k.getRiskId());
-					lmap.put("locationName", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getLocationName().toString())).findAny().orElse(""));
-					lmap.put("buildingAddress", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getBuildingAddress().toString()))
-							.findAny().orElse("")+", "+StringUtils.capitalize(lmap.get("locationName").toString()));
-					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
-					lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
-							&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
-							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
-					lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
-							&& f.getSectionId()==Integer.parseInt(k.getSectionId())
-							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
-					return lmap;
-				}).collect(Collectors.toList());
 				
 				CriteriaQuery<Tuple> cq1 = cb.createQuery(Tuple.class);
 				Root<PolicyCoverData> pcdRoot = cq1.from(PolicyCoverData.class);
@@ -1901,6 +1885,27 @@ public class JasperCustomServiceImple {
 				.where(predicateArray).orderBy(cb.asc(sddRoot.get("sectionId")));
 						
 			List<Tuple> Slist = em.createQuery(cq1).getResultList();
+			
+			List<BuildingDetails> Blist = buildingDetRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
+			List<BuildingRiskDetails> buildingdtl = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionId(map.get("requestReferenceNo").toString(),"1");
+			List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
+				LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
+				lmap.put("riskId", k.getRiskId());
+				lmap.put("locationName", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getLocationName().toString())).findAny().orElse(""));
+				lmap.put("buildingAddress", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getBuildingAddress().toString()))
+						.findAny().orElse("")+", "+StringUtils.capitalize(lmap.get("locationName").toString()));
+				lmap.put("buildingSumInsured", k.getBuildingSuminsured());
+				lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+						&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
+						&& f.getVehicleId()==k.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
+				lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+						&& f.getSectionId()==Integer.parseInt(k.getSectionId())
+						&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+				lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals("1") && f.get("coverNoteReferenceNo")!=null)
+						.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
+				return lmap;
+			}).collect(Collectors.toList());
+			
 			List<Map<String,Object>>sectList=new ArrayList<>();
 			Double minAdjPrem=0.0,minAdjPremFc=0.0,basePremium=0.0,basePremiumFc=0.0,
 					minAdjExPrem=0.0,minAdjExPremFc=0.0,baseExPremium=0.0,baseExPremiumFc=0.0;
@@ -2038,7 +2043,7 @@ public class JasperCustomServiceImple {
 						Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(m -> {
 							LinkedHashMap<String, Object> contentMap = new LinkedHashMap<String, Object>();
 							contentMap.put("itemId", m.getItemId());
-							contentMap.put("contentRiskDesc", m.getContentRiskDesc()+":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(m.getSumInsured())+"</span>");
+							contentMap.put("contentRiskDesc", m.getContentRiskDesc()+", &nbsp;"+m.getSerialNoDesc()+":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(m.getSumInsured())+"</span>");
 							contentMap.put("sumInsured", m.getSumInsured());
 							contentMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
 									&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(m.getSectionId())
@@ -2167,7 +2172,7 @@ public class JasperCustomServiceImple {
 			result.put("brokerName", map.get("brokerName")==null?"":map.get("brokerName").toString());
 			result.put("coreAppBrokerCode", map.get("coreAppBrokerCode")==null?"":map.get("coreAppBrokerCode").toString());
 			result.put("currency", map.get("currency")==null?"":map.get("currency").toString());
-		//	result.put("vatPercent", map.get("vatPercent")==null?"":Double.parseDouble(map.get("vatPercent").toString()));
+			result.put("debitNoteNo", map.get("debitNoteNo")==null?"":map.get("debitNoteNo").toString());
 			result.put("premium", map.get("premium")==null?"":new BigDecimal(Double.parseDouble(map.get("premium").toString())).toString());
 			result.put("vatPremium", map.get("vatPremium")==null?"":Double.parseDouble(map.get("vatPremium").toString()));
 			result.put("totalPremium", map.get("totalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("totalPremium").toString())).toString());
