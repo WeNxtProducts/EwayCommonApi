@@ -1260,7 +1260,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				retc.sort(comp);
 			}
 			//if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
-			BigDecimal totalPremium=retc.stream().filter(x -> (!"N".equals(x.getIsselected()) && !"945".equals(x.getCoverId()) )).map(x -> x.getPremiumExcluedTaxLC()).reduce(BigDecimal.ZERO,BigDecimal::add);
+			BigDecimal totalPremium=retc.stream().filter(x -> (!"N".equals(x.getIsselected()) && !"945".equals(x.getCoverId()) && x.getPremiumExcluedTaxLC()!=null  )).map(x-> x.getPremiumExcluedTaxLC()).reduce(BigDecimal.ZERO,BigDecimal::add);
 			if(totalPremium.compareTo(minimumPremium)<0) {
 				
 				List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
