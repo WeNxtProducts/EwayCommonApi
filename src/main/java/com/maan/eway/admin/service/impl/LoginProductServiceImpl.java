@@ -3921,7 +3921,7 @@ List<Error> errorList = new ArrayList<Error>();
 			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
 			Predicate n3 = cb.equal(b.get("status"), "Y");
 			Predicate n4 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n5 = cb.equal(b.get("loginId"),req.getLoginId());
+			Predicate n5 = cb.equal(b.get("loginId"),"99999");
 			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 	
 			// Get Result
