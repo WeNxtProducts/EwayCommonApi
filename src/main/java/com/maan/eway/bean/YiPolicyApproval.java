@@ -103,6 +103,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="DOC_NO", length=100)
     private String     docNo ;
+    
+    @Column(name="APR_END_NO_IDX", length=100)
+    private String     aprEndNoIdx ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

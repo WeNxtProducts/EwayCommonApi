@@ -108,6 +108,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="STATUS", length=10)
     private String     status ;
+    
+    @Column(name="VAT_END_NO_IDX", length=10)
+    private String     vatEndNoIdx ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

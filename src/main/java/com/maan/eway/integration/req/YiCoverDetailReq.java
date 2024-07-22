@@ -126,4 +126,7 @@ public class YiCoverDetailReq {
 	@JsonProperty("PrcPremLc1")
 	private String prcPremLc1;
 
+
+	@JsonProperty("CvrEndNoIdx")
+	private String     cvrEndNoIdx ;
 }

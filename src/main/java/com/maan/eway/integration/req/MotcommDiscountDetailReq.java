@@ -94,4 +94,7 @@ public class MotcommDiscountDetailReq implements Serializable {
 
 	@JsonProperty("CvrId")
 	private Integer cvrId;
+	
+	@JsonProperty("McomEndNoIdx")
+    private String     mcomEndNoIdx ;
 }

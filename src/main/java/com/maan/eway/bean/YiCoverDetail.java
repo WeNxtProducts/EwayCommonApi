@@ -161,6 +161,9 @@ private String prcPremFc;
 @Column(name = "PRC_PREM_LC_1", length = 200)
 private String prcPremLc1;
 
+@Column(name="CVR_END_NO_IDX", length=100)
+private String     cvrEndNoIdx ;
+
 }
 
 

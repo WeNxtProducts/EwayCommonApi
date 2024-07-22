@@ -1058,6 +1058,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PRAI_SYS_ID")
     private String     praiSysId ;
+    
+
+    @Column(name = "PRAI_END_NO_IDX", length = 200)
+    private String praiEndNoIdx;
 }
 
 

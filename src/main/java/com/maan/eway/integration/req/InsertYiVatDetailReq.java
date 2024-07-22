@@ -69,5 +69,8 @@ public class InsertYiVatDetailReq implements Serializable {
 
 	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("VatEndNoIdx")
+    private String     vatEndNoIdx ;
 
 }

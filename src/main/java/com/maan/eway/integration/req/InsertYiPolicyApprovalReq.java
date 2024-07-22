@@ -56,5 +56,9 @@ public class InsertYiPolicyApprovalReq implements Serializable {
 
 	@JsonProperty("DocNo")
 	private String docNo;
+	
+
+	@JsonProperty("AprEndNoIdx")
+    private String     aprEndNoIdx ;
 
 }

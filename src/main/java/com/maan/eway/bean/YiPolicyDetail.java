@@ -15,6 +15,8 @@ package com.maan.eway.bean;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -418,8 +420,26 @@ private static final long serialVersionUID = 1L;
     
     @Column(name = "POL_TYPE_OF_CUSTOMER", length = 200)
     private String polTypeOfCustomer;
+    
+    @Column(name = "POL_AG_BRK_MOBILE_NO", length = 200)
+    private String polAgBrkMobileNo;
+    
+    @Column(name = "POL_AG_BRK_COMM_PERC", length = 200)
+    private String polAgBrkCommPerc;
+    
+    @Column(name = "POL_AG_BRK_COMM_AMT", length = 200)
+    private String polAgBrkCommAmt;
+    
+    @Column(name = "POL_USD_EXCH_RATE", length = 200)
+    private String polUsdExchRate;
+    
+    @Column(name = "POL_END_NO_IDX", length = 200)
+    private String polEndNoIdx;
+
 
 }
+
+
 
 
 

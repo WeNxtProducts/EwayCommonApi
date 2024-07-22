@@ -87,4 +87,13 @@ public class YiChargeDetailReq implements Serializable {
 
 	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("VatSrNo")
+    private String     vatSrNo ;
+    
+	@JsonProperty("VatApplyOn")
+    private String     vatApplyOn ;
+	
+	@JsonProperty("CrgEndNoIdx")
+    private String     crgEndNoIdx ;
 }

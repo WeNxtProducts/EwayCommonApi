@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -132,6 +131,9 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="LICENSE_ISSUED_ON")
     private Date       licenseIssuedOn ;
+    
+    @Column(name="DRVR_END_NO_IDX", length=100)
+    private String     drvrEndNoIdx ;
     
     
     //--- ENTITY LINKS ( RELATIONSHIP )

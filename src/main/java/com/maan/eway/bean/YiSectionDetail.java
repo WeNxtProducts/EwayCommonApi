@@ -98,7 +98,8 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="SCHEME_DESC", length=50)
     private String     schemeDesc ;
-
+    @Column(name="SEC_END_NO_IDX", length=10)
+    private String     secEndNoIdx ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

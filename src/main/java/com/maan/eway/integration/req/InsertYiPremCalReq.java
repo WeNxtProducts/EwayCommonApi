@@ -69,6 +69,9 @@ public class InsertYiPremCalReq implements Serializable {
 
 	@JsonProperty("ProductCode")
 	private String productCode;
+	
+	@JsonProperty("PremEndNoIdx")
+    private String     premEndNoIdx ;
 
 	// --- ENTITY LINKS ( RELATIONSHIP )
 

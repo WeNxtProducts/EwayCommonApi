@@ -72,5 +72,8 @@ public class InsertCreditLimitDetailReq implements Serializable {
 
 	@JsonProperty("Product")
 	private String product;
+	
+	@JsonProperty("CrdEndNoIdx")
+    private String     crdEndNoIdx ;
 
 }

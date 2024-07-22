@@ -14,7 +14,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -102,6 +101,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PRODUCT", length=12)
     private String   product;
+    
+    @Column(name="CRD_END_NO_IDX", length=100)
+    private String     crdEndNoIdx ;
     
 
 }

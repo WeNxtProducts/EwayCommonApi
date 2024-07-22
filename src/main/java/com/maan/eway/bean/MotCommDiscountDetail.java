@@ -123,6 +123,11 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="COVER_DESC", length=100)
     private String     coverDesc ;
+    
+    @Column(name="MCOM_END_NO_IDX", length=100)
+    private String     mcomEndNoIdx ;
+    
+    
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
