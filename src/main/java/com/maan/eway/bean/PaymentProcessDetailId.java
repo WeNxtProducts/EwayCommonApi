@@ -3,7 +3,6 @@ package com.maan.eway.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Entity;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
