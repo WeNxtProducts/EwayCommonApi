@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,17 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.ClausesMaster;
-import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.WarRateMaster;
 import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
@@ -42,17 +29,25 @@ import com.maan.eway.master.req.WarrantyChangeStatusReq;
 import com.maan.eway.master.req.WarrantyMasterDropdownReq;
 import com.maan.eway.master.req.WarrantyMasterGetReq;
 import com.maan.eway.master.req.WarrantyMasterGetallReq;
-import com.maan.eway.master.req.WarrantyMasterListSaveReq;
 import com.maan.eway.master.req.WarrantyMasterReq;
 import com.maan.eway.master.req.WarrantyMasterSaveReq;
-import com.maan.eway.master.res.ClausesMasterRes;
-import com.maan.eway.master.res.WarRateMasterRes;
 import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.master.service.WarrantyMasterService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.WarrantyMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 @Service
 public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 
@@ -330,6 +325,7 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 //		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
 		saveData.setTypeDesc(data.getItemValue());
 		saveData.setTypeId(req.getTypeId());
+		saveData.setWarrantyDescriptionLocal(req.getCodeDescLocal());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 	}
@@ -355,9 +351,9 @@ public Integer getMasterTableCount(String companyId, String productId, String se
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<WarrantyMaster> ocpm1 = effectiveDate.from(WarrantyMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("warrantyId"),b.get("warrantyId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
@@ -456,7 +452,7 @@ public List<WarrantyMasterRes> getallWarranty(WarrantyMasterGetallReq req) {
 
 			res = mapper.map(data, WarrantyMasterRes.class);
 			res.setCoreAppCode(data.getCoreAppCode());
-
+			res.setCodeDescLocal(data.getWarrantyDescriptionLocal());
 			resList.add(res);
 		}
 
@@ -648,9 +644,9 @@ public List<DropDownRes> getWarrantyMasterDropdown(WarrantyMasterDropdownReq req
 		orderList.add(cb.asc(c.get("warrantyDescription")));
 		
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<WarrantyMaster> ocpm1 = effectiveDate.from(WarrantyMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("warrantyId"),ocpm1.get("warrantyId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -661,9 +657,9 @@ public List<DropDownRes> getWarrantyMasterDropdown(WarrantyMasterDropdownReq req
 
 		effectiveDate.where(a1,a2,a5,a6,a7,a8);
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<WarrantyMaster> ocpm2 = effectiveDate2.from(WarrantyMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a3 = cb.equal(c.get("warrantyId"),ocpm2.get("warrantyId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate a10 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -695,6 +691,7 @@ public List<DropDownRes> getWarrantyMasterDropdown(WarrantyMasterDropdownReq req
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getWarrantyId().toString());
 			res.setCodeDesc(data.getWarrantyDescription());
+			res.setCodeDescLocal(data.getWarrantyDescriptionLocal());
 			res.setStatus(data.getStatus());
 			resList.add(res);
 		}
@@ -944,9 +941,9 @@ public List<WarrantyMasterRes> getallNonSelectedWarranty(NonSelectedClausesGetAl
 		query.select(b);
 
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<WarrantyMaster> ocpm1 = effectiveDate.from(WarrantyMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 		Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
@@ -955,9 +952,9 @@ public List<WarrantyMasterRes> getallNonSelectedWarranty(NonSelectedClausesGetAl
 		effectiveDate.where(a1,a2,a3,a4,a5);
 
 		// Effective Date End
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<WarrantyMaster> ocpm2 = effectiveDate2.from(WarrantyMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 		Predicate a7 = cb.equal(ocpm2.get("productId"), b.get("productId"));
 		Predicate a8 = cb.equal(ocpm2.get("sectionId"), b.get("sectionId"));
@@ -972,9 +969,9 @@ public List<WarrantyMasterRes> getallNonSelectedWarranty(NonSelectedClausesGetAl
 		// Company Product Effective Date Max Filter
 		Subquery<Long> clause = query.subquery(Long.class);
 		Root<WarrantyMaster> cs = clause.from(WarrantyMaster.class);
-		Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
 		Root<WarrantyMaster> ocpm3 = effectiveDate3.from(WarrantyMaster.class);
-		effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+		effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
 		Predicate eff1 = cb.equal(ocpm3.get("companyId"), cs.get("companyId"));
 		Predicate eff2 = cb.equal(ocpm3.get("productId"), cs.get("productId"));
 		Predicate eff3 = cb.equal(ocpm3.get("sectionId"), cs.get("sectionId"));
@@ -982,9 +979,9 @@ public List<WarrantyMasterRes> getallNonSelectedWarranty(NonSelectedClausesGetAl
 		Predicate eff5 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"),today);
 		effectiveDate3.where(eff1,eff2,eff3,eff4,eff5);
 		
-		Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
 		Root<WarrantyMaster> ocpm4 = effectiveDate4.from(WarrantyMaster.class);
-		effectiveDate4.select(cb.max(ocpm4.get("effectiveDateEnd")));
+		effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd")));
 		Predicate eff6 = cb.equal(ocpm4.get("companyId"), cs.get("companyId"));
 		Predicate eff7 = cb.equal(ocpm4.get("productId"), cs.get("productId"));
 		Predicate eff8 = cb.equal(ocpm4.get("sectionId"), cs.get("sectionId"));
@@ -1105,6 +1102,7 @@ public WarrantyMasterRes getByWarrantyId(WarrantyMasterGetReq req) {
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		res.setCoreAppCode(list.get(0).getCoreAppCode());
+		res.setCodeDescLocal(list.get(0).getWarrantyDescriptionLocal());
 		} 
 	}catch (Exception e) {
 		e.printStackTrace();

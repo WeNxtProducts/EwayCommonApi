@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,17 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -47,6 +37,17 @@ import com.maan.eway.repository.ClausesMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 @Service
 public class ClausesMasterServiceImpl implements ClausesMasterService {
 
@@ -344,7 +345,7 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 		saveData.setPdfLocation(req.getPdfLocation()==null?"":req.getPdfLocation());
 		saveData.setOptionalType(req.getOptionalType()==null?"":req.getOptionalType());		
 		saveData.setIntCode(req.getIntCode()==null?"":req.getIntCode());
-		
+		saveData.setClausesDescriptionLocal(req.getCodeDescLocal());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}
@@ -370,9 +371,9 @@ public Integer getMasterTableCount(String companyId,  String productId, String s
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<ClausesMaster> ocpm1 = effectiveDate.from(ClausesMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("clausesId"),b.get("clausesId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
@@ -464,7 +465,7 @@ public List<ClausesMasterRes> getallClauses(ClausesMasterGetallReq req) {
 
 			res = mapper.map(data, ClausesMasterRes.class);
 			res.setCoreAppCode(data.getCoreAppCode());
-
+			res.setCodeDescLocal(data.getClausesDescriptionLocal());
 			resList.add(res);
 		}
 
@@ -619,6 +620,7 @@ public ClausesMasterRes getByClausesId(ClausesMasterGetReq req) {
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		res.setCoreAppCode(list.get(0).getCoreAppCode());
+		res.setCodeDescLocal(list.get(0).getClausesDescriptionLocal());
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -746,9 +748,9 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 		orderList.add(cb.asc(b.get("clausesDescription")));
 		
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<ClausesMaster> ocpm1 = effectiveDate.from(ClausesMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(b.get("clausesId"),ocpm1.get("clausesId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -758,9 +760,9 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 
 		effectiveDate.where(a1,a2,a3,a4,a5,a6);
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<ClausesMaster> ocpm2 = effectiveDate2.from(ClausesMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a7 = cb.equal(b.get("clausesId"),ocpm2.get("clausesId"));
 		Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate a9 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -793,6 +795,7 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getClausesId().toString());
 			res.setCodeDesc(data.getClausesDescription());
+			res.setCodeDescLocal(data.getClausesDescriptionLocal());
 			res.setStatus(data.getStatus());
 			resList.add(res);
 		}
@@ -832,9 +835,9 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ClausesMaster> ocpm1 = effectiveDate.from(ClausesMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
@@ -843,9 +846,9 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 			effectiveDate.where(a1,a2,a3,a4,a5);
 
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ClausesMaster> ocpm2 = effectiveDate2.from(ClausesMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a7 = cb.equal(ocpm2.get("productId"), b.get("productId"));
 			Predicate a8 = cb.equal(ocpm2.get("sectionId"), b.get("sectionId"));
@@ -860,18 +863,18 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 			// Company Product Effective Date Max Filter
 			Subquery<Long> clause = query.subquery(Long.class);
 			Root<ClausesMaster> cs = clause.from(ClausesMaster.class);
-			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
 			Root<ClausesMaster> ocpm3 = effectiveDate3.from(ClausesMaster.class);
-			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+			effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
 			Predicate eff1 = cb.equal(ocpm3.get("companyId"), cs.get("companyId"));
 			Predicate eff2 = cb.equal(ocpm3.get("productId"), cs.get("productId"));
 			Predicate eff3 = cb.equal(ocpm3.get("sectionId"), cs.get("sectionId"));
 			Predicate eff4 = cb.equal(ocpm3.get("branchCode"), cs.get("branchCode"));
 			effectiveDate3.where(eff1,eff2,eff3,eff4);
 			
-			Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
 			Root<ClausesMaster> ocpm4 = effectiveDate4.from(ClausesMaster.class);
-			effectiveDate4.select(cb.max(ocpm4.get("effectiveDateEnd")));
+			effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd")));
 			Predicate eff6 = cb.equal(ocpm4.get("companyId"), cs.get("companyId"));
 			Predicate eff7 = cb.equal(ocpm4.get("productId"), cs.get("productId"));
 			Predicate eff8 = cb.equal(ocpm4.get("sectionId"), cs.get("sectionId"));

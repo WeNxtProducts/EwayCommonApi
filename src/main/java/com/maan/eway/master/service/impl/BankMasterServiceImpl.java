@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,16 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
-import com.maan.eway.bean.MotorMakeMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BankChangeStatusReq;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
@@ -49,6 +38,16 @@ import com.maan.eway.repository.BankMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.impl.BasicValidationService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
@@ -157,6 +156,7 @@ public SuccessRes insertBank(BankMasterSaveReq req) {
 		saveData.setUpdatedDate(new Date());
 		saveData.setAmendId(amendId);
 		saveData.setBranchCode(req.getBranchCode());
+		saveData.setBankFullNameLocal(req.getCodeDescLocal());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}
@@ -182,9 +182,9 @@ public Integer getMasterTableCount(String companyId, String branchCode)	{
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("bankCode"),b.get("bankCode"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
@@ -432,7 +432,7 @@ public List<BankMasterRes> getallBankDetails(BankMasterGetAllReq req) {
 
 			res = mapper.map(data, BankMasterRes.class);
 			res.setCoreAppCode(data.getCoreAppCode());
-
+			res.setCodeDescLocal(data.getBankFullNameLocal());
 			resList.add(res);
 		}
 
@@ -509,6 +509,7 @@ public BankMasterRes getByBankCode(BankMasterGetReq req) {
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		res.setCoreAppCode(list.get(0).getCoreAppCode());
+		res.setCodeDescLocal(list.get(0).getBankFullNameLocal());
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -548,14 +549,14 @@ public List<DropDownRes> getBankMasterDropdown() {
 		// Effective Date Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
 		Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode") );
-		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode") );
+		jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		effectiveDate.where(a1,a2);
 		
 	    // Where	
-		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+		jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 		
 		query.where(n1,n2).orderBy(orderList);
 		
@@ -772,18 +773,18 @@ public List<DropDownRes> getBankMasterDropdown( BankChangeStatusReq req) {
 		
 		
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 		Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 		effectiveDate.where(a1,a2,a5,a6);
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<BankMaster> ocpm2 = effectiveDate2.from(BankMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a3 = cb.equal(c.get("bankCode"),ocpm2.get("bankCode"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -817,6 +818,7 @@ public List<DropDownRes> getBankMasterDropdown( BankChangeStatusReq req) {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getBankCode().toString());
 			res.setCodeDesc(data.getBankFullName());
+			res.setCodeDescLocal(data.getBankFullNameLocal());
 			res.setStatus(data.getStatus());
 			resList.add(res);
 		}		

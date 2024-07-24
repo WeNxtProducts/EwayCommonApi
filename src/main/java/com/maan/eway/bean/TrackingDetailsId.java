@@ -5,7 +5,7 @@
 package com.maan.eway.bean;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,6 +29,8 @@ public class TrackingDetailsId implements Serializable {
     private static final long serialVersionUID = 1L;
     private String     trackingId ;
     private String     companyId ;
+    private String     riskId ;     
+    private String     branchCode ;
     
      
 }

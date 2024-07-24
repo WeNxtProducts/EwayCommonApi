@@ -51,6 +51,7 @@ public class MotorMakeSaveReq {
 	private String regulatoryCode;
 
 
-
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 	
 }

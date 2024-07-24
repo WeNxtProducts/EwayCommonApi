@@ -3,14 +3,6 @@ package com.maan.eway.auth.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -19,6 +11,14 @@ import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.service.LoginCriteriaQueryService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.LoginMaster;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 @Component
 public class LoginCriteriaQueryServiceImpl implements LoginCriteriaQueryService {

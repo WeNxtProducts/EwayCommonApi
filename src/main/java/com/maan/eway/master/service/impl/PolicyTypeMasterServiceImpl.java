@@ -1,22 +1,12 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.common.service.impl.DropDownServiceImpl;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.PolicyTypeMasterGetAllReq;
 import com.maan.eway.master.req.PolicyTypeMasterGetReq;
 import com.maan.eway.master.req.PolicyTypeMasterSaveReq;
@@ -36,7 +27,17 @@ import com.maan.eway.master.service.PolicyTypeMasterService;
 import com.maan.eway.repository.PolicyTypeMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.error.Error;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
@@ -144,9 +145,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		//Select
 		query.select(b);
 		//Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 		effectiveDate.where(a1,a2);
@@ -220,9 +221,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		//Select
 		query.multiselect(cb.count(b));
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
 		effectiveDate.where(a1);
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
@@ -265,9 +266,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -338,9 +339,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 
@@ -407,9 +408,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 
@@ -476,16 +477,16 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			orderList.add(cb.asc(c.get("policyTypeId")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("policyTypeId"),ocpm1.get("policyTypeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<PolicyTypeMaster> ocpm2 = effectiveDate2.from(PolicyTypeMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("policyTypeId"),ocpm2.get("policyTypeId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);

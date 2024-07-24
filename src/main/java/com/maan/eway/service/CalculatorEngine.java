@@ -3,7 +3,7 @@ package com.maan.eway.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.req.calcengine.CalcCommission;

@@ -47,4 +47,7 @@ public class GetmenuDetailsRes2 {
      
      @JsonProperty("MenuId")
  	  private String menuId;
+     
+     @JsonProperty("CodeDescLocal")
+     private String codeDescLocal;
 }

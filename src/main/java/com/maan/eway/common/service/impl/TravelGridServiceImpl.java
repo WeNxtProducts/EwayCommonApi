@@ -2,6 +2,7 @@ package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
 import java.sql.DatabaseMetaData;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,17 +16,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,7 +67,6 @@ import com.maan.eway.common.res.TravelQuoteCriteriaRes;
 import com.maan.eway.common.res.TravelQuoteCriteriaResponse;
 import com.maan.eway.common.res.TravelRejectCriteriaRes;
 import com.maan.eway.common.service.TravelGridService;
-import com.maan.eway.endorsment.service.EndorsementService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -96,6 +85,18 @@ import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Transactional
 @Service
@@ -206,7 +207,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
 			predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 			if ("Broker".equalsIgnoreCase(req.getUserType())) {
-				predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+				predics1.add(cb.equal(m.get("brokerCode"), agencyCode.as(String.class)));
 			} else if ("User".equalsIgnoreCase(req.getUserType())) {
 				predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
 			}
@@ -1876,16 +1877,16 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
@@ -3003,9 +3004,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				orderList.add(cb.asc(c.get("branchCode")));
 
 				// Effective Date Start Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -3013,9 +3014,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				effectiveDate.where(a1,a2,b1,b2);
 				
 				// Effective Date End Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 				Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 				Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -3645,7 +3646,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					m.get("sourceType").alias("type"));
 
 					// Find All
-					Subquery<Long> agencyCode = query.subquery(Long.class);
+					Subquery<String> agencyCode = query.subquery(String.class);
 					Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
 					agencyCode.select(ocpm1.get("agencyCode"));
 					Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
@@ -3812,7 +3813,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), before30));
 			//		predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 					if ("Broker".equalsIgnoreCase(req.getUserType())) {
-						predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+						predics1.add(cb.equal(m.get("brokerCode"), agencyCode.as(String.class)));
 					} else if ("User".equalsIgnoreCase(req.getUserType())) {
 						predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
 					}
@@ -3982,7 +3983,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
 					predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 					if ("Broker".equalsIgnoreCase(req.getUserType())) {
-						predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+						predics1.add(cb.equal(m.get("brokerCode"), agencyCode.as(String.class)));
 					} else if ("User".equalsIgnoreCase(req.getUserType())) {
 						predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
 					}
@@ -4151,7 +4152,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					Predicate n5 = cb.equal(m.get("status"), status);
 					Predicate n12 = null;
 					if ("Broker".equalsIgnoreCase(req.getUserType())) {
-						n12 = cb.equal(m.get("brokerCode"), agencyCode);
+						n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 					} else if ("User".equalsIgnoreCase(req.getUserType())) {
 						n12 = cb.equal(m.get("agencyCode"), agencyCode);
 					}

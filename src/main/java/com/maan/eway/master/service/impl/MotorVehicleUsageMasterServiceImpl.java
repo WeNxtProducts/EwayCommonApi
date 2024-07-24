@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,37 +18,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
-import com.maan.eway.bean.MotorVehicleUsageMaster;
-import com.maan.eway.bean.MotorVehicleUsageMaster;
-
-
 import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BodyTypeDropDownReq;
 import com.maan.eway.master.req.MotorVehicleUsageChangeStatusReq;
 import com.maan.eway.master.req.MotorVehicleUsageMasterGetReq;
 import com.maan.eway.master.req.MotorVehicleUsageMasterGetallReq;
@@ -58,6 +40,16 @@ import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorVehicleUsageMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>EserviceCustomerDetailsServiceimpl</h2>
 */
@@ -255,7 +247,7 @@ public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq re
 //			// Amend ID Max Filter
 //			Subquery<Long> effectiveDate = query.subquery(Long.class);
 //			Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-//			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+//			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 //			Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
 //			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 //			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
@@ -321,6 +313,7 @@ public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq re
 		saveData.setUpdatedDate(new Date());
 		saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setAmendId(amendId);
+		saveData.setVehicleUsageDescLocal(req.getCodeDescLocal());
 		repo.saveAndFlush(saveData);
 	
 
@@ -346,9 +339,9 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 		query.select(b);
 		
 		// Amend ID Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -403,7 +396,7 @@ public MotorVehicleUsageMasterGetRes getMotorVehicleDetails(MotorVehicleUsageMas
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<MotorVehicleUsageMaster> ocpm1 = amendId.from(MotorVehicleUsageMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
+		jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),c.get("branchCode"));
 		amendId.where(a1, a2,a3);
@@ -435,6 +428,7 @@ public MotorVehicleUsageMasterGetRes getMotorVehicleDetails(MotorVehicleUsageMas
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+		res.setCodeDescLocal(list.get(0).getVehicleUsageDescLocal());
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -501,7 +495,7 @@ public List<MotorVehicleUsageMasterGetRes> getallMotorVehicleDetails(MotorVehicl
 			MotorVehicleUsageMasterGetRes res = new MotorVehicleUsageMasterGetRes();
 
 			res = mapper.map(data, MotorVehicleUsageMasterGetRes.class);
-		
+			res.setCodeDescLocal(data.getVehicleUsageDescLocal());
 			resList.add(res);
 		}
 
@@ -619,9 +613,9 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		orderList.add(cb.asc(c.get("vehicleUsageDesc")));
 		
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("vehicleUsageId"),ocpm1.get("vehicleUsageId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -629,9 +623,9 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		Predicate a5 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
 		effectiveDate.where(a1, a2,a3,a4,a5);
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<MotorVehicleUsageMaster> ocpm2 = effectiveDate2.from(MotorVehicleUsageMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a6 = cb.equal(c.get("vehicleUsageId"),ocpm2.get("vehicleUsageId"));
 		Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
@@ -667,6 +661,7 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getVehicleUsageId().toString());
 			res.setCodeDesc(data.getVehicleUsageDesc());
+			res.setCodeDescLocal(data.getVehicleUsageDescLocal());
 			res.setStatus(data.getStatus());
 			resList.add(res);
 		}
@@ -826,9 +821,9 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 		orderList.add(cb.asc(c.get("branchCode")));
 		
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("vehicleUsageId"),ocpm1.get("vehicleUsageId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -837,9 +832,9 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 
 		effectiveDate.where(a1,a2,a3,a4,a10);
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<MotorVehicleUsageMaster> ocpm2 = effectiveDate2.from(MotorVehicleUsageMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a5 = cb.equal(c.get("vehicleUsageId"),ocpm2.get("vehicleUsageId"));
 		Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -859,8 +854,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 			query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
 		} else {
 			query.where(n1,n2,n3,n4,n7).orderBy(orderList);
-		}
-		
+		}	
 		// Get Result
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
 		list = result.getResultList();
@@ -874,6 +868,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 			res.setCodeDesc(data.getVehicleUsageDesc());
 			res.setStatus(data.getStatus());
 			res.setBodyType(data.getBodyType());
+			res.setCodeDescLocal(data.getVehicleUsageDescLocal());
 			resList.add(res);
 		}
 	}
@@ -913,9 +908,9 @@ public List<MotorBodyTypeMaster> getBodyTypeMasterDropdown(String companyId , St
 		orderList.add(cb.asc(c.get("branchCode")));
 
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<MotorBodyTypeMaster> ocpm1 = effectiveDate.from(MotorBodyTypeMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("bodyId"), ocpm1.get("bodyId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -923,9 +918,9 @@ public List<MotorBodyTypeMaster> getBodyTypeMasterDropdown(String companyId , St
 		Predicate a5 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
 		effectiveDate.where(a1, a2,a3,a4,a5);
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<MotorBodyTypeMaster> ocpm2 = effectiveDate2.from(MotorBodyTypeMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a6 = cb.equal(c.get("bodyId"), ocpm2.get("bodyId"));
 		Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));

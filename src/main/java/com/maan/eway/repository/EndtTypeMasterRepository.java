@@ -58,5 +58,7 @@ public interface EndtTypeMasterRepository  extends JpaRepository<EndtTypeMaster,
 	EndtTypeMaster findByCompanyIdAndProductIdAndStatusAndEndtTypeId(String insuranceId, int parseInt, String string,
 			Integer valueOf);
 
+	List<EndtTypeMaster> findByEndtTypeAndCompanyId(String string, String insuranceId);
+
 
 }

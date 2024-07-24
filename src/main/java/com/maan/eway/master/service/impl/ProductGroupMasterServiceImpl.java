@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,16 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +37,16 @@ import com.maan.eway.master.req.ProductGroupGetReq;
 import com.maan.eway.master.res.ProductGroupMasterDropDownRes;
 import com.maan.eway.master.service.ProductGroupMasterService;
 import com.maan.eway.repository.ProductGroupMasterRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -177,9 +178,9 @@ try {
 	orderList.add(cb.asc(c.get("groupId")));
 
 	// Effective Date Start Max Filter
-	Subquery<Long> effectiveDate = query.subquery(Long.class);
+	Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 	Root<ProductGroupMaster> ocpm1 = effectiveDate.from(ProductGroupMaster.class);
-	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 	Predicate a1 = cb.equal(c.get("groupId"), ocpm1.get("groupId"));
 	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 	Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -187,9 +188,9 @@ try {
 	Predicate a5 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 	effectiveDate.where(a1, a2, a3, a4, a5);
 	// Effective Date End Max Filter
-	Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+	Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 	Root<ProductGroupMaster> ocpm2 = effectiveDate2.from(ProductGroupMaster.class);
-	effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 	Predicate a6 = cb.equal(c.get("groupId"), ocpm2.get("groupId"));
 	Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 	Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));

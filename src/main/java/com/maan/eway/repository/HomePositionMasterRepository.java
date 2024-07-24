@@ -15,7 +15,7 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.maan.eway.bean.HomePositionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -60,5 +60,8 @@ public interface HomePositionMasterRepository  extends JpaRepository<HomePositio
 	@Transactional
 	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, Integer bigDecimal,
 			String originalPolicyNo);
+	
+	HomePositionMaster findTop1ByPolicyNo(String policyNo);
+
 
 }

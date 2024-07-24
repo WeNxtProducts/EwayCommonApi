@@ -19,15 +19,15 @@ import org.hibernate.annotations.DynamicUpdate;
 import com.maan.eway.ui.request.Field;
 import com.maan.eway.ui.service.impl.FieldConverter;
 
-import javax.persistence.Table;
+import jakarta.persistence.Table;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.math.BigDecimal;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 

@@ -6,7 +6,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.function.Consumer;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import com.maan.eway.res.calc.Tax;
 

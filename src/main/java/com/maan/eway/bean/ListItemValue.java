@@ -16,12 +16,12 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -117,6 +117,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate;
     
+    @Column(name="ITEM_TYPE_LOCAL", length=100)
+    private String     itemTypeLocal ;
+    
+    @Column(name="ITEM_VALUE_LOCAL", length=100)
+    private String     itemValueLocal ;
+    
+    @Column(name="CATEGORY_LOCAL", length=100)
+    private String     categoryLocal ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

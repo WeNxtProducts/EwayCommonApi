@@ -6,15 +6,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.admin.req.AdditionalInfoReq;
 import com.maan.eway.admin.req.AttachBrokerBranchReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
@@ -35,24 +25,26 @@ import com.maan.eway.admin.req.AttachIssuerReferalReq;
 import com.maan.eway.admin.req.AttachReferalReq;
 import com.maan.eway.admin.req.AttacheIssuerBranchReq;
 import com.maan.eway.admin.req.AttachedBranchesReq;
-import com.maan.eway.admin.req.AttachedProductReq;
 import com.maan.eway.admin.req.BrokerBranchesReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
-import com.maan.eway.admin.req.CommonPersonalInforReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerLoginReq;
 import com.maan.eway.admin.req.IssuerPersonalInfoReq;
 import com.maan.eway.admin.req.LoginBranchesSaveReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.service.LoginValidationService;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.LoginBranchMaster;
-import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 @Service
 public class LoginValidationServiceImpl implements LoginValidationService  {

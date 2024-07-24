@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,17 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,23 +23,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.MotorBodyTypeMaster;
-import com.maan.eway.bean.MotorColorMaster;
 import com.maan.eway.bean.MotorMakeMaster;
 import com.maan.eway.bean.MotorMakeModelMaster;
-import com.maan.eway.bean.MotorMakeMaster;
-import com.maan.eway.bean.MotorMakeMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.MotorMakeChangeStatusReq;
 import com.maan.eway.master.req.MotorMakeGetAllReq;
 import com.maan.eway.master.req.MotorMakeGetReq;
 import com.maan.eway.master.req.MotorMakeSaveReq;
 import com.maan.eway.master.res.MotorMakeGetRes;
-
 import com.maan.eway.master.service.MotorMakeMasterService;
 import com.maan.eway.repository.MotorMakeMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -232,7 +226,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 //				// Effective Date Max Filter
 //				Subquery<Long> effectiveDate = query.subquery(Long.class);
 //				Root<MotorMakeMaster> ocpm1 = effectiveDate.from(MotorMakeMaster.class);
-//				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+//				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 //				Predicate a1 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
 //				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 //				
@@ -303,6 +297,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCompanyId(req.getInsuranceId());
 			saveData.setAmendId(amendId);
+			saveData.setMakeNameLocal(req.getCodeDescLocal());
 			repo.saveAndFlush(saveData);
 
 			
@@ -334,9 +329,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<MotorMakeMaster> ocpm1 = effectiveDate.from(MotorMakeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -422,7 +417,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			res.setBranchCode(list.get(0).getBranchCode()==null?"":list.get(0).getBranchCode());
-			
+			res.setCodeDescLocal(list.get(0).getMakeNameLocal());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -484,6 +479,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 
 				res = mapper.map(data, MotorMakeGetRes.class);
 				res.setMakeId(data.getMakeId());
+				res.setCodeDescLocal(data.getMakeNameLocal());
 				resList.add(res);
 			}
 
@@ -595,9 +591,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				
 				
 				// Effective Date Start Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<MotorMakeModelMaster> ocpm1 = effectiveDate.from(MotorMakeModelMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("makeId"),ocpm1.get("makeId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -606,9 +602,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				Predicate a11 = cb.equal(c.get("modelId"),ocpm1.get("modelId"));
 				effectiveDate.where(a1,a2,a5,a6,a9,a11);
 				// Effective Date End Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<MotorMakeModelMaster> ocpm2 = effectiveDate2.from(MotorMakeModelMaster.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 				Predicate a3 = cb.equal(c.get("makeId"),ocpm2.get("makeId"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 				Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -622,18 +618,18 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				Subquery<Long> makeId = query.subquery(Long.class);
 				Root<MotorMakeMaster> m = makeId.from(MotorMakeMaster.class);
 				
-				Subquery<Long> effectiveDate3 = makeId.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate3 = makeId.subquery(Timestamp.class);
 				Root<MotorMakeMaster> ocpm3 = effectiveDate3.from(MotorMakeMaster.class);
-				effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+				effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
 				Predicate a13 = cb.equal(m.get("makeId"),ocpm3.get("makeId"));
 				Predicate a14 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
 				Predicate a15 = cb.equal(m.get("companyId"),ocpm3.get("companyId"));
 				Predicate a16 = cb.equal(m.get("branchCode"),ocpm3.get("branchCode"));
 				effectiveDate3.where(a13,a14,a15,a16);
 				// Effective Date End Max Filter
-				Subquery<Long> effectiveDate4 = makeId.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate4 = makeId.subquery(Timestamp.class);
 				Root<MotorMakeMaster> ocpm4 = effectiveDate4.from(MotorMakeMaster.class);
-				effectiveDate4.select(cb.max(ocpm4.get("effectiveDateEnd")));
+				effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd")));
 				Predicate a17 = cb.equal(m.get("makeId"),ocpm4.get("makeId"));
 				Predicate a18 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
 				Predicate a19 = cb.equal(m.get("companyId"),ocpm4.get("companyId"));
@@ -676,11 +672,12 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getMakeId()))).collect(Collectors.toList());
 				list.stream().filter( o -> o.getMakeNameEn()!=null ).collect(Collectors.toList()).sort(Comparator.comparing(MotorMakeModelMaster :: getMakeNameEn ));
 				
-				for (MotorMakeModelMaster data : list) {
+				for (MotorMakeModelMaster data : list) {  
 					// Response 
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getMakeId().toString());
 					res.setCodeDesc(data.getMakeNameEn());
+					res.setCodeDescLocal(data.getMakeNameLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -697,18 +694,18 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				
 				
 				// Effective Date Start Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<MotorMakeMaster> ocpm1 = effectiveDate.from(MotorMakeMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("makeId"),ocpm1.get("makeId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 				Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 				effectiveDate.where(a1,a2,a5,a6);
 				// Effective Date End Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<MotorMakeMaster> ocpm2 = effectiveDate2.from(MotorMakeMaster.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 				Predicate a3 = cb.equal(c.get("makeId"),ocpm2.get("makeId"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 				Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -740,6 +737,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getMakeId().toString());
 					res.setCodeDesc(data.getMakeNameEn());
+					res.setCodeDescLocal(data.getMakeNameLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}

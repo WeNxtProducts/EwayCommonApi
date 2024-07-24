@@ -2,7 +2,7 @@ package com.maan.eway.master.req;
 
 import java.util.Date;
 
-import javax.persistence.Temporal;
+import jakarta.persistence.Temporal;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,5 +52,8 @@ public class ExchangeMasterSaveReq {
 	
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 	
 }

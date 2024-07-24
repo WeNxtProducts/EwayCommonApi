@@ -13,6 +13,7 @@ public class ProductBenefitDropDownRes {
 
 	@JsonProperty("BenefitId")
 	private String benefitId;
+	
 	@JsonProperty("BenefitDescription")
 	private String benefitDescription;
 	
@@ -34,6 +35,9 @@ public class ProductBenefitDropDownRes {
 //	@JsonProperty("TypeDesc")
 //	private String TypeDesc;
 //	
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 	
 	@JsonProperty("ProductBenefits")
 	private List<ProductBenefits> productBenefits;

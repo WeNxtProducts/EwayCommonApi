@@ -28,15 +28,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,6 +102,7 @@ import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
+import com.maan.eway.repository.ProductSectionMasterRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqDocuniqueidRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
@@ -176,6 +177,9 @@ public class DocumentServiceImpl implements DocumentService {
 	@Autowired
 	private ProductEmployeesDetailsRepository paccRepo;
 	
+	@Autowired
+	private ProductSectionMasterRepository productSectionMasterRepo;
+	
 	
 
 //	@Autowired
@@ -239,9 +243,9 @@ public class DocumentServiceImpl implements DocumentService {
 			orderList.add(cb.asc(c.get("documentDesc")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CoverDocumentMaster> ocpm1 = effectiveDate.from(CoverDocumentMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 
 			Predicate a10 = cb.equal(c.get("documentId"), ocpm1.get("documentId"));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
@@ -251,9 +255,9 @@ public class DocumentServiceImpl implements DocumentService {
 			effectiveDate.where(a1, a3, a4, a5, a10);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CoverDocumentMaster> ocpm2 = effectiveDate2.from(CoverDocumentMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a11 = cb.equal(c.get("documentId"), ocpm2.get("documentId"));
 			Predicate a6 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a7 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
@@ -312,6 +316,7 @@ public class DocumentServiceImpl implements DocumentService {
 			res.setRiskId("99999");
 			res.setId("99999");
 			res.setIdType("Common");
+			res.setCodeDescLocal("Todos");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -330,7 +335,7 @@ public class DocumentServiceImpl implements DocumentService {
 					homeData.getProductId().toString());
 
 			if (product.getMotorYn().equalsIgnoreCase("H")
-					&& homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
+					&& homeData.getProductId().equals(Integer.valueOf(travelProductId))) { 
 				// Travel Product Details
 				resList = getTravelDocument(homeData);
 
@@ -379,15 +384,19 @@ public class DocumentServiceImpl implements DocumentService {
 					String idType = docTypeList.stream().filter(o -> o.getItemCode().equalsIgnoreCase("T"))
 							.collect(Collectors.toList()).get(0).getItemValue();
 					doc.setIdType(idType);
+					doc.setCodeDescLocal(passenger.getPassportNo());
 					idList.add(doc);
 
 				}
-
+				//get Section name Local from session master 
+				List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(sec.getSectionDesc()!=null ? sec.getSectionDesc().toString() : " ");
+				
 				// Section
 				DocumentSectionList sectionRes = new DocumentSectionList();
 				sectionRes.setSectionId(sec.getSectionId());
 				sectionRes.setSectionName(sec.getSectionDesc());
 				sectionRes.setIdList(idList);
+				sectionRes.setCodeDescLocal((PSM!=null && PSM.size()>0) ? PSM.get(0).getSectionNameLocal() : " ");
 				sectionList.add(sectionRes);
 			}
 
@@ -423,10 +432,14 @@ public class DocumentServiceImpl implements DocumentService {
 				List<MotorDataDetails> filtermotList = motorList.stream()
 						.filter(o -> o.getSectionId().toString().equals(sec.getSectionId().toString()))
 						.collect(Collectors.toList());
-
+				
+				//get Section name Local from session master 
+				List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(sec.getSectionDesc()!=null ? sec.getSectionDesc().toString() : " ");
+				
 				DocumentSectionList sectionRes = new DocumentSectionList();
 				sectionRes.setSectionId(sec.getSectionId());
 				sectionRes.setSectionName(sec.getSectionDesc());
+				sectionRes.setCodeDescLocal((PSM!=null && PSM.size()>0) ? PSM.get(0).getSectionNameLocal() : " ");
 
 				List<DocumentDropdownRes> idList = new ArrayList<DocumentDropdownRes>();
 				for (MotorDataDetails mot : filtermotList) {
@@ -438,6 +451,7 @@ public class DocumentServiceImpl implements DocumentService {
 					String idType = docTypeList.stream().filter(o -> o.getItemCode().equalsIgnoreCase("M"))
 							.collect(Collectors.toList()).get(0).getItemValue();
 					doc.setIdType(idType);
+					doc.setCodeDescLocal(mot.getRegistrationNumber());
 					idList.add(doc);
 				}
 				sectionRes.setIdList(idList);
@@ -503,6 +517,7 @@ public class DocumentServiceImpl implements DocumentService {
 											.filter(o -> o.getItemCode().equalsIgnoreCase("H"))
 											.collect(Collectors.toList()).get(0).getItemValue();
 									doc.setIdType(idType);
+									doc.setCodeDescLocal(emp.getNationalityId());
 									idList.add(doc);
 								}
 
@@ -528,6 +543,7 @@ public class DocumentServiceImpl implements DocumentService {
 											.filter(o -> o.getItemCode().equalsIgnoreCase("A"))
 											.collect(Collectors.toList()).get(0).getItemValue();
 									doc.setIdType(idType);
+									doc.setCodeDescLocal(c.getSerialNoDesc() == null ? "1" : c.getSerialNoDesc());
 									idList.add(doc);
 								}
 
@@ -539,6 +555,7 @@ public class DocumentServiceImpl implements DocumentService {
 								String idType = docTypeList.stream().filter(o -> o.getItemCode().equalsIgnoreCase("A"))
 										.collect(Collectors.toList()).get(0).getItemValue();
 								doc.setIdType(idType);
+								doc.setCodeDescLocal(buildingRisk.size() > 0 ? buildingRisk.get(0).getRiskId().toString() : "1");
 								idList.add(doc);
 							}
 //								} else {
@@ -551,13 +568,16 @@ public class DocumentServiceImpl implements DocumentService {
 //								}
 
 						}
-
+						//get Section name Local from session master 
+						List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(sec.getSectionDesc()!=null ? sec.getSectionDesc().toString() : " ");
+						
 						// Section
 						if (idList.size() > 0) {
 							DocumentSectionList sectionRes = new DocumentSectionList();
 							sectionRes.setSectionId(sec.getSectionId());
 							sectionRes.setSectionName(sec.getSectionDesc());
 							sectionRes.setIdList(idList);
+							sectionRes.setCodeDescLocal((PSM!=null && PSM.size()>0) ? PSM.get(0).getSectionNameLocal() : " ");
 							sectionList.add(sectionRes);
 						}
 
@@ -584,14 +604,18 @@ public class DocumentServiceImpl implements DocumentService {
 					String idType = docTypeList.stream().filter(o -> o.getItemCode().equalsIgnoreCase("A"))
 							.collect(Collectors.toList()).get(0).getItemValue();
 					doc.setIdType(idType);
+					doc.setCodeDescLocal(buildingRisk.size() > 0 ? buildingRisk.get(0).getRiskId().toString() : "1");
 					idList.add(doc);
-
+					
+					//get Section name Local from session master 
+					List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(sec.getSectionDesc()!=null ? sec.getSectionDesc().toString() : " ");
 					// Section
 					if (idList.size() > 0) {
 						DocumentSectionList sectionRes = new DocumentSectionList();
 						sectionRes.setSectionId(sec.getSectionId());
 						sectionRes.setSectionName(sec.getSectionDesc());
 						sectionRes.setIdList(idList);
+						sectionRes.setCodeDescLocal((PSM!=null && PSM.size()>0) ? PSM.get(0).getSectionNameLocal() : " ");
 						sectionList.add(sectionRes);
 					}
 
@@ -643,13 +667,19 @@ public class DocumentServiceImpl implements DocumentService {
 							String idType = docTypeList.stream().filter(o -> o.getItemCode().equalsIgnoreCase("H"))
 									.collect(Collectors.toList()).get(0).getItemValue();
 							doc.setIdType(idType);
+							doc.setCodeDescLocal(emp.getNationalityId());
 							idList.add(doc);
 						}
+						
+						//get Section name Local from session master 
+						List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(sec.getSectionDesc()!=null ? sec.getSectionDesc().toString() : " ");
+						
 						// Section
 						DocumentSectionList sectionRes = new DocumentSectionList();
 						sectionRes.setSectionId(sec.getSectionId());
 						sectionRes.setSectionName(sec.getSectionDesc());
 						sectionRes.setIdList(idList);
+						sectionRes.setCodeDescLocal((PSM!=null && PSM.size()>0) ? PSM.get(0).getSectionNameLocal() : " ");
 						sectionList.add(sectionRes);
 
 					}
@@ -682,13 +712,18 @@ public class DocumentServiceImpl implements DocumentService {
 						String idType = docTypeList.stream().filter(o -> o.getItemCode().equalsIgnoreCase("H"))
 								.collect(Collectors.toList()).get(0).getItemValue();
 						doc.setIdType(idType);
+						doc.setCodeDescLocal(emp.getNationalityId());
 						idList.add(doc);
 					}
+					//get Section name Local from session master 
+					List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(sec.getSectionDesc()!=null ? sec.getSectionDesc().toString() : " ");
+					
 					// Section
 					DocumentSectionList sectionRes = new DocumentSectionList();
 					sectionRes.setSectionId(sec.getSectionId());
 					sectionRes.setSectionName(sec.getSectionDesc());
 					sectionRes.setIdList(idList);
+					sectionRes.setCodeDescLocal((PSM!=null && PSM.size()>0) ? PSM.get(0).getSectionNameLocal() : " ");
 					sectionList.add(sectionRes);
 				}
 
@@ -734,17 +769,17 @@ public class DocumentServiceImpl implements DocumentService {
 			orderList.add(cb.asc(c.get("productName")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -791,16 +826,16 @@ public class DocumentServiceImpl implements DocumentService {
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3, a4);
@@ -979,6 +1014,13 @@ public class DocumentServiceImpl implements DocumentService {
 							req.getInstallmentPeriod() == null ? null : req.getInstallmentPeriod());
 					uniqDoc.setNoOfInstallment(req.getNoOfInstallment() == null ? null : req.getNoOfInstallment());
 				}
+				
+				//adding local description feilds 
+				uniqDoc.setIdTypeLocal(req.getIdType());
+				//uniqDoc.setDocumentApplicableLocal(docDetails.getDocApplicableLocal());
+				uniqDoc.setDocumentNameLocal(docDetails.getDocumentNameLocal());
+				uniqDoc.setDocumentDescLocal(docDetails.getDocumentDescLocal());
+				uniqDoc.setDocumentTypeDescLocal(docDetails.getDocumentTypeDescLocal());
 				docUniqueRepo.saveAndFlush(uniqDoc);
 			}
 
@@ -1022,6 +1064,9 @@ public class DocumentServiceImpl implements DocumentService {
 						docTran.setEndtCount(new BigDecimal(req.getEndtCount()));
 						docTran.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
 						docTran.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+						
+						//insert local description
+						docTran.setEndorsementTypeDescLocal(entMaster.getEndtTypeCategory());
 					}
 				}
 				if ("Y".equalsIgnoreCase(req.getEmiYn())) {
@@ -1030,6 +1075,11 @@ public class DocumentServiceImpl implements DocumentService {
 							req.getInstallmentPeriod() == null ? null : req.getInstallmentPeriod());
 					docTran.setNoOfInstallment(req.getNoOfInstallment() == null ? null : req.getNoOfInstallment());
 				}
+				//insert local description
+				docTran.setProductNameLocal(homeData.getProductName());
+				
+				docTran.setSectionNameLocal(secData == null ? "All" : secData.getSectionName());
+				
 				docTranRepo.saveAndFlush(docTran);
 			}
 
@@ -1076,9 +1126,9 @@ public class DocumentServiceImpl implements DocumentService {
 			orderList.add(cb.asc(c.get("sectionName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
@@ -1086,9 +1136,9 @@ public class DocumentServiceImpl implements DocumentService {
 			effectiveDate.where(a1, a2, a3, a4);
 
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ProductSectionMaster> ocpm2 = effectiveDate2.from(ProductSectionMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
 			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
@@ -1175,9 +1225,9 @@ public class DocumentServiceImpl implements DocumentService {
 			for (CoverDocumentMaster data : filterDocList) {
 
 				DocTypeRes res = new DocTypeRes();
-
 				res.setCode(data.getDocumentId().toString());
 				res.setCodeDesc(data.getDocumentDesc());
+				res.setCodeDescLocal(data.getDocumentDescLocal());
 				resList.add(res);
 			}
 
@@ -1431,13 +1481,13 @@ public class DocumentServiceImpl implements DocumentService {
 			orderList.add(cb.desc(c.get("effectiveDateStart")));
 
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n11 = cb.equal(c.get("status"), "R");
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			jakarta.persistence.criteria.Predicate n11 = cb.equal(c.get("status"), "R");
 			Predicate n12 = cb.or(n1, n11);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), insId);
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), productId);
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), sectionId);
-			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("documentId"), documentId);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), insId);
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), productId);
+			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), sectionId);
+			jakarta.persistence.criteria.Predicate n7 = cb.equal(c.get("documentId"), documentId);
 			query.where(n12, n3, n4, n5, n7).orderBy(orderList);
 
 			// Get Result

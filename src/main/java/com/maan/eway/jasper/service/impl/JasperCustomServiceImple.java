@@ -19,22 +19,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.query.sql.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -109,6 +98,17 @@ import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.PolicyDrcrDetailRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.criteria.Subquery;
 
 @Component
 public class JasperCustomServiceImple {
@@ -984,7 +984,7 @@ public class JasperCustomServiceImple {
 			List<Predicate> dPredicate = new ArrayList<Predicate>();
 			dPredicate.add(cb.equal(dRoot.get("quoteNo"), map.get("quoteNo").toString()));
 			dPredicate.add(cb.equal(dRoot.get("quoteNo"), dmdRoot.get("quoteNo")));
-			dPredicate.add(cb.equal(dmdRoot.get("vehicleId"), dRoot.get("riskId")));
+			dPredicate.add(cb.equal(dmdRoot.get("vehicleId"), dRoot.get("riskId").as(String.class)));
 			dPredicate.add(cb.equal(dmdRoot.get("companyId"), dRoot.get("companyId")));
 			dPredicate.add(cb.equal(dmdRoot.get("productId"), dRoot.get("productId")));
 			if(StringUtils.isNotBlank(vehicleId)) {
@@ -1057,7 +1057,7 @@ public class JasperCustomServiceImple {
 			List<Predicate> predicate = new ArrayList<Predicate>();
 			predicate.add(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")));
 			predicate.add(cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")));
-			predicate.add(cb.equal(pcdRoot.get("sectionId"), sddRoot.get("sectionId")));
+			predicate.add(cb.equal(pcdRoot.get("sectionId").as(String.class), sddRoot.get("sectionId")));
 			predicate.add(cb.equal(pcdRoot.get("taxId"),"0"));
 			predicate.add(cb.equal(pcdRoot.get("discLoadId"), "0"));
 			predicate.add(cb.equal(pcdRoot.get("subCoverId"), "0"));
@@ -1066,8 +1066,8 @@ public class JasperCustomServiceImple {
 			
 			Subquery<String> occDesc = cq1.subquery(String.class);
 			Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
-			occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), ecdRoot.get("sectionId")),
-					cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")),
+			occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class),ecdRoot.get("sectionId")),
+					cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId").as(String.class), ecdRoot.get("productId")),
 					cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
 			
 			cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
@@ -1167,7 +1167,7 @@ public class JasperCustomServiceImple {
 					
 					doc.multiselect(cmRoot.get("docRefNo").alias("docRefNo"),dudRoot.get("filePathOrginal").alias("filePathOrginal"))
 					.where(cb.equal(lmRoot.get("loginId"), dlui.get("loginId")),cb.equal(dlui.get("customerCode"), cmRoot.get("brokerCode")),
-							cb.equal(cmRoot.get("docRefNo"), dudRoot.get("uniqueId")),cb.equal(lmRoot.get("loginId"), loginId),
+							cb.equal(cmRoot.get("docRefNo").as(String.class), dudRoot.get("uniqueId").as(String.class)),cb.equal(lmRoot.get("loginId").as(String.class), loginId),
 							cb.equal(cmRoot.get("status"), "Y"),cb.equal(cmRoot.get("amendId"), cmAmd));
 					
 					List<Tuple> docList = em.createQuery(doc).getResultList();
@@ -1375,7 +1375,7 @@ public class JasperCustomServiceImple {
 					sumInsured.alias("sumInsured"),pcdRoot2.get("rate").alias("rate"),pcdRoot2.get("currency").alias("currency"),pcdRoot2.get("taxRate").alias("taxRate"),
 				cb.selectCase().when(cb.in(pcdRoot2.get("currency")).value(currencyId2), pcdRoot2.get("premiumIncludedTaxLc")).otherwise(pcdRoot2.get("premiumIncludedTaxFc")).alias("premium"))
 			.where(cb.equal(tpdRoot2.get("quoteNo"), hpmRoot2.get("quoteNo")),cb.equal(pgmRoot2.get("groupId"),tpdRoot2.get("groupId")),
-					cb.equal(hpmRoot2.get("productId"), "4"),cb.equal(hpmRoot2.get("status"), "P"),cb.equal(hpmRoot2.get("quoteNo"), pcdRoot2.get("quoteNo")),cb.equal(pcdRoot2.get("vehicleId"), tpdRoot2.get("groupId")),
+					cb.equal(hpmRoot2.get("productId").as(String.class), "4"),cb.equal(hpmRoot2.get("status"), "P"),cb.equal(hpmRoot2.get("quoteNo"), pcdRoot2.get("quoteNo")),cb.equal(pcdRoot2.get("vehicleId"), tpdRoot2.get("groupId")),
 					cb.equal(pcdRoot2.get("discLoadId"), "0"),cb.equal(pcdRoot2.get("taxId"), "0"),cb.equal(hpmRoot2.get("policyNo"),policyNo)).distinct(true);
 			
 			List<Tuple> travelSubReport = em.createQuery(cq2).getResultList();
@@ -1855,7 +1855,7 @@ public class JasperCustomServiceImple {
 				List<Predicate> predicate = new ArrayList<Predicate>();
 				predicate.add(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")));
 				predicate.add(cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")));
-				predicate.add(cb.equal(pcdRoot.get("sectionId"), sddRoot.get("sectionId")));
+				predicate.add(cb.equal(pcdRoot.get("sectionId").as(String.class), sddRoot.get("sectionId")));
 				predicate.add(cb.equal(pcdRoot.get("taxId"),"0"));
 				predicate.add(cb.equal(pcdRoot.get("discLoadId"), "0"));
 				predicate.add(cb.equal(pcdRoot.get("subCoverId"), "0"));
@@ -1873,7 +1873,7 @@ public class JasperCustomServiceImple {
 				
 				Subquery<String> occDesc = cq1.subquery(String.class);
 				Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
-				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), ecdRoot.get("sectionId")),
+				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class), ecdRoot.get("sectionId")),
 						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")),
 						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
 				
@@ -2232,7 +2232,7 @@ public class JasperCustomServiceImple {
 				}
 				cq2.multiselect(cmRoot2.get("clausesDescription").alias("conditionTerms"),cmRoot2.get("sectionId").alias("sectionId"));
 				predicates.add(cb.equal(cmRoot2.get("companyId"), hpmRoot2.get("companyId")));
-				predicates.add(cb.equal(cmRoot2.get("productId"), hpmRoot2.get("productId")));
+				predicates.add(cb.equal(cmRoot2.get("productId").as(String.class), hpmRoot2.get("productId").as(String.class)));
 				predicates.add(cb.or(cb.equal(cmRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(cmRoot2.get("branchCode"), "99999")));
 				predicates.add(cb.between(cb.literal(new Date()), cmRoot2.get("effectiveDateStart"), cmRoot2.get("effectiveDateEnd")));
 				predicates.add(cb.equal(cmRoot2.get("status"), "Y"));
@@ -2248,7 +2248,7 @@ public class JasperCustomServiceImple {
 				}
 				cq2.multiselect(tacRoot2.get("subIdDesc").alias("conditionTerms"),tacRoot2.get("sectionId").alias("sectionId"));
 				predicates.add(cb.equal(tacRoot2.get("companyId"), hpmRoot2.get("companyId")));
-				predicates.add(cb.equal(tacRoot2.get("productId"), hpmRoot2.get("productId")));
+				predicates.add(cb.equal(tacRoot2.get("productId").as(String.class), hpmRoot2.get("productId").as(String.class)));
 				predicates.add(cb.in(hpmRoot2.get("quoteNo")).value(tacRoot2.get("quoteNo")));
 				predicates.add(cb.equal(tacRoot2.get("status"), "Y"));
 				predicates.add(cb.or(cb.equal(tacRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(tacRoot2.get("branchCode"), "99999")));
@@ -2303,7 +2303,7 @@ public class JasperCustomServiceImple {
 					}
 					cq3.multiselect(emRoot3.get("exclusionDescription").alias("exclusionTerms"),emRoot3.get("sectionId").alias("sectionId"));
 					predicates.add(cb.equal(emRoot3.get("companyId"), hpmRoot3.get("companyId")));
-					predicates.add(cb.equal(emRoot3.get("productId"), hpmRoot3.get("productId")));
+					predicates.add(cb.equal(emRoot3.get("productId").as(String.class), hpmRoot3.get("productId").as(String.class)));
 					predicates.add(cb.or(cb.equal(emRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(emRoot3.get("branchCode"), "99999")));
 					predicates.add(cb.between(cb.literal(new Date()), emRoot3.get("effectiveDateStart"), emRoot3.get("effectiveDateEnd")));
 					predicates.add(cb.equal(emRoot3.get("status"), "Y"));
@@ -2323,7 +2323,7 @@ public class JasperCustomServiceImple {
 					
 					cq3.multiselect(tacRoot3.get("subIdDesc").alias("exclusionTerms"),tacRoot3.get("sectionId").alias("sectionId"));
 					predicates.add(cb.equal(tacRoot3.get("companyId"), hpmRoot3.get("companyId")));
-					predicates.add(cb.equal(tacRoot3.get("productId"), hpmRoot3.get("productId")));
+					predicates.add(cb.equal(tacRoot3.get("productId").as(String.class), hpmRoot3.get("productId").as(String.class)));
 					
 					predicates.add(cb.in(hpmRoot3.get("quoteNo")).value(tacRoot3.get("quoteNo")));
 					predicates.add(cb.equal(tacRoot3.get("status"), "Y"));
@@ -2370,7 +2370,7 @@ public class JasperCustomServiceImple {
 					Root<WarrantyMaster> wmRoot3 = cq3.from(WarrantyMaster.class);
 					cq3.multiselect(wmRoot3.get("warrantyDescription").alias("warrantyTerms"),wmRoot3.get("sectionId").alias("sectionId"));
 					predicates.add(cb.equal(wmRoot3.get("companyId"), hpmRoot3.get("companyId")));
-					predicates.add(cb.equal(wmRoot3.get("productId"), hpmRoot3.get("productId")));
+					predicates.add(cb.equal(wmRoot3.get("productId").as(String.class), hpmRoot3.get("productId").as(String.class)));
 					predicates.add(cb.or(cb.equal(wmRoot3.get("sectionId"), sectionId), cb.equal(wmRoot3.get("sectionId"), "99999")));
 					predicates.add(cb.or(cb.equal(wmRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(wmRoot3.get("branchCode"), "99999")));
 					predicates.add(cb.between(cb.literal(new Date()), wmRoot3.get("effectiveDateStart"), wmRoot3.get("effectiveDateEnd")));
@@ -2383,7 +2383,7 @@ public class JasperCustomServiceImple {
 					Root<TermsAndCondition> tacRoot3 = cq3.from(TermsAndCondition.class);
 					cq3.multiselect(tacRoot3.get("subIdDesc").alias("warrantyTerms"),tacRoot3.get("sectionId").alias("sectionId"));
 					predicates.add(cb.equal(tacRoot3.get("companyId"), hpmRoot3.get("companyId")));
-					predicates.add(cb.equal(tacRoot3.get("productId"), hpmRoot3.get("productId")));
+					predicates.add(cb.equal(tacRoot3.get("productId").as(String.class), hpmRoot3.get("productId").as(String.class)));
 					predicates.add(cb.or(cb.equal(tacRoot3.get("sectionId"), sectionId), cb.equal(tacRoot3.get("sectionId"), "99999")));
 					predicates.add(cb.in(hpmRoot3.get("quoteNo")).value(tacRoot3.get("quoteNo")));
 					predicates.add(cb.equal(tacRoot3.get("status"), "Y"));
@@ -2516,7 +2516,7 @@ public class JasperCustomServiceImple {
 				List<Predicate> predicate = new ArrayList<Predicate>();
 				predicate.add(cb.equal(pcdRoot.get("quoteNo"),m.get("quoteNo")));
 				predicate.add(cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")));
-				predicate.add(cb.equal(pcdRoot.get("sectionId"), sddRoot.get("sectionId")));
+				predicate.add(cb.equal(pcdRoot.get("sectionId").as(String.class), sddRoot.get("sectionId")));
 				predicate.add(cb.equal(pcdRoot.get("taxId"),"0"));
 				predicate.add(cb.equal(pcdRoot.get("discLoadId"), "0"));
 				predicate.add(cb.equal(pcdRoot.get("subCoverId"), "0"));
@@ -2525,7 +2525,7 @@ public class JasperCustomServiceImple {
 				
 				Subquery<String> occDesc = cq1.subquery(String.class);
 				Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
-				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId"), ecdRoot.get("sectionId")),
+				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class), ecdRoot.get("sectionId")),
 						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")),
 						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
 				

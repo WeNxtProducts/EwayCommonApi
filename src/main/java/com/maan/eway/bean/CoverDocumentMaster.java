@@ -15,15 +15,15 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
+import jakarta.persistence.Table;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -133,6 +133,15 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="UPDATED_DATE")
     private Date      updatedDate ;
+    
+    @Column(name="DOCUMENT_TYPE_DESC_LOCAL")
+    private String     documentTypeDescLocal ;
+    
+    @Column(name="DOCUMENT_NAME_LOCAL")
+    private String     documentNameLocal ;
+    
+    @Column(name="DOCUMENT_DESC_LOCAL")
+    private String     documentDescLocal ;
 
 }
 

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.function.Function;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import com.maan.eway.res.calc.Cover;
 
@@ -77,6 +77,10 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.minSumInsured(t.get("minSuminsured")==null?BigDecimal.ZERO:new BigDecimal(t.get("minSuminsured").toString()))
 					.isTaxExcempted(t.get("isTaxExcempted")==null?"N":t.get("isTaxExcempted").toString())
 					.freeCoverLimit(t.get("freeCoverLimit")==null?BigDecimal.ZERO:new BigDecimal(t.get("freeCoverLimit").toString()))
+					.coverDescLocal(t.get("coverDescLocal")==null?"":t.get("coverDescLocal").toString())
+					.coverNameLocal(t.get("coverNameLocal")==null?"":t.get("coverNameLocal").toString())
+					.subCoverDescLocal(t.get("subCoverDescLocal")==null?"":t.get("subCoverDescLocal").toString())
+					.subCoverNameLocal(t.get("subCoverNameLocal")==null?"":t.get("subCoverNameLocal").toString())
 					.build();
 				return c;
 			 }			

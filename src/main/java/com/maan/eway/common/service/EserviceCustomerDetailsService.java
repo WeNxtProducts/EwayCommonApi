@@ -61,5 +61,7 @@ public interface EserviceCustomerDetailsService {
 
 	SuccessRes customerChanges(CustomerChangesSaveReq req);	
 	
+	CommonRes fetchPolicyData(String policyNumber);
+	
 
 }

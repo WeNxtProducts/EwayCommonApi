@@ -2,7 +2,7 @@ package com.maan.eway.calculator.util;
 
 import java.util.function.Function;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.res.calc.UWReferrals;

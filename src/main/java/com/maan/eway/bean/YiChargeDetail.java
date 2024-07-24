@@ -15,15 +15,16 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import jakarta.persistence.Table;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 

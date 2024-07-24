@@ -55,6 +55,7 @@ public class CachingConfig   {
 	  @Qualifier("catcheManager")
 	  @Autowired
 	  private CacheManager catcheManager;
+	
 	  @PreDestroy
 	  public void cleanUp() {
 		    ((SpringCache2kCacheManager) catcheManager).destroy();

@@ -3,7 +3,7 @@ package com.maan.eway.calculator.util;
 import java.math.BigDecimal;
 import java.util.function.Function;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.res.calc.Cover;
@@ -82,6 +82,10 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.policyPeriod(t.getNoOfDays())
 					.isTaxExcempted(t.getIsTaxExtempted()==null?"N":t.getIsTaxExtempted())
 					.freeCoverLimit(t.getFreeCoverLimit()==null?BigDecimal.ZERO:t.getFreeCoverLimit())
+					.coverDescLocal(t.getCoverDescLocal()==null?"":t.getCoverDescLocal().toString())
+					.coverNameLocal( t.getCoverNameLocal()==null?"": t.getCoverNameLocal().toString())
+					.subCoverDescLocal(t.getSubCoverDescLocal()==null?"":t.getSubCoverDescLocal())
+					.subCoverNameLocal(t.getSubCoverNameLocal()==null?"":t.getSubCoverNameLocal().toString())
 					.build();
 				return c;
 			 }			

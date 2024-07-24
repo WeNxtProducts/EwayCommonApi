@@ -17,13 +17,13 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -353,6 +353,51 @@ private static final long serialVersionUID = 1L;
     
     @Column(name = "ZONE")
 	private Integer zone;
+
+    @Column(name = "TITLE_DESC_LOCAL", length = 50)
+    private String titleDescLocal;
+
+    @Column(name = "GENDER_DESC_LOCAL", length = 50)
+    private String genderDescLocal;
+
+    @Column(name = "OCCUPATION_DESC_LOCAL", length = 50)
+    private String occupationDescLocal;
+
+    @Column(name = "BUSINESS_TYPE_DESC_LOCAL", length = 50)
+    private String businessTypeDescLocal;
+
+    @Column(name = "STATE_NAME_LOCAL", length = 50)
+    private String stateNameLocal;
+
+    @Column(name = "CITY_NAME_LOCAL", length = 50)
+    private String cityNameLocal;
+
+    @Column(name = "MOBILE_CODE_DESC_1_LOCAL", length = 50)
+    private String mobileCodeDesc1Local;
+
+    @Column(name = "MOBILE_CODE_DESC_2_LOCAL", length = 50)
+    private String mobileCodeDesc2Local;
+
+    @Column(name = "MOBILE_CODE_DESC_3_LOCAL", length = 50)
+    private String mobileCodeDesc3Local;
+
+    @Column(name = "WHATSAPP_CODE_DESC_LOCAL", length = 50)
+    private String whatsappCodeDescLocal;
+
+    @Column(name = "LANGUAGE_DESC_LOCAL", length = 50)
+    private String languageDescLocal;
+
+    @Column(name = "ID_TYPE_DESC_LOCAL", length = 50)
+    private String idTypeDescLocal;
+
+    @Column(name = "POLICY_HOLDER_TYPE_DESC_LOCAL", length = 50)
+    private String policyHolderTypeDescLocal;
+
+    @Column(name = "POLICY_HOLDER_TYPE_ID_DESC_LOCAL", length = 50)
+    private String policyHolderTypeIdDescLocal;
+
+    @Column(name = "MARITAL_STATUS_DESC_LOCAL", length = 50)
+    private String maritalStatusDescLocal;
     
 }
 

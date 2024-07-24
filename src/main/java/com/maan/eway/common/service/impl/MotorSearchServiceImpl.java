@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,18 +14,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
@@ -68,6 +55,18 @@ import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.res.calc.Endorsement;
 import com.maan.eway.res.calc.Tax;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 
 @Service
@@ -130,9 +129,9 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -140,9 +139,9 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			effectiveDate.where(a1,a2,b1,b2);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));

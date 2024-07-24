@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,15 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -109,8 +110,8 @@ public class FetchErrorDescServiceImpl {
 	}
 	
 	@Bean
-	public void loadModule() {
-		loadErrorModule();
+	public List<ErrorGroupRes> loadModule() {
+		return loadErrorModule();
 	}
 
 
@@ -206,9 +207,9 @@ public class FetchErrorDescServiceImpl {
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ErrorDescMaster> ocpm1 = effectiveDate.from(ErrorDescMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("errorCode"),ocpm1.get("errorCode"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -217,9 +218,9 @@ public class FetchErrorDescServiceImpl {
 			Predicate a6 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			effectiveDate.where(a1,a2,a3,a4,a5,a6);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ErrorDescMaster> ocpm2 = effectiveDate2.from(ErrorDescMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a7 = cb.equal(c.get("errorCode"),ocpm2.get("errorCode"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));

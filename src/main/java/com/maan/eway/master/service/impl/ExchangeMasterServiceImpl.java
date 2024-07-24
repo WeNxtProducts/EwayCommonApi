@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,17 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,26 +23,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.ExchangeMaster;
-import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.ExchangeChangeStatusReq;
 import com.maan.eway.master.req.ExchangeMasterGetReq;
 import com.maan.eway.master.req.ExchangeMasterGetallReq;
 import com.maan.eway.master.req.ExchangeMasterSaveReq;
-import com.maan.eway.master.res.CityMasterRes;
-import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.res.ExchangeMasterGetRes;
-import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.ExchangeMasterService;
 import com.maan.eway.repository.CurrencyMasterRepository;
 import com.maan.eway.repository.ExchangeMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -194,9 +186,9 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("exchangeId"), b.get("exchangeId"));
 			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
@@ -204,9 +196,9 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ExchangeMaster> ocpm2 = effectiveDate2.from(ExchangeMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(ocpm2.get("exchangeId"), b.get("exchangeId"));
 			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
@@ -239,6 +231,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		try {
 			 List<CurrencyMaster>   currencyList = getByCurrencyId(req.getCompanyId() ,req.getCurrencyId() );
 			String  currencyname =currencyList.size()>0  ? currencyList.get(0).getCurrencyName() : "";// currencyrepo.findByCurrencyId(req.getCurrencyId());
+			String  currencyNameLocal = currencyList.size()>0 ? currencyList.get(0).getCurrencyNameLocal(): "";
 			Integer amendId=0;
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
@@ -321,6 +314,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCreatedBy(createdBy);
 			saveData.setCurrencyName(currencyname);
+			saveData.setCurrencyNameLocal(req.getCodeDescLocal());
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 		} catch (Exception e) {
@@ -372,8 +366,8 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			
 		    // Where	
 		
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("currencyId"),currencyId) ;
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("currencyId"),currencyId) ;
 			Predicate n3 = cb.equal(c.get("companyId"), companyId);
 			Predicate n4 = cb.equal(c.get("companyId"), "99999");
 			Predicate n5 = cb.or(n3,n4);
@@ -404,9 +398,9 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			// Select
 			query.select(b);
 			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("exchangeId"), b.get("exchangeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1,a2);
@@ -492,6 +486,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			res.setCoreAppCode(list.get(0).getCoreAppCode());
+			res.setCodeDescLocal(list.get(0).getCurrencyNameLocal());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -555,7 +550,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 				res.setCompanyId(data.getCompanyId());
 				res.setCurrencyId(data.getCurrencyId());
 				res.setExchangeRate(data.getExchangeRate().toString());
-				
+				res.setCodeDescLocal(data.getCurrencyNameLocal());;
 				resList.add(res);
 			}
 
@@ -663,14 +658,14 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("exchangeId"),ocpm1.get("exchangeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<ExchangeMaster> ocpm2 = effectiveDate2.from(ExchangeMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("exchangeId"),ocpm2.get("exchangeId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
@@ -783,16 +778,16 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			orderList.add(cb.asc(c.get("exchangeId")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("exchangeId"),ocpm1.get("exchangeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ExchangeMaster> ocpm2 = effectiveDate2.from(ExchangeMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("exchangeId"),ocpm2.get("exchangeId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
@@ -835,9 +830,9 @@ public ExchangeMaster getCurrencyNameRes(String currencyId, String companyId) {
 		Root<ExchangeMaster> s = query.from(ExchangeMaster.class);
 		
 		// State Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate c1 = cb.equal(ocpm1.get("currencyId"), s.get("currencyId"));
 		Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
 		Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);

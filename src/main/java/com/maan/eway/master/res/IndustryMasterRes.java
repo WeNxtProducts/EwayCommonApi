@@ -72,4 +72,7 @@ public class IndustryMasterRes {
 	@JsonProperty("AmendId")
 	private String amendId;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 }

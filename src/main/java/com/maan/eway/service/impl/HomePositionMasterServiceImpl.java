@@ -1,19 +1,9 @@
 package com.maan.eway.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +23,17 @@ import com.maan.eway.res.GetPolicyDetailsRes;
 import com.maan.eway.res.GetQuoteCountRes;
 import com.maan.eway.res.GetQuoteDetailsRes;
 import com.maan.eway.service.HomePositionMasterService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
@@ -65,12 +66,12 @@ public class HomePositionMasterServiceImpl implements HomePositionMasterService 
 			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 			
 			// Select Product Name SubQuery for Effective Date Max Filter 
-			Subquery<Long> pmEff = query.subquery(Long.class);
+			Subquery<Timestamp> pmEff = query.subquery(Timestamp.class);
 			Root<ProductMaster> pm = pmEff.from(ProductMaster.class);
 			Subquery<Long> product = query.subquery(Long.class);
 			Root<ProductMaster> p = product.from(ProductMaster.class);
 			
-			pmEff.select( cb.max(pm.get("effectiveDateStart")) );
+			pmEff.select( cb.greatest(pm.get("effectiveDateStart")) );
 			Predicate p1 = cb.equal(p.get("companyId"), pm.get("companyId"));
 			Predicate p2 = cb.equal(p.get("productId"), pm.get("productId"));
 			Predicate p3 = cb.lessThanOrEqualTo(pm.get("effectiveDateStart") , today);

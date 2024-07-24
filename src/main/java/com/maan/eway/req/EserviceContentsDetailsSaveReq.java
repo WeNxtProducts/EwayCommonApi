@@ -11,7 +11,7 @@ import lombok.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

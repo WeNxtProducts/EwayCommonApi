@@ -40,6 +40,15 @@ import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.repository.MenuMasterRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
 @Service
 @Transactional
 public class MenuMasterServiceImpl implements MenuMasterService {
@@ -127,6 +136,18 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 							.orderby(menuMaster.getDisplayOrder() == null ? 0 : menuMaster.getDisplayOrder().longValue())
 							.build();
 					userMenus.add(menu);
+				}
+			}
+			if(userMenus.isEmpty()) {
+				for (MenuMaster menuMaster : otherMenulist) {
+					if(menuMaster.getCompanyId().equalsIgnoreCase("99999")) {
+						Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl())
+								.id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+								.icon(menuMaster.getMenuLogo()).isdesti(false)
+								.orderby(menuMaster.getDisplayOrder() == null ? 0 : menuMaster.getDisplayOrder().longValue())
+								.build();
+						userMenus.add(menu);
+					}
 				}
 			}
 			if(userMenus.isEmpty()) {
@@ -247,6 +268,7 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 			savemenu.setMenuLogo(StringUtils.isBlank(req.getMenulogo()) ? null : req.getMenulogo());
 			savemenu.setDisplayYn(StringUtils.isBlank(req.getStatus()) ? null : req.getStatus());
 			savemenu.setCompanyId(req.getCompanyId());
+			savemenu.setMenuNameLocal(req.getCodeDescLocal());
 			menurepo.saveAndFlush(savemenu);
 			count++;
 			}
@@ -284,6 +306,7 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 				savemenu.setMenuLogo(StringUtils.isBlank(req.getMenulogo()) ? null : req.getMenulogo());
 				savemenu.setDisplayYn(StringUtils.isBlank(req.getStatus()) ? null : req.getStatus());
 				savemenu.setCompanyId(req.getCompanyId());
+				savemenu.setMenuNameLocal(req.getCodeDescLocal());
 				menurepo.saveAndFlush(savemenu);
 				count++;
 				}
@@ -325,7 +348,7 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 	           }
 	           if(!StringUtils.isBlank(req.getMenuType()))
 	           {
-	        	 if(req.getParentMenu().isBlank()  ||req.getParentMenu()==null)
+	        	 if(req.getParentMenu()==null || req.getParentMenu().isBlank() )
 	        	 {
 	        		 errorList.add("2216");   
 	        	 }
@@ -339,9 +362,17 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 		       {
 		    	   errorList.add("2220");
 		       }
-				/*
-				 * if(req.getUsertype().isBlank()) { errorList.add("2218"); }
-				 */
+				
+			   if(req.getUsertypelist() == null || req.getUsertypelist().isEmpty()) {
+				   errorList.add("2218"); 
+			   }else {
+				   for(UserTypeReq user : req.getUsertypelist()) {
+					   if(StringUtils.isBlank(user.getUserType())) {
+						   errorList.add("2218"); 
+					   }
+				   }
+			   }
+				 
 			
 		}catch(Exception Problem)
 		{
@@ -384,6 +415,7 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 		     GetmenuDetailsRes2 res = dozerMapper.map(menumaster.get(0), GetmenuDetailsRes2.class);
 		     res.setUsertypelist(u1);
 		     res.setMenuType(menumaster.get(0).getParentMenu().equalsIgnoreCase("99999")?"Parent": "Child");
+		     res.setCodeDescLocal(menumaster.get(0).getMenuNameLocal());
 		    
 		     resList.add(res);
 		    } 
@@ -415,6 +447,7 @@ public class MenuMasterServiceImpl implements MenuMasterService {
 		         res.setUsertypelist(u1);
 		         res.setMenuType(menutype);
 		         res.setEntryDate(entrydate.isBlank()?null:entrydate);
+		         res.setCodeDescLocal(mm.getMenuNameLocal());
 		         resList.add(res);
 		         start++;
 		     }

@@ -1,46 +1,48 @@
 package com.maan.eway.auth.token;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfigurationSource;
  
 
-@Configuration
+/*@Configuration
 @EnableWebSecurity
-@Order(999)
-public class WebSecurityConfigBasic extends WebSecurityConfigurerAdapter {
+@Order(999*/
+public class WebSecurityConfigBasic {
 
 	@Autowired
 	private BasicAuthenticationPoint basicAuthenticationPoint;
+	@Autowired
+	@Qualifier(value = "corsConfigurationSource")
+	private CorsConfigurationSource corsConfig;
+	 @Bean
+	 public SecurityFilterChain filterChain(HttpSecurity http)throws Exception {
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+		 return http.csrf(AbstractHttpConfigurer::disable)
+				 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfig))
+				 .authorizeHttpRequests(auth -> auth.requestMatchers("/embedded/create/schedule/**","/embedded/create/policy/schedule/**")
+						 .permitAll()
+						 .requestMatchers("/api/generatesequence","/api/updatebycustrefno","/basicauth/**","/embedded/create/**","post/notification/ack/mail")
+						 .hasRole("USER")
+						 ).httpBasic(b-> b.authenticationEntryPoint(basicAuthenticationPoint))
+				 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).build();
 
-				http.csrf().disable();
-	//	http.antMatcher("/post/notification/**").authorizeRequests().anyRequest().hasRole("USER").and().httpBasic();
 
-				http.authorizeRequests()
-				.antMatchers("/embedded/create/schedule/**","/embedded/create/policy/schedule/**").permitAll()
-				.and()
-                .requestMatchers().antMatchers("/api/generatesequence","/api/updatebycustrefno","/basicauth/**","/embedded/create/**","post/notification/ack/mail") 
-                .and()
-                .authorizeRequests().anyRequest().hasRole("USER")
-                .and()
-                .httpBasic();
-	
-		http.cors();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.httpBasic().authenticationEntryPoint(basicAuthenticationPoint);
-	}
+	 }
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	

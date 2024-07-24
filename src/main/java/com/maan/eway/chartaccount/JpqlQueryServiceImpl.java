@@ -3,15 +3,9 @@ package com.maan.eway.chartaccount;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +14,10 @@ import org.springframework.stereotype.Component;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductTaxSetup;
 import com.maan.eway.bean.ReportJasperConfigMaster;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 @Component
 @Transactional

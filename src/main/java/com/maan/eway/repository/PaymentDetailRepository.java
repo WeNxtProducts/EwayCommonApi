@@ -34,7 +34,7 @@ public interface PaymentDetailRepository  extends JpaRepository<PaymentDetail,Pa
 
 
 
-	PaymentDetail findByQuoteNoAndPaymentIdAndMerchantReference(String quoteNo, Double valueOf,
+	PaymentDetail findByQuoteNoAndPaymentIdAndMerchantReference(String quoteNo, String paymentId,
 			String paymentReferenceNo);
 
 	List<PaymentDetail> findByQuoteNo(String quoteNo);

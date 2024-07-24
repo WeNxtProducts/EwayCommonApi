@@ -3,8 +3,8 @@ package com.maan.eway.notification.req;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

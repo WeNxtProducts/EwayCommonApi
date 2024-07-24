@@ -14,4 +14,8 @@ public class GetExistingBrokerListRes {
 
 	@JsonProperty("Type")
 	private String type;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+
 }

@@ -15,15 +15,15 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
+import jakarta.persistence.Table;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -147,6 +147,23 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PO_BOX", length=100)
     private String    poBox;
+    
+    @Column(name="BRANCH_NAME_LOCAL", length=100)
+    private String    branchNameLocal;
+    
+    @Column(name="STATE_NAME_LOCAL", length=100)
+    private String    stateNameLocal;
+    
+    @Column(name="CITY_NAME_LOCAL", length=100)
+    private String    cityNameLocal;
+    
+    @Column(name="ADDRESS1_LOCAL", length=100)
+    private String    address1Local;
+    
+    @Column(name="ADDRESS2_LOCAL", length=100)
+    private String    address2Local;
+    
+    
 }
 
 

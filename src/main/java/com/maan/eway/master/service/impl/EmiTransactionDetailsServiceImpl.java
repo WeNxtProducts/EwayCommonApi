@@ -7,31 +7,16 @@ package com.maan.eway.master.service.impl;
 
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,17 +28,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.master.req.EmiEndtDetailsReq;
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.EmiMaster;
+import com.maan.eway.bean.EmiTransactionDetails;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceLifeDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.ExchangeMaster;
+import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.PaymentDetail;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EmiInstallmentDetailsReq;
 import com.maan.eway.master.req.EmiTransactionDetailsGetReq;
 import com.maan.eway.master.req.EmiTransactionDetailsNextReq;
 import com.maan.eway.master.req.EmiTransactionDetailsSaveReq;
 import com.maan.eway.master.req.EmiTransactionDetailsUpdateReq;
-import com.maan.eway.master.res.EmiTransactionDetailsRes;
 import com.maan.eway.master.res.EmiCompanyInfoListRes;
 import com.maan.eway.master.res.EmiDisplayListRes;
 import com.maan.eway.master.res.EmiDisplayRes;
 import com.maan.eway.master.res.EmiInfoListRes;
+import com.maan.eway.master.res.EmiTransactionDetailsRes;
 import com.maan.eway.master.service.EmiTransactionDetailsService;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
@@ -64,25 +60,17 @@ import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.ExchangeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
-import com.maan.eway.bean.EmiTransactionDetails;
-import com.maan.eway.bean.EserviceBuildingDetails;
-import com.maan.eway.bean.EserviceCommonDetails;
-import com.maan.eway.bean.EserviceLifeDetails;
-import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EserviceTravelDetails;
-import com.maan.eway.bean.ExchangeMaster;
-import com.maan.eway.bean.FactorRateMaster;
-import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.PaymentDetail;
-import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.CountryMaster;
-import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.error.Error;
-
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.res.calc.Loading;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>EmiTransactionDetailsServiceimpl</h2>
@@ -516,17 +504,17 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			orderList.add(cb.asc(c.get("productName")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -577,9 +565,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			query.select( b );
 
 //			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal( b.get("emiId"),ocpm1.get("emiId"));
 			Predicate a2 = cb.equal( b.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.equal( b.get("productId"),ocpm1.get("productId"));
@@ -588,9 +576,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			effectiveDate.where(a1, a2, a3, a4,a9);
 //			
 //			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<EmiMaster> ocpm2 = effectiveDate2.from(EmiMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
 			Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
 			Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
@@ -1058,9 +1046,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			query.select( b );
 
 //			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal( b.get("emiId"),ocpm1.get("emiId"));
 			Predicate a2 = cb.equal( b.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.equal( b.get("productId"),ocpm1.get("productId"));
@@ -1069,9 +1057,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			effectiveDate.where(a1, a2, a3, a4,a9);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<EmiMaster> ocpm2 = effectiveDate2.from(EmiMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
 			Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
 			Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
@@ -1103,7 +1091,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			Predicate n7 = cb.equal(b.get("policyType"), policyType);
 //			Predicate n11 = cb.equal(b.get("policyType"), "99999");
 //			Predicate n12 = cb.or(n7, n11);
-			Predicate n9 = cb.between(cb.literal(amt).as(Double.class) , b.get("premiumStart"), b.get("premiumEnd"));
+			Predicate n9 = cb.between(cb.literal(amt).as(Double.class) , b.get("premiumStart").as(Double.class), b.get("premiumEnd").as(Double.class));
 			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n13 = cb.equal(b.get("status"), "Y");
 			query.where(n1, n5, n6,n7,n9,n13,n10).orderBy(orderList);

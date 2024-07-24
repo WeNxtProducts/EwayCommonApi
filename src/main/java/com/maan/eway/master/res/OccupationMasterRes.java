@@ -69,6 +69,9 @@ public class OccupationMasterRes implements Serializable {
 
 	@JsonProperty("CategoryId")
 	private String categoryId;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 
 
 }

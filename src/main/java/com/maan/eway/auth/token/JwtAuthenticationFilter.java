@@ -8,12 +8,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +22,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.repository.SessionMasterRepository;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 
 
 
@@ -33,6 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Lazy
 	@Autowired
+	@Qualifier(value = "authendicationServiceImpl")
 	UserDetailsService userDetailsService;
 
 	@Autowired

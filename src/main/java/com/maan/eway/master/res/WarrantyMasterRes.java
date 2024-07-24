@@ -75,4 +75,7 @@ public class WarrantyMasterRes {
 	@JsonProperty("TypeDesc")
 	private String typeDesc;
 	
+	
+	 @JsonProperty("CodeDescLocal")
+     private String codeDescLocal;
 }

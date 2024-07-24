@@ -14,13 +14,13 @@ package com.maan.eway.repository;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCommonDetailsId;
+
+import jakarta.transaction.Transactional;
 /**
  * <h2>BankMasterRepository</h2>
  *
@@ -81,7 +81,7 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 		List<EserviceCommonDetails> findByQuoteNoAndStatusNotOrderByRiskIdAsc(String endtPrevQuoteNo, String string);
 
-		List<EserviceCommonDetails> findByRequestReferenceNoAndEndorsementType(String newReqRefNo, String string);
+		List<EserviceCommonDetails> findByRequestReferenceNoAndEndorsementType(String newReqRefNo, Integer endorsementType);
 
 		List<EserviceCommonDetails> findByRequestReferenceNoAndStatusNotAndRiskIdInOrderByRiskIdAsc(
 				String requestReferenceNo, String string, List<Integer> vehicleIds);

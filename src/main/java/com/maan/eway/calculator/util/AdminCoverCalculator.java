@@ -6,7 +6,6 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.persistence.Tuple;
 
 import org.springframework.stereotype.Component;
 

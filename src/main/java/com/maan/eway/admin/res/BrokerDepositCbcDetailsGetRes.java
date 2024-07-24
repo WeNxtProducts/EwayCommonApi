@@ -1,9 +1,6 @@
 package com.maan.eway.admin.res;
 
-import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -5,17 +5,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.transaction.Transactional;
-
-import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.query.sql.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON) // change to prototype

@@ -17,13 +17,13 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -167,6 +167,18 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "NO_OF_INSTALLMENT")
 	private String noOfInstallment;
+
+	@Column(name = "PRODUCT_NAME_LOCAL", length = 100)
+	private String productNameLocal;
+
+	@Column(name = "SECTION_NAME_LOCAL", length = 100)
+	private String sectionNameLocal;
+
+	@Column(name = "ENDORSEMENT_TYPE_DESC_LOCAL", length = 100)
+	private String endorsementTypeDescLocal;
+
+	@Column(name = "ENDT_CATEG_DESC_LOCAL", length = 100)
+	private String endtCategDescLocal;
    
 }
 

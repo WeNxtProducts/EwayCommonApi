@@ -1,6 +1,7 @@
 package com.maan.eway.master.service.impl;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,16 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -37,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.UWQuestionsMaster;
 import com.maan.eway.bean.UwQuestionsOptionsMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.OptionsReq;
 import com.maan.eway.master.req.UwQuestionChangeStatusReq;
 import com.maan.eway.master.req.UwQuestionMasterGetReq;
@@ -52,6 +42,16 @@ import com.maan.eway.repository.UwQuestionMasterRepository;
 import com.maan.eway.repository.UwQuestionsOptionsMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -531,9 +531,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<UWQuestionsMaster> ocpm1 = effectiveDate.from(UWQuestionsMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("uwQuestionId"),b.get("uwQuestionId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
@@ -672,9 +672,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			query.select(b);
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<UWQuestionsMaster> ocpm1 = effectiveDate.from(UWQuestionsMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(b.get("uwQuestionId"),ocpm1.get("uwQuestionId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
@@ -684,9 +684,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 
 			effectiveDate.where(a1,a2,a3,a4,a5,a11);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<UWQuestionsMaster> ocpm2 = effectiveDate2.from(UWQuestionsMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(b.get("uwQuestionId"),ocpm2.get("uwQuestionId"));
 			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a8 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
@@ -1017,9 +1017,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			orderList.add(cb.asc(c.get("uwQuestionDesc")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<UWQuestionsMaster> ocpm1 = effectiveDate.from(UWQuestionsMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("uwQuestionId"), ocpm1.get("uwQuestionId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
@@ -1028,9 +1028,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			
 			effectiveDate.where(a1, a2, a3,a9,a10);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<UWQuestionsMaster> ocpm2 = effectiveDate2.from(UWQuestionsMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(c.get("uwQuestionId"), ocpm2.get("uwQuestionId"));
 			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
@@ -1044,12 +1044,12 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n8 = cb.equal(c.get("branchCode"), req.getBranchCode());
-			javax.persistence.criteria.Predicate n9 = cb.equal(c.get("branchCode"),"99999");
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n8 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			jakarta.persistence.criteria.Predicate n9 = cb.equal(c.get("branchCode"),"99999");
 
 			Predicate n10 = cb.or(n8,n9);
 

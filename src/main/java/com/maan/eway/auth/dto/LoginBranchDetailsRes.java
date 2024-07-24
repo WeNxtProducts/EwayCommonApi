@@ -66,6 +66,9 @@ public class LoginBranchDetailsRes {
 	@JsonProperty("DepartmentCode")
 	private String departmentCode;
 	
+	@JsonProperty("BrokerBranchNameLocal")
+	private String brokerBranchNameLocal ;
+	
 //	@JsonProperty("CustomerCode")
 //	private String customerCode;
 //	

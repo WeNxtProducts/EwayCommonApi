@@ -2,7 +2,7 @@ package com.maan.eway.document.res;
 
 import java.util.Date;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

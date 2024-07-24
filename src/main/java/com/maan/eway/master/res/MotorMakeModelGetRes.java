@@ -170,5 +170,8 @@ public class MotorMakeModelGetRes {
 	@JsonFormat(pattern="dd/MM/YYYY")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 		
 }

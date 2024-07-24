@@ -6,7 +6,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;

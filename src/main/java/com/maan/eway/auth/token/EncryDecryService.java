@@ -1,8 +1,10 @@
 package com.maan.eway.auth.token;
 
 import javax.crypto.Cipher;
-import javax.xml.bind.DatatypeConverter;
+
 import org.springframework.stereotype.Service;
+
+import jakarta.xml.bind.DatatypeConverter;
 
 @Service
 public class EncryDecryService {

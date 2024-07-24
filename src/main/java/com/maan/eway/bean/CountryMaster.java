@@ -15,15 +15,15 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
+import jakarta.persistence.Table;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -123,6 +123,17 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="NATIONALITY", length=100)
     private String     nationality;
+    
+    //Local Language 
+    
+    @Column(name="COUNTRY_NAME_LOCAL", length=100)
+    private String   countryNameLocal ;
+    
+    @Column(name="PLAN_DESC_LOCAL", length=100)
+    private String   planDescLocal ;
+    
+    @Column(name="NATIONALITY_LOCAL", length=100)
+    private String   nationalityLocal ;
 
 }
 

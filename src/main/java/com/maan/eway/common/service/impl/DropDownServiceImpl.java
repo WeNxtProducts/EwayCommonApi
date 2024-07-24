@@ -3,6 +3,7 @@ package com.maan.eway.common.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -14,23 +15,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.query.sql.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -55,7 +43,6 @@ import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.integration.service.impl.OracleQuery;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
-
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.MotDropdownReq;
@@ -73,6 +60,19 @@ import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.MachineryDropDownRes;
 import com.maan.eway.res.MotorWithAccessoriesRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 
 @Service
@@ -129,6 +129,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -138,8 +139,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
-
 	@Override
 	public List<DropDownRes> paymentmode(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -152,6 +151,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -161,7 +161,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 	@Override
 	public List<DropDownRes> endorsementtype(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -174,6 +173,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -183,7 +183,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> discounttypeoffered(LovDropDownReq req) {
@@ -197,6 +196,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -206,7 +206,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> taxexcempted(LovDropDownReq req) {
@@ -220,6 +219,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -229,7 +229,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 	@Override
 	public List<DropDownRes> taxexcemptiontype(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -242,6 +241,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -251,7 +251,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 	@Override
 	public List<DropDownRes> policyholdertype(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -264,6 +263,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -273,7 +273,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 	@Override
 	public List<DropDownRes> policyholderidtype(LovPolicyDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -286,6 +285,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -308,6 +308,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -317,8 +318,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
-
 	@Override
 	public List<DropDownRes> nametitle(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -331,6 +330,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -340,7 +340,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> notificationtype(LovDropDownReq req) {
@@ -354,6 +353,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -363,7 +363,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
+	
 	@Override
 	public List<DropDownRes> getMotorCategory(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -376,6 +376,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -385,8 +386,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
-
 	@Override
 	public List<DropDownRes> getMotorType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -399,6 +398,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -433,7 +433,6 @@ public class DropDownServiceImpl  implements DropDownService{
 //	}
 
 
-
 	@Override
 	public List<DropDownRes> ownerCategory(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -446,6 +445,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -455,7 +455,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -470,6 +469,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -479,8 +479,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
-
 
 	@Override
 	public List<DropDownRes> reinsuranceCategory(LovDropDownReq req) {
@@ -494,6 +492,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -503,7 +502,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -518,6 +516,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -542,6 +541,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -551,7 +551,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -566,6 +565,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -575,7 +575,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -590,6 +589,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -599,7 +599,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -614,6 +613,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -623,7 +623,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -638,6 +637,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -647,7 +647,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -662,6 +661,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -671,7 +671,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -686,6 +685,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -695,7 +695,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -710,6 +709,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -719,7 +719,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -734,6 +733,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -743,7 +743,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -758,6 +757,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -767,7 +767,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -782,6 +781,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -791,7 +791,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 
 	@Override
@@ -806,6 +805,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -815,7 +815,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> tonnage(LovDropDownReq req) {
@@ -829,6 +828,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -838,7 +838,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> getNcdDetails(NcdDetailsGetReq req) {
@@ -859,6 +858,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 				if(ncdyear+2==Integer.valueOf(data.getItemCode())) {
 				break;			
@@ -872,7 +872,6 @@ public class DropDownServiceImpl  implements DropDownService{
 			}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> insuranceType(LovDropDownReq req) {
@@ -926,6 +925,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -935,7 +935,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 		
-	
 
 	}
 
@@ -981,6 +980,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				if(!data.getParam1().isEmpty()) {
 				res.setTitletype(data.getParam1());
 				}
@@ -993,8 +993,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
-
 	@Override
 	public List<DropDownRes> borrowerType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -1007,6 +1005,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1016,7 +1015,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> cityLimit(LovDropDownReq req) {
@@ -1030,6 +1028,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1039,7 +1038,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 	@Override
 	public List<DropDownRes> getLanguage(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -1052,6 +1050,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1061,7 +1060,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
+	
 	@Override
 	public List<DropDownRes> getFuelType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -1074,6 +1073,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1083,7 +1083,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 //	@Override
 //	public List<ColummnDropRes> getTableDetails(LovDropDownReq req) {
@@ -1166,6 +1165,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1175,7 +1175,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> consecutiveDays(LovDropDownReq req) {
@@ -1189,6 +1188,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1198,7 +1198,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> buildingType(LovDropDownReq req) {
@@ -1212,6 +1211,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1221,7 +1221,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-	
 	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
 	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
@@ -1252,16 +1251,16 @@ public class DropDownServiceImpl  implements DropDownService{
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
@@ -1318,16 +1317,16 @@ public class DropDownServiceImpl  implements DropDownService{
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
@@ -1384,9 +1383,9 @@ public class DropDownServiceImpl  implements DropDownService{
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -1394,9 +1393,9 @@ public class DropDownServiceImpl  implements DropDownService{
 			effectiveDate.where(a1,a2,b1,b2);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -1459,9 +1458,9 @@ public class DropDownServiceImpl  implements DropDownService{
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -1469,9 +1468,9 @@ public class DropDownServiceImpl  implements DropDownService{
 			effectiveDate.where(a1,a2,b1,b2);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -1535,9 +1534,9 @@ public class DropDownServiceImpl  implements DropDownService{
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<PlanTypeMaster> ocpm1 = effectiveDate.from(PlanTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("planTypeId"), ocpm1.get("planTypeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -1547,9 +1546,9 @@ public class DropDownServiceImpl  implements DropDownService{
 			effectiveDate.where(a1, a2,a3,a4,a5,a6);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<PlanTypeMaster> ocpm2 = effectiveDate2.from(PlanTypeMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a7 = cb.equal(c.get("planTypeId"), ocpm2.get("planTypeId"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
@@ -1583,6 +1582,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getPlanTypeId().toString());
 				res.setCodeDesc(data.getPlanTypeDescription());
 				res.setStatus(data.getStatus());
+				//res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1606,6 +1606,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1636,6 +1637,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1659,6 +1661,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1682,6 +1685,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1705,6 +1709,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1728,6 +1733,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1751,6 +1757,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1776,6 +1783,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1799,6 +1807,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1808,7 +1817,6 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
-
 
 	@Override
 	public List<DropDownRes> termsandcondition(LovDropDownReq req) {
@@ -1822,6 +1830,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1845,6 +1854,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1868,6 +1878,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1891,6 +1902,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1914,6 +1926,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1937,6 +1950,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1960,6 +1974,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2038,6 +2053,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2062,6 +2078,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2086,6 +2103,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2110,6 +2128,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2204,9 +2223,9 @@ public class DropDownServiceImpl  implements DropDownService{
 			orderList.add(cb.asc(c.get("productId")));
 			
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -2215,9 +2234,9 @@ public class DropDownServiceImpl  implements DropDownService{
 			effectiveDate.where(a1,a2,a3,a4,a9);
 			
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<BrokerCommissionDetails> ocpm2 = effectiveDate2.from(BrokerCommissionDetails.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal(c.get("productId"),ocpm2.get("productId") );
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
 			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -2265,6 +2284,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2289,6 +2309,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2315,6 +2336,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2340,6 +2362,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			res.setCode(data.getItemCode());
 			res.setCodeDesc(data.getItemValue());
 			res.setStatus(data.getStatus());
+			res.setCodeDescLocal(data.getItemValueLocal());
 			resList.add(res);
 		}
 	} catch (Exception e) {
@@ -2366,6 +2389,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2390,6 +2414,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2414,6 +2439,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2438,6 +2464,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2462,6 +2489,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2486,6 +2514,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2510,6 +2539,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2534,6 +2564,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2558,6 +2589,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2582,6 +2614,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2606,6 +2639,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2630,6 +2664,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2653,6 +2688,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCodeDesc(data.getOccupationDesc());
 				res.setStatus(data.getStatus());
 				res.setRiskId(data.getRiskId().toString());
+				//res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2677,6 +2713,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2700,6 +2737,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2724,6 +2762,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2887,6 +2926,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2911,6 +2951,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2935,6 +2976,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2958,6 +3000,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -2982,6 +3025,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3006,6 +3050,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3028,6 +3073,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3050,6 +3096,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3072,6 +3119,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3095,6 +3143,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3143,6 +3192,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3166,6 +3216,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3206,6 +3257,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3229,6 +3281,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3252,6 +3305,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3275,6 +3329,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3298,6 +3353,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3321,6 +3377,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3344,6 +3401,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -3367,6 +3425,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 			resList = resList.stream().sorted((o1, o2)->Long.valueOf(o1.getCode()).compareTo(Long.valueOf(o2.getCode()))).collect(Collectors.toList());
@@ -3393,6 +3452,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 			resList = resList.stream().sorted((o1, o2)->Long.valueOf(o1.getCode()).compareTo(Long.valueOf(o2.getCode()))).collect(Collectors.toList());
@@ -3418,6 +3478,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 			resList = resList.stream().sorted((o1, o2)->o1.getCode().compareTo(o2.getCode())).collect(Collectors.toList());
@@ -3442,6 +3503,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 			resList = resList.stream().sorted((o1, o2)->Long.valueOf(o1.getCode()).compareTo(Long.valueOf(o2.getCode()))).collect(Collectors.toList());
@@ -3468,6 +3530,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 			resList = resList.stream().sorted((o1, o2)->Long.valueOf(o1.getCode()).compareTo(Long.valueOf(o2.getCode()))).collect(Collectors.toList());
@@ -3491,6 +3554,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {

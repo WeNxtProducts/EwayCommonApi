@@ -15,15 +15,13 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.maan.eway.bean.CoverDocumentMaster;
-import com.maan.eway.bean.CoverDocumentMasterId;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.DocumentTransactionDetailsId;
+
+import jakarta.transaction.Transactional;
 
  
 public interface DocumentTransactionDetailsRepository  extends JpaRepository<DocumentTransactionDetails,DocumentTransactionDetailsId > , JpaSpecificationExecutor<DocumentTransactionDetails> {
@@ -43,7 +41,7 @@ public interface DocumentTransactionDetailsRepository  extends JpaRepository<Doc
 
 	List<DocumentTransactionDetails> findByRequestReferenceNo( String requestReferenceNo);
 
-	List<DocumentTransactionDetails> findByQuoteNoAndSectionId(String quoteNo, String secId);
+	List<DocumentTransactionDetails> findByQuoteNoAndSectionId(String quoteNo, Integer secId);
 
 	List<DocumentTransactionDetails> findByQuoteNoAndIdAndIdTypeAndRiskId(String quoteNo, String id, String idType,
 			Integer valueOf);

@@ -68,4 +68,6 @@ public class WarrantyMasterSaveReq {
 	@JsonProperty("TypeId")
 	private String typeId;
 	
+	@JsonProperty("CodeDescLocal")
+    private String codeDescLocal;
 }

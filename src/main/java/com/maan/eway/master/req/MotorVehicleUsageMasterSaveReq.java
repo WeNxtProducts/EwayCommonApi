@@ -35,4 +35,6 @@ public class MotorVehicleUsageMasterSaveReq {
     private String createdBy;
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

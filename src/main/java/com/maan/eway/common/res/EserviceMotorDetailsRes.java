@@ -10,14 +10,15 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import lombok.*;
-
-
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.res.SectionDetails;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
  
 @Getter

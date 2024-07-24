@@ -14,6 +14,7 @@ package com.maan.eway.repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import com.maan.eway.bean.RegionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,6 +35,8 @@ public interface RegionMasterRepository  extends JpaRepository<RegionMaster,Regi
 
 
 	List<RegionMaster> findByRegionCode(String stateCode);
+
+	List<RegionMaster> findByCountryIdAndRegionCode(String nationality, String stateCode);
 
 
 

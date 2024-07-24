@@ -5,18 +5,15 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Tuple;
-
-import org.apache.tomcat.util.buf.StringUtils;
-
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.RatingInfo;
+
+import jakarta.persistence.Tuple;
 //@Component
 //@CacheConfig(cacheNames = {"RatingType"})
 public class CommonCalculator {

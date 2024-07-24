@@ -1,6 +1,7 @@
 package com.maan.eway.master.service.impl;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,16 +14,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.bean.BrokerCommissionDetails;
-import com.maan.eway.bean.ClausesMaster;
-import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BrokerBackdaysGetReq;
@@ -49,6 +37,16 @@ import com.maan.eway.repository.BrokerCommissionDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.PolicyTypeMasterRepository;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 @Service
 public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissionDetailsMasterService {
 
@@ -401,9 +399,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
@@ -454,9 +452,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("id"),b.get("id"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
@@ -886,27 +884,27 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			javax.persistence.criteria.Predicate a3 = cb.equal(b.get("loginId"), ocpm1.get("loginId"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(b.get("productId"), ocpm1.get("productId"));
-//			javax.persistence.criteria.Predicate a11 = cb.equal(b.get("policyType"), ocpm1.get("policyType"));
-//			javax.persistence.criteria.Predicate a12 = cb.equal(b.get("id"), ocpm1.get("id"));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			jakarta.persistence.criteria.Predicate a3 = cb.equal(b.get("loginId"), ocpm1.get("loginId"));
+			jakarta.persistence.criteria.Predicate a4 = cb.equal(b.get("productId"), ocpm1.get("productId"));
+//			jakarta.persistence.criteria.Predicate a11 = cb.equal(b.get("policyType"), ocpm1.get("policyType"));
+//			jakarta.persistence.criteria.Predicate a12 = cb.equal(b.get("id"), ocpm1.get("id"));
 			effectiveDate.where(a1, a2, a3,a4);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<BrokerCommissionDetails> ocpm2 = effectiveDate2.from(BrokerCommissionDetails.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a6 = cb.equal(b.get("companyId"), ocpm2.get("companyId"));
-			javax.persistence.criteria.Predicate a8 = cb.equal(b.get("productId"), ocpm2.get("productId"));
-			javax.persistence.criteria.Predicate a9 = cb.equal(b.get("loginId"), ocpm2.get("loginId"));
-			javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-//			javax.persistence.criteria.Predicate a13 = cb.equal(b.get("policyType"), ocpm2.get("policyType"));
-//			javax.persistence.criteria.Predicate a14 = cb.equal(b.get("id"), ocpm2.get("id"));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a6 = cb.equal(b.get("companyId"), ocpm2.get("companyId"));
+			jakarta.persistence.criteria.Predicate a8 = cb.equal(b.get("productId"), ocpm2.get("productId"));
+			jakarta.persistence.criteria.Predicate a9 = cb.equal(b.get("loginId"), ocpm2.get("loginId"));
+			jakarta.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+//			jakarta.persistence.criteria.Predicate a13 = cb.equal(b.get("policyType"), ocpm2.get("policyType"));
+//			jakarta.persistence.criteria.Predicate a14 = cb.equal(b.get("id"), ocpm2.get("id"));
 			effectiveDate2.where(a6,  a8, a9, a10);
 
 			// Order By
@@ -1033,9 +1031,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
@@ -1043,9 +1041,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			effectiveDate.where(a1,a2,a3,a7);
 	
 			// Effective Date End
-			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate5 = query.subquery(Timestamp.class);
 			Root<BrokerCommissionDetails> ocpm5 = effectiveDate5.from(BrokerCommissionDetails.class);
-			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
 			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -1102,9 +1100,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
@@ -1112,9 +1110,9 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			effectiveDate.where(a1,a2,a3,a7);
 	
 			// Effective Date End
-			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate5 = query.subquery(Timestamp.class);
 			Root<PolicyTypeMaster> ocpm5 = effectiveDate5.from(PolicyTypeMaster.class);
-			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
 			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);

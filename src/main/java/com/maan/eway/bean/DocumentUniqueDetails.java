@@ -16,13 +16,13 @@ package com.maan.eway.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -138,6 +138,21 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "VERIFIED_YN", length = 2)
 	private String verifiedYn;
+	
+	@Column(name = "ID_TYPE_LOCAL", length = 100)
+    private String idTypeLocal;
+
+    @Column(name = "DOCUMENT_APPLICABLE_LOCAL", length = 100)
+    private String documentApplicableLocal;
+
+    @Column(name = "DOCUMENT_NAME_LOCAL", length = 100)
+    private String documentNameLocal;
+
+    @Column(name = "DOCUMENT_DESC_LOCAL", length = 100)
+    private String documentDescLocal;
+
+    @Column(name = "DOCUMENT_TYPE_DESC_LOCAL", length = 100)
+    private String documentTypeDescLocal;
 
 }
 

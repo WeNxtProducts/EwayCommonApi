@@ -17,13 +17,13 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -220,6 +220,18 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="FREE_COVER_LIMIT")
     private BigDecimal     freeCoverLimit;
+    
+    @Column(name="COVER_NAME_LOCAL", length=100)
+    private String     coverNameLocal ;
+
+    @Column(name="COVER_DESC_LOCAL", length=100)
+    private String     coverDescLocal ;
+
+    @Column(name="SUB_COVER_NAME_LOCAL", length=100)
+    private String     subCoverNameLocal ;
+
+    @Column(name="SUB_COVER_DESC_LOCAL", length=100)
+    private String     subCoverDescLocal ;
 }
 
 

@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -20,22 +21,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.asn1.dvcs.Data;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,7 +55,6 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.PaymentDetail;
-import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.bean.UWReferralDetails;
@@ -139,7 +126,6 @@ import com.maan.eway.common.service.LifeGridService;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BrokerCompanyListProductReq;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -157,6 +143,18 @@ import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.thread.MyTaskList;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -333,17 +331,17 @@ public class GridServiceImpl implements GridService {
 			orderList.add(cb.asc(c.get("productName")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -395,17 +393,17 @@ public class GridServiceImpl implements GridService {
 			orderList.add(cb.asc(c.get("productName")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -1978,6 +1976,7 @@ public class GridServiceImpl implements GridService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setCodeDescLocal(data.getItemValueLocal());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
@@ -4625,7 +4624,7 @@ public class GridServiceImpl implements GridService {
 				query.multiselect(/*m.get("agencyCode").alias("code"),*/ m.get("loginId").alias("code"),us.get("userName").alias("codeDesc"),
 						m.get("sourceType").alias("type"));
 				// Find All
-				Subquery<Long> agencyCode = query.subquery(Long.class);
+				Subquery<String> agencyCode = query.subquery(String.class);
 				Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
 				agencyCode.select(ocpm1.get("agencyCode"));
 				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
@@ -4890,7 +4889,7 @@ public class GridServiceImpl implements GridService {
 				query.multiselect(/*m.get("agencyCode").alias("code"),*/ m.get("loginId").alias("code"),us.get("userName").alias("codeDesc"),
 						m.get("sourceType").alias("type"));
 				// Find All
-				Subquery<Long> agencyCode = query.subquery(Long.class);
+				Subquery<String> agencyCode = query.subquery(String.class);
 				Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
 				agencyCode.select(ocpm1.get("agencyCode"));
 				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
@@ -5105,7 +5104,7 @@ public class GridServiceImpl implements GridService {
 						m.get("sourceType").alias("type"));
 
 				// Find All
-				Subquery<Long> agencyCode = query.subquery(Long.class);
+				Subquery<String> agencyCode = query.subquery(String.class);
 				Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
 				agencyCode.select(ocpm1.get("agencyCode"));
 				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
@@ -7479,17 +7478,17 @@ public class GridServiceImpl implements GridService {
 			Root<CompanyProductMaster> cm = productIds.from(CompanyProductMaster.class);
 			
 			
-			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm4 = effectiveDate3.from(CompanyProductMaster.class);
-			effectiveDate3.select(cb.max(ocpm4.get("effectiveDateStart")));
+			effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart")));
 			Predicate a9 = cb.equal(cm.get("productId"),ocpm4.get("productId") );
 			Predicate a10 = cb.equal(cm.get("companyId"),ocpm4.get("companyId") );
 			Predicate a11 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
 			effectiveDate3.where(a9,a10,a11);
 			
-			Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm5 = effectiveDate4.from(CompanyProductMaster.class);
-			effectiveDate4.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
 			Predicate a12 = cb.equal(cm.get("productId"),ocpm5.get("productId") );
 			Predicate a13 = cb.equal(cm.get("companyId"),ocpm5.get("companyId") );
 			Predicate a14 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -7551,17 +7550,17 @@ public class GridServiceImpl implements GridService {
 			orderList.add(cb.asc(c.get("productName")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);

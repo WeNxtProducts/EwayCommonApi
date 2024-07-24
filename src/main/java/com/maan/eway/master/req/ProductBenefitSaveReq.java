@@ -2,7 +2,7 @@ package com.maan.eway.master.req;
 
 import java.util.Date;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import org.springframework.web.multipart.MultipartFile;
 

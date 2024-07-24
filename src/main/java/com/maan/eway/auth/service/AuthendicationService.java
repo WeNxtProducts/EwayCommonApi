@@ -1,7 +1,5 @@
 package com.maan.eway.auth.service;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.maan.eway.auth.dto.AuthToken2;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
@@ -9,6 +7,8 @@ import com.maan.eway.auth.dto.ForgetPasswordReq;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.dto.LogoutRequest;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface AuthendicationService {
 

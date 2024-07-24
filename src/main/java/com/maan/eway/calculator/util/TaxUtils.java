@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import org.apache.commons.lang3.StringUtils;
 

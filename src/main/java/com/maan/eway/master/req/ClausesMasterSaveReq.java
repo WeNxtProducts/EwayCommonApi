@@ -78,5 +78,8 @@ public class ClausesMasterSaveReq {
 	
 	@JsonProperty("BrokerCode")
 	private String brokerCode;
+	
+	@JsonProperty("CodeDescLocal")
+    private String codeDescLocal;
 
 }

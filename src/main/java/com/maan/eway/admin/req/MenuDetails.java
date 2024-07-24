@@ -55,4 +55,7 @@ public class MenuDetails {
      @JsonProperty("InsertType")
  	 private String Inserttype;
      
+     @JsonProperty("CodeDescLocal")
+     private String codeDescLocal;
+     
 }

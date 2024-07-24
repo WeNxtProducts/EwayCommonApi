@@ -59,4 +59,8 @@ public class LovDetailsGetRes {
 	
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+
 }

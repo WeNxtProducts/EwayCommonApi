@@ -336,7 +336,7 @@ public class EserviceCustomerDetailsController {
 
 		}
 		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-		@RequestMapping(value = "/ValidatEmail", method = RequestMethod.GET)
+		@RequestMapping(value = "/ValidateEmail", method = RequestMethod.GET)
 		@ApiOperation(value = "Validate Email", notes = "validate length and format")
 		public CommonRes validateEmail(@RequestParam(value =  "email" , required = true) String email,
 				@RequestParam(value = "companyid", required = true) String companyId,
@@ -359,6 +359,7 @@ public class EserviceCustomerDetailsController {
 			return entityService.validateDate(date,policyHolderType , idType ,  companyId, saveOrSubmit, gender);
 
 		}
+
 		@PostMapping(value = "/customerchanges")
 		public ResponseEntity<CommonRes> customerChanges(@RequestBody CustomerChangesSaveReq  req) {
 			CommonRes data = new CommonRes();
@@ -389,4 +390,14 @@ public class EserviceCustomerDetailsController {
 			}
 	    }
 		
+
+		
+		@RequestMapping(value = "/policydata", method = RequestMethod.GET)
+		@ApiOperation(value = "Fetch Policy Data Based On Policy Number", notes = "Fetch Policy data")
+		public CommonRes fetchPolicyData(@RequestParam(value = "policyno", required = true) String policyNumber) {
+
+			return entityService.fetchPolicyData(policyNumber);
+
+		}
+
 }

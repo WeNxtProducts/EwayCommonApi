@@ -15,15 +15,15 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
+import jakarta.persistence.Table;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -108,7 +108,13 @@ private static final long serialVersionUID = 1L;
     private String     regulatoryCode ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
-
+    
+    @Column(name="COLOR_CODE_LOCAL",  length=100)
+    private String     colorCodeLocal ;
+    
+    @Column(name="COLOR_DESC_LOCAL",  length=100)
+    private String     colorDescLocal ;
+  
 }
 
 

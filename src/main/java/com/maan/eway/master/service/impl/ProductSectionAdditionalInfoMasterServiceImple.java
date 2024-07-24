@@ -14,17 +14,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -52,6 +41,17 @@ import com.maan.eway.repository.ProductSectionAdditionalInfoMasterRepo;
 import com.maan.eway.repository.ProductSectionMasterRepository;
 import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -510,9 +510,9 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 			orderList.add(cb.desc(c.get("amendId")));
 			
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId") );
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId") );
@@ -520,22 +520,22 @@ public class ProductSectionAdditionalInfoMasterServiceImple implements ProductSe
 			effectiveDate.where(a1,a2,a3,a4);
 			
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ProductSectionMaster> ocpm2 = effectiveDate2.from(ProductSectionMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
 			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
 			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId") );
 			
-			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			jakarta.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a5, a6,a7,a8);
 
 		    // Where	
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), req.getProductId());
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
+			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), req.getProductId());
 			Predicate n6 = cb.equal(c.get("status"),"R");
 			Predicate n7 = cb.or(n1,n6);
 			query.where(n7,n2,n3,n4,n5).orderBy(orderList);

@@ -1,57 +1,27 @@
 package com.maan.eway.notification.service.impl;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -59,19 +29,13 @@ import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
-import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
-import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.bean.SmsDataDetails;
-import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.notification.bean.MailDataDetails;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
@@ -81,15 +45,12 @@ import com.maan.eway.notification.req.Broker;
 import com.maan.eway.notification.req.Customer;
 import com.maan.eway.notification.req.DirectMailSentReq;
 import com.maan.eway.notification.req.DirectSmsSentReq;
-import com.maan.eway.notification.req.JobCredentials;
-import com.maan.eway.notification.req.Mail;
 import com.maan.eway.notification.req.NotifGetByIdReq;
 import com.maan.eway.notification.req.NotifGetByQuoteNoReq;
 import com.maan.eway.notification.req.NotifGetReq;
 import com.maan.eway.notification.req.NotifTemplateGetReq;
 import com.maan.eway.notification.req.Notification;
 import com.maan.eway.notification.req.NotificationFrameReq;
-import com.maan.eway.notification.req.Sms;
 import com.maan.eway.notification.req.TemplatesDropDownReq;
 import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
@@ -114,6 +75,18 @@ import com.maan.eway.repository.SmsDataDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.upgrade.criteria.CriteriaService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -205,9 +178,9 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			orderList.add(cb.asc(c.get("notifTemplatename")));
     
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("notifTemplateCode"), ocpm1.get("notifTemplateCode"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -215,9 +188,9 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			effectiveDate.where(a1, a2, a3, a4);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<NotifTemplateMaster> ocpm2 = effectiveDate2.from(NotifTemplateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(c.get("notifTemplateCode"), ocpm2.get("notifTemplateCode"));
 			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
@@ -289,9 +262,9 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			orderList.add(cb.asc(c.get("notifTemplatename")));
     
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("notifTemplateCode"), ocpm1.get("notifTemplateCode"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -299,9 +272,9 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			effectiveDate.where(a1, a2, a3, a4);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<NotifTemplateMaster> ocpm2 = effectiveDate2.from(NotifTemplateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(c.get("notifTemplateCode"), ocpm2.get("notifTemplateCode"));
 			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
@@ -1492,7 +1465,7 @@ public List<NofiByQuoteNoRes> viewNotificationSentToQuoteNo(NotifGetByQuoteNoReq
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(cb.max(td.get("entryDate"))));
+		orderList.add(cb.desc(cb.greatest(td.get("entryDate"))));
 
 
 		// Where
@@ -1635,9 +1608,9 @@ public List<DropDownRes> getActiveTemplatesDropDown(TemplatesDropDownReq req) {
 		orderList.add(cb.asc(c.get("notifTemplatename")));
 
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("notifTemplateCode"), ocpm1.get("notifTemplateCode"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -1645,9 +1618,9 @@ public List<DropDownRes> getActiveTemplatesDropDown(TemplatesDropDownReq req) {
 		effectiveDate.where(a1, a2, a3, a4);
 		
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<NotifTemplateMaster> ocpm2 = effectiveDate2.from(NotifTemplateMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a6 = cb.equal(c.get("notifTemplateCode"), ocpm2.get("notifTemplateCode"));
 		Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 		Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
@@ -1734,17 +1707,17 @@ public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String 
 		orderList.add(cb.asc(c.get("productName")));
 
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 		Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 		Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		effectiveDate.where(a1, a2, a3);
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 		Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 		Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);

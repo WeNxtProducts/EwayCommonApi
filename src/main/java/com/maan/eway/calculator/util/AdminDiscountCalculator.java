@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import com.maan.eway.res.calc.Discount;
 

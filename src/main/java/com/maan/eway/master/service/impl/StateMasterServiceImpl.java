@@ -5,9 +5,9 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -17,17 +17,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,14 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
-import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.common.res.CityDropdown;
 import com.maan.eway.common.res.StateDropdown;
 import com.maan.eway.common.res.SubUrbDropDown;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.StateMasterChangeStatusReq;
 import com.maan.eway.master.req.StateMasterDropDownReq;
 import com.maan.eway.master.req.StateMasterGetAllReq;
@@ -55,6 +41,16 @@ import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.impl.BasicValidationService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>StateMasterServiceimpl</h2>
@@ -490,20 +486,20 @@ public class StateMasterServiceImpl implements StateMasterService {
 			orderList.add(cb.asc(c.get("stateName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
 			effectiveDate.where(a1, a2,a3);
 
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
-			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+			jakarta.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a4 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
 			effectiveDate2.where(a5,a6, a4);
 			
@@ -512,9 +508,9 @@ public class StateMasterServiceImpl implements StateMasterService {
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
 	
 			query.where(n12, n2,n3,n4).orderBy(orderList);
 
@@ -681,9 +677,9 @@ public class StateMasterServiceImpl implements StateMasterService {
 			orderList.add(cb.asc(c.get("stateName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
@@ -691,11 +687,11 @@ public class StateMasterServiceImpl implements StateMasterService {
 			effectiveDate.where(a1, a2,a3,a7);
 
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
-			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+			jakarta.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a4 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
 			Predicate a8 = cb.equal(c.get("regionCode"), ocpm2.get("regionCode"));
 			effectiveDate2.where(a5,a6, a4,a8);
@@ -705,10 +701,10 @@ public class StateMasterServiceImpl implements StateMasterService {
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("regionCode"), req.getRegionCode());
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("regionCode"), req.getRegionCode());
 	
 			query.where(n12, n2,n3,n4,n5).orderBy(orderList);
 
@@ -721,6 +717,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getStateId().toString());
 				res.setCodeDesc(data.getStateName());
+				res.setCodeDescLocal(data.getStateNameLocal());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
@@ -766,9 +763,9 @@ public class StateMasterServiceImpl implements StateMasterService {
 			orderList.add(cb.asc(c.get("stateName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
@@ -779,11 +776,11 @@ public class StateMasterServiceImpl implements StateMasterService {
 			effectiveDate.where(a1, a2,a3,a7 ,a9,a11,a13);
 
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
-			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+			jakarta.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a4 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
 			Predicate a8 = cb.equal(c.get("regionCode"), ocpm2.get("regionCode"));
 			Predicate a10 = cb.equal(c.get("stateShortCode"), ocpm2.get("stateShortCode"));
@@ -796,10 +793,10 @@ public class StateMasterServiceImpl implements StateMasterService {
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
-			//javax.persistence.criteria.Predicate n5 = cb.equal(c.get("regionCode"), req.getRegionCode());
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			//jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("regionCode"), req.getRegionCode());
 	
 			query.where(n12, n2,n3,n4).orderBy(orderList);
 
@@ -898,9 +895,9 @@ public class StateMasterServiceImpl implements StateMasterService {
 			orderList.add(cb.asc(c.get("stateName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
@@ -911,11 +908,11 @@ public class StateMasterServiceImpl implements StateMasterService {
 			effectiveDate.where(a1, a2,a3,a7 ,a9,a11,a13);
 
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
-			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+			jakarta.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a4 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
 			Predicate a8 = cb.equal(c.get("regionCode"), ocpm2.get("regionCode"));
 			Predicate a10 = cb.equal(c.get("stateShortCode"), ocpm2.get("stateShortCode"));
@@ -928,10 +925,10 @@ public class StateMasterServiceImpl implements StateMasterService {
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 	
 			query.where(n12, n2,n3,n4,n5).orderBy(orderList);
 

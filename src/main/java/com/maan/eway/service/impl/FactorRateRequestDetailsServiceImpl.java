@@ -7,11 +7,11 @@ package com.maan.eway.service.impl;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,20 +20,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -50,7 +38,6 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -71,14 +58,8 @@ import com.maan.eway.bean.PolicyCoverDataEndt;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
-import com.maan.eway.calculator.util.CoverFromFactor;
-import com.maan.eway.calculator.util.CreatePolicyPremium;
-import com.maan.eway.calculator.util.DiscountFromFactor;
-import com.maan.eway.calculator.util.LoadingFromFactor;
-import com.maan.eway.calculator.util.PolicyCoverCalculator;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.calculator.util.TaxFromFactor;
-import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.CoverIdReq2;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
@@ -128,6 +109,16 @@ import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 import com.maan.eway.service.impl.referal.ReferalServiceImpl;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>FactorRateRequestDetailsServiceimpl</h2>
 */
@@ -427,6 +418,11 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					saveCover.setCoverageLimit(coverData.getCoverageLimit()==null?BigDecimal.ZERO:coverData.getCoverageLimit());
 					saveCover.setMinCoverageLimit(coverData.getMinSumInsured()==null?BigDecimal.ZERO:coverData.getMinSumInsured());
 					saveCover.setIsTaxExtempted(StringUtil.isBlank(coverData.getIsTaxExcempted())?"N":coverData.getIsTaxExcempted());
+					
+					saveCover.setCoverNameLocal(StringUtil.isBlank(coverData.getCoverNameLocal())?"":coverData.getCoverNameLocal());
+					saveCover.setCoverDescLocal(StringUtil.isBlank(coverData.getSubCoverDescLocal())?"":coverData.getSubCoverDescLocal());
+					saveCover.setSubCoverDescLocal(StringUtil.isBlank(coverData.getCoverNameLocal())?"":coverData.getCoverNameLocal());
+					saveCover.setSubCoverNameLocal(StringUtil.isBlank(coverData.getSubCoverDescLocal())?"":coverData.getSubCoverDescLocal());
 				    //private BigDecimal     minCoverageLimit;
 					// Date Differents
 					Date periodStart =  coverData.getEffectiveDate();
@@ -549,6 +545,11 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						saveSubCover.setCoverageType(subCoverData.getCoverageType());
 						saveSubCover.setCoverageLimit(saveSubCover.getCoverageLimit()==null?BigDecimal.ZERO:saveSubCover.getCoverageLimit());
 						saveSubCover.setMinCoverageLimit(subCoverData.getMinSumInsured()==null?BigDecimal.ZERO:subCoverData.getMinSumInsured());
+						
+						saveSubCover.setCoverNameLocal(StringUtil.isBlank(coverData.getCoverNameLocal())?"":coverData.getCoverNameLocal());
+						saveSubCover.setCoverDescLocal(StringUtil.isBlank(coverData.getSubCoverDescLocal())?"":coverData.getSubCoverDescLocal());
+						saveSubCover.setSubCoverDescLocal(StringUtil.isBlank(subCoverData.getCoverNameLocal())?"":subCoverData.getCoverNameLocal());
+						saveSubCover.setSubCoverNameLocal(StringUtil.isBlank(subCoverData.getSubCoverDescLocal())?"":subCoverData.getSubCoverDescLocal());
 //						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
 //							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
 //							if(coverData.getTaxes().size() > 1  ) 
@@ -808,17 +809,17 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			orderList.add(cb.asc(c.get("productName")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -873,9 +874,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			orderList.add(cb.asc(c.get("currencyName")));
 			
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
 			Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a18 = cb.equal(c.get("status"),ocpm1.get("status") );
@@ -884,9 +885,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			effectiveDate.where(a11,a12,a18,a22);
 			
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CurrencyMaster> ocpm2 = effectiveDate2.from(CurrencyMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
 			Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a19 = cb.equal(c.get("status"),ocpm2.get("status") );
@@ -1424,18 +1425,18 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 			effectiveDate.where(a1,a2,a5,a6);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<BankMaster> ocpm2 = effectiveDate2.from(BankMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("bankCode"),ocpm2.get("bankCode"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -1900,6 +1901,10 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					coverRes.setTiraSumInsured(filterCover.get(0).getRegulSumInsured()==null?BigDecimal.ZERO:filterCover.get(0).getRegulSumInsured());
 					coverRes.setTiraRate(filterCover.get(0).getRegulatoryRate()==null?0D:filterCover.get(0).getRegulatoryRate().doubleValue());
 					coverRes.setReferalDescription(filterCover.get(0).getReferralDescription() ==null?null:filterCover.get(0).getReferralDescription());
+					coverRes.setCoverNameLocal(filterCover.get(0).getCoverNameLocal());
+					coverRes.setCoverDescLocal(filterCover.get(0).getCoverDescLocal());
+					coverRes.setSubCoverDescLocal(null);
+					coverRes.setSubCoverNameLocal(null);
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 					
@@ -1966,7 +1971,11 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					coverRes.setCoverageType(filterCover.get(0).getCoverageType());
 					coverRes.setIsselected(filterCover.get(0).getIsSelected());
 					coverRes.setCurrency(filterCover.get(0).getCurrency());
-						
+					
+					coverRes.setCoverNameLocal(filterCover.get(0).getCoverNameLocal());
+					coverRes.setCoverDescLocal(filterCover.get(0).getCoverDescLocal());
+					
+					
 					List<Cover>  subCoverListRes = new ArrayList<Cover>();
 					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
 					for ( FactorRateRequestDetails subCovers : filterSubCover) {
@@ -2002,7 +2011,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						subCoverRes.setPolicyEndDate(filterSubCover.get(0).getCoverPeriodTo());
 						subCoverRes.setProRata(filterSubCover.get(0).getProRataPercent());
 						subCoverRes.setProRataYn(filterSubCover.get(0).getProRataYn());
-						
+						subCoverRes.setSubCoverDescLocal(filterSubCover.get(0).getSubCoverDescLocal());
+						subCoverRes.setSubCoverNameLocal(filterSubCover.get(0).getSubCoverNameLocal());
 						
 						// Discount Covers Or Promo Covers
 						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
@@ -2721,9 +2731,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			orderList.add(cb.asc(c.get("sectionName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
@@ -2731,22 +2741,22 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			effectiveDate.where(a1, a2, a3, a4);
 
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ProductSectionMaster> ocpm2 = effectiveDate2.from(ProductSectionMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
 			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 
-			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			jakarta.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a5, a6, a7, a8);
 
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), companyId);
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), productId);
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), productId);
 			Predicate n6 = cb.equal(c.get("sectionId"), sectionId);
 			query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
 		//	query.where(n1, n2, n3, n4, n5).orderBy(orderList);

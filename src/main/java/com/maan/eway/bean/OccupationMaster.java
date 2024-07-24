@@ -15,13 +15,13 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Domain class for entity "BankMaster"
@@ -116,5 +116,8 @@ public class OccupationMaster implements Serializable {
 	
 	@Column(name = "Occupation_Type", length = 100)
 	private String occupationType;
+	
+	@Column(name = "OCCUPATION_NAME_LOCAL", length = 100)
+	private String occupationNameLocal;
 
 }

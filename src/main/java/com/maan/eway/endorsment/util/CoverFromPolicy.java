@@ -85,6 +85,10 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					.minSumInsured(t.getMinCoverageLimit()==null?BigDecimal.ZERO:t.getMinCoverageLimit())
 					.isTaxExcempted(t.getIsTaxExtempted()==null?"N":t.getIsTaxExtempted())
 					.freeCoverLimit(t.getFreeCoverLimit()==null?BigDecimal.ZERO:t.getFreeCoverLimit())
+					.coverDescLocal(t.getCoverDescLocal()==null?"":t.getCoverDescLocal().toString())
+					.coverNameLocal( t.getCoverNameLocal()==null?"": t.getCoverNameLocal().toString())
+					.subCoverDescLocal(t.getSubCoverDescLocal()==null?"":t.getSubCoverDescLocal())
+					.subCoverNameLocal(t.getSubCoverNameLocal()==null?"":t.getSubCoverNameLocal().toString())
 					.build();
 				return c;
 			 }			

@@ -2,8 +2,8 @@ package com.maan.eway.bean;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 
 import io.swagger.models.parameters.SerializableParameter;
 import lombok.AllArgsConstructor;

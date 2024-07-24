@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,16 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,11 +22,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PaymentMaster;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.ClausesMasterDropdownReq;
 import com.maan.eway.master.req.PaymentMasterChangeStatusReq;
 import com.maan.eway.master.req.PaymentMasterDropdownReq;
 import com.maan.eway.master.req.PaymentMasterGetReq;
@@ -46,8 +33,17 @@ import com.maan.eway.master.res.PaymentMasterRes;
 import com.maan.eway.master.service.PaymentMasterService;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.PaymentMasterRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 @Service
 public class PaymentMasterServiceImpl implements PaymentMasterService {
 
@@ -270,9 +266,9 @@ public Integer getMasterTableCount(String companyId, String branchCode , String 
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<PaymentMaster> ocpm1 = effectiveDate.from(PaymentMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"),b.get("paymentMasterId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
@@ -638,9 +634,9 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		orderList.add(cb.asc(c.get("paymentMasterId")));
 		
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<PaymentMaster> ocpm1 = effectiveDate.from(PaymentMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("paymentMasterId"),ocpm1.get("paymentMasterId"));
 		Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 		Predicate a3 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -652,9 +648,9 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a15);
 		
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<PaymentMaster> ocpm2 = effectiveDate2.from(PaymentMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a8 = cb.equal(c.get("paymentMasterId"),ocpm2.get("paymentMasterId"));
 		Predicate a9 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 		Predicate a10 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
@@ -708,6 +704,7 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
 				res.setCode(cash.getItemCode());
 				res.setCodeDesc(cash.getItemValue());
+				res.setCodeDescLocal(cash.getItemValueLocal());
 				resList.add(res);
 			} 
 			if(paymentData.getCreditYn().equalsIgnoreCase("Y") ) {
@@ -715,6 +712,7 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
 				res.setCode(credit.getItemCode());
 				res.setCodeDesc(credit.getItemValue());
+				res.setCodeDescLocal(credit.getItemValueLocal());
 				resList.add(res);
 			}
 			if(paymentData.getChequeYn().equalsIgnoreCase("Y") ) {
@@ -722,6 +720,7 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
 				res.setCode(cheque.getItemCode());
 				res.setCodeDesc(cheque.getItemValue());
+				res.setCodeDescLocal(cheque.getItemValueLocal());
 				resList.add(res);
 			}
 			
@@ -730,12 +729,14 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
 				res.setCode(online.getItemCode());
 				res.setCodeDesc(online.getItemValue());
+				res.setCodeDescLocal(online.getItemValueLocal());
 				resList.add(res);
 				
 				ListItemValue online2 = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("5") ).collect(Collectors.toList()).get(0) ;
 				PaymentMasterDropDownRes res2 = new PaymentMasterDropDownRes();
 				res2.setCode(online2.getItemCode());
 				res2.setCodeDesc(online2.getItemValue());
+				res2.setCodeDescLocal(online2.getItemValueLocal());
 				resList.add(res2);
 			}
 		}
@@ -772,16 +773,16 @@ public synchronized List<ListItemValue> getPaymentItems(String insuranceId , Str
 		
 		
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		effectiveDate.where(a1,a2);
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		effectiveDate2.where(a3,a4);

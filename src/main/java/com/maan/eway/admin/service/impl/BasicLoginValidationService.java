@@ -1,26 +1,13 @@
 package com.maan.eway.admin.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
-
-
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +32,15 @@ import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.StateMasterRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 public class BasicLoginValidationService {
@@ -447,9 +443,9 @@ public class BasicLoginValidationService {
 			Root<CountryMaster> c = query.from(CountryMaster.class);
 			
 			// Country Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate c1 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
 			Predicate c2 = cb.equal(ocpm1.get("status"),c.get("status"));
 			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -490,9 +486,9 @@ public class BasicLoginValidationService {
 			Root<StateMaster> s = query.from(StateMaster.class);
 			
 			// State Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate c1 = cb.equal(ocpm1.get("countryId"), s.get("countryId"));
 			Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
 			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -535,9 +531,9 @@ public class BasicLoginValidationService {
 			Root<CityMaster> c = query.from(CityMaster.class);
 			
 			// City Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate c1 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
 			Predicate c2 = cb.equal(ocpm1.get("status"),c.get("status"));
 			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);

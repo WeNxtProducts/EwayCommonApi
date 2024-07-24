@@ -1,6 +1,6 @@
 package com.maan.eway.common.service.impl;
 
-import java.rmi.UnexpectedException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,16 +16,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -77,6 +66,16 @@ import com.maan.eway.repository.TermsAndConditionRepository;
 import com.maan.eway.repository.WarRateMasterRepository;
 import com.maan.eway.repository.WarrantyMasterRepository;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -289,9 +288,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			query.select(b);
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ClausesMaster> ocpm1 = effectiveDate.from(ClausesMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(b.get("clausesId"), ocpm1.get("clausesId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -301,9 +300,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 			effectiveDate.where(a1, a2, a3, a4, a5, a6);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ClausesMaster> ocpm2 = effectiveDate2.from(ClausesMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a7 = cb.equal(b.get("clausesId"), ocpm2.get("clausesId"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
@@ -377,9 +376,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			query2.select(b2);
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate3 = query2.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate3 = query2.subquery(Timestamp.class);
 			Root<ExclusionMaster> ocpm3 = effectiveDate3.from(ExclusionMaster.class);
-			effectiveDate3.select(cb1.max(ocpm3.get("effectiveDateStart")));
+			effectiveDate3.select(cb1.greatest(ocpm3.get("effectiveDateStart")));
 			Predicate a21 = cb1.equal(b2.get("exclusionId"), ocpm3.get("exclusionId"));
 			Predicate a22 = cb1.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
 			Predicate a23 = cb1.equal(ocpm3.get("companyId"), b2.get("companyId"));
@@ -389,9 +388,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 			effectiveDate3.where(a21, a22, a23, a24, a25, a26);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate4 = query2.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate4 = query2.subquery(Timestamp.class);
 			Root<ExclusionMaster> ocpm4 = effectiveDate4.from(ExclusionMaster.class);
-			effectiveDate4.select(cb1.max(ocpm4.get("effectiveDateEnd")));
+			effectiveDate4.select(cb1.greatest(ocpm4.get("effectiveDateEnd")));
 			Predicate a27 = cb1.equal(b2.get("exclusionId"), ocpm4.get("exclusionId"));
 			Predicate a28 = cb1.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
 			Predicate a29 = cb1.equal(ocpm4.get("companyId"), b2.get("companyId"));
@@ -462,9 +461,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			query3.select(b3);
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate5 = query3.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate5 = query3.subquery(Timestamp.class);
 			Root<WarrantyMaster> ocpm5 = effectiveDate5.from(WarrantyMaster.class);
-			effectiveDate5.select(cb3.max(ocpm5.get("effectiveDateStart")));
+			effectiveDate5.select(cb3.greatest(ocpm5.get("effectiveDateStart")));
 			Predicate a33 = cb3.equal(b3.get("warrantyId"), ocpm5.get("warrantyId"));
 			Predicate a34 = cb3.lessThanOrEqualTo(ocpm5.get("effectiveDateStart"), today);
 			Predicate a35 = cb3.equal(ocpm5.get("companyId"), b3.get("companyId"));
@@ -474,9 +473,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 			effectiveDate5.where(a33, a34, a35, a36, a37, a38);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate6 = query3.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate6 = query3.subquery(Timestamp.class);
 			Root<WarrantyMaster> ocpm6 = effectiveDate6.from(WarrantyMaster.class);
-			effectiveDate6.select(cb3.max(ocpm6.get("effectiveDateEnd")));
+			effectiveDate6.select(cb3.greatest(ocpm6.get("effectiveDateEnd")));
 			Predicate a39 = cb3.equal(b3.get("warrantyId"), ocpm6.get("warrantyId"));
 			Predicate a40 = cb3.greaterThanOrEqualTo(ocpm6.get("effectiveDateEnd"), todayEnd);
 			Predicate a41 = cb3.equal(ocpm6.get("companyId"), b3.get("companyId"));

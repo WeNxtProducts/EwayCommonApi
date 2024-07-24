@@ -2,7 +2,6 @@
 package com.maan.eway.auth.token;
 
 
-import static com.maan.eway.auth.token.Constants.ACCESS_TOKEN_VALIDITY_SECONDS;
 import static com.maan.eway.auth.token.Constants.SIGNING_KEY;
 
 import java.io.Serializable;
@@ -12,8 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Function;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,6 +22,7 @@ import com.maan.eway.bean.LoginMaster;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtTokenUtil implements Serializable {

@@ -32,4 +32,7 @@ public class CommonDoumentRes {
 	@JsonProperty("IdType")
 	private String idType;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 }

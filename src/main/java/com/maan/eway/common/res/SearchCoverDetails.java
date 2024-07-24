@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

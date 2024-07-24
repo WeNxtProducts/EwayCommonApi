@@ -15,16 +15,16 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
+import jakarta.persistence.Table;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -135,6 +135,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="REGULATORY_CODE")
     private String regulatoryCode;
+    
+    @Column(name="CURRENCY_NAME_LOCAL", length=100)
+    private String    currencyNameLocal;
     
 }
 

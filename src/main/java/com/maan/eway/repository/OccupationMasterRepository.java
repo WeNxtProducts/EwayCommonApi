@@ -34,7 +34,7 @@ import com.maan.eway.bean.ProductMasterId;
  
 public interface OccupationMasterRepository  extends JpaRepository<OccupationMaster,OccupationMasterId > , JpaSpecificationExecutor<OccupationMaster> {
 
-	OccupationMaster findByOccupationId(String occupation);
+	OccupationMaster findByOccupationId(Integer occupation);
 
 
 

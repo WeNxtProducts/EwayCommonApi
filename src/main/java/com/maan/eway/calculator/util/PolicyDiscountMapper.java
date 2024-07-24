@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.function.Function;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import com.maan.eway.res.calc.Cover;
 

@@ -17,12 +17,12 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -108,6 +108,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
 
+    
+    @Column(name="BANK_CODE_LOCAL", length=100)
+    private String     bankCodeLocal ;
+    
+    @Column(name="BANK_SHORT_NAME_LOCAL", length=100)
+    private String     bankShortNameLocal ;
+    
+    @Column(name="BANK_FULL_NAME_LOCAL", length=100)
+    private String     bankFullNameLocal ;
 
 
 }

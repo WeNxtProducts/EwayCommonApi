@@ -17,12 +17,12 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -108,7 +108,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=20)
     private String     updatedBy ;
     //--- ENTITY LINKS ( RELATIONSHIP )
-
+    
+    
+    @Column(name="REGION_NAME_LOCAL", length=100)
+    private String     regionNameLocal ;
 
 
 }

@@ -54,4 +54,7 @@ public class CountryMasterSaveReq implements Serializable {
 	@JsonProperty("Nationality")
 	private String nationality;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 }

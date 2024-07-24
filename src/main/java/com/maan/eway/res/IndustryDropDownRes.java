@@ -20,4 +20,7 @@ public class IndustryDropDownRes {
 	private String categoryDesc;
 	@JsonProperty("TitleType")
 	private String titletype;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

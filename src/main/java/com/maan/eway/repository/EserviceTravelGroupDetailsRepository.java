@@ -12,21 +12,13 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
-import com.maan.eway.bean.BankMaster;
-
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.BankMasterId;
+
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetailsId;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 /**
  * <h2>BankMasterRepository</h2>
  *
@@ -44,7 +36,7 @@ public interface EserviceTravelGroupDetailsRepository  extends JpaRepository<Ese
 	EserviceTravelGroupDetails findByRequestReferenceNoAndGroupId(String requestReferenceNo, Integer groupId);
 
 	EserviceTravelGroupDetails findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductId(
-			String requestReferenceNo, Integer vehicleId, Integer valueOf, String companyId, Integer valueOf2);
+			String requestReferenceNo, Integer vehicleId, Integer groupId, String companyId, String productId);
 
 	long countByRequestReferenceNo(String newReqRefNo);
 

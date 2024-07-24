@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,16 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.EndtDependantFieldMaster;
-import com.maan.eway.bean.WarrantyMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EndtDependantFieldChangeStatusReq;
 import com.maan.eway.master.req.EndtDependantFieldMasterSaveReq;
 import com.maan.eway.master.req.EndtDependantFieldsGetallReq;
@@ -43,6 +31,16 @@ import com.maan.eway.master.service.EndtDependantFieldMasterService;
 import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMasterService{
@@ -317,9 +315,9 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<EndtDependantFieldMaster> ocpm1 = effectiveDate.from(EndtDependantFieldMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("dependantFieldId"),b.get("dependantFieldId"));
@@ -403,7 +401,7 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<EndtDependantFieldMaster> ocpm1 = effectiveDate.from(EndtDependantFieldMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(b.get("dependantFieldId"),ocpm1.get("dependantFieldId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
@@ -413,7 +411,7 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<EndtDependantFieldMaster> ocpm2 = effectiveDate2.from(EndtDependantFieldMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal(b.get("dependantFieldId"),ocpm2.get("dependantFieldId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
@@ -741,9 +739,9 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			orderList.add(cb.asc(b.get("dependantFieldName")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<EndtDependantFieldMaster> ocpm1 = effectiveDate.from(EndtDependantFieldMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(b.get("dependantFieldId"),ocpm1.get("dependantFieldId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -751,9 +749,9 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 
 			effectiveDate.where(a1,a2,a3,a4);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<EndtDependantFieldMaster> ocpm2 = effectiveDate2.from(EndtDependantFieldMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a7 = cb.equal(b.get("dependantFieldId"),ocpm2.get("dependantFieldId"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
@@ -778,6 +776,7 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getDependantFieldId().toString());
 				res.setCodeDesc(data.getDependantFieldName());
+				res.setCodeDescLocal(data.getDependentFieldNameLocal());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}

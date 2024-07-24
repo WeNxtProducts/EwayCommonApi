@@ -3,13 +3,13 @@ package com.maan.eway.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -228,5 +228,20 @@ public class MotorMakeModelMaster implements Serializable {
 	
 	@Column(name = "LOSS_OF_USE_VALUE")
 	private Double lossOfUseValue;
+	
+	@Column(name = "MAKE_NAME_LOCAL", length = 100)
+	private String makeNameLocal;
+	
+	@Column(name = "MODEL_NAME_LOCAL", length = 100)
+	private String modelNameLocal;
+	
+	@Column(name = "VEH_CLASS_LOCAL", length = 100)
+	private String vehClassLocal;
+	
+	@Column(name = "VEH_MANF_COUNTRY_LOCAL", length = 100)
+	private String vehManfCountryLocal;
+	
+	@Column(name = "VEH_MANF_REGION_LOCAL", length = 100)
+	private String vehManfRegionLocal;
 
 }

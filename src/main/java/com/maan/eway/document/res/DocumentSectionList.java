@@ -19,4 +19,7 @@ public class DocumentSectionList {
 	
 	@JsonProperty("IdList")
 	private List<DocumentDropdownRes> idList;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

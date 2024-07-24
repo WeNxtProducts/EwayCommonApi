@@ -17,13 +17,13 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
@@ -107,6 +107,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="BODY_TYPE",  length=20)
     private String     bodyType ;
+    
+    @Column(name="VEHICLE_USAGE_DESC_LOCAL", length=100)
+    private String vehicleUsageDescLocal;
 }
 
 

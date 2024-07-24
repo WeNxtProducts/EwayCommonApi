@@ -35,5 +35,6 @@ public class MultiplePolicyDrCrDetailId implements Serializable{
 	private String branchCode;
 	
 	private String status;
+	private String companyId;
 
 }

@@ -62,5 +62,9 @@ public class BankMasterRes implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 
 }

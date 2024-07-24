@@ -162,4 +162,7 @@ public class MotorMakeModelSaveReq {
 
 	@JsonProperty("RopBodyId")
 	private String ropBodyid;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }                                      

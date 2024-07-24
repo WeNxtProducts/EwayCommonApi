@@ -44,6 +44,9 @@ public class MotorBodySaveReq {
 
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }                                      
   
    

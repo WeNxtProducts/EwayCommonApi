@@ -2,13 +2,13 @@ package com.maan.eway.bean;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -98,5 +98,9 @@ public class WarrantyMaster {
 
 	@Column(name="DOC_REF_NO",length=50)
 	private String docRefNo;
+	
+	@Column(name="WARRANTY_DESCRIPTION_LOCAL",length=100)
+	private String warrantyDescriptionLocal;
 
+	 
 }

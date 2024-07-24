@@ -16,6 +16,9 @@ public class DocumentDropdownRes {
 	@JsonProperty("IdType")
 	private String idType;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 
 	
 }

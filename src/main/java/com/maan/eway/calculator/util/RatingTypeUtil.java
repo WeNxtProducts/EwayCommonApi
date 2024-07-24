@@ -2,9 +2,9 @@ package com.maan.eway.calculator.util;
 
 import java.util.function.Function;
 
-import javax.persistence.Tuple;
-
 import com.maan.eway.res.calc.RatingInfo;
+
+import jakarta.persistence.Tuple;
 
 public class RatingTypeUtil implements Function<Tuple,RatingInfo > {
 

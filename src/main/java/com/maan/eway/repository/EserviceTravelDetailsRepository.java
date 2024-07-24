@@ -36,8 +36,8 @@ public interface EserviceTravelDetailsRepository  extends JpaRepository<Eservice
 	EserviceTravelDetails findByRequestReferenceNo(String requestReferenceNo);
 
 	EserviceTravelDetails findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductIdAndSectionId(
-			String requestReferenceNo, Integer vehicleId,  String companyId, Integer valueOf2,
-			Integer valueOf3);
+			String requestReferenceNo, Integer vehicleId,  String companyId, String productId,
+			String sectionId);
 
 	EserviceTravelDetails findByRequestReferenceNoAndCompanyIdAndProductIdAndSectionId(String requestReferenceNo,
 			String companyId, String productId, String sectionId);
@@ -66,10 +66,10 @@ public interface EserviceTravelDetailsRepository  extends JpaRepository<Eservice
 
 	EserviceTravelDetails findByQuoteNoAndSectionIdAndProductIdOrderByRiskIdAsc(String quoteNo, String sectionId,
 			String productId);
-
+/*
 	EserviceTravelDetails findByQuoteNoAndSectionIdAndProductIdOrderByRiskIdAsc(String quoteNo, Integer sectionId,
 			Integer productId);
-
+*/
 	List<EserviceTravelDetails> findByPolicyNo(String prevPolicyNo);
 
 	EserviceTravelDetails findByQuoteNo(String quoteNo);

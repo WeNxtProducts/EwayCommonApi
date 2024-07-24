@@ -1,5 +1,8 @@
 package com.maan.eway.common.service.impl;
 
+
+import java.sql.Timestamp;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -10,8 +13,11 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,8 +32,10 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.xml.bind.DataBindingException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.cookie.DateParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -41,37 +49,62 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CountryMaster;
+import com.ctc.wstx.util.StringUtil;
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.StateMaster;
+import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.req.CustomerChangesSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
+import com.maan.eway.common.req.EservieMotorDetailsViewRes;
+import com.maan.eway.common.req.FactorRateDetailsGetReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetByCustomerRefNoReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.Cover;
+import com.maan.eway.common.res.Covers;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
+import com.maan.eway.common.res.PolicyDataRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.CompanyProductMasterRepository;
+import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.OccupationMasterRepository;
+import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.PolicyCoverDataEndtRepository;
+import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.SeqCustrefnoRepository;
+import com.maan.eway.repository.RegionMasterRepository;
+import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.impl.FactorRateRequestDetailsServiceImpl;
 
 @Service
 @Transactional
@@ -105,6 +138,35 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ; 
+	
+	@Autowired
+	private RegionMasterRepository regionMasterRepo;
+	
+	@Autowired
+	private StateMasterRepository stateMasterRepo;
+
+	private PaymentDetailRepository paymentDetailsRepo;
+	
+	
+	@Autowired
+	private CompanyProductMasterRepository companyProductRepo;
+	
+	@Autowired
+	private EServiceMotorDetailsRepository  eserviceMotorRepo;
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository eserviceBuildingRepo;
+	
+	@Autowired
+	private EserviceTravelDetailsRepository eserviceTravelRepo;
+	
+	@Autowired
+	private EserviceCommonDetailsRepository eserviceCommonRepo;
+	
+	@Autowired private PolicyCoverDataRepository policyCoverDataRepo;
+	
+	@Autowired FactorRateRequestDetailsServiceImpl factorRateRequestDetailsServiceImpl;
+
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -1059,41 +1121,79 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			}
 
 			// From List Item Value
-			String gender = getListItem (req.getCompanyId() , req.getBranchCode() ,"GENDER",req.getGender());// listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
-			String title = getListItem (req.getCompanyId() , req.getBranchCode() ,"NAME_TITLE",req.getTitle());//listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
-			String language = getListItem (req.getCompanyId() , req.getBranchCode() ,"LANGUAGE",req.getLanguage());//listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
-			String policyHolderType = getListItem ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
-			String policyHolderTypeId = getListItem (req.getCompanyId(), req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+			
+			Map<String,String> title = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"NAME_TITLE",req.getTitle());//listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
+			Map<String,String> gender = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"GENDER",req.getGender());// listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
+			Map<String,String> language = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"LANGUAGE",req.getLanguage());//listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
+			Map<String,String> policyHolderType = getListItemLocal ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
+			Map<String,String> policyHolderTypeId = getListItemLocal (req.getCompanyId(), req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+			
+			String genderDesc = Optional.ofNullable(gender).map(map -> map.get("itemDesc")).orElse("");
+			String titleDesc = Optional.ofNullable(title).map(map -> map.get("itemDesc")).orElse("");
+			String languageDesc = Optional.ofNullable(language).map(map -> map.get("itemDesc")).orElse("");
+			String policyHolderTypeDesc = Optional.ofNullable(policyHolderType).map(map -> map.get("itemDesc")).orElse("");
+			String policyHolderTypeIdDesc = Optional.ofNullable(policyHolderTypeId).map(map -> map.get("itemDesc")).orElse("");
+			
+			// From List Item Value (Local)
+			String genderLocal = Optional.ofNullable(gender).map(map -> map.get("itemDescLocal")).orElse("");
+			String titleLocal = Optional.ofNullable(title).map(map -> map.get("itemDescLocal")).orElse("");
+			String languageLocal = Optional.ofNullable(language).map(map -> map.get("itemDescLocal")).orElse("");
+			String PolicyHolderTypeLocal = Optional.ofNullable(policyHolderType).map(map -> map.get("itemDescLocal")).orElse("");
+			String policyHolderTypeIdLocal = Optional.ofNullable(policyHolderTypeId).map(map -> map.get("itemDescLocal")).orElse("");
+			
+			// From Region_mater for state name local
+			String stateNameLocal = "";
+			List<RegionMaster> rgMaster = regionMasterRepo.findByCountryIdAndRegionCode(req.getNationality(),req.getStateCode());
+			if(rgMaster!= null  && rgMaster.size()>0) {
+				stateNameLocal = rgMaster.get(0).getRegionNameLocal();
+			}
+			// From State_master for city name local
+			String cityNameLocal = "";
+			List<StateMaster> stMaster = stateMasterRepo.findByStateIdAndCountryIdAndRegionCode(Integer.valueOf(req.getCityCode()),req.getNationality(),req.getStateCode());
+			if(stMaster!= null && stMaster.size()>0) {
+				cityNameLocal = stMaster.get(0).getStateNameLocal();
+			}
 			
 			if(StringUtils.isNotBlank(req.getMobileCode1())){		        
-				String mobileCode1 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode1());
+				Map<String,String> mobileCode1Desc = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode1());
+				String mobileCode1 = Optional.ofNullable(mobileCode1Desc).map(map -> map.get("itemDesc")).orElse("");
+				String mobileCode1Local = Optional.ofNullable(mobileCode1Desc).map(map -> map.get("itemDescLocal")).orElse("");		
 			saveData.setMobileCodeDesc1(mobileCode1);
 
 			}
 	        if(StringUtils.isNotBlank(req.getMobileCode2())){
-	        	String mobileCode2 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode2());
+	        	Map<String,String> mobileCode2Desc = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode2());
+	        	String mobileCode2 = Optional.ofNullable(mobileCode2Desc).map(map -> map.get("itemDesc")).orElse("");
+				String mobileCode2Local = Optional.ofNullable(mobileCode2Desc).map(map -> map.get("itemDescLocal")).orElse("");		
 			saveData.setMobileCodeDesc2(mobileCode2);
 
 	        }
 	       
 	        
 	        if(StringUtils.isNotBlank(req.getMobileCode3())){		        
-	        	String mobileCode3 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode3());
+	        	Map<String,String> mobileCode3Desc = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode3());
+	        	String mobileCode3 = Optional.ofNullable(mobileCode3Desc).map(map -> map.get("itemDesc")).orElse("");
+				String mobileCode3Local = Optional.ofNullable(mobileCode3Desc).map(map -> map.get("itemDescLocal")).orElse("");
 			saveData.setMobileCodeDesc3(mobileCode3);
 
 	        }
 	        if(StringUtils.isNotBlank(req.getWhatsappCode())){		        
-	        	String whatsappCode = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getWhatsappCode());
+	        	Map<String,String> whatsappCodeDesc = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getWhatsappCode());
+	        	String whatsappCode = Optional.ofNullable(whatsappCodeDesc).map(map -> map.get("itemDesc")).orElse("");
+				String whatsappCodeLocal = Optional.ofNullable(whatsappCodeDesc).map(map -> map.get("itemDescLocal")).orElse("");
 			saveData.setWhatsappCodeDesc(whatsappCode);
 
 	        }			
-			
+	        String businessTypeLocal = "";
 			if (StringUtils.isNotBlank(req.getBusinessType())) {
-				String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+				Map<String,String> businessTypeDesc =  getListItemLocal ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+				String businessType = Optional.ofNullable(businessTypeDesc).map(map -> map.get("itemDesc")).orElse("");
+				businessTypeLocal = Optional.ofNullable(businessTypeDesc).map(map -> map.get("itemDescLocal")).orElse("");
 				saveData.setBusinessTypeDesc(businessType);
 			}
- 			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
-			
+ 			Map<String,String> occupation = getByOccupationIdDesc(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
+			String occupationDesc = Optional.ofNullable(occupation).map(map -> map.get("occupationName")).orElse("");
+			String occupationDescLocal = Optional.ofNullable(occupation).map(map -> map.get("occupationNameLocal")).orElse("");
 //			if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId()) ) {
 //				saveData.setTitleDesc(null);
 //				saveData.setPreferredNotification("Sms");
@@ -1121,7 +1221,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //				saveData.setMobileCode1(req.getMobileCode1());
 //				saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 //			}
-			saveData.setTitleDesc(title);
+			saveData.setTitleDesc(titleDesc);
 			saveData.setMiddleName(req.getMiddleName());
 			saveData.setLastName(req.getLastName());
 			saveData.setPreferredNotification(req.getPreferredNotification());
@@ -1133,15 +1233,14 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setVrnGst(req.getVrTinNo());
 			saveData.setMobileCode1(req.getMobileCode1());
 			saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
-			saveData.setGenderDesc(gender);
-			saveData.setTitleDesc(title);
-			saveData.setLanguageDesc(language);
+			saveData.setGenderDesc(genderDesc);
+			saveData.setLanguageDesc(languageDesc);
 			saveData.setOccupationDesc(occupationDesc);
 			saveData.setOtherOccupation(req.getOtherOccupation());
-			saveData.setPolicyHolderTypeDesc(policyHolderType);
-			saveData.setPolicyHolderTypeIdDesc(policyHolderTypeId);
+			saveData.setPolicyHolderTypeDesc(policyHolderTypeDesc);
+			saveData.setPolicyHolderTypeIdDesc(policyHolderTypeIdDesc);
 			saveData.setIdType(req.getPolicyHolderTypeid());
-			saveData.setIdTypeDesc(policyHolderTypeId);
+			saveData.setIdTypeDesc(policyHolderTypeIdDesc);
 			saveData.setVrTinNo(req.getVrTinNo());
 			saveData.setVrnGst(req.getVrTinNo());
 			saveData.setAge(age);
@@ -1156,6 +1255,22 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setCityCode(StringUtils.isBlank(req.getCityCode())?null :Integer.valueOf(req.getCityCode()));
 			saveData.setCityName(req.getCityName());
 			saveData.setRegionCode(req.getRegionCode());
+			
+			//local desc feilds
+			saveData.setGenderDescLocal(genderLocal);
+			saveData.setTitleDescLocal(titleLocal);
+			saveData.setLanguageDescLocal(languageLocal);
+			saveData.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
+			saveData.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
+			saveData.setOccupationDescLocal(occupationDescLocal);
+			//saveData.setMaritalStatusDescLocal(maritalStatusDescLocal);
+			saveData.setStateNameLocal(stateNameLocal);
+			saveData.setCityNameLocal(cityNameLocal);
+			saveData.setMobileCodeDesc1Local(req.getMobileCode1());
+			saveData.setMobileCodeDesc2Local(req.getMobileCode2());
+			saveData.setMobileCodeDesc3Local(req.getMobileCode3());
+			saveData.setWhatsappCodeDescLocal(req.getWhatsappCode());
+			saveData.setIdTypeDescLocal(policyHolderTypeIdLocal);
 			
 			// Kenya Rating Fields
 			saveData.setMaritalStatus(StringUtils.isBlank(req.getMaritalStatus()) ?"Single" : req.getMaritalStatus() );
@@ -1237,22 +1352,21 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setFax(req.getFax());
 				savePersonalInfo.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
 				savePersonalInfo.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
-				savePersonalInfo.setGenderDesc(gender);
-				savePersonalInfo.setGenderDesc(gender);
-				savePersonalInfo.setTitleDesc(title);
-				savePersonalInfo.setLanguageDesc(language);
+				savePersonalInfo.setGenderDesc(genderDesc);
+				savePersonalInfo.setTitleDesc(titleDesc);
+				savePersonalInfo.setLanguageDesc(languageDesc);
 				savePersonalInfo.setOccupationDesc(occupationDesc);
 				
 						
 				// Induvidual / Corporate
 				savePersonalInfo.setPolicyHolderType(req.getPolicyHolderType());
-				savePersonalInfo.setPolicyHolderTypeDesc(policyHolderType);
+				savePersonalInfo.setPolicyHolderTypeDesc(policyHolderTypeDesc);
 				
 				// Possport or etc
 				savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
-				savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
+				savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeIdDesc);
 				savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
-				savePersonalInfo.setIdTypeDesc(policyHolderTypeId);
+				savePersonalInfo.setIdTypeDesc(policyHolderTypeIdDesc);
 				 
 				savePersonalInfo.setMobileCode1(req.getMobileCode1());
 				savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
@@ -1289,6 +1403,21 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setNationality(req.getNationality());
 				savePersonalInfo.setVrTinNo(req.getVrTinNo());
 				savePersonalInfo.setVrnGst(req.getVrTinNo());
+				
+				
+				// local desc 
+				savePersonalInfo.setTitleDescLocal(titleLocal);
+				savePersonalInfo.setGenderDescLocal(genderLocal);
+				savePersonalInfo.setOccupationDescLocal(occupationDescLocal);
+				savePersonalInfo.setBusinessTypeDescLocal(businessTypeLocal);
+				savePersonalInfo.setStateNameLocal(stateNameLocal);
+				savePersonalInfo.setCityNameLocal(cityNameLocal);
+				savePersonalInfo.setIdTypeDescLocal(policyHolderTypeIdLocal);
+				savePersonalInfo.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
+				savePersonalInfo.setLanguageDescLocal(languageLocal);
+				savePersonalInfo.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
+				savePersonalInfo.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
+				
 				personalInforepo.save(savePersonalInfo);
 			}
 			}else if(StringUtils.isNotBlank(req.getType())) {
@@ -1342,24 +1471,23 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					savePersonalInfo.setFax(req.getFax());
 					savePersonalInfo.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
 					savePersonalInfo.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
-					savePersonalInfo.setGenderDesc(gender);
-					savePersonalInfo.setGenderDesc(gender);
+					savePersonalInfo.setGenderDesc(genderDesc);
 					savePersonalInfo.setTitle(req.getTitle());
-					savePersonalInfo.setTitleDesc(title);
-					savePersonalInfo.setLanguageDesc(language);
+					savePersonalInfo.setTitleDesc(titleDesc);
+					savePersonalInfo.setLanguageDesc(languageDesc);
 					savePersonalInfo.setOccupationDesc(occupationDesc);
 					savePersonalInfo.setIdType(req.getIdType()); 
-					savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
+					savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeIdDesc);
 					
 					// Induvidual / Corporate
 					savePersonalInfo.setPolicyHolderType(req.getPolicyHolderType());
-					savePersonalInfo.setPolicyHolderTypeDesc(policyHolderType);
+					savePersonalInfo.setPolicyHolderTypeDesc(policyHolderTypeDesc);
 					
 					// Possport or etc
 					savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
-					savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
+					savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeIdDesc);
 					savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
-					savePersonalInfo.setIdTypeDesc(policyHolderTypeId);
+					savePersonalInfo.setIdTypeDesc(policyHolderTypeDesc);
 					
 					savePersonalInfo.setMobileCode1(req.getMobileCode1());
 					savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
@@ -1396,6 +1524,19 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					savePersonalInfo.setNationality(req.getNationality());
 					savePersonalInfo.setVrTinNo(req.getVrTinNo());
 					savePersonalInfo.setVrnGst(req.getVrTinNo());
+					
+					// local desc 
+					savePersonalInfo.setTitleDescLocal(titleLocal);
+					savePersonalInfo.setGenderDescLocal(genderLocal);
+					savePersonalInfo.setOccupationDescLocal(occupationDescLocal);
+					savePersonalInfo.setBusinessTypeDescLocal(businessTypeLocal);
+					savePersonalInfo.setStateNameLocal(stateNameLocal);
+					savePersonalInfo.setCityNameLocal(cityNameLocal);
+					savePersonalInfo.setIdTypeDescLocal(PolicyHolderTypeLocal);
+					savePersonalInfo.setLanguageDescLocal(languageLocal);
+					savePersonalInfo.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
+					savePersonalInfo.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
+					
 					personalInforepo.save(savePersonalInfo);
 				}
 			}
@@ -1449,9 +1590,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -1459,9 +1600,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			effectiveDate.where(a1,a2,b1,b2);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -1493,7 +1634,78 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		}
 		return itemDesc ;
 	}
+	
+	public synchronized Map<String,String> getListItemLocal(String insuranceId , String branchCode, String itemType, String itemCode) {
+		Map<String,String> itemDesc = new HashMap<String,String>() ;
+		List<ListItemValue> list = new ArrayList<ListItemValue>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			effectiveDate.where(a1,a2,b1,b2);
+			
+			// Effective Date End Max Filter
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate b4= cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			effectiveDate2.where(a3,a4,b3,b4);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+			//Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			//Predicate n8 = cb.or(n4,n5);
+			Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType );
+			Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
+			query.where(n1,n2,n3,n4,n9,n10,n11).orderBy(orderList);
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			itemDesc.put("itemDesc",list.size() > 0 ? list.get(0).getItemValue() : "" );
+			itemDesc.put("itemDescLocal",list.size() > 0 ? list.get(0).getItemValueLocal() : "" );
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return itemDesc ;
+	}
 
+	
 	public synchronized String getListItem1(String insuranceId , String branchCode, String itemType) {
 		String countryCode = "" ;
 		List<ListItemValue> list = new ArrayList<ListItemValue>();
@@ -1518,9 +1730,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -1528,9 +1740,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			effectiveDate.where(a1,a2,b1,b2);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -1585,9 +1797,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			orderList.add(cb.asc(c.get("branchCode")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -1595,9 +1807,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			effectiveDate.where(a1,a2,a5,a6,a9);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -1632,6 +1844,77 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		}
 			return occupationDesc;
 		}
+	public Map<String,String> getByOccupationIdDesc(String occupationId, String insuranceId, String productId , String branchCode) {
+		Map<String,String> occupationDesc = new HashMap<String,String>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<OccupationMaster> query=  cb.createQuery(OccupationMaster.class);
+			List<OccupationMaster> list = new ArrayList<OccupationMaster>();
+			
+			// Find All
+			Root<OccupationMaster> c = query.from(OccupationMaster.class);
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			// Effective Date Start Max Filter
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+			effectiveDate.where(a1,a2,a5,a6,a9);
+			// Effective Date End Max Filter
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			Predicate a10 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+			effectiveDate2.where(a3,a4,a7,a8,a10);
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+			Predicate n5 = cb.equal(c.get("branchCode"),branchCode);
+			Predicate n6 = cb.equal(c.get("branchCode"),"99999");
+			Predicate n7 = cb.or(n5,n6);
+			Predicate n8 = cb.equal(c.get("occupationId"),occupationId);
+			Predicate n9 = cb.equal(c.get("productId"),productId );
+			Predicate n10 = cb.equal(c.get("productId"),"99999" );
+			Predicate n11 =  cb.or(n9, n10);
+			query.where(n1,n2,n3,n4,n7,n8,n11).orderBy(orderList);
+			TypedQuery<OccupationMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+			if(list.size()>0) {
+				list = result.getResultList();
+				list.sort(Comparator.comparing(OccupationMaster::getOccupationName));
+				occupationDesc.put("occupationName" , list.size() > 0 ? list.get(0).getOccupationName() : "");
+				occupationDesc.put("occupationNameLocal" , list.size() > 0 ? list.get(0).getOccupationNameLocal() : "");
+			}
+		} catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+		}
+			return occupationDesc;
+		}
 
 	public String getByCountry(String insuranceId) {
 		String country = "";
@@ -1656,9 +1939,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			orderList.add(cb.asc(c.get("amendId")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("amendId"),ocpm1.get("amendId"));
@@ -1666,9 +1949,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			//Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			effectiveDate.where(a1,a2,a5);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("amendId"),ocpm2.get("amendId"));
@@ -1710,9 +1993,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			// State Effective Date Max Filter
 			Root<StateMaster> s = query.from(StateMaster.class);
 
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart")));
 			Predicate seff1 = cb.equal(ocpm2.get("stateId"), stateCode);
 			Predicate seff2 = cb.equal(ocpm2.get("countryId"), countryId);
 			Predicate seff3 = cb.equal(ocpm2.get("status"), s.get("status"));
@@ -1731,9 +2014,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Subquery<Long> country = query.subquery(Long.class);
 			Root<CountryMaster> cm = country.from(CountryMaster.class);
 
-			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
 			Root<CountryMaster> ocpm3 = effectiveDate3.from(CountryMaster.class);
-			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+			effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
 			Predicate ceff2 = cb.equal(ocpm3.get("countryId"), cm.get("countryId"));
 			Predicate ceff3 = cb.equal(ocpm3.get("status"), cm.get("status"));
 			Predicate ceff4 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
@@ -1831,7 +2114,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				n4 = cb.equal(  h.get("brokerBranchCode"), req.getBrokerBranchCode());
 				if ("Broker".equalsIgnoreCase(loginData.getUserType())) {
-					Subquery<Long> loginId = query.subquery(Long.class);
+					Subquery<String> loginId = query.subquery(String.class);
 					Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
 					loginId.select(ocpm1.get("loginId"));
 					Predicate a1 = cb.equal(ocpm1.get("agencyCode"), loginData.getOaCode());
@@ -2041,7 +2324,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				n4 = cb.equal(  h.get("brokerBranchCode"), req.getBrokerBranchCode());
 				if ("Broker".equalsIgnoreCase(loginData.getUserType())) {
-					Subquery<Long> loginId = query.subquery(Long.class);
+					Subquery<String> loginId = query.subquery(String.class);
 					Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
 					loginId.select(ocpm1.get("loginId"));
 					Predicate a1 = cb.equal(ocpm1.get("agencyCode"), loginData.getOaCode());
@@ -3489,7 +3772,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
 
-				if (StringUtils.isNotBlank(companyId) && !companyId.equalsIgnoreCase("100019")) {
+				if (StringUtils.isNotBlank(companyId) && !companyId.equalsIgnoreCase("100019")  ) {
 					// DOB Validation
 					if (StringUtils.isNotBlank(policyHolderType) && policyHolderType.equalsIgnoreCase("1")) {
 						if (StringUtils.isNotBlank(idType) && idType.equalsIgnoreCase("1")) {
@@ -3689,6 +3972,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			}
 			return true;
 		}
+
 		
 		@Override
 		public List<Error> validate(CustomerChangesSaveReq req) {
@@ -3999,17 +4283,17 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				orderList.add(cb.asc(c.get("productName")));
 
 				// Effective Date Start Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 				Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				effectiveDate.where(a1, a2, a3);
 				// Effective Date End Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 				Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 				Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 				Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -4032,5 +4316,329 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				return null;
 			}
 			return product;
+		}
+
+
+		@Override
+		public CommonRes fetchPolicyData(String policyNumber) {
+			
+			CommonRes commonResponse = new CommonRes();
+			
+			if (StringUtils.isNotBlank(policyNumber)) {
+
+				HomePositionMaster homeData = homePosistionRepo.findTop1ByPolicyNo(policyNumber);
+
+				if (null != homeData &&  homeData.getProductId() != null && StringUtils.isNotBlank( homeData.getRequestReferenceNo()) )  {
+					
+					
+					com.maan.eway.req.FactorRateDetailsGetReq req = new com.maan.eway.req.FactorRateDetailsGetReq();
+					req.setRequestReferenceNo( homeData.getRequestReferenceNo());
+					req.setProductId( homeData.getProductId().toString());
+					
+					List<EservieMotorDetailsViewRes> res =	factorRateRequestDetailsServiceImpl.getFactorRateRequestDetails(req, "");
+					
+					if(null != res && !res.isEmpty() ) {
+						
+						for (EservieMotorDetailsViewRes eservieMotorDetailsViewRes : res) {
+							
+							if(null != eservieMotorDetailsViewRes &&  eservieMotorDetailsViewRes.getCoverList() == null) {
+								
+								continue;
+							}else {
+								
+								List<com.maan.eway.res.calc.Cover> covers =	eservieMotorDetailsViewRes.getCoverList();
+								
+								if(covers == null) {
+									
+									continue;
+								}else {
+									
+									
+									for (com.maan.eway.res.calc.Cover cover : covers) {
+										
+										if(null != cover) {
+											
+											cover.setTaxes(null);
+										}
+
+									}
+
+								}
+
+							}
+
+						}
+
+					}
+					
+					commonResponse.setCommonResponse(res);
+					
+				return commonResponse;
+			}
+
+		} else {
+
+			// bad request
+		}
+
+		 boolean isNeed = false;
+			
+  //  ------------------------------------Proper----------------------------------
+				 
+				 
+			if(isNeed) {	 
+
+			PolicyDataRes res = new PolicyDataRes();
+
+			CommonRes commonRes = new CommonRes();
+
+			try {
+
+				if (StringUtils.isNotBlank(policyNumber)) {
+					
+					
+				HomePositionMaster homeData = homePosistionRepo.findByPolicyNo(policyNumber);
+				
+				if(null != homeData) {
+					
+					
+					if (StringUtils.isNotBlank(homeData.getQuoteNo())) {
+
+						List<PaymentDetail> paymentDataList = paymentDetailsRepo.findByQuoteNo(homeData.getQuoteNo());
+						
+						List<PolicyCoverData> coverDataList = policyCoverDataRepo.findByQuoteNo(homeData.getQuoteNo());
+
+						if (null != paymentDataList && !paymentDataList.isEmpty() && null != paymentDataList.get(0)) {
+							
+							PaymentDetail paymentData =  paymentDataList.get(0);
+							
+							String transactionDate = null;
+							String inceptionDate = null;
+							String expiryDate = null;
+							
+							try {
+								
+								SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+								
+								
+								if(paymentData.getEntryDate() != null ) {
+									
+								  String s =	format.format(paymentData.getEntryDate());
+								  
+								  transactionDate =  s;
+								}
+								
+								if(homeData.getInceptionDate() != null ) {
+									
+								  String s = format.format(homeData.getInceptionDate());
+								  
+								  inceptionDate = s;
+									
+								}
+								
+								if(homeData.getExpiryDate() != null ) {
+									
+									  String s = format.format(homeData.getExpiryDate());
+									  
+									  expiryDate = s;
+										
+									}
+								
+								
+							}catch (Exception e) {
+								
+								log.error("Exception Occurs When Format The Date *****  "  +  e.getMessage());
+								e.printStackTrace();
+						//		throw new DateParseException("Date Format Convert Exception ");
+							}
+							
+							res.setTypeOfTransaction( StringUtils.isNotBlank(paymentData.getPaymentTypedesc() ) ? paymentData.getPaymentTypedesc() : "" );
+							res.setTransactionDate(transactionDate);
+                            res.setInceptionDate(inceptionDate);
+						    res.setExpiryDate(expiryDate);						   
+						    res.setGrossPremium(paymentData.getPremium() != null ? paymentData.getPremium() : null );
+						    res.setProductId(homeData.getProductId() != null ? homeData.getProductId() : 0  );
+		//				    res.setSectionId(homeData.getSectionId() != null  ? homeData.getSectionId() : 0 );;
+						    
+						    
+						    List<Cover> coverList = new ArrayList<>();
+						    
+						    
+						    if(null != coverDataList  && !coverDataList.isEmpty()) {
+						    	
+						    Set<Integer>  sectionIdList = coverDataList.stream().map(a ->a.getSectionId()).collect(Collectors.toSet() );	
+						    
+						    for (Integer sectionId : sectionIdList) {
+								
+							    Cover cover = new Cover();
+							    
+							    cover.setSectionId(sectionId != null  ? sectionId.toString() : "" );
+							    
+							    List<Covers> coversList = new ArrayList<>();
+
+							    for (PolicyCoverData policyCoverData : coverDataList) {
+						    		
+						    		Covers covers = new Covers();
+						    		
+						    		
+						    		covers.setCoverId(policyCoverData.getCoverId() != null ? policyCoverData.getCoverId().toString(): null   );						    		
+									covers.setPremium(policyCoverData.getPremiumAfterDiscountFc() != null ? policyCoverData.getPremiumAfterDiscountFc().toString(): null   );		
+									covers.setSumInsured(policyCoverData.getSumInsured() != null ? policyCoverData.getSumInsured().toPlainString(): null   );
+						    	    covers.setIsSubCover( StringUtils.isNotBlank(policyCoverData.getSubCoverYn()) ? policyCoverData.getSubCoverYn().toString(): null   );
+									
+									coversList.add(covers);
+
+								}
+						    	
+						    	cover.setCovers(coversList);
+							}
+						}
+						    
+						    
+						    res.setCoversList(coverList);
+						    
+						    
+						    Map<Integer, String> siMap = new HashMap<>();
+						    
+						    
+						    if(StringUtils.isNotBlank(paymentData.getCompanyId()) && homeData.getProductId() != null ) {
+						  List<CompanyProductMaster> companyProductDataList =  companyProductRepo.findByCompanyIdAndProductIdOrderByAmendIdDesc(paymentData.getCompanyId(), homeData.getProductId());
+						  
+						  
+						  if(null != companyProductDataList && !companyProductDataList.isEmpty() && null != companyProductDataList.get(0) &&null  != companyProductDataList.get(0) ){
+							  
+							  CompanyProductMaster  product =	  companyProductDataList.get(0);
+							  
+							 
+							  
+							  if(product.getMotorYn().equalsIgnoreCase("H") &&  homeData.getProductId().equals(Integer.valueOf(4))) {
+									
+								  // travel
+								  
+								  List<EserviceTravelDetails> travelList  =  eserviceTravelRepo.findByPolicyNo(policyNumber);
+								  
+								 // No sum Insured
+									
+							 } else if(product.getMotorYn().equalsIgnoreCase("M") ) {
+								// Motor Product Details
+									List<EserviceMotorDetails> motorList =  eserviceMotorRepo.findByOriginalPolicyNo(policyNumber);
+									
+									 if(null != motorList && !motorList.isEmpty()) {
+										  
+										  for (EserviceMotorDetails motor : motorList) {
+											  
+											  if(null != motor && StringUtils.isNotBlank(motor.getSectionId()) && motor.getSumInsured() != null ) {
+											  siMap.put( Integer.valueOf(motor.getSectionId()) , motor.getSumInsured() != null ?  motor.getSumInsured().toPlainString() : "" );
+										}
+											  
+										  }
+									  }
+								
+							} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
+								// Asset Product Details
+								List<EserviceBuildingDetails> buildingList =  eserviceBuildingRepo.findByPolicyNo(policyNumber);
+								
+								if(null != buildingList && !buildingList.isEmpty()) {
+									  
+									  for (EserviceBuildingDetails building : buildingList) {
+										  
+										  if(null != building && StringUtils.isNotBlank(building.getSectionId())) {
+											  
+											  BigDecimal sumInsured = null;
+											  if( "1".equals( building.getSectionId()) ) {
+												  
+												  sumInsured = building.getBuildingSuminsured();
+											  }
+											  else  if( "47".equals( building.getSectionId()) ) {
+												  
+												  sumInsured = building.getContentSuminsured();
+											  }
+ 
+											  else if( "3".equals( building.getSectionId()) ) {
+	  
+	                                            sumInsured = building.getAllriskSuminsured();
+                                                  }
+// 
+//											  else  if( "36".equals( building.getSectionId()) ) {
+//	 
+//                                                 humanrepo.
+//	  
+//	                                               sumInsured = building.get
+//                                                }
+//											  else if( "35".equals( building.getSectionId()) ) {
+//                                            		  
+//                                            		  sumInsured = building.get
+//                                            	 }
+//                                            			
+ 									  
+										  siMap.put( Integer.valueOf(building.getSectionId()) ,  sumInsured != null ? sumInsured.toPlainString() : "" );
+									}
+										  
+									  }
+								  }
+								
+							} else {
+								// Human Product Details
+								List<EserviceCommonDetails> humanList =  eserviceCommonRepo.findByPolicyNo(policyNumber);
+								
+								
+								if(null != humanList && !humanList.isEmpty()) {
+									  
+									  for (EserviceCommonDetails human : humanList) {
+
+											if (null != human && StringUtils.isNotBlank(human.getSectionId())
+													&& human.getSumInsured() != null) {
+												siMap.put(Integer.valueOf(human.getSectionId()),human.getSumInsured() != null ? human.getSumInsured().toPlainString() : "" );
+											}
+
+										}
+									}
+								}
+
+							}
+
+						}
+
+					//	res.setSumInsuredWithSectionId(siMap);
+
+					}
+
+				}
+
+			}
+
+			res.setPolicyNo(policyNumber);
+			
+			commonRes.setMessage("success");
+			commonRes.setIsError(false);
+			commonRes.setCommonResponse(res);
+			commonRes.setErroCode(0);
+
+			
+			return commonRes;
+
+			} else {
+
+					commonRes.setMessage("Failed-Check Request Data");
+					commonRes.setIsError(true);
+					commonRes.setCommonResponse(null);
+					commonRes.setErroCode(0);
+
+				}
+
+				return commonRes;
+
+			} catch (Exception e) {
+
+				log.error("Exception occurs When Fetching The Policy Data Based On Policy Number  ****** "+ e.getMessage());
+				e.printStackTrace();
+				// throw new DataBindingException( "Check Data Fetching and Binding", e);
+
+			}
+		
+			
+			}
+			return null;
+
 		}
 	}

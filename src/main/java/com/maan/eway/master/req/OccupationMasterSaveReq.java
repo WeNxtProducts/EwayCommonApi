@@ -57,6 +57,9 @@ public class OccupationMasterSaveReq implements Serializable {
 	
 	@JsonProperty("CategoryId")
 	private String categoryId;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 
 
 }

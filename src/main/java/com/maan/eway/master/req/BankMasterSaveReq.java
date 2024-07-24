@@ -3,7 +3,7 @@ package com.maan.eway.master.req;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,7 +16,7 @@ public class BankMasterSaveReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	@JsonProperty("BankCode")
-    private String     bankCode     ;
+    private String     bankCode;
 	
 	@JsonProperty("InsuranceId")
     private String     companyId;
@@ -60,5 +60,8 @@ public class BankMasterSaveReq implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 
 }

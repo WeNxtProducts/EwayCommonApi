@@ -81,6 +81,8 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			if(Exsisting!=null) {
 				AmendId=Exsisting.getAmendId()+1;
 				ProductStructureRepo.delete(Exsisting);}
+				AmendId=Exsisting.getAmendId();
+				ProductStructureRepo.delete(Exsisting);
 			}
 			//insert block
 		   
@@ -128,6 +130,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		try {
 			List<ProductStructureMasterReq> result1 = new ArrayList<>();
 			List<InsuranceTypeMaster> data =ProductStructureRepo.findByCompanyIdAndProductId(req.getCompanyId(),Integer.valueOf(req.getProductid()));
+			List<InsuranceTypeMaster> data =ProductStructureRepo.findByCompanyIdAndProductIdAndStatus(req.getCompanyId(),Integer.valueOf(req.getProductid()),"Y");
 			for(InsuranceTypeMaster dd:data)
 			{
 				ProductStructureMasterReq records=new DozerBeanMapper().map(dd,ProductStructureMasterReq.class);
@@ -142,6 +145,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		}catch(Exception cc)
 		{
 		System.out.println("The Exception Occured in get All  get Insurance Type Master");	
+		System.out.println("The Exception Occured in get All Product Structure Master");	
 		return null;
 		}
 		return result;
@@ -178,11 +182,11 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		return res;
 		
 	}
-	public List<ProductStructureMasterRes> getByIndustryTypeId(GetProductMasterReq sneha)
 	{
 		List<ProductStructureMasterRes> result=null;
 		try {
 			List<InsuranceTypeMaster> getdata=	ProductStructureRepo.findByIndsutryTypeIdAndStatusAndCompanyIdAndProductId(sneha.getIndsutryTypeId(),"Y",sneha.getCompanyId(),Integer.valueOf(sneha.getProductid()));
+			List<InsuranceTypeMaster> getdata=	ProductStructureRepo.findByIndsutryTypeIdAndStatus(sneha.getIndsutryTypeId(),"Y");
 			List<ProductStructureMasterRes> result1 = new ArrayList<>();
 			for(InsuranceTypeMaster dd:getdata)
 			{
@@ -197,6 +201,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		}catch(Exception cc)
 		{
 		 System.out.println("***************Exception Occured in  get Insurance Type Master****************");
+		 System.out.println("***************Exception Occured in GetIndustryType****************");
         cc.printStackTrace();
         return null;
 		}
@@ -228,6 +233,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		}catch(Exception dd)
 		{
 			System.out.println("**************The Exception Occured in Delete  Insurance Type Master*************");
+			System.out.println("**************The Exception Occured in Delete Product Structure Master *************");
 			dd.printStackTrace();
 			res.setCommonResponse(result);
 			res.setMessage("Success");
@@ -238,4 +244,6 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 	}
 
 	
+		return null;
+	}
 }

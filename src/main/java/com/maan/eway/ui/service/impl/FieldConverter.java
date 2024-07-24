@@ -1,6 +1,6 @@
 package com.maan.eway.ui.service.impl;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 
 import com.google.gson.Gson;
 import com.maan.eway.ui.request.Field;

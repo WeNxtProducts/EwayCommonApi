@@ -3,25 +3,10 @@ package com.maan.eway.common.service.impl;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,10 +20,8 @@ import com.maan.eway.bean.DepositDetail;
 import com.maan.eway.bean.DepositcbcMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.PaymentDeposit;
 import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.common.req.GetDepositPaymentReq;
 import com.maan.eway.common.req.SaveDepositeMasterReq;
 import com.maan.eway.common.req.SavePaymentDepositReq;
@@ -54,6 +37,16 @@ import com.maan.eway.error.Error;
 import com.maan.eway.repository.DepositDetailRepository;
 import com.maan.eway.repository.DepositcbcMasterRepository;
 import com.maan.eway.repository.PaymentDepositRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.transaction.Transactional;
 
 @Service
 public class DepositServiceImpl implements DepositService {

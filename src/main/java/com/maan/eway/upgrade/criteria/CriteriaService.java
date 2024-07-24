@@ -3,7 +3,6 @@ package com.maan.eway.upgrade.criteria;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,25 +15,24 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.service.PrintReqService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.criteria.Subquery;
 @Component
 public class CriteriaService {
 
@@ -102,7 +100,7 @@ public class CriteriaService {
 			for(Entry<String, Object> keyas:parameters.entrySet()) {
 				//keyas.getValue().getClass()
 				final Class<?> parameterType = result.getParameter(keyas.getKey()).getParameterType();
-				if(parameterType.isAssignableFrom(java.util.Date.class) ) {
+				if(parameterType.isAssignableFrom(java.util.Date.class) || parameterType.isAssignableFrom(java.sql.Timestamp.class) ) {
 					DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 					DateFormat time=new SimpleDateFormat("HH:mm:ss");
 					//String format = ;
@@ -181,7 +179,7 @@ public class CriteriaService {
 		}
 
 		//amendId.select(cb.max(ocpm1.get(amendIdCol)));
-		javax.persistence.criteria.Predicate n3=null;
+		Predicate n3=null;
 		Predicate subPredicate = cb.conjunction();
 		{
 
@@ -203,7 +201,7 @@ public class CriteriaService {
 
 
 		}
-		//javax.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
+		//Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
 
 
 
@@ -231,7 +229,7 @@ public class CriteriaService {
 			for(Entry<String, Object> keyas:parameters.entrySet()) {
 				//keyas.getValue().getClass()
 				final Class<?> parameterType = result.getParameter(keyas.getKey()).getParameterType();
-				if(parameterType.isAssignableFrom(java.util.Date.class) ) {
+				if(parameterType.isAssignableFrom(java.util.Date.class) || parameterType.isAssignableFrom(java.sql.Timestamp.class) ) {
 					DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy  HH:mm:ss");
 					DateFormat time=new SimpleDateFormat("HH:mm:ss");
 					//formatter.format(data.get("inceptiondate"));
@@ -411,7 +409,7 @@ public class CriteriaService {
 			for(Entry<String, Object> keyas:parameters.entrySet()) {
 				//keyas.getValue().getClass()
 				final Class<?> parameterType = result.getParameter(keyas.getKey()).getParameterType();
-				if(parameterType.isAssignableFrom(java.util.Date.class) ) {
+				if(parameterType.isAssignableFrom(java.util.Date.class) || parameterType.isAssignableFrom(java.sql.Timestamp.class)) {
 					DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 					DateFormat time=new SimpleDateFormat("HH:mm:ss");
 					//formatter.format(data.get("inceptiondate"));
@@ -495,7 +493,7 @@ public class CriteriaService {
 		}
 
 		//amendId.select(cb.max(ocpm1.get(amendIdCol)));
-		javax.persistence.criteria.Predicate n3=null;
+		Predicate n3=null;
 		Predicate subPredicate = cb.conjunction();
 		{
 
@@ -517,7 +515,7 @@ public class CriteriaService {
 
 
 		}
-		//javax.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
+		//Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
 
 
 
@@ -545,7 +543,7 @@ public class CriteriaService {
 			for(Entry<String, Object> keyas:parameters.entrySet()) {
 				//keyas.getValue().getClass()
 				final Class<?> parameterType = result.getParameter(keyas.getKey()).getParameterType();
-				if(parameterType.isAssignableFrom(java.util.Date.class) ) {
+				if(parameterType.isAssignableFrom(java.util.Date.class) || parameterType.isAssignableFrom(java.sql.Timestamp.class)) {
 					DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 					DateFormat time=new SimpleDateFormat("HH:mm:ss");
 					//formatter.format(data.get("inceptiondate"));
@@ -678,7 +676,7 @@ public class CriteriaService {
 				for(Entry<String, Object> keyas:parameter.entrySet()) {
 					//keyas.getValue().getClass()
 					final Class<?> parameterType = result.getParameter(keyas.getKey()).getParameterType();
-					if(parameterType.isAssignableFrom(java.util.Date.class) ) {
+					if(parameterType.isAssignableFrom(java.util.Date.class) || parameterType.isAssignableFrom(java.sql.Timestamp.class)) {
 						DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 						DateFormat time=new SimpleDateFormat("HH:mm:ss");
 						//String format = ;
@@ -768,7 +766,7 @@ public class CriteriaService {
 			for(Entry<String, Object> keyas:parameters.entrySet()) {
 				//keyas.getValue().getClass()
 				final Class<?> parameterType = result.getParameter(keyas.getKey()).getParameterType();
-				if(parameterType.isAssignableFrom(java.util.Date.class) ) {
+				if(parameterType.isAssignableFrom(java.util.Date.class) || parameterType.isAssignableFrom(java.sql.Timestamp.class)) {
 					DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 					DateFormat time=new SimpleDateFormat("HH:mm:ss");
 					//String format = ;

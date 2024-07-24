@@ -1,21 +1,12 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,6 +27,16 @@ import com.maan.eway.master.service.LifePolicyTermsMasterService;
 import com.maan.eway.notification.repository.LifePolicytermsMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -389,9 +390,9 @@ public class LifePolicyTermsMasterServiceImple implements LifePolicyTermsMasterS
 			query.select(c);
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<LifePolicytermsMaster> ocpm1 = effectiveDate.from(LifePolicytermsMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 =  cb.equal(ocpm1.get("policyTerms"), c.get("policyTerms"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -399,9 +400,9 @@ public class LifePolicyTermsMasterServiceImple implements LifePolicyTermsMasterS
 			Predicate a10 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			effectiveDate.where(a1,a2,a5,a6,a10);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<LifePolicytermsMaster> ocpm2 = effectiveDate2.from(LifePolicytermsMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(ocpm2.get("policyTerms"), c.get("policyTerms"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -431,6 +432,7 @@ public class LifePolicyTermsMasterServiceImple implements LifePolicyTermsMasterS
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getPolicyTerms().toString());
 				res.setCodeDesc(data.getPolicyTermsDesc());
+				res.setCodeDescLocal(data.getPolicyTermsDescLocal());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}		

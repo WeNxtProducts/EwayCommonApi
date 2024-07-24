@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,44 +19,19 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.BuildingRiskDetails;
-import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -86,12 +62,9 @@ import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.req.VehicleIdsReq;
-import com.maan.eway.common.req.VehicleNeedToAdd;
-import com.maan.eway.common.req.VehicleNeedToRemove;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.NewQuoteRes;
-import com.maan.eway.common.res.PortfolioAdminPendingRes;
 import com.maan.eway.common.res.ProductThreadRes;
 import com.maan.eway.common.res.QuoteThreadRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
@@ -99,7 +72,6 @@ import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
-import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
 import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.notification.req.Broker;
@@ -132,7 +104,6 @@ import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.ProductMasterRepository;
-import com.maan.eway.repository.ProductSectionMasterRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
@@ -146,6 +117,19 @@ import com.maan.eway.res.ReferalResponse;
 import com.maan.eway.res.calc.AdminReferral;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.thread.MyTaskList;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -1988,23 +1972,23 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					orderList.add(cb.asc(c.get("endtTypeId")));
 
 					// Effective Date Max Filter
-					Subquery<Long> effectiveDate = query.subquery(Long.class);
+					Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 					Root<EndtTypeMaster> ocpm1 = effectiveDate.from(EndtTypeMaster.class);
-					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-					javax.persistence.criteria.Predicate a1 = cb.equal(c.get("endtTypeId"), ocpm1.get("endtTypeId"));
-					javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(cb.function("trunc", Date.class,ocpm1.get("effectiveDateStart")) , today );
-					javax.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
-					javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+					effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+					jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("endtTypeId"), ocpm1.get("endtTypeId"));
+					jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(cb.function("trunc", Date.class,ocpm1.get("effectiveDateStart")) , today );
+					jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+					jakarta.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 
 					effectiveDate.where(a1, a2, a3, a4);
 					// Effective Date End Max Filter
-					Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+					Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 					Root<EndtTypeMaster> ocpm2 = effectiveDate2.from(EndtTypeMaster.class);
-					effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-					javax.persistence.criteria.Predicate a6 = cb.equal(c.get("endtTypeId"), ocpm2.get("endtTypeId"));
-					javax.persistence.criteria.Predicate a7 = cb.equal(c.get("productId"), ocpm2.get("productId"));
-					javax.persistence.criteria.Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
-					javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(cb.function("trunc", Date.class,ocpm2.get("effectiveDateEnd")), todayEnd);
+					effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+					jakarta.persistence.criteria.Predicate a6 = cb.equal(c.get("endtTypeId"), ocpm2.get("endtTypeId"));
+					jakarta.persistence.criteria.Predicate a7 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+					jakarta.persistence.criteria.Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+					jakarta.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(cb.function("trunc", Date.class,ocpm2.get("effectiveDateEnd")), todayEnd);
 					effectiveDate2.where(a6, a7, a8, a10);
 
 					// Where
@@ -2012,11 +1996,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					Predicate n1 = cb.equal(c.get("status"),"Y");
 					Predicate n11 = cb.equal(c.get("status"),"R");
 					Predicate n12 = cb.or(n1,n11);
-					javax.persistence.criteria.Predicate n2 = cb.equal(cb.function("trunc", Date.class,c.get("effectiveDateStart")), effectiveDate);
-					javax.persistence.criteria.Predicate n3 = cb.equal(c.get("endtTypeId"), endtTypeId);
-					javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), productId);
-					javax.persistence.criteria.Predicate n6 = cb.equal(c.get("companyId"), insuranceId);
-					javax.persistence.criteria.Predicate n7 = cb.equal(cb.function("trunc", Date.class,c.get("effectiveDateEnd")), effectiveDate2);
+					jakarta.persistence.criteria.Predicate n2 = cb.equal(cb.function("trunc", Date.class,c.get("effectiveDateStart")), effectiveDate);
+					jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("endtTypeId"), endtTypeId);
+					jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), productId);
+					jakarta.persistence.criteria.Predicate n6 = cb.equal(c.get("companyId"), insuranceId);
+					jakarta.persistence.criteria.Predicate n7 = cb.equal(cb.function("trunc", Date.class,c.get("effectiveDateEnd")), effectiveDate2);
 
 					query.where(n12, n2, n3, n5, n6,n7).orderBy(orderList);
 
@@ -2956,17 +2940,17 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			orderList.add(cb.asc(c.get("productName")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);

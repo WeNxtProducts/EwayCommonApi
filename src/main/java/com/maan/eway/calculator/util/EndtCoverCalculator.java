@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import org.springframework.stereotype.Component;
 

@@ -1,67 +1,22 @@
 package com.maan.eway.common.service.impl;
 
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
-import javax.persistence.Column;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.maan.eway.admin.res.MotorGridCriteriaRes;
-import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
-import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
-import com.maan.eway.admin.res.ReferalGridCriteriaRes;
-import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
-import com.maan.eway.auth.dto.BrokerProductsGetRes;
-import com.maan.eway.auth.dto.LoginProductCriteriaRes;
-import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.EserviceBuildingDetails;
-import com.maan.eway.bean.EserviceCommonDetails;
-import com.maan.eway.bean.EserviceCustomerDetails;
-import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.LoginBranchMaster;
-import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TiraTrackingDetails;
@@ -69,8 +24,6 @@ import com.maan.eway.common.req.AdminTiraIntegrationGridReq;
 import com.maan.eway.common.res.AdminTiraIntegrationGirdRes;
 import com.maan.eway.common.res.TiraRes;
 import com.maan.eway.common.service.AdminTiraIntegrationService;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
@@ -79,7 +32,16 @@ import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.TiraTrackingDetailsRepository;
-import com.maan.eway.thread.MyTaskList;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 @Service
 @Transactional

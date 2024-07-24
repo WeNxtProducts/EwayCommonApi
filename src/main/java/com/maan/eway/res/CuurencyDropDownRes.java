@@ -20,4 +20,7 @@ public class CuurencyDropDownRes {
 	private String maxRate;
 	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

@@ -1,17 +1,14 @@
 package com.maan.eway.common.res;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 import com.google.gson.annotations.SerializedName;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 import lombok.ToString;
 

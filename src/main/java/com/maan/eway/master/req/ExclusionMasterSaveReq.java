@@ -60,6 +60,8 @@ public class ExclusionMasterSaveReq {
 	@JsonProperty("TypeId")
 	private String typeId;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 	//	
 //	@JsonProperty("PolicyType")
 //	private String policyType;

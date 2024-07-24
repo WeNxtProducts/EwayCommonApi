@@ -6,15 +6,16 @@
 package com.maan.eway.common.req;
 
 import java.io.Serializable;
-
-import lombok.*;
 import java.util.Date;
-
-import java.util.Date;
-import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Domain class for entity "PersonalInfo"

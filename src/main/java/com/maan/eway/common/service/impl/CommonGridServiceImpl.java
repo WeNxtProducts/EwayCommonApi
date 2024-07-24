@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,18 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -73,7 +62,6 @@ import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.CommonGridService;
-import com.maan.eway.endorsment.service.EndorsementService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
@@ -94,6 +82,18 @@ import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -200,9 +200,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 				predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
 				predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
-					predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+					predics1.add(cb.equal(m.get("brokerCode").as(Long.class), agencyCode));
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
-					predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+					predics1.add(cb.equal(m.get("agencyCode").as(Long.class), agencyCode));
 				}
 				predics1.add(cb.isNotNull(m.get("sourceType")));
 				predics1.add(cb.isNotNull(m.get("loginId")));
@@ -1308,7 +1308,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Root<EserviceCommonDetails> c = query.from(EserviceCommonDetails.class);
 				Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 				
-				query.multiselect(c.alias("c") ,cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"),
+				query.multiselect(cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"),
 
 				cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),
 				cb.max(c.get("riskId")).alias("riskId"), 
@@ -1766,16 +1766,16 @@ public class CommonGridServiceImpl implements CommonGridService {
 				orderList.add(cb.asc(c.get("branchCode")));
 
 				// Effective Date Start Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				effectiveDate.where(a1, a2);
 				// Effective Date End Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 				Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 				effectiveDate2.where(a3, a4);
@@ -2129,9 +2129,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 					orderList.add(cb.asc(c.get("branchCode")));
 
 					// Effective Date Start Max Filter
-					Subquery<Long> effectiveDate = query.subquery(Long.class);
+					Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 					Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+					effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 					Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 					Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -2139,9 +2139,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 					effectiveDate.where(a1,a2,b1,b2);
 					
 					// Effective Date End Max Filter
-					Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+					Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 					Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-					effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+					effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 					Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 					Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 					Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -3486,9 +3486,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 					Predicate n5 = cb.equal(m.get("endtStatus"), "P");
 					Predicate n12 = null;
 					if ("Broker".equalsIgnoreCase(req.getUserType())) {
-						n12 = cb.equal(m.get("brokerCode"), agencyCode);
+						n12 = cb.equal(m.get("brokerCode").as(Long.class), agencyCode);
 					} else if ("User".equalsIgnoreCase(req.getUserType())) {
-						n12 = cb.equal(m.get("agencyCode"), agencyCode);
+						n12 = cb.equal(m.get("agencyCode").as(Long.class), agencyCode);
 					}
 					Predicate n13 = cb.isNotNull(m.get("sourceType"));
 					Predicate n14 = cb.isNotNull(m.get("loginId"));
@@ -3635,9 +3635,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 					predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), before30));
 			//		predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 					if ("Broker".equalsIgnoreCase(req.getUserType())) {
-						predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+						predics1.add(cb.equal(m.get("brokerCode").as(Long.class), agencyCode));
 					} else if ("User".equalsIgnoreCase(req.getUserType())) {
-						predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+						predics1.add(cb.equal(m.get("agencyCode").as(Long.class), agencyCode));
 					}
 					predics1.add(cb.isNotNull(m.get("sourceType")));
 					predics1.add(cb.isNotNull(m.get("loginId")));
@@ -3798,9 +3798,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 					predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
 					predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 					if ("Broker".equalsIgnoreCase(req.getUserType())) {
-						predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+						predics1.add(cb.equal(m.get("brokerCode").as(Long.class), agencyCode));
 					} else if ("User".equalsIgnoreCase(req.getUserType())) {
-						predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+						predics1.add(cb.equal(m.get("agencyCode").as(Long.class), agencyCode));
 					}
 					predics1.add(cb.isNotNull(m.get("sourceType")));
 					predics1.add(cb.isNotNull(m.get("loginId")));
@@ -3961,9 +3961,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 					Predicate n5 = cb.equal(m.get("status"), status);
 					Predicate n12 = null;
 					if ("Broker".equalsIgnoreCase(req.getUserType())) {
-						n12 = cb.equal(m.get("brokerCode"), agencyCode);
+						n12 = cb.equal(m.get("brokerCode").as(Long.class), agencyCode);
 					} else if ("User".equalsIgnoreCase(req.getUserType())) {
-						n12 = cb.equal(m.get("agencyCode"), agencyCode);
+						n12 = cb.equal(m.get("agencyCode").as(Long.class), agencyCode);
 					}
 					Predicate n13 = cb.isNotNull(m.get("sourceType"));
 					Predicate n14 = cb.isNotNull(m.get("loginId"));

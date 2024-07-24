@@ -1,15 +1,13 @@
 package com.maan.eway.upgrade.criteria;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 public class UserSearchQueryCriteriaConsumer implements Consumer<SearchCriteria>{
 
@@ -36,7 +34,9 @@ public class UserSearchQueryCriteriaConsumer implements Consumer<SearchCriteria>
         } else if (param.getOperation().equalsIgnoreCase("%")) {
         	 predicate = builder.and(predicate, builder.like(builder.upper(r.get(param.getKey())),"%"+param.getValue().toString().toUpperCase()+"%"));
         }else if (param.getOperation().equalsIgnoreCase(":")) {
-        	 if (param.getKey().indexOf(".")==-1 &&  (r.get(param.getKey()).getJavaType() == String.class || r.get(param.getKey()).getJavaType()==Integer.class )) {
+        	 if (param.getKey().indexOf(".")==-1 &&  (r.get(param.getKey()).getJavaType() == String.class 
+        			 || r.get(param.getKey()).getJavaType()==Integer.class 
+        			 || r.get(param.getKey()).getJavaType()== Long.class)) {
         		 if(param.getValues()!=null && param.getValues().size()>0) {
         			 predicate = builder.and(predicate,r.get(param.getKey()).in(param.getValues()));
             	 }else if(r.get(param.getKey()).getJavaType() == String.class)  {     		 

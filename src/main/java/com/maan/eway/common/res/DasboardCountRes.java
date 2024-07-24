@@ -27,4 +27,7 @@ public class DasboardCountRes {
 	
 	@JsonProperty("Premium")
     private BigDecimal premium;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

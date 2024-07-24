@@ -37,4 +37,6 @@ public class MotorVehicleUsageMasterGetRes {
     private String b2cStatus;
 	@JsonProperty("RegulatoryCode")
     private String regulatoryCode;
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

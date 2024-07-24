@@ -29,18 +29,6 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -129,6 +117,18 @@ import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
 * <h2>LoginMasterServiceimpl</h2>
@@ -688,16 +688,16 @@ this.repository = repo;
 				Subquery<Long> amendId = query.subquery(Long.class);
 				Root<RegionMaster> ocpm1 = amendId.from(RegionMaster.class);
 				amendId.select(cb.max(ocpm1.get("amendId")));
-				javax.persistence.criteria.Predicate a1 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode") );
+				Predicate a1 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode") );
 				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				amendId.where(a1,a3);
 			
 				
 			    // Where	
 			
-				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
-				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("regionCode"),cityCode) ;
-				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"),countryId) ;
+				Predicate n1 = cb.equal(c.get("amendId"), amendId);		
+				Predicate n2 = cb.equal(c.get("regionCode"),cityCode) ;
+				Predicate n3 = cb.equal(c.get("countryId"),countryId) ;
 				query.where(n1 ,n2,n3).orderBy(orderList);
 				// Get Result
 				TypedQuery<Tuple> result = em.createQuery(query);
@@ -1568,7 +1568,7 @@ this.repository = repo;
 */
 				List<Menu> menus=new ArrayList<Menu>();
 				for (MenuMaster menuMaster : unique) {
-					Menu m = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+					Menu m = Menu.builder().title(menuMaster.getMenuName()).titleLocal(menuMaster.getMenuNameLocal()).link(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
 							.icon(menuMaster.getMenuLogo()).orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
 					menus.add(m);
 				}

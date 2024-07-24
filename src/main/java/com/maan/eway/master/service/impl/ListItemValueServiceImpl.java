@@ -5,8 +5,8 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -19,32 +19,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.common.service.impl.DropDownServiceImpl;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ListItemValueSaveReq;
 import com.maan.eway.master.req.LovChangeStatusReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -56,6 +40,17 @@ import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.TitleType;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>ListItemValueServiceimpl</h2>
 */
@@ -470,6 +465,7 @@ this.repository = repo;
 			saveData.setAmendId(amendId);
 			saveData.setParam1(StringUtils.isBlank(req.getTitleType())?"I":req.getTitleType());
 			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setItemValueLocal(req.getCodeDescLocal());
 			repository.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			
@@ -495,9 +491,9 @@ this.repository = repo;
 			query.select(b);
 
 			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 			effectiveDate.where(a1);
 			
@@ -583,7 +579,7 @@ this.repository = repo;
 				LovDetailsGetRes res = new LovDetailsGetRes();
 
 				res = mapper.map(data, LovDetailsGetRes.class);
-				
+				res.setCodeDescLocal(data.getItemValueLocal());			
 				resList.add(res);
 			}
 
@@ -718,6 +714,7 @@ this.repository = repo;
 			list = result.getResultList();
 			// Map
 			res = mapper.map(list.get(0), LovDetailsGetRes.class);
+			res.setCodeDescLocal(list.get(0).getItemValueLocal());
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -747,25 +744,25 @@ this.repository = repo;
 			Root<ListItemValue> c = query.from(ListItemValue.class);
 			
 			//Select
-			query.multiselect( c.get("itemId").alias("itemId") ,  c.get("itemType").alias("itemType") ,  c.get("status").alias("status")    );
+			query.multiselect( c.get("itemId").alias("itemId") ,  c.get("itemType").alias("itemType") ,  c.get("status").alias("status") ,c.get("itemTypeLocal").alias("itemTypeLocal"));
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("branchCode")));
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a7 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
 			effectiveDate.where(a1,a2,a6,a7);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a8 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -794,7 +791,7 @@ this.repository = repo;
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
 			Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
-			Predicate n10 = cb.equal(c.get("itemType"),itemType);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType.as(String.class));
 			query.where(n2,n3,n8,n9,n10).orderBy(orderList);
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
@@ -807,6 +804,7 @@ this.repository = repo;
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.get("itemId").toString());
 				res.setCodeDesc(data.get("itemType").toString());
+				res.setCodeDescLocal(data.get("itemTypeLocal")!=null ? data.get("itemTypeLocal").toString() : "");
 				res.setStatus(data.get("status")==null?"":data.get("status").toString());
 				resList.add(res);
 			}
@@ -978,6 +976,7 @@ this.repository = repo;
                res.setTitletype(data.getParam1());
 			res.setCode(data.getItemCode().toString());
 			res.setCodeDesc(data.getItemValue().toString());
+			res.setCodeDescLocal(data.getItemValueLocal());
 				res.setStatus(data.getStatus()==null?"":data.getStatus().toString());
 			resList.add(res);
 			}

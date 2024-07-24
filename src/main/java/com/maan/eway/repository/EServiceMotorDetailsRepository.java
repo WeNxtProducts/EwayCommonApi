@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.bean.CustomerDetailsId;

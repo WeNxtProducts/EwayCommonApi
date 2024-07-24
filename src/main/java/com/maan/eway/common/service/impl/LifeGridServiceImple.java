@@ -9,17 +9,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -277,7 +277,7 @@ public class LifeGridServiceImple implements LifeGridService {
 			predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 			predics1.add(cb.equal(us.get("loginId"), m.get("loginId")));
 			if ("Broker".equalsIgnoreCase(req.getUserType())) {
-				predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+				predics1.add(cb.equal(m.get("brokerCode"), agencyCode.as(String.class)));
 			} else if ("User".equalsIgnoreCase(req.getUserType())) {
 				predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
 			}
@@ -436,7 +436,7 @@ public class LifeGridServiceImple implements LifeGridService {
 				predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), before30));
 		//		predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
-					predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+					predics1.add(cb.equal(m.get("brokerCode"), agencyCode.as(String.class)));
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
 					predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
 				}
@@ -909,7 +909,7 @@ public class LifeGridServiceImple implements LifeGridService {
 				predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
 				predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
-					predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+					predics1.add(cb.equal(m.get("brokerCode"), agencyCode.as(String.class)));
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
 					predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
 				}
@@ -1078,7 +1078,7 @@ public class LifeGridServiceImple implements LifeGridService {
 				Predicate n5 = cb.equal(m.get("endtStatus"), "P");
 				Predicate n12 = null;
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("brokerCode"), agencyCode);
+					n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
 					n12 = cb.equal(m.get("agencyCode"), agencyCode);
 				}
@@ -1439,7 +1439,7 @@ public class LifeGridServiceImple implements LifeGridService {
 				Predicate n5 = cb.equal(m.get("status"), "RP");
 				Predicate n12 = null;
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("brokerCode"), agencyCode);
+					n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
 					n12 = cb.equal(m.get("agencyCode"), agencyCode);
 				}
@@ -1830,7 +1830,7 @@ public class LifeGridServiceImple implements LifeGridService {
 				Predicate n5 = cb.equal(m.get("status"), "RA");
 				Predicate n12 = null;
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("brokerCode"), agencyCode);
+					n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
 					n12 = cb.equal(m.get("agencyCode"), agencyCode);
 				}
@@ -1998,7 +1998,7 @@ public class LifeGridServiceImple implements LifeGridService {
 				Predicate n5 = cb.equal(m.get("status"), "RR");
 				Predicate n12 = null;
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("brokerCode"), agencyCode);
+					n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
 					n12 = cb.equal(m.get("agencyCode"), agencyCode);
 				}
@@ -2168,7 +2168,7 @@ public class LifeGridServiceImple implements LifeGridService {
 				Predicate n5 = cb.equal(m.get("status"), "RE");
 				Predicate n12 = null;
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("brokerCode"), agencyCode);
+					n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
 					n12 = cb.equal(m.get("agencyCode"), agencyCode);
 				}

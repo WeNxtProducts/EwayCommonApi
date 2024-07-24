@@ -1,32 +1,15 @@
 package com.maan.eway.common.controller;
 
 
-import java.awt.image.RescaleOp;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDate;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
-import org.hibernate.sql.JoinType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +20,7 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.DashBoardGetReq;
 import com.maan.eway.common.res.CommonRes;
@@ -45,7 +29,19 @@ import com.maan.eway.common.res.DashBoardChart;
 import com.maan.eway.common.res.DashBoardGetRes;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
+import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.req.calcengine.CalcEngine;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 public class DashBoardServiceV1 {
@@ -58,6 +54,9 @@ public class DashBoardServiceV1 {
 	
 	@Autowired
 	private NotifTransactionDetailsRepository notifyrepo;
+	
+	@Autowired
+	private EndtTypeMasterRepository endtTypeMasterRepo;
 	
 	
 	//SELECT TYPE,SUM(COUNT) AS COUNT,SUM(PREMIUM) AS PREMIUM,CURRENCY_CODE FROM( SELECT (CASE WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN IS NULL) THEN 'QUOTE' WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN='Y') THEN 'RENEWAL QUOTE' END) AS TYPE, COUNT(*) AS COUNT, ROUND(SUM(OVERALL_PREMIUM_LC),0) AS PREMIUM, MAX(CPM.CURRENCY_ID) AS CURRENCY_CODE FROM ESERVICE_BUILDING_DETAILS HPM,EWAY_INSURANCE_COMPANY_MASTER CPM WHERE HPM.COMPANY_ID=? AND HPM.PRODUCT_ID=? AND HPM.STATUS IN ('Y') AND (CASE WHEN 'Issuer'='Issuer' THEN HPM.APPLICATION_ID ELSE HPM.LOGIN_ID END) IN () AND HPM.entry_date >= ? AND HPM.ENTRY_DATE <=? AND CPM.COMPANY_ID=HPM.COMPANY_ID AND CPM.AMEND_ID=(SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER WHERE CPM.COMPANY_ID=COMPANY_ID) GROUP BY HPM.STATUS,HPM.RENEWAL_DATE_YN UNION ALL SELECT (CASE WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN IS NULL) THEN 'QUOTE' WHEN (HPM.STATUS ='Y' AND RENEWAL_DATE_YN='Y') THEN 'RENEWAL QUOTE' END) AS TYPE, COUNT(*) AS COUNT, ROUND(SUM(OVERALL_PREMIUM_LC),0) AS PREMIUM, MAX(CPM.CURRENCY_ID) AS CURRENCY_CODE FROM ESERVICE_COMMON_DETAILS HPM,EWAY_INSURANCE_COMPANY_MASTER CPM WHERE HPM.COMPANY_ID=? AND HPM.PRODUCT_ID=? AND HPM.STATUS IN ('Y') AND CPM.COMPANY_ID=HPM.COMPANY_ID and (CASE WHEN 'Issuer'='Issuer' THEN HPM.APPLICATION_ID ELSE HPM.LOGIN_ID END) IN () AND HPM.entry_date >= ? AND HPM.ENTRY_DATE <=? AND CPM.AMEND_ID=(SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER WHERE CPM.COMPANY_ID=COMPANY_ID) GROUP BY HPM.STATUS,HPM.RENEWAL_DATE_YN)X GROUP BY TYPE,CURRENCY_CODE
@@ -279,7 +278,15 @@ public class DashBoardServiceV1 {
 					total.add(res);
 				}
 			}
-			
+			Map<String,String> map=new HashMap<String,String>();
+			map.put("QUOTE","CITAÇÃO");
+			map.put("RENEWAL QUOTE","CITAÇÃO DE RENOVAÇÃO");
+			map.put("POLICY","POLÍTICA");
+			map.put("RENEWAL POLICY","POLÍTICA DE RENOVAÇÃO");
+		    for (DasboardCountRes res : total) {
+		         String codeDescLocal = map.get(res.getType());
+		         res.setCodeDescLocal(codeDescLocal);
+		    }
 			CommonRes res=new CommonRes();
 			res.setCommonResponse(total);
 			return res;
@@ -296,7 +303,7 @@ public class DashBoardServiceV1 {
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<LoginMaster> root = cq.from(LoginMaster.class);
 			
-            Subquery<String> subquery = cq.subquery(String.class);
+            Subquery<Integer> subquery = cq.subquery(Integer.class);
             Root<LoginMaster> subRoot = subquery.from(LoginMaster.class);
             subquery.select(subRoot.get("oaCode"))
                     .where(cb.equal(subRoot.get("loginId"), loginId),
@@ -660,9 +667,11 @@ public class DashBoardServiceV1 {
 			 List<Map<String,Object>> rspone=new ArrayList<Map<String,Object>>();
 			 for (int i = 0; i < results.size(); i++) {
 				 Tuple tuple = results.get(i);
+				 List<EndtTypeMaster> endtTypeMaster = endtTypeMasterRepo.findByEndtTypeAndCompanyId(tuple.get(1).toString() , req.getInsuranceId());
 				 Map<String,Object> a=new HashMap<String, Object>();
 				 a.put("EndtTypeId", tuple.get(0));
 				 a.put("EndorsementDesc", tuple.get(1));
+				 a.put("CodeDescLocal",(endtTypeMaster!=null && endtTypeMaster.size()>0) ? endtTypeMaster.get(0).getEndtTypeLocal() : " ");
 				 a.put("Count", tuple.get(2));
 				 rspone.add(a);
 			 }

@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.5</version>
+		<version>3.2.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.maan.eway</groupId>
 	<artifactId>EwayCommonApi</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>EwayCommonApi</name>
 	<description>CRM project for Spring Boot</description>
@@ -18,12 +18,13 @@
 		<java.version>17</java.version>
 		<cache2k-version>2.6.1.Final</cache2k-version>
 	</properties>
-	<dependencies>
+	<dependencies
+	>
 	<dependency>
-    <groupId>org.codehaus.groovy</groupId>
-    <artifactId>groovy-all</artifactId>
-    <version>2.4.10</version>
-</dependency>
+	    <groupId>org.codehaus.groovy</groupId>
+	    <artifactId>groovy-all</artifactId>
+	    <version>2.4.10</version>
+	</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -55,7 +56,7 @@
 	<dependency>
 	    <groupId>com.fasterxml.jackson.core</groupId>
 	    <artifactId>jackson-databind</artifactId>
-	    <version>2.13.0</version>
+	    
 	</dependency> 
 	<!-- Security
 		<dependency>
@@ -64,9 +65,9 @@
 		</dependency> -->
 		
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
+			     <groupId>mysql</groupId>
+			    <artifactId>mysql-connector-java</artifactId>
+			    <version>8.0.33</version> 
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -93,13 +94,8 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<version>2.17.2</version><!--$NO-MVN-MAN-VER$-->
-		</dependency>
-		<!-- Lombok -->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
+		</dependency>	
+	
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
@@ -134,8 +130,7 @@
 		</dependency>
 <dependency>
     <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-config</artifactId>
-    <version>5.0.0.RELEASE</version>
+    <artifactId>spring-security-config</artifactId>    
 </dependency>
 		<!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
 		<dependency>
@@ -147,8 +142,7 @@
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
-			<version>2.7.0</version>
+			<artifactId>spring-boot-starter-mail</artifactId>			
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
 		<dependency>
@@ -174,12 +168,18 @@
 			<version>1.1.1</version>
 		</dependency>
 
+<dependency>
+    <groupId>javax.annotation</groupId>
+    <artifactId>javax.annotation-api</artifactId>
+    <version>1.3.2</version>
+</dependency>
+	
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.14.0</version>
+</dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.8.1</version>
-		</dependency>
 		<dependency>
 		    <groupId>com.googlecode.jmapper-framework</groupId>
 		    <artifactId>jmapper-core</artifactId>
@@ -261,6 +261,29 @@
 		    <artifactId>itextpdf</artifactId>
 		    <version>5.5.13</version>
 		</dependency>
+<!--
+<dependency>
+    <groupId>jakarta.xml.bind</groupId>
+    <artifactId>jakarta.xml.bind-api</artifactId>
+    <version>4.0.2</version>
+</dependency>
+<dependency>
+    <groupId>jakarta.activation</groupId>
+    <artifactId>jakarta.activation-api</artifactId>
+    <version>2.1.3</version>
+</dependency>
+-->
+<dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.3.1</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/javax.activation/javax.activation-api -->
+<dependency>
+    <groupId>javax.activation</groupId>
+    <artifactId>javax.activation-api</artifactId>
+    <version>1.2.0</version>
+</dependency>
 
 <!--	<dependency>
 		<groupId>com.3rdparty</groupId>

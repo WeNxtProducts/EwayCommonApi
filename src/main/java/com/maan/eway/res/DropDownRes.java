@@ -1,10 +1,9 @@
 package com.maan.eway.res;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 import lombok.ToString;
 
@@ -30,4 +29,6 @@ public class DropDownRes {
 	@JsonProperty("RiskId")
 	private String riskId;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

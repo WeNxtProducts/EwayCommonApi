@@ -82,6 +82,7 @@ public class CurrencyMasterSaveReq implements Serializable {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
-	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 	
 }

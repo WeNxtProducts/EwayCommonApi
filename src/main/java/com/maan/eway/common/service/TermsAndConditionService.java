@@ -3,7 +3,7 @@ package com.maan.eway.common.service;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import org.springframework.http.ResponseEntity;
 

@@ -20,6 +20,7 @@ public class WarrantyMasterId implements Serializable {
 	private Integer amendId;
 	private String productId;
 	private String sectionId;
-//	private String policyType;
+	//private String policyType;
+	
 
 }

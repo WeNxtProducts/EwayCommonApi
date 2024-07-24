@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,16 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,21 +29,27 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.IndustryMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.IndustryMasterChangeStatusReq;
 import com.maan.eway.master.req.IndustryMasterDropdownReq;
 import com.maan.eway.master.req.IndustryMasterGetReq;
 import com.maan.eway.master.req.IndustryMasterGetallReq;
 import com.maan.eway.master.req.IndustryMasterSaveReq;
 import com.maan.eway.master.res.IndustryMasterRes;
-import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.IndustryMasterService;
 import com.maan.eway.repository.IndustryMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.IndustryDropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>CityMasterServiceimpl</h2>
@@ -94,9 +91,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			query.select(c);
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<IndustryMaster> ocpm1 = effectiveDate.from(IndustryMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("categoryId"),ocpm1.get("categoryId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -107,9 +104,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 
 			effectiveDate.where(a1,a2,a5,a6,a9,a10);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<IndustryMaster> ocpm2 = effectiveDate2.from(IndustryMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("categoryId"),ocpm2.get("categoryId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -450,6 +447,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
 			saveData.setCategoryDesc(data.getItemValue());
+		    saveData.setIndustryNameLocal(req.getCodeDescLocal());
 			industryrepo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			
@@ -476,9 +474,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			query.select(b);
 
 			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<IndustryMaster> ocpm1 = effectiveDate.from(IndustryMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -556,9 +554,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			*/
 			
 			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<IndustryMaster> ocpm1 = effectiveDate.from(IndustryMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -568,9 +566,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 
 			effectiveDate.where(a1,a2,a3,a4,a10,a9);
 
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<IndustryMaster> ocpm2 = effectiveDate2.from(IndustryMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal(ocpm2.get("categoryId"), b.get("categoryId"));
 			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a7 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
@@ -608,6 +606,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 
 				res = dozermapper.map(data, IndustryMasterRes.class);
 				res.setCompanyId(data.getCompanyId());
+				res.setCodeDescLocal(data.getIndustryNameLocal());
 				resList.add(res);
 			}
 
@@ -658,9 +657,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			*/
 			
 			
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<IndustryMaster> ocpm1 = effectiveDate.from(IndustryMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -669,9 +668,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 
 			effectiveDate.where(a1,a2,a3,a4,a10);
 
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<IndustryMaster> ocpm2 = effectiveDate2.from(IndustryMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal(ocpm2.get("categoryId"), b.get("categoryId"));
 			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a7 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
@@ -755,9 +754,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			amendId.where(a1, a2,a3,a4);
 			 */
 			
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<IndustryMaster> ocpm1 = effectiveDate.from(IndustryMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -767,9 +766,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 
 			effectiveDate.where(a1,a2,a3,a4,a9,a11);
 
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<IndustryMaster> ocpm2 = effectiveDate2.from(IndustryMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal(ocpm2.get("categoryId"), b.get("categoryId"));
 			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a7 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
@@ -802,6 +801,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getIndustryId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(IndustryMaster :: getIndustryName ));
 				res = dozermapper.map(list.get(0), IndustryMasterRes.class);
+				res.setCodeDescLocal(list.get(0).getIndustryNameLocal());
 			
 
 		} catch (Exception e) {

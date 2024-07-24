@@ -10,7 +10,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

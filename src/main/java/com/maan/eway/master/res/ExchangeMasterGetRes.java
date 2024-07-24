@@ -64,4 +64,7 @@ public class ExchangeMasterGetRes {
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 }

@@ -3,11 +3,6 @@ package com.maan.eway.common.res;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;

@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,17 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,19 +24,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.MotorColorMaster;
-import com.maan.eway.bean.MotorColorMaster;
-
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ColorChangeStatusReq;
 import com.maan.eway.master.req.MotorColorGetAllReq;
 import com.maan.eway.master.req.MotorColorGetReq;
 import com.maan.eway.master.req.MotorColorSaveReq;
 import com.maan.eway.master.res.MotorColorGetRes;
-
 import com.maan.eway.master.service.MotorColorMasterService;
 import com.maan.eway.repository.MotorColorMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -233,7 +229,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 				/*// Effective Date Max Filter
 				Subquery<Long> effectiveDate = query.subquery(Long.class);
 				Root<MotorColorMaster> ocpm1 = effectiveDate.from(MotorColorMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("colorId"), b.get("colorId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 
@@ -302,6 +298,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdateBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
+			saveData.setColorDescLocal(req.getCodeDescLocal());
 			repo.saveAndFlush(saveData);
 
 			log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -331,9 +328,9 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			//query.multiselect(cb.count(b));
 			query.select(b);
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<MotorColorMaster> ocpm1 = effectiveDate.from(MotorColorMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("colorId"), b.get("colorId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -399,8 +396,8 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 
 			// Where
 
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("colorId"), req.getColorId());
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("colorId"), req.getColorId());
 			Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
 			Predicate n4 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n5 = cb.equal(c.get("branchCode"), "99999");
@@ -419,6 +416,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			res.setRemarks(list.get(0).getRemarks());
+			res.setCodeDescLocal(list.get(0).getColorDescLocal());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -484,6 +482,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 
 				res = mapper.map(data, MotorColorGetRes.class);
 				res.setColorId(data.getColorId());
+				res.setCodeDescLocal(data.getColorDescLocal());
 				resList.add(res);
 			}
 
@@ -587,18 +586,18 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			orderList.add(cb.asc(c.get("branchCode")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<MotorColorMaster> ocpm1 = effectiveDate.from(MotorColorMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("colorCode"),ocpm1.get("colorCode"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 			effectiveDate.where(a1,a2,a5,a6);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<MotorColorMaster> ocpm2 = effectiveDate2.from(MotorColorMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("colorCode"),ocpm2.get("colorCode"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -623,6 +622,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getColorId().toString());
 				res.setCodeDesc(data.getColorCode());
+		        res.setCodeDescLocal(data.getColorDescLocal());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}

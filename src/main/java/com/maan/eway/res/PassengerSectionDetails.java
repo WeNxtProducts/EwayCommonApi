@@ -53,4 +53,7 @@ public class PassengerSectionDetails {
 
 	@JsonProperty("Covers")
 	private  List<CoverRes> covers ;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

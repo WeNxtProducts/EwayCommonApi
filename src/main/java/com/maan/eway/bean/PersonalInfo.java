@@ -17,13 +17,13 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -340,6 +340,58 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="ADDRESS_3", length=100)
     private String     address3 ;
+    
+    @Column(name = "CLIENT_NAME_LOCAL", length = 100)
+    private String clientNameLocal;
+
+    @Column(name = "ADDRESS_1_LOCAL", length = 100)
+    private String address1Local;
+
+    @Column(name = "ADDRESS_2_LOCAL", length = 100)
+    private String address2Local;
+
+    @Column(name = "TITLE_DESC_LOCAL", length = 10)
+    private String titleDescLocal;
+
+    @Column(name = "CLIENT_STATUS_DESC_LOCAL", length = 100)
+    private String clientStatusDescLocal;
+
+    @Column(name = "PLACE_OF_BIRTH_LOCAL", length = 100)
+    private String placeOfBirthLocal;
+
+    @Column(name = "GENDER_DESC_LOCAL", length = 100)
+    private String genderDescLocal;
+
+    @Column(name = "OCCUPATION_DESC_LOCAL", length = 100)
+    private String occupationDescLocal;
+
+    @Column(name = "BUSINESS_TYPE_DESC_LOCAL", length = 100)
+    private String businessTypeDescLocal;
+
+    @Column(name = "STATE_NAME_LOCAL", length = 100)
+    private String stateNameLocal;
+
+    @Column(name = "CITY_NAME_LOCAL", length = 100)
+    private String cityNameLocal;
+
+    @Column(name = "STREET_LOCAL", length = 100)
+    private String streetLocal;
+
+    @Column(name = "ID_TYPE_DESC_LOCAL", length = 100)
+    private String idTypeDescLocal;
+
+    @Column(name = "MARITAL_STATUS_LOCAL", length = 100)
+    private String maritalStatusLocal;
+    
+    @Column(name = "LANGUAGE_DESC_LOCAL", length = 100)
+    private String languageDescLocal;
+
+    @Column(name = "POLICY_HOLDER_TYPE_DESC_LOCAL", length = 100)
+    private String policyHolderTypeDescLocal;
+
+    @Column(name = "POLICY_HOLDER_TYPE_ID_DESC_LOCAL", length = 100)
+    private String policyHolderTypeIdDescLocal;
+
     
 }
 

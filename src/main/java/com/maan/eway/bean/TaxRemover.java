@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.persistence.Tuple;
+import jakarta.persistence.Tuple;
 
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Tax;

@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,16 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,10 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.PremiaConfigDataMaster;
-import com.maan.eway.bean.PremiaConfigMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.PremiaConfigDataMasterChangeStatusReq;
 import com.maan.eway.master.req.PremiaConfigDataMasterGetReq;
@@ -42,12 +31,21 @@ import com.maan.eway.master.req.PremiaConfigDataMasterSaveReq;
 import com.maan.eway.master.res.PremiaConfigDataMasterGetRes;
 import com.maan.eway.master.res.PremiaConfigDataMasterGetallRes;
 import com.maan.eway.master.res.PremiaConfigDataMasterListRes;
-import com.maan.eway.master.res.PremiaConfigMasterRes;
 import com.maan.eway.master.service.PremiaConfigDataMasterService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.PremiaConfigDataMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -302,9 +300,9 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<PremiaConfigDataMaster> ocpm1 = effectiveDate.from(PremiaConfigDataMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("premiaId"), b.get("premiaId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -680,9 +678,9 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			orderList.add(cb.asc(b.get("premiaId")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<PremiaConfigDataMaster> ocpm1 = effectiveDate.from(PremiaConfigDataMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(b.get("premiaId"),ocpm1.get("premiaId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -692,9 +690,9 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 
 			effectiveDate.where(a1,a2,a3,a4,a5,a6);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<PremiaConfigDataMaster> ocpm2 = effectiveDate2.from(PremiaConfigDataMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a7 = cb.equal(b.get("premiaId"),ocpm2.get("premiaId"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));

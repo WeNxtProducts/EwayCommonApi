@@ -77,4 +77,7 @@ public class ExclusionMasterRes {
 //	@JsonProperty("PolicyType")
 //	private String policyType;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 }

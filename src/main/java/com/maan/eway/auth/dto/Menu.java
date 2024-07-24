@@ -44,5 +44,8 @@ public class Menu {
 	@JsonProperty("children")
 	private List<Menu> children;
 	
+	@JsonProperty("titleLocal")
+	private String titleLocal;
+	
 	
 }

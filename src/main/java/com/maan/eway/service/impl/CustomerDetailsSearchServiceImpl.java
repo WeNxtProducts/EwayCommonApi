@@ -7,19 +7,10 @@ package com.maan.eway.service.impl;
 
 
 import java.lang.reflect.Type;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +29,16 @@ import com.maan.eway.req.CustomerDetailsSearchReq;
 import com.maan.eway.res.CustomerDetailsCriteriaRes;
 import com.maan.eway.res.CustomerDetailsSearchRes;
 import com.maan.eway.service.CustomerDetailsSearchService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>ReferalMasterServiceimpl</h2>
 */
@@ -68,12 +69,12 @@ public List<CustomerDetailsSearchRes> searchCustDetails(CustomerDetailsSearchReq
 		Root<CustomerDetails> c = query.from(CustomerDetails.class);
 		
 		// Select Company Name SubQuery for Effective Date Max Filter 
-		Subquery<Long> insEff = query.subquery(Long.class);
+		Subquery<Timestamp> insEff = query.subquery(Timestamp.class);
 		Root<InsuranceCompanyMaster> i = insEff.from(InsuranceCompanyMaster.class);
 		Subquery<Long> company = query.subquery(Long.class);
 		Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
 		
-		insEff.select( cb.max(i.get("effectiveDateStart")) );
+		insEff.select( cb.greatest(i.get("effectiveDateStart")) );
 		Predicate i1 = cb.equal(ins.get("companyId"), i.get("companyId"));
 		Predicate i2 = cb.lessThanOrEqualTo(i.get("effectiveDateStart") , today);
 		insEff.where(i1,i2);
@@ -85,12 +86,12 @@ public List<CustomerDetailsSearchRes> searchCustDetails(CustomerDetailsSearchReq
 		company.where(ins1,ins2,ins3);
 		
 		// Select Branch Name SubQuery for Effective Date Max Filter 
-		Subquery<Long> bmEff = query.subquery(Long.class);
+		Subquery<Timestamp> bmEff = query.subquery(Timestamp.class);
 		Root<BranchMaster> b = bmEff.from(BranchMaster.class);
 		Subquery<Long> branch = query.subquery(Long.class);
 		Root<BranchMaster> bm = branch.from(BranchMaster.class);
 		
-		bmEff.select( cb.max(b.get("effectiveDateStart")) );
+		bmEff.select( cb.greatest(b.get("effectiveDateStart")) );
 		Predicate b1 = cb.equal(bm.get("branchCode"), b.get("branchCode"));
 		Predicate b2 = cb.lessThanOrEqualTo(b.get("effectiveDateStart") , today);
 		bmEff.where(b1,b2);

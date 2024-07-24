@@ -89,4 +89,6 @@ public class CurrencyMasterRes implements Serializable {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

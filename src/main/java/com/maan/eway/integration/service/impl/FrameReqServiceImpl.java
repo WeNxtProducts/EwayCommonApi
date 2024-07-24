@@ -9,12 +9,12 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,7 +159,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 		String url = MotCommDiscountDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
         List<MotcommDiscountDetailReq> reqlist = new ArrayList<MotcommDiscountDetailReq>();
 		List<MotCommDiscountDetail> list = motComRepo.findByQuotationPolicyNo(policyNo);
@@ -216,7 +216,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 	public Object pushMotDriverDetail(String policyNo) {
 		String url = MotDriverDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
         List<MotDriverDetailReq> reqlist = new ArrayList<MotDriverDetailReq>();
 		List<MotDriverDetail> list = motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
@@ -273,7 +273,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 	public Object pushYiCoverDetail(String policyNo) {
 		String url = YiCoverdetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
         List<YiCoverDetailReq> reqlist = new ArrayList<YiCoverDetailReq>();
 		List<YiCoverDetail> list = yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
@@ -328,7 +328,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 	public Object pushYiChargeDetail(String policyNo) {
 		String url = YiChargeDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
         List<YiChargeDetailReq> reqlist = new ArrayList<YiChargeDetailReq>();
 		List<YiChargeDetail> list = yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
@@ -384,7 +384,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 		
 		String url = YiPolicyDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
         List<YiPolicyDetailReq> reqlist = new ArrayList<YiPolicyDetailReq>();
 		List<YiPolicyDetail> list = yiPolicyReo.findByQuotationPolicyNo(policyNo);
@@ -441,7 +441,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 		
 		String url = CreditLimitDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
         List<InsertCreditLimitDetailReq> reqList = new ArrayList<InsertCreditLimitDetailReq>();
       
@@ -500,7 +500,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 		
 		String url = YiPolicyApprovalCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
        
 		List<YiPolicyApproval> list =yipolicyRepo.findByQuotationPolicyNo(policyNo);
@@ -559,7 +559,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 		
 		String url = YiPremCalCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
        
 		List<YiPremCal> list =yipremRepo.findByQuotationPolicyNo(policyNo);
@@ -616,7 +616,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 		
 		String url = YiVatDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
 		List<YiVatDetail> list =yivatRepo.findByQuotationPolicyNo(policyNo);
 		YiVatDetail saveData=new YiVatDetail();
@@ -674,7 +674,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 		
 		String url = YiSectionDetailCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
       
 		List<YiSectionDetail> list =yisecRepo.findByQuotationPolicyNo(policyNo);
@@ -731,7 +731,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 	public Object pushPgitPolRiskAddlInfo(String policyNo) {
 		String url = PgitPolRiskAddlInfoCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
      
 		List<PgithPolRiskAddlInfo> list = pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
@@ -791,7 +791,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 		
 		String url = PtIntgFlexTranCall;
 		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
         List<PtIntgFlexTranReq> reqlist = new ArrayList<PtIntgFlexTranReq>();
 		List<PtIntgFlexTran> list = ptintgFlexTransRepo.findByPiftPolicyNo(policyNo);

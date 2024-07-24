@@ -49,4 +49,7 @@ public class IndustryMasterSaveReq {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 }

@@ -3,8 +3,8 @@ package com.maan.eway.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

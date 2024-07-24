@@ -1,5 +1,6 @@
 package com.maan.eway.admin.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -11,18 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +19,20 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.admin.service.AdminDropDownService;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
-import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SubUserTypeDropDownRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 public class AdminDropDownServiceImpl  implements AdminDropDownService{
@@ -229,13 +225,13 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOBILE_CODE", "Y");
 				String itemType = "MOBILE_CODE";
-				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());
-				
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId());		
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
 					res.setStatus(data.getStatus());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -245,7 +241,6 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			}
 			return resList;
 		}
-
 		@Override
 		public List<DropDownRes> getBusinessType(LovDropDownReq req) {
 			List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -258,6 +253,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
 					res.setStatus(data.getStatus());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -318,18 +314,18 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				
 				
 				// Effective Date Start Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 				Predicate x3 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 				Predicate x4 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				effectiveDate.where(a1,a2,x3,x4);
 				// Effective Date End Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 				Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 				Predicate x1 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 				Predicate x2 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));

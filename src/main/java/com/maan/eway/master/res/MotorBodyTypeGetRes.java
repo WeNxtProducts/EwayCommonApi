@@ -2,7 +2,7 @@ package com.maan.eway.master.res;
 
 import java.util.Date;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -75,5 +75,9 @@ public class MotorBodyTypeGetRes {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+
 
 }

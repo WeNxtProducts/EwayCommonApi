@@ -42,4 +42,7 @@ public class SectionDetails {
 	
 	@JsonProperty("Covers")
 	private  List<CoverRes> covers ;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }
