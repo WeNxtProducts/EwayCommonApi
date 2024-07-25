@@ -7,15 +7,9 @@ import lombok.Data;
 public class ProductStructureMasterRes {
 	
 	@JsonProperty("Code")
-	private Integer code;
-
-	@JsonProperty("CodeDesc")
-	private String codeDesc;
-	
-	@JsonProperty("SectionId")
 	private Integer sectionid;
 
-	@JsonProperty("SectionName")
+	@JsonProperty("CodeDesc")
 	private String sectionName;
 	
 	@JsonProperty("Status")
@@ -23,5 +17,4 @@ public class ProductStructureMasterRes {
 	
 	@JsonProperty("IndustryType")
 	private String IndustryType;
-	
 }
