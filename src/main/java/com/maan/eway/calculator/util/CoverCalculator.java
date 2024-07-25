@@ -33,7 +33,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 
 			//	 loadOnetimetable(engine);
 				 boolean discountLoading=true;
-				 
+				 System.out.println(t.getCoverId()+ "--- "+t.getCoverName());
 				 BigDecimal exchangeRate= new BigDecimal(vehicles.get(0).get("exchangeRate")==null?"1":vehicles.get(0).get("exchangeRate").toString());
 				 t.setExchangeRate(exchangeRate);
 				 String currecy=vehicles.get(0).get("currency")==null?"N/A":vehicles.get(0).get("currency").toString();

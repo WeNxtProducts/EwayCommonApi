@@ -124,9 +124,9 @@ public class CriteriaService {
 			}
 		}
 
-		result.setFirstResult(limit* offset);
+		/*result.setFirstResult(limit* offset);
 		result.setMaxResults(offset);
-
+*/
 		reqPrinter.reqPrint(cr.getWheres());
 		list =  result.getResultList();
 
@@ -252,8 +252,8 @@ public class CriteriaService {
 			}
 		}
 
-		result.setFirstResult(limit* offset);
-		result.setMaxResults(offset);
+		/*result.setFirstResult(limit* offset);
+		result.setMaxResults(offset);*/
 		reqPrinter.reqPrint(cr.getWheres());
 		list =  result.getResultList();
 
@@ -566,8 +566,8 @@ public class CriteriaService {
 			}
 		}
 
-		result.setFirstResult(limit* offset);
-		result.setMaxResults(offset);
+		/*result.setFirstResult(limit* offset);
+		result.setMaxResults(offset);*/
 		reqPrinter.reqPrint(cr.getWheres());
 		list =  result.getResultList();
 
@@ -790,9 +790,9 @@ public class CriteriaService {
 			}
 		}
 
-		result.setFirstResult(limit* offset);
+		/*result.setFirstResult(limit* offset);
 		result.setMaxResults(offset);
-
+*/
 		reqPrinter.reqPrint(cr.getWheres());
 		list =  result.getResultList();
 

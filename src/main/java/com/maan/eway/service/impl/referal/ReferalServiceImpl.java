@@ -57,7 +57,7 @@ public class ReferalServiceImpl {
 					String tablename =	r.getPrimaryTable();
 					Class<?> tableClass = Class.forName("com.maan.eway.bean."+tablename);
 					try {
-						String search="requestReferenceNo:"+engine.getRequestReferenceNo()+";riskId:"+engine.getVehicleId()+";companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";";
+						String search="requestReferenceNo:"+engine.getRequestReferenceNo()+";riskId:"+engine.getVehicleId()+";companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";";
 						SpecCriteria criteria = crservice.createCriteria(tableClass, search, "companyId"); 
 						result = crservice.getResult(criteria, 0, 1);
 					}catch (Exception e) {
