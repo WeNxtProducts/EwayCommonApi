@@ -2121,7 +2121,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					Predicate a2 = cb.equal(ocpm1.get("companyId"),req.getComapanyId());
 
 					loginId.where(a1,a2);
-					n5 = cb.equal(c.get("createdBy"), loginId);
+					n5 = cb.equal(c.get("createdBy"), loginId.as(String.class));
 				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())&& !"Direct".equalsIgnoreCase(Brokerlogin.getSubUserType())) {
 					Subquery<Long> loginId = query.subquery(Long.class);
 					Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
@@ -2129,7 +2129,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					Predicate a1 = cb.equal(ocpm1.get("agencyCode"), loginData.getOaCode());
 					Predicate a2 = cb.equal(ocpm1.get("companyId"),req.getComapanyId());
 					loginId.where(a1,a2);
-					n5 = cb.equal(c.get("createdBy"), loginId);
+					n5 = cb.equal(c.get("createdBy"), loginId.as(String.class));
 				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())&& "Direct".equalsIgnoreCase(Brokerlogin.getSubUserType())) {
 					n5 = cb.equal(c.get("createdBy"), req.getCreatedBy());
 				}
@@ -2330,7 +2330,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					Predicate a1 = cb.equal(ocpm1.get("agencyCode"), loginData.getOaCode());
 					Predicate a2 = cb.equal(ocpm1.get("companyId"), req.getComapanyId());
 					loginId.where(a1,a2);
-					n5 = cb.equal(c.get("createdBy"), loginId);
+					n5 = cb.equal(c.get("createdBy"), loginId.as(String.class));
 				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())&& !"Direct".equalsIgnoreCase(Brokerlogin.getSubUserType())) {
 					Subquery<Long> loginId = query.subquery(Long.class);
 					Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
@@ -2338,7 +2338,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					Predicate a1 = cb.equal(ocpm1.get("agencyCode"), loginData.getOaCode());
 					Predicate a2 = cb.equal(ocpm1.get("companyId"), req.getComapanyId());
 					loginId.where(a1,a2);
-					n5 = cb.equal(c.get("createdBy"), loginId);
+					n5 = cb.equal(c.get("createdBy"), loginId.as(String.class));
 				}else 	if ("User".equalsIgnoreCase(loginData.getUserType())&& "Direct".equalsIgnoreCase(Brokerlogin.getSubUserType())) {
 					n5 = cb.equal(c.get("createdBy"), req.getCreatedBy());
 				}
