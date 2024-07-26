@@ -227,7 +227,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			if ("Broker".equalsIgnoreCase(req.getUserType())) {
 				predics1.add(cb.equal(m.get("brokerCode"), agencyCode.as(String.class)));
 			} else if ("User".equalsIgnoreCase(req.getUserType())) {
-				predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+				predics1.add(cb.equal(m.get("agencyCode"), agencyCode.as(String.class)));
 			}
 			predics1.add(cb.isNotNull(m.get("sourceType")));
 			predics1.add(cb.isNotNull(m.get("loginId")));
@@ -4853,7 +4853,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						if ("Broker".equalsIgnoreCase(req.getUserType())) {
 							predics1.add(cb.equal(m.get("brokerCode"), agencyCode.as(String.class)));
 						} else if ("User".equalsIgnoreCase(req.getUserType())) {
-							predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+							predics1.add(cb.equal(m.get("agencyCode"), agencyCode.as(String.class)));
 						}
 						predics1.add(cb.isNotNull(m.get("sourceType")));
 						predics1.add(cb.isNotNull(m.get("loginId")));
@@ -4926,7 +4926,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						if ("Broker".equalsIgnoreCase(req.getUserType())) {
 							predics1.add(cb.equal(m.get("brokerCode"), agencyCode.as(String.class)));
 						} else if ("User".equalsIgnoreCase(req.getUserType())) {
-							predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+							predics1.add(cb.equal(m.get("agencyCode"), agencyCode.as(String.class)));
 						}
 						predics1.add(cb.isNotNull(m.get("sourceType")));
 						predics1.add(cb.isNotNull(m.get("loginId")));
@@ -5192,7 +5192,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						if ("Broker".equalsIgnoreCase(req.getUserType())) {
 							n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 						} else if ("User".equalsIgnoreCase(req.getUserType())) {
-							n12 = cb.equal(m.get("agencyCode"), agencyCode);
+							n12 = cb.equal(m.get("agencyCode"), agencyCode.as(String.class));
 						}
 						Predicate n13 = cb.isNotNull(m.get("sourceType"));
 						Predicate n14 = cb.isNotNull(m.get("loginId"));
@@ -5356,7 +5356,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						if ("Broker".equalsIgnoreCase(req.getUserType())) {
 							n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 						} else if ("User".equalsIgnoreCase(req.getUserType())) {
-							n12 = cb.equal(m.get("agencyCode"), agencyCode);
+							n12 = cb.equal(m.get("agencyCode"), agencyCode.as(String.class));
 						}
 						Predicate n13 = cb.isNotNull(m.get("sourceType"));
 						Predicate n14 = cb.isNotNull(m.get("loginId"));
@@ -5521,7 +5521,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						if ("Broker".equalsIgnoreCase(req.getUserType())) {
 							n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 						} else if ("User".equalsIgnoreCase(req.getUserType())) {
-							n12 = cb.equal(m.get("agencyCode"), agencyCode);
+							n12 = cb.equal(m.get("agencyCode"), agencyCode.as(String.class));
 						}
 						Predicate n13 = cb.isNotNull(m.get("sourceType"));
 						Predicate n14 = cb.isNotNull(m.get("loginId"));
@@ -5688,7 +5688,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						if ("Broker".equalsIgnoreCase(req.getUserType())) {
 							n12 = cb.equal(m.get("brokerCode"), agencyCode.as(String.class));
 						} else if ("User".equalsIgnoreCase(req.getUserType())) {
-							n12 = cb.equal(m.get("agencyCode"), agencyCode);
+							n12 = cb.equal(m.get("agencyCode"), agencyCode.as(String.class));
 						}
 						Predicate n13 = cb.isNotNull(m.get("sourceType"));
 						Predicate n14 = cb.isNotNull(m.get("loginId"));
