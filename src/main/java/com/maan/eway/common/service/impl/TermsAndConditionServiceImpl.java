@@ -1129,7 +1129,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			res.setMessage("Failure-Data Not found In Table");
 		
 		
-			return new ResponseEntity<CommonRes>(res, HttpStatus.NOT_FOUND );
+			return new ResponseEntity<CommonRes>(res, HttpStatus.OK );
 
 		
 		}catch(Exception e) {
