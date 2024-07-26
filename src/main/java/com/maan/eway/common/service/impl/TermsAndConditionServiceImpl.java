@@ -30,6 +30,7 @@ import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -55,6 +56,7 @@ import com.maan.eway.common.service.TermsAndConditionService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.ClausesMasterRepository;
+import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.ExclusionMasterRepository;
@@ -121,6 +123,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 	
 	@Autowired
 	private EserviceCommonDetailsRepository commonRepo;
+	
+	@Autowired
+	private EServiceMotorDetailsRepository EServiceMotorDetailsRepo;
 
 	@Override
 	public TermsAndConditionRes viewTermsAndCondition(TermsAndConditionReq req) {
@@ -1122,6 +1127,28 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				
 				return new ResponseEntity<CommonRes>(res, HttpStatus.CREATED );
 
+			}else {
+				EserviceMotorDetails data = EServiceMotorDetailsRepo.findByRequestReferenceNoAndRiskId(requestReferenceNo, riskId);
+				
+				if(data != null) {
+					SectionDataRes secRes = new SectionDataRes();
+					secRes.setCompanyId(data.getCompanyId());
+					secRes.setProductId(data.getProductId());
+					secRes.setRequestReferenceNo(requestReferenceNo);
+					secRes.setRiskId(String.valueOf(riskId));
+					secRes.setSectionId(data.getSectionId());
+					secRes.setSectionName(data.getSectionName());
+					
+					sectionDataList.add(secRes);
+					
+					res.setCommonResponse(sectionDataList);
+					res.setErrorMessage(null);
+					res.setIsError(false);
+					res.setMessage("Success");
+					
+					return new ResponseEntity<CommonRes>(res, HttpStatus.CREATED );
+				}
+				
 			}
 			res.setCommonResponse(sectionDataList);
 			res.setErrorMessage(null);
