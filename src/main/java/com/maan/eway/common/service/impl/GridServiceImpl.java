@@ -4646,7 +4646,7 @@ public class GridServiceImpl implements GridService {
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
 					n12 = cb.equal(m.get("brokerCode"), agencyCode);
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("agencyCode"), agencyCode);
+					n12 = cb.equal(m.get("agencyCode").as(String.class), agencyCode);
 				}
 				Predicate n13 = cb.isNotNull(m.get("sourceType"));
 				Predicate n14 = cb.isNotNull(m.get("loginId"));
@@ -4911,7 +4911,7 @@ public class GridServiceImpl implements GridService {
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
 					n12 = cb.equal(m.get("brokerCode"), agencyCode);
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("agencyCode"), agencyCode);
+					n12 = cb.equal(m.get("agencyCode").as(String.class), agencyCode);
 				}
 				Predicate n13 = cb.isNotNull(m.get("sourceType"));
 				Predicate n14 = cb.isNotNull(m.get("loginId"));
@@ -5123,7 +5123,7 @@ public class GridServiceImpl implements GridService {
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
 					n12 = cb.equal(m.get("brokerCode"), agencyCode);
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("agencyCode"), agencyCode);
+					n12 = cb.equal(m.get("agencyCode").as(String.class), agencyCode);
 				}
 				Predicate n13 = cb.isNotNull(m.get("sourceType"));
 				Predicate n14 = cb.isNotNull(m.get("loginId"));
