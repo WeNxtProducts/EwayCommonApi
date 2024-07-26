@@ -855,4 +855,11 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="LOCATION_NAME")
 	      private String locationName;
 	      
+	 	 @Column(name="Business_Interruption")
+	  	 private String  businessInterruption;
+	  	 
+	 	 @Column(name="FIRST_LOSS_PAYEE")
+	  	 private String  firstLossPayee;
+
+	      
 }
