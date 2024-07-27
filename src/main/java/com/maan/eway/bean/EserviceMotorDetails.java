@@ -151,8 +151,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="FUEL_TYPE_DESC", length=100)
     private String     fuelTypeDesc ;
 
-    @Column(name="OVERRIDE_PERCENTAGE")
-    private BigDecimal     overridePercentage ;
+//    @Column(name="OVERRIDE_PERCENTAGE")
+//    private BigDecimal     overridePercentage ;
 
     @Temporal(TemporalType.DATE)
     @Column(name="REGISTRATION_YEAR")
@@ -176,11 +176,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="TARE_WEIGHT")
     private BigDecimal     tareWeight ;
 
-    @Column(name="COVERNOTE_NO", length=20)
-    private String     covernoteNo ;
-
-    @Column(name="STICKER_NO", length=20)
-    private String     stickerNo ;
+//    @Column(name="COVERNOTE_NO", length=20)
+//    private String     covernoteNo ;
+//
+//    @Column(name="STICKER_NO", length=20)
+//    private String     stickerNo ;
 
     @Column(name="PERIOD_OF_INSURANCE", length=20)
     private String     periodOfInsurance ;
@@ -191,8 +191,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ACCCESSORIES_SUM_INSURED")
     private BigDecimal     acccessoriesSumInsured ;
 
-    @Column(name="ACCESSORIES_INFORMATION", length=200)
-    private String     accessoriesInformation ;
+//    @Column(name="ACCESSORIES_INFORMATION", length=200)
+//    private String     accessoriesInformation ;
 
     @Column(name="NUMBER_OF_AXELS")
     private Integer    numberOfAxels ;
@@ -253,9 +253,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MANUFACTURE_AGE")
     private Integer    manufactureAge ;
-
-    @Column(name="INSURER_SETTLEMENT")
-    private BigDecimal     insurerSettlement ;
+//
+//    @Column(name="INSURER_SETTLEMENT")
+//    private BigDecimal     insurerSettlement ;
 
     @Column(name="REGISTRATION_AGE")
     private Integer    registrationAge ;
@@ -271,9 +271,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="POLICY_TYPE_DESC", length=100)
     private String     policyTypeDesc ;
-
-    @Column(name="RADIOORCASSETEPLAYER")
-    private BigDecimal     radioorcasseteplayer ;
+//
+//    @Column(name="RADIOORCASSETEPLAYER")
+//    private BigDecimal     radioorcasseteplayer ;
 
     @Column(name="STATUS", length=1)
     private String     status ;
