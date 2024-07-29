@@ -781,7 +781,7 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "VEHICLE_MAKE_DESC_LOCAL")
 	private String vehicleMakeDescLocal;
 
-	@Column(name = "VEHCILE_MODEL_DESC_LOCAL")
+	@Column(name = "VEHICILE_MODEL_DESC_LOCAL")
 	private String vehcileModelDescLocal;
 
 	@Column(name = "FUEL_TYPE_DESC_LOCAL")
