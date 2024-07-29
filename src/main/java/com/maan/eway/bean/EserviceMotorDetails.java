@@ -751,6 +751,52 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "PAYLOAD")
 	private BigDecimal payload;
+
+	/// Local Description Columns///
+
+	@Column(name = "EXCESS_DESC_LOCAL")
+	private String excessDescLocal;
+
+	@Column(name = "VEHICLE_VALUE_TYPE_DESC_LOCAL")
+	private String vehicleValueTypeDescLocal;
+
+	@Column(name = "DEFENCE_VALUE_DESC_LOCAL")
+	private String defenceValueDescLocal;
+
+	@Column(name = "VEHICLE_TYPE_DESC_LOCAL")
+	private String vehicleTypeDescLocal;
+
+	@Column(name = "MOTOR_CATEGORY_DESC_LOCAL")
+	private String motorCategoryDescLocal;
+
+	@Column(name = "MOTOR_USAGE_DESC_LOCAL")
+	private String motorUsageDescLocal;
+
+	@Column(name = "BORROWER_TYPE_DESC_LOCAL")
+	private String borrowerTypeDescLocal;
+
+	@Column(name = "INSURANCE_TYPE_DESC_LOCAL")
+	private String insuranceTypeDescLocal;
+
+	@Column(name = "VEHICLE_MAKE_DESC_LOCAL")
+	private String vehicleMakeDescLocal;
+
+	@Column(name = "VEHCILE_MODEL_DESC_LOCAL")
+	private String vehcileModelDescLocal;
+
+	@Column(name = "FUEL_TYPE_DESC_LOCAL")
+	private String fuelTypeDescLocal;
+
+	@Column(name = "COLOR_DESC_LOCAL")
+	private String colorDescLocal;
+
+	@Column(name = "SECTION_NAME_LOCAL")
+	private String sectionNameLocal;
+
+	@Column(name = "PRODUCT_NAME_LOCAL")
+	private String productNameLocal;
+
+	/// Local Description Columns///
 }
 
 

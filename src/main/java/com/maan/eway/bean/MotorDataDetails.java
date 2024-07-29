@@ -664,6 +664,78 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "PREVIOUS_INSURANCE_YN")
 	private String previousInsuranceYN;
+	
+	@Column(name="NO_OF_DOORS_DESC_LOCAL", length=10)
+    private String     noOfDoorsDescLocal ;
+    
+    @Column(name="NO_OF_CYCLINDERS_DESC_LOCAL", length=10)
+    private String     noOfCyclindersDescLocal; 
+    
+    @Column(name="PLATE_TYPE_DESC_LOCAL", length=10)
+    private String     plateTypeDescLocal;
+    
+    @Column(name="PLATE_COLOR_LOCAL", length=10)
+    private String     plateColorLocal;
+    
+    @Column(name="PRODUCT_NAME_LOCAL", length=100)
+    private String     productNameLocal ;
+
+    @Column(name="SECTION_NAME_LOCAL", length=100)
+    private String     sectionNameLocal ;
+
+    @Column(name="COMPANY_NAME_LOCAL", length=100)
+    private String     companyNameLocal ;
+
+    @Column(name="INSURANCE_TYPE_DESC_LOCAL", length=100)
+    private String     insuranceTypeDescLocal ;
+
+    @Column(name="MOTOR_CATEGORY_DESC_LOCAL", length=100)
+    private String     motorCategoryDescLocal ;
+
+    @Column(name="VEHICLE_MAKE_DESC_LOCAL", length=100)
+    private String     vehicleMakeDescLocal ;
+
+    @Column(name="VEHICLE_MODEL_DESC_LOCAL", length=100)
+    private String     vehicleModelDescLocal ;
+
+    @Column(name="VEHICLE_TYPE_DESC_LOCAL", length=100)
+    private String     vehicleTypeDescLocal ;
+
+    @Column(name="FUEL_TYPE_DESC_LOCAL", length=100)
+    private String     fuelTypeDescLocal ;
+
+    @Column(name="COLOR_DESC_LOCAL", length=100)
+    private String     colorDescLocal ;
+
+    @Column(name="POLICY_TYPE_DESC_LOCAL", length=100)
+    private String     policyTypeDescLocal ;
+
+    @Column(name="ENDORSEMENT_TYPE_DESC_LOCAL", length=100)
+    private String     endorsementTypeDescLocal ;
+
+    @Column(name="INUSRANCE_CLASS_DESC_LOCAL", length=100)
+    private String     inusranceClassDescLocal ;
+
+    @Column(name="ENDT_CATEG_DESC_LOCAL", length=100)
+    private String     endtCategDescLocal ;
+
+    @Column(name="CUSTOMER_NAME_LOCAL", length=100)
+    private String     customerNameLocal ;
+
+    @Column(name="BRANCH_NAME_LOCAL", length=100)
+    private String     branchNameLocal ;
+
+    @Column(name="MOTOR_USAGE_DESC_LOCAL", length=100)
+    private String     motorUsageDescLocal ;
+
+    @Column(name="TIRA_BODY_TYPE_LOCAL", length=100)
+    private String     tiraBodyTypeLocal ;
+
+    @Column(name="TIRA_MOTOR_USAGE_LOCAL", length=100)
+    private String     tiraMotorUsageLocal ;
+
+    @Column(name="OWNER_NAME_LOCAL", length=100)
+    private String     ownerNameLocal ;
    
 }
 
