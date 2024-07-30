@@ -1839,7 +1839,7 @@ public class JasperCustomServiceImple {
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),
 					icmRoot.get("signature").alias("signature"),lbmRoot.get("branchName").alias("place"),companyName.alias("companyName"),imageURL.alias("companylogo"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("productId").alias("productId"),
 					hpmRoot.get("debitNoteNo").alias("debitNoteNo"))
-			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("agencyCode"), luiRoot.get("agencyCode")),cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
+			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("agencyCode").as(String.class), luiRoot.get("agencyCode")),cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
 					cb.equal(hpmRoot.get("loginId"), lbmRoot.get("loginId")),cb.equal(hpmRoot.get("companyId"), lbmRoot.get("companyId")),cb.equal(hpmRoot.get("branchCode"), lbmRoot.get("branchCode")),cb.equal(lbmRoot.get("status"), "Y"),
 					cb.equal(icmRoot.get("status"), "Y"),cb.between(cb.literal(new Date()), icmRoot.get("effectiveDateStart"), icmRoot.get("effectiveDateEnd")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("quoteNo"), QuoteNo));
 			List<Tuple> list = em.createQuery(cq).getResultList();
@@ -1874,7 +1874,7 @@ public class JasperCustomServiceImple {
 				Subquery<String> occDesc = cq1.subquery(String.class);
 				Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
 				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class), ecdRoot.get("sectionId")),
-						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")),
+						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId").as(String.class), ecdRoot.get("productId")),
 						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
 				
 				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
@@ -1887,24 +1887,6 @@ public class JasperCustomServiceImple {
 			List<Tuple> Slist = em.createQuery(cq1).getResultList();
 			
 			List<BuildingDetails> Blist = buildingDetRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
-			List<BuildingRiskDetails> buildingdtl = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionId(map.get("requestReferenceNo").toString(),"1");
-			List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
-				LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
-				lmap.put("riskId", k.getRiskId());
-				lmap.put("locationName", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getLocationName().toString())).findAny().orElse(""));
-				lmap.put("buildingAddress", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getBuildingAddress().toString()))
-						.findAny().orElse("")+", "+StringUtils.capitalize(lmap.get("locationName").toString()));
-				lmap.put("buildingSumInsured", k.getBuildingSuminsured());
-				lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
-						&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
-						&& f.getVehicleId()==k.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
-				lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
-						&& f.getSectionId()==Integer.parseInt(k.getSectionId())
-						&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
-				lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals("1") && f.get("coverNoteReferenceNo")!=null)
-						.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
-				return lmap;
-			}).collect(Collectors.toList());
 			
 			List<Map<String,Object>>sectList=new ArrayList<>();
 			Double minAdjPrem=0.0,minAdjPremFc=0.0,basePremium=0.0,basePremiumFc=0.0,
@@ -2038,6 +2020,28 @@ public class JasperCustomServiceImple {
 			for(int i=0;i<sectionIds.size();i++) {
 				Map<String,Object> coverMap = new HashMap<String,Object>();
 				String sectionId = sectionIds.get(i).toString();
+				
+				List<BuildingRiskDetails> buildingdtl = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionId(map.get("requestReferenceNo").toString(),sectionId);
+				List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
+					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
+					lmap.put("riskId", k.getRiskId());
+					lmap.put("locationName", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getLocationName().toString())).findAny().orElse(""));
+					lmap.put("buildingAddress", sectionId.equalsIgnoreCase("1")?
+							Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getBuildingAddress().toString()))
+							.findAny().orElse("")+", "+StringUtils.capitalize(lmap.get("locationName").toString())
+							:k.getAddress()+", "+k.getRegionDesc()+", "+k.getDistrictDesc());
+					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
+					lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+							&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
+							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
+					lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+							&& f.getSectionId()==Integer.parseInt(k.getSectionId())
+							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+					lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals("1") && f.get("coverNoteReferenceNo")!=null)
+							.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
+					return lmap;
+				}).collect(Collectors.toList());
+				
 				List<ContentAndRisk> contentInfo = conAndRiskRepo.findByQuoteNoAndSectionId(map.get("quoteNo").toString(),sectionId);
 				List<Map<String,Object>> contentList = contentInfo.stream().collect(
 						Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(m -> {
@@ -2122,7 +2126,6 @@ public class JasperCustomServiceImple {
 				
 					List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
 					coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
-					if("1".equalsIgnoreCase(sectionId))
 					coverMap.put("locationDetails", locationDetails);
 					coverMap.put("contentList", contentList);
 					coverMap.put("employeeList", employeeList);
