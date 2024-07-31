@@ -1949,7 +1949,7 @@ public class JasperCustomServiceImple {
 						List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999
 								&& (f.getCoverageType().equals("O") && (f.getIsSelected().equalsIgnoreCase("Y")?"Y":"N").equalsIgnoreCase("Y") 
 								|| !f.getCoverageType().equalsIgnoreCase("O")))
-								.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverDesc(),Collectors.reducing(
+								.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverName(),Collectors.reducing(
 									BigDecimal.ZERO, PolicyCoverData::getPremiumExcludedTaxLc, BigDecimal::add))))
 								.entrySet().stream()
 								.flatMap((Map.Entry<Integer,Map<String,BigDecimal>> s ) -> {
@@ -1960,7 +1960,7 @@ public class JasperCustomServiceImple {
 												BigDecimal totPremium = g.getValue();
 												Map<String,Object> secMap = new HashMap<String,Object>();
 												secMap.put("SectionId", sectionId);
-												secMap.put("CoverDesc", coverDesc);
+												secMap.put("CoverDesc", coverDesc.toUpperCase());
 												secMap.put("TotPremium", totPremium);
 												return secMap;
 											});
@@ -2017,6 +2017,7 @@ public class JasperCustomServiceImple {
 			
 			List<Object> sectionIds = Slist.stream().map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
 			List<Map<String,Object>> coverageList = new ArrayList<Map<String,Object>>();
+			String productId = map.get("productId")==null?null:map.get("productId").toString();
 			for(int i=0;i<sectionIds.size();i++) {
 				Map<String,Object> coverMap = new HashMap<String,Object>();
 				String sectionId = sectionIds.get(i).toString();
@@ -2026,10 +2027,9 @@ public class JasperCustomServiceImple {
 					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 					lmap.put("riskId", k.getRiskId());
 					lmap.put("locationName", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getLocationName().toString())).findAny().orElse(""));
-					lmap.put("buildingAddress", sectionId.equalsIgnoreCase("1")?
+					lmap.put("buildingAddress",productId.equalsIgnoreCase("6")?k.getAddress()+", "+k.getRegionDesc()+", "+k.getDistrictDesc():
 							Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getBuildingAddress().toString()))
-							.findAny().orElse("")+", "+StringUtils.capitalize(lmap.get("locationName").toString())
-							:k.getAddress()+", "+k.getRegionDesc()+", "+k.getDistrictDesc());
+							.findAny().orElse("")+", "+StringUtils.capitalize(lmap.get("locationName").toString()));
 					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
 					lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
 							&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
@@ -2100,15 +2100,6 @@ public class JasperCustomServiceImple {
 							return eMap;
 						}).collect(Collectors.toList());
 												
-					/*	empDetails.stream().map(e ->{
-					LinkedHashMap<String,Object> empMap = new LinkedHashMap<String,Object>();
-						empMap.put("employeeId", e.getEmployeeId());
-						empMap.put("employeeName", e.getEmployeeName());
-						empMap.put("occupationDesc", e.getOccupationDesc());
-						empMap.put("salary", new BigDecimal(Double.parseDouble(e.getSalary().toString())).toString());
-						return empMap;
-					}).collect(Collectors.toList());*/
-				
 				// CONDITIONS
 				List<Map<String,Object>> conditionList = getConditionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 
@@ -2126,18 +2117,25 @@ public class JasperCustomServiceImple {
 				
 					List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
 					coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
+					if("1".equalsIgnoreCase(sectionId) || "6".equalsIgnoreCase(productId))
 					coverMap.put("locationDetails", locationDetails);
 					coverMap.put("contentList", contentList);
 					coverMap.put("employeeList", employeeList);
 					coverMap.put("termsAndconditions", termsAndconditions);
+					coverMap.put("sectionId", sectionId);
 					coverageList.add(coverMap);
 			}
 			
-			Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream().collect(Collectors.groupingBy(k -> k.get("sectionDesc"), Collectors.toList()));
+			Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream()
+					.collect(Collectors.groupingBy(k -> k.get("sectionDesc"), Collectors.toList()));
 			for(Map.Entry<Object, List<Map<String,Object>>> CDEntry : groupBycoverageDetails.entrySet()) {
 				LinkedHashMap<String, Object> coverMap = new LinkedHashMap<String, Object>();
 				coverMap.put("coverId", Slist.stream().filter(f -> f.get("sectionDesc").equals(CDEntry.getKey())).map(m -> m.get("sectionId")).findFirst().orElse(""));
-				coverMap.put("coverKey", CDEntry.getKey().toString().toUpperCase()+" "+(map.get("policyNo")==null?"QUOTE SCHEDULE":"POLICY SCHEDULE"));
+				coverMap.put("coverKey", CDEntry.getValue().stream()
+					    .filter(e -> Arrays.asList(108, 109, 114, 115, 33, 111).contains(Integer.parseInt(e.get("sectionId").toString())))
+					    .map(e -> "BUSINESS INTERRUPTION (" + CDEntry.getKey().toString() + ")".toUpperCase()+ " " +(map.get("policyNo") == null ? "QUOTE SCHEDULE" : "POLICY SCHEDULE"))
+					    .findFirst()
+					    .orElse(CDEntry.getKey().toString().toUpperCase() + " " + (map.get("policyNo") == null ? "QUOTE SCHEDULE" : "POLICY SCHEDULE")));
 				coverMap.put("coverValue", CDEntry.getValue());
 				coverMap.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 				coverMap.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
