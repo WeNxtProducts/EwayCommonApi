@@ -85,7 +85,7 @@ public class CommonCalculator {
 						if (vehicle.get(r.getInputColumName()) instanceof BigDecimal) {
 							r.setInputColumValue( ((BigDecimal) vehicle.get(r.getInputColumName())).toPlainString());
 						}else
-							r.setInputColumValue(vehicle.get(r.getInputColumName()).toString());
+							r.setInputColumValue(vehicle.get(r.getInputColumName())!=null?vehicle.get(r.getInputColumName()).toString():"");
 					}
 					
 					

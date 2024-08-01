@@ -2,6 +2,7 @@ package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -291,7 +292,18 @@ public class PerilCalculator {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				Double riskPremiumAmt=t.getSumInsured().multiply(new BigDecimal(premiumRate/100), MathContext.DECIMAL32).doubleValue();
+				Double riskPremiumAmt=0D;
+				
+				if("P".equals(t.getCalcType())){
+					riskPremiumAmt=	t.getSumInsured().multiply(new BigDecimal(premiumRate/100), MathContext.DECIMAL32).doubleValue();	
+				 }else if("A".equals(t.getCalcType())) {
+					 riskPremiumAmt=new BigDecimal(premiumRate/100, MathContext.DECIMAL32).doubleValue();			
+				 }else if("M".equals(t.getCalcType())) {
+					 riskPremiumAmt = t.getSumInsured().multiply(new BigDecimal(premiumRate/1000), MathContext.DECIMAL32).doubleValue();		
+				 }else if("X".equals(t.getCalcType())) {
+					 riskPremiumAmt = t.getSumInsured().multiply(new BigDecimal(premiumRate)).doubleValue();
+				 }
+				
 				EwayFactorResultDetail efResult=EwayFactorResultDetail.builder()
 						.cdRefno(engine.getCdRefNo())
 						.companyId(engine.getInsuranceId())
