@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import jakarta.persistence.Table;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -55,6 +54,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="RISK_ID", nullable=false)
     private Integer    riskId ;
+    
+    @Id
+    @Column(name="LOCATION_ID", nullable=false)
+    private Integer    locationId ;
 
     @Id
     @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=100)

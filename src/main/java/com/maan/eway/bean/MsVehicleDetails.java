@@ -57,6 +57,10 @@ private static final long serialVersionUID = 1L;
     private String     vehicleId ;
 
     @Id
+    @Column(name="LOCATION_ID", nullable=false)
+    private Integer    locationId ;
+    
+    @Id
     @Column(name="VD_REFNO", nullable=false)
     private Long       vdRefno ;
 

@@ -36,6 +36,8 @@ public class MsDriverDetailsId implements Serializable {
     private Integer    driverId ;
     
     private Long       ddRefno ;
+
+    private Integer    locationId ;
     
      
 }

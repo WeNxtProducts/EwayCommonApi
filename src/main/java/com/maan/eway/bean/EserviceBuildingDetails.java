@@ -47,12 +47,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @ToString
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Builder
+//@Builder
 @IdClass(EserviceBuildingDetailsId.class)
 @Table(name = "eservice_building_details")
 
@@ -68,6 +68,10 @@ public class EserviceBuildingDetails implements Serializable {
 	@Id
 	@Column(name = "RISK_ID", nullable = false)
 	private Integer riskId;
+	
+    @Id
+    @Column(name="LOCATION_ID", nullable=false)
+    private Integer    locationId ;
 
 	@Id
 	@Column(name = "CUSTOMER_REFERENCE_NO", nullable = false, length = 20)

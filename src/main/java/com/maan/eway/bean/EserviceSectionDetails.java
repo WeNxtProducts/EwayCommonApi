@@ -59,6 +59,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="RISK_ID", nullable=false)
     private Integer    riskId ;
+    
+    @Id
+    @Column(name="LOCATION_ID", nullable=false)
+    private Integer    locationId ;
 
     @Id
     @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
