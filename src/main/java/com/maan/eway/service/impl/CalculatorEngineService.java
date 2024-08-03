@@ -513,7 +513,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					String rawtable = ratingutil.getProductIdBasedRawTable(engine);
 					String search = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 							+ ";sectionId:" + engine.getSectionId() + ";riskId:" + engine.getVehicleId()
-							+ ";status:{E,D,RP};requestReferenceNo:" + requestRefercenNo + ";";
+							+ ";status:{E,D,RP};requestReferenceNo:" + requestRefercenNo + ";locationId:"+(StringUtils.isBlank(engine.getLocationId())?"1":engine.getLocationId());
 					SpecCriteria criteria = crservice.createCriteria(Class.forName(rawtable), search,
 							"requestReferenceNo");
 					List<Long> count = crservice.getCount(criteria,0,2);
@@ -521,7 +521,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 						String riskid = engine.getVehicleId();
 						search = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
-								+ ";riskId:" + riskid + ";status:{E,D,RP};requestReferenceNo:" + requestRefercenNo + ";";
+								+ ";riskId:" + riskid + ";status:{E,D,RP};requestReferenceNo:" + requestRefercenNo +
+								";locationId:"+(StringUtils.isBlank(engine.getLocationId())?"1":engine.getLocationId());
 					}
 
 					List<Tuple> result = null;
@@ -1018,26 +1019,26 @@ public class CalculatorEngineService implements CalculatorEngine {
 				while (vehicles == null || vehicles.size() == 0 && counter < 6) {
 
 					if (oneProduct.equals("M")) {
-						search = "vdRefno:" + engine.getVdRefNo() + ";vehicleId:" + engine.getVehicleId();
+						search = "vdRefno:" + engine.getVdRefNo() + ";vehicleId:" + engine.getVehicleId()+";locationId:"+(StringUtils.isBlank(engine.getLocationId())?"1":engine.getLocationId());
 						criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
 						
-						if(StringUtils.isNotBlank(engine.getDdRefno())) {
-							search = "ddRefno:" + engine.getDdRefno() + ";riskId:" + engine.getVehicleId()+";driverId:1";
+						if(StringUtils.isNotBlank(engine.getDdRefno()) && !"0".equals(engine.getDdRefno())) {
+							search = "ddRefno:" + engine.getDdRefno() + ";riskId:" + engine.getVehicleId()+";driverId:1;locationId:"+(StringUtils.isBlank(engine.getLocationId())?"1":engine.getLocationId());
 							criteria = crservice.createCriteria(MsDriverDetails.class, search, "ddRefno");
 							drivers = crservice.getResult(criteria, 0, 50);
 						}
 						
 					} else if (oneProduct.equals("H")) {
-						search = "vdRefno:" + engine.getVdRefNo() + ";humanId:" + engine.getVehicleId();
+						search = "vdRefno:" + engine.getVdRefNo() + ";humanId:" + engine.getVehicleId()+";locationId:"+(StringUtils.isBlank(engine.getLocationId())?"1":engine.getLocationId());
 						criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
 					} else if (oneProduct.equalsIgnoreCase("A")) {
-						search = "vdRefno:" + engine.getVdRefNo() + ";locationId:" + engine.getVehicleId();
+						search = "vdRefno:" + engine.getVdRefNo() + ";locationId:" + engine.getVehicleId()+";locationId:"+(StringUtils.isBlank(engine.getLocationId())?"1":engine.getLocationId());
 						criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
 					}else if (oneProduct.equalsIgnoreCase("L")) {
-						search = "vdRefno:" + engine.getVdRefNo() + ";riskId:" + engine.getVehicleId();
+						search = "vdRefno:" + engine.getVdRefNo() + ";riskId:" + engine.getVehicleId()+";locationId:"+(StringUtils.isBlank(engine.getLocationId())?"1":engine.getLocationId());
 						criteria = crservice.createCriteria(MsLifeDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
 					}

@@ -61,8 +61,9 @@ public class CalcEngine {
 		@JsonProperty("DdRefNo")
 		private String ddRefno;
 		
-		@JsonProperty("LocationId")
+		@JsonProperty("LocationId") 
 		private String locationId;
+		
 		
 		
 }
