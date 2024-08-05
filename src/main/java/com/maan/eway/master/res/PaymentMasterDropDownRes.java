@@ -18,9 +18,11 @@ public class PaymentMasterDropDownRes {
 
 	@JsonProperty("CodeDesc")
 	private String codeDesc;
-
 	
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
+	
+	@JsonProperty("Type")
+	private String type;
 		
 }

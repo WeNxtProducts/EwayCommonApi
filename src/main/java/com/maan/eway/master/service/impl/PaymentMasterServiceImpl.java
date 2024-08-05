@@ -705,6 +705,7 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 				res.setCode(cash.getItemCode());
 				res.setCodeDesc(cash.getItemValue());
 				res.setCodeDescLocal(cash.getItemValueLocal());
+				res.setType(cash.getParam1());
 				resList.add(res);
 			} 
 			if(paymentData.getCreditYn().equalsIgnoreCase("Y") ) {
@@ -713,6 +714,7 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 				res.setCode(credit.getItemCode());
 				res.setCodeDesc(credit.getItemValue());
 				res.setCodeDescLocal(credit.getItemValueLocal());
+				res.setType(credit.getParam1());
 				resList.add(res);
 			}
 			if(paymentData.getChequeYn().equalsIgnoreCase("Y") ) {
@@ -721,6 +723,7 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 				res.setCode(cheque.getItemCode());
 				res.setCodeDesc(cheque.getItemValue());
 				res.setCodeDescLocal(cheque.getItemValueLocal());
+				res.setType(cheque.getParam1());
 				resList.add(res);
 			}
 			
@@ -730,14 +733,23 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 				res.setCode(online.getItemCode());
 				res.setCodeDesc(online.getItemValue());
 				res.setCodeDescLocal(online.getItemValueLocal());
+				res.setType(online.getParam1());
 				resList.add(res);
 				
-				ListItemValue online2 = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("5") ).collect(Collectors.toList()).get(0) ;
-				PaymentMasterDropDownRes res2 = new PaymentMasterDropDownRes();
-				res2.setCode(online2.getItemCode());
-				res2.setCodeDesc(online2.getItemValue());
-				res2.setCodeDescLocal(online2.getItemValueLocal());
-				resList.add(res2);
+			}
+			if(paymentData.getMobilePaymentYn().equalsIgnoreCase("Y") ) {
+				Arrays.asList("5","6").forEach(i -> {
+					List<ListItemValue> onlineList = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(i) ).collect(Collectors.toList());
+					if(!onlineList.isEmpty()) {
+						ListItemValue online = onlineList.get(0);
+						PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
+						res.setCode(online.getItemCode());
+						res.setCodeDesc(online.getItemValue());
+						res.setCodeDescLocal(online.getItemValueLocal());
+						res.setType(online.getParam1());
+						resList.add(res);
+					}
+				});
 			}
 		}
 		
