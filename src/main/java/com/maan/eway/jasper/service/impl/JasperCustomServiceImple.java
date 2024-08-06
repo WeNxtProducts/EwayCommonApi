@@ -2527,7 +2527,7 @@ public class JasperCustomServiceImple {
 				Subquery<String> occDesc = cq1.subquery(String.class);
 				Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
 				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class), ecdRoot.get("sectionId")),
-						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId"), ecdRoot.get("productId")),
+						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId").as(String.class), ecdRoot.get("productId")),
 						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
 				
 				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
