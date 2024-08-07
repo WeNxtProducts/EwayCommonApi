@@ -3,6 +3,8 @@ package com.maan.eway.payment.process;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,4 +32,15 @@ public class PaymentProcessController {
 			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
 		}
 	}
+	
+	@GetMapping("/get/{type}/{status}")
+	public ResponseEntity<?> getStatusList(@PathVariable("type") String type,@PathVariable("status") String status){
+		CommonRes res = service.getStatusList(type,status);
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(res,HttpStatus.ACCEPTED);
+		}else {
+			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+		}
+	}
+		
 }

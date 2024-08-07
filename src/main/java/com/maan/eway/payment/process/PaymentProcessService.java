@@ -7,4 +7,6 @@ public interface PaymentProcessService {
 
 	CommonRes savePaymentProcess(SavePaymentProcessReq req);
 
+	CommonRes getStatusList(String type,String status);
+
 }
