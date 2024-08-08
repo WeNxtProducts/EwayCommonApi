@@ -254,5 +254,10 @@ public class EserviceCustomerSaveReq {
 	
 	@JsonProperty("ZONE")
 	private String zone;
-
+	
+	@JsonProperty("SocioProfessionalCategory")
+	private String socioProfessionalCategory;
+		
+	@JsonProperty("Activities")
+	private String activities;
 }

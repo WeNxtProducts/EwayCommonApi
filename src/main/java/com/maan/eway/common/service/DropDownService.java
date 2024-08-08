@@ -254,5 +254,11 @@ public interface DropDownService {
 	List<DropDownRes> characterType(LovDropDownReq req);
 
 	List<DropDownRes> policyEndDateList(String policyStartDate);
+	
+	List<DropDownRes> socioProfessionalCategory(LovDropDownReq req);
+	
+	List<DropDownRes> municipalityTraffic(LovDropDownReq req);
+	
+	List<DropDownRes> aggregatedValue(LovDropDownReq req);
 
 }

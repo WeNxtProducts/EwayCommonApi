@@ -2053,4 +2053,64 @@ public class DropDownController {
 			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/socioProfessional")
+	@ApiOperation(value = "This method is to Socio Professional Category Drop Down")
+	public ResponseEntity<CommonRes> socioProfessionalCategory(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.socioProfessionalCategory(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(null);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/municipalityTraffic")
+	@ApiOperation(value = "This method is to Municipality Traffic Drop Down")
+	public ResponseEntity<CommonRes> municipalityTraffic(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.municipalityTraffic(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(null);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/aggregatedValue")
+	@ApiOperation(value = "This method is to Aggregated Value Drop Down")
+	public ResponseEntity<CommonRes> aggregatedValue(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.aggregatedValue(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(null);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 }
