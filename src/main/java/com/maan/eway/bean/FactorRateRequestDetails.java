@@ -100,7 +100,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENDT_COUNT")
     private BigDecimal     endtCount ;
     
+    @Id
+    @Column(name="LOCATION_ID")
+    private Integer     locationId ;
+    
     //--- ENTITY DATA FIELDS 
+  
+    
     @Column(name="CD_REFNO", nullable=false, length=20)
     private String     cdRefno ;
 

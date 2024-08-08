@@ -212,6 +212,9 @@ public class Cover implements Serializable{
 				  public String subCoverDescLocal;
 				  @JsonProperty("SubCoverNameLocal") 
 				  public String subCoverNameLocal;
+				  @JsonProperty("LocationId") 
+				  public String locationId;
+				  
 }
 
 
