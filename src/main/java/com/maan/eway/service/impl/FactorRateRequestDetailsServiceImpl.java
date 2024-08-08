@@ -508,6 +508,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						FactorRateRequestDetails saveSubCover = new FactorRateRequestDetails(); 
 						
 						dozerMapper.map(subCoverData, saveSubCover);
+						saveSubCover.setLocationId(Integer.valueOf(req.getLocationId()));
 						saveSubCover.setRequestReferenceNo(req.getRequestReferenceNo());
 						saveSubCover.setCompanyId(req.getInsuranceId());
 						saveSubCover.setProductId(Integer.valueOf(req.getProductId()));
