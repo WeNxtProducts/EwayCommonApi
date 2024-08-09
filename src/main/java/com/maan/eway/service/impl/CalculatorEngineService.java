@@ -1035,7 +1035,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 						criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
 					} else if (oneProduct.equalsIgnoreCase("A")) {
-						search = "vdRefno:" + engine.getVdRefNo() + ";locationId:" + engine.getVehicleId()+";locationId:"+(StringUtils.isBlank(engine.getLocationId())?"1":engine.getLocationId());
+						search = "vdRefno:" + engine.getVdRefNo() + ";riskId:" + engine.getVehicleId()+";locationId:"+(StringUtils.isBlank(engine.getLocationId())?"1":engine.getLocationId());
 						criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
 					}else if (oneProduct.equalsIgnoreCase("L")) {
