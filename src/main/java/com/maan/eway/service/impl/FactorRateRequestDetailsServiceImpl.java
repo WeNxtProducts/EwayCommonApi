@@ -1360,6 +1360,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setActualPremiumLc(mot.getActualPremiumLc()==null?"0":mot.getActualPremiumLc().toPlainString());
 						res.setVehicleId(mot.getRiskId().toString());
 						res.setGroupId(1);
+						res.setLocationId("1");
 						res.setGroupMember(0);
 						res.setSectionId(section.getSectionId());
 						res.setSectionName(section.getSectionName());	
