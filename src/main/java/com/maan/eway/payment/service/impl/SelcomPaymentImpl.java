@@ -126,10 +126,11 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					response.addProperty("result", "SUCCESS");
 					
 					JsonObject innerResponse=new JsonObject();
-					innerResponse.addProperty("payment_gateway_url", "url not available");
+					innerResponse.addProperty("payment_gateway_url", "dXJsIG5vdCBhdmFpbGFibGU=");
 					JsonArray asJsonArray =new JsonArray(1);
 					asJsonArray.add(innerResponse);
-					response.add("data", innerResponse);
+					response.add("data", asJsonArray);
+					return response;
 				}else {
 					return selcomPayment(vendor,payment);
 				}
@@ -507,7 +508,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("amount",  payment.getPremiumFc().toPlainString());
 
 			*/
-				orderDict.addProperty("amount",  "1");
+				orderDict.addProperty("amount",  "5");
 
 				
 				orderDict.addProperty("accountNumber",payment.getReqBillToPhone());
