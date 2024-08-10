@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -264,93 +265,60 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				boolean isPaymentdone=false;
 				JsonObject j=new JsonObject();
 				for(PaymentDetail payment:payments) {
-					String apiKey = null;
-					String apiSecret = null;
-					String baseUrl = null;					
-					String checkstatusLink=null;
-					if(vendor!=null) {
-						apiKey=vendor.getApiKey();
-						apiSecret=vendor.getApiSecretKey();
-						baseUrl=vendor.getApiBaseUrl();
-						checkstatusLink=vendor.getCheckStatusUrl();					
+
+					JsonObject responses=null;
+
+					if("lipila".equals(vendor.getVendorName())) {
+						responses=lipilaOrderStatus(payment,vendor);
+					}else {
+						responses=selcomOrderStatus(payment,vendor);
 					}
-					// initalize a new Client instace with values of the base url, api key and api secret
-					ApigwClient client = new ApigwClient(baseUrl,apiKey,apiSecret);
-					JsonObject orderStatusDict = new JsonObject();
-					orderStatusDict.addProperty("order_id",payment.getMerchantReference());
-					//get order status
-					JsonObject	responses= client.getFunc(checkstatusLink ,orderStatusDict);
-					System.out.println("PAY ::"+payment.getMerchantReference()+" "+responses );
-					  
-					if("SUCCESS".equalsIgnoreCase(responses.get("result").getAsString()) ) {
-						JsonArray array = responses.get("data").getAsJsonArray();
-						response = array.get(0).getAsJsonObject();
 
-						if("COMPLETED".equals(response.get("payment_status").getAsString())) {
-							payment.setPaymentStatus("ACCEPTED");
-							payment.setAuthTransRefNo(response.get("transid").getAsString());
-							payment.setChannel(response.get("channel").getAsString());
-							payment.setReference(response.get("reference").getAsString());
-							payment.setMsisdn(response.get("msisdn").getAsString());
-							isPaymentdone=true;
-						}else if("PENDING".equals(response.get("payment_status").getAsString()))
-							payment.setPaymentStatus("PENDING");
-						else if("INPROGRESS".equals(response.get("payment_status").getAsString()))
-							payment.setPaymentStatus("PENDING");
-						else
-							payment.setPaymentStatus("FAILED");
 
-						payment.setAuthResponse(response.get("payment_status").getAsString());
-						payment.setResponseMessage(responses.get("message").getAsString());
-						payment.setResponseTime(new Date());
-						payment.setAuthAmount(response.get("amount").getAsString());
-						paymentDetailRepo.save(payment);
+					if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus())) { 
+						PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(payment.getQuoteNo(), payment.getPaymentId());
+						if(!"ACCEPTED".equals(paymentInfo.getPaymentStatus())) {
+							paymentInfo.setPaymentStatus(payment.getPaymentStatus());
+							paymentInfo.setUpdatedDate(new Date());
+							paymentInfo.setMerchantReference(payment.getMerchantReference());
+							paymentinforepo.save(paymentInfo);
 
-						if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus())) { 
-							PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(payment.getQuoteNo(), payment.getPaymentId());
-							if(!"ACCEPTED".equals(paymentInfo.getPaymentStatus())) {
-								paymentInfo.setPaymentStatus(payment.getPaymentStatus());
-								paymentInfo.setUpdatedDate(new Date());
-								paymentInfo.setMerchantReference(payment.getMerchantReference());
-								paymentinforepo.save(paymentInfo);
-
-								if("COMPLETED".equals(response.get("payment_status").getAsString())) {
-									try {
-										LoginRequest mslogin=new LoginRequest();
-										mslogin.setLoginId("guest");
-										mslogin.setPassword("Admin@01");
-										mslogin.setReLoginKey("Y");
-										CommonLoginRes checkUserLogin = authservice.checkUserLogin(mslogin,null);
-										ClaimLoginResponse commonResponse =(ClaimLoginResponse) checkUserLogin.getCommonResponse();
-										if(commonResponse!=null) {
-											String tokeen = commonResponse.getToken();
-											TiraFrameReqCall tira=new TiraFrameReqCall();
-											tira.setQuoteNo(orderId);
-											tiraService.callTiraIntegeration(tira, tokeen);
-										}
-									}catch(Exception e) {
-										e.printStackTrace();
+							if("COMPLETED".equals(response.get("payment_status").getAsString())) {
+								try {
+									LoginRequest mslogin=new LoginRequest();
+									mslogin.setLoginId("guest");
+									mslogin.setPassword("Admin@01");
+									mslogin.setReLoginKey("Y");
+									CommonLoginRes checkUserLogin = authservice.checkUserLogin(mslogin,null);
+									ClaimLoginResponse commonResponse =(ClaimLoginResponse) checkUserLogin.getCommonResponse();
+									if(commonResponse!=null) {
+										String tokeen = commonResponse.getToken();
+										TiraFrameReqCall tira=new TiraFrameReqCall();
+										tira.setQuoteNo(orderId);
+										tiraService.callTiraIntegeration(tira, tokeen);
 									}
-									PaymentDetailsSaveReq req=new PaymentDetailsSaveReq();
-									req.setQuoteNo(payment.getQuoteNo());
-									req.setCreatedBy(payment.getUpdatedBy());
-									req.setPaymentType(payment.getPaymentType());
-
-									paymentService.generatePolicy(paymentInfo,req,payment,token);
+								}catch(Exception e) {
+									e.printStackTrace();
 								}
+								PaymentDetailsSaveReq req=new PaymentDetailsSaveReq();
+								req.setQuoteNo(payment.getQuoteNo());
+								req.setCreatedBy(payment.getUpdatedBy());
+								req.setPaymentType(payment.getPaymentType());
+
+								paymentService.generatePolicy(paymentInfo,req,payment,token);
 							}
-
-
 						}
+
+
 					}
 					j.addProperty("result",isPaymentdone?"COMPLETED":"FAIL");
 					j.addProperty("message",responses.toString());
 					System.out.println("Push whatsapp call for "+payment.getMerchantReference()+"--"+payment.getPaymentStatus());
 					if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus()))
 						postCall(j,payment);
-				} 		
-
-				
+				}
+					
+			 	
 
 				return j;
 			}else {
@@ -368,6 +336,114 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 
+	private JsonObject lipilaOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
+		  CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+		try {
+			
+			String url=vendor.getCheckStatusUrl()+payment.getMerchantReference();
+			
+			HttpGet request = new HttpGet(url);
+            System.out.println(url);
+	        request.addHeader("Authorization", "Bearer "+vendor.getApiSecretKey());
+	        request.setHeader("Content-Type","application/json");
+
+	            HttpResponse hresp  = httpClient.execute(request);
+
+	            org.apache.http.HttpEntity httpEntity = hresp.getEntity();
+	            String apiOutput = EntityUtils.toString(httpEntity);
+	            System.out.println("output"+ apiOutput.toString());
+
+	            JsonObject fromJson = new Gson().fromJson(apiOutput, JsonObject.class);
+	            
+	            if("Successful".equalsIgnoreCase(fromJson.get("status").getAsString()) ) {
+					
+					if("Successful".equals(fromJson.get("status").getAsString())) {
+						payment.setPaymentStatus("ACCEPTED");
+						payment.setAuthTransRefNo(fromJson.get("transactionId").getAsString());
+						payment.setChannel(fromJson.get("transactionId").getAsString());
+						payment.setReference(fromJson.get("transactionId").getAsString());
+						payment.setMsisdn(fromJson.get("externalId").getAsString());
+						
+						///isPaymentdone=true;
+					}else if("Pending".equals(fromJson.get("status").getAsString()))
+						payment.setPaymentStatus("PENDING");
+					else if("INPROGRESS".equals(fromJson.get("status").getAsString()))
+						payment.setPaymentStatus("PENDING");
+					else
+						payment.setPaymentStatus("FAILED");
+
+					payment.setAuthResponse(fromJson.get("status").getAsString());
+					payment.setResponseMessage(fromJson.get("message")!=null?fromJson.get("message").getAsString():"");
+					payment.setResponseTime(new Date());
+					payment.setAuthAmount(fromJson.get("amount").getAsString());
+					paymentDetailRepo.save(payment);
+				}
+		
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+        	if(httpClient!=null)
+				try {
+					httpClient.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		} 
+	return null;
+	}
+	private JsonObject selcomOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
+		try {
+			String apiKey = null;
+			String apiSecret = null;
+			String baseUrl = null;					
+			String checkstatusLink=null;
+			if(vendor!=null) {
+				apiKey=vendor.getApiKey();
+				apiSecret=vendor.getApiSecretKey();
+				baseUrl=vendor.getApiBaseUrl();
+				checkstatusLink=vendor.getCheckStatusUrl();					
+			}
+			// initalize a new Client instace with values of the base url, api key and api secret
+			ApigwClient client = new ApigwClient(baseUrl,apiKey,apiSecret);
+			JsonObject orderStatusDict = new JsonObject();
+			orderStatusDict.addProperty("order_id",payment.getMerchantReference());
+			//get order status
+			JsonObject	responses= client.getFunc(checkstatusLink ,orderStatusDict);
+			
+			
+			System.out.println("PAY ::"+payment.getMerchantReference()+" "+responses );
+			  
+			if("SUCCESS".equalsIgnoreCase(responses.get("result").getAsString()) ) {
+				JsonArray array = responses.get("data").getAsJsonArray();
+				JsonObject response = array.get(0).getAsJsonObject();
+
+				if("COMPLETED".equals(response.get("payment_status").getAsString())) {
+					payment.setPaymentStatus("ACCEPTED");
+					payment.setAuthTransRefNo(response.get("transid").getAsString());
+					payment.setChannel(response.get("channel").getAsString());
+					payment.setReference(response.get("reference").getAsString());
+					payment.setMsisdn(response.get("msisdn").getAsString());
+					///isPaymentdone=true;
+				}else if("PENDING".equals(response.get("payment_status").getAsString()))
+					payment.setPaymentStatus("PENDING");
+				else if("INPROGRESS".equals(response.get("payment_status").getAsString()))
+					payment.setPaymentStatus("PENDING");
+				else
+					payment.setPaymentStatus("FAILED");
+
+				payment.setAuthResponse(response.get("payment_status").getAsString());
+				payment.setResponseMessage(responses.get("message").getAsString());
+				payment.setResponseTime(new Date());
+				payment.setAuthAmount(response.get("amount").getAsString());
+				paymentDetailRepo.save(payment);
+			}
+			return responses;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	private void postCall(JsonObject j, PaymentDetail payment) {
 		try {
 			
