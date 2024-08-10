@@ -21,6 +21,7 @@ import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.payment.process.Repository.PaymentProcessDetailRepository;
 import com.maan.eway.payment.process.req.SavePaymentProcessReq;
+import com.maan.eway.payment.process.req.StatusListReq;
 import com.maan.eway.payment.process.res.StatusListRes;
 
 import jakarta.persistence.EntityManager;
@@ -162,7 +163,7 @@ public class PaymentProcessServiceImpl implements PaymentProcessService {
 	}
 
 	@Override
-	public CommonRes getStatusList(String type,String status) {
+	public CommonRes getStatusList(String type,String status,StatusListReq req) {
 		LOGGER.info("Enter into StatusList || "+type,status);
 		CommonRes response = new CommonRes();
 		List<StatusListRes> res = new ArrayList<StatusListRes>();
@@ -186,7 +187,7 @@ public class PaymentProcessServiceImpl implements PaymentProcessService {
 					hpmRoot.get("inceptionDate").alias("inceptionDate"),hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("overallPremiumFc").alias("overallPremiumFc"),
 					ppdRoot.get("paymentType").alias("paymentType"),ppdRoot.get("paymentId").alias("paymentId"),ppdRoot.get("type").alias("type"))
 			.where(cb.equal(hpmRoot.get("quoteNo"), ppdRoot.get("quoteNo")),cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),n1 == null?cb.conjunction():n1,
-					cb.equal(hpmRoot.get("productId"), n1));
+					cb.equal(hpmRoot.get("productId"), req.getProductId()));
 			
 			List<Tuple> list = em.createQuery(cq).getResultList();
 			if(!list.isEmpty()) {
