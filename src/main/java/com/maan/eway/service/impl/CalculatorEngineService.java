@@ -951,6 +951,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 				response.setSectionId(request.getSectionId());
 				response.setCreatedBy(request.getCreatedBy());
 				response.setProductId(request.getProductId());
+				
+				response.setLocationId(request.getLocationId());
 				response.setMsrefno(request.getMsrefno());
 				response.setUpdateas("admin");
 				// response.setUwList(referr);
