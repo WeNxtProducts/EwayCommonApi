@@ -277,13 +277,15 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 
 					if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus())) { 
 						PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(payment.getQuoteNo(), payment.getPaymentId());
+						
+						
 						if(!"ACCEPTED".equals(paymentInfo.getPaymentStatus())) {
 							paymentInfo.setPaymentStatus(payment.getPaymentStatus());
 							paymentInfo.setUpdatedDate(new Date());
 							paymentInfo.setMerchantReference(payment.getMerchantReference());
 							paymentinforepo.save(paymentInfo);
 
-							if("COMPLETED".equals(response.get("payment_status").getAsString())) {
+							if("ACCEPTED".equals(payment.getPaymentStatus())) {
 								try {
 									LoginRequest mslogin=new LoginRequest();
 									mslogin.setLoginId("guest");
@@ -307,12 +309,13 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 
 								paymentService.generatePolicy(paymentInfo,req,payment,token);
 							}
+							isPaymentdone=true;
 						}
 
 
 					}
 					j.addProperty("result",isPaymentdone?"COMPLETED":"FAIL");
-					j.addProperty("message",responses.toString());
+					j.addProperty("message",responses!=null ?responses.toString():"");
 					System.out.println("Push whatsapp call for "+payment.getMerchantReference()+"--"+payment.getPaymentStatus());
 					if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus()))
 						postCall(j,payment);
@@ -355,9 +358,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 
 	            JsonObject fromJson = new Gson().fromJson(apiOutput, JsonObject.class);
 	            
-	            if("Successful".equalsIgnoreCase(fromJson.get("status").getAsString()) ) {
+	            if( fromJson!=null ) {
 					
-					if("Successful".equals(fromJson.get("status").getAsString())) {
+					if(fromJson.get("status") !=null && "Successful".equals(fromJson.get("status").getAsString())) {
 						payment.setPaymentStatus("ACCEPTED");
 						payment.setAuthTransRefNo(fromJson.get("transactionId").getAsString());
 						payment.setChannel(fromJson.get("transactionId").getAsString());
@@ -365,17 +368,17 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 						payment.setMsisdn(fromJson.get("externalId").getAsString());
 						
 						///isPaymentdone=true;
-					}else if("Pending".equals(fromJson.get("status").getAsString()))
+					}else if(fromJson.get("status") !=null &&  "Pending".equals(fromJson.get("status").getAsString()))
 						payment.setPaymentStatus("PENDING");
-					else if("INPROGRESS".equals(fromJson.get("status").getAsString()))
+					else if(fromJson.get("status") !=null &&  "INPROGRESS".equals(fromJson.get("status").getAsString()))
 						payment.setPaymentStatus("PENDING");
 					else
 						payment.setPaymentStatus("FAILED");
 
-					payment.setAuthResponse(fromJson.get("status").getAsString());
+					payment.setAuthResponse(fromJson.get("status") !=null?fromJson.get("status").getAsString():"");
 					payment.setResponseMessage(fromJson.get("message")!=null?fromJson.get("message").getAsString():"");
 					payment.setResponseTime(new Date());
-					payment.setAuthAmount(fromJson.get("amount").getAsString());
+					payment.setAuthAmount(fromJson.get("amount")!=null? fromJson.get("amount").getAsString():"0");
 					paymentDetailRepo.save(payment);
 				}
 		
@@ -584,7 +587,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("amount",  payment.getPremiumFc().toPlainString());
 
 			*/
-				orderDict.addProperty("amount",  "5");
+				orderDict.addProperty("amount",  100);
 
 				
 				orderDict.addProperty("accountNumber",payment.getReqBillToPhone());

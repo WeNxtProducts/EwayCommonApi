@@ -2336,7 +2336,7 @@ public class PaymentServiceImpl implements PaymentService {
 			res.setQuoteNo(req.getQuoteNo());
 			res.setMerchantReference(refno);
 			
-			if(req.getPaymentType().equalsIgnoreCase("4") || req.getPaymentType().equalsIgnoreCase("5")) {
+			/*if(req.getPaymentType().equalsIgnoreCase("4") || req.getPaymentType().equalsIgnoreCase("5")) {
 				res.setIserror(((JsonPrimitive) payment.get("result")).getAsString()); //;
 				if(res.getIserror().equals("SUCCESS")) {
 					JsonArray array=(JsonArray) payment.get("data");
@@ -2354,7 +2354,7 @@ public class PaymentServiceImpl implements PaymentService {
 					res.setResponse(depores.getMessage().toString());
 				}
 				
-			}
+			}*/
 			//Tracking Details
 			
 			trackingDetailsPayment(data, req.getCreatedBy());
