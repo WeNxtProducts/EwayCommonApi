@@ -17,4 +17,8 @@ public class ProductStructureMasterRes {
 	
 	@JsonProperty("IndustryType")
 	private String IndustryType;
+	
+    @JsonProperty("LocalDesc")
+	private String localCodeDesc;
+	
 }
