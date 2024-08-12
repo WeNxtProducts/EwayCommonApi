@@ -5,9 +5,11 @@ import java.util.List;
 import com.maan.eway.admin.res.GetallPortfolioActiveRes;
 import com.maan.eway.bean.YiPolicyDetail;
 import com.maan.eway.integration.req.GetAllPolicy;
+import com.maan.eway.integration.req.IntegrationStateByPolicyReq;
 import com.maan.eway.integration.req.PremiaGetReq;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.res.CreditLimitDetailGetRes;
+import com.maan.eway.integration.res.IntegrationStatgingRes;
 import com.maan.eway.integration.res.MotCommDiscountDetailGetRes;
 import com.maan.eway.integration.res.MotDriverDetailGetRes;
 import com.maan.eway.integration.res.PgithPolRiskAddlInfoGetRes;
@@ -45,6 +47,8 @@ public interface IntegrationGetService {
 	List<PgithPolRiskAddlInfoGetRes> getPgithPolRiskAddlInfo(PremiaGetReq req);
 
 	GetallPortfolioActiveRes getAllPolicyDetails(GetAllPolicy req);
+
+	List<IntegrationStatgingRes> getIntegrationStageDetails(IntegrationStateByPolicyReq req);
 
 	
 
