@@ -47,6 +47,9 @@ public class EservieMotorDetailsViewRes {
 	@JsonProperty("SectionId")
 	private String sectionId;
 	
+	@JsonProperty("LocationId")
+	private String locationId;
+	
 	@JsonProperty("LocationName")
 	private String locationName;
 	

@@ -356,6 +356,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					saveCover.setSubCoverId(0);
 					//saveCover.setCoverId(Integer.valueOf(coverData.getCoverId()));
 					saveCover.setCurrency(coverData.getCurrency());
+					saveCover.setLocationId(Integer.valueOf(req.getLocationId()));
 					saveCover.setExchangeRate(coverData.getExchangeRate()==null?null : coverData.getExchangeRate());
 					saveCover.setCompanyId(req.getInsuranceId());
 					saveCover.setProductId(Integer.valueOf(req.getProductId()));
@@ -476,6 +477,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					primaryKeys.put("CdRefNo" ,req.getCdRefNo());
 					primaryKeys.put("VdRefNo" ,req.getVdRefNo());
 					primaryKeys.put("MsRefNo" ,req.getMsrefno());	
+					primaryKeys.put("LocationId" ,req.getLocationId());
 					
 					
 					// Save Discount Or Promo Cover
@@ -507,6 +509,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						FactorRateRequestDetails saveSubCover = new FactorRateRequestDetails(); 
 						
 						dozerMapper.map(subCoverData, saveSubCover);
+						saveSubCover.setLocationId(Integer.valueOf(req.getLocationId()));
 						saveSubCover.setRequestReferenceNo(req.getRequestReferenceNo());
 						saveSubCover.setCompanyId(req.getInsuranceId());
 						saveSubCover.setProductId(Integer.valueOf(req.getProductId()));
@@ -931,6 +934,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveTax.setCoverName(coverReq.getCoverName() +" "+tax.getTaxDesc() );
 				saveTax.setCoverDesc(coverReq.getCoverDesc() +" "+tax.getTaxDesc());
 				saveTax.setCurrency(coverReq.getCurrency());
+				saveTax.setLocationId(Integer.valueOf(primaryKeys.get("LocationId").toString()));
 				saveTax.setExchangeRate(coverReq.getExchangeRate()==null?null :coverReq.getExchangeRate());
 				saveTax.setCompanyId(primaryKeys.get("InsuranceId").toString());
 				saveTax.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
@@ -990,7 +994,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				dozerMapper.map(coverReq, saveLod);
 				saveLod.setRequestReferenceNo(primaryKeys.get("RefNo").toString() );
 				saveLod.setCoverName(lod.getCoverName());
-				saveLod.setCoverDesc(lod.getEndorsementDesc());				
+				saveLod.setCoverDesc(lod.getEndorsementDesc());	
+				saveLod.setLocationId(Integer.valueOf(primaryKeys.get("LocationId").toString()));
 				saveLod.setCompanyId(primaryKeys.get("InsuranceId").toString());
 				saveLod.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
 				saveLod.setSectionId(Integer.valueOf(primaryKeys.get("SectionId").toString()));
@@ -1079,6 +1084,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveLod.setCoverName(lod.getLoadingDesc());
 				saveLod.setCoverDesc(lod.getLoadingDesc());
 				saveLod.setCurrency(coverReq.getCurrency());
+				saveLod.setLocationId(Integer.valueOf(primaryKeys.get("LocationId").toString()));
 				saveLod.setExchangeRate(coverReq.getExchangeRate()==null?null : coverReq.getExchangeRate());
 				saveLod.setCompanyId(primaryKeys.get("InsuranceId").toString());
 				saveLod.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
@@ -1145,6 +1151,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				dozerMapper.map(coverReq, saveDiscounts);
 				saveDiscounts.setRequestReferenceNo(primaryKeys.get("RefNo").toString() );
 				saveDiscounts.setDiscLoadId(Integer.valueOf(disc.getDiscountId()));
+				saveDiscounts.setLocationId(Integer.valueOf(primaryKeys.get("LocationId").toString()));
 				saveDiscounts.setCoverName(disc.getDiscountDesc());
 				saveDiscounts.setCoverDesc(disc.getDiscountDesc());
 				saveDiscounts.setCurrency(coverReq.getCurrency());
@@ -1218,7 +1225,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 				// Set Covers
 				List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
-						o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId()) ).collect(Collectors.toList());
+						o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId())  && o.getLocationId().toString().equals(res.getLocationId()) ).collect(Collectors.toList());
 				
 				Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 				List<Cover> coverListRes = 	getCoversList(groupByCover);
@@ -1258,7 +1265,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				res.setCoverList(coverListRes);
 				res.setUwList(uwReferals);
 				res.setReferals(masterreferrals);
-				res.setVehicleId(res.getOriginalRiskId() != null ? res.getOriginalRiskId() :  res.getVehicleId() );			
+//				res.setVehicleId(res.getOriginalRiskId() != null ? res.getOriginalRiskId() :  res.getVehicleId() );			
+				res.setVehicleId(res.getVehicleId() == null ? "" :  res.getVehicleId() );
 				// Emi Details 
 				List<HomePositionMaster> homeData  =  homeRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 				if(homeData!=null && homeData.size()>0) {
@@ -1352,6 +1360,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setActualPremiumLc(mot.getActualPremiumLc()==null?"0":mot.getActualPremiumLc().toPlainString());
 						res.setVehicleId(mot.getRiskId().toString());
 						res.setGroupId(1);
+						res.setLocationId(section.getLocationId().toString());
 						res.setGroupMember(0);
 						res.setSectionId(section.getSectionId());
 						res.setSectionName(section.getSectionName());	
@@ -1697,7 +1706,10 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						String LocationName="";
 						if(buildingList!=null) {
 							LocationName=buildingList.getLocationName();
+						}else {
+							LocationName=acc.getLocationName();
 						}
+						res.setLocationId(acc.getLocationId()==null?"" :acc.getLocationId().toString());
 						res.setLocationName(LocationName);
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
@@ -1761,7 +1773,10 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						String LocationName="";
 						if(buildingList!=null) {
 							LocationName=buildingList.getLocationName();
+						}else {
+							LocationName=buildData.getLocationName();
 						}
+						res.setLocationId(buildData.getLocationId()==null?"" :buildData.getLocationId().toString());
 						res.setLocationName(LocationName);
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
@@ -1822,7 +1837,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				res.setPolicyNo(comData.getPolicyNo());
 				res.setOriginalPolicyNo(comData.getOriginalPolicyNo());
 				res.setSourceType(comData.getSourceType());
-				res.setFinalizeYn(comData.getFinalizeYn());			
+				res.setFinalizeYn(comData.getFinalizeYn());	
+				res.setLocationId(comData.getLocationId()==null?"1":comData.getLocationId().toString());
+				res.setLocationName(StringUtil.isBlank(comData.getLocationName())?"":comData.getLocationName());
 				//res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
@@ -1864,6 +1881,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					// Get Covers
 					List<FactorRateRequestDetails> filterCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
 					coverRes = dozerMapper.map(filterCover.get(0), Cover.class);
+					coverRes.setLocationId(filterCover.get(0).getLocationId().toString());
 					coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
 					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
@@ -1945,7 +1963,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					// Get Sub Covers
 			
 					List<FactorRateRequestDetails> filterCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
-					 coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
+					coverRes.setLocationId(filterCover.get(0).getLocationId().toString());
+					coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
 					 coverRes.setCalcType(filterCover.get(0).getCalcType());
 					 coverRes.setCoverName(filterCover.get(0).getCoverName());
 					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());

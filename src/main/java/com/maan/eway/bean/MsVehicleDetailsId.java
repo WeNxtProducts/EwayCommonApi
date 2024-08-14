@@ -40,4 +40,6 @@ public class MsVehicleDetailsId implements Serializable {
     private Integer    endtTypeId ;
     
     private String    endtCategoryId ;
+    
+    private Integer    locationId ;
 }

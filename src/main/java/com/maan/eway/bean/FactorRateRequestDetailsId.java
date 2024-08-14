@@ -54,5 +54,7 @@ public class FactorRateRequestDetailsId implements Serializable {
     
     private BigDecimal     endtCount ;
     
+    private Integer     locationId ;
+    
      
 }

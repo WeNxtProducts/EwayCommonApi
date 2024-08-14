@@ -160,6 +160,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		    result.setCompanyid(data.getCompanyId());
 		    result.setIndustryTypeId(data.getIndsutryTypeId());
 		    result.setIndustryTypeDesc(data.getIndsutryTypeDesc());
+		    result.setIndustryTypeLocalDesc(data.getIndsutryTypeLocalDesc());
 		    res.setCommonResponse(result);
 		  
 		    res.setIsError(false);
@@ -191,6 +192,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 				data.setSectionid(dd.getSectionId());
 				data.setStatus(dd.getStatus());
 				data.setSectionName(dd.getSectionName());
+				data.setLocalCodeDesc(dd.getIndsutryTypeLocalDesc());
 				result1.add(data);
 			}
 			result=result1;

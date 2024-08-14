@@ -48,6 +48,8 @@ public class EserviceMotorDetailsSaveRes {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	@JsonProperty("LocationId")
+	private String locationId;
 	
 	@JsonProperty("UWReferral")
 	private List<UWReferrals> uwList;

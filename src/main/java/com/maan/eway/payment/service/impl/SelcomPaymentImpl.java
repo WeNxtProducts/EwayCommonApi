@@ -1,5 +1,6 @@
 package com.maan.eway.payment.service.impl;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
@@ -11,6 +12,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -109,94 +118,121 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					vendor = paymentId.get(0);
 				}
 
-				String apiKey = null;
-				String apiSecret = null;
-				String baseUrl = null;
-				String orderPath =null;
-				String vendorCode=null;
-				String redirect_url=null;
-				String cancel_url=null;
-				String webHookUrl=null;
-				String signedFields="";
-				if(vendor!=null) {
-					apiKey=vendor.getApiKey();
-					apiSecret=vendor.getApiSecretKey();
-					baseUrl=vendor.getApiBaseUrl();
-					orderPath=vendor.getPaymentUrlLink();
-					vendorCode=vendor.getVendorCode();
-					redirect_url=vendor.getReturnUrlLink();
-					cancel_url=vendor.getCancelUrlLink();
-					webHookUrl=vendor.getWebhookUrlLink();
-
-					redirect_url=redirect_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
-					cancel_url=cancel_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
-					signedFields=vendor.getSignedFields();
+				
+				JsonObject response = null;
+ 
+				if("lipila".equals(vendor.getVendorName())) {
+					// Online Payment not available
+					response = new JsonObject();
+					response.addProperty("result", "SUCCESS");
+					
+					JsonObject innerResponse=new JsonObject();
+					innerResponse.addProperty("payment_gateway_url", "dXJsIG5vdCBhdmFpbGFibGU=");
+					JsonArray asJsonArray =new JsonArray(1);
+					asJsonArray.add(innerResponse);
+					response.add("data", asJsonArray);
+					return response;
+				}else {
+					return selcomPayment(vendor,payment);
 				}
-
-				// data
-				JsonObject orderDict = new JsonObject();
-				orderDict.addProperty("vendor",vendorCode);
-				orderDict.addProperty("order_id",payment.getMerchantReference());
-				orderDict.addProperty("buyer_email", StringUtils.isBlank(payment.getCustomerEmail())?"info@alliance.co.tz":payment.getCustomerEmail() );
-				orderDict.addProperty("buyer_name", payment.getCustomerName());
-				orderDict.addProperty("buyer_userid", "");
-				orderDict.addProperty("buyer_phone", payment.getReqBillToPhone());
-				orderDict.addProperty("gateway_buyer_uuid", "");
-				List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
-				if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
-					orderDict.addProperty("amount",  payment.getPremiumLc().toPlainString());
-				else
-					orderDict.addProperty("amount",  payment.getPremiumFc().toPlainString());
-
-				orderDict.addProperty("currency",payment.getCurrencyId());
-
-				//orderDict.addProperty("amount",100);					 
-				//4orderDict.addProperty("currency","TZS");
-				orderDict.addProperty("payment_methods","ALL");
-				orderDict.addProperty("redirect_url",StringUtils.isNotBlank(redirect_url)?Base64.getEncoder().encodeToString(redirect_url.getBytes("UTF-8")):"");
-				orderDict.addProperty("cancel_url",StringUtils.isNotBlank(cancel_url)?Base64.getEncoder().encodeToString(cancel_url.getBytes("UTF-8")):"");
-				orderDict.addProperty("webhook",StringUtils.isNotBlank(webHookUrl)?Base64.getEncoder().encodeToString(webHookUrl.getBytes("UTF-8")):"");
-				orderDict.addProperty("billing.firstname" , payment.getReqBillToForename());
-				orderDict.addProperty("billing.lastname" , payment.getReqBillToSurname());
-				orderDict.addProperty("billing.address_1" , payment.getReqBillToAddressLine1()); 
-				orderDict.addProperty("billing.address_2" ,payment.getReqBillToAddressLine2());		
-				orderDict.addProperty("billing.city" , payment.getReqBillToAddressCity()); 
-				orderDict.addProperty("billing.state_or_region" , payment.getReqBillToAddressState());  
-				orderDict.addProperty("billing.postcode_or_pobox" ,StringUtils.isBlank(payment.getReqBillToAddrPostalCode())?"99999":payment.getReqBillToAddrPostalCode());  
-				orderDict.addProperty("billing.country" , payment.getReqBillToCountry());  
-				orderDict.addProperty("billing.phone" , payment.getReqBillToPhone());
-				/*
-						 orderDict.addProperty("shipping.firstname" ,  payment.getReqBillToForename());
-						 orderDict.addProperty("shipping.lastname" ,  payment.getReqBillToSurname());
-				 */
-				//orderDict.addProperty("shipping.address_1" , payment.getReqBillToAddressLine1());
-				orderDict.addProperty("shipping.address_2" , payment.getReqBillToAddressLine2());
-				orderDict.addProperty("shipping.city" , payment.getReqBillToAddressCity());
-				orderDict.addProperty("shipping.state_or_region" , payment.getReqBillToAddressState());  
-				orderDict.addProperty("shipping.postcode_or_pobox" ,StringUtils.isBlank(payment.getReqBillToAddrPostalCode())?"99999":payment.getReqBillToAddrPostalCode());  
-				orderDict.addProperty("shipping.country" ,  payment.getReqBillToCountry()); 
-				//orderDict.addProperty("shipping.phone" , payment.getReqBillToPhone());
-				orderDict.addProperty("buyer_remarks","None");
-				orderDict.addProperty("merchant_remarks","None");
-				orderDict.addProperty("no_of_items",  1);
-				List<String> signRemove=new LinkedList<String>();
-				for (Entry<String, JsonElement> entry : orderDict.entrySet()) {
-					if(!signedFields.contains(entry.getKey())) {
-						signRemove.add(entry.getKey());
-					} 
-				}					
-				for(String key:signRemove) {
-					orderDict.remove(key);
-				}
-				// initalize a new Client instace with values of the base url, api key and api secret
-				ApigwClient client = new ApigwClient(baseUrl,apiKey,apiSecret);
-				//post data
-				JsonObject response = client.postFunc(orderPath ,orderDict); 
-				return response;
+				
 			}
 
 		}catch (Exception e) {
 			e.printStackTrace();
+		}
+		return null;
+	}
+	private JsonObject selcomPayment(PaymentVendorMaster vendor,PaymentDetail payment) {
+		try {
+
+			String apiKey = null;
+			String apiSecret = null;
+			String baseUrl = null;
+			String orderPath =null;
+			String vendorCode=null;
+			String redirect_url=null;
+			String cancel_url=null;
+			String webHookUrl=null;
+			String signedFields="";
+			if(vendor!=null) {
+				apiKey=vendor.getApiKey();
+				apiSecret=vendor.getApiSecretKey();
+				baseUrl=vendor.getApiBaseUrl();
+				orderPath=vendor.getPaymentUrlLink();
+				vendorCode=vendor.getVendorCode();
+				redirect_url=vendor.getReturnUrlLink();
+				cancel_url=vendor.getCancelUrlLink();
+				webHookUrl=vendor.getWebhookUrlLink();
+
+				redirect_url=redirect_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
+				cancel_url=cancel_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
+				signedFields=vendor.getSignedFields();
+			}
+
+
+			// data
+			JsonObject orderDict = new JsonObject();
+			orderDict.addProperty("vendor",vendorCode);
+			orderDict.addProperty("order_id",payment.getMerchantReference());
+			orderDict.addProperty("buyer_email", StringUtils.isBlank(payment.getCustomerEmail())?"info@alliance.co.tz":payment.getCustomerEmail() );
+			orderDict.addProperty("buyer_name", payment.getCustomerName());
+			orderDict.addProperty("buyer_userid", "");
+			orderDict.addProperty("buyer_phone", payment.getReqBillToPhone());
+			orderDict.addProperty("gateway_buyer_uuid", "");
+			List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+			if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
+				orderDict.addProperty("amount",  payment.getPremiumLc().toPlainString());
+			else
+				orderDict.addProperty("amount",  payment.getPremiumFc().toPlainString());
+
+			orderDict.addProperty("currency",payment.getCurrencyId());
+
+			//orderDict.addProperty("amount",100);					 
+			//4orderDict.addProperty("currency","TZS");
+			orderDict.addProperty("payment_methods","ALL");
+			orderDict.addProperty("redirect_url",StringUtils.isNotBlank(redirect_url)?Base64.getEncoder().encodeToString(redirect_url.getBytes("UTF-8")):"");
+			orderDict.addProperty("cancel_url",StringUtils.isNotBlank(cancel_url)?Base64.getEncoder().encodeToString(cancel_url.getBytes("UTF-8")):"");
+			orderDict.addProperty("webhook",StringUtils.isNotBlank(webHookUrl)?Base64.getEncoder().encodeToString(webHookUrl.getBytes("UTF-8")):"");
+			orderDict.addProperty("billing.firstname" , payment.getReqBillToForename());
+			orderDict.addProperty("billing.lastname" , payment.getReqBillToSurname());
+			orderDict.addProperty("billing.address_1" , payment.getReqBillToAddressLine1()); 
+			orderDict.addProperty("billing.address_2" ,payment.getReqBillToAddressLine2());		
+			orderDict.addProperty("billing.city" , payment.getReqBillToAddressCity()); 
+			orderDict.addProperty("billing.state_or_region" , payment.getReqBillToAddressState());  
+			orderDict.addProperty("billing.postcode_or_pobox" ,StringUtils.isBlank(payment.getReqBillToAddrPostalCode())?"99999":payment.getReqBillToAddrPostalCode());  
+			orderDict.addProperty("billing.country" , payment.getReqBillToCountry());  
+			orderDict.addProperty("billing.phone" , payment.getReqBillToPhone());
+			/*
+					 orderDict.addProperty("shipping.firstname" ,  payment.getReqBillToForename());
+					 orderDict.addProperty("shipping.lastname" ,  payment.getReqBillToSurname());
+			 */
+			//orderDict.addProperty("shipping.address_1" , payment.getReqBillToAddressLine1());
+			orderDict.addProperty("shipping.address_2" , payment.getReqBillToAddressLine2());
+			orderDict.addProperty("shipping.city" , payment.getReqBillToAddressCity());
+			orderDict.addProperty("shipping.state_or_region" , payment.getReqBillToAddressState());  
+			orderDict.addProperty("shipping.postcode_or_pobox" ,StringUtils.isBlank(payment.getReqBillToAddrPostalCode())?"99999":payment.getReqBillToAddrPostalCode());  
+			orderDict.addProperty("shipping.country" ,  payment.getReqBillToCountry()); 
+			//orderDict.addProperty("shipping.phone" , payment.getReqBillToPhone());
+			orderDict.addProperty("buyer_remarks","None");
+			orderDict.addProperty("merchant_remarks","None");
+			orderDict.addProperty("no_of_items",  1);
+			List<String> signRemove=new LinkedList<String>();
+			for (Entry<String, JsonElement> entry : orderDict.entrySet()) {
+				if(!signedFields.contains(entry.getKey())) {
+					signRemove.add(entry.getKey());
+				} 
+			}					
+			for(String key:signRemove) {
+				orderDict.remove(key);
+			}
+			// initalize a new Client instace with values of the base url, api key and api secret
+			ApigwClient client = new ApigwClient(baseUrl,apiKey,apiSecret);
+			//post data
+			JsonObject response = client.postFunc(orderPath ,orderDict);
+			return response;
+		}catch(Exception e) {
+			e.printStackTrace();			
 		}
 		return null;
 	}
@@ -229,93 +265,63 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				boolean isPaymentdone=false;
 				JsonObject j=new JsonObject();
 				for(PaymentDetail payment:payments) {
-					String apiKey = null;
-					String apiSecret = null;
-					String baseUrl = null;					
-					String checkstatusLink=null;
-					if(vendor!=null) {
-						apiKey=vendor.getApiKey();
-						apiSecret=vendor.getApiSecretKey();
-						baseUrl=vendor.getApiBaseUrl();
-						checkstatusLink=vendor.getCheckStatusUrl();					
+
+					JsonObject responses=null;
+
+					if("lipila".equals(vendor.getVendorName())) {
+						responses=lipilaOrderStatus(payment,vendor);
+					}else {
+						responses=selcomOrderStatus(payment,vendor);
 					}
-					// initalize a new Client instace with values of the base url, api key and api secret
-					ApigwClient client = new ApigwClient(baseUrl,apiKey,apiSecret);
-					JsonObject orderStatusDict = new JsonObject();
-					orderStatusDict.addProperty("order_id",payment.getMerchantReference());
-					//get order status
-					JsonObject	responses= client.getFunc(checkstatusLink ,orderStatusDict);
-					System.out.println("PAY ::"+payment.getMerchantReference()+" "+responses );
-					  
-					if("SUCCESS".equalsIgnoreCase(responses.get("result").getAsString()) ) {
-						JsonArray array = responses.get("data").getAsJsonArray();
-						response = array.get(0).getAsJsonObject();
 
-						if("COMPLETED".equals(response.get("payment_status").getAsString())) {
-							payment.setPaymentStatus("ACCEPTED");
-							payment.setAuthTransRefNo(response.get("transid").getAsString());
-							payment.setChannel(response.get("channel").getAsString());
-							payment.setReference(response.get("reference").getAsString());
-							payment.setMsisdn(response.get("msisdn").getAsString());
-							isPaymentdone=true;
-						}else if("PENDING".equals(response.get("payment_status").getAsString()))
-							payment.setPaymentStatus("PENDING");
-						else if("INPROGRESS".equals(response.get("payment_status").getAsString()))
-							payment.setPaymentStatus("PENDING");
-						else
-							payment.setPaymentStatus("FAILED");
 
-						payment.setAuthResponse(response.get("payment_status").getAsString());
-						payment.setResponseMessage(responses.get("message").getAsString());
-						payment.setResponseTime(new Date());
-						payment.setAuthAmount(response.get("amount").getAsString());
-						paymentDetailRepo.save(payment);
+					if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus())) { 
+						PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(payment.getQuoteNo(), payment.getPaymentId());
+						
+						
+						if(!"ACCEPTED".equals(paymentInfo.getPaymentStatus())) {
+							paymentInfo.setPaymentStatus(payment.getPaymentStatus());
+							paymentInfo.setUpdatedDate(new Date());
+							paymentInfo.setMerchantReference(payment.getMerchantReference());
+							paymentinforepo.save(paymentInfo);
 
-						if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus())) { 
-							PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(payment.getQuoteNo(), payment.getPaymentId());
-							if(!"ACCEPTED".equals(paymentInfo.getPaymentStatus())) {
-								paymentInfo.setPaymentStatus(payment.getPaymentStatus());
-								paymentInfo.setUpdatedDate(new Date());
-								paymentInfo.setMerchantReference(payment.getMerchantReference());
-								paymentinforepo.save(paymentInfo);
-
-								if("COMPLETED".equals(response.get("payment_status").getAsString())) {
-									try {
-										LoginRequest mslogin=new LoginRequest();
-										mslogin.setLoginId("guest");
-										mslogin.setPassword("Admin@01");
-										mslogin.setReLoginKey("Y");
-										CommonLoginRes checkUserLogin = authservice.checkUserLogin(mslogin,null);
-										ClaimLoginResponse commonResponse =(ClaimLoginResponse) checkUserLogin.getCommonResponse();
-										if(commonResponse!=null) {
-											String tokeen = commonResponse.getToken();
-											TiraFrameReqCall tira=new TiraFrameReqCall();
-											tira.setQuoteNo(orderId);
-											tiraService.callTiraIntegeration(tira, tokeen);
-										}
-									}catch(Exception e) {
-										e.printStackTrace();
+							if("ACCEPTED".equals(payment.getPaymentStatus())) {
+								try {
+									LoginRequest mslogin=new LoginRequest();
+									mslogin.setLoginId("guest");
+									mslogin.setPassword("Admin@01");
+									mslogin.setReLoginKey("Y");
+									CommonLoginRes checkUserLogin = authservice.checkUserLogin(mslogin,null);
+									ClaimLoginResponse commonResponse =(ClaimLoginResponse) checkUserLogin.getCommonResponse();
+									if(commonResponse!=null) {
+										String tokeen = commonResponse.getToken();
+										TiraFrameReqCall tira=new TiraFrameReqCall();
+										tira.setQuoteNo(orderId);
+										tiraService.callTiraIntegeration(tira, tokeen);
 									}
-									PaymentDetailsSaveReq req=new PaymentDetailsSaveReq();
-									req.setQuoteNo(payment.getQuoteNo());
-									req.setCreatedBy(payment.getUpdatedBy());
-									req.setPaymentType(payment.getPaymentType());
-
-									paymentService.generatePolicy(paymentInfo,req,payment,token);
+								}catch(Exception e) {
+									e.printStackTrace();
 								}
+								PaymentDetailsSaveReq req=new PaymentDetailsSaveReq();
+								req.setQuoteNo(payment.getQuoteNo());
+								req.setCreatedBy(payment.getUpdatedBy());
+								req.setPaymentType(payment.getPaymentType());
+
+								paymentService.generatePolicy(paymentInfo,req,payment,token);
 							}
-
-
+							isPaymentdone=true;
 						}
+
+
 					}
 					j.addProperty("result",isPaymentdone?"COMPLETED":"FAIL");
-					j.addProperty("message",responses.toString());
+					j.addProperty("message",responses!=null ?responses.toString():"");
 					System.out.println("Push whatsapp call for "+payment.getMerchantReference()+"--"+payment.getPaymentStatus());
 					if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus()))
 						postCall(j,payment);
-				} 		
-
-				
+				}
+					
+			 	
 
 				return j;
 			}else {
@@ -333,6 +339,114 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 
+	private JsonObject lipilaOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
+		  CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+		try {
+			
+			String url=vendor.getCheckStatusUrl()+payment.getMerchantReference();
+			
+			HttpGet request = new HttpGet(url);
+            System.out.println(url);
+	        request.addHeader("Authorization", "Bearer "+vendor.getApiSecretKey());
+	        request.setHeader("Content-Type","application/json");
+
+	            HttpResponse hresp  = httpClient.execute(request);
+
+	            org.apache.http.HttpEntity httpEntity = hresp.getEntity();
+	            String apiOutput = EntityUtils.toString(httpEntity);
+	            System.out.println("output"+ apiOutput.toString());
+
+	            JsonObject fromJson = new Gson().fromJson(apiOutput, JsonObject.class);
+	            
+	            if( fromJson!=null ) {
+					
+					if(fromJson.get("status") !=null && "Successful".equals(fromJson.get("status").getAsString())) {
+						payment.setPaymentStatus("ACCEPTED");
+						payment.setAuthTransRefNo(fromJson.get("transactionId").getAsString());
+						payment.setChannel(fromJson.get("transactionId").getAsString());
+						payment.setReference(fromJson.get("transactionId").getAsString());
+						payment.setMsisdn(fromJson.get("externalId").getAsString());
+						
+						///isPaymentdone=true;
+					}else if(fromJson.get("status") !=null &&  "Pending".equals(fromJson.get("status").getAsString()))
+						payment.setPaymentStatus("PENDING");
+					else if(fromJson.get("status") !=null &&  "INPROGRESS".equals(fromJson.get("status").getAsString()))
+						payment.setPaymentStatus("PENDING");
+					else
+						payment.setPaymentStatus("FAILED");
+
+					payment.setAuthResponse(fromJson.get("status") !=null?fromJson.get("status").getAsString():"");
+					payment.setResponseMessage(fromJson.get("message")!=null?fromJson.get("message").getAsString():"");
+					payment.setResponseTime(new Date());
+					payment.setAuthAmount(fromJson.get("amount")!=null? fromJson.get("amount").getAsString():"0");
+					paymentDetailRepo.save(payment);
+				}
+		
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+        	if(httpClient!=null)
+				try {
+					httpClient.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		} 
+	return null;
+	}
+	private JsonObject selcomOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
+		try {
+			String apiKey = null;
+			String apiSecret = null;
+			String baseUrl = null;					
+			String checkstatusLink=null;
+			if(vendor!=null) {
+				apiKey=vendor.getApiKey();
+				apiSecret=vendor.getApiSecretKey();
+				baseUrl=vendor.getApiBaseUrl();
+				checkstatusLink=vendor.getCheckStatusUrl();					
+			}
+			// initalize a new Client instace with values of the base url, api key and api secret
+			ApigwClient client = new ApigwClient(baseUrl,apiKey,apiSecret);
+			JsonObject orderStatusDict = new JsonObject();
+			orderStatusDict.addProperty("order_id",payment.getMerchantReference());
+			//get order status
+			JsonObject	responses= client.getFunc(checkstatusLink ,orderStatusDict);
+			
+			
+			System.out.println("PAY ::"+payment.getMerchantReference()+" "+responses );
+			  
+			if("SUCCESS".equalsIgnoreCase(responses.get("result").getAsString()) ) {
+				JsonArray array = responses.get("data").getAsJsonArray();
+				JsonObject response = array.get(0).getAsJsonObject();
+
+				if("COMPLETED".equals(response.get("payment_status").getAsString())) {
+					payment.setPaymentStatus("ACCEPTED");
+					payment.setAuthTransRefNo(response.get("transid").getAsString());
+					payment.setChannel(response.get("channel").getAsString());
+					payment.setReference(response.get("reference").getAsString());
+					payment.setMsisdn(response.get("msisdn").getAsString());
+					///isPaymentdone=true;
+				}else if("PENDING".equals(response.get("payment_status").getAsString()))
+					payment.setPaymentStatus("PENDING");
+				else if("INPROGRESS".equals(response.get("payment_status").getAsString()))
+					payment.setPaymentStatus("PENDING");
+				else
+					payment.setPaymentStatus("FAILED");
+
+				payment.setAuthResponse(response.get("payment_status").getAsString());
+				payment.setResponseMessage(responses.get("message").getAsString());
+				payment.setResponseTime(new Date());
+				payment.setAuthAmount(response.get("amount").getAsString());
+				paymentDetailRepo.save(payment);
+			}
+			return responses;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	private void postCall(JsonObject j, PaymentDetail payment) {
 		try {
 			
@@ -444,10 +558,86 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 
 
 	public JsonObject createOrderMinimal(PaymentDetail payment) {
+		List<PaymentVendorMaster> paymentId= paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdOrderByAmendIdDesc(payment.getCompanyId(),"Y","1");
+		PaymentVendorMaster vendor = paymentId.get(0);
+		
+		if("lipila".equals(vendor.getVendorName())){
+			return lipilaOrderMinimal(payment, vendor);
+		}else {
+			return selcomOrderMinimal(payment,vendor);
+		}
+			
+	}
+	
+	private JsonObject lipilaOrderMinimal(PaymentDetail payment, PaymentVendorMaster vendor) {
 		try {
 
-			List<PaymentVendorMaster> paymentId= paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdOrderByAmendIdDesc(payment.getCompanyId(),"Y","1");
-			PaymentVendorMaster vendor = paymentId.get(0);		
+	        
+	        String url = vendor.getApiBaseUrl();
+	        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+
+	        try {
+	        	JsonObject orderDict = new JsonObject();
+				orderDict.addProperty("currency",payment.getCurrencyId());
+				List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+				
+				if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
+					orderDict.addProperty("amount",  payment.getPremiumLc());
+				else
+					orderDict.addProperty("amount",  payment.getPremiumFc());
+				
+				orderDict.addProperty("accountNumber",payment.getReqBillToPhone());
+				orderDict.addProperty("fullName",payment.getCustomerName());
+				orderDict.addProperty("phoneNumber",payment.getReqBillToPhone());
+				if(StringUtils.isNotBlank(payment.getReqBillToEmail()))
+					orderDict.addProperty("email",payment.getReqBillToEmail());
+				orderDict.addProperty("externalId",payment.getMerchantReference());
+				orderDict.addProperty("narration",payment.getQuoteNo() +" Payment Request");
+				
+				
+	            Gson gson = new Gson();
+	            HttpPost request = new HttpPost(url);
+	            StringEntity params = new StringEntity(orderDict.toString());
+
+	            System.out.println(url);
+	            System.out.println( orderDict.toString());
+	            
+	             request.addHeader("Authorization", "Bearer "+vendor.getApiSecretKey());
+	             request.setHeader("Content-Type","application/json");
+
+	            request.setEntity(params);
+	            HttpResponse hresp  = httpClient.execute(request);
+
+	            org.apache.http.HttpEntity httpEntity = hresp.getEntity();
+	            String apiOutput = EntityUtils.toString(httpEntity);
+	            System.out.println("output"+ apiOutput.toString());
+
+	            return new Gson().fromJson(apiOutput, JsonObject.class);
+	        } catch (Exception ex) {
+	            JsonObject err = new JsonObject();
+	            err.addProperty("error", ex.getMessage());
+	            return err;
+	        }finally {
+	        	if(httpClient!=null)
+					try {
+						httpClient.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			} 
+	    
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	private JsonObject selcomOrderMinimal(PaymentDetail payment, PaymentVendorMaster vendor) {
+
+		try {
+
+					
 			JsonObject response =null;
 			boolean isPaymentdone=false;
 			JsonObject j=new JsonObject();
@@ -502,6 +692,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			e.printStackTrace();
 		}
 		return null;
+	
 	}
 	@Override
 	public JsonObject createOrderMinimal(String merchantRefernceNo) {

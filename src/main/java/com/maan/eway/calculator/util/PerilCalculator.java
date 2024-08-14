@@ -2,6 +2,7 @@ package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -280,9 +281,20 @@ public class PerilCalculator {
 						fds.add(fd);
 					 
 				}
+				Double premiumRate=fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble();	
+				try {
+					BigDecimal basePremium = domath(this.factors.get(0).get("calcType").toString(),Double.parseDouble(this.factors.get(0).get("rate").toString()), t.getSumInsured(), t.getExchangeRate());
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				crservice.saveFds(fds,engine);
 				
-				Double premiumRate=fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble();				
+						
 				String pattern =  "#####0.####" ;
 				DecimalFormat decimalFormat = new DecimalFormat(pattern);
 				try {
@@ -291,7 +303,18 @@ public class PerilCalculator {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				Double riskPremiumAmt=t.getSumInsured().multiply(new BigDecimal(premiumRate/100), MathContext.DECIMAL32).doubleValue();
+				Double riskPremiumAmt=0D;
+				String calctype=this.factors.get(0).get("calcType").toString();
+				if("P".equals(calctype)){
+					riskPremiumAmt=	t.getSumInsured().multiply(new BigDecimal(premiumRate/100), MathContext.DECIMAL32).doubleValue();	
+				 }else if("A".equals(calctype)) {
+					 riskPremiumAmt=new BigDecimal(premiumRate, MathContext.DECIMAL32).doubleValue();			
+				 }else if("M".equals(calctype)) {
+					 riskPremiumAmt = t.getSumInsured().multiply(new BigDecimal(premiumRate/1000), MathContext.DECIMAL32).doubleValue();		
+				 }else if("X".equals(calctype)) {
+					 riskPremiumAmt = t.getSumInsured().multiply(new BigDecimal(premiumRate)).doubleValue();
+				 }
+				
 				EwayFactorResultDetail efResult=EwayFactorResultDetail.builder()
 						.cdRefno(engine.getCdRefNo())
 						.companyId(engine.getInsuranceId())
@@ -362,5 +385,19 @@ public class PerilCalculator {
 		}
 		return queriesResult;
 	}
-	
+
+	protected BigDecimal domath(String calctype, Double rate,BigDecimal si,BigDecimal exchangeRate) throws ParseException {
+		BigDecimal d=BigDecimal.ZERO;
+		if("P".equals(calctype)) {
+			d = si.multiply(new BigDecimal(rate/100)/*, round*/);			
+		 }else if("A".equals(calctype)) {
+			d=(new BigDecimal(rate).divide(exchangeRate,3,RoundingMode.HALF_UP));// for foreign currency calculation we have to divide by exchange rate			
+		 }else if("M".equals(calctype)) {
+			 d = si.multiply(new BigDecimal(rate/1000)/*, round*/);			
+		 }else if("X".equals(calctype)) {
+			 d = si.multiply(new BigDecimal(rate));
+		 }
+		//d = (BigDecimal) decimalFormat.parse(decimalFormat.format(d));
+		return d;
+	}
 }

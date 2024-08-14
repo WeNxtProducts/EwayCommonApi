@@ -392,6 +392,11 @@ private static final long serialVersionUID = 1L;
     @Column(name = "POLICY_HOLDER_TYPE_ID_DESC_LOCAL", length = 100)
     private String policyHolderTypeIdDescLocal;
 
+    @Column(name = "SOCIO_PROFESSIONAL_CATEGORY", length=100)
+    private String socioProfessionalCategory;
+       
+    @Column(name = "ACTIVITIES", length=100)
+    private String activities;
     
 }
 

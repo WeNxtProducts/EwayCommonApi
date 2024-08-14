@@ -1,28 +1,20 @@
 package com.maan.eway.integration.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
-
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,11 +30,8 @@ import com.maan.eway.bean.CreditLimitDetail;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotCommDiscountDetail;
 import com.maan.eway.bean.MotDriverDetail;
-import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PgithPolRiskAddlInfo;
-import com.maan.eway.bean.PremiaConfigDataMaster;
-import com.maan.eway.bean.PremiaConfigMaster;
 import com.maan.eway.bean.YiChargeDetail;
 import com.maan.eway.bean.YiCoverDetail;
 import com.maan.eway.bean.YiPolicyApproval;
@@ -50,17 +39,15 @@ import com.maan.eway.bean.YiPolicyDetail;
 import com.maan.eway.bean.YiPremCal;
 import com.maan.eway.bean.YiSectionDetail;
 import com.maan.eway.bean.YiVatDetail;
-import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.integration.req.GetAllPolicy;
+import com.maan.eway.integration.req.IntegrationStateByPolicyReq;
 import com.maan.eway.integration.req.PremiaGetReq;
-import com.maan.eway.integration.req.PremiaRequest;
-import com.maan.eway.integration.req.YiPolicyDetailReq;
 import com.maan.eway.integration.res.CreditLimitDetailGetRes;
+import com.maan.eway.integration.res.IntegrationStatgingRes;
 import com.maan.eway.integration.res.MotCommDiscountDetailGetRes;
 import com.maan.eway.integration.res.MotDriverDetailGetRes;
 import com.maan.eway.integration.res.PgithPolRiskAddlInfoGetRes;
-import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.res.YiChargeDetailsGetRes;
 import com.maan.eway.integration.res.YiCoverDetailsGetRes;
 import com.maan.eway.integration.res.YiPolicyApprovalGetRes;
@@ -68,16 +55,12 @@ import com.maan.eway.integration.res.YiPolicyDetailsGetRes;
 import com.maan.eway.integration.res.YiPremCalGetRes;
 import com.maan.eway.integration.res.YiSectionDetailGetRes;
 import com.maan.eway.integration.res.YiVatDetailGetRes;
-import com.maan.eway.integration.service.FrameReqService;
 import com.maan.eway.integration.service.IntegrationGetService;
-import com.maan.eway.integration.service.IntegrationService;
 import com.maan.eway.repository.CreditLimitDetailRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotDriverDetailRepository;
 import com.maan.eway.repository.MotcommDiscountDetailRepository;
 import com.maan.eway.repository.PgitPolRiskAddlInfoRepository;
-import com.maan.eway.repository.PremiaConfigDataMasterRepository;
-import com.maan.eway.repository.PremiaConfigMasterRepository;
 import com.maan.eway.repository.YiChargeDetailRepository;
 import com.maan.eway.repository.YiCoverDetailRepository;
 import com.maan.eway.repository.YiPolicyApprovalRepository;
@@ -738,5 +721,140 @@ public List<PgithPolRiskAddlInfoGetRes> getPgithPolRiskAddlInfo(PremiaGetReq req
 	}
 	return resList;
 	
+}
+@Override
+public List<IntegrationStatgingRes> getIntegrationStageDetails(IntegrationStateByPolicyReq req) {
+	List<IntegrationStatgingRes> res=new ArrayList<IntegrationStatgingRes>();
+		List<Tuple>portfolio=null;
+		if("Date".equalsIgnoreCase(req.getSearchType())) {
+			portfolio=getPolicyDetails(req);
+			for (Tuple tuple : portfolio) {
+				IntegrationStatgingRes resp=new IntegrationStatgingRes();
+				String policyNo=tuple.get("policyNo")==null?"":tuple.get("policyNo").toString();
+				resp=GetIntegrationStatusSearch(policyNo);
+				res.add(resp);
+			}
+		}else {
+			IntegrationStatgingRes resp=new IntegrationStatgingRes();
+			resp=GetIntegrationStatusSearch(req.getPolicyNo());
+			res.add(resp);
+		}
+	return res;
+}
+private IntegrationStatgingRes GetIntegrationStatusSearch(String policyNo) {
+	IntegrationStatgingRes resp=new IntegrationStatgingRes();
+		resp.setQuotationPolicyNo(policyNo);
+		List<YiPolicyDetail>policyList=yiPolicyDetailsRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(policyList)) {
+			resp.setPolicyStatus("Success");
+		}else {
+			resp.setPolicyStatus("Failed");
+		}
+		
+		List<YiSectionDetail>sectionList=yiSectionDetailsRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(sectionList)) {
+			resp.setSectionStatus("Success");
+		}else {
+			resp.setSectionStatus("Failed");
+		}
+		
+		List<PgithPolRiskAddlInfo>policRiskList=pgitPolRiskAddlInfoRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(policRiskList)) {
+			resp.setPolicyRiskStatus("Success");
+		}else {
+			resp.setPolicyRiskStatus("Failed");
+		}
+		
+		List<MotDriverDetail>driverList=motDriverDetailRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(driverList)) {
+			resp.setDriverStatus("Success");
+		}else {
+			resp.setDriverStatus("Failed");
+		}
+		
+		List<YiCoverDetail>coverList=yiCoverDetailsRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(coverList)) {
+			resp.setCoverStatus("Success");
+		}else {
+			resp.setCoverStatus("Failed");
+		}
+		
+		List<MotCommDiscountDetail>discountList=motCommDiscountDetailRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(discountList)) {
+			resp.setDiscountStatus("Success");
+		}else {
+			resp.setDiscountStatus("Failed");
+		}
+		List<YiChargeDetail>chargeList=yiChargeDetailsRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(chargeList)) {
+			resp.setChargeStatus("Success");
+		}else {
+			resp.setChargeStatus("Failed");
+		}
+		List<YiVatDetail>vatList=yiVatDetailsRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(vatList)) {
+			resp.setVatStatus("Success");
+		}else {
+			resp.setVatStatus("Failed");
+		}
+		List<YiPremCal>premiumList=yiPremCalRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(premiumList)) {
+			resp.setPremiumStatus("Success");
+		}else {
+			resp.setPremiumStatus("Failed");
+		}
+		List<YiPremCal>policyApproveList=yiPremCalRepo.findByQuotationPolicyNo(policyNo);
+		if(!CollectionUtils.isEmpty(policyApproveList)) {
+			resp.setPolicyApproveStatus("Success");
+		}else {
+			resp.setPolicyApproveStatus("Failed");
+		}
+		
+	return resp;
+}
+
+public List<Tuple>getPolicyDetails(IntegrationStateByPolicyReq req){
+	List<Tuple>portfolio=null;
+	try {
+		Calendar cal = new GregorianCalendar();
+	
+		Date startDate = req.getStartDate();
+		cal.setTime(startDate);
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		startDate = cal.getTime();
+	
+		Date endDate = req.getEndDate();
+		cal.setTime(endDate);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		endDate = cal.getTime();
+	
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+	
+		// Find All
+		Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+	
+		// Select
+		query.multiselect(m.get("companyId").alias("companyId"), m.get("policyNo").alias("policyNo"));
+	
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(m.get("entryDate")));
+	
+		// Where
+		Predicate n1 = cb.equal(m.get("companyId"), req.getCompanyId());
+		Predicate n2 = cb.equal(m.get("status"), "P");
+		Predicate n3 = (cb.greaterThanOrEqualTo(m.get("entryDate"), startDate));
+		Predicate n4 = (cb.lessThanOrEqualTo(m.get("entryDate"), endDate));
+		
+		query.where(n1, n2, n3, n4);
+		
+		// Get Result
+		TypedQuery<Tuple> result = em.createQuery(query);
+		portfolio = result.getResultList();
+	}catch (Exception e) {
+		e.printStackTrace();;
+	}
+	return portfolio;
 }
 }

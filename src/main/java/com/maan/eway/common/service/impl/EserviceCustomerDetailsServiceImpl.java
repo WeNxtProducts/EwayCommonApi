@@ -907,7 +907,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
 					list = result.getResultList();
 					if (list.size() > 0) {
-						errorList.add("1001");
+						errorList.add("1511");
 
 					}
 				}
@@ -1271,6 +1271,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setMobileCodeDesc3Local(req.getMobileCode3());
 			saveData.setWhatsappCodeDescLocal(req.getWhatsappCode());
 			saveData.setIdTypeDescLocal(policyHolderTypeIdLocal);
+			saveData.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
+			saveData.setActivities(req.getActivities());
 			
 			// Kenya Rating Fields
 			saveData.setMaritalStatus(StringUtils.isBlank(req.getMaritalStatus()) ?"Single" : req.getMaritalStatus() );
@@ -1417,6 +1419,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setLanguageDescLocal(languageLocal);
 				savePersonalInfo.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
 				savePersonalInfo.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
+				savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
+				savePersonalInfo.setActivities(req.getActivities());
+				
 				
 				personalInforepo.save(savePersonalInfo);
 			}
@@ -1536,6 +1541,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					savePersonalInfo.setLanguageDescLocal(languageLocal);
 					savePersonalInfo.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
 					savePersonalInfo.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
+					savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
+					savePersonalInfo.setActivities(req.getActivities());
 					
 					personalInforepo.save(savePersonalInfo);
 				}
@@ -2061,7 +2068,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			res.setMobileCode1(data.get(0).getMobileCode1()==null?"":data.get(0).getMobileCode1());
 			res.setMobileCode2(data.get(0).getMobileCode2()==null?"":data.get(0).getMobileCode2());
 			res.setMobileCode3(data.get(0).getMobileCode3()==null?"":data.get(0).getMobileCode3());
-	
+			res.setSocioProfessionalCategory(data.get(0).getSocioProfessionalCategory());
+			res.setActivities(data.get(0).getActivities());
+			
+					
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -2185,6 +2195,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setWhatsappDesc(data.getWhatsappCodeDesc()==null?"":data.getWhatsappCodeDesc());
 				res.setWhatsappNo(data.getWhatsappNo()==null?"":data.getWhatsappNo());
 				res.setVrTinNo( data.getIdType().equalsIgnoreCase("6") ? data.getIdNumber() : data.getVrTinNo()  );
+				
+				res.setSocioProfessionalCategory(data.getSocioProfessionalCategory());	
+				res.setActivities(data.getActivities());				
 				
 				resList.add(res);
 			}
@@ -2388,7 +2401,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setWhatsappCode(data.getWhatsappCode()==null?"":data.getWhatsappCode());
 				res.setWhatsappDesc(data.getWhatsappCodeDesc()==null?"":data.getWhatsappCodeDesc());
 				res.setWhatsappNo(data.getWhatsappNo()==null?"":data.getWhatsappNo());
-				res.setVrTinNo( data.getIdType().equalsIgnoreCase("6") ? data.getIdNumber() : data.getVrTinNo()  );				
+				res.setVrTinNo( data.getIdType().equalsIgnoreCase("6") ? data.getIdNumber() : data.getVrTinNo()  );	
+				
+				res.setSocioProfessionalCategory(data.getSocioProfessionalCategory());				
+				res.setActivities(data.getActivities());
+				
 				resList.add(res);
 			}
 

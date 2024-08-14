@@ -38,5 +38,7 @@ public class EserviceCommonDetailsId implements Serializable {
     private String  sectionId ;
     
     private Integer    originalRiskId ;
+    
+    private Integer locationId;
 
 }

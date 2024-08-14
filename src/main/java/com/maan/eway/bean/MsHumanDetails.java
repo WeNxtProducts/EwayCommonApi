@@ -59,6 +59,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="HUMAN_ID", nullable=false)
     private Integer    humanId ;
+    
+    @Id
+    @Column(name="LOCATION_ID", nullable=false)
+    private Integer    locationId ;
 
     @Id
     @Column(name="VD_REFNO", nullable=false)
