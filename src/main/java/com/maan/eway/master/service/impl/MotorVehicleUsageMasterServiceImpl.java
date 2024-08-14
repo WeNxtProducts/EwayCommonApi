@@ -639,11 +639,12 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		Predicate n12 = cb.or(n1,n11);
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-		Predicate n4 = cb.like(c.get("sectionId"), "%" +req.getSectionId() + "%");
+	//	Predicate n4 = cb.like(c.get("sectionId"), "%" +req.getSectionId() + "%");
 		Predicate n5 = cb.equal(c.get("companyId"), req.getInsuranceId());
 		Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 		Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-		Predicate n8 = cb.or(n6,n7);
+	     Predicate n8 = cb.or(n6,n7);
+		Predicate n4 = cb.or(cb.equal(c.get("sectionId"), req.getSectionId()),cb.equal(c.get("sectionId"), "99999"));
 		if(StringUtils.isNotBlank(bodyType)) {
 			Predicate n9 = cb.equal(c.get("bodyType"), bodyType);
 			query.where(n12,n2,n3,n4,n5,n8,n9).orderBy(orderList);
