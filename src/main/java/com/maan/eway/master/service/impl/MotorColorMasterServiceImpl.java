@@ -589,7 +589,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<MotorColorMaster> ocpm1 = effectiveDate.from(MotorColorMaster.class);
 			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(c.get("colorCode"),ocpm1.get("colorCode"));
+			Predicate a1 = cb.equal(c.get("colorId"),ocpm1.get("colorId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -598,7 +598,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<MotorColorMaster> ocpm2 = effectiveDate2.from(MotorColorMaster.class);
 			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
-			Predicate a3 = cb.equal(c.get("colorCode"),ocpm2.get("colorCode"));
+			Predicate a3 = cb.equal(c.get("colorId"),ocpm2.get("colorId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
