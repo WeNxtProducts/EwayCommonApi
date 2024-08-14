@@ -23,7 +23,7 @@ public class TaxRemover implements Consumer<Cover> {
 	public void accept(Cover t) {
 		 
 		List<Tuple> collect = result.stream().filter(r-> r.get("coverId").toString().equals(t.getCoverId())).collect(Collectors.toList());
-		if(!collect.isEmpty() && !t.getTaxes().isEmpty()) {
+		if(!collect.isEmpty() && t.getTaxes()!=null && !t.getTaxes().isEmpty()) {
 			for(Tuple tup: collect) {
 				List<Tax> totalTax = t.getTaxes().stream().collect(Collectors.toList());
 				totalTax.removeIf(e-> tup.get("taxId").toString().equals(e.getTaxId()));
