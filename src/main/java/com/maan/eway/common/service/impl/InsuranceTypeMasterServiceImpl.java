@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.InsuranceTypeMaster;
+import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.common.req.GetProductMasterReq;
 import com.maan.eway.common.req.ProductStructureMasterReq;
 import com.maan.eway.common.res.CommonRes;
@@ -20,14 +21,16 @@ import com.maan.eway.common.res.ProductStructureMasterRes;
 import com.maan.eway.common.service.InsuranceTypeMasterService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.InsuranceTypeMasterRepository;
+import com.maan.eway.repository.SectionMasterRepository;
 @Service
 @Transactional
 public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterService{
 
 	@Autowired
 	InsuranceTypeMasterRepository ProductStructureRepo;
-
 	
+	@Autowired
+	SectionMasterRepository sectionrepo;
 	@Override
 	public List<Error> validationInsuranceTypeMaster(ProductStructureMasterReq req) {
 		// TODO Auto-generated method stub
@@ -152,15 +155,17 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		CommonRes res = new CommonRes();
 	ProductStructureMasterReq result=null;
 		try {
-			
+	        
+			List<SectionMaster> section =sectionrepo.findBySectionId(Integer.valueOf(req.getSectionId()));
 		    InsuranceTypeMaster data =ProductStructureRepo.findByIndsutryTypeIdAndSectionId(req.getIndsutryTypeId(),Integer.valueOf(req.getSectionId()));
-		    if(data!=null)
+		    if(data!=null )
 		    {
 		    result=new DozerBeanMapper().map(data, ProductStructureMasterReq.class);
 		    result.setCompanyid(data.getCompanyId());
 		    result.setIndustryTypeId(data.getIndsutryTypeId());
 		    result.setIndustryTypeDesc(data.getIndsutryTypeDesc());
 		    result.setIndustryTypeLocalDesc(data.getIndsutryTypeLocalDesc());
+		    result.setSectionNameLocal(section.isEmpty()?null:section.get(0).getSectionNameLocal());
 		    res.setCommonResponse(result);
 		  
 		    res.setIsError(false);
@@ -174,6 +179,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		}catch(Exception cc)
 		{
 		System.out.println("The Exception Occured in get Insurance Type Master");	
+		cc.printStackTrace();
 		return res;
 		}
 		return res;

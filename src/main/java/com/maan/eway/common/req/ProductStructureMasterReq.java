@@ -21,6 +21,9 @@ public class ProductStructureMasterReq {
     @JsonProperty("SectionName")
 	private String sectionName;
     
+    @JsonProperty("SectionNameLocal")
+   	private String sectionNameLocal;
+    
     @JsonProperty("IndustryTypeId")
    	private String industryTypeId;
     
