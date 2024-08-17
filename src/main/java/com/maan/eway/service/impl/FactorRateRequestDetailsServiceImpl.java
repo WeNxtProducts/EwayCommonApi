@@ -630,6 +630,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						primaryKeys.put("CdRefNo" ,req.getCdRefNo());
 						primaryKeys.put("VdRefNo" ,req.getVdRefNo());
 						primaryKeys.put("MsRefNo" ,req.getMsrefno());	
+						primaryKeys.put("LocationId" ,req.getLocationId());	
 						// Save Discount Cover Or Promo Cover
 						if( subCoverData.getDiscounts()!=null && subCoverData.getDiscounts().size() > 0 ) {
 							successRes  = 	saveDiscountOrPromoRates( primaryKeys ,subCoverData ,   subCoverData.getDiscounts() ,df , diff) ;

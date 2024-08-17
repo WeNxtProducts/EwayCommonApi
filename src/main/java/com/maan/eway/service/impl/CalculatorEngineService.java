@@ -438,6 +438,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 						List<Cover> subcover = noncovers.stream()
 								.filter(cv -> cv.getCoverId().equals(cover.getCoverId())).collect(Collectors.toList());
 						subcover.stream().forEach(s -> s.setIsSubCover("N"));
+						subcover.stream().forEach(taxRemov);
 						// subcover.stream().forEach(s->s.setTaxes(new ArrayList<Tax>(taxez)));
 						Cover newcover = SerializationUtils.clone(cover);
 						newcover.setSubcovers(subcover);
