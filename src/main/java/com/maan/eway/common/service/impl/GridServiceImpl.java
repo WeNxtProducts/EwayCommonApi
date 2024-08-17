@@ -2689,12 +2689,12 @@ public class GridServiceImpl implements GridService {
 			orderList.add(cb.asc(h.get("productName")));
 
 			// Broker condition
-			Subquery<Long> loginId = query.subquery(Long.class);
+			Subquery<String> loginId = query.subquery(String.class);
 			Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
 			loginId.select(ocpm1.get("loginId"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("loginId"), h.get("loginId"));
-			Predicate a3 = cb.equal(ocpm1.get("oaCode"), l.get("agencyCode"));
+			Predicate a3 = cb.equal(ocpm1.get("oaCode").as(String.class), l.get("agencyCode"));
 			loginId.where(a1, a2, a3);
 
 			
