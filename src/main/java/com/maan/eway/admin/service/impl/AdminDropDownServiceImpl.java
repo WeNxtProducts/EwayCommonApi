@@ -247,7 +247,11 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("BUSINESS_TYPE", "Y");
 				String itemType = "BUSINESS_TYPE";
-				List<ListItemValue> list  = getListItem(req , itemType, "99999");
+				List<ListItemValue> list  = getListItem(req , itemType, req.getInsuranceId()!=null?req.getInsuranceId():"99999");
+				if(list==null || list.size()==0) {
+					
+					list = getListItem(req, itemType,"99999");
+				}
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
