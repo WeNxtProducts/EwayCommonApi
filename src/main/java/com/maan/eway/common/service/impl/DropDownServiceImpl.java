@@ -993,7 +993,7 @@ public class DropDownServiceImpl implements DropDownService {
 			/*
 			 * if(getList1.size()>0) { itemType=getList1.get(0).getItemType(); }
 			 */
-			List<ListItemValue> getList = getListItem(req, itemType, "99999");
+			List<ListItemValue> getList = getListItem(req, itemType, req.getInsuranceId()!=null?req.getInsuranceId():"99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
