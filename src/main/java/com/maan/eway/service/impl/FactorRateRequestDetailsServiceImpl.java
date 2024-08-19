@@ -2359,23 +2359,23 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				
 //				repository.deleteByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndCoverIdNotIn(
 //						companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId, selectedCoverId);
-				List<FactorRateRequestDetails> unOptCovs = 	repository.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndCoverIdNotIn(
-															companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId, selectedCoverId);
+				List<FactorRateRequestDetails> unOptCovs = 	repository.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndLocationIdAndCoverIdNotIn(
+															companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId,  Integer.valueOf(req.getLocationId()),selectedCoverId );
 				unOptCovs.forEach( o -> o.setUserOpt("N"));
 				repository.saveAllAndFlush(unOptCovs);
 				
 			}
 			// delete unselected cover block end
 			
-			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
-					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;	
+			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
+					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,Integer.valueOf(req.getLocationId()) ) ;	
 		
 			List<ProductSectionMaster> sectionList = getProductSectionDropdown(req.getCompanyId(), req.getProductId(), req.getSectionId() ) ;
 			String productType  =sectionList.size()> 0 ? sectionList.get(0).getMotorYn() :  "M" ; 
 			
 			if(    productType.equalsIgnoreCase("M") ){
-				EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleId() 
-						) ;
+				EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndRiskIdAndLocationId(req.getRequestReferenceNo() , req.getVehicleId() 
+						,Integer.valueOf(req.getLocationId())	) ;
 				agencyCode = findMot.getAgencyCode();
 				branchCode = findMot.getBranchCode();
 				currencyId = findMot.getCurrency();
@@ -2413,7 +2413,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				findTra.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findTra.getVatCommission() );
 				eserTraRepo.save(findTra);
 			} else if(    productType.equalsIgnoreCase("A") ) {
-				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() , 1 , req.getSectionId());
+				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(req.getRequestReferenceNo() , 1 , req.getSectionId(),Integer.valueOf(req.getLocationId()));
 			    if(req.getProductId().equals("6"))
 			    {
 			    	 findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()), req.getSectionId());
@@ -2433,7 +2433,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			} else  {
-				EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,req.getSectionId() ) ;
+				EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(req.getRequestReferenceNo() , req.getVehicleId() ,req.getSectionId(),Integer.valueOf(req.getLocationId()) ) ;
 				agencyCode = findCommon.getBrokerCode();
 				branchCode = findCommon.getBranchCode();
 				currencyId = findCommon.getCurrency();

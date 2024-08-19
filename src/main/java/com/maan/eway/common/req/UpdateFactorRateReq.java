@@ -43,4 +43,8 @@ public class UpdateFactorRateReq {
 	
 	@JsonProperty("AdminLoginId")
 	private String adminLoginId;
+	
+	@JsonProperty("LocationId")
+	private String locationId;
+	
 }
