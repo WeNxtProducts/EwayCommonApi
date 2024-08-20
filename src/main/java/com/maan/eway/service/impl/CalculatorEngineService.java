@@ -1299,6 +1299,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				response.setCreatedBy(request.getCreatedBy());
 				response.setProductId(request.getProductId());
 				response.setMsrefno(request.getMsrefno());
+				response.setLocationId(request.getLocationId());
 				response.setUpdateas("admin");
 				// response.setUwList(referr);
 

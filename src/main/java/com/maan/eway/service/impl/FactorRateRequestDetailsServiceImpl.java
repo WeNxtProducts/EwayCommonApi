@@ -2351,6 +2351,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			String requestRef =req.getRequestReferenceNo();
 			Integer sectionId =Integer.valueOf(req.getSectionId());
 			Integer vehicleId =req.getVehicleId();
+			Integer LocationId=Integer.valueOf(req.getLocationId());
 			List<CoverIdReq2> coverList =req.getCoverIdList().isEmpty() || req.getCoverIdList().size()==0 ?Collections.emptyList():req.getCoverIdList();
 			if(!coverList.isEmpty()) {
 				List<Integer> selectedCoverId =coverList.stream()
@@ -2360,7 +2361,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 //				repository.deleteByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndCoverIdNotIn(
 //						companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId, selectedCoverId);
 				List<FactorRateRequestDetails> unOptCovs = 	repository.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndLocationIdAndCoverIdNotIn(
-															companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId,  Integer.valueOf(req.getLocationId()),selectedCoverId );
+															companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId,  LocationId,selectedCoverId );
 				unOptCovs.forEach( o -> o.setUserOpt("N"));
 				repository.saveAllAndFlush(unOptCovs);
 				
@@ -2368,7 +2369,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			// delete unselected cover block end
 			
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
-					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,Integer.valueOf(req.getLocationId()) ) ;	
+					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,LocationId ) ;	
 		
 			List<ProductSectionMaster> sectionList = getProductSectionDropdown(req.getCompanyId(), req.getProductId(), req.getSectionId() ) ;
 			String productType  =sectionList.size()> 0 ? sectionList.get(0).getMotorYn() :  "M" ; 
@@ -2413,7 +2414,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				findTra.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findTra.getVatCommission() );
 				eserTraRepo.save(findTra);
 			} else if(    productType.equalsIgnoreCase("A") ) {
-				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(req.getRequestReferenceNo() , 1 , req.getSectionId(),Integer.valueOf(req.getLocationId()));
+				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(req.getRequestReferenceNo() , 1 , req.getSectionId(),LocationId);
 			    if(req.getProductId().equals("6"))
 			    {
 			    	 findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()), req.getSectionId());
@@ -2472,7 +2473,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			engine.setMsVehicleDetails(null);
 			engine.setEffectiveDate(findCovers.get(0).getCoverPeriodFrom());
 			engine.setPolicyEndDate(findCovers.get(0).getCoverPeriodTo());
-			
+			engine.setLocationId(req.getLocationId());
 			
 			List<PolicyCoverDataEndt> oldPolicyData = policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
 					Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
