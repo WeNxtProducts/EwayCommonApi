@@ -434,7 +434,7 @@ public class DocumentServiceImpl implements DocumentService {
 						.collect(Collectors.toList());
 				
 				//get Section name Local from session master 
-				List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(sec.getSectionDesc()!=null ? sec.getSectionDesc().toString() : " ");
+				List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionNameAndCompanyIdOrderByAmendIdDesc(sec.getSectionDesc()!=null ? sec.getSectionDesc().toString() : " ",homeData.getCompanyId());
 				
 				DocumentSectionList sectionRes = new DocumentSectionList();
 				sectionRes.setSectionId(sec.getSectionId());
