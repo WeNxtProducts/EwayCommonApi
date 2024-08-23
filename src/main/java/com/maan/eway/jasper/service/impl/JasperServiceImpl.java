@@ -574,8 +574,17 @@ public class JasperServiceImpl implements JasperService {
 			String jasperPath = policyReportPath+req.getLoginId()+System.currentTimeMillis()+("Y".equalsIgnoreCase(req.getExcelYn())?".xlsx":".pdf");
 			log.info("PremiumReport jasperPath ==> "+ jasperPath);
 			HashMap<String, Object> jasperParameter = new HashMap<String, Object>();
-			jasperParameter.put("pvStartDate", getFormattedDate(req.getStartDate()));
-			jasperParameter.put("pvEndDate", getFormattedDate(req.getEndDate()));
+			InputStream is;
+			if(dataBaseType.contains("oracle")) {
+				jasperParameter.put("pvStartDate", req.getStartDate());
+				jasperParameter.put("pvEndDate", req.getEndDate());
+				is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReport.jrxml");
+			}else {
+				jasperParameter.put("pvStartDate", getFormattedDate(req.getStartDate()));
+				jasperParameter.put("pvEndDate", getFormattedDate(req.getEndDate()));
+				is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReportSql.jrxml");
+			}
+			
 			jasperParameter.put("pvBranch", StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode());
 			jasperParameter.put("pvImagepath", imagepath);
 			jasperParameter.put("pvLoginId", req.getLoginId());
@@ -587,7 +596,6 @@ public class JasperServiceImpl implements JasperService {
 			if("Y".equalsIgnoreCase(req.getExcelYn())) {
 				fileName ="PremiumRegister";
 				prefix="data:application/vnd.ms-excel;base64,";
-				InputStream is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReport.jrxml");
 				JasperDesign design = JRXmlLoader.load(is);
 				design.setPageFooter(null);
 				design.setLeftMargin(0);
@@ -612,7 +620,6 @@ public class JasperServiceImpl implements JasperService {
 			}else {
 				fileName ="PremiumRegister";
 				prefix="data:application/pdf;base64,";
-				InputStream is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReport.jrxml");
 				JasperReport jasperReport = JasperCompileManager.compileReport(is);
 				JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, jasperParameter, connection);
 				JRPdfExporter pdfExporter = new JRPdfExporter();
