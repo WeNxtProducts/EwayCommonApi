@@ -19,10 +19,6 @@ public class CoverRes {
     public String coverName;
     @JsonProperty("CoverDesc") 
     public String coverDesc;
-    @JsonProperty("CoverNameLocal") 
-    public String coverNameLocal;
-    @JsonProperty("CoverDescLocal") 
-    public String coverDescLocal;
     @JsonProperty("IsSubCover") 
     public String isSubCover;
     @JsonProperty("SumInsured") 
