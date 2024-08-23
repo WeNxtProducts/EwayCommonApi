@@ -139,6 +139,7 @@ import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.repository.UWReferralHistoryRepository;
 import com.maan.eway.repository.ProductSectionMasterRepository;
+import com.maan.eway.repository.SectionCoverMasterRepository;
 import com.maan.eway.res.BuildingSumInsuredDetails;
 import com.maan.eway.res.CommonSumInsuredDetails;
 import com.maan.eway.res.CoverRes;
@@ -193,6 +194,9 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	private PersonalInfoRepository custRepo ;
+	
+	@Autowired
+	private SectionCoverMasterRepository sectioncoverrepo;
 	
 	@Autowired
 	private MotorDriverDetailsRepository driverRepo ;
@@ -1085,9 +1089,22 @@ public class QuoteServiceImpl implements QuoteService {
 					// Get Sub Covers
 			
 					List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
-					coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
+					List<SectionCoverMaster> coverdetails=new ArrayList<>();
+					if(filterCover!=null ||! filterCover.isEmpty() ||filterCover.size()>=0)
+					{
+						coverdetails= sectioncoverrepo.findByCompanyIdAndSectionIdAndCoverIdOrderByAmendIdDesc(filterCover.get(0).getCompanyId(), filterCover.get(0).getSectionId(), coverId);
+					    if(coverdetails!=null || coverdetails.size()>=0)
+					    { coverRes.setCoverNameLocal(coverdetails.get(0).getCoverNameLocal());
+					       //  coverRes.setCoverDescLocal(coverdetails.get(0).getCoverDescLocal());}
+					}
+
+					    	
+					    
+					
+					 coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
 					 coverRes.setCoverName(filterCover.get(0).getCoverName());
 					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
+					 
 					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
 					 coverRes.setSumInsuredLc(filterCover.get(0).getSumInsuredLc()==null ? null : new BigDecimal(filterCover.get(0).getSumInsuredLc().toString()));
@@ -1101,6 +1118,12 @@ public class QuoteServiceImpl implements QuoteService {
 					for ( PolicyCoverData subCovers : filterSubCover) {
 						SubCoverRes subCoverRes = new SubCoverRes();
 						subCoverRes = dozerMapper.map(subCovers, SubCoverRes.class);
+						List<SectionCoverMaster> subcoverdetails= sectioncoverrepo.findByCompanyIdAndSectionIdAndCoverIdOrderByAmendIdDesc(subCovers.getCompanyId(), subCovers.getSectionId(), subCovers.getCoverId());
+						    if(subcoverdetails!=null || subcoverdetails.size()>=0)
+						    { subCoverRes.setSubcoverNameLocal(subcoverdetails.get(0).getCoverNameLocal());
+						  //  subCoverRes.setSubcoverDescLocal(subcoverdetails.get(0).getCoverDescLocal());
+						    }
+						
 						subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
 						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
 						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());

@@ -13,7 +13,9 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -30,4 +32,5 @@ import com.maan.eway.bean.SectionCoverMasterId;
  
 public interface SectionCoverMasterRepository  extends JpaRepository<SectionCoverMaster,SectionCoverMasterId > , JpaSpecificationExecutor<SectionCoverMaster> {
 
+	List<SectionCoverMaster> findByCompanyIdAndSectionIdAndCoverIdOrderByAmendIdDesc(String companyId,Integer SectioId,Integer Coverid);
 }
