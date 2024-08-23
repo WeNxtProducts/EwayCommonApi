@@ -106,6 +106,9 @@ public class JasperServiceImpl implements JasperService {
 	@Value(value = "${report.file.path}")
 	private String policyReportPath;
 	
+	@Value(value = "${spring.jpa.database}")
+	private String dataBaseType;
+	
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -678,17 +681,20 @@ public class JasperServiceImpl implements JasperService {
 			int end =  limit * offset + offset ;
 //			int start =  limit; */
 //			int end = offset ;
+			List<Map<String,Object>> list = new ArrayList<>();
+			String branchCode =StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-			String date1 = new SimpleDateFormat("yyyy-MM-dd").format(sdf.parse(req.getStartDate()));
-			String date2 = new SimpleDateFormat("yyyy-MM-dd").format(sdf.parse(req.getEndDate()));
-//			LocalDate startDate =LocalDate.parse(req.getStartDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-//			LocalDate endDate =LocalDate.parse(req.getEndDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-//            Date date1 = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
-//            Date date2 = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
-            String branchCode =StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
-			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
-			//Pagination Count
-//			List<Map<String,Object>> listcount =branchRepo.getPremiumReportDetailsCount(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
+			String date1;
+			String date2;
+			if(dataBaseType.contains("oracle")) {
+				date1 = req.getStartDate();
+				date2 = req.getEndDate();
+				list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
+			}else {
+				date1 = new SimpleDateFormat("yyyy-MM-dd").format(sdf.parse(req.getStartDate()));
+				date2 = new SimpleDateFormat("yyyy-MM-dd").format(sdf.parse(req.getEndDate()));
+				list =branchRepo.getPremiumReportDetailsSql(req.getProductId(), branchCode, date1, date2, req.getLoginId(),req.getUserType(),req.getCode());
+			}
 			ReportRes res=new ReportRes();
 			
 			Integer count=list.size();
