@@ -1165,6 +1165,7 @@ public class QuoteServiceImpl implements QuoteService {
 					coverRes.setSubcovers(subCoverListRes);
 				}
 				coverListRes.add(coverRes);
+				}
 			}
 	
 			coverListRes.sort(Comparator.comparing(CoverRes :: getCoverId));;
