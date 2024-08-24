@@ -25,7 +25,8 @@ public class SubCoverRes {
 	    public String subCoverDesc;
 	    @JsonProperty("SubCoverName") 
 	    public String subCoverName;
-
+	    @JsonProperty("SubCoverNameLocal") 
+	    public String subCoverNameLocal;
 	   
 	    
 	    @JsonProperty("isSelected") 
