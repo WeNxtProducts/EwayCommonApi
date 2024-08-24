@@ -96,11 +96,20 @@ public class BasicLoginValidationService {
 				errors.add("1270");
 			}
 			
+			
 			if (StringUtils.isBlank(loginReq.getLoginId())) {
 		//		errors.add(new Error("02", "Login Id", "Please Enter Login Id"));
 				errors.add("1723");
 				
-			} else if (loginReq.getLoginId().length() > 50 || loginReq.getLoginId().length() < 5  ) {
+			} 
+			else if(StringUtils.isNotBlank(loginReq.getLoginId()) )
+			{
+			if(loginReq.getLoginId().contains(" "))
+			{
+				errors.add("2281");
+			}
+			}
+			else if (loginReq.getLoginId().length() > 50 || loginReq.getLoginId().length() < 5  ) {
 			//	errors.add(new Error("02", "Login Id", "Login Id Under 5 - 50 Characters Only Allowed"));
 				errors.add("1724");
 			} 
