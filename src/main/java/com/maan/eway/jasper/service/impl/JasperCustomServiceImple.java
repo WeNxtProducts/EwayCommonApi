@@ -58,6 +58,7 @@ import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyDrcrDetail;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.ProductGroupMaster;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -66,6 +67,7 @@ import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.jasper.req.JasperScheduleReq;
+import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.AttachMentRes;
 import com.maan.eway.jasper.res.CoverDetailsRes;
 import com.maan.eway.jasper.res.CreditDataSetOne;
@@ -103,6 +105,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -2794,4 +2797,89 @@ public class JasperCustomServiceImple {
 		return result;
 	}
 
+	public List<Map<String,Object>> getEwayPremiumRegister(PremiumReportReq req){
+		log.info("Enter into EwayPremiumRegister || "+req.toString());
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+			Root<HomePositionMaster> hpm = cq.from(HomePositionMaster.class);
+			Root<PersonalInfo> pif = cq.from(PersonalInfo.class);
+			
+			//BROKER_NAME
+			Subquery<String> brokerName = cq.subquery(String.class);
+			Root<LoginUserInfo> lui = brokerName.from(LoginUserInfo.class);
+			brokerName.select(cb.upper(lui.get("userName"))).where(cb.equal(lui.get("loginId"), hpm.get("loginId")));
+			
+		/*	//PAYMENT_ID
+			Subquery<Object> paymentIds = cq.subquery(Object.class);
+			Root<PaymentInfo> pi = paymentIds.from(PaymentInfo.class);
+			paymentIds.select(pi.get("paymentId")).where(cb.equal(pi.get("quoteNo"), hpm.get("quoteNo")),
+					cb.equal(pi.get("paymentStatus"), "ACCEPTED"));
+			paymentIds.setMaxResults(1); */
+			
+			//SECTION_NAME
+			Subquery<String> sectionName = cq.subquery(String.class);
+			Root<TravelPassengerDetails> tpd = sectionName.from(TravelPassengerDetails.class);
+			sectionName.select(tpd.get("sectionName")).where(cb.equal(tpd.get("quoteNo"), hpm.get("quoteNo"))).distinct(true);
+			
+			//POLICY_TYPE_DESC
+			Subquery<String> policyTypeDesc = cq.subquery(String.class);
+			Root<MotorDataDetails> mdd = policyTypeDesc.from(MotorDataDetails.class);
+			policyTypeDesc.select(mdd.get("policyTypeDesc")).where(cb.equal(tpd.get("quoteNo"), hpm.get("quoteNo")),
+					cb.equal(mdd.get("vehicleId"), "1"));
+			
+			//POLICY_TYPE_NAME
+			Subquery<String> policyTypeName = cq.subquery(String.class);
+			Root<PolicyTypeMaster> ptm = policyTypeName.from(PolicyTypeMaster.class);
+			
+			Subquery<Integer> policyTypeAmd = policyTypeName.subquery(Integer.class);
+			Root<PolicyTypeMaster> policyTypeAmdRoot = policyTypeAmd.from(PolicyTypeMaster.class);
+			policyTypeAmd.select(cb.max(policyTypeAmdRoot.get("amendId"))).where(cb.equal(policyTypeAmdRoot.get("status"), ptm.get("status")),
+					cb.equal(policyTypeAmdRoot.get("productId"), ptm.get("productId")),cb.equal(policyTypeAmdRoot.get("companyId"), ptm.get("companyId")));
+			
+			policyTypeName.select(ptm.get("policyTypeName")).where(cb.equal(ptm.get("status"), "Y"),
+					cb.equal(ptm.get("productId"), hpm.get("productId")),cb.equal(ptm.get("companyId"), hpm.get("companyId")),
+					cb.equal(ptm.get("amendId"), policyTypeAmd));
+			
+			//SUM_INSURED
+			Subquery<BigDecimal> sumInsured = cq.subquery(BigDecimal.class);
+			Root<PolicyCoverData> pcd = sumInsured.from(PolicyCoverData.class);
+			sumInsured.select(cb.sum(pcd.get("sumInsured"))).where(cb.equal(pcd.get("quoteNo"), hpm.get("quoteNo")),
+					cb.equal(pcd.get("taxId"), 0),cb.equal(pcd.get("discLoadId"), 0),cb.equal(pcd.get("coverageType"), "B"));
+			
+			//CURRENCY_ID
+			Subquery<Tuple> currencyId = cq.subquery(Tuple.class);
+			Root<InsuranceCompanyMaster> icm = currencyId.from(InsuranceCompanyMaster.class);
+			currencyId.select(icm.get("currencyId")).where(cb.equal(hpm.get("companyId"), icm.get("companyId")));
+			
+			
+			cq.multiselect(hpm.get("originalPolicyNo").alias("originalPolicyNo"),hpm.get("sourceType").alias("sourceType"),
+					hpm.get("customerCode").alias("customerCode"),hpm.get("loginId").alias("loginId"),hpm.get("quoteNo").alias("quoteNo"),
+					hpm.get("policyNo").alias("policyNo"),cb.upper(cb.concat(pif.get("titleDesc"), cb.concat(".", pif.get("clientName")))).alias("customerName"),
+					hpm.get("inceptionDate").alias("startDate"),hpm.get("expiryDate").alias("endDate"),hpm.get("entryDate").alias("issueDate"),
+					cb.upper(hpm.get("branchName")).alias("branchName"),cb.selectCase().when(cb.in(hpm.get("sourceType")).value(Arrays.asList("Premia Broker",
+							"Premia Direct","Premia Agent")), hpm.get("customerName")).otherwise(brokerName).alias("brokerName"),
+					hpm.get("userType").alias("userType"),hpm.get("subUserType").alias("subUserType"),hpm.get("currency").alias("currency"),hpm.get("paymentType").alias("paymentType"),
+					hpm.get("productName").alias("productName"),cb.selectCase().when(cb.equal(hpm.get("productId"), 4), sectionName).when(cb.equal(hpm.get("productId"), 5), policyTypeDesc)
+					.otherwise(policyTypeName).alias("policyTypeDesc"),hpm.get("debitNoteNo").alias("debitNoteNo"),sumInsured.alias("sumInsured"),
+					cb.selectCase().when(cb.in(hpm.get("currency")).value(currencyId), cb.selectCase().when(cb.in(hpm.get("productId")).value(Arrays.asList(5,46)),
+							icm))
+					
+					
+					
+					);
+			
+			
+			
+			
+			
+			
+		log.info("Exit into EwayPremiumRegister");
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 }

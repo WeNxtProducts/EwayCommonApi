@@ -575,6 +575,12 @@ public class JasperServiceImpl implements JasperService {
 			log.info("PremiumReport jasperPath ==> "+ jasperPath);
 			HashMap<String, Object> jasperParameter = new HashMap<String, Object>();
 			InputStream is;
+			jasperParameter.put("pvBranch", StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode());
+			jasperParameter.put("pvImagepath", imagepath);
+			jasperParameter.put("pvLoginId", req.getLoginId());
+			jasperParameter.put("pvProductId", req.getProductId());
+			jasperParameter.put("pvCode", StringUtils.isBlank(req.getCode())?"99999":req.getCode());
+			jasperParameter.put("pvUserType", StringUtils.isBlank(req.getUserType())?"99999":req.getUserType());
 			if(dataBaseType.contains("oracle")) {
 				jasperParameter.put("pvStartDate", req.getStartDate());
 				jasperParameter.put("pvEndDate", req.getEndDate());
@@ -584,13 +590,6 @@ public class JasperServiceImpl implements JasperService {
 				jasperParameter.put("pvEndDate", getFormattedDate(req.getEndDate()));
 				is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReportSql.jrxml");
 			}
-			
-			jasperParameter.put("pvBranch", StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode());
-			jasperParameter.put("pvImagepath", imagepath);
-			jasperParameter.put("pvLoginId", req.getLoginId());
-			jasperParameter.put("pvProductId", req.getProductId());
-			jasperParameter.put("pvCode", StringUtils.isBlank(req.getCode())?"99999":req.getCode());
-			jasperParameter.put("pvUserType", StringUtils.isBlank(req.getUserType())?"99999":req.getUserType());
 			log.info("PremiumReport jasperParameter ==> "+gson.toJson(jasperParameter));
 			connection=config.getDataSourceForJasper().getConnection();
 			if("Y".equalsIgnoreCase(req.getExcelYn())) {

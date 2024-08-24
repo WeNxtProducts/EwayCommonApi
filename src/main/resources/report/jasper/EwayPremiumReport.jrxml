@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayPremiumReport" pageWidth="1013" pageHeight="595" orientation="Landscape" columnWidth="1013" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isIgnorePagination="true" uuid="4ebbc096-5982-46d2-96dc-2d4d9556bbc8">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MYSQLDATA.xml"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -12,6 +12,7 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
 	<parameter name="pvStartDate" class="java.lang.String"/>
 	<parameter name="pvImagepath" class="java.lang.String"/>
 	<parameter name="pvEndDate" class="java.lang.String"/>
@@ -20,30 +21,38 @@
 	<parameter name="pvProductId" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT 
-  HPM.ORIGINAL_POLICY_NO, 
-  HPM.SOURCE_TYPE, 
-  HPM.CUSTOMER_CODE, 
   HPM.LOGIN_ID, 
   HPM.QUOTE_NO, 
   HPM.POLICY_NO, 
-  UPPER(
-    PIF.TITLE_DESC || '.' || PIF.CLIENT_NAME
-  ) AS CUSTOMER_NAME, 
+  SDD.STICKER_NUMBER,
+  MDD.VEHICLE_MAKE_DESC AS MAKE,
+  MDD.VEHCILE_MODEL AS MODEL,
+  MDD.REGISTRATION_NUMBER,
+  MDD.CHASSIS_NUMBER,
+  SDD.RESPONSE_STATUS_DESC REMARKS,
+  UPPER(PIF.TITLE_DESC || '.' || PIF.CLIENT_NAME) AS CUSTOMER_NAME, 
   HPM.inception_date AS START_DATE, 
   HPM.expiry_date AS END_DATE, 
-  HPM.entry_date AS ISSUE_DATE, 
+  HPM.effective_date AS ISSUE_DATE, 
   UPPER(HPM.BRANCH_NAME) AS BRANCH_NAME, 
-  CASE WHEN HPM.SOURCE_TYPE IN (
+  CASE WHEN HPM.SOURCE_TYPE IN(
     'Premia Broker', 'Premia Direct', 
     'Premia Agent'
-  ) THEN HPM.CUSTOMER_NAME ELSE (
+  ) THEN HPM.CUSTOMER_NAME ELSE(
     SELECT 
       UPPER(USER_NAME) 
     FROM 
       login_user_info 
     WHERE 
-      LOGIN_ID = HPM.LOGIN_ID
+      agency_code = (SELECT DISTINCT oa_code FROM eway_login_master WHERE login_id=HPM.LOGIN_ID)
   ) END AS BROKER_NAME, 
+    (CASE WHEN HPM.USER_TYPE='User' THEN
+   (SELECT 
+      UPPER(USER_NAME) 
+    FROM 
+      login_user_info WHERE LOGIN_ID=HPM.LOGIN_ID)
+    ELSE ''
+  END) AS USER_NAME,
   HPM.USER_TYPE AS USER_TYPE, 
   HPM.SUB_USER_TYPE AS SUB_USER_TYPE, 
   HPM.CURRENCY, 
@@ -55,7 +64,8 @@
       PAYMENT_INFO 
     WHERE 
       QUOTE_NO = HPM.QUOTE_NO 
-      AND payment_status = 'ACCEPTED' FETCH FIRST 1 ROW ONLY
+      AND payment_status = 'ACCEPTED'
+      and rownum= 1
   ) AS PAYMENT_ID, 
   HPM.PRODUCT_NAME, 
   CASE WHEN HPM.PRODUCT_ID = '4' THEN (
@@ -65,7 +75,7 @@
       TRAVEL_PASSENGER_DETAILS 
     WHERE 
       QUOTE_NO = HPM.QUOTE_NO
-  ) WHEN HPM.PRODUCT_ID = '5' THEN (
+  ) WHEN HPM.PRODUCT_ID = $P{pvProductId} THEN (
     SELECT 
       POLICY_TYPE_DESC 
     FROM 
@@ -105,37 +115,26 @@
       AND DISC_LOAD_ID = '0' 
       AND COVERAGE_TYPE = 'B'
   ) AS SUM_INSURED, 
-  CASE WHEN HPM.CURRENCY IN (
+CASE WHEN HPM.CURRENCY IN (
     SELECT 
       CURRENCY_ID 
     FROM 
       EWAY_INSURANCE_COMPANY_MASTER 
     WHERE 
       HPM.COMPANY_ID = COMPANY_ID
-  ) THEN (
-    CASE WHEN HPM.PRODUCT_ID IN ('5', '46') THEN MDD.OVERALL_PREMIUM_LC ELSE ROUND(HPM.OVERALL_PREMIUM_LC) END
-  ) ELSE (
-    CASE WHEN HPM.PRODUCT_ID IN ('5', '46') THEN MDD.OVERALL_PREMIUM_FC ELSE ROUND(HPM.OVERALL_PREMIUM_FC) END
-  ) END AS PREMIUM, 
+  ) THEN (CASE WHEN HPM.PRODUCT_ID IN ($P{pvProductId},'46') THEN MDD.OVERALL_PREMIUM_LC  ELSE ROUND(HPM.OVERALL_PREMIUM_LC )END)
+    ELSE (CASE WHEN HPM.PRODUCT_ID IN ($P{pvProductId},'46') THEN MDD.OVERALL_PREMIUM_FC  ELSE ROUND(HPM.OVERALL_PREMIUM_FC )END) END AS PERMIUM,
   ROUND(HPM.COMMISSION_PERCENTAGE, 1) AS COMMISSION_PERCENTAGE, 
-  ROUND(COMMISSION, 2) AS COMMISSION_AMOUNT, 
-  CASE WHEN UPPER(HPM.PAYMENT_TYPE) = UPPER('Credit') THEN (
-    SELECT 
-      COALESCE(DEPOSIT_AMOUNT, 0) - COALESCE(DEPOSIT_UTILISED, 0) + COALESCE(REFUND_AMOUNT, 0) 
-    FROM 
-      EWAY_DEPOSIT_CBC_MASTER 
-    WHERE 
-      BROKER_ID = HPM.BROKER_CODE
-  ) ELSE NULL END AS CREDIT_LIMIT 
+  ROUND(COMMISSION) AS COMMISSION_AMOUNT 
 FROM 
-  HOME_POSITION_MASTER HPM 
-  JOIN PERSONAL_INFO PIF ON HPM.CUSTOMER_ID = PIF.CUSTOMER_ID 
-  LEFT JOIN SECTION_DATA_DETAILS SDD ON HPM.QUOTE_NO = SDD.QUOTE_NO 
-  LEFT JOIN MOTOR_DATA_DETAILS MDD ON SDD.QUOTE_NO = MDD.QUOTE_NO 
-  AND SDD.RISK_ID = MDD.VEHICLE_ID 
+  HOME_POSITION_MASTER HPM, 
+  PERSONAL_INFO PIF ,
+  SECTION_DATA_DETAILS SDD 
+  LEFT JOIN MOTOR_DATA_DETAILS MDD ON SDD.QUOTE_NO = MDD.QUOTE_NO AND SDD.RISK_ID=MDD.VEHICLE_ID
 WHERE 
-  HPM.QUOTE_NO = SDD.QUOTE_NO 
-  AND HPM.PRODUCT_ID = $P{pvProductId} 
+  HPM.QUOTE_NO=SDD.QUOTE_NO
+  AND HPM.CUSTOMER_ID = PIF.CUSTOMER_ID
+  AND HPM.PRODUCT_ID = $P{pvProductId}
   AND (
     CASE WHEN '99999' = $P{pvBranch} THEN '1' ELSE HPM.BRANCH_CODE END
   ) = (
@@ -143,8 +142,8 @@ WHERE
   ) 
   AND HPM.STATUS = 'P' 
   AND HPM.POLICY_NO IS NOT NULL 
-  AND REGEXP_SUBSTR(HPM.EFFECTIVE_DATE, '[^ ]+') BETWEEN $P{pvStartDate} 
-  AND $P{pvEndDate} 
+  AND REGEXP_SUBSTR(HPM.ENTRY_DATE,'[^ ]+') BETWEEN $P{pvStartDate} 
+  AND $P{pvEndDate}
   AND (
     (
       CASE WHEN (
@@ -161,7 +160,7 @@ WHERE
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('high') THEN HPM.Application_id END
+      ) IN ('low') THEN HPM.Application_id END
     ) = (
       CASE WHEN (
         SELECT 
@@ -170,7 +169,7 @@ WHERE
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) IN ('both', 'high') THEN '1' ELSE 'approver1' END
+      ) IN ('both', 'high') THEN '1' ELSE $P{pvLoginId} END
     ) 
     OR (
       CASE WHEN (
@@ -180,7 +179,7 @@ WHERE
           eway_login_master 
         WHERE 
           LOGIN_ID = $P{pvLoginId}
-      ) = 'Broker' THEN HPM.AGENCY_CODE END
+      )= 'Broker' THEN HPM.AGENCY_CODE END
     ) IN (
       SELECT 
         DISTINCT AGENCY_CODE 
@@ -204,20 +203,8 @@ WHERE
       WHERE 
         LOGIN_ID = $P{pvLoginId}
     )
-  ) 
-  AND (
-    CASE WHEN '99999' = $P{pvUserType} THEN '1' WHEN $P{pvUserType} IN (
-      'Premia Broker', 'Premia Direct', 
-      'Premia Agent'
-    ) THEN HPM.CUSTOMER_CODE ELSE HPM.LOGIN_ID END
-  ) = (
-    CASE WHEN '99999' = $P{pvUserType} THEN '1' WHEN $P{pvUserType} IN (
-      'Premia Broker', 'Premia Direct', 
-      'Premia Agent'
-    ) THEN $P{pvCode} ELSE $P{pvCode} END
-  ) 
-ORDER BY 
-  HPM.EFFECTIVE_DATE DESC;]]>
+  )
+  ORDER BY BRANCH_NAME,BROKER_NAME,USER_NAME DESC]]>
 	</queryString>
 	<field name="LOGIN_ID" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="LOGIN_ID"/>
