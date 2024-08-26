@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+
 public class Error {
 
 	@JsonProperty("Code")
@@ -20,4 +20,17 @@ public class Error {
     private String field;
 	@JsonProperty("Message")
     private String message;
+	@JsonProperty("FieldLocal")
+    private String fieldLocal;
+	@JsonProperty("MessageLocal")
+    private String messageLocal;
+	public Error(String code, String field, String message) {
+		super();
+		this.code = code;
+		this.field = field;
+		this.message = message;
+	}
+	
+	
+	
 }

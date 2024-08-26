@@ -91,7 +91,12 @@ public class FetchErrorDescServiceImpl {
 				// Response 
 				if(filterErrorCode.size() > 0 ) {
 					ErrorDescListRes res = filterErrorCode.get(0) ;
-					errors.add(new Error(err ,res.getErrorField() ,res.getErrorDesc()+" "+concate));
+					Error error1 = new Error(err ,res.getErrorField() ,res.getErrorDesc()+" "+concate);
+					error1.setMessageLocal(res.getErrorDescLocal());
+					error1.setFieldLocal(res.getErrorFieldLocal());
+					errors.add(error1);
+					
+					
 				} else {
 					errors.add(new Error(err ,"" ,"No Error Description Available"));
 				}
@@ -158,6 +163,8 @@ public class FetchErrorDescServiceImpl {
 								errorDescRes.setErrorCode(data.getErrorCode());
 								errorDescRes.setErrorField(data.getErrorField());
 								errorDescRes.setErrorDesc(data.getErrorDesc());
+								errorDescRes.setErrorFieldLocal(data.getLocalLangErrorField());
+								errorDescRes.setErrorDescLocal(data.getLocalLanguageDesc());
 								errorDescResList.add(errorDescRes);
 								
 							}

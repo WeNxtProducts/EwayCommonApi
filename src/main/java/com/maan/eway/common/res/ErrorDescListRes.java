@@ -19,4 +19,10 @@ public class ErrorDescListRes {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	@JsonProperty("ErrorFieldLocal")
+	private String errorFieldLocal;
+	
+	@JsonProperty("ErrorDescLocal")
+	private String errorDescLocal;
+	
 }
