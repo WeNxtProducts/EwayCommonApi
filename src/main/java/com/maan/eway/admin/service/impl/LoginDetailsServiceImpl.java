@@ -358,7 +358,7 @@ this.repository = repo;
 			}
 			
 			// Product Insert 
-			if(StringUtils.isNotBlank(req.getLoginInformation().getSubUserType() ) && ! "SuperAdmin".equalsIgnoreCase(req.getLoginInformation().getSubUserType() ) ) {
+			if(StringUtils.isNotBlank(req.getLoginInformation().getSubUserType() ) && "SuperAdmin".equalsIgnoreCase(req.getLoginInformation().getSubUserType() ) ) {
 				AttachCompnayProductRequest productReq = new AttachCompnayProductRequest();
 				productReq.setCreatedBy(req.getLoginInformation().getCreatedBy());
 				productReq.setInsuranceId(req.getLoginInformation().getCompanyId());
