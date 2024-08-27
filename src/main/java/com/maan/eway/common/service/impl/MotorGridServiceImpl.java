@@ -408,8 +408,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(m.get("status"), "Y");
-			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
-			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+			/*
+			 * Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate); Predicate
+			 * n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+			 */
+			Predicate n5 = cb.between(m.get("updatedDate"), startDate, endDate);
+
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
 			Predicate n11 = null;
@@ -441,7 +445,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 		
-			query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10).orderBy(orderList);	
+			query.where(n1, n2, n3, n4, n5 , n7,n11, n8,n9,n10).orderBy(orderList);	
 		
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
