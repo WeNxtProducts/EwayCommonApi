@@ -704,10 +704,14 @@ public class StateMasterServiceImpl implements StateMasterService {
 			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			if(req.getRegionCode()!=null) {
 			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("regionCode"), req.getRegionCode());
 	
 			query.where(n12, n2,n3,n4,n5).orderBy(orderList);
-
+			}
+			else {
+				query.where(n12, n2,n3,n4).orderBy(orderList);	
+			}
 			// Get Result
 			TypedQuery<StateMaster> result = em.createQuery(query);
 			list = result.getResultList();

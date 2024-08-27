@@ -552,10 +552,11 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 		try {
 
-			if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null) {
-				errorList.add(new Error("01", "StateId", "Please Enter State  Id "));
-			}
-
+			/*
+			 * if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null &&
+			 * req.getCountryId()!="IVY") { errorList.add(new Error("01", "StateId",
+			 * "Please Enter State  Id ")); }
+			 */
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -620,10 +621,15 @@ public class CityMasterServiceImpl implements CityMasterService {
 			Predicate n12 = cb.or(n1,n11);
 			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
-			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 			jakarta.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 
+			if(req.getStateId()!=null) {
+			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
+			
 			query.where(n12, n2, n3, n5, n6).orderBy(orderList);
+			}else {
+				query.where(n12, n2, n3, n6).orderBy(orderList);	
+			}
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);
