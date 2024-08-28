@@ -1782,7 +1782,7 @@ public class PaymentServiceImpl implements PaymentService {
 				if(StringUtils.isBlank(req.getPayeeName())) {
 					error.add("1136");
 //					error.add(new Error("01","PayeeName","Please Enter PayeeName"));
-				}else if(!req.getPayeeName().matches("[a-zA-Z ]*$") ) {
+				}else if(StringUtils.isNotBlank(req.getPayeeName()) && !req.getPayeeName().matches("[a-zA-Z ]*$") && !req.getPayeeName().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")) {
 					error.add("1137");
 //					error.add(new Error("01","PayeeName","Please Enter Valid PayeeName"));
 				}
