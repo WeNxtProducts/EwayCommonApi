@@ -137,6 +137,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PWD_COUNT", length=10)
     private String     pwdCount ;
+    
+    @Column(name="DML_YN", length=10)
+    private String     dmlYN ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

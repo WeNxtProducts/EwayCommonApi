@@ -53,6 +53,9 @@ public class IssuerLoginReq {
 	 
 	 @JsonProperty("ReferralIds")
      private List<String>  referralIds ;
+	 
+	 @JsonProperty("DmlYN")
+	 private String    dmlYN ;
 
 
 	}

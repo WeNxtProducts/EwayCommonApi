@@ -57,6 +57,9 @@ public class CommonLoginInformationReq {
 	@JsonProperty("CbcNo")
 	private String     cbcNo    ;
 	
+	@JsonProperty("DmlYN")
+    private String    dmlYN ;
+	
 	
 
 }

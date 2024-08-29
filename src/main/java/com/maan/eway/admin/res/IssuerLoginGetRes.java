@@ -67,4 +67,7 @@ public class IssuerLoginGetRes {
 	
 	@JsonProperty("BrokerCompanyYn")
     private String    brokerCompanyYn ;
+	
+	@JsonProperty("DmlYN")
+    private String    dmlYN ;
 }
