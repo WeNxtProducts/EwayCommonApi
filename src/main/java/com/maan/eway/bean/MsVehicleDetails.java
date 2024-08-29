@@ -356,6 +356,9 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "PAYLOAD")
 	private BigDecimal payload;
+	
+	@Column(name = "PA_COVERID")
+    private String paCoverId;
 }
 
 

@@ -800,6 +800,57 @@ private static final long serialVersionUID = 1L;
 	private String productNameLocal;
 
 	/// Local Description Columns///
+	
+////ivory
+	@Column(name = "PA_COVERID")
+    private String paCoverId;
+	
+
+	@Column(name = "PA_COVERID_DESC")
+    private String paCoveridDesc;
+	
+	@Column(name = "ZONE_CIRCULATION_DESC")
+    private String zonecirculationDesc;
+	
+	@Column(name = "ZONE_CIRCULATION")
+    private String zonecirculation;
+	
+	
+	@Column(name = "BANKING_DELEGATION")
+    private String bankingDelegation; 
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "LOAN_START_DATE ")
+    private Date loanStartDate ;
+	
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "LOAN_END_DATE")
+    private Date loanEndDate;
+	
+	@Column(name = "LOAN_AMOUNT")
+	private Double loanAmount;
+	
+	@Column(name = "COLLATERAL_COMPANY_ADDRESS")
+    private String collateralCompanyAddress; 
+	
+	@Column(name = "COLLATERAL_COMPANY_NAME")
+    private String collateralCompanyName;
+	
+	@Column(name = "USAGE_ID")
+    private String usageId;
+	
+	@Column(name = "USAGE_DESC")
+    private String usageDesc;
+	
+	@Column(name = "VEHICLE_TYPE_IVR")
+    private String vehicleTypeIvr;
+	
+	@Column(name = "VEHICLE_TYPE_DESC_IVR")
+    private String vehicleTypeDescIvr;
+	
+	 
+	
 }
 
 
