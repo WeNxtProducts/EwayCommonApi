@@ -86,10 +86,12 @@ import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.token.passwordEnc;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.DepositcbcMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
+import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginUserInfo;
@@ -106,6 +108,7 @@ import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.repository.DepositcbcMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.LoginBranchMasterArchRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
@@ -164,6 +167,9 @@ public class LoginDetailsServiceImpl implements LoginDetailsService {
 	
 	@Autowired
 	private LoginBranchMasterRepository loginBranchRepo ;
+	
+	@Autowired
+	private LoginBranchMasterArchRepository loginBrokerArchRepo;
 	
 	@Autowired
 	private ListItemValueRepository listRepo;
@@ -508,21 +514,8 @@ this.repository = repo;
 			saveLogin.setPwdCount("0");				
 		//	saveLogin.setLpassDate(dateAfter);
 			saveLogin.setLpassDate(firstlogindate);
-			
-			// Branch Setup
-			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
-			saveLogin.setAttachedBranches(branches);
-			saveLogin.setAttachedRegions(regions);
-			saveLogin.setAttachedCompanies(companies);
-			saveLogin.setMenuIds(menuId);
 			saveLogin.setCompanyId(StringUtils.isNotBlank(req.getLoginInformation().getCompanyId() ) ? req.getLoginInformation().getCompanyId() : loginReq.getAttachedCompanies().get(0)  );
-			saveLogin.setBrokerCompanyYn(findBroker!=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
 			
-			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
-				saveLogin.setBankCode("");
-			}
-			loginRepo.saveAndFlush(saveLogin);
-				
 			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc("MOBILE_CODE" , "Y",saveLogin.getCompanyId() );
 			// Login User Details Insert
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ;
@@ -597,6 +590,22 @@ this.repository = repo;
 		      loginUserRepo.saveAndFlush(userInfo);
 			
 		      
+		   // Branch Setup
+				String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?loginReq.getSubUserType().equalsIgnoreCase("SuperAdmin")?
+						GetAttachedBranchs(loginReq,countId):"": String.join(",", loginReq.getAttachedBranches());
+				saveLogin.setAttachedBranches(branches);
+				saveLogin.setAttachedRegions(regions);
+				saveLogin.setAttachedCompanies(companies);
+				saveLogin.setMenuIds(menuId);
+				
+				saveLogin.setBrokerCompanyYn(findBroker!=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
+				
+				if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
+					saveLogin.setBankCode("");
+				}
+				loginRepo.saveAndFlush(saveLogin);
+					
+		      
 		      
 		      if(loginReq.getUserType().equalsIgnoreCase("Broker") ) {
 		    	  
@@ -639,13 +648,98 @@ this.repository = repo;
 			// Branch Id
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.info("Exception is --->" + e.getMessage());
+			log.info("" + e.getMessage());
 			return null;
 		}
 		return res;
 	}
 	
-	 public String generateAgencyCode() {
+	 private String GetAttachedBranchs(CommonLoginInformationReq loginReq, Long oacode) {
+		 log.info("Enter into GetAttachedBranchs || "+loginReq.toString());
+		 try {
+			List<String> result = new ArrayList<>();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss");
+			LoginUserInfo loginUserInfo = loginUserRepo.findByLoginId(loginReq.getLoginId());
+			loginReq.getAttachedCompanies().forEach(k -> {
+				try {
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+					Root<BranchMaster> bmRoot = cq.from(BranchMaster.class);
+					
+					Subquery<Integer> bmAmd = cq.subquery(Integer.class);
+					Root<BranchMaster> bmAmdRoot = bmAmd.from(BranchMaster.class);
+					bmAmd.select(cb.max(bmAmdRoot.get("amendId"))).where(cb.equal(bmAmdRoot.get("companyId"), bmRoot.get("companyId")),
+							cb.equal(bmAmdRoot.get("status"), bmRoot.get("status")),cb.equal(bmAmdRoot.get("branchCode"), bmRoot.get("branchCode")));
+					
+					cq.multiselect(bmRoot.get("branchCode").alias("branchCode"),bmRoot.get("branchName").alias("branchName"))
+					.where(cb.equal(bmRoot.get("companyId"), k),cb.equal(bmRoot.get("status"), "Y"),
+							cb.equal(bmRoot.get("amendId"), bmAmd));
+					
+					List<Tuple> queryList = em.createQuery(cq).getResultList();
+					List<String> branch_code_list = queryList.stream().filter(f -> f.get("branchCode")!=null).map(m -> m.get("branchCode").toString()).collect(Collectors.toList());
+					result.addAll(branch_code_list);
+					
+					queryList.forEach(q -> {
+						LoginBranchMaster findBranch = loginBranchRepo.findByBranchCodeAndLoginIdAndCompanyId(
+								(q.get("branchCode")==null?"":q.get("branchCode").toString()), loginReq.getLoginId(),  loginReq.getCompanyId());
+
+						LoginBranchMaster save = dozerMapper.map(loginReq, LoginBranchMaster.class);
+						if (findBranch != null) {
+							// Delete Old Record
+							loginBranchRepo.delete(findBranch);
+							// Save in Arch tables
+							String archId = "AI-" + idf.format(new Date());
+							LoginBranchMasterArch loginArch = dozerMapper.map(findBranch, LoginBranchMasterArch.class);
+							loginArch.setArchId(archId);
+							loginBrokerArchRepo.saveAndFlush(loginArch);
+
+							save.setEntryDate(findBranch.getEntryDate());
+							save.setCreatedBy(findBranch.getCreatedBy());
+							save.setUpdatedBy(loginReq.getCreatedBy());
+							save.setUpdatedDate(new Date());
+						} else {
+							save.setEntryDate(new Date());
+							save.setCreatedBy(loginReq.getCreatedBy());
+							save.setUpdatedBy(loginReq.getCreatedBy());
+							save.setUpdatedDate(new Date());
+						}
+
+						save.setOaCode(oacode.intValue());
+						save.setAgencyCode(oacode.intValue());
+						save.setAttachedBranch(result.stream().distinct().collect(Collectors.joining(",")));
+						save.setAttachedCompany(String.join(",", loginReq.getAttachedCompanies()));
+						save.setUserType(loginReq.getUserType());
+						save.setSubUserType(loginReq.getSubUserType());
+						save.setBranchCode(q.get("branchCode")==null?"":q.get("branchCode").toString());
+						save.setBrokerBranchCode(q.get("branchCode")==null?"":q.get("branchCode").toString());
+						save.setBranchName(q.get("branchName")==null?"":q.get("branchName").toString());
+						save.setBrokerBranchName(q.get("branchName")==null?"":q.get("branchName").toString());
+						save.setCustomerCode(loginUserInfo.getCustomerCode());
+						save.setCustomerName(loginUserInfo.getCustomerName());
+						save.setCompanyId(loginReq.getAttachedCompanies().get(0));
+
+						loginBranchRepo.save(save);
+					});
+					
+					
+				}catch(Exception e) {
+					log.info("Exception is --->" + k+" "+e.getMessage());
+					e.printStackTrace();
+				}
+			});
+			
+			return result.stream().distinct().collect(Collectors.joining(",")); 
+			 
+		}catch(Exception e) {
+			log.info("Exception in GetAttachedBranchs --->" + e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
+	public String generateAgencyCode() {
 	       try {
 	        	SeqAgencycode entity;
 	            entity = seqAgencyRepo.save(new SeqAgencycode());          
