@@ -659,13 +659,29 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		list = result.getResultList();
 		for (MotorVehicleUsageMaster data : list) {
 			// Response 
-			DropDownRes res = new DropDownRes();
-			res.setCode(data.getVehicleUsageId().toString());
-			res.setCodeDesc(data.getVehicleUsageDesc());
-			res.setCodeDescLocal(data.getVehicleUsageDescLocal());
-			res.setStatus(data.getStatus());
-			resList.add(res);
+			
+			if(req.getInsuranceId().equals("100040"))
+			{
+				if(data.getBodyType().contains(req.getBodyId()))
+				{
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getVehicleUsageId().toString());
+				res.setCodeDesc(data.getVehicleUsageDesc());
+				res.setCodeDescLocal(data.getVehicleUsageDescLocal());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+				}
+			}else {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getVehicleUsageId().toString());
+				res.setCodeDesc(data.getVehicleUsageDesc());
+				res.setCodeDescLocal(data.getVehicleUsageDescLocal());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
 		}
+		
+		
 	}
 		catch(Exception e) {
 			e.printStackTrace();
