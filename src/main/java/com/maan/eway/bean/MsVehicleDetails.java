@@ -360,6 +360,11 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "PA_COVERID")
     private String paCoverId;
 	
+	
+	@Column(name = "CLAIM_TYPE", length = 20)
+	private String claimType;
+
+	
 	@Column(name = "NO_OF_CYLINDERS")
     private String noOfCylinders;
 }
