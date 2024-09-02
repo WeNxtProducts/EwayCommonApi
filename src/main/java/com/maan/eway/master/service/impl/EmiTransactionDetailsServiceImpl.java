@@ -408,8 +408,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				for(EserviceBuildingDetails data:list) {
 				save = dozermapper.map(data, EserviceBuildingDetails.class);
 				save.setEmiYn("Y");
-				save.setInstallmentPeriod(Integer.valueOf(installmentPeriod));
-				save.setNoOfInstallment(Integer.valueOf(noOFIns));
+				save.setInstallmentPeriod(StringUtils.isBlank(installmentPeriod)?null:Integer.valueOf(installmentPeriod));
+				save.setNoOfInstallment(StringUtils.isBlank(noOFIns)?null:Integer.valueOf(noOFIns));
 				save.setEmiPremium(adv);
 				buildingRepo.save(save);
 				}
@@ -435,9 +435,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				for(EserviceCommonDetails data:list) {
 				save = dozermapper.map(data, EserviceCommonDetails.class);
 				save.setEmiYn("Y");
-				save.setInstallmentPeriod(Integer.valueOf(installmentPeriod));
-				save.setNoOfInstallment(Integer.valueOf(noOFIns));
-				save.setEmiPremium(adv);
+				save.setInstallmentPeriod(StringUtils.isBlank(installmentPeriod)?null:Integer.valueOf(installmentPeriod));
+				save.setNoOfInstallment(StringUtils.isBlank(noOFIns)?null:Integer.valueOf(noOFIns));
+				save.setEmiPremium(adv==null?null:adv);
 				commonRepo.save(save);
 				}
 			}

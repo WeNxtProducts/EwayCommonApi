@@ -59,6 +59,11 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="VEHICLE_ID", nullable=false)
     private Integer    vehicleId ;
+    
+    @Id
+    @Column(name="LOCATION_ID", nullable=false)
+    private Integer    locationId ;
+    
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
@@ -71,6 +76,7 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SECTION_ID", nullable=false)
     private Integer    sectionId ;
+    
 
     @Id
     @Column(name="COVER_ID", nullable=false)
@@ -100,9 +106,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENDT_COUNT")
     private BigDecimal     endtCount ;
     
-    @Id
-    @Column(name="LOCATION_ID")
-    private Integer     locationId ;
     
     //--- ENTITY DATA FIELDS 
   

@@ -590,9 +590,10 @@ public class NotificationService {
 				 quoteNo=StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString();
 				 productName= cusRefNo.get(0).getProductName();
 			}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
-				EserviceBuildingDetails cusRefNo = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo(),1 ,"0");
-				
-				 customerRefNo=cusRefNo.getCustomerReferenceNo();
+//				EserviceBuildingDetails cusRefNo = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo(),1 ,"0");
+				List<EserviceBuildingDetails> cusRefNo1 = eserBuildRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				EserviceBuildingDetails cusRefNo=cusRefNo1.get(0);
+				customerRefNo=cusRefNo.getCustomerReferenceNo();
 				 applicationId=cusRefNo.getApplicationId();
 				 loginId = cusRefNo.getLoginId();
 				 companyId=cusRefNo.getCompanyId();

@@ -72,6 +72,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SECTION_ID", length=20)
     private String  sectionId ;
+    
+    @Id
+    @Column(name="LOCATION_ID")
+    private Integer  locationId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
@@ -189,6 +193,10 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="COMMISSION_AMOUNT", length=100)
    private BigDecimal commissionAmount;
+   
+   
+   @Column(name="LOCATION_NAME", length=100)
+   private String locationName;
    
    
 }

@@ -21,6 +21,9 @@ public class ViewQuoteRes {
 	@JsonProperty("DocumentDetails")
 	private List<DocumentDetails> documentDetails ;
 	
+	@JsonProperty("LocationDetails")
+	private List<LocationDetailsRes> locationDetails ;
+	
 	 @JsonProperty("TotalAccessoriesSumInsured")
 	 private Double totalAccessoriesSumInsured;
 	

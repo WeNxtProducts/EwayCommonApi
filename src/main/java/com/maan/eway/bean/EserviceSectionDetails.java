@@ -180,6 +180,12 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="SECTION_ENDT_MODIFICATION", length=100)
    private String     sectionEndtModification;
+   
+   @Column(name="OVERALL_PREMIUM_FC")
+   private BigDecimal     overallPremiumFc ;
+
+   @Column(name="OVERALL_PREMIUM_LC")
+   private BigDecimal     overallPremiumLc ;
     
 }
 

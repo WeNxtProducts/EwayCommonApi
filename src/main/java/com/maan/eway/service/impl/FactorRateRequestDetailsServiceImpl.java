@@ -288,28 +288,28 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 		String successRes = "" ;
 		try {
 			// Delete Unopted Sections 
-			List<EserviceSectionDetails> secList = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()), req.getProductId());
+			List<EserviceSectionDetails> secList = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdAndLocationIdOrderBySectionIdAsc(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()), req.getProductId(),Integer.valueOf(req.getLocationId()));
 			List<Integer> optedSectionIds = new ArrayList<Integer>();
 			secList.forEach( o -> { 
 				
 				optedSectionIds.add(Integer.valueOf(o.getSectionId()));	} ); 					
 					
-			Long notSecCount = 	repository.countByRequestReferenceNoAndVehicleIdAndSectionIdNotIn(req.getRequestReferenceNo(), Integer.valueOf(req.getVehicleId()), optedSectionIds );	
+			Long notSecCount = 	repository.countByRequestReferenceNoAndVehicleIdAndSectionIdNotInAndLocationId(req.getRequestReferenceNo(), Integer.valueOf(req.getVehicleId()), optedSectionIds,Integer.valueOf(req.getLocationId()) );	
 			if(notSecCount > 0) {
-				repository.deleteByRequestReferenceNoAndVehicleIdAndSectionIdNotIn(req.getRequestReferenceNo(), Integer.valueOf(req.getVehicleId()) ,optedSectionIds );
+				repository.deleteByRequestReferenceNoAndVehicleIdAndSectionIdNotInAndLocationId(req.getRequestReferenceNo(), Integer.valueOf(req.getVehicleId()) ,optedSectionIds,Integer.valueOf(req.getLocationId()) );
 			}
 					
 			// Find Datas
 			req.setSectionId(StringUtils.isNotBlank(req.getSectionId())?req.getSectionId():"0");
-			Long factorCount = repository.countByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()), req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()));
+			Long factorCount = repository.countByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()), req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()));
 			List<FactorRateRequestDetails> coverIds =null;
 			// Delete Old Datas
 			if( factorCount > 0 ) {
-				coverIds = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId())
-						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()) );				
+				coverIds = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdOrderByCoverIdAsc(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId())
+						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()) );				
 				
-				repository.deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId())
-						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()) );
+				repository.deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId())
+						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()) );
 			}
 			
 			// Save New Details

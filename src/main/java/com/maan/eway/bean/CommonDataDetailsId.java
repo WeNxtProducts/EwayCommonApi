@@ -36,5 +36,7 @@ public class CommonDataDetailsId implements Serializable {
     private String     customerReferenceNo ;
     
     private String  sectionId ;
+    
+    private Integer    locationId ;
      
 }

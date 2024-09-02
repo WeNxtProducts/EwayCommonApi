@@ -12,14 +12,15 @@ public class VehicleIdsReq {
 
 	@JsonProperty("Id")
 	private Integer vehicleId;
-	
-	 
-	 @JsonProperty("SectionId")
-	 private String    sectionId ;
-	
+
+	@JsonProperty("SectionId")
+	private String sectionId;
+
+	@JsonProperty("LocationId")
+	private Integer locationId;
+
 	@JsonProperty("Covers")
 	private List<CoverIdsReq> coverIdList;
-	
 
 	@JsonProperty("MasterReferral")
 	private List<MasterReferal> referals;

@@ -1285,6 +1285,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
 	            	request2.setCreatedBy(request.getCreatedBy());
 	            	request2.setVehicleId(veh);
+	            	request2.setLocationId(1);
 	            	request2.setSectionId(sectionId.get(0));
 	            	request2.setPolicyStartDate(request.getPolicyStartDate());
 	            	request2.setPolicyEndDate(request.getPolicyEndDate());
@@ -1319,6 +1320,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	           	 request2.setVehicleIdsList(request.getVehicleIdsList());
 	           	 request2.setCreatedBy(request.getCreatedBy());
 	           	 request2.setGroupId(99999);
+	           	request2.setLocationId(1);
 	           	 request2.setGroupCount(1);
 	           	 request2.setSectionId("99999");
 	           	 request2.setPolicyStartDate(request.getPolicyStartDate());
@@ -1513,21 +1515,26 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			int threadCount = 1 ;
 			request.setGroupId(1);
 			request.setVehicleId(1);
-			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+			List<Integer> locationIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getLocationId).collect(Collectors.toList());
+			System.out.println("Total Location Id  :"+locationIds);
+			for(Integer locId :locationIds) {
+				System.out.println("Loop Location Id  :"+locId);
+			List<Integer> vehicleIds = req.getVehicleIdsList().stream().filter(l -> l.getLocationId().equals(locId)).map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
 			vehicleIds.removeIf ( o -> o.equals(1)  );
 			vehicleIds.add(1);
 			vehicleIds = vehicleIds.stream().distinct().collect(Collectors.toList());
 			List<EserviceSectionDetails> sectionList = eserSecRepo.findByRequestReferenceNoOrderBySectionIdAsc(request.getRequestReferenceNo());
-			
+			System.out.println("Total Vehicle Id  :"+vehicleIds);
 			
 			for (Integer vehId :  vehicleIds ) {
-	            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
-	            	if(vehId.equals(1) ) {
-	            		sectionId.add("0");
-	            	}
-	            	
+				System.out.println("Loop Vehicle Id  :"+vehId);
+	            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId) && o.getLocationId().equals(locId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
+//	            	if(vehId.equals(1) ) {
+//	            		sectionId.add("0");
+//	            	}
+	            	System.out.println("Total Section Id  :"+sectionId);
 	            	for ( String sec : sectionId) {
-	            		
+	            		System.out.println("Loop Section Id  :"+sectionId);
 	            		List<EserviceSectionDetails> activeSection = sectionList.stream().filter( o -> o.getSectionId().equals(sec)).collect(Collectors.toList());
 		    			if("0".equalsIgnoreCase(sec) ||  activeSection.size() > 0 ) {
 		    				EserviceSectionDetails secData = activeSection.size() > 0 ? activeSection.get(0) : new EserviceSectionDetails();
@@ -1542,6 +1549,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			            	request2.setVehicleIdsList(request.getVehicleIdsList());
 			            	request2.setCreatedBy(request.getCreatedBy());
 			            	request2.setVehicleId(vehId);
+			            	request2.setLocationId(locId);
 			            	request2.setSectionId(sec);	
 			            	request2.setPolicyStartDate(request.getPolicyStartDate());
 			            	request2.setPolicyEndDate(request.getPolicyEndDate());
@@ -1583,8 +1591,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	
 	            	}
 	            }
+			}
 				 // 99999 Covers
 		       	 {
+		       		System.out.println("99999 Covers");
 		       		threadCount = threadCount + 1;
 		       		 QuoteThreadReq request2 = new QuoteThreadReq();
 		           	 request2.setVehicleId(99999);
@@ -1607,6 +1617,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		           	 request2.setEndtFields(request.getEndtFields());	
 		           	 request2.setMotorYn(request.getMotorYn());
 		           	 request2.setIsFinYn(request.getIsFinYn());
+		           	request2.setLocationId(1);
 		           	 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 									, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
 								    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
@@ -1631,10 +1642,13 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			int threadCount = 0 ;
 			List<Callable<Object>> productQueue = new ArrayList<Callable<Object>>();
 			List<Callable<Object>> coverQueue = new ArrayList<Callable<Object>>();
-			
+			List<Integer> locationIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getLocationId).collect(Collectors.toList());
+			System.out.println("Total Location Id  :"+locationIds);
+			for(Integer locId :locationIds)  {
 			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
-			List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoAndStatusNotAndOriginalRiskIdInOrderByOriginalRiskIdAsc(req.getRequestReferenceNo(),"D",vehicleIds );
-			List<Integer> activeVehicleIds = commonDatas.stream().map(EserviceCommonDetails :: getOriginalRiskId).collect(Collectors.toList());
+//				List<Integer> vehicleIds = req.getVehicleIdsList().stream().filter(l -> l.getLocationId().equals(locId)).map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+				List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoAndStatusNotAndRiskIdInOrderByRiskIdAsc(req.getRequestReferenceNo(),"D",vehicleIds );
+			List<Integer> activeVehicleIds = commonDatas.stream().filter(l -> l.getLocationId().equals(locId)).map(EserviceCommonDetails :: getRiskId).collect(Collectors.toList());
 			
 			for (Integer vehId : activeVehicleIds) {
 				threadCount = threadCount + 2;
@@ -1650,6 +1664,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					request2.setVehicleIdsList(request.getVehicleIdsList());
 					request2.setCreatedBy(request.getCreatedBy());
 					request2.setVehicleId(vehId);
+					request2.setLocationId(locId);
 					request2.setSectionId(sec);
 					request2.setPolicyStartDate(request.getPolicyStartDate());
 	            	request2.setPolicyEndDate(request.getPolicyEndDate());
@@ -1671,6 +1686,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					coverQueue.add(coverSave);
 				}
 			}
+		}
 			
 			 // 99999 Covers
 	       	 {
@@ -1686,6 +1702,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	           	 request2.setCreatedBy(request.getCreatedBy());
 	           	 request2.setGroupId(99999);
 	           	 request2.setGroupCount(1);
+	           	request2.setLocationId(1);
 	           	 request2.setSectionId("99999");
 	           	 request2.setPolicyStartDate(request.getPolicyStartDate());
 		             request2.setPolicyEndDate(request.getPolicyEndDate());
@@ -1732,6 +1749,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			String endtFields = "" ;
 			String originalPolicyNo = "" ;
 			String isFinYn = "" ;
+			String locationId="";
 			DecimalFormat df = new DecimalFormat("####");
 			// Find Old QuoteNo
 			 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {

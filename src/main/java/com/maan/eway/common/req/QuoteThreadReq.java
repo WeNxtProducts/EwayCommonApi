@@ -36,6 +36,9 @@ public class QuoteThreadReq {
 		
 	@JsonProperty("VehicleId")
 	private Integer vehicleId ;
+	
+	@JsonProperty("LocationId")
+	private Integer locationId ;
 
 	@JsonProperty("CreatedBy")
 	private String createdBy;

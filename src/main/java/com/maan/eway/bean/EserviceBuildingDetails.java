@@ -856,6 +856,9 @@ public class EserviceBuildingDetails implements Serializable {
 	      @Column(name="CONTENT_DESC")
 	      private String contentDesc;
 	      
+	      @Column(name="SERIAL_NO",length=200)
+	      private String serialNo;
+	      
 	      @Column(name="LOCATION_NAME")
 	      private String locationName;
 	      

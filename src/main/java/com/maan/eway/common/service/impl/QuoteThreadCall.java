@@ -259,11 +259,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 		try {
 		
 			// Cover Calc
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdAndLocationIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()),request.getLocationId());
 		//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
 			// Insert Other Covers
-			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())).collect(Collectors.toList());
+			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) && o.getLocationId().equals(request.getLocationId())).collect(Collectors.toList());
 			List<CoverIdsReq> coverReqList = VehicleList.get(0).getCoverIdList();
 			
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
@@ -303,7 +303,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// Find Motor
-			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndOriginalRiskIdAndSectionId(request.getRequestReferenceNo() ,request.getVehicleId() ,request.getSectionId());
+			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() ,request.getVehicleId() ,request.getSectionId(),request.getLocationId());
 			String decimalDigits = currencyDecimalFormat(eserCommonData.getCompanyId() , eserCommonData.getCurrency() ).toString();
 			String stringFormat = "%0"+decimalDigits+"d" ;
 			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
@@ -319,6 +319,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			eserCommonData.setQuoteNo(request.getQuoteNo());
 			eserCommonData.setCustomerId(request.getCustomerId());
 			
+			//Update Eservice Section Details
+			EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() ,request.getVehicleId() ,request.getSectionId(),request.getLocationId());
+			if(eSecUpdate!=null) {
+			eSecUpdate.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+			eSecUpdate.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
+			eserSecRepo.saveAndFlush(eSecUpdate);
+			}
 			// Save Details
 			CommonDataDetails commonData= new CommonDataDetails();
 			//MotorDataDetails motorData  = new MotorDataDetails();
@@ -327,10 +334,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 			commonData.setCreatedBy(request.getCreatedBy());
 			commonData.setQuoteNo(request.getQuoteNo());
 			commonData.setCustomerId(request.getCustomerId());
-			commonData.setRiskId(eserCommonData.getOriginalRiskId());
+//			commonData.setRiskId(eserCommonData.getOriginalRiskId());
+			commonData.setRiskId(eserCommonData.getRiskId());
 			commonData.setStatus(eserCommonData.getStatus());
 			commonData.setSectionDesc(eserCommonData.getSectionName());		
-			
+			commonData.setLocationId(eserCommonData.getLocationId());
 			EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes();
 			if(eserCommonData.getEndorsementType()!=null) {
 				String prevQuoteNo=eserCommonData.getEndtPrevQuoteNo();
@@ -361,7 +369,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				eserCommonData.setOverallPremiumFc(BigDecimal.ZERO);
 				eserCommonData.setOverallPremiumLc(BigDecimal.ZERO);
 				
-				CommonDataDetails oldRisk = commonDataRepo.findByQuoteNoAndRiskIdAndSectionId(request.getEndtPrevQuoteNo() ,1 ,request.getSectionId());
+				CommonDataDetails oldRisk = commonDataRepo.findByQuoteNoAndRiskIdAndSectionIdAndLocationId(request.getEndtPrevQuoteNo() ,1 ,request.getSectionId(),request.getLocationId());
 				if(oldRisk!=null ) {
 					eserCommonData.setVatPremium(oldRisk.getVatPremium());
 					eserCommonData.setActualPremiumFc(oldRisk.getActualPremiumFc());
@@ -376,6 +384,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}
 				
 			}
+			
 			eserCommonRepo.saveAndFlush(eserCommonData);
 			commonDataRepo.saveAndFlush(commonData);
 			log.error("Save Common Info is ---> " + json.toJson(commonData));
@@ -1292,7 +1301,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getSectionId()));
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdAndLocationIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getSectionId()),request.getLocationId());
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
 			List<FactorRateRequestDetails>  coverTaxes = new  ArrayList<FactorRateRequestDetails>();
 
@@ -1333,14 +1342,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Find Building
 			List<EserviceBuildingDetails> eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndSectionId(request.getRequestReferenceNo() ,request.getSectionId());
 			for(EserviceBuildingDetails section:eserBuild1) { 
-			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() , section.getRiskId(),request.getSectionId());
-			eserBuild.setQuoteNo(request.getQuoteNo());
-			eserBuild.setCustomerId(request.getCustomerId());
+				EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() ,section.getRiskId() ,request.getSectionId(),request.getLocationId());
+				EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() , section.getRiskId(),request.getSectionId(),request.getLocationId());
+				eserBuild.setQuoteNo(request.getQuoteNo());
+				eserBuild.setCustomerId(request.getCustomerId());
 			
 			BuildingRiskDetails bulildDetails = new BuildingRiskDetails();
 			dozerMapper.map(eserBuild,bulildDetails);
 			bulildDetails.setQuoteNo(request.getQuoteNo());
-			bulildDetails.setUpdatedDate(new Date());;
+			bulildDetails.setUpdatedDate(new Date());
 		
 			BigDecimal endtPremium = null;
 			EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes(); 
@@ -1377,6 +1387,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 				bulildDetails.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
 				bulildDetails.setVatPremium(new BigDecimal(df.format(taxPremium)));
 				
+				//Update Eservice Section Details
+				if(eSecUpdate!=null) {
+				eSecUpdate.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+				eSecUpdate.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
+				eserSecRepo.saveAndFlush(eSecUpdate);
+				}
 				ObjectMapper m = new ObjectMapper();
 				// Set Empty Un opted Covers
 				Map<String,String> assetKeyValue = m.convertValue(bulildDetails , Map.class);
@@ -1475,7 +1491,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}
 			
 		    eserBuildRepo.saveAndFlush(eserBuild);
-			
+		    
 		}
 			
 			res.put("Response", "Success") ;
@@ -1648,8 +1664,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
 			
-				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
-				
+
+			List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdAndLocationIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId(),request.getLocationId());
 				if(covers.size() > 0 ) {
 					// Save Endt Covers
 					if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
@@ -1709,7 +1725,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 			} else if(request.getMotorYn().equalsIgnoreCase("A") ) {
 				
-				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())). collect(Collectors.toList());
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId()) &&  o.getLocationId().equals(request.getLocationId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 			
 			} else   {
@@ -1784,7 +1800,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 			} else if(request.getMotorYn().equalsIgnoreCase("A")) {
 				
-				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())). collect(Collectors.toList());
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())&&  o.getLocationId().equals(request.getLocationId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 			
 			} else   {
@@ -1863,7 +1879,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					PolicyCoverData coverData  = new PolicyCoverData();
 					dozerMapper.map(cov, coverData);
 					coverData.setEntryDate(new Date());
-					
+					coverData.setLocationId(request.getLocationId()==null?1:request.getLocationId());					
 					coverData.setQuoteNo(request.getQuoteNo());
 					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
 					coverData.setCreatedBy(request.getCreatedBy());
@@ -2035,6 +2051,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
 					coverData.setCreatedBy(request.getCreatedBy());
 					coverData.setVehicleId(request.getVehicleId());
+					coverData.setLocationId(request.getLocationId()==null?1:request.getLocationId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
 					coverData.setIndividualId(request.getVehicleId());
 					coverData.setCoverPeriodFrom(effDate);
@@ -3260,10 +3277,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<EserviceSectionDetails> updateEserSec =  new ArrayList<EserviceSectionDetails>();
 			
 			for (VehicleIdsReq veh : VehicleIdsList) {
-				List<EserviceSectionDetails> filterSecId =  eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
+				List<EserviceSectionDetails> filterSecId =  eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) && o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList());
 				if(filterSecId.size() > 0 ) {
 					
-					EserviceSectionDetails filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) &&  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
+					EserviceSectionDetails filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) &&  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) && o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList()).get(0);	
 					filterSec.setUserOpt("Y");
 					filterSec.setQuoteNo(request.getQuoteNo());
 					filterSec.setUpdatedDate(new Date());
@@ -3601,7 +3618,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 		try {
 			
 			
-			EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() , 1,"0") ;
+//			EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() , 1,"0") ;
+			List<EserviceBuildingDetails>  buildingData1 = eserBuildRepo.findByRequestReferenceNo(request.getRequestReferenceNo()) ;
+			EserviceBuildingDetails buildingData=buildingData1.get(0);
 			Long builCount =  eserBuildRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(buildingData.getCustomerReferenceNo());
 			home.setCustomerName(custData.getClientName());

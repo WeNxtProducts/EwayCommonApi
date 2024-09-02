@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.jsoup.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -84,10 +86,12 @@ import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.EserviceCommonGetRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
+import com.maan.eway.common.res.LocationDetailsRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.PaccGetRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
+import com.maan.eway.common.res.SectionDetailsRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.common.service.QuoteService;
@@ -666,7 +670,13 @@ public class QuoteServiceImpl implements QuoteService {
 			List<SectionDataDetails> secDatas =  secDataRepo.findByQuoteNoAndStatusNot(req.getQuoteNo(),"D");
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
-			
+			List<LocationDetailsRes>  loctionList = new ArrayList<LocationDetailsRes>();
+			List<SectionDetailsRes>  sectionList = new ArrayList<SectionDetailsRes>();
+			String locationId="";
+			String locationName="";
+			String sumInsured="0.0";
+			String contentType="";
+			String contentDesc="";
 			// Building Details 
 			// Build
 			// Section Details
@@ -728,8 +738,7 @@ public class QuoteServiceImpl implements QuoteService {
 						pacRes.setSectionDetails(pacSectionList);	
 						buildingSectionList.add(buildSec);
 						pacRes.setDocumentsTitle(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
-						pacRes.setLocationId(acc.getRiskId().toString());
-//						pacRes.setLocationName(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
+						
 						BuildingDetails buildingList=BuildingRepo.findByRequestReferenceNoAndRiskIdAndSectionId(acc.getRequestReferenceNo(),risk,"1");
 						String LocationName="";
 						if(buildingList!=null) {
@@ -737,10 +746,12 @@ public class QuoteServiceImpl implements QuoteService {
 						}
 						pacRes.setLocationName(LocationName);
 						pacRes.setRiskId(acc.getRiskId().toString());
+						pacRes.setLocationId(acc.getLocationId().toString());
+						pacRes.setLocationName(acc.getLocationName());
 						pacRes.setSuminsured(acc.getSumInsured()==null?"" : acc.getSumInsured().toPlainString());
 						pacRes.setSectionId(StringUtils.isNotBlank(acc.getSectionId() ) ?  acc.getSectionId() :  "99999"  );
 						paccGetResList.add(pacRes);
-						;
+						
 						
 					}
 					
@@ -792,6 +803,7 @@ public class QuoteServiceImpl implements QuoteService {
 			if(buildingList!=null) {
 				LocationName=buildingList.getLocationName();
 			}
+	
 			buildingRes.setLocationName(LocationName);
 			buildingRes.setRiskId(risk.toString());
 		// Default Entry
@@ -823,6 +835,7 @@ public class QuoteServiceImpl implements QuoteService {
 				LocationName=buildingList.getLocationName();
 			}
 			buildingRes.setLocationName(LocationName);
+			
 //			buildingRes.setLocationName(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
 			buildingRes.setRiskId(buildData.getRiskId().toString());
 			buildingRes.setSuminsured(buildData.getBuildingSuminsured()==null?"" : buildData.getBuildingSuminsured().toPlainString());
@@ -831,7 +844,8 @@ public class QuoteServiceImpl implements QuoteService {
 			List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildData.getRequestReferenceNo());
 			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(1)).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
 			buildingRes.setRiskId(buildData.getRiskId().toString());
-			
+			locationId=buildData.getLocationId().toString();
+			locationName=buildData.getLocationName();
 			List<BuildingDetails> buildingRiskDatas = BuildingRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 				
 				if(buildingRiskDatas.size()  > 0) {
@@ -871,13 +885,22 @@ public class QuoteServiceImpl implements QuoteService {
 				buildingRes.setBuildingUsageYn(build.getBuildingUsageYn());
 				buildingRes.setBuildingUsageId(build.getBuildingUsageId());
 				buildingRes.setBuildingUsageDesc(build.getBuildingUsageDesc());
-			} 
+				locationId=build.getLocationId().toString();
+				locationName=build.getLocationName();
+				sumInsured=build.getBuildingSuminsured().toString();
+				} 
 			
 			// Content
 			List<BuildingRiskDetails> filterContent = buildings.stream().filter( o -> "47".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk) ).collect(Collectors.toList());
 			if(filterContent.size() > 0 ) {
 				BuildingRiskDetails build = filterContent.get(0);
 				buildingRes.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
+				locationId=build.getLocationId().toString();
+				locationName=build.getLocationName();
+				sumInsured=build.getContentSuminsured().toString();
+				contentType=StringUtil.isBlank(build.getContentId())?"":build.getContentId();
+				contentDesc=StringUtil.isBlank(build.getContentDesc())?"":build.getContentDesc();
+				
 				
 			} 
 			
@@ -896,6 +919,21 @@ public class QuoteServiceImpl implements QuoteService {
 			//	Double GensetsSi = build.getGensetsSi() == null?0D :Double.valueOf(build.getGensetsSi().toPlainString()) ;
 			//	Double plantAllRiskSi = MiningPlantSi +NonminingPlantSi  + GensetsSi ;
 				//res.setPlantAllriskSi( plantAllRiskSi==null ? "" :plantAllRiskSi.toString());
+				locationId=build.getLocationId().toString();
+				locationName=build.getLocationName();
+				if(build.getAllriskSuminsured()!=null && Double.valueOf(build.getAllriskSuminsured().toString())>0.0) {
+					sumInsured=build.getAllriskSuminsured()==null?null:build.getAllriskSuminsured().toString();
+				}else if(build.getMiningPlantSi()!=null && Double.valueOf(build.getMiningPlantSi().toString())>0.0) {
+					sumInsured=build.getMiningPlantSi()==null?null:build.getMiningPlantSi().toString();	
+				}
+				else if(build.getNonminingPlantSi()!=null && Double.valueOf(build.getNonminingPlantSi().toString())>0.0) {
+					sumInsured=build.getNonminingPlantSi()==null?null:build.getNonminingPlantSi().toString();	
+				}else if(build.getGensetsSi()!=null && Double.valueOf(build.getGensetsSi().toString())>0.0) {
+					sumInsured=build.getGensetsSi()==null?null:build.getGensetsSi().toString();	
+				}else if(build.getEquipmentSi()!=null && Double.valueOf(build.getEquipmentSi().toString())>0.0) {
+					sumInsured=build.getEquipmentSi()==null?null:build.getEquipmentSi().toString();	
+				}
+				
 				
 			} 
 			
@@ -904,7 +942,8 @@ public class QuoteServiceImpl implements QuoteService {
 			if(filterAccidental.size() > 0 ) {
 				BuildingRiskDetails build = filterAccidental.get(0);
 				//res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
-				
+				locationId=build.getLocationId().toString();
+				locationName=build.getLocationName();
 			}
 			
 			// Burgalry
@@ -952,6 +991,8 @@ public class QuoteServiceImpl implements QuoteService {
 				 buildingRes.setWallType(build.getWallType()==null  ? "" :build.getWallType().toString());				
 				 buildingRes.setRegionCode(build.getRegionCode()==null  ? "" :build.getRegionCode().toString());
 				 buildingRes.setFinalizeYn(build.getFinalizeYn());
+				 locationId=build.getLocationId().toString();
+					locationName=build.getLocationName();
 			}
 			
 			// Fire And Material Damage
@@ -962,7 +1003,8 @@ public class QuoteServiceImpl implements QuoteService {
 				buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());	
 				buildingRes.setFireEquipSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
 				buildingRes.setFirePlantSi(build.getFirePlantSi() == null?"0" :build.getFirePlantSi().toPlainString());
-				
+				locationId=build.getLocationId().toString();
+				locationName=build.getLocationName();
 			}
 			
 			// Electronic Equipment
@@ -970,6 +1012,12 @@ public class QuoteServiceImpl implements QuoteService {
 			if(filterElecEquip.size() > 0 ) {
 				BuildingRiskDetails build = filterElecEquip.get(0);
 				buildingRes.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?BigDecimal.ZERO :build.getElecEquipSuminsured());
+				locationId=build.getLocationId().toString();
+				locationName=build.getLocationName();
+				sumInsured=build.getElecEquipSuminsured()==null?null:build.getElecEquipSuminsured().toString();
+				contentType=StringUtil.isBlank(build.getContentId())?"":build.getContentId();
+				contentDesc=StringUtil.isBlank(build.getContentDesc())?"":build.getContentDesc();
+						
 			}
 			
 			// Money
@@ -982,7 +1030,8 @@ public class QuoteServiceImpl implements QuoteService {
 				buildingRes.setMoneyOutofSafe(build.getMoneyOutofSafe()== null?"0" : build.getMoneyOutofSafe().toPlainString() );
 				buildingRes.setMoneySafeLimit(build.getMoneySafeLimit()== null?"0" : build.getMoneySafeLimit().toPlainString() );
 				buildingRes.setMoneyMajorLoss(build.getMoneyMajorLoss() == null?"0" : build.getMoneyMajorLoss().toPlainString() );
-				
+				locationId=build.getLocationId().toString();
+				locationName=build.getLocationName();
 			}
 			
 			// Machinery
@@ -999,24 +1048,44 @@ public class QuoteServiceImpl implements QuoteService {
 				Double machinerySi = ElecMachinesSi + BoilerPlantsSi + EquipmentSi + GeneralMachineSi + MachineEquipSi + ManuUnitsSi + plantSi ;
 						
 				buildingRes.setMachinerySi( machinerySi==null ? "" :machinerySi.toString());
-				
+				locationId=build.getLocationId().toString();
+				locationName=build.getLocationName();
 			}
-			
-			
-			
-			
+			buildingRes.setLocationId(locationId);
+			buildingRes.setLocationName(locationName);
 			buildList.add(buildingRes);
-			
 			}
 			totalList.addAll(buildList);
 //			totalList.addAll(paccGetResList);
 			// Location Wise Details
 		//	List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
-			
-		
+		Set<Integer> findlocationid = secDatas.stream().map(SectionDataDetails::getLocationId).distinct()
+				.collect(Collectors.toSet());
+		for (Integer d : findlocationid) {
+			LocationDetailsRes locRes = new LocationDetailsRes();
+			List<SectionDataDetails> filter = secDatas.stream().filter(o -> o.getLocationId().equals(d))
+					.collect(Collectors.toList());
+			locRes.setLocationId(filter.get(0).getLocationId().toString());
+			locRes.setLocationName(filter.get(0).getLocationName());
+
+			for (SectionDataDetails sec : filter) {
+				SectionDetailsRes secRes = new SectionDetailsRes();
+
+				secRes.setRiskId(sec.getRiskId().toString());
+				secRes.setSectionId(sec.getSectionId().toString());
+				secRes.setSectionName(sec.getSectionDesc());
+				secRes.setSumInsured(sumInsured);
+				secRes.setContentType(contentType);
+				secRes.setContentDesc(contentDesc);
+				sectionList.add(secRes);
+			}
+			locRes.setSectionDetails(sectionList);
+			loctionList.add(locRes);
+		}		
 			
 			viewRes.setRiskDetails(totalList);
 			viewRes.setDocumentDetails(documentDetails);
+			viewRes.setLocationDetails(loctionList);	
 					
 					
 			
@@ -1397,6 +1466,8 @@ public class QuoteServiceImpl implements QuoteService {
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			List<EserviceCommonGetRes>   commonResList = new ArrayList<EserviceCommonGetRes>();
+			List<LocationDetailsRes>  loctionList = new ArrayList<LocationDetailsRes>();
+			List<SectionDetailsRes>  sList = new ArrayList<SectionDetailsRes>();
 			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();
 			for (CommonDataDetails com :  commonDatas) {
 				
@@ -1447,6 +1518,9 @@ public class QuoteServiceImpl implements QuoteService {
 				commonDetails.setCommissionPercentage(com.getCommissionPercentage()==null?"" : com.getCommissionPercentage().toPlainString());
 				commonDetails.setVatCommission(com.getVatCommission()==null?"" : com.getVatCommission().toPlainString());				
 				commonDetails.setFinalizeYn(com.getFinalizeYn());
+				commonDetails.setLocationId(com.getLocationId().toString());
+				commonDetails.setLocationName(com.getLocationName());
+				
 				
 				//get Section name Local from session master 
 				List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(com.getSectionDesc()!=null ? com.getSectionDesc().toString() : " ");
@@ -1473,7 +1547,7 @@ public class QuoteServiceImpl implements QuoteService {
 				commonResList.add(commonDetails);
 				
 				
-			}
+				}
 //			//Common Document 
 //			DocumentDetails  document = new DocumentDetails();
 //			document.setDocumentTitle("Common Documents");
@@ -1493,9 +1567,40 @@ public class QuoteServiceImpl implements QuoteService {
 					documentDetails.add(document2);
 				}
 			} 
+			String SunInsured="0";
+			Set<Integer> findlocationid = commonDatas.stream().map(CommonDataDetails::getLocationId).distinct()
+					.collect(Collectors.toSet());
+			for (Integer d : findlocationid) {
+				LocationDetailsRes locRes = new LocationDetailsRes();
+				List<CommonDataDetails> filter = commonDatas.stream().filter(o -> o.getLocationId().equals(d))
+						.collect(Collectors.toList());
+				locRes.setLocationId(filter.get(0).getLocationId().toString());
+				locRes.setLocationName(filter.get(0).getLocationName());
+
+				for (CommonDataDetails sec : filter) {
+					SectionDetailsRes secRes = new SectionDetailsRes();
+
+					secRes.setRiskId(sec.getRiskId().toString());
+					secRes.setSectionId(sec.getSectionId().toString());
+					secRes.setSectionName(sec.getSectionDesc());
+					secRes.setCount((sec.getTotalNoOfEmployees()==null ||sec.getTotalNoOfEmployees()==0)?sec.getFidEmpCount().toString():sec.getTotalNoOfEmployees().toString());
+					secRes.setOccupationId(sec.getOccupationType());
+					secRes.setOccupationDesc(sec.getOccupationDesc());
+					if(!(sec.getEmpLiabilitySi().equals(BigDecimal.ZERO)) && Double.valueOf(sec.getEmpLiabilitySi().toString())>0.0) {
+						SunInsured=sec.getEmpLiabilitySi().toString();					
+					}else if( !(sec.getFidEmpSi().equals(BigDecimal.ZERO)) && Double.valueOf(sec.getFidEmpSi().toString())>0.0) {
+						SunInsured=sec.getFidEmpSi().toString();					
+					}
+					secRes.setSumInsured(SunInsured);						
+					sList.add(secRes);
+				}
+				locRes.setSectionDetails(sList);
+				loctionList.add(locRes);
+			}
+			
 			viewRes.setRiskDetails(commonResList);	
 			viewRes.setDocumentDetails(documentDetails);
-			
+			viewRes.setLocationDetails(loctionList);			
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -2931,9 +3036,9 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			if(buildings.size()> 0 ) {
 				// Default Entry
-				List<BuildingRiskDetails> filterDefaultBuilding = buildings.stream().filter( o -> "0".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
-				if(filterDefaultBuilding.size() > 0 ) {
-					BuildingRiskDetails build = filterDefaultBuilding.get(0);
+//				List<BuildingRiskDetails> filterDefaultBuilding = buildings.stream().filter( o -> "0".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				if(buildings.size() > 0 ) {
+					BuildingRiskDetails build = buildings.get(0);
 					List<SectionDataDetails>   buildSections = secDataRepo.findByQuoteNoAndStatusNot(build.getQuoteNo(), "D");
 					List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(1)).map(SectionDataDetails :: getSectionId ).collect(Collectors.toList());
 					res.setCurrencyId(build.getCurrency());

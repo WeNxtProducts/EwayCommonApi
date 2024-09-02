@@ -128,4 +128,10 @@ public class EserviceCommonGetRes {
 	
 	@JsonProperty("FinalyzeYn")
 	private String finalizeYn;
+	
+	@JsonProperty("LocationId")
+    private String locationId;
+	
+	@JsonProperty("LocationName")
+	private String locationName;
 }

@@ -56,5 +56,7 @@ public class PolicyCoverDataId implements Serializable {
     
     private Integer    individualId ;
     
+    private Integer    locationId ;
+    
      
 }

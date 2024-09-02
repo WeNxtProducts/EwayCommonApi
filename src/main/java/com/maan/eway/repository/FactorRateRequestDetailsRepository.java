@@ -156,5 +156,28 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 			String requestReferenceNo, Integer vehicleId, String companyId, Integer valueOf, Integer valueOf2,
 			Integer valueOf3);
 
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndSectionIdAndLocationIdOrderByVehicleIdAsc(
+			String requestReferenceNo, Integer valueOf, Integer locationId);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdAndLocationIdOrderByVehicleIdAsc(
+			String requestReferenceNo, Integer valueOf, Integer valueOf2, Integer vehicleId, Integer locationId);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdAndLocationIdOrderByVehicleIdAsc(
+			String requestReferenceNo, Integer vehicleId, Integer valueOf, Integer valueOf2, Integer locationId);
+
+	Long countByRequestReferenceNoAndVehicleIdAndSectionIdNotInAndLocationId(String requestReferenceNo, Integer valueOf,
+			List<Integer> optedSectionIds, Integer valueOf2);
+
+	void deleteByRequestReferenceNoAndVehicleIdAndSectionIdNotInAndLocationId(String requestReferenceNo,
+			Integer valueOf, List<Integer> optedSectionIds, Integer valueOf2);
+
+	Long countByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationId(
+			String requestReferenceNo, Integer valueOf, String insuranceId, Integer valueOf2, Integer valueOf3,
+			Integer valueOf4);
+
+	void deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationId(
+			String requestReferenceNo, Integer valueOf, String insuranceId, Integer valueOf2, Integer valueOf3,
+			Integer valueOf4);
+
 	
 }

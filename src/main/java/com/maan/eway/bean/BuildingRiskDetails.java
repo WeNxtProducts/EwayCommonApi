@@ -77,6 +77,9 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SECTION_ID", length=100)
     private String  sectionId;
+    
+    @Column(name="LOCATION_ID", nullable=false)
+    private Integer    locationId ;
 
      //--- ENTITY DATA FIELDS 
     @Column(name="PRODUCT_ID", length=20)
@@ -88,6 +91,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="POLICY_NO", length=100)
     private String     policyNo;
+    
+    @Column(name="LOCATION_NAME", length=100)
+    private String     locationName;
 
     
     @Column(name="BRANCH_CODE", length=20)
@@ -822,6 +828,18 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="BOND_YEAR")
       private String bondYear;
+      
+      @Column(name="CONTENT_ID")
+      private String contentId;
+      
+      @Column(name="CONTENT_DESC")
+      private String contentDesc;
+      
+      @Column(name="SERIAL_NO",length=200)
+      private String serialNo;
+      
+      
+ 
      
 }
 
