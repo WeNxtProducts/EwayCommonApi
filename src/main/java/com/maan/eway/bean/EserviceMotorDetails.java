@@ -850,7 +850,7 @@ private static final long serialVersionUID = 1L;
     private String vehicleTypeDescIvr;
 	
 	@Column(name = "NO_OF_CYLINDERS")
-    private String noOfCylinders;
+    private Integer noOfCylinders;
 	
 	 
 	
