@@ -788,6 +788,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorData.setCustomerId(request.getCustomerId());
 			motorData.setVehicleId(eserMotors.getRiskId().toString());
 			motorData.setStatus(eserMotors.getStatus());
+			motorData.setLocationId(eserMotors.getLocationId()==null?1:eserMotors.getLocationId());
 			motorData.setActualPremiumFc(premiumFc);
 			motorData.setActualPremiumLc(premiumLc);
 			motorData.setOverallPremiumFc(overAllPremiumFc);

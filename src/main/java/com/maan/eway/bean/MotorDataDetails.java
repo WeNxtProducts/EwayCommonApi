@@ -65,6 +65,9 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="VEHICLE_ID", nullable=false, length=20)
     private String     vehicleId ;
+    @Id
+    @Column(name="LOCATION_ID", nullable=false)
+    private Integer     locationId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="PRODUCT_ID", nullable=false)

@@ -35,5 +35,7 @@ public class MotorDataDetailsId implements Serializable {
     
     private String     vehicleId ;
     
+    private Integer     locationId ;
+    
      
 }
