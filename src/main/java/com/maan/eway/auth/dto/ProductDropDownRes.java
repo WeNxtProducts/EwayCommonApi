@@ -31,4 +31,7 @@ public class ProductDropDownRes {
 	@JsonProperty("DisplayOrder")
 	private Integer displayOrder;
 	
+	@JsonProperty("ProductNameLocal")
+	private String newProductNameLocal;
+	
 }
