@@ -849,6 +849,9 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "VEHICLE_TYPE_DESC_IVR")
     private String vehicleTypeDescIvr;
 	
+	@Column(name = "NO_OF_CYLINDERS")
+    private String noOfCylinders;
+	
 	 
 	
 }

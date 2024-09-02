@@ -359,6 +359,9 @@ private static final long serialVersionUID = 1L;
 	
 	@Column(name = "PA_COVERID")
     private String paCoverId;
+	
+	@Column(name = "NO_OF_CYLINDERS")
+    private String noOfCylinders;
 }
 
 
