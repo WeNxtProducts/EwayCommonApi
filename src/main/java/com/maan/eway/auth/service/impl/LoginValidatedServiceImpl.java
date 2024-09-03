@@ -38,6 +38,8 @@ import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.SessionMaster;
+import com.maan.eway.common.req.CommonErrorModuleReq;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.repository.BlockingIpAddressRepository;
@@ -49,6 +51,9 @@ import com.maan.eway.repository.SessionMasterRepository;
 
 @Component
 public class LoginValidatedServiceImpl implements LoginValidatedService {
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 
 	@Autowired
 	private LoginCriteriaQueryService criteriaQuery;
@@ -204,8 +209,22 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 							sessionRep.save(updatelogout);
 							
 						}else if(sessionlist.get(0).getLogoutDate()==null && list.size()<=0) {
-							list.add(new Error("", "SessionError", "You already have an active logged in session on another device or window Do you want to start new session and terminate that session?"));
-							list.add(new Error("", "SessionError", "User :" + sessionlist.get(0).getUserName() + " : logged in at " +sessionlist.get(0).getEntryDate().toString()));
+							
+						
+							List<String> error = new ArrayList<String>();
+							error.add("1144");
+
+							CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+							comErrDescReq.setBranchCode("99999");
+							comErrDescReq.setInsuranceId("99999");
+							comErrDescReq.setProductId("99999");
+							comErrDescReq.setModuleId("36");
+							comErrDescReq.setModuleName("SESSION LOGIN");
+						
+							
+							list = errorDescService.getErrorDesc(error ,comErrDescReq);
+//							list.add(new Error("", "SessionError", "You already have an active logged in session on another device or window Do you want to start new session and terminate that session?", "", "Vous avez déjà une session active sur un autre appareil ou une autre fenêtre. Souhaitez-vous commencer une nouvelle session et mettre fin à l'autre session ?"));
+//							list.add(new Error("", "SessionError", "User :" + sessionlist.get(0).getUserName() + " : logged in at " +sessionlist.get(0).getEntryDate().toString()));
 						}
 				}
 			
@@ -223,6 +242,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			commonRes.setIsError(true);
 			commonRes.setMessage("Failed");
 		}
+	
 		return commonRes;
 	}
 
