@@ -219,6 +219,8 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 				saveData.setStatus(data.getStatus());
 				saveData.setTextValue(data.getTextValue());
 				saveData.setStatus(data.getStatus());
+				saveData.setQuestionCategory(data.getQuestionCategory());
+				saveData.setQuestionCategoryDesc(data.getQuestionCategoryDesc());
 				if((StringUtils.isNotBlank(data.getStatus())) && (data.getStatus().equalsIgnoreCase("R")) ){
 					saveData.setIsReferral("Y");
 				}

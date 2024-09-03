@@ -94,13 +94,13 @@ public class UwQuestionsDetails implements Serializable {
     @Column(name="POLICY_HOLDER_TYPE_DESC", length=100)
     private String     policyHolderTypeDesc ;
     
-    @Column(name="ID_TYPE", nullable=false, length=100)
+    @Column(name="ID_TYPE",  length=100)
     private String     idType ;
 
     @Column(name="ID_TYPE_DESC", length=100)
     private String     idTypeDesc ;
 
-    @Column(name="ID_NUMBER", nullable=false, length=100)
+    @Column(name="ID_NUMBER", length=100)
     private String     idNumber ;
 
 	///////////

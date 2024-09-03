@@ -69,5 +69,11 @@ public class UwQuestionsDetailsSaveReq implements Serializable {
 	
 	@JsonProperty("LoadingPercent")
 	private String loadingPercent;
+	
+	@JsonProperty("QuestionCategory")
+	private String questionCategory;
+	
+	@JsonProperty("QuestionCategoryDesc")
+	private String questionCategoryDesc;
 
 }
