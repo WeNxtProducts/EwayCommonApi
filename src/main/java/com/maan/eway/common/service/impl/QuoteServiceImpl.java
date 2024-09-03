@@ -672,6 +672,7 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			List<LocationDetailsRes>  loctionList = new ArrayList<LocationDetailsRes>();
 			List<SectionDetailsRes>  sectionList = new ArrayList<SectionDetailsRes>();
+			String productId=buildings.get(0).getProductId();
 			String locationId="";
 			String locationName="";
 			String sumInsured="0.0";
@@ -1029,7 +1030,7 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 			
 			// Bond
-			if(StringUtils.isNotBlank(sectionId)) {
+			if(StringUtils.isNotBlank(sectionId) && "61".equals(productId) ) {
 				String sec=sectionId;
 				List<BuildingRiskDetails> filterBond = buildings.stream().filter( o -> sec.equalsIgnoreCase(o.getSectionId())
 					/*|| "118".equalsIgnoreCase(o.getSectionId()) 
@@ -1088,15 +1089,17 @@ public class QuoteServiceImpl implements QuoteService {
 		List<SectionDataDetails> secDatas2 = secDataRepo.findByQuoteNoAndStatusNot(req.getQuoteNo(), "D");
 		Set<Integer> findlocationid = secDatas2.stream().map(SectionDataDetails::getLocationId).distinct()
 				.collect(Collectors.toSet());
+		LocationDetailsRes locRes = null;
+		SectionDetailsRes secRes = null;
 		for (Integer d : findlocationid) {
-			LocationDetailsRes locRes = new LocationDetailsRes();
+			 locRes = new LocationDetailsRes();
 			List<SectionDataDetails> filter = secDatas2.stream().filter(o -> o.getLocationId().equals(d))
 					.collect(Collectors.toList());
 			locRes.setLocationId(filter.get(0).getLocationId().toString());
 			locRes.setLocationName(filter.get(0).getLocationName());
 
 			for (SectionDataDetails sec : filter) {
-				SectionDetailsRes secRes = new SectionDetailsRes();
+				secRes = new SectionDetailsRes();
 				secRes.setRiskId(sec.getRiskId().toString());
 				secRes.setSectionId(sec.getSectionId().toString());
 				secRes.setSectionName(sec.getSectionDesc());
