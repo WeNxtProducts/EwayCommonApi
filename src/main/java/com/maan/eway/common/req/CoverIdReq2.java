@@ -60,5 +60,10 @@ public class CoverIdReq2 {
 		 
 		 @JsonProperty("EndtCount")
 		 private BigDecimal endtCount;
+		 @JsonProperty("MinRate") 
+		  public Double minrate;
+		  // only for ui
+		  @JsonProperty("ActualRate") 
+		  public Double actualrate;
 
 }

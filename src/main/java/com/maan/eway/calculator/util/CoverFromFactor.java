@@ -86,6 +86,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.coverNameLocal( t.getCoverNameLocal()==null?"": t.getCoverNameLocal().toString())
 					.subCoverDescLocal(t.getSubCoverDescLocal()==null?"":t.getSubCoverDescLocal())
 					.subCoverNameLocal(t.getSubCoverNameLocal()==null?"":t.getSubCoverNameLocal().toString())
+					.minrate(t.getMinimumRate() ==null?0D:t.getMinimumRate().doubleValue())
 					.build();
 				return c;
 			 }			

@@ -81,6 +81,7 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.coverNameLocal(t.get("coverNameLocal")==null?"":t.get("coverNameLocal").toString())
 					.subCoverDescLocal(t.get("subCoverDescLocal")==null?"":t.get("subCoverDescLocal").toString())
 					.subCoverNameLocal(t.get("subCoverNameLocal")==null?"":t.get("subCoverNameLocal").toString())
+					.minrate(t.get("minimumRate")==null?0D:Double.parseDouble(t.get("minimumRate").toString()))
 					.build();
 				return c;
 			 }			

@@ -25,6 +25,7 @@ public class DiscountFromFactor  implements Function<FactorRateRequestDetails,Di
 						 	.coverAgeType(t.getCoverageType())
 						 	.effectiveDate(t.getCoverPeriodFrom())
 						 	.policyEndDate(t.getCoverPeriodTo())
+						 	.minrate(t.getMinimumRate()==null?0D: t.getMinimumRate().doubleValue())
 						 	.build();
 				 return d;
 			 }

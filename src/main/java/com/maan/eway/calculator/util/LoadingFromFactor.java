@@ -24,6 +24,7 @@ public class LoadingFromFactor  implements Function<FactorRateRequestDetails,Loa
 						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
 						 	.effectiveDate(t.getCoverPeriodFrom())
 						 	.policyEndDate(t.getCoverPeriodTo())
+						 	.minrate(t.getMinimumRate()==null?0D: t.getMinimumRate().doubleValue())
 						 	.build();
 				 return d;
 			 }

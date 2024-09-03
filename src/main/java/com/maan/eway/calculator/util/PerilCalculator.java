@@ -342,6 +342,7 @@ public class PerilCalculator {
 				 t.setPremiumBeforeDiscount(new BigDecimal(riskPremiumAmt));
 				 t.setMinimumPremium(new BigDecimal("0"));
 				 t.setRate(premiumRate);
+				 t.setMinrate(premiumRate);
 				 t.setCalcType("P");
 				 t.setRegulatoryCode("NA");
 				 /// Referal

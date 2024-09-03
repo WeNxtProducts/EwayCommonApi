@@ -214,6 +214,11 @@ public class Cover implements Serializable{
 				  public String subCoverNameLocal;
 				  @JsonProperty("LocationId") 
 				  public String locationId;
+				  @JsonProperty("MinRate") 
+				  public Double minrate;
+				  // only for ui
+				  @JsonProperty("ActualRate") 
+				  public Double actualrate;
 				  
 }
 

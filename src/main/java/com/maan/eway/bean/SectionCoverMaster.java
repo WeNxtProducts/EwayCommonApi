@@ -232,6 +232,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="SUB_COVER_DESC_LOCAL", length=100)
     private String     subCoverDescLocal ;
+    
+    @Column(name="MINIMUM_RATE")
+    private BigDecimal     minimumRate ;
 }
 
 

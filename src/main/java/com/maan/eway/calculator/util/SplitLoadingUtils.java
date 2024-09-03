@@ -34,6 +34,7 @@ public class SplitLoadingUtils  implements Function<Tuple,Loading>{
 							.regulatoryCode(t.get("regulatoryCode")==null?"N/A":t.get("regulatoryCode").toString())
 							.effectiveDate(effectiveDate)
 							.policyEndDate(policyEndDate)
+							.minrate(t.get("minimumRate")==null?0D:Double.parseDouble(t.get("minimumRate").toString()))
 						 	.build();
 				 return d;
 			 }

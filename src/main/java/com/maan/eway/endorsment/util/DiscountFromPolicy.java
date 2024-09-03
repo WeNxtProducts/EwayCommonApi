@@ -25,6 +25,7 @@ public class DiscountFromPolicy  implements Function<PolicyCoverData,Discount>{
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
 						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
 						 	.coverAgeType(t.getCoverageType())
+						 	.minrate(t.getMinimumRate()==null?0D: t.getMinimumRate().doubleValue())
 						 	.build();
 				 return d;
 			 }

@@ -260,6 +260,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="EXCESS_DESC")
     private String     excessDesc ;
+    
+    @Column(name="MINIMUM_RATE")
+    private BigDecimal     minimumRate ;
 }
 
 

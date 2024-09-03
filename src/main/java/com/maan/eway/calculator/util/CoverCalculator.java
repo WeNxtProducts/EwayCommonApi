@@ -135,10 +135,12 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 }else if(tuple!=null) {
 						 String calctype=tuple.get("calcType").toString();
 						 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
+						 String minrate=tuple.get("minimumRate")==null?"0":tuple.get("minimumRate").toString();
 						 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
 
 						 t.setRate((Double) ((Double.parseDouble(rate)*Double.parseDouble(rateFor))));
-
+						 t.setMinrate((Double) ((Double.parseDouble(minrate)*Double.parseDouble(rateFor))));
+						 
 						 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
 						 //System.out.println(t.getCoverDesc()+ "<--->"+t.getRate() +"---"+si);
 						 

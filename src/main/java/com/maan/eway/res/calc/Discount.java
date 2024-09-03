@@ -47,6 +47,12 @@ public class Discount implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("PolicyEndDate")
     private Date   policyEndDate ;
+	@JsonProperty("MinRate") 
+	  public Double minrate;
+	 // only for ui
+	  @JsonProperty("ActualRate") 
+	  public Double actualrate;
+	 
 
     
 }

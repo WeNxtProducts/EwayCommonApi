@@ -424,7 +424,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					saveCover.setCoverDescLocal(StringUtil.isBlank(coverData.getSubCoverDescLocal())?"":coverData.getSubCoverDescLocal());
 					saveCover.setSubCoverDescLocal(StringUtil.isBlank(coverData.getCoverNameLocal())?"":coverData.getCoverNameLocal());
 					saveCover.setSubCoverNameLocal(StringUtil.isBlank(coverData.getSubCoverDescLocal())?"":coverData.getSubCoverDescLocal());
-				    //private BigDecimal     minCoverageLimit;
+					saveCover.setMinimumRate(coverData.getMinrate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getMinrate()));
+					//private BigDecimal     minCoverageLimit;
 					// Date Differents
 					Date periodStart =  coverData.getEffectiveDate();
 					Date periodEnd = coverData.getPolicyEndDate() ;
@@ -565,6 +566,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						saveSubCover.setMinimumPremiumYn(StringUtils.isBlank(subCoverData.getMinimumPremiumYn())?"N":subCoverData.getMinimumPremiumYn());
 						saveSubCover.setEndtCount(coverData.getEndtCount()==null?BigDecimal.ZERO:coverData.getEndtCount());
 						saveSubCover.setFreeCoverLimit(coverData.getFreeCoverLimit()==null?BigDecimal.ZERO:coverData.getFreeCoverLimit());
+						saveSubCover.setMinimumRate(coverData.getMinrate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getMinrate()));
 						/*if(coverIds!=null && !coverIds.isEmpty()) {
 							long count = coverIds.stream().filter(t-> (saveSubCover.getCoverId().equals(t.getCoverId()) && saveSubCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 							if(count>0) userOpt="Y";
@@ -1125,8 +1127,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveLod.setEndtCount(BigDecimal.ZERO);
 				saveLod.setCoverPeriodFrom(coverReq.getEffectiveDate());
 				saveLod.setCoverPeriodTo(coverReq.getPolicyEndDate());
-				
-				
+				saveLod.setMinimumRate(lod.getMinrate()==null ? BigDecimal.ZERO:new BigDecimal(lod.getMinrate()));
+				saveLod.setActualRate(lod.getLoadingRate()==null ? null :new BigDecimal(lod.getLoadingRate()));
 				saveLod.setNoOfDays(new BigDecimal(diff));
 			//	repository.saveAndFlush(saveLod);
 				saveLodings.add(saveLod)	;		
@@ -1187,9 +1189,12 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveDiscounts.setEndtCount(BigDecimal.ZERO );
 				saveDiscounts.setCoverPeriodFrom(coverReq.getEffectiveDate());
 				saveDiscounts.setCoverPeriodTo(coverReq.getPolicyEndDate());
-				
-				
+				saveDiscounts.setMinimumRate(disc.getMinrate()==null ? BigDecimal.ZERO:new BigDecimal(disc.getMinrate()));	
 				saveDiscounts.setNoOfDays(new BigDecimal(diff));
+				
+					
+				saveDiscounts.setActualRate(disc.getDiscountRate()==null ? null :new BigDecimal(disc.getDiscountRate()));
+				
 				//repository.saveAndFlush(saveDiscounts);
 				saveDiscountList.add(saveDiscounts);
 				
@@ -1924,6 +1929,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					coverRes.setCoverDescLocal(filterCover.get(0).getCoverDescLocal());
 					coverRes.setSubCoverDescLocal(null);
 					coverRes.setSubCoverNameLocal(null);
+					coverRes.setMinrate(filterCover.get(0).getMinimumRate()==null?0D:filterCover.get(0).getMinimumRate().doubleValue());
+					coverRes.setActualrate(filterCover.get(0).getActualRate()==null?0D:filterCover.get(0).getActualRate().doubleValue());;
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 					
@@ -2033,7 +2040,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						subCoverRes.setProRataYn(filterSubCover.get(0).getProRataYn());
 						subCoverRes.setSubCoverDescLocal(filterSubCover.get(0).getSubCoverDescLocal());
 						subCoverRes.setSubCoverNameLocal(filterSubCover.get(0).getSubCoverNameLocal());
-						
+						subCoverRes.setMinrate(filterSubCover.get(0).getMinimumRate()==null?0D:filterSubCover.get(0).getMinimumRate().doubleValue());
+						subCoverRes.setActualrate(filterCover.get(0).getActualRate()==null?0D:filterCover.get(0).getActualRate().doubleValue());
 						// Discount Covers Or Promo Covers
 						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 						
@@ -2089,7 +2097,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				discount.setMaxAmount(disc.getMinimumPremium());
 				discount.setSubCoverId(disc.getSubCoverId().toString());
 				discount.setDiscountforId(disc.getDependentCoverId()==null?null:disc.getDependentCoverId().toString());
-				
+				discount.setActualrate(disc.getActualRate()==null?0D:disc.getActualRate().doubleValue());
+				discount.setMinrate(disc.getMinimumRate()==null?0D:disc.getMinimumRate().doubleValue());
 				DiscountList.add(discount);
 				
 			}
@@ -2117,6 +2126,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				loding.setLoadingRate(lod.getRate()==null?null:lod.getRate().toString());
 				loding.setMaxAmount(lod.getPremiumIncludedTaxFc());
 				//loding.setSubCoverId(lod.getLodingSubcoverId()==null?null:lod.getLodingSubcoverId().toString());	
+				loding.setActualrate(lod.getActualRate()==null?0D:lod.getActualRate().doubleValue());
+				loding.setMinrate(lod.getMinimumRate()==null?0D:lod.getMinimumRate().doubleValue());
 				LodingList.add(loding);
 			}
 			
@@ -2294,7 +2305,10 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						errors.add(new Error("01","Rate","Please Enter Valid Rate")) ;				
 					} else if ( cov.getRate().equalsIgnoreCase("0") &&  cov.getCoverageType().equalsIgnoreCase("D")    ) {
 						errors.add(new Error("01","Rate","Please Enter Valid Number In Rate")) ;				
+					}else if( cov.getMinrate()>=Double.parseDouble(cov.getRate())  && Double.parseDouble(cov.getRate())<=cov.getActualrate() ) {
+						errors.add(new Error("01","Rate","Please Enter Rate between "+cov.getMinrate()+"& "+cov.getActualrate())) ;
 					}
+					
 					if(StringUtils.isNotBlank(cov.getUserOpt())  && cov.getUserOpt().equalsIgnoreCase("Y")  ) {
 						if (StringUtils.isBlank(cov.getExcessAmount() ) ) {
 							errors.add(new Error("01"," Excess Amount","Please Enter Excess Amount")) ;				

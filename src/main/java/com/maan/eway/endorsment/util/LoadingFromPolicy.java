@@ -22,7 +22,8 @@ public class LoadingFromPolicy  implements Function<PolicyCoverData,Loading>{
 						 	.loadingforId(t.getDiscountCoverId()==null?"":t.getDiscountCoverId().toString())
 						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
-						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())						 
+						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())	
+						 	.minrate(t.getMinimumRate()==null?0D: t.getMinimumRate().doubleValue())
 						 	.build();
 				 return d;
 			 }
