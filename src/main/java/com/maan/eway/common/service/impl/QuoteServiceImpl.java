@@ -677,6 +677,7 @@ public class QuoteServiceImpl implements QuoteService {
 			String sumInsured="0.0";
 			String contentType="";
 			String contentDesc="";
+			String sectionId="";
 			// Building Details 
 			// Build
 			// Section Details
@@ -689,20 +690,23 @@ public class QuoteServiceImpl implements QuoteService {
 			
 		
 			Map<Integer, List<SectionDataDetails>> riskGroup =null;
-			riskGroup = secDatas.stream().filter( o -> o.getRiskId()!=null  ).collect( Collectors.groupingBy(SectionDataDetails :: getRiskId )) ;
+			Map<Integer, List<SectionDataDetails>> locationGroup =null;
+			locationGroup = secDatas.stream().filter( o -> o.getLocationId()!=null  ).collect( Collectors.groupingBy(SectionDataDetails :: getLocationId )) ;
+			for (Integer locId :  locationGroup.keySet()) {
+			riskGroup = secDatas.stream().filter( o -> o.getRiskId()!=null && locId.equals(o.getLocationId())  ).collect( Collectors.groupingBy(SectionDataDetails :: getRiskId )) ;
 			for (Integer risk :  riskGroup.keySet()) {
-			List<SectionDataDetails> filterData = secDatas.stream().filter( o -> o.getRiskId().equals(risk)).collect(Collectors.toList());
+			List<SectionDataDetails> filterData = secDatas.stream().filter( o -> o.getRiskId().equals(risk) && o.getLocationId().equals(locId)).collect(Collectors.toList());
 			List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
 			EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
 			for (SectionDataDetails sec :  filterData) {
-				
+				sectionId=sec.getSectionId()==null?"":sec.getSectionId().toString();
 				if( sec.getProductType().equalsIgnoreCase("H") ) {
 					List<SectionDetails>  pacSectionList = new ArrayList<SectionDetails>();
-					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoAndSectionIdOrderByRiskIdAsc(req.getQuoteNo() , sec.getSectionId());
+					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoAndSectionIdOrderByLocationIdAsc(req.getQuoteNo() , sec.getSectionId());
 					for (CommonDataDetails	 acc : accData ) {
 						
 						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(acc.getRiskId()) &&
-								 o.getSectionId().toString().equals(acc.getSectionId()) ).collect(Collectors.toList());
+								 o.getSectionId().toString().equals(acc.getSectionId()) &&  o.getLocationId().equals(acc.getLocationId()) ).collect(Collectors.toList());
 						SectionDetails buildSec = new SectionDetails(); 
 						buildSec.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
 						buildSec.setSectionName( acc.getSectionDesc());
@@ -757,7 +761,7 @@ public class QuoteServiceImpl implements QuoteService {
 					
 				} else {
 					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(sec.getRiskId())) &&
-							o.getCompanyId().equals(sec.getCompanyId()) && o.getProductId().toString().equals(sec.getProductId()) && o.getSectionId().toString().equals(sec.getSectionId()) ).collect(Collectors.toList());
+							o.getCompanyId().equals(sec.getCompanyId()) && o.getProductId().toString().equals(sec.getProductId()) && o.getSectionId().toString().equals(sec.getSectionId()) &&  o.getLocationId().equals(sec.getLocationId())).collect(Collectors.toList());
 				
 					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 					
@@ -789,6 +793,10 @@ public class QuoteServiceImpl implements QuoteService {
 					buildSec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc==null?"":PremiumExcluedTaxLc.toString());
 					buildSec.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
 					buildSec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
+					locationId=sec.getLocationId().toString();
+					locationName=sec.getLocationName();
+					buildSec.setLocationId(StringUtils.isBlank(locationId)?"":locationId);
+					buildSec.setLocationName(StringUtils.isBlank(locationName)?"":locationName);
 					buildingSectionList.add(buildSec);
 				
 			} 
@@ -1020,6 +1028,23 @@ public class QuoteServiceImpl implements QuoteService {
 						
 			}
 			
+			// Bond
+			if(StringUtils.isNotBlank(sectionId)) {
+				String sec=sectionId;
+				List<BuildingRiskDetails> filterBond = buildings.stream().filter( o -> sec.equalsIgnoreCase(o.getSectionId())
+					/*|| "118".equalsIgnoreCase(o.getSectionId()) 
+					|| "119".equalsIgnoreCase(o.getSectionId()) 
+					|| "120".equalsIgnoreCase(o.getSectionId()))*/
+					&& o.getRiskId().equals(risk)  ).collect(Collectors.toList());
+			if(filterBond.size() > 0 ) {
+				BuildingRiskDetails build = filterBond.get(0);
+				buildingRes.setBondSuminsured(build.getBondSuminsured() == null?BigDecimal.ZERO :build.getBondSuminsured());
+				locationId=build.getLocationId().toString();
+				locationName=build.getLocationName();
+				sumInsured=build.getBondSuminsured()==null?null:build.getBondSuminsured().toString();
+						
+			}
+			}
 			// Money
 			List<BuildingRiskDetails> filterMoney = buildings.stream().filter( o -> "42".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
 			if(filterMoney.size() > 0 ) {
@@ -1055,22 +1080,23 @@ public class QuoteServiceImpl implements QuoteService {
 			buildingRes.setLocationName(locationName);
 			buildList.add(buildingRes);
 			}
+		}
 			totalList.addAll(buildList);
 //			totalList.addAll(paccGetResList);
 			// Location Wise Details
 		//	List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
-		Set<Integer> findlocationid = secDatas.stream().map(SectionDataDetails::getLocationId).distinct()
+		List<SectionDataDetails> secDatas2 = secDataRepo.findByQuoteNoAndStatusNot(req.getQuoteNo(), "D");
+		Set<Integer> findlocationid = secDatas2.stream().map(SectionDataDetails::getLocationId).distinct()
 				.collect(Collectors.toSet());
 		for (Integer d : findlocationid) {
 			LocationDetailsRes locRes = new LocationDetailsRes();
-			List<SectionDataDetails> filter = secDatas.stream().filter(o -> o.getLocationId().equals(d))
+			List<SectionDataDetails> filter = secDatas2.stream().filter(o -> o.getLocationId().equals(d))
 					.collect(Collectors.toList());
 			locRes.setLocationId(filter.get(0).getLocationId().toString());
 			locRes.setLocationName(filter.get(0).getLocationName());
 
 			for (SectionDataDetails sec : filter) {
 				SectionDetailsRes secRes = new SectionDetailsRes();
-
 				secRes.setRiskId(sec.getRiskId().toString());
 				secRes.setSectionId(sec.getSectionId().toString());
 				secRes.setSectionName(sec.getSectionDesc());
@@ -1078,11 +1104,13 @@ public class QuoteServiceImpl implements QuoteService {
 				secRes.setContentType(contentType);
 				secRes.setContentDesc(contentDesc);
 				sectionList.add(secRes);
+				
 			}
 			locRes.setSectionDetails(sectionList);
 			loctionList.add(locRes);
-		}		
+		}
 			
+	
 			viewRes.setRiskDetails(totalList);
 			viewRes.setDocumentDetails(documentDetails);
 			viewRes.setLocationDetails(loctionList);	

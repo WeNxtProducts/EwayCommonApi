@@ -379,6 +379,10 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 	
 	@JsonProperty("FirePlantSi")
     private String firePlantSi;
+	
+	
+	@JsonProperty("BondSuminsured")
+    private BigDecimal bondSuminsured;
 
 	@JsonProperty("FinalyzeYn")
 	private String finalizeYn;

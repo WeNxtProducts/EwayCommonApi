@@ -15,6 +15,12 @@ public class SectionDetails {
 	
 	@JsonProperty("SectionName")
 	private  String sectionName;	
+
+	@JsonProperty("LocationId")
+	private  String locationId;	
+	
+	@JsonProperty("LocationName")
+	private  String locationName;	
 	
 	@JsonProperty("PremiumAfterDiscount")
 	private  String premiumAfterDiscount;	
