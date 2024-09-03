@@ -212,7 +212,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 							
 						
 							List<String> error = new ArrayList<String>();
-							error.add("1144");
+							error.add("2286");
 
 							CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
 							comErrDescReq.setBranchCode("99999");
