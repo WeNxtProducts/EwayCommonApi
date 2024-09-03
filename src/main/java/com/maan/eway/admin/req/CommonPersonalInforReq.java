@@ -92,6 +92,9 @@ public class CommonPersonalInforReq {
     
     @JsonProperty("TaxExemptedYn")
     private String    taxExemptedYn ;
+    
+    @JsonProperty("TaxExemptedCode")
+    private String    taxExemptedCode ;
 	
 	@JsonProperty("CreditLimit")
     private String    creditLimit ;
