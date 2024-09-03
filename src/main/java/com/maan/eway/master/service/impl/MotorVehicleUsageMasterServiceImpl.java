@@ -660,25 +660,14 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		for (MotorVehicleUsageMaster data : list) {
 			// Response 
 			
-			if(req.getInsuranceId().equals("100040") && req.getBodyId()!=null && req.getBodyId()!="")
-			{
-				if(data.getBodyType()!=null && !data.getBodyType().isBlank() && data.getBodyType().contains(req.getBodyId()))
-				{
+			
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getVehicleUsageId().toString());
 				res.setCodeDesc(data.getVehicleUsageDesc());
 				res.setCodeDescLocal(data.getVehicleUsageDescLocal());
 				res.setStatus(data.getStatus());
 				resList.add(res);
-				}
-			}else if(!req.getInsuranceId().equals("100040")) {
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getVehicleUsageId().toString());
-				res.setCodeDesc(data.getVehicleUsageDesc());
-				res.setCodeDescLocal(data.getVehicleUsageDescLocal());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}
+			
 		}
 		
 		
@@ -819,7 +808,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 		Date todayEnd = cal.getTime();
 		
 		String bodyType = "";
-		if(StringUtils.isNotBlank(req.getBodyId())  ) {
+		if(StringUtils.isNotBlank(req.getBodyId()) &&! req.getInsuranceId().equals("100040")) {
 			List<MotorBodyTypeMaster> bodyTypeList =  getBodyTypeMasterDropdown(req.getInsuranceId() , req.getBranchCode() ,"", req.getBodyId() ) ;
 			bodyType = bodyTypeList.size() > 0 ? bodyTypeList.get(0).getBodyType() : "";
 		}
@@ -880,13 +869,29 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 		list.sort(Comparator.comparing(MotorVehicleUsageMaster :: getVehicleUsageDesc ));
 		for (MotorVehicleUsageMaster data : list) {
 			// Response 
-			DropDownRes res = new DropDownRes();
-			res.setCode(data.getVehicleUsageId().toString());
-			res.setCodeDesc(data.getVehicleUsageDesc());
-			res.setStatus(data.getStatus());
-			res.setBodyType(data.getBodyType());
-			res.setCodeDescLocal(data.getVehicleUsageDescLocal());
-			resList.add(res);
+			if(req.getInsuranceId().equals("100040") && req.getBodyId()!=null && req.getBodyId()!="")
+			{
+				String[] numbers =data.getBodyType()!=null ? data.getBodyType().split(","):null;
+				if(numbers!=null) {
+				Arrays.stream(numbers)
+			    .filter(number -> number.trim().equals(req.getBodyId()))
+			    .forEach(number -> {
+			        DropDownRes res = new DropDownRes();
+			        res.setCode(data.getVehicleUsageId().toString());
+			        res.setCodeDesc(data.getVehicleUsageDesc());
+			        res.setCodeDescLocal(data.getVehicleUsageDescLocal());
+			        res.setStatus(data.getStatus());
+			        resList.add(res);
+			    });}
+
+			}else if(!req.getInsuranceId().equals("100040")) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getVehicleUsageId().toString());
+				res.setCodeDesc(data.getVehicleUsageDesc());
+				res.setCodeDescLocal(data.getVehicleUsageDescLocal());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
 		}
 	}
 		catch(Exception e) {
