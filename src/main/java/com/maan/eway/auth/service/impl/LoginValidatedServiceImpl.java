@@ -224,7 +224,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 							
 							list = errorDescService.getErrorDesc(error ,comErrDescReq);
 //							list.add(new Error("", "SessionError", "You already have an active logged in session on another device or window Do you want to start new session and terminate that session?", "", "Vous avez déjà une session active sur un autre appareil ou une autre fenêtre. Souhaitez-vous commencer une nouvelle session et mettre fin à l'autre session ?"));
-//							list.add(new Error("", "SessionError", "User :" + sessionlist.get(0).getUserName() + " : logged in at " +sessionlist.get(0).getEntryDate().toString()));
+							list.add(new Error("", "SessionError", "User :" + sessionlist.get(0).getUserName() + " : logged in at " +sessionlist.get(0).getEntryDate().toString()));
 						}
 				}
 			
