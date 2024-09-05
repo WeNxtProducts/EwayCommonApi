@@ -113,6 +113,9 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="UPDATED_DATE")
     private Date  updatedDate ;
+    
+    @Column(name="CITY_NAME_LOCAL")
+    private String     cityNameLocal ;
 
 }
 

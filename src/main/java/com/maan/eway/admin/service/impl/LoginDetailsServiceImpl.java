@@ -531,6 +531,7 @@ this.repository = repo;
 //			userInfo.setCityCode(StringUtils.isNotBlank(personalReq.getCityName()) && personalReq.getCityName().matches("[0-9]+") ? Integer.valueOf(personalReq.getCityName()) :null );
 			userInfo.setStateCode(StringUtils.isBlank(personalReq.getStateCode())?null:personalReq.getStateCode());
 			userInfo.setTaxExemptedYn(StringUtils.isBlank(personalReq.getTaxExemptedYn())?"N":personalReq.getTaxExemptedYn() );
+			userInfo.setTaxExemptedCode(req.getPersonalInformation().getTaxExemptedCode());
 			userInfo.setCreditLimit(StringUtils.isBlank(personalReq.getCreditLimit())?BigDecimal.ZERO : new BigDecimal(personalReq.getCreditLimit()) );
 			userInfo.setAddress1(StringUtils.isBlank(personalReq.getAddress1())?null:personalReq.getAddress1());
 			userInfo.setAddress2(StringUtils.isBlank(personalReq.getAddress2())?null:personalReq.getAddress2());
@@ -946,6 +947,7 @@ this.repository = repo;
 			updateUser.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			updateUser.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			updateUser.setTaxExemptedYn(StringUtils.isBlank(personalReq.getTaxExemptedYn())?"N":personalReq.getTaxExemptedYn() );
+			updateUser.setTaxExemptedCode(personalReq.getTaxExemptedCode());
 			updateUser.setCreditLimit(StringUtils.isBlank(personalReq.getCreditLimit())?BigDecimal.ZERO : new BigDecimal(personalReq.getCreditLimit()) );
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {

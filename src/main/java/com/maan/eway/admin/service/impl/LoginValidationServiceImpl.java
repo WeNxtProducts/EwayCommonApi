@@ -155,16 +155,16 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 			if(StringUtils.isNotBlank(req.getLoginInformation().getSubUserType()) && ! req.getLoginInformation().getSubUserType().equalsIgnoreCase("SuperAdmin") ) {
 				
 				if(StringUtils.isNotBlank(loginReq.getSubUserType()) && (loginReq.getSubUserType().equalsIgnoreCase("low") ) ) { 
-					if( loginReq.getProductIds()==null || loginReq.getProductIds().size() == 0 ) {
-					//	errors.add(new Error("06", "ProductIds", "Please Choose Atleast One Product"));
-						errors.add("1766");
-					}
+					/*if( loginReq.getProductIds()==null || loginReq.getProductIds().size() == 0 ) {
+						//	errors.add(new Error("06", "ProductIds", "Please Choose Atleast One Product"));
+							errors.add("1766");
+					}*/
 				}
 				
-				if( loginReq.getAttachedBranches()==null || loginReq.getAttachedBranches().size() == 0 ) {
+			/*	if( loginReq.getAttachedBranches()==null || loginReq.getAttachedBranches().size() == 0 ) {
 				//	errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
 					errors.add("1767");
-				} 
+				} */
 			
 			}
 			
