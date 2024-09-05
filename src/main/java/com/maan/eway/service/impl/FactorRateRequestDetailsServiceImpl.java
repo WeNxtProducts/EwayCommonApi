@@ -2144,7 +2144,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 		try {
 			for (FactorRateRequestDetails tax :  filterTaxCover ) {
 				Tax taxes = new Tax();
-				taxes.setCalcType(tax.getCalcType());
+				taxes.setCalcType(tax.getTaxCalcType());
 				taxes.setIsTaxExempted(tax.getIsTaxExtempted());
 				taxes.setTaxAmount(tax.getTaxAmount());
 				taxes.setTaxDesc(tax.getTaxDesc());
