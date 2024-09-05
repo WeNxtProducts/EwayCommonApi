@@ -906,7 +906,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					// Get Result 
 					TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
 					list = result.getResultList();
-					if (list.size() > 0) {
+					if (list.size() > 0 && req.getCustomerReferenceNo()==null) {
 						errorList.add("1511");
 
 					}
