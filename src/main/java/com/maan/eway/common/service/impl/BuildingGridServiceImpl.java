@@ -420,7 +420,14 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				n8 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			}
 
-			Predicate n13 = cb.equal(  m.get("sectionId"),  "0");
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceBuildingDetails> ocp = riskId.from(EserviceBuildingDetails.class);
+			riskId.select(cb.max(ocp.get("riskId")));
+			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			riskId.where(a3);
+			Predicate n13 = cb.equal(m.get("riskId"), riskId);
+//			Predicate n13 = cb.equal(  m.get("sectionId"),  "0");
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n13).orderBy(orderList);
 
 			// Get Result
