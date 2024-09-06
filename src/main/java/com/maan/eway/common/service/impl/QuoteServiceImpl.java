@@ -1551,7 +1551,7 @@ public class QuoteServiceImpl implements QuoteService {
 				commonDetails.setFinalizeYn(com.getFinalizeYn());
 				commonDetails.setLocationId(com.getLocationId().toString());
 				commonDetails.setLocationName(com.getLocationName());
-				
+				commonDetails.setOccupationTypeDesc(com.getOccupationDesc());				
 				
 				//get Section name Local from session master 
 				List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(com.getSectionDesc()!=null ? com.getSectionDesc().toString() : " ");

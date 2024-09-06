@@ -60,6 +60,9 @@ public class ContentAndRisk implements Serializable {
 	@Id	
 	@Column(name = "ITEM_ID", nullable = false)
 	private Integer itemId;	
+	@Id	
+	@Column(name = "LOCATION_ID", nullable = false)
+	private Integer locationId;
 	
 	/* @Id */
 	@Column(name = "QUOTE_NO", length = 20)

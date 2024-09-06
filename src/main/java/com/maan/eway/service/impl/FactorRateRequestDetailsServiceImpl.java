@@ -1846,12 +1846,13 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				res.setFinalizeYn(comData.getFinalizeYn());	
 				res.setLocationId(comData.getLocationId()==null?"1":comData.getLocationId().toString());
 				res.setLocationName(StringUtil.isBlank(comData.getLocationName())?"":comData.getLocationName());
+			
 				//res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
 				dozerMapper.map(comData, comRes);
-				comRes.setPolicyNo(StringUtils.isBlank(comData.getOriginalPolicyNo()) ? comData.getPolicyNo() : comData.getOriginalPolicyNo() ); 
-		//		comRes.setSectionName(comData.getSectionDesc());
+				comRes.setPolicyNo(StringUtils.isBlank(comData.getOriginalPolicyNo()) ? comData.getPolicyNo() : comData.getOriginalPolicyNo() );
+				comRes.setOccupationTypeDesc(comData.getOccupationDesc());	//		comRes.setSectionName(comData.getSectionDesc());
 				riskDetails = comRes ;
 				res.setRiskDetails(riskDetails);	
 				viewCommonList.add(res);

@@ -36,6 +36,7 @@ public class ContentAndRiskId implements Serializable {
 	private Integer itemId;	
 	//private String quoteNo;
 	  private String     serialNoDesc;
+	  private Integer locationId;
 
 
     
