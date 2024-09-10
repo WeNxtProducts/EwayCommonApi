@@ -1684,8 +1684,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						dozerMapper.map(acc,res);
 						res.setInsuranceId(acc.getCompanyId());
 						res.setSectionId(filterData.get(0).getSectionId());
-//						res.setVehicleId(acc.getRiskId().toString());
-						res.setVehicleId(acc.getLocationId().toString());
+						res.setVehicleId(acc.getRiskId().toString());
 						res.setOriginalRiskId(acc.getOriginalRiskId()!= null ? acc.getOriginalRiskId().toString() :  "" );
 					//	res.setVehicleId(acc.getOriginalRiskId()!= null ? acc.getOriginalRiskId().toString() :  acc.getRiskId().toString()  );
 						
@@ -1828,8 +1827,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				dozerMapper.map(comData,res);
 				
 				res.setInsuranceId(comData.getCompanyId());
-//				res.setVehicleId(comData.getRiskId().toString());
-				res.setVehicleId(comData.getLocationId().toString());
+//				res.setVehicleId(comData.getRiskId().toString())
+				res.setVehicleId(comData.getRiskId().toString());
 				res.setGroupId(1);
 				res.setGroupMember(0);
 				res.setOverallPremiumFc(comData.getOverallPremiumFc()==null?"0": comData.getOverallPremiumFc().toPlainString());
