@@ -881,6 +881,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 			        res.setCodeDesc(data.getVehicleUsageDesc());
 			        res.setCodeDescLocal(data.getVehicleUsageDescLocal());
 			        res.setStatus(data.getStatus());
+			        res.setBodyType(data.getBodyType());
 			        resList.add(res);
 			    });}
 
@@ -889,6 +890,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 				res.setCode(data.getVehicleUsageId().toString());
 				res.setCodeDesc(data.getVehicleUsageDesc());
 				res.setCodeDescLocal(data.getVehicleUsageDescLocal());
+				res.setBodyType(data.getBodyType());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
