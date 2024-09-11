@@ -37,4 +37,8 @@ public interface UwQuestionsDetailsArchRepository  extends JpaRepository<UwQuest
 
 	@Transactional
 	void deleteByRequestReferenceNoAndVehicleId(String refNo, Integer vehId);
+
+	void deleteByRequestReferenceNo(String refNo);
+
+	Long countByRequestReferenceNo(String refNo);
 }

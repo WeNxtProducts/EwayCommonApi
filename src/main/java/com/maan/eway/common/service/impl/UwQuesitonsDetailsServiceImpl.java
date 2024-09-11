@@ -186,13 +186,14 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			String sectionId = req.get(0).getProductId();
 			
 			// Save Old Datas
-			List<UwQuestionsDetails> oldDatas = uwRepo.findByRequestReferenceNoAndVehicleId(refNo , vehId);
+			List<UwQuestionsDetails> oldDatas = uwRepo.findByRequestReferenceNo(refNo);
 			List<UwQuestionsDetailsArch> saveArchs = new ArrayList<UwQuestionsDetailsArch>();
-			Long count = uwArchRepo.countByRequestReferenceNoAndVehicleId(refNo , vehId);
+			Long count = uwArchRepo.countByRequestReferenceNo(refNo);
 			//Integer sno = Integer.valueOf(count.toString())+1;
 			if(count > 0 ) {
-				uwArchRepo.deleteByRequestReferenceNoAndVehicleId(refNo , vehId);
-				
+//				uwArchRepo.deleteByRequestReferenceNoAndVehicleId(refNo , vehId);
+
+				uwArchRepo.deleteByRequestReferenceNo(refNo);
 			}
 			if ( oldDatas.size() > 0 ) {
 				entryDate = oldDatas.get(0).getEntryDate() !=null ? oldDatas.get(0).getEntryDate() : new Date()  ;
@@ -264,14 +265,10 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 					
 				}
 			} else if(product.getMotorYn().equalsIgnoreCase("H") ) {
-					EserviceCommonDetails comData = eserHumanRepo.findByRequestReferenceNoAndRiskId(refNo , vehId)	;
-					if(comData==null ) {
-						List<EserviceCommonDetails> comDatas = eserHumanRepo.findByRequestReferenceNo(refNo)	;
-						comData = comDatas.size() > 0 ? comDatas.get(0) : null ;
-					}
-				
+				List<EserviceCommonDetails> comDatas = eserHumanRepo.findByRequestReferenceNo(refNo )	;
+				for (EserviceCommonDetails comData : comDatas) {
 					MsHumanDetails humanData = msHumanRepo.findByVdRefno(Long.valueOf(comData.getVdRefNo()) );
-					if(humanData!=null) {
+					if(humanData !=null) {
 						cdRefNo = comData.getCdRefno() ;
 						vdRefNo = comData.getVdRefNo();
 						msRefNo = comData.getMsRefno();
@@ -279,8 +276,10 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 						humanData.setUwLoading(totalUwLoading);
 						msHumanRepo.saveAndFlush(humanData);
 						
-					}			
-			} else  {
+					}
+					
+			}
+			}else  {
 					List<EserviceBuildingDetails> buildings = eserBuildRepo.findByRequestReferenceNo(refNo )	;
 					for (EserviceBuildingDetails buildData : buildings) {
 						MsAssetDetails assetData = msAssetRepo.findByVdRefno(Long.valueOf(buildData.getVdRefNo()) );
