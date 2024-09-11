@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -275,11 +276,19 @@ try {
 	 list = list.stream() .filter(item ->
 	 req.getTitletype().equals(item.getOccupationType()))
 	 .collect(Collectors.toList()); }
+	
 	 if(!StringUtils.isBlank(req.getProductId()))
 	 {
-		 list=list.stream().filter(s->s.getProductId().equals(req.getProductId())).collect(Collectors.toList());
-	 }
-	
+		
+		List<OccupationMaster> list1= list.stream().filter(s->s.getProductId().equals(req.getProductId())).collect(Collectors.toList());
+		if(list1.isEmpty())
+		{
+			list = list.stream().filter(a->a.getProductId().equals("99999")).collect(Collectors.toList());	
+		}else {
+			list.clear();
+			list=list1;
+		}
+	  }
 	for (OccupationMaster data : list) {
 		// Response 
 		IndustryDropDownRes res = new IndustryDropDownRes();
