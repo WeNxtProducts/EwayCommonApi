@@ -3,6 +3,7 @@ package com.maan.eway.calculator.util;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -62,8 +63,13 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 if("Y".equals(t.getDependentCoveryn())) {
 					 if(calculatedcover!=null) {
-						Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);
-						si=ct!=null?ct.getPremiumExcluedTax():BigDecimal.ZERO;
+						 List<String> dependentIds = Arrays.asList(t.getDependentCoverId().split(","));
+						 
+						 si = calculatedcover.stream().filter(c->{					        
+					        return dependentIds.contains(c.getCoverId());
+						}).map(x-> x.getPremiumExcluedTax()).reduce((a, b) -> a.subtract(b)).orElse(BigDecimal.ZERO);
+								//findAny().orElse(null);
+						//si=ct!=null?ct.getPremiumExcluedTax():BigDecimal.ZERO;
 					}
 				 }		
 				 si=si.subtract(t.getFreeCoverLimit());

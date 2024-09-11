@@ -194,7 +194,7 @@ private static final long serialVersionUID = 1L;
     private String     dependentCoverYn ;
 
     @Column(name="DEPENDENT_COVER_ID")
-    private Integer    dependentCoverId ;
+    private String    dependentCoverId ;
 
     @Column(name="IS_SELECTED_YN", length=20)
     private String     isSelectedYn ;

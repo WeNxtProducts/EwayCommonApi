@@ -372,7 +372,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					saveCover.setStatus(coverData.getStatus() );
 					saveCover.setVehicleId(Integer.valueOf(req.getVehicleId()));	
 					saveCover.setDependentCoverYn(coverData.getDependentCoveryn());
-					saveCover.setDependentCoverId(StringUtils.isBlank(coverData.getDependentCoverId())?null :Integer.valueOf(coverData.getDependentCoverId()));
+					saveCover.setDependentCoverId(StringUtils.isBlank(coverData.getDependentCoverId())?null :coverData.getDependentCoverId());
 					saveCover.setIsSelected(coverData.getIsselected());
 					saveCover.setPremiumAfterDiscountFc(coverData.getPremiumAfterDiscount()==null ? null : new BigDecimal(df.format( coverData.getPremiumAfterDiscount())));
 					saveCover.setPremiumBeforeDiscountFc(coverData.getPremiumBeforeDiscount()==null ? null : new BigDecimal(df.format(coverData.getPremiumBeforeDiscount())));
@@ -528,7 +528,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						saveSubCover.setStatus(saveSubCover.getStatus());
 						saveSubCover.setVehicleId(Integer.valueOf(req.getVehicleId()));		
 						saveSubCover.setDependentCoverYn(subCoverData.getDependentCoveryn());
-						saveSubCover.setDependentCoverId(StringUtils.isBlank(subCoverData.getDependentCoverId())?null :Integer.valueOf(subCoverData.getDependentCoverId()));	
+						saveSubCover.setDependentCoverId(StringUtils.isBlank(subCoverData.getDependentCoverId())?null :subCoverData.getDependentCoverId());	
 						saveSubCover.setIsSelected(subCoverData.getIsselected());
 						saveSubCover.setPremiumAfterDiscountFc(subCoverData.getPremiumAfterDiscount()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumAfterDiscount())));
 						saveSubCover.setPremiumBeforeDiscountFc(subCoverData.getPremiumBeforeDiscount()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumBeforeDiscount())));
@@ -971,7 +971,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveTax.setMinimumPremium(tax.getMinimumTaxAmountLc());
 				saveTax.setMinimumPremiumFc(tax.getMinimumTaxAmount());
 				saveTax.setTaxAmountLc(tax.getTaxAmountLc()==null?null :new BigDecimal(df.format(tax.getTaxAmountLc())));
-				
+				saveTax.setDependentCoverId("0");
 				saveTax.setNoOfDays(new BigDecimal(diff));
 				//	repository.saveAndFlush(saveTax);
 				saveTaxList.add(saveTax);
@@ -1018,7 +1018,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveLod.setCoverageType("E");
 				saveLod.setDiscLoadId(lod.getEndorsementId()==null?null:Integer.valueOf(lod.getEndorsementId()));
 				saveLod.setDependentCoverYn(coverReq.getDependentCoveryn());
-				saveLod.setDependentCoverId(StringUtils.isBlank(coverReq.getDependentCoverId())?null:Integer.parseInt(coverReq.getDependentCoverId()));
+				saveLod.setDependentCoverId(StringUtils.isBlank(coverReq.getDependentCoverId())?null:coverReq.getDependentCoverId());
 				
 				// Factor
 				saveLod.setFactorTypeId(StringUtils.isBlank(lod.getFactorTypeId())?null: new BigDecimal(lod.getFactorTypeId()));				

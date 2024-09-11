@@ -159,7 +159,7 @@ private static final long serialVersionUID = 1L;
     private String     dependentCoverYn ;
 
     @Column(name="DEPENDENT_COVER_ID")
-    private Integer    dependentCoverId ;
+    private String    dependentCoverId ;
 
     @Column(name="PREMIUM_BEFORE_DISCOUNT_FC")
     private BigDecimal     premiumBeforeDiscountFc ;
