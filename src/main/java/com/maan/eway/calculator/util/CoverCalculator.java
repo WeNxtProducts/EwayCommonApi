@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -65,7 +66,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 if(calculatedcover!=null) {
 						 List<String> dependentIds = Arrays.asList(t.getDependentCoverId().split(","));
 						 
-						 si = calculatedcover.stream().filter(c->{					        
+						 si = calculatedcover.stream().sorted(Comparator.comparing(Cover::getPremiumExcluedTax).reversed()).filter(c->{					        
 					        return dependentIds.contains(c.getCoverId());
 						}).map(x-> x.getPremiumExcluedTax()).reduce((a, b) -> a.subtract(b)).orElse(BigDecimal.ZERO);
 								//findAny().orElse(null);
