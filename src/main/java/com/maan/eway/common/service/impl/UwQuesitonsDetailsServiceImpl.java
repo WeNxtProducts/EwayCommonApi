@@ -380,7 +380,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 		
 		try {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		List<UwQuestionsDetails> datas = uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(req.getCompanyId(),Integer.valueOf(req.getProductId()),req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()));
+		List<UwQuestionsDetails> datas = uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(req.getCompanyId(),Integer.valueOf(req.getProductId()),req.getRequestReferenceNo());
 		for(UwQuestionsDetails data : datas) {
 			UwQuestionsDetailsRes res = new UwQuestionsDetailsRes();
 			res=dozerMapper.map(data,UwQuestionsDetailsRes.class);

@@ -23,6 +23,9 @@ public interface UwQuestionsDetailsRepository  extends JpaRepository<UwQuestions
 			String companyId, Integer valueOf, String requestReferenceNo, String branchCode, String questionCategory,
 			Integer valueOf2, String idType, String idNumber);
 
+	List<UwQuestionsDetails> findByCompanyIdAndProductIdAndRequestReferenceNo(String companyId, Integer valueOf,
+			String requestReferenceNo);
+
 
 
 }

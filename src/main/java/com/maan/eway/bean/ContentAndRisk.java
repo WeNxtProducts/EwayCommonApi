@@ -183,4 +183,9 @@ public class ContentAndRisk implements Serializable {
    //LC Column
 	@Column(name = "SUM_INSURED_LC")
 	private BigDecimal sumInsuredLc;
+
+    @Column(name = "COMPANY_ID", length = 20)
+    private String companyId;
+	@Column(name = "SNO")
+	private Long sno;
 }
