@@ -244,19 +244,40 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					//errorList.add(new Error("09", " Identity Type", "Please Select Identity Type"));
 				}
 				
-				if (StringUtils.isBlank(req.getIdNumber())) {
-					errorList.add("1013");
-					//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
-				} else if (req.getIdNumber().length() > 100) {
-					errorList.add("1014");
-					//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
-				}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
-					errorList.add("1015");
-					//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
-				} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
-					
-					errorList.add("1015");
+			
+				if("100040".equalsIgnoreCase(req.getCompanyId()))	{
+					if (StringUtils.isBlank(req.getIdNumber())) {
+						errorList.add("1013");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
+					} else if (req.getIdNumber().length() > 15) {
+						errorList.add("1014");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
+					}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
+						errorList.add("1015");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
+					} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
+						
+						errorList.add("1015");
+					}
 				}
+				else
+				{
+					if (StringUtils.isBlank(req.getIdNumber())) {
+						errorList.add("1013");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
+					} else if (req.getIdNumber().length() > 100) {
+						errorList.add("1014");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
+					}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
+						errorList.add("1015");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
+					} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {	
+						errorList.add("1015");
+					}
+				}
+				
+						
+		
 //				else if(!containsOnlyNumbers(req.getIdNumber()))
 //				{
 //					errorList.add("1015");
@@ -315,16 +336,35 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //				errorList.add(new Error("17", "VrnGst", "Please Enter VrnGst within 20 Characters"));
 //			}
 				
-				if (StringUtils.isNotBlank(req.getPinCode())) {
-//					 if (! req.getPinCode().matches("[0-9a-bA-Z]+") ) {
-//						 errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
-//						 
-//					 } else
-					if (req.getPinCode().length() > 20) {
-						errorList.add("1016");
-						//errorList.add(new Error("18", "PinCode", "Please Enter Po Box within 20 Characters"));
-					}
-				} 
+				if("100040".equalsIgnoreCase(req.getCompanyId() ))
+				{
+					if (StringUtils.isNotBlank(req.getPinCode())) {
+//						 if (! req.getPinCode().matches("[0-9a-bA-Z]+") ) {
+//							 errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
+//							 
+//						 } else
+						if (req.getPinCode().length() > 10) {
+							errorList.add("1016");
+							//errorList.add(new Error("18", "PinCode", "Please Enter Po Box within 20 Characters"));
+						}
+					} 
+				}
+				else
+				{
+					if (StringUtils.isNotBlank(req.getPinCode())) {
+//						 if (! req.getPinCode().matches("[0-9a-bA-Z]+") ) {
+//							 errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
+//							 
+//						 } else
+						if (req.getPinCode().length() > 20) {
+							errorList.add("1016");
+							//errorList.add(new Error("18", "PinCode", "Please Enter Po Box within 20 Characters"));
+						}
+					} 
+				}
+				
+				
+
 				/*if (StringUtils.isBlank(req.getStreet())) {
 					errorList.add(new Error("19", "Street", "Please Enter Street"));
 				}
@@ -407,7 +447,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
 					} else if(StringUtils.isNotBlank(req.getEmail1())) {
 						boolean b = isValidMail(req.getEmail1());
-						if (b == false && !req.getEmail1().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")) {
+						if (b == false && (!req.getEmail1().matches("^[a-zA-ZÀ-ÿ\\s'-]+$") || !req.getEmail1().matches("^[.@]+$"))) {
 							errorList.add("1033");
 						}
 					}
