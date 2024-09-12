@@ -28,6 +28,8 @@ public class DropDownRes {
 	private String bodyType;
 	@JsonProperty("RiskId")
 	private String riskId;
+	@JsonProperty("LocationId")
+	private String locationId;
 	
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
