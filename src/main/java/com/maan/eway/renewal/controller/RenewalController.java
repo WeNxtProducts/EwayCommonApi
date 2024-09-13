@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.renewal.req.PullrenewalReq;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
+import com.maan.eway.renewal.req.RenewalPendingRequest;
 import com.maan.eway.renewal.service.RenewalService;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 
@@ -33,13 +34,85 @@ public class RenewalController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+
 	@PostMapping("/renewalCopyQuote")
 	public ResponseEntity<CopyQuoteSuccessRes> renewalCopyQuote(@RequestBody RenewalCopyQuoteReq request) {
 		CopyQuoteSuccessRes data = renewalservice.renewalCopyQuote(request);
 	 	if (data != null) {
 			return new ResponseEntity<CopyQuoteSuccessRes>(data, HttpStatus.CREATED);
+	 	} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/pending")
+	public ResponseEntity<CommonRes> getRenewalPending(@RequestBody RenewalPendingRequest request) {
+	 	CommonRes data = renewalservice.getRenewalPending(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+
+	@PostMapping("/expired")
+	public ResponseEntity<CommonRes> getRenewalExpired(@RequestBody RenewalPendingRequest request) {
+	 	CommonRes data = renewalservice.getRenewalExpired(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/completed")
+	public ResponseEntity<CommonRes> getRenewalCompleted(@RequestBody RenewalPendingRequest request) {
+	 	CommonRes data = renewalservice.getRenewalCompleted(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/transaction")
+	public ResponseEntity<CommonRes> getRenewalTransaction(@RequestBody RenewalPendingRequest request) {
+	 	CommonRes data = renewalservice.getRenewalTransaction(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/transaction/success")
+	public ResponseEntity<CommonRes> getRenewalTransactionSuccess(@RequestBody RenewalPendingRequest request) {
+	 	CommonRes data = renewalservice.getRenewalTransactionSuccess(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/transaction/converted")
+	public ResponseEntity<CommonRes> getRenewalTransactionCoverted(@RequestBody RenewalPendingRequest request) {
+	 	CommonRes data = renewalservice.getRenewalTransactionConverted(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/transaction/pending")
+	public ResponseEntity<CommonRes> getRenewalTransactionPending(@RequestBody RenewalPendingRequest request) {
+	 	CommonRes data = renewalservice.getRenewalTransactionPending(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

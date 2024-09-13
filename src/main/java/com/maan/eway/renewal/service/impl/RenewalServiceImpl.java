@@ -1,11 +1,11 @@
 package com.maan.eway.renewal.service.impl;
 
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
@@ -35,7 +36,6 @@ import com.maan.eway.bean.RenewalNotificationMaster;
 import com.maan.eway.bean.RenewalTransactionDetails;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.service.SequenceGenerateService;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
@@ -43,7 +43,12 @@ import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.renewal.req.PullrenewalReq;
 import com.maan.eway.renewal.req.RenewDataRequest;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
+import com.maan.eway.renewal.req.RenewalPendingRequest;
+import com.maan.eway.renewal.res.RenewQuotePolicyResponse;
+import com.maan.eway.renewal.res.RenewalDetailRes;
+import com.maan.eway.renewal.res.RenewalPendingResponse;
 import com.maan.eway.renewal.res.RenewalPolicyDetailsRes;
+import com.maan.eway.renewal.res.RenewalTransactionDetailsRes;
 import com.maan.eway.renewal.service.RenewalService;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -60,7 +65,6 @@ import com.maan.eway.res.CopyQuoteSuccessRes;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -74,9 +78,12 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class RenewalServiceImpl implements RenewalService{
-
+	
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private RenewQuotePolicyRepository renewQuotePolicyRepo;
 	
 	@Autowired
 	private RenewQuotePolicyRepository renewQuotePolicyRepository;
@@ -189,6 +196,7 @@ public class RenewalServiceImpl implements RenewalService{
 			}
 		}
 	}
+
 
 	private void InsertVehicleDetails(String quoteNo) {
 		List<MotorDataDetails>mddList=motorDataDetailsRepository.findByQuoteNoOrderByVehicleIdAsc(quoteNo);
@@ -891,4 +899,438 @@ public class RenewalServiceImpl implements RenewalService{
 
 	
 
+	@Override
+	public CommonRes getRenewalPending(RenewalPendingRequest req) {
+		CommonRes data = new CommonRes();
+		try {
+			RenewalPendingResponse res = new RenewalPendingResponse();
+			List<RenewalDetailRes> renewal = getAllPendingRenewalDetails(req);
+			res.setRenewalDetailRes(renewal);
+			if(renewal != null ) {
+				int count = renewal.size();
+				res.setTotalCount(count);
+			}
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	private List<RenewalDetailRes> getAllPendingRenewalDetails(RenewalPendingRequest req) {
+		List<RenewalDetailRes> res = new ArrayList<RenewalDetailRes>();
+		
+		try {
+
+	        Date today = new Date();
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.setTime(today);
+	        calendar.add(Calendar.DAY_OF_MONTH, 30);
+	        Date dateAfter30Days = calendar.getTime();
+			
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RenewalDetailRes> query = cb.createQuery(RenewalDetailRes.class);
+
+			// Find All
+			Root<RenewQuotePolicy> r = query.from(RenewQuotePolicy.class);
+						
+			// Select
+			query.multiselect(
+					r.get("oldpolicyNo").alias("oldpolicyNo"),
+					r.get("oldquoteNo").alias("oldquoteNo"),
+					r.get("customerName").alias("customerName"),
+					r.get("oldstartDate").alias("inceptionDate"),
+					r.get("oldendDate").alias("expiryDate"),
+					r.get("newpolicyNumber").alias("newpolicyNumber"),
+					r.get("currentStatus").alias("currentStatus")
+
+					);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(r.get("newendDate")));
+					
+			// Where
+			Predicate n1 = cb.equal(r.get("companyId"), req.getInsuranceId());
+			Predicate n2 = cb.equal(r.get("productCode"), req.getProductId());
+			Predicate n3 = cb.between(r.get("newendDate"), today, dateAfter30Days);
+			Predicate n4 = cb.equal(r.get("loginId"), req.getLoginId());
+			Predicate n5 = cb.equal(r.get("branchCode"), req.getBranchCode());
+
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+
+
+			// Get Result
+			TypedQuery<RenewalDetailRes> result = em.createQuery(query);
+			res = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return res;
+	}
+
+	@Override
+	public CommonRes getRenewalExpired(RenewalPendingRequest req) {
+		CommonRes data = new CommonRes();
+		try {
+			RenewalPendingResponse res = new RenewalPendingResponse();
+			List<RenewalDetailRes> renewal = getAllExpiredRenewalDetails(req);
+			res.setRenewalDetailRes(renewal);
+			if(renewal != null ) {
+				int count = renewal.size();
+				res.setTotalCount(count);
+			}
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+	
+	private List<RenewalDetailRes> getAllExpiredRenewalDetails(RenewalPendingRequest req) {
+      List<RenewalDetailRes> res = new ArrayList<RenewalDetailRes>();
+		
+		try {
+
+	        Date today = new Date();
+	        
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RenewalDetailRes> query = cb.createQuery(RenewalDetailRes.class);
+
+			// Find All
+			Root<RenewQuotePolicy> r = query.from(RenewQuotePolicy.class);
+						
+			// Select
+			query.multiselect(
+					r.get("oldpolicyNo").alias("oldpolicyNo"),
+					r.get("oldquoteNo").alias("oldquoteNo"),
+					r.get("customerName").alias("customerName"),
+					r.get("oldstartDate").alias("inceptionDate"),
+					r.get("oldendDate").alias("expiryDate"),
+					r.get("newpolicyNumber").alias("newpolicyNumber"),
+					r.get("currentStatus").alias("currentStatus")
+
+					);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(r.get("newendDate")));
+					
+			// Where
+			Predicate n1 = cb.equal(r.get("companyId"), req.getInsuranceId());
+			Predicate n2 = cb.equal(r.get("productCode"), req.getProductId());
+			Predicate n3 = cb.lessThan(r.get("newendDate"), today);
+			Predicate n4 = cb.equal(r.get("loginId"), req.getLoginId());
+			Predicate n5 = cb.equal(r.get("branchCode"), req.getBranchCode());
+
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+
+
+			// Get Result
+			TypedQuery<RenewalDetailRes> result = em.createQuery(query);
+			res = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return res;
+	}
+
+	@Override
+	public CommonRes getRenewalCompleted(RenewalPendingRequest req) {
+		CommonRes data = new CommonRes();
+		try {
+			RenewalPendingResponse res = new RenewalPendingResponse();
+			List<RenewalDetailRes> renewal = getAllCompletedRenewalDetails(req);
+			res.setRenewalDetailRes(renewal);
+			if(renewal != null ) {
+				int count = renewal.size();
+				res.setTotalCount(count);
+			}
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	private List<RenewalDetailRes> getAllCompletedRenewalDetails(RenewalPendingRequest req) {
+		 List<RenewalDetailRes> res = new ArrayList<RenewalDetailRes>();
+			
+			try {
+		        
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<RenewalDetailRes> query = cb.createQuery(RenewalDetailRes.class);
+
+				// Find All
+				Root<RenewQuotePolicy> r = query.from(RenewQuotePolicy.class);
+							
+				// Select
+				query.multiselect(
+						r.get("oldpolicyNo").alias("oldpolicyNo"),
+						r.get("oldquoteNo").alias("oldquoteNo"),
+						r.get("customerName").alias("customerName"),
+						r.get("oldstartDate").alias("inceptionDate"),
+						r.get("oldendDate").alias("expiryDate"),
+						r.get("newpolicyNumber").alias("newpolicyNumber"),
+						r.get("currentStatus").alias("currentStatus")
+
+						);
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(r.get("newendDate")));
+						
+				// Where
+				Predicate n1 = cb.equal(r.get("companyId"), req.getInsuranceId());
+				Predicate n2 = cb.equal(r.get("productCode"), req.getProductId());
+				Predicate n3 = cb.equal(r.get("currentStatusCode"), "RS");
+				Predicate n4 = cb.equal(r.get("loginId"), req.getLoginId());
+				Predicate n5 = cb.equal(r.get("branchCode"), req.getBranchCode());
+
+				query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+
+
+				// Get Result
+				TypedQuery<RenewalDetailRes> result = em.createQuery(query);
+				res = result.getResultList();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return res;
+	}
+
+	@Override
+	public CommonRes getRenewalTransaction(RenewalPendingRequest req) {
+		CommonRes data = new CommonRes();
+		try {
+			List<RenewalTransactionDetailsRes> res = new ArrayList<RenewalTransactionDetailsRes>();
+			res = getAllRenewalTransactionDetails(req);
+
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	private List<RenewalTransactionDetailsRes> getAllRenewalTransactionDetails(RenewalPendingRequest req) {
+		List<RenewalTransactionDetailsRes> res = new ArrayList<RenewalTransactionDetailsRes>();
+		
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RenewalTransactionDetailsRes> cq = cb.createQuery(RenewalTransactionDetailsRes.class);
+
+			// Root for RenewalTransactionDetails table
+			Root<RenewalTransactionDetails> renewalTransactionDetailsRoot = cq.from(RenewalTransactionDetails.class);
+
+			// Subquery for success count
+			Subquery<String> successCountSubquery = cq.subquery(String.class);
+			Root<RenewQuotePolicy> successSubqueryRoot = successCountSubquery.from(RenewQuotePolicy.class);
+			successCountSubquery.select(cb.count(successSubqueryRoot).as(String.class))
+			    .where(
+			        cb.equal(successSubqueryRoot.get("tranId"), renewalTransactionDetailsRoot.get("tranId")),
+			        cb.equal(successSubqueryRoot.get("currentStatusCode"), "RS")
+			    );
+
+			// Subquery for Converted count
+			Subquery<String> convertedCountSubquery = cq.subquery(String.class);
+			Root<RenewQuotePolicy> convertedSubqueryRoot = convertedCountSubquery.from(RenewQuotePolicy.class);
+			convertedCountSubquery.select(cb.count(convertedSubqueryRoot).as(String.class))
+			    .where(
+			        cb.equal(convertedSubqueryRoot.get("tranId"), renewalTransactionDetailsRoot.get("tranId")),
+			        cb.equal(convertedSubqueryRoot.get("currentStatusCode"), "CS")
+			    );
+
+			// Subquery for pending count
+			Subquery<String> pendingCountSubquery = cq.subquery(String.class);
+			Root<RenewQuotePolicy> pendingSubqueryRoot = pendingCountSubquery.from(RenewQuotePolicy.class);
+			pendingCountSubquery.select(cb.count(pendingSubqueryRoot).as(String.class))
+			    .where(
+			        cb.equal(pendingSubqueryRoot.get("tranId"), renewalTransactionDetailsRoot.get("tranId")),
+			        cb.notEqual(pendingSubqueryRoot.get("currentStatusCode"), "RS"),
+			        cb.notEqual(pendingSubqueryRoot.get("currentStatusCode"), "CS")
+			    );
+			
+			// Subquery for total count
+	        Subquery<String> totalCountSubquery = cq.subquery(String.class);
+	        Root<RenewQuotePolicy> totalCountSubqueryRoot = totalCountSubquery.from(RenewQuotePolicy.class);
+	        totalCountSubquery.select(cb.count(totalCountSubqueryRoot).as(String.class))
+	            .where(
+	                cb.equal(totalCountSubqueryRoot.get("tranId"), renewalTransactionDetailsRoot.get("tranId"))
+	            );
+	        
+			// Define predicates for the query
+			//Predicate tranIdPredicate = cb.equal(renewalTransactionDetailsRoot.get("tranId"), req.getTranId());
+
+			// Select fields and subqueries in multiselect
+			cq.multiselect(
+			    renewalTransactionDetailsRoot.get("tranId").alias("tranId"),
+			    renewalTransactionDetailsRoot.get("requestTime").alias("requestTime"),
+			    renewalTransactionDetailsRoot.get("responseTime").alias("responseTime"),
+			    totalCountSubquery.getSelection().alias("totalCount"),
+			    successCountSubquery.getSelection().alias("successCount"),
+			    convertedCountSubquery.getSelection().alias("convertedCount"),
+			    pendingCountSubquery.getSelection().alias("pendingCount")
+			);
+
+			// Apply the predicates
+			//cq.where(tranIdPredicate);
+			
+			// Apply the order by clause
+	        cq.orderBy(cb.asc(renewalTransactionDetailsRoot.get("responseTime")));
+	        
+			// Execute the query
+			res =  em.createQuery(cq).getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+        return res;
+	}
+
+	@Override
+	public CommonRes getRenewalTransactionSuccess(RenewalPendingRequest req) {
+	    CommonRes data = new CommonRes();
+	    try {
+	        // Fetch the list of RenewQuotePolicy where status is "RS" (Success)
+	        List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCurrentStatusCode(req.getTranId(), "RS");
+
+	        // Map the entities to response objects
+	        List<RenewQuotePolicyResponse> res = mapRenewQuotePolicyResponse(list);
+
+	        // Set the response data
+	        data.setCommonResponse(res);
+	        data.setIsError(false);
+	        data.setErrorMessage(Collections.emptyList());
+	        data.setMessage("Success");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        data.setIsError(true);
+	        data.setMessage("Failed");
+	    }
+	    return data;
+	}
+
+	@Override
+	public CommonRes getRenewalTransactionConverted(RenewalPendingRequest req) {
+		CommonRes data = new CommonRes();
+		try {
+			List<RenewQuotePolicyResponse> res = new ArrayList<RenewQuotePolicyResponse>();
+			
+			List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCurrentStatusCode(req.getTranId(),"CS");
+			
+			res = mapRenewQuotePolicyResponse(list);
+
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	private List<RenewQuotePolicyResponse> mapRenewQuotePolicyResponse(List<RenewQuotePolicy> list) {
+	    List<RenewQuotePolicyResponse> responseList = new ArrayList<>();
+	    try {
+			for (RenewQuotePolicy policy : list) {
+			    RenewQuotePolicyResponse response = new RenewQuotePolicyResponse();
+			    
+			 // Mapping fields from RenewQuotePolicy to RenewQuotePolicyResponse
+		        response.setTranId(policy.getTranId());
+		        response.setOldRequestRefNo(policy.getOldrequestreferenceNo());
+		        response.setServiceType(policy.getServiceType());
+		        response.setRequestTime(policy.getRequestTime());
+		        response.setResponseTime(policy.getResponseTime());
+		        response.setStatus(policy.getStatus());
+		        response.setOldPolicyNo(policy.getOldpolicyNo());
+		        response.setOldQuoteNo(policy.getOldquoteNo());
+		        response.setOldStartDate(policy.getOldstartDate());
+		        response.setOldEndDate(policy.getOldendDate());
+		        response.setTitle(policy.getTitle());
+		        response.setCustomerName(policy.getCustomerName());
+		        response.setGender(policy.getGender());
+		        response.setOccupation(policy.getOccupation());
+		        response.setMobileCode(policy.getMobileCode());
+		        response.setMobileNo(policy.getMobileNo());
+		        response.setEmailId(policy.getEmailId());
+		        response.setIdentityType(policy.getIdentityType());
+		        response.setIdentityNumber(policy.getIdentityNumber());
+		        response.setPreferredNotification(policy.getPreferedNotification());
+		        response.setTaxExcemption(policy.getTaxExcemption());
+		        response.setStreet(policy.getStreet());
+		        response.setCountry(policy.getCountry());
+		        response.setRegion(policy.getRegion());
+		        response.setDistrict(policy.getDistrict());
+		        response.setPobox(policy.getPobox());
+		        response.setNoOfVehicle(policy.getNoofVehicle());
+		        response.setNewStartDate(policy.getNewstartDate());
+		        response.setNewEndDate(policy.getNewendDate());
+		        response.setNewPremium(policy.getNewPremium() != null ? policy.getNewPremium().toString() : null);
+		        response.setNewPolicyNumber(policy.getNewpolicyNumber());
+		        response.setCurrentStatus(policy.getCurrentStatus());
+		        response.setCurrentStageCode(policy.getCurrentStageCode());
+		        response.setCurrentStatusCode(policy.getCurrentStatusCode());
+		        response.setLoginId(policy.getLoginId());
+		        response.setApplicationId(policy.getApplicationId());
+		        response.setCompanyId(policy.getCompanyId());
+		        response.setProductCode(policy.getProductCode());
+		        response.setSectionCode(policy.getSectionCode());
+		        response.setBranchCode(policy.getBranchCode());
+		        response.setBranchName(policy.getBranchName());
+		        response.setViewedDate(policy.getViewDate());
+		        response.setRemarks(policy.getRemarks());
+
+			    responseList.add(response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	    return responseList;
+	}
+
+	@Override
+	public CommonRes getRenewalTransactionPending(RenewalPendingRequest req) {
+	    CommonRes data = new CommonRes();
+	    try {
+	        // Fetch the list of RenewQuotePolicy where status is neither "RS" nor "CS" (Pending)
+	        List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCurrentStatusCodeNotIn(req.getTranId(), Arrays.asList("RS", "CS"));
+
+	        // Map the entities to response objects
+	        List<RenewQuotePolicyResponse> res = mapRenewQuotePolicyResponse(list);
+
+	        // Set the response data
+	        data.setCommonResponse(res);
+	        data.setIsError(false);
+	        data.setErrorMessage(Collections.emptyList());
+	        data.setMessage("Success");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        data.setIsError(true);
+	        data.setMessage("Failed");
+	    }
+	    return data;
+	}
+	
 }

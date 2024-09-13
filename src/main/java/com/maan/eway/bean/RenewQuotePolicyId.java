@@ -4,13 +4,15 @@
  */
 package com.maan.eway.bean;
 
-import lombok.*;
-import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
-
-import java.util.Date;
+import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Composite primary key for entity "AcExecutiveMaster" ( stored in table "ac_executive_master" )
