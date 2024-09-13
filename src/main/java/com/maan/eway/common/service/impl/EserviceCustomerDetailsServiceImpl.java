@@ -197,26 +197,68 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			
 			
 			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
-				if (StringUtils.isBlank(req.getClientName()) ) {
-					//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
-					errorList.add("1001");
-				} else if (req.getClientName().length() > 250) {
-				   errorList.add("1002");
-					//errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
-				} 
-				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+") && !req.getClientName().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")){
-					errorList.add("1003");		
-					//errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
+				
+				if("100040".equalsIgnoreCase(req.getCompanyId())) {
+					if (StringUtils.isBlank(req.getClientName()) ) {
+						//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+						errorList.add("1001");
+					} else if (req.getClientName().length() > 100) {
+					   errorList.add("1002");
+						//errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
+					} 
+					else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+") && !req.getClientName().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")){
+						errorList.add("1003");		
+						//errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
+					}
+				}
+				else {
+					if (StringUtils.isBlank(req.getClientName()) ) {
+						//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+						errorList.add("1001");
+					} else if (req.getClientName().length() > 250) {
+					   errorList.add("1002");
+						//errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
+					} 
+					else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+") && !req.getClientName().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")){
+						errorList.add("1003");		
+						//errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
+					}
 				}
 				
 				
-				if (StringUtils.isBlank(req.getAddress1())) {
-					errorList.add("1004");
-					//errorList.add(new Error("02", "Address1", "Please Enter Address "));
-				} else if (req.getAddress1().length() > 100) {
-					errorList.add("1009");
-					//errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
+				
+		
+				
+				
+				if("100040".equalsIgnoreCase(req.getCompanyId())) 
+				{
+					if (StringUtils.isBlank(req.getAddress1())) {
+						errorList.add("1004");
+						//errorList.add(new Error("02", "Address1", "Please Enter Address "));
+					} else if (req.getAddress1().length() > 50) {
+						errorList.add("1009");
+						//errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
+					}
 				}
+				else {
+					if (StringUtils.isBlank(req.getAddress1())) {
+						errorList.add("1004");
+						//errorList.add(new Error("02", "Address1", "Please Enter Address "));
+					} else if (req.getAddress1().length() > 100) {
+						errorList.add("1009");
+						//errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
+					}
+				}
+				
+				if("100040".equalsIgnoreCase(req.getCompanyId())) 
+				{
+			
+					if (req.getAddress2().length() > 50) {
+						errorList.add("1000");
+						//errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
+					}
+				}
+				
 				
 //				if (StringUtils.isBlank(req.getStreet())) {
 //					errorList.add(new Error("03", "Street", "Please Enter Street"));
@@ -441,17 +483,39 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //				if (StringUtils.isBlank(req.getEmail1())) {
 //					errorList.add(new Error("27", "Email1", "Please Enter Email"));
 //				} else
-				if ( StringUtils.isNotBlank(req.getEmail1()) ) {
-					if( req.getEmail1().length() > 100 ) {
-						errorList.add("1032");
-						//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
-					} else if(StringUtils.isNotBlank(req.getEmail1())) {
-						boolean b = isValidMail(req.getEmail1());
-						if (b == false && (!req.getEmail1().matches("^[a-zA-ZÀ-ÿ\\s'-]+$") || !req.getEmail1().matches("^[.@]+$"))) {
-							errorList.add("1033");
+				
+				if("100040".equalsIgnoreCase(req.getCompanyId()))
+				{
+					if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+						if( req.getEmail1().length() > 50 ) {
+							errorList.add("1032");
+							//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
+						} else if(StringUtils.isNotBlank(req.getEmail1())) {
+							boolean b = isValidMail(req.getEmail1());
+							if (b == false && (!req.getEmail1().matches("^[a-zA-ZÀ-ÿ\\s'-]+$") || !req.getEmail1().matches("^[.@]+$"))) {
+								errorList.add("1033");
+							}
 						}
-					}
-				} 
+					} 
+				}
+				else {
+					if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+						if( req.getEmail1().length() > 100 ) {
+							errorList.add("1032");
+							//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
+						} else if(StringUtils.isNotBlank(req.getEmail1())) {
+							boolean b = isValidMail(req.getEmail1());
+							if (b == false && (!req.getEmail1().matches("^[a-zA-ZÀ-ÿ\\s'-]+$") || !req.getEmail1().matches("^[.@]+$"))) {
+								errorList.add("1033");
+							}
+						}
+					} 
+				}
+				
+				
+				
+				
+	
 
 				if (StringUtils.isNotBlank(req.getEmail2()) && req.getEmail2().length() > 20) {
 					errorList.add("1034");
