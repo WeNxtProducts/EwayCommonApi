@@ -61,6 +61,8 @@ public interface ListItemValueRepository  extends JpaRepository<ListItemValue,Li
 	@Query(value = "SELECT ITEM_CODE,ITEM_VALUE FROM eway_list_item_value WHERE ITEM_TYPE='DOMESTIC_KEY_FACTS' AND ITEM_CODE=?1",nativeQuery = true)
 	List<Map<String, Object>> getDomesticKeyFactor(String itemCode);
 
+	List<ListItemValue> findByItemTypeAndStatusOrderByItemCodeDesc(String string, String string2);
+
 
 
 

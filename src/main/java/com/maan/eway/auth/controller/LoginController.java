@@ -53,6 +53,7 @@ public class LoginController {
 	@ApiOperation(value="This method is to Create Token For Access Other Apis")
 	public ResponseEntity<CommonLoginRes> getloginToken(@RequestBody LoginRequest mslogin, HttpServletRequest http)  {
 		CommonLoginRes res = new CommonLoginRes();
+		
 		reqPrinter.reqPrint(mslogin);
 		res =loginValidationComponent.loginInputValidation(mslogin); 
 		if(res.getErrorMessage()!=null &&  res.getErrorMessage().size()>0 ) {

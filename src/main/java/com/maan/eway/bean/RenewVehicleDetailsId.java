@@ -25,11 +25,11 @@ public class RenewVehicleDetailsId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Column(name="RISK_ID", nullable=false)   //--- ENTITY PRIMARY KEY 
-   	private Integer    riskId ;
+    @Column(name="VEHICLE_ID", nullable=false)   //--- ENTITY PRIMARY KEY 
+   	private String    vehicleId ;
    	
-   	@Column(name="OLD_REQUEST_REF_NO", nullable=false)
-   	private String     oldrequestreferenceNo ;
+   	@Column(name="OLD_REQUEST_REFERENCE_NO", nullable=false)
+   	private String     OldrequestReferenceNo ;
    
  
 }

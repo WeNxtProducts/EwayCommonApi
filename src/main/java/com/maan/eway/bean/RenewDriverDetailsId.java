@@ -25,19 +25,22 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 @Builder
-public class RenewQuotePolicyId implements Serializable {
+public class RenewDriverDetailsId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    @Column(name="TRAN_ID", nullable=false)   //--- ENTITY PRIMARY KEY 
-	private String    tranId ;
+    @Column(name="RISK_ID", nullable=false)   //--- ENTITY PRIMARY KEY 
+	private Integer    riskId ;
 	
-	@Column(name="OLD_REQUEST_REF_NO", nullable=false)
+	@Column(name="OLD_REQUEST_REFERENCE_NO", nullable=false)
 	private String     oldrequestreferenceNo ;
 	 
-	@Column(name="OLD_POLICY_NO", nullable=false)
-	private String     oldpolicyNo ;
+	@Column(name="DRIVER_ID", nullable=false)
+	private Integer     driverId ;
+	
+	@Column(name="ID_NUMBER", nullable=false)
+	private String     idNumber ;
     
  
 }

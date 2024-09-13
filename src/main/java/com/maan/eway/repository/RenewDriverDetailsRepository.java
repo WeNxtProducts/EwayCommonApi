@@ -17,8 +17,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.maan.eway.bean.RenewVehicleDetails;
-import com.maan.eway.bean.RenewVehicleDetailsId;
+import com.maan.eway.bean.RenewDriverDetails;
+import com.maan.eway.bean.RenewDriverDetailsId;
 /**
  * <h2>BankMasterRepository</h2>
  *
@@ -29,10 +29,14 @@ import com.maan.eway.bean.RenewVehicleDetailsId;
  
  
  
-public interface RenewVehicleDetailsRepository  extends JpaRepository<RenewVehicleDetails,RenewVehicleDetailsId > , JpaSpecificationExecutor<RenewVehicleDetails> {
+public interface RenewDriverDetailsRepository  extends JpaRepository<RenewDriverDetails,RenewDriverDetailsId > , JpaSpecificationExecutor<RenewDriverDetails> {
 
 
-	List<RenewVehicleDetails> findByOldquoteNoOrderByVehicleIdAsc(String quoteNo);
+	List<RenewDriverDetails> findByOldrequestreferenceNoAndStatusNot(String requestNo, String string);
+
+
+
 
 	
+
 }

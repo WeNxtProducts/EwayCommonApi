@@ -62,7 +62,7 @@ private static final long serialVersionUID = 1L;
  
 	@Id
 	@Column(name="TRAN_ID", nullable=false)   //--- ENTITY PRIMARY KEY 
-	private Integer    tranId ;
+	private String    tranId ;
 	
 	@Id
 	@Column(name="OLD_REQUEST_REF_NO", nullable=false)
@@ -87,11 +87,11 @@ private static final long serialVersionUID = 1L;
     private String     status ;
 
     @Column(name="OLD_QUOTE_NO", length=20)
-    private Date     oldquoteNo ;
+    private String     oldquoteNo ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="OLD_START_DATE")
-    private Double     oldstartDate ;
+    private Date     oldstartDate ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="OLD_END_DATE", nullable=false)
@@ -198,8 +198,11 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="REMARKS")
     private String    remarks ;
+    
+    @Column(name="LAST_NOTIFY_YN")
+    private String    lastNotifyYN ;
 
-
+    
 }
 
 

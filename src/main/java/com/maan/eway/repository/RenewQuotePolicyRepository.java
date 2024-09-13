@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -28,6 +30,12 @@ import com.maan.eway.bean.RenewQuotePolicyId;
  
  
 public interface RenewQuotePolicyRepository  extends JpaRepository<RenewQuotePolicy,RenewQuotePolicyId > , JpaSpecificationExecutor<RenewQuotePolicy> {
+
+	List<RenewQuotePolicy> findByCurrentStatusCodeAndTranId(String string, String tranId);
+
+	List<RenewQuotePolicy> findByCurrentStatusCodeInAndTranIdIn(List<String> status, List<String> tranId);
+
+	List<RenewQuotePolicy> findByOldpolicyNo(String policyNo);
 
 	
 

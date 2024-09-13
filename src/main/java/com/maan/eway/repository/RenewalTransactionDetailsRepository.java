@@ -12,27 +12,27 @@
 
 package com.maan.eway.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.maan.eway.bean.RenewVehicleDetails;
-import com.maan.eway.bean.RenewVehicleDetailsId;
+import com.maan.eway.bean.RenewQuotePolicy;
+import com.maan.eway.bean.RenewQuotePolicyId;
+import com.maan.eway.bean.RenewalTransactionDetails;
 /**
  * <h2>BankMasterRepository</h2>
  *
  * createdAt : 2022-08-24 - Time 12:58:26
  * <p>
- * Description: "BankMaster" Repository
+ * Description: "RenewalTransactionDetailsRepository" Repository
  */
  
  
  
-public interface RenewVehicleDetailsRepository  extends JpaRepository<RenewVehicleDetails,RenewVehicleDetailsId > , JpaSpecificationExecutor<RenewVehicleDetails> {
-
-
-	List<RenewVehicleDetails> findByOldquoteNoOrderByVehicleIdAsc(String quoteNo);
+public interface RenewalTransactionDetailsRepository  extends JpaRepository<RenewalTransactionDetails,Integer > , JpaSpecificationExecutor<RenewalTransactionDetails> {
 
 	
+
+
+	
+
 }

@@ -17,8 +17,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.maan.eway.bean.RenewVehicleDetails;
-import com.maan.eway.bean.RenewVehicleDetailsId;
+import com.maan.eway.bean.RenewQuotePolicy;
+import com.maan.eway.bean.RenewQuotePolicyId;
+import com.maan.eway.bean.RenewalNotificationMaster;
 /**
  * <h2>BankMasterRepository</h2>
  *
@@ -29,10 +30,17 @@ import com.maan.eway.bean.RenewVehicleDetailsId;
  
  
  
-public interface RenewVehicleDetailsRepository  extends JpaRepository<RenewVehicleDetails,RenewVehicleDetailsId > , JpaSpecificationExecutor<RenewVehicleDetails> {
+public interface RenewalNotificationMasterRepository  extends JpaRepository<RenewalNotificationMaster,Long > , JpaSpecificationExecutor<RenewalNotificationMaster> {
 
 
-	List<RenewVehicleDetails> findByOldquoteNoOrderByVehicleIdAsc(String quoteNo);
+	List<RenewalNotificationMaster> findAllByOrderBySnoDesc();
+
+	List<RenewalNotificationMaster> findByTranIdOrderByNotificationIdDesc(String tranId);
+
 
 	
+
+
+	
+
 }

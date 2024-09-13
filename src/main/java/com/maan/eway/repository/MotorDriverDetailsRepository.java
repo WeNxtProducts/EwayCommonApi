@@ -67,6 +67,8 @@ public interface MotorDriverDetailsRepository  extends JpaRepository<MotorDriver
 
 	List<MotorDriverDetails> findByRequestReferenceNoAndStatusNot(String searchValue, String string);
 
+	List<MotorDriverDetails> findByQuoteNoOrderByRiskIdAsc(String quoteNo);
+
 	
 
 

@@ -210,6 +210,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="TINY_GROUP_ID", length=100)
     public String tinyGroupId;
     
+    @Column(name="REG_NO", length=100)
+    public String regNo;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EXPIRY_DATE")
+    public Date       expiryDate ;
+    
 }
 
 
