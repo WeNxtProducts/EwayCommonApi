@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
@@ -158,12 +159,15 @@ public class JasperServiceImpl implements JasperService {
 				if (!theDir.exists()) {
 					theDir.mkdirs();
 				}
-				if(StringUtils.isBlank(homeData.getPolicyNo()) && (homeData.getProductId()==5 || homeData.getProductId()==46)) {
-					if("Y".equalsIgnoreCase(req.getBrokerQuoteYn())) {
+				if(StringUtils.isBlank(homeData.getPolicyNo()) &&  (Arrays.asList(5,46,63).contains(homeData.getProductId()))) {
+					if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getProductId() != 63) {
 						Map<String,Object> brokerQuotation = jasperCustomeImple.getMotorBrokerQuotation(homeData.getQuoteNo());
 						String jsonString = gson.toJson(brokerQuotation);
 						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
 						res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, input, "- BrokerQuotation.json");
+					}else if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getProductId() == 63) {
+						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+						res = getJasperPdfFile("/report/jasper/HomePremierQuotation.jrxml", jasperSaveLocation, input);
 					}else {
 						String JasperName = "MotorPrivate";
 						if("100019".equalsIgnoreCase(homeData.getCompanyId())) {
