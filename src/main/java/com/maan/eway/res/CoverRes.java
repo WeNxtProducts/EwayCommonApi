@@ -41,6 +41,8 @@ public class CoverRes {
    
     @JsonProperty("CoverageType") 
     private String coverageType;
+    @JsonProperty("CalcType") 
+    private String calcType;
     @JsonProperty("isSelected") 
     private String isselected;
     

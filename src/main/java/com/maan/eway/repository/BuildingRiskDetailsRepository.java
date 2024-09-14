@@ -62,6 +62,8 @@ public interface BuildingRiskDetailsRepository  extends JpaRepository<BuildingRi
 
 	List<BuildingRiskDetails> findByRequestReferenceNoAndSectionId(String string, String string2);
 
+	List<BuildingRiskDetails> findByQuoteNoAndSectionIdOrderByLocationIdAsc(String quoteNo, String sectionId);
+
 
 
 }
