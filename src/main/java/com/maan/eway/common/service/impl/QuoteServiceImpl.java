@@ -1104,7 +1104,6 @@ public class QuoteServiceImpl implements QuoteService {
 				secRes.setRiskId(sec.getRiskId().toString());
 				secRes.setSectionId(sec.getSectionId().toString());
 				secRes.setSectionName(sec.getSectionDesc());
-				secRes.setSumInsured(sumInsured);
 				secRes.setContentType(contentType);
 				secRes.setContentDesc(contentDesc);
 				sectionId=sec.getSectionId()==null?"":sec.getSectionId().toString();
@@ -1139,25 +1138,14 @@ public class QuoteServiceImpl implements QuoteService {
 							secRes.setPremiumExcluedTaxLc(PremiumExcluedTaxLc==null?"":PremiumExcluedTaxLc.toString());
 							secRes.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
 							secRes.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
-
 							secRes.setCovers(coverListRes);
 						}
+					secRes.setRiskId(acc.getRiskId().toString());
+					secRes.setLocationId(acc.getLocationId().toString());
+					secRes.setLocationName(acc.getLocationName());
+					secRes.setSumInsured(acc.getSumInsured()==null?"" : acc.getSumInsured().toPlainString());
+					buildingSectionList.add(secRes);
 						
-//						// Accident
-//						PaccGetRes pacRes = new  PaccGetRes()  ;
-//						dozerMapper.map(acc, pacRes);		
-//						buildingSectionList.add(secRes);
-//						pacRes.setSectionDetails(buildingSectionList);	
-						buildingSectionList.add(secRes);
-//						pacRes.setDocumentsTitle(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
-//						pacRes.setRiskId(acc.getRiskId().toString());
-//						pacRes.setLocationId(acc.getLocationId().toString());
-//						pacRes.setLocationName(acc.getLocationName());
-//						pacRes.setSuminsured(acc.getSumInsured()==null?"" : acc.getSumInsured().toPlainString());
-//						pacRes.setSectionId(StringUtils.isNotBlank(acc.getSectionId() ) ?  acc.getSectionId() :  "99999"  );
-//						paccGetResList.add(pacRes);
-//						
-//						
 					}
 					
 				}else {
@@ -1200,6 +1188,12 @@ public class QuoteServiceImpl implements QuoteService {
 					secRes.setLocationId(StringUtils.isBlank(locationId)?"":locationId);
 					secRes.setLocationName(StringUtils.isBlank(locationName)?"":locationName);
 					secRes.setSumInsured(bul.getSumInsured()==null?"" : bul.getSumInsured().toPlainString());
+					secRes.setMoneyAnnualEstimate(bul.getMoneyAnnualEstimate()== null?"0" : bul.getMoneyAnnualEstimate().toPlainString());
+					secRes.setMoneyCollector(bul.getMoneyCollector()== null?"0" : bul.getMoneyCollector().toPlainString() );
+					secRes.setMoneyDirectorResidence(bul.getMoneyDirectorResidence()== null?"0" : bul.getMoneyDirectorResidence().toPlainString() );
+					secRes.setMoneyOutofSafe(bul.getMoneyOutofSafe()== null?"0" : bul.getMoneyOutofSafe().toPlainString() );
+					secRes.setMoneySafeLimit(bul.getMoneySafeLimit()== null?"0" : bul.getMoneySafeLimit().toPlainString() );
+					secRes.setMoneyMajorLoss(bul.getMoneyMajorLoss() == null?"0" : bul.getMoneyMajorLoss().toPlainString() );
 					buildingSectionList.add(secRes);
 					}
 				

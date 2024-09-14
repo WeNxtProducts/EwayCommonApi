@@ -73,6 +73,24 @@ public class SectionDetailsRes {
 	
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
+	
+	@JsonProperty("MoneySafeLimit")
+    private String moneySafeLimit    ;
+	
+	@JsonProperty("MoneyOutofSafe")
+    private String moneyOutofSafe    ;
+	
+	@JsonProperty("MoneyDirectorResidence")
+    private String moneyDirectorResidence    ;
+	
+	@JsonProperty("MoneyCollector")
+    private String moneyCollector    ;
+	
+	@JsonProperty("MoneyAnnualEstimate")
+    private String moneyAnnualEstimate    ;
+	
+	@JsonProperty("MoneyMajorLoss")
+    private String moneyMajorLoss;
 
 	
 	
