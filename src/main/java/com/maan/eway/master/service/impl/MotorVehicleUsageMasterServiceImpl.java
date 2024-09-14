@@ -808,7 +808,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 		Date todayEnd = cal.getTime();
 		
 		String bodyType = "";
-		if(StringUtils.isNotBlank(req.getBodyId()) &&! req.getInsuranceId().equals("100040")) {
+		if(StringUtils.isNotBlank(req.getBodyId()) && !(req.getInsuranceId().equals("100040") || req.getInsuranceId().equals("100042"))) {
 			List<MotorBodyTypeMaster> bodyTypeList =  getBodyTypeMasterDropdown(req.getInsuranceId() , req.getBranchCode() ,"", req.getBodyId() ) ;
 			bodyType = bodyTypeList.size() > 0 ? bodyTypeList.get(0).getBodyType() : "";
 		}
@@ -869,7 +869,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 		list.sort(Comparator.comparing(MotorVehicleUsageMaster :: getVehicleUsageDesc ));
 		for (MotorVehicleUsageMaster data : list) {
 			// Response 
-			if(req.getInsuranceId().equals("100040") && req.getBodyId()!=null && req.getBodyId()!="")
+			if(   (req.getInsuranceId().equals("100040") || req.getInsuranceId().equals("100042")) && req.getBodyId()!=null && req.getBodyId()!="")
 			{
 				String[] numbers =data.getBodyType()!=null ? data.getBodyType().split(","):null;
 				if(numbers!=null) {
@@ -885,7 +885,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 			        resList.add(res);
 			    });}
 
-			}else if(!req.getInsuranceId().equals("100040")) {
+			}else if(!(req.getInsuranceId().equals("100040") || req.getInsuranceId().equals("100042"))) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getVehicleUsageId().toString());
 				res.setCodeDesc(data.getVehicleUsageDesc());
