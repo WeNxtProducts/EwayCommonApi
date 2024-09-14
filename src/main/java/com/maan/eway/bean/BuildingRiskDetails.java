@@ -838,6 +838,12 @@ private static final long serialVersionUID = 1L;
       @Column(name="SERIAL_NO",length=200)
       private String serialNo;
       
+      @Column(name="SUM_INSURED")
+ 	  private BigDecimal sumInsured;
+      
+      @Column(name="SUM_INSURED_LC")
+ 	  private BigDecimal sumInsuredLc;
+      
       
  
      
