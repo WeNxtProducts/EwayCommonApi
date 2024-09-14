@@ -381,10 +381,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if("100040".equalsIgnoreCase(req.getCompanyId() ))
 				{
 					if (StringUtils.isNotBlank(req.getPinCode())) {
-//						 if (! req.getPinCode().matches("[0-9a-bA-Z]+") ) {
-//							 errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
-//							 
-//						 } else
+						 if (! req.getPinCode().matches("[0-9a-zA-Z]+") ) {
+							 errorList.add("3000");
+							 
+//							 new Error("18", "PinCode", "Please Enter Valid Number In Po Box")
+							 
+						 } 
 						if (req.getPinCode().length() > 10) {
 							errorList.add("1016");
 							//errorList.add(new Error("18", "PinCode", "Please Enter Po Box within 20 Characters"));
