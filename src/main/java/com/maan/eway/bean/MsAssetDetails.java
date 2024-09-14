@@ -474,6 +474,12 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="BOND_YEAR")
    private String bondYear;
+   
+   @Column(name="SUM_INSURED")
+   private BigDecimal     sumInsured ;
+   
+   @Column(name="SUM_INSURED_LC")
+   private BigDecimal     sumInsuredLc ;
 
 }
 
