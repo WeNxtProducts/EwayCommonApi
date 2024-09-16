@@ -186,6 +186,6 @@ public class ContentAndRisk implements Serializable {
 
     @Column(name = "COMPANY_ID", length = 20)
     private String companyId;
-	@Column(name = "SNO")
-	private Long sno;
+//	@Column(name = "SNO")
+//	private Long sno;
 }
