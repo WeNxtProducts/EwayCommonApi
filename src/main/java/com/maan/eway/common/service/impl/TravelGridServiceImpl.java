@@ -3730,6 +3730,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
 							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							String type=data.get("type") == null ? "" : data.get("type").toString();
+							type="Premia"+type;
+							res.setType(type);
 							resList.add(res);
 
 						}
