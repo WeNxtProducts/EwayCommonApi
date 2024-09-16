@@ -425,7 +425,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					saveCover.setSubCoverDescLocal(StringUtil.isBlank(coverData.getCoverNameLocal())?"":coverData.getCoverNameLocal());
 					saveCover.setSubCoverNameLocal(StringUtil.isBlank(coverData.getSubCoverDescLocal())?"":coverData.getSubCoverDescLocal());
 					saveCover.setMinimumRate(coverData.getMinrate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getMinrate()));
-					//private BigDecimal     minCoverageLimit;
+					saveCover.setMinimumRateYn(coverData.getMinimumRateYn()==null?"":coverData.getMinimumRateYn());	
+							//private BigDecimal     minCoverageLimit;
 					// Date Differents
 					Date periodStart =  coverData.getEffectiveDate();
 					Date periodEnd = coverData.getPolicyEndDate() ;
@@ -567,6 +568,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						saveSubCover.setEndtCount(coverData.getEndtCount()==null?BigDecimal.ZERO:coverData.getEndtCount());
 						saveSubCover.setFreeCoverLimit(coverData.getFreeCoverLimit()==null?BigDecimal.ZERO:coverData.getFreeCoverLimit());
 						saveSubCover.setMinimumRate(coverData.getMinrate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getMinrate()));
+						saveSubCover.setMinimumRateYn(coverData.getMinimumRateYn()==null?"":coverData.getMinimumRateYn());
 						/*if(coverIds!=null && !coverIds.isEmpty()) {
 							long count = coverIds.stream().filter(t-> (saveSubCover.getCoverId().equals(t.getCoverId()) && saveSubCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 							if(count>0) userOpt="Y";
@@ -1932,6 +1934,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					coverRes.setSubCoverNameLocal(null);
 					coverRes.setMinrate(filterCover.get(0).getMinimumRate()==null?0D:filterCover.get(0).getMinimumRate().doubleValue());
 					coverRes.setActualrate(filterCover.get(0).getActualRate()==null?0D:filterCover.get(0).getActualRate().doubleValue());;
+					coverRes.setMinimumRateYn(filterCover.get(0).getMinimumRateYn()==null?"":filterCover.get(0).getMinimumRateYn());
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 					
@@ -2043,6 +2046,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						subCoverRes.setSubCoverNameLocal(filterSubCover.get(0).getSubCoverNameLocal());
 						subCoverRes.setMinrate(filterSubCover.get(0).getMinimumRate()==null?0D:filterSubCover.get(0).getMinimumRate().doubleValue());
 						subCoverRes.setActualrate(filterCover.get(0).getActualRate()==null?0D:filterCover.get(0).getActualRate().doubleValue());
+						subCoverRes.setMinimumRateYn(filterCover.get(0).getMinimumRateYn()==null?"":filterCover.get(0).getMinimumRateYn());
 						// Discount Covers Or Promo Covers
 						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 						

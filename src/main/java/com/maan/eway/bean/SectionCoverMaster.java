@@ -235,6 +235,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MINIMUM_RATE")
     private BigDecimal     minimumRate ;
+    
+    @Column(name="MINIMUM_RATEYN")
+    private String minimumRateYn;
+    
 }
 
 

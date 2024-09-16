@@ -1302,7 +1302,7 @@ public class QuoteServiceImpl implements QuoteService {
 					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
 					
 					List<SubCoverRes>  subCoverListRes = new ArrayList<SubCoverRes>();
-					List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
+					List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getPremiumExcludedTaxLc()!=null ).collect(Collectors.toList());
 					for ( PolicyCoverData subCovers : filterSubCover) {
 						SubCoverRes subCoverRes = new SubCoverRes();
 						List<SectionCoverMaster> subcoverdetails=new ArrayList<>();

@@ -408,6 +408,7 @@ public class CachingConfig   {
 		    				String string = new StringBuilder().append(e.getInsuranceId())
 		    						.append(e.getProductId())
 		    						.append(e.getBranchCode())
+		    						.append(e.getSectionId())
 		    						.append("excludedTax")
 		    						.append(StringUtils.join(taxFor,','))
 		    						.toString();
