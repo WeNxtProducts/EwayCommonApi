@@ -199,17 +199,40 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
 				
 				if("100040".equalsIgnoreCase(req.getCompanyId())) {
-					if (StringUtils.isBlank(req.getClientName()) ) {
-						//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
-						errorList.add("1001");
-					} else if (req.getClientName().length() > 100) {
-					   errorList.add("1002");
-						//errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
-					} 
-					else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+") && !req.getClientName().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")){
-						errorList.add("1003");		
-						//errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
+					
+					if("2".equalsIgnoreCase(req.getPolicyHolderType()))
+					{
+						if (StringUtils.isBlank(req.getClientName()) ) {
+							//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+							errorList.add("1100");
+						} else if (req.getClientName().length() > 100) {
+						   errorList.add("1101");
+							//errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
+						} 
+						else if (StringUtils.isNotBlank(req.getClientName()) &&
+						         (req.getClientName().matches("^[0-9].*") || 
+						                 !req.getClientName().matches("[a-zA-ZÀ-ÿ0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?\\s'-]+$"))){
+							errorList.add("1102");		
+							//errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
+						}
 					}
+					else
+					{
+						if (StringUtils.isBlank(req.getClientName()) ) {
+							//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+							errorList.add("1001");
+						} else if (req.getClientName().length() > 100) {
+						   errorList.add("1002");
+							//errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
+						} 
+						else if (StringUtils.isNotBlank(req.getClientName()) &&
+						         (req.getClientName().matches("^[0-9].*") || 
+						                 !req.getClientName().matches("[a-zA-ZÀ-ÿ0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?\\s'-]+$"))){
+							errorList.add("1003");		
+							//errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
+						}
+					}
+									
 				}
 				else {
 					if (StringUtils.isBlank(req.getClientName()) ) {
@@ -381,7 +404,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if("100040".equalsIgnoreCase(req.getCompanyId() ))
 				{
 					if (StringUtils.isNotBlank(req.getPinCode())) {
-						 if (! req.getPinCode().matches("[0-9a-zA-Z]+") ) {
+						 if (! (req.getPinCode().matches("[0-9a-zA-Z]+") ||  req.getPinCode().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")) ) {
 							 errorList.add("3000");
 							 
 //							 new Error("18", "PinCode", "Please Enter Valid Number In Po Box")
@@ -488,17 +511,50 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				if("100040".equalsIgnoreCase(req.getCompanyId()))
 				{
-					if ( StringUtils.isNotBlank(req.getEmail1()) ) {
-						if( req.getEmail1().length() > 50 ) {
-							errorList.add("1032");
-							//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
-						} else if(StringUtils.isNotBlank(req.getEmail1())) {
-							boolean b = isValidMail(req.getEmail1());
-							if (b == false && (!req.getEmail1().matches("^[a-zA-ZÀ-ÿ\\s'-]+$") || !req.getEmail1().matches("^[.@]+$"))) {
-								errorList.add("1033");
+					
+					if("2".equalsIgnoreCase(req.getPolicyHolderType()))
+					{
+						if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+							if( req.getEmail1().length() > 50 ) {
+								errorList.add("1032");
+								//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
+							} else if(StringUtils.isNotBlank(req.getEmail1())) {
+								boolean bValue = checkIsValidMail(req.getEmail1());
+								
+								if(req.getEmail1().matches("^[0-9].*") || !req.getEmail1().matches(".*@.*\\..*") )
+								{
+									errorList.add("1033");
+								}		
+								else if (!bValue) {
+									errorList.add("1033");
+								}
 							}
+						} 
+						else {
+							errorList.add("3001");
 						}
-					} 
+						
+					}
+					else
+					{
+						if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+							if( req.getEmail1().length() > 50 ) {
+								errorList.add("1032");
+								//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
+							} else if(StringUtils.isNotBlank(req.getEmail1())) {
+								boolean bValue = checkIsValidMail(req.getEmail1());
+								
+								if(req.getEmail1().matches("^[0-9].*") || !req.getEmail1().matches(".*@.*\\..*") )
+								{
+									errorList.add("1033");
+								}		
+								else if (!bValue) {
+									errorList.add("1033");
+								}
+							}
+						} 
+					}
+			
 				}
 				else {
 					if ( StringUtils.isNotBlank(req.getEmail1()) ) {
@@ -1147,6 +1203,15 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return m.matches();
 
 	}
+	
+	public static boolean checkIsValidMail(String mail) {
+		String regex = "^[a-zA-Z0-9._%+-àâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ]+@[a-zA-Z0-9.-àâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ]+\\.[a-zA-ZàâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ]{2,}$";
+	    Pattern p = Pattern.compile(regex);
+	    Matcher m = p.matcher(mail);
+	    return m.matches();
+	}
+	
+
 
 	@Override
 	@Transactional
