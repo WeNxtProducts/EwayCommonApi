@@ -1152,7 +1152,7 @@ public class LifeGridServiceImple implements LifeGridService {
 						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
 						res.setType(data.get("type") == null ? "" : data.get("type").toString());
 						String type=data.get("type") == null ? "" : data.get("type").toString();
-						type="Premia"+type;
+						type="Premia "+type;
 						res.setType(type);
 						resList.add(res);
 
