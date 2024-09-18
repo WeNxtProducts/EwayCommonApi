@@ -28,9 +28,9 @@ public class TaxFromFactor  implements Function<FactorRateRequestDetails,Tax>{
 					.endtTypeCount(t.getEndtCount())
 					.dependentYn(t.getDependentCoverYn())
 					.taxExemptedAllowed(t.getIsTaxExtempted())
-					.minimumTaxAmountLc(t.getTaxAmountLc())
-					.minimumTaxAmount(t.getTaxAmount())
-					.taxAmountLc(BigDecimal.ZERO)
+					.minimumTaxAmountLc(BigDecimal.ZERO)
+					.minimumTaxAmount(BigDecimal.ZERO)
+					.taxAmountLc(t.getTaxAmountLc())
 					.taxFor("")					
 					.build();
 			return d;
