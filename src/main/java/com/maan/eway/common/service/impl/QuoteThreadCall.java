@@ -3051,13 +3051,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 						 
 //						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(99999) && o.getVehicleId().equals(99999)  && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
 //						 if(filterNonDefaultCovers==null) {
-						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
+						 filterNonDefaultCovers = covers.stream().filter( o -> o.getLocationId().equals(Integer.valueOf(vehReq.getLocationId())) && o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
 //						 }
 					
 						 
 					} else  {
 						
-						 filterNonDefaultCovers = covers.stream().filter( o ->  o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
+						 filterNonDefaultCovers = covers.stream().filter( o -> o.getLocationId().equals(Integer.valueOf(vehReq.getLocationId())) && o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
 						
 					}
 					
