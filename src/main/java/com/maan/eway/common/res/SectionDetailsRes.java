@@ -91,6 +91,33 @@ public class SectionDetailsRes {
 	
 	@JsonProperty("MoneyMajorLoss")
     private String moneyMajorLoss;
+	
+	@JsonProperty("PremiumLc")
+    private Double premiumLc;	
+
+	@JsonProperty("PremiumFc")
+    private Double premiumFc;	
+
+	@JsonProperty("OverAllPremiumFc")
+    private Double overAllPremiumFc;	
+
+	@JsonProperty("OverAllPremiumLc")
+    private Double overAllPremiumLc;	
+
+	@JsonProperty("CommissionAmount")
+    private String commissionAmount;	
+
+	@JsonProperty("CommissionPercentage")
+    private String commissionPercentage;
+
+	@JsonProperty("VatCommission")
+    private String vatCommission;
+	
+	@JsonProperty("FinalyzeYn")
+	private String finalizeYn;
+	
+	@JsonProperty("OccupationTypeDesc")
+    private String    occupationTypeDesc;
 
 	
 	

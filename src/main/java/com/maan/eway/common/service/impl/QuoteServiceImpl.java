@@ -1701,21 +1701,86 @@ public class QuoteServiceImpl implements QuoteService {
 				locRes.setLocationId(filter.get(0).getLocationId().toString());
 				locRes.setLocationName(filter.get(0).getLocationName());
 
-				for (CommonDataDetails sec : filter) {
+				for (CommonDataDetails com : filter) {
 					SectionDetailsRes secRes = new SectionDetailsRes();
 
-					secRes.setRiskId(sec.getRiskId().toString());
-					secRes.setSectionId(sec.getSectionId().toString());
-					secRes.setSectionName(sec.getSectionDesc());
-					secRes.setCount((sec.getTotalNoOfEmployees()==null ||sec.getTotalNoOfEmployees()==0)?sec.getFidEmpCount().toString():sec.getTotalNoOfEmployees().toString());
-					secRes.setOccupationId(sec.getOccupationType());
-					secRes.setOccupationDesc(sec.getOccupationDesc());
-					if(!(sec.getEmpLiabilitySi().equals(BigDecimal.ZERO)) && Double.valueOf(sec.getEmpLiabilitySi().toString())>0.0) {
-						SunInsured=sec.getEmpLiabilitySi().toString();					
-					}else if( !(sec.getFidEmpSi().equals(BigDecimal.ZERO)) && Double.valueOf(sec.getFidEmpSi().toString())>0.0) {
-						SunInsured=sec.getFidEmpSi().toString();					
-					}
-					secRes.setSumInsured(SunInsured);						
+					secRes.setRiskId(com.getRiskId().toString());
+					secRes.setSectionId(com.getSectionId().toString());
+					secRes.setSectionName(com.getSectionDesc());
+					secRes.setCount((com.getTotalNoOfEmployees()==null ||com.getTotalNoOfEmployees()==0)?com.getFidEmpCount().toString():com.getTotalNoOfEmployees().toString());
+					secRes.setOccupationId(com.getOccupationType());
+					secRes.setOccupationDesc(com.getOccupationDesc());
+					secRes.setSumInsured(com.getSumInsured()==null?null:com.getSumInsured().toString());
+						
+						// Cover Details
+						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(com.getRiskId()))).collect(Collectors.toList());
+						
+						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
+						
+						List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+						BigDecimal PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumExcluedTax = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumIncludedTax = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+
+						// Response
+						// Mot
+//						 List<BrokerCommissionDetails> policylist = getPolicyName(com.getCompanyId() , com.getProductId().toString(), com.getCreatedBy(),com.getAgencyCode(),"99999");
+//					
+//						 Double commissionPercent = 0.0;
+//							if(policylist.size()>0 && policylist!=null) {
+//							
+//						 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+//							}
+//							else {
+//								commissionPercent =5.0;
+//							}
+						 String premiumFc = com.getOverallPremiumFc().toString();
+						 String vatPremiumFc =	com.getOverallPremiumFc().toString();
+						 BigDecimal commission=	new BigDecimal(premiumFc)
+					 				.multiply(com.getCommissionPercentage()==null ?  new BigDecimal("0") : com.getCommissionPercentage())
+			 						.divide(BigDecimal.valueOf(100D))
+			 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+			 						.getPrecision(),RoundingMode.HALF_UP);
+
+						
+						dozerMapper.map(com, secRes);
+						secRes.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
+						secRes.setOverAllPremiumFc(com.getOverallPremiumFc()==null?0D:Double.valueOf(com.getOverallPremiumFc().toString()));
+						secRes.setOverAllPremiumLc(com.getOverallPremiumLc()==null?0D:Double.valueOf(com.getOverallPremiumLc().toString()));
+						secRes.setPremiumFc(com.getActualPremiumFc()==null?0D:Double.valueOf(com.getActualPremiumFc().toString()));
+						secRes.setPremiumLc(com.getActualPremiumLc()==null?0D:Double.valueOf(com.getActualPremiumLc().toString()));
+						secRes.setCommissionAmount(commission.toString()==null?"":commission.toString());
+						secRes.setCommissionPercentage(com.getCommissionPercentage()==null?"" : com.getCommissionPercentage().toPlainString());
+						secRes.setVatCommission(com.getVatCommission()==null?"" : com.getVatCommission().toPlainString());				
+						secRes.setFinalizeYn(com.getFinalizeYn());
+						secRes.setLocationId(com.getLocationId().toString());
+						secRes.setLocationName(com.getLocationName());
+						secRes.setOccupationTypeDesc(com.getOccupationDesc());				
+						
+						//get Section name Local from session master 
+						List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(com.getSectionDesc()!=null ? com.getSectionDesc().toString() : " ");
+						
+					 
+						secRes.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
+						secRes.setSectionName( com.getSectionDesc());
+						secRes.setCodeDescLocal((PSM!=null && PSM.size()>0) ? PSM.get(0).getSectionNameLocal() : " ");
+						secRes.setPremiumAfterDiscount(PremiumAfterDiscount.toString()==null?"":PremiumAfterDiscount.toString());
+						secRes.setPremiumAfterDiscountLc(PremiumAfterDiscountLc.toString()==null?"":PremiumAfterDiscountLc.toString());
+						secRes.setPremiumBeforeDiscount(PremiumBeforeDiscount.toString()==null?"":PremiumBeforeDiscount.toString());
+						secRes.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc.toString()==null?"":PremiumBeforeDiscountLc.toString());
+						secRes.setPremiumExcluedTax(PremiumExcluedTax.toString()==null?"":PremiumExcluedTax.toString());
+						secRes.setPremiumExcluedTaxLc(PremiumExcluedTaxLc.toString()==null?"":PremiumExcluedTaxLc.toString());
+						secRes.setPremiumIncludedTax(PremiumIncludedTax.toString()==null?"":PremiumIncludedTax.toString());
+						secRes.setPremiumIncludedTaxLc(PremiumIncludedTaxLc.toString()==null?"":PremiumIncludedTaxLc.toString());
+
+						secRes.setCovers(coverListRes);
+					
+						
 					sList.add(secRes);
 				}
 				locRes.setSectionDetails(sList);
