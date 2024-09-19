@@ -1,13 +1,18 @@
 package com.maan.eway.common.service.impl;
 
 import java.sql.Date;
+
+
 import java.time.LocalDate;
 import java.util.ArrayList;
+
 import java.util.Comparator;
+import java.util.Arrays;
+
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.dozer.DozerBeanMapper;
+//import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +23,7 @@ import com.maan.eway.common.req.GetProductMasterReq;
 import com.maan.eway.common.req.ProductStructureMasterReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ProductStructureMasterRes;
+import com.maan.eway.common.res.ProductStructureMasterResponse;
 import com.maan.eway.common.service.InsuranceTypeMasterService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.InsuranceTypeMasterRepository;
@@ -62,6 +68,22 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		{
 			 errors.add(new Error("06", "Product Id" , "Please enter the product id"));	
 		}
+		if (req.getBodyTypeIds().size() < 1  ) {
+			 errors.add(new Error("07", "Body Type" , "Please select the body type"));
+		 }
+		if(req.getEntryDate() == null)
+		{
+			errors.add(new Error("08", "Effective Date" , "Please select the effective date"));
+		}
+		if(StringUtils.isBlank(req.getStatus()))
+		{
+			 errors.add(new Error("09", "Status " , "Please choose the status"));	
+		}
+		if(StringUtils.isBlank(req.getCoreAppCode()))
+		{
+			 errors.add(new Error("10", "Core App Code " , "Please Enter the core app code"));	
+		}
+		
 		}catch(Exception cc)
 		{
 			System.out.println("The Exception Occured in ValidationnsuranceTypeMaster ");
@@ -107,7 +129,20 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			newRecords.setEffectiveDateEnd(enddate);
 			newRecords.setAmendId(AmendId);
 			newRecords.setDisplayOrder(StringUtils.isBlank(req.getDisplayOrder())?null:Integer.valueOf(req.getDisplayOrder()));
+			newRecords.setIndsutryTypeLocalDesc(StringUtils.isBlank(req.getIndustryTypeLocalDesc()) ? null : req.getIndustryTypeLocalDesc());
+			newRecords.setCoreAppCode(StringUtils.isBlank(req.getCoreAppCode()) ? null : req.getCoreAppCode());
 			
+			List<String> bodyTypeIds = req.getBodyTypeIds();
+			StringBuilder concatenatedBodyTypeIds = new StringBuilder();
+
+			for (int i = 0; i < bodyTypeIds.size(); i++) {
+			    concatenatedBodyTypeIds.append(bodyTypeIds.get(i));
+			    if (i < bodyTypeIds.size() - 1) {
+			        concatenatedBodyTypeIds.append(",");
+			    }
+			}
+			newRecords.setBodyTypeIds(concatenatedBodyTypeIds.toString());
+	
 			ProductStructureRepo.saveAndFlush(newRecords);
 		
 			res.setCommonResponse("Inserted Successfully......");
@@ -125,19 +160,44 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		return res;
 	}
  
-	public List<ProductStructureMasterReq> getAllProductStructureMaster(GetProductMasterReq req)
+	public List<ProductStructureMasterResponse> getAllProductStructureMaster(GetProductMasterReq req)
 	{
-		List<ProductStructureMasterReq> result=null;
+		List<ProductStructureMasterResponse> result=null;
 		try {
-			List<ProductStructureMasterReq> result1 = new ArrayList<>();
+			List<ProductStructureMasterResponse> result1 = new ArrayList<>();
 			List<InsuranceTypeMaster> data =ProductStructureRepo.findByCompanyIdAndProductId(req.getCompanyId(),Integer.valueOf(req.getProductid()));
 			for(InsuranceTypeMaster dd:data)
 			{
-				ProductStructureMasterReq records=new DozerBeanMapper().map(dd,ProductStructureMasterReq.class);
+				ProductStructureMasterResponse records=new ProductStructureMasterResponse();
+//						DozerBeanMapper().map(dd,ProductStructureMasterReq.class);
 				records.setIndustryTypeId(dd.getIndsutryTypeId());
 				records.setIndustryTypeDesc(dd.getIndsutryTypeDesc());
 				records.setIndustryTypeLocalDesc(dd.getIndsutryTypeLocalDesc());
 				records.setCompanyid(dd.getCompanyId());
+				
+				records.setProductId(String.valueOf(dd.getProductId()));
+				records.setSectionId(String.valueOf(dd.getSectionId()));
+				records.setSectionName(dd.getSectionName());
+//				records.setSectionNameLocal(dd.getSectionName());
+				records.setStatus(dd.getStatus());
+				records.setDisplayOrder(String.valueOf(dd.getDisplayOrder()));
+				records.setEntryDate(dd.getEntryDate());
+				records.setCreatedBy(dd.getCreatedBy());
+				records.setAmendId(String.valueOf(dd.getAmendId()));
+				records.setRemarks(dd.getRemarks()  );
+
+			    if(dd.getBodyTypeIds() != null) {
+			    	String bodyTypeIdsInString = dd.getBodyTypeIds();
+				    List<String> bodyTypeIdsList = Arrays.asList(bodyTypeIdsInString.split(","));
+				    records.setBodyTypeIds(bodyTypeIdsList);
+			    }
+			    else
+			    {
+			    	records.setBodyTypeIds(null);
+			    }
+			    
+				records.setCoreAppCode(dd.getCoreAppCode());
+				
 				result1.add(records);
 			}
 			result=result1;
@@ -153,19 +213,43 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 	public CommonRes getInsuranceMaster(GetProductMasterReq req)
 	{
 		CommonRes res = new CommonRes();
-	ProductStructureMasterReq result=null;
+		ProductStructureMasterResponse result = new ProductStructureMasterResponse();
 		try {
 	        
 			List<SectionMaster> section =sectionrepo.findBySectionId(Integer.valueOf(req.getSectionId()));
 		    InsuranceTypeMaster data =ProductStructureRepo.findByIndsutryTypeIdAndSectionId(req.getIndsutryTypeId(),Integer.valueOf(req.getSectionId()));
 		    if(data!=null )
 		    {
-		    result=new DozerBeanMapper().map(data, ProductStructureMasterReq.class);
+//		    result=new DozerBeanMapper().map(data, ProductStructureMasterReq.class);
 		    result.setCompanyid(data.getCompanyId());
 		    result.setIndustryTypeId(data.getIndsutryTypeId());
 		    result.setIndustryTypeDesc(data.getIndsutryTypeDesc());
 		    result.setIndustryTypeLocalDesc(data.getIndsutryTypeLocalDesc());
 		    result.setSectionNameLocal(section.isEmpty()?null:section.get(0).getSectionNameLocal());
+		        
+		    result.setProductId(String.valueOf(data.getProductId()));
+		    result.setSectionId(String.valueOf(data.getSectionId()));
+		    result.setSectionName(data.getSectionName());
+		    result.setStatus(data.getStatus());
+		    result.setDisplayOrder(String.valueOf(data.getDisplayOrder()));
+		    result.setEntryDate(data.getEntryDate());
+		    result.setCreatedBy(data.getCreatedBy());
+		    result.setAmendId(String.valueOf(data.getAmendId()));
+		    result.setRemarks(data.getRemarks());
+		    
+		    if(data.getBodyTypeIds() != null) {
+		    	String bodyTypeIdsInString = data.getBodyTypeIds();
+			    List<String> bodyTypeIdsList = Arrays.asList(bodyTypeIdsInString.split(","));
+			    result.setBodyTypeIds(bodyTypeIdsList);
+		    }
+		    else
+		    {
+		    	result.setBodyTypeIds(null);
+		    }
+		    
+
+		    result.setCoreAppCode(data.getCoreAppCode());
+		    
 		    res.setCommonResponse(result);
 		  
 		    res.setIsError(false);
@@ -191,11 +275,12 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		try {
 			List<InsuranceTypeMaster> getdata=	ProductStructureRepo.findByIndsutryTypeIdAndStatusAndCompanyIdAndProductId(sneha.getIndsutryTypeId(),"Y",sneha.getCompanyId(),Integer.valueOf(sneha.getProductid()));
 			List<ProductStructureMasterRes> result1 = new ArrayList<>();
+
 			getdata.sort(Comparator.comparing(InsuranceTypeMaster::getDisplayOrder)); 
+		 			
 			for(InsuranceTypeMaster dd:getdata)
 			{
 				List<SectionMaster> section =sectionrepo.findBySectionId(Integer.valueOf(dd.getSectionId()));
-				
 				ProductStructureMasterRes data = new ProductStructureMasterRes();
 				data.setIndustryType(dd.getIndsutryTypeId());
 				data.setSectionid(dd.getSectionId());

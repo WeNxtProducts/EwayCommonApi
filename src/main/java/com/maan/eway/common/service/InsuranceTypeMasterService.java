@@ -9,6 +9,7 @@ import com.maan.eway.common.req.GetProductMasterReq;
 import com.maan.eway.common.req.ProductStructureMasterReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ProductStructureMasterRes;
+import com.maan.eway.common.res.ProductStructureMasterResponse;
 import com.maan.eway.error.Error;
 
 
@@ -17,7 +18,7 @@ public interface InsuranceTypeMasterService {
 	
 	CommonRes saveproductMaster(ProductStructureMasterReq req);
 	
-	List<ProductStructureMasterReq> getAllProductStructureMaster(GetProductMasterReq req);
+	List<ProductStructureMasterResponse> getAllProductStructureMaster(GetProductMasterReq req);
 	
 	CommonRes getInsuranceMaster(GetProductMasterReq req);
 	

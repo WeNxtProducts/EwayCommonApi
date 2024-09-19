@@ -20,6 +20,7 @@ import com.maan.eway.common.req.ProductStructureMasterReq;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ProductStructureMasterRes;
+import com.maan.eway.common.res.ProductStructureMasterResponse;
 import com.maan.eway.common.service.InsuranceTypeMasterService;
 import com.maan.eway.error.Error;
 import com.maan.eway.service.PrintReqService;
@@ -65,7 +66,7 @@ public  ResponseEntity<CommonRes> insertProductStructure(@RequestBody  ProductSt
 public ResponseEntity<CommonRes> getAllProductStructureMaster(@RequestBody GetProductMasterReq req){
 CommonRes data = new CommonRes();
 
-List<ProductStructureMasterReq> res= entityService.getAllProductStructureMaster(req);
+List<ProductStructureMasterResponse> res= entityService.getAllProductStructureMaster(req);
 data.setCommonResponse(res);
 data.setErrorMessage(Collections.emptyList());
 data.setIsError(false);

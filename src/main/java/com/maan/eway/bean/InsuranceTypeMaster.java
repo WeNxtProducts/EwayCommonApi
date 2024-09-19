@@ -2,7 +2,11 @@ package com.maan.eway.bean;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+
+//import java.util.Date;
+
+import java.sql.Date;
+
 
 
 import jakarta.persistence.Column;
@@ -66,16 +70,16 @@ public class InsuranceTypeMaster implements Serializable {
 	    private String     status ;
 	    
 	
-	    @Temporal(TemporalType.TIMESTAMP)
+	    //@Temporal(TemporalType.TIMESTAMP)
 	    @Column(name="ENTRY_DATE")
 	    private Date       entryDate ;
 	
-	    @Temporal(TemporalType.TIMESTAMP)
+	    //@Temporal(TemporalType.TIMESTAMP)
 	    @Column(name="EFFECTIVE_DATE_END")
 	    private Date       effectiveDateEnd ;
 
 	    
-	    @Temporal(TemporalType.TIMESTAMP)
+	   // @Temporal(TemporalType.TIMESTAMP)
 	    @Column(name="EFFECTIVE_DATE_START")
 	    private Date       effectiveDateStart ;
 
@@ -91,4 +95,9 @@ public class InsuranceTypeMaster implements Serializable {
 	    @Column(name="REMARKS", length=100)
 	    private String     remarks;
 	    
+	    @Column(name="BODY_TYPE")
+	    private String  bodyTypeIds;
+	    
+	    @Column(name="CORE_APP_CODE")
+	    private String coreAppCode;  
 }
