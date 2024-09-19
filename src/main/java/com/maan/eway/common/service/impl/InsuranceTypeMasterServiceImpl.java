@@ -285,10 +285,9 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 				data.setIndustryType(dd.getIndsutryTypeId());
 				data.setSectionid(dd.getSectionId());
 				data.setStatus(dd.getStatus());
-				data.setSectionName(dd.getSectionName());
+				data.setSectionName(dd.getSectionName().trim());
 				data.setLocalCodeDesc(section.isEmpty()?null:section.get(0).getSectionNameLocal());
 			
-				 
 				result1.add(data);
 			}
 			result=result1;
