@@ -105,7 +105,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
-import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -1859,6 +1858,7 @@ public class JasperCustomServiceImple {
 				predicate.add(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")));
 				predicate.add(cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")));
 				predicate.add(cb.equal(pcdRoot.get("sectionId").as(String.class), sddRoot.get("sectionId")));
+				predicate.add(cb.equal(pcdRoot.get("locationId"),sddRoot.get("locationId")));
 				predicate.add(cb.equal(pcdRoot.get("taxId"),"0"));
 				predicate.add(cb.equal(pcdRoot.get("discLoadId"), "0"));
 				predicate.add(cb.equal(pcdRoot.get("subCoverId"), "0"));
@@ -1876,15 +1876,17 @@ public class JasperCustomServiceImple {
 				
 				Subquery<String> occDesc = cq1.subquery(String.class);
 				Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
-				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class), ecdRoot.get("sectionId")),
+				occDesc.select(ecdRoot.get("occupationDesc"))
+				.where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class), ecdRoot.get("sectionId")),
 						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId").as(String.class), ecdRoot.get("productId")),
-						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
+						cb.equal(pcdRoot.get("locationId"), ecdRoot.get("locationId")),cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
 				
 				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
 						pcdRoot.get("coverId").alias("coverId"),pcdRoot.get("coverageType").alias("coverageType"),sddRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),
 						 pcdRoot.get("sumInsured").alias("sumInsured"),pcdRoot.get("rate").alias("rate"),pcdRoot.get("premiumIncludedTaxLc").alias("premiumIncludedTaxLc"),
 						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"),occDesc.alias("occupationDesc"),
-						 pcdRoot.get("premiumExcludedTaxLc").alias("premiumExcludedTaxLc"),pcdRoot.get("premiumExcludedTaxFc").alias("premiumExcludedTaxFc"))
+						 pcdRoot.get("premiumExcludedTaxLc").alias("premiumExcludedTaxLc"),pcdRoot.get("premiumExcludedTaxFc").alias("premiumExcludedTaxFc"),
+						 pcdRoot.get("locationId").alias("locationId"))
 				.where(predicateArray).orderBy(cb.asc(sddRoot.get("sectionId")));
 						
 			List<Tuple> Slist = em.createQuery(cq1).getResultList();
@@ -1935,11 +1937,11 @@ public class JasperCustomServiceImple {
 				}
 			}
 			List<Map<String,Object>> sectionList = new ArrayList<Map<String,Object>>();
-			List<Map<String,Object>> coverageDetails = new ArrayList<Map<String,Object>>();
+		//	List<Map<String,Object>> coverageDetails = new ArrayList<Map<String,Object>>();
 			List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
 			Double OverAllPremium=0.0;
 			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
-			if("100002".equalsIgnoreCase(companyId)) {
+			if(Arrays.asList("100002","100028").contains(companyId)) {
 					if(coverData!=null && !coverData.isEmpty()) {
 						Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T"))
 								.map(m -> m.getTaxRate()).map(BigDecimal::doubleValue)
@@ -2018,118 +2020,131 @@ public class JasperCustomServiceImple {
 				}
 			}
 			
-			List<Object> sectionIds = Slist.stream().map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
+			List<Map<String,Object>> locationGroupList = new ArrayList<Map<String,Object>>();
+			List<Object> locationIds = Slist.stream().map(k -> k.get("locationId")).distinct().collect(Collectors.toList());
 			List<Map<String,Object>> coverageList = new ArrayList<Map<String,Object>>();
 			String productId = map.get("productId")==null?null:map.get("productId").toString();
-			for(int i=0;i<sectionIds.size();i++) {
-				Map<String,Object> coverMap = new HashMap<String,Object>();
-				String sectionId = sectionIds.get(i).toString();
+			for(int x=0;x<locationIds.size();x++) {
+				String locationId = locationIds.get(x).toString();
+				String locationName="",locationAddress="";
+				List<Object> sectionIds = Slist.stream().filter(f -> f.get("locationId")!=null && f.get("locationId").toString().equals(locationId))
+						.map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
 				
-				List<BuildingRiskDetails> buildingdtl = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionId(map.get("requestReferenceNo").toString(),sectionId);
-				List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
-					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
-					lmap.put("riskId", k.getRiskId());
-					lmap.put("locationName", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getLocationName().toString())).findAny().orElse(""));
-					lmap.put("buildingAddress",productId.equalsIgnoreCase("6")?k.getAddress()+", "+k.getRegionDesc()+", "+k.getDistrictDesc():
-							Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getBuildingAddress().toString()))
-							.findAny().orElse("")+", "+StringUtils.capitalize(lmap.get("locationName").toString()));
-					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
-					lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
-							&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
-							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
-					lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
-							&& f.getSectionId()==Integer.parseInt(k.getSectionId())
-							&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
-					lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals("1") && f.get("coverNoteReferenceNo")!=null)
-							.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
-					return lmap;
-				}).collect(Collectors.toList());
-				
-				List<ContentAndRisk> contentInfo = conAndRiskRepo.findByQuoteNoAndSectionId(map.get("quoteNo").toString(),sectionId);
-				List<Map<String,Object>> contentList = contentInfo.stream().collect(
-						Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(m -> {
-							LinkedHashMap<String, Object> contentMap = new LinkedHashMap<String, Object>();
-							contentMap.put("itemId", m.getItemId());
-							contentMap.put("contentRiskDesc", m.getContentRiskDesc()+", &nbsp;"+m.getSerialNoDesc()+":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(m.getSumInsured())+"</span>");
-							contentMap.put("sumInsured", m.getSumInsured());
-							contentMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
-									&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(m.getSectionId())
-									&& f.getVehicleId()==m.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
-							contentMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
-									&& f.getSectionId()==Integer.parseInt(m.getSectionId())
-									&& f.getVehicleId()==m.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
-							return contentMap;
-						}, Collectors.toList()))).entrySet()
-						.stream().map(l -> {
-							LinkedHashMap<String, Object> cMap = new LinkedHashMap<String, Object>();
-							cMap.put("locationName", locationDetails.stream().filter(f -> Integer.parseInt(f.get("riskId").toString())==l.getKey())
-									.map(m -> m.get("buildingAddress").toString()).findAny().orElse(""));
-							cMap.put("contentRiskDesc", l.getValue().stream().map(q -> String.valueOf(q.get("contentRiskDesc"))).collect(Collectors.joining("<br>")));
-							cMap.put("sumInsured", l.getValue().stream().map(g -> (BigDecimal) g.get("sumInsured")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
-							cMap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
-							cMap.put("premium", l.getValue().stream().map(g -> g.get("Premium")).findFirst().get());
-							cMap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
-									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
-							return cMap;
-						}).collect(Collectors.toList());
-				List<ProductEmployeeDetails> empDetails = productEmpDetRepo.findByQuoteNoAndSectionId(map.get("quoteNo").toString(),sectionId);
-				List<Map<String,Object>> employeeList = empDetails.stream()
-						.collect(Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(o -> {
-							LinkedHashMap<String,Object> empMap = new LinkedHashMap<String,Object>();
-							empMap.put("employeeId", o.getEmployeeId());
-							empMap.put("employeeName", o.getEmployeeName());
-							empMap.put("occupationDesc", o.getOccupationDesc()+":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(o.getSalary())+"</span>");
-							empMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
-									&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(o.getSectionId())
-									&& f.getVehicleId()==o.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
-							empMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
-									&& f.getSectionId()==Integer.parseInt(o.getSectionId())
-									&& f.getVehicleId()==o.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
-							empMap.put("salary", o.getSalary());
-							return empMap;
-						}, Collectors.toList()))).entrySet()
-						.stream().map(g -> {
-							LinkedHashMap<String,Object> eMap = new LinkedHashMap<String,Object>();
-							eMap.put("locationName", locationDetails.stream().filter(f -> Integer.parseInt(f.get("riskId").toString())==g.getKey())
-									.map(m -> m.get("buildingAddress").toString()).findAny().orElse(""));
-							eMap.put("employeeName", g.getValue().stream().map(t -> t.get("employeeName")).findFirst().orElse(""));
-							eMap.put("occupationDesc", g.getValue().stream().map(t -> String.valueOf(t.get("occupationDesc"))).collect(Collectors.joining("<br>")));
-							eMap.put("Rate", g.getValue().stream().map(t -> t.get("Rate")).findFirst().get());
-							eMap.put("premium", g.getValue().stream().map(h -> h.get("Premium")).findFirst().get());
-							eMap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
-									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
-							eMap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
-							eMap.put("salary", g.getValue().stream().map(h -> (BigDecimal) h.get("salary")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
-							return eMap;
-						}).collect(Collectors.toList());
-												
-				// CONDITIONS
-				List<Map<String,Object>> conditionList = getConditionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
+				for(int i=0;i<sectionIds.size();i++) {
+					Map<String,Object> coverMap = new HashMap<String,Object>();
+					String sectionId = sectionIds.get(i).toString();
+					
+					List<BuildingRiskDetails> buildingdtl = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),sectionId,Integer.parseInt(locationId));
+					if(buildingdtl!=null && buildingdtl.size()>0) {
+						locationName = buildingdtl.get(0).getLocationName()==null?"":buildingdtl.get(0).getLocationName();
+						locationAddress = buildingdtl.get(0).getAddress()==null?"":buildingdtl.get(0).getAddress();
+					}
+					
+					/*List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
+						LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
+						lmap.put("riskId", k.getRiskId());
+						lmap.put("locationName", Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getLocationName().toString())).findAny().orElse(""));
+						lmap.put("buildingAddress",productId.equalsIgnoreCase("6")?k.getAddress()+", "+k.getRegionDesc()+", "+k.getDistrictDesc():
+								Blist.stream().filter(f -> f.getRiskId()==k.getRiskId()).map(j -> StringUtils.capitalize(j.getBuildingAddress().toString()))
+								.findAny().orElse("")+", "+StringUtils.capitalize(lmap.get("locationName").toString()));
+						lmap.put("buildingSumInsured", k.getBuildingSuminsured());
+						lmap.put("rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+								&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(k.getSectionId())
+								&& f.getVehicleId()==k.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
+						lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+								&& f.getSectionId()==Integer.parseInt(k.getSectionId())
+								&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+						lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals("1") && f.get("coverNoteReferenceNo")!=null)
+								.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
+						return lmap;
+					}).collect(Collectors.toList());*/
+					
+					List<ContentAndRisk> contentInfo = conAndRiskRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),sectionId,Integer.parseInt(locationId));
+					List<Map<String,Object>> contentList = contentInfo.stream().collect(
+							Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(m -> {
+								LinkedHashMap<String, Object> contentMap = new LinkedHashMap<String, Object>();
+								contentMap.put("itemId", m.getItemId());
+								contentMap.put("contentRiskDesc", m.getContentRiskDesc()+", &nbsp;"+m.getSerialNoDesc()+":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(m.getSumInsured())+"</span>");
+								contentMap.put("sumInsured", m.getSumInsured());
+								contentMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+										&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(m.getSectionId())
+										&& f.getVehicleId()==m.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
+								contentMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+										&& f.getSectionId()==Integer.parseInt(m.getSectionId())
+										&& f.getVehicleId()==m.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+								return contentMap;
+							}, Collectors.toList()))).entrySet()
+							.stream().map(l -> {
+								LinkedHashMap<String, Object> cMap = new LinkedHashMap<String, Object>();
+								cMap.put("contentRiskDesc", l.getValue().stream().map(q -> String.valueOf(q.get("contentRiskDesc"))).collect(Collectors.joining("<br>")));
+								cMap.put("sumInsured", l.getValue().stream().map(g -> (BigDecimal) g.get("sumInsured")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+								cMap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+								cMap.put("premium", l.getValue().stream().map(g -> g.get("Premium")).findFirst().get());
+								cMap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+										.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
+								return cMap;
+							}).collect(Collectors.toList());
+					List<ProductEmployeeDetails> empDetails = productEmpDetRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),sectionId,Integer.parseInt(locationId));
+					List<Map<String,Object>> employeeList = empDetails.stream()
+							.collect(Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(o -> {
+								LinkedHashMap<String,Object> empMap = new LinkedHashMap<String,Object>();
+								empMap.put("employeeId", o.getEmployeeId());
+								empMap.put("employeeName", o.getEmployeeName());
+								empMap.put("occupationDesc", o.getOccupationDesc()+":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(o.getSalary())+"</span>");
+								empMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+										&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(o.getSectionId())
+										&& f.getVehicleId()==o.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
+								empMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+										&& f.getSectionId()==Integer.parseInt(o.getSectionId())
+										&& f.getVehicleId()==o.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+								empMap.put("salary", o.getSalary());
+								return empMap;
+							}, Collectors.toList()))).entrySet()
+							.stream().map(g -> {
+								LinkedHashMap<String,Object> eMap = new LinkedHashMap<String,Object>();
+								eMap.put("employeeName", g.getValue().stream().map(t -> t.get("employeeName")).findFirst().orElse(""));
+								eMap.put("occupationDesc", g.getValue().stream().map(t -> String.valueOf(t.get("occupationDesc"))).collect(Collectors.joining("<br>")));
+								eMap.put("Rate", g.getValue().stream().map(t -> t.get("Rate")).findFirst().get());
+								eMap.put("premium", g.getValue().stream().map(h -> h.get("Premium")).findFirst().get());
+								eMap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+										.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
+								eMap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+								eMap.put("salary", g.getValue().stream().map(h -> (BigDecimal) h.get("salary")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+								return eMap;
+							}).collect(Collectors.toList());
+													
+					// CONDITIONS
+					List<Map<String,Object>> conditionList = getConditionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 
-				// EXCLUSION
-				List<Map<String,Object>> exclusionRes = getExclusionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
-				List<Map<String,Object>> exclusionList = exclusionRes.stream().map(k -> {
-					Map<String,Object> eMap = new HashMap<String,Object>();
-					eMap.put("conditionTerms", k.get("exclusioTerms"));
-					eMap.put("SectionId", k.get("SectionId"));
-					return eMap;
-				}).collect(Collectors.toList());
+					// EXCLUSION
+					List<Map<String,Object>> exclusionRes = getExclusionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
+					List<Map<String,Object>> exclusionList = exclusionRes.stream().map(k -> {
+						Map<String,Object> eMap = new HashMap<String,Object>();
+						eMap.put("conditionTerms", k.get("exclusioTerms"));
+						eMap.put("SectionId", k.get("SectionId"));
+						return eMap;
+					}).collect(Collectors.toList());
+					
+					//WARRANTY
+					List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
+					
+						List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+						coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
+						coverMap.put("contentList", contentList);
+						coverMap.put("employeeList", employeeList);
+						coverMap.put("termsAndconditions", termsAndconditions);
+						coverMap.put("sectionId", sectionId);
+						coverageList.add(coverMap);
+				}
 				
-				//WARRANTY
-				List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
-				
-					List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
-					coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
-					if("1".equalsIgnoreCase(sectionId) || "6".equalsIgnoreCase(productId))
-					coverMap.put("locationDetails", locationDetails);
-					coverMap.put("contentList", contentList);
-					coverMap.put("employeeList", employeeList);
-					coverMap.put("termsAndconditions", termsAndconditions);
-					coverMap.put("sectionId", sectionId);
-					coverageList.add(coverMap);
+				Map<String,Object> locationMap = new HashMap<String,Object>();
+				locationMap.put("locationName", locationName);
+				locationMap.put("locationAddress", locationAddress);
+				locationMap.put("coverageDetails", coverageList);
+				locationGroupList.add(locationMap);
 			}
 			
-			Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream()
+			/*Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream()
 					.collect(Collectors.groupingBy(k -> k.get("sectionDesc"), Collectors.toList()));
 			for(Map.Entry<Object, List<Map<String,Object>>> CDEntry : groupBycoverageDetails.entrySet()) {
 				LinkedHashMap<String, Object> coverMap = new LinkedHashMap<String, Object>();
@@ -2147,7 +2162,7 @@ public class JasperCustomServiceImple {
 				coverMap.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
 				coverMap.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
 				coverageDetails.add(coverMap);
-			}
+			}*/
 			
 			List<EserviceBuildingDetails> buildingDtl = eserviceBuildingDetailsRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(QuoteNo, "Y");
 			String buildingOwnerYn = buildingDtl.isEmpty()?"":buildingDtl.get(0).getBuildingOwnerYn()==null?"":buildingDtl.get(0).getBuildingOwnerYn();
@@ -2194,7 +2209,8 @@ public class JasperCustomServiceImple {
 			result.put("premiumDetails", premiumDetailsRes);
 			//result.put("sectionDetails", sectionList);
 			//result.put("locationDetails", locationDetails);
-			result.put("coverageDetails", coverageDetails);
+			//result.put("coverageDetails", coverageDetails);
+			result.put("locationGroupDetails", locationGroupList);
 			result.put("attachMents", attachments);
 			}
 		}catch(Exception e) {

@@ -69,10 +69,10 @@ public interface ContentAndRiskRepository  extends JpaRepository<ContentAndRisk,
 			String originalPolicyNo);
 
 
-	List<ContentAndRisk> findByQuoteNoAndSectionId(String QuoteNo, String sectionId);
-
-
 	List<ContentAndRisk> findByRequestReferenceNo(String requestrefno);
+
+
+	List<ContentAndRisk> findByRequestReferenceNoAndSectionIdAndLocationId(String string, String sectionId, int int1);
 
 
 }
