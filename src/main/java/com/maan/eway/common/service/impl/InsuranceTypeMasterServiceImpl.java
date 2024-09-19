@@ -3,8 +3,8 @@ package com.maan.eway.common.service.impl;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
@@ -191,7 +191,7 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		try {
 			List<InsuranceTypeMaster> getdata=	ProductStructureRepo.findByIndsutryTypeIdAndStatusAndCompanyIdAndProductId(sneha.getIndsutryTypeId(),"Y",sneha.getCompanyId(),Integer.valueOf(sneha.getProductid()));
 			List<ProductStructureMasterRes> result1 = new ArrayList<>();
-				 
+			getdata.sort(Comparator.comparing(InsuranceTypeMaster::getDisplayOrder)); 
 			for(InsuranceTypeMaster dd:getdata)
 			{
 				List<SectionMaster> section =sectionrepo.findBySectionId(Integer.valueOf(dd.getSectionId()));
