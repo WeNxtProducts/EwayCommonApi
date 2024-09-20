@@ -48,29 +48,41 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		if (StringUtils.isBlank(req.getIndustryTypeId())) {
 			 errors.add(new Error("02", "Insurance Type Id" , "Please select  the insurance type"));
 		 }
-		if(StringUtils.isBlank(req.getSectionId()))
-		{
-			 errors.add(new Error("03", "Section Id" , "Please select  the section"));	
-		}
+//		if(StringUtils.isBlank(req.getSectionId()))
+//		{
+//			 errors.add(new Error("03", "Section Id" , "Please select  the section"));	
+//		}
 		if(StringUtils.isBlank(req.getSectionName()))
 		{
-			 errors.add(new Error("04", "Section Name" , "Please enter the section name"));	
+			 errors.add(new Error("04", "Section Name" , "Please enter the section"));	
 		}
 		if(StringUtils.isBlank(req.getRemarks()))
 		{
 			 errors.add(new Error("05", "Remark" , "Please enter the remark"));	
 		}
+		
 		if(StringUtils.isBlank(req.getDisplayOrder()))
 		{
 			 errors.add(new Error("06", "Display Order" , "Please enter the display order"));	
 		}
+		else if(!req.getDisplayOrder().matches("[0-9]+"))
+		{
+			errors.add(new Error("11", "Display Order" , "Please enter the display order in number only"));	
+		}
+		
 		if(StringUtils.isBlank(req.getProductId()))
 		{
 			 errors.add(new Error("06", "Product Id" , "Please enter the product id"));	
 		}
-		if (req.getBodyTypeIds().size() < 1  ) {
+		
+		if (req.getBodyTypeIds() == null) {
 			 errors.add(new Error("07", "Body Type" , "Please select the body type"));
 		 }
+		else if(req.getBodyTypeIds().size() < 1)
+		{
+			errors.add(new Error("07", "Body Type" , "Please select the body type"));
+		}
+		
 		if(req.getEntryDate() == null)
 		{
 			errors.add(new Error("08", "Effective Date" , "Please select the effective date"));
