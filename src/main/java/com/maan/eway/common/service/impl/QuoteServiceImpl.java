@@ -1109,7 +1109,7 @@ public class QuoteServiceImpl implements QuoteService {
 				sectionId=sec.getSectionId()==null?"":sec.getSectionId().toString();
 				if( sec.getProductType().equalsIgnoreCase("H") ) {
 //					List<SectionDetails>  pacSectionList = new ArrayList<SectionDetails>();
-					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoAndSectionIdOrderByLocationIdAsc(req.getQuoteNo() , sec.getSectionId());
+					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoAndSectionIdAndLocationIdOrderByLocationIdAsc(req.getQuoteNo() , sec.getSectionId(),d);
 					for (CommonDataDetails	 acc : accData ) {
 						
 						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(acc.getRiskId()) &&
@@ -1149,7 +1149,7 @@ public class QuoteServiceImpl implements QuoteService {
 					}
 					
 				}else {
-					List<BuildingRiskDetails> bulData =  	buildRiskRepo.findByQuoteNoAndSectionIdOrderByLocationIdAsc(req.getQuoteNo() , sec.getSectionId());
+					List<BuildingRiskDetails> bulData =  	buildRiskRepo.findByQuoteNoAndSectionIdAndLocationIdOrderByLocationIdAsc(req.getQuoteNo() , sec.getSectionId(),d);
 					for (BuildingRiskDetails	 bul : bulData ) {
 					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(bul.getRiskId())) &&
 							o.getCompanyId().equals(bul.getCompanyId()) && o.getProductId().toString().equals(bul.getProductId()) && o.getSectionId().toString().equals(bul.getSectionId()) &&  o.getLocationId().equals(bul.getLocationId())).collect(Collectors.toList());
