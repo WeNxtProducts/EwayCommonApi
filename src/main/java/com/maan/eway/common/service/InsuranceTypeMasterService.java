@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.maan.eway.common.req.GetProductMasterReq;
 import com.maan.eway.common.req.ProductStructureMasterReq;
@@ -11,6 +12,8 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ProductStructureMasterRes;
 import com.maan.eway.common.res.ProductStructureMasterResponse;
 import com.maan.eway.error.Error;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 
 public interface InsuranceTypeMasterService {
@@ -22,7 +25,7 @@ public interface InsuranceTypeMasterService {
 	
 	CommonRes getInsuranceMaster(GetProductMasterReq req);
 	
-	List<ProductStructureMasterRes> getByIndustryTypeId(GetProductMasterReq req);
+	List<ProductStructureMasterRes> getByIndustryTypeId(GetProductMasterReq req,  @RequestHeader("Authorization") String token);
 	
 	CommonRes DeleteproductStructureMaster(GetProductMasterReq req);
 	

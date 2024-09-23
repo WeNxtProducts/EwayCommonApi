@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +27,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api")
@@ -95,10 +97,10 @@ else {
 }	
 @PostMapping("/getByIndsutryType")
 @ApiOperation(value="This method is to Industry Type")
-public ResponseEntity<CommonRes> getByIndutryType(@RequestBody GetProductMasterReq req){
+public ResponseEntity<CommonRes> getByIndutryType(@RequestBody GetProductMasterReq req, @RequestHeader("Authorization") String token){
 CommonRes data = new CommonRes();
 
-List<ProductStructureMasterRes> res= entityService.getByIndustryTypeId(req);
+List<ProductStructureMasterRes> res= entityService.getByIndustryTypeId(req, token);
 
 if(res!=null) {
 	data.setCommonResponse(res);

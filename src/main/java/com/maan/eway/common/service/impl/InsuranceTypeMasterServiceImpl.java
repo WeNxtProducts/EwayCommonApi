@@ -8,32 +8,48 @@ import java.util.ArrayList;
 
 import java.util.Comparator;
 import java.util.Arrays;
-
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 //import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 
+import com.maan.eway.admin.req.PolicyTypeMasterGetReq;
+import com.maan.eway.admin.service.RestTemplateApiService;
 import com.maan.eway.bean.InsuranceTypeMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.common.req.GetProductMasterReq;
 import com.maan.eway.common.req.ProductStructureMasterReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.common.res.ProductStructureMasterRes;
 import com.maan.eway.common.res.ProductStructureMasterResponse;
 import com.maan.eway.common.service.InsuranceTypeMasterService;
 import com.maan.eway.error.Error;
+//import com.maan.eway.master.service.PolicyTypeMasterService;
 import com.maan.eway.repository.InsuranceTypeMasterRepository;
 import com.maan.eway.repository.SectionMasterRepository;
+import com.maan.eway.res.DropDownRes;
+
+import jakarta.servlet.http.HttpServletRequest;
 @Service
 @Transactional
 public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterService{
 
+//	@Autowired
+//	private PolicyTypeMasterService service;
+	
 	@Autowired
 	InsuranceTypeMasterRepository ProductStructureRepo;
+
+	
+	@Autowired
+	RestTemplateApiService restTemplateApiService;
 	
 	@Autowired
 	SectionMasterRepository sectionrepo;
@@ -281,15 +297,14 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		return res;
 		
 	}
-	public List<ProductStructureMasterRes> getByIndustryTypeId(GetProductMasterReq sneha)
+	public List<ProductStructureMasterRes> getByIndustryTypeId(GetProductMasterReq sneha, @RequestHeader("Authorization") String token)
 	{
-		List<ProductStructureMasterRes> result=null;
+//		List<ProductStructureMasterRes> result=null;
+		List<ProductStructureMasterRes> result1 = new ArrayList<>();
 		try {
 			List<InsuranceTypeMaster> getdata=	ProductStructureRepo.findByIndsutryTypeIdAndStatusAndCompanyIdAndProductId(sneha.getIndsutryTypeId(),"Y",sneha.getCompanyId(),Integer.valueOf(sneha.getProductid()));
-			List<ProductStructureMasterRes> result1 = new ArrayList<>();
 
-			getdata.sort(Comparator.comparing(InsuranceTypeMaster::getDisplayOrder)); 
-		 			
+			getdata.sort(Comparator.comparing(InsuranceTypeMaster::getDisplayOrder)); 	
 			for(InsuranceTypeMaster dd:getdata)
 			{
 				List<SectionMaster> section =sectionrepo.findBySectionId(Integer.valueOf(dd.getSectionId()));
@@ -302,14 +317,39 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			
 				result1.add(data);
 			}
-			result=result1;
+			
+			String removedBearer = token.replaceAll("Bearer ", "").split(",")[0];
+			PolicyTypeMasterGetReq policyTypeMasterGetReq = new PolicyTypeMasterGetReq();
+			policyTypeMasterGetReq.setInsuranceId(sneha.getCompanyId());
+			policyTypeMasterGetReq.setProductId(sneha.getProductid());
+			policyTypeMasterGetReq.setLoginId(sneha.getLoginId() );
+				
+			String url = "http://192.168.1.42:8084/master/dropdown/policytype";
+			DropdownCommonRes policyTypeCommonRes = restTemplateApiService.callSecondApi(url, policyTypeMasterGetReq, removedBearer);
+
+			List<DropDownRes> commonResponse = policyTypeCommonRes.getCommonResponse();		
+		    if (commonResponse == null || commonResponse.isEmpty()) {
+	            return result1;  
+	        }
+			 List<String> policyType = commonResponse.stream()
+			            .map(DropDownRes::getCode) 
+			            .collect(Collectors.toList());
+
+			List<ProductStructureMasterRes> getByIndustryType = result1.stream()
+				            .filter(item -> policyType.contains(item.getSectionid().toString())) 
+				            .collect(Collectors.toList());
+				  
+			 return getByIndustryType.isEmpty() ? Collections.emptyList() : getByIndustryType;
+			
+//			result=result1;
+			
 		}catch(Exception cc)
 		{
 		 System.out.println("***************Exception Occured in  get Insurance Type Master****************");
         cc.printStackTrace();
         return null;
 		}
-		return result;
+//		return result;
 	}
 
 	@Override

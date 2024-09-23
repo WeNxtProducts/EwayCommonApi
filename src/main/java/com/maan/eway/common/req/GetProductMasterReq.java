@@ -24,4 +24,7 @@ public class GetProductMasterReq {
 	 
 	 @JsonProperty("SectionId")
 	 private String sectionId;
+	 
+	 @JsonProperty("LoginId")
+	 private String loginId;
 }
