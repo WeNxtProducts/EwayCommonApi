@@ -1198,7 +1198,7 @@ public class QuoteServiceImpl implements QuoteService {
 					}
 				
 			}
-				sectionList.add(secRes);
+//				sectionList.add(secRes);
 				
 			}
 			locRes.setSectionDetails(buildingSectionList);
@@ -1591,7 +1591,7 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			List<EserviceCommonGetRes>   commonResList = new ArrayList<EserviceCommonGetRes>();
 			List<LocationDetailsRes>  loctionList = new ArrayList<LocationDetailsRes>();
-			List<SectionDetailsRes>  sList = new ArrayList<SectionDetailsRes>();
+			
 			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();
 			for (CommonDataDetails com :  commonDatas) {
 				
@@ -1695,6 +1695,7 @@ public class QuoteServiceImpl implements QuoteService {
 			Set<Integer> findlocationid = commonDatas.stream().map(CommonDataDetails::getLocationId).distinct()
 					.collect(Collectors.toSet());
 			for (Integer d : findlocationid) {
+				List<SectionDetailsRes>  sList = new ArrayList<SectionDetailsRes>();
 				LocationDetailsRes locRes = new LocationDetailsRes();
 				List<CommonDataDetails> filter = commonDatas.stream().filter(o -> o.getLocationId().equals(d))
 						.collect(Collectors.toList());
@@ -1713,7 +1714,8 @@ public class QuoteServiceImpl implements QuoteService {
 					secRes.setSumInsured(com.getSumInsured()==null?null:com.getSumInsured().toString());
 						
 						// Cover Details
-						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(com.getRiskId()))).collect(Collectors.toList());
+						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(com.getRiskId()))&&
+								 o.getSectionId().toString().equals(com.getSectionId()) &&  o.getLocationId().equals(com.getLocationId()) ).collect(Collectors.toList());
 						
 						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 						
@@ -1777,11 +1779,8 @@ public class QuoteServiceImpl implements QuoteService {
 						secRes.setPremiumExcluedTaxLc(PremiumExcluedTaxLc.toString()==null?"":PremiumExcluedTaxLc.toString());
 						secRes.setPremiumIncludedTax(PremiumIncludedTax.toString()==null?"":PremiumIncludedTax.toString());
 						secRes.setPremiumIncludedTaxLc(PremiumIncludedTaxLc.toString()==null?"":PremiumIncludedTaxLc.toString());
-
 						secRes.setCovers(coverListRes);
-					
-						
-					sList.add(secRes);
+						sList.add(secRes);
 				}
 				locRes.setSectionDetails(sList);
 				loctionList.add(locRes);
