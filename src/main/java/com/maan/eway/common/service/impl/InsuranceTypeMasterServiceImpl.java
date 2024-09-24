@@ -331,12 +331,13 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 		    if (commonResponse == null || commonResponse.isEmpty()) {
 	            return result1;  
 	        }
+		   
 			 List<String> policyType = commonResponse.stream()
-			            .map(DropDownRes::getCode) 
+			            .map(D->D.getCodeDesc().trim())
 			            .collect(Collectors.toList());
-
+		
 			List<ProductStructureMasterRes> getByIndustryType = result1.stream()
-				            .filter(item -> policyType.contains(item.getSectionid().toString())) 
+				            .filter(item -> policyType.contains(item.getSectionName().trim())) 
 				            .collect(Collectors.toList());
 				  
 			 return getByIndustryType.isEmpty() ? Collections.emptyList() : getByIndustryType;
