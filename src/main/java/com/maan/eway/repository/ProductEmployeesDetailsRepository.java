@@ -43,8 +43,10 @@ public interface ProductEmployeesDetailsRepository extends JpaRepository<Product
 	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
 			String originalPolicyNo);
 
+	List<ProductEmployeeDetails> findByQuoteNoAndSectionId(String string, String sectionId);
+
 	List<ProductEmployeeDetails> findByRequestReferenceNoAndSectionIdAndLocationId(String string, String sectionId,
-			int LocationId);
+			Integer locationId);
 
 
 }

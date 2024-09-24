@@ -1858,10 +1858,10 @@ public class JasperCustomServiceImple {
 				predicate.add(cb.equal(pcdRoot.get("quoteNo"),map.get("quoteNo")));
 				predicate.add(cb.equal(pcdRoot.get("quoteNo"),sddRoot.get("quoteNo")));
 				predicate.add(cb.equal(pcdRoot.get("sectionId").as(String.class), sddRoot.get("sectionId")));
-				predicate.add(cb.equal(pcdRoot.get("locationId"),sddRoot.get("locationId")));
 				predicate.add(cb.equal(pcdRoot.get("taxId"),"0"));
 				predicate.add(cb.equal(pcdRoot.get("discLoadId"), "0"));
 				predicate.add(cb.equal(pcdRoot.get("subCoverId"), "0"));
+				predicate.add(cb.equal(pcdRoot.get("locationId"), sddRoot.get("locationId")));
 				/*if(!eserviceCommonList.isEmpty()) {
 					Root<EserviceCommonDetails> ecdRoot = cq1.from(EserviceCommonDetails.class);
 					eserviceQuote = ecdRoot.get("occupationDesc").alias("occupationDesc");
@@ -1876,17 +1876,16 @@ public class JasperCustomServiceImple {
 				
 				Subquery<String> occDesc = cq1.subquery(String.class);
 				Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
-				occDesc.select(ecdRoot.get("occupationDesc"))
-				.where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class), ecdRoot.get("sectionId")),
+				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class), ecdRoot.get("sectionId")),
 						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId").as(String.class), ecdRoot.get("productId")),
-						cb.equal(pcdRoot.get("locationId"), ecdRoot.get("locationId")),cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")));
+						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")),cb.equal(pcdRoot.get("locationId"), ecdRoot.get("locationId")));
 				
 				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
 						pcdRoot.get("coverId").alias("coverId"),pcdRoot.get("coverageType").alias("coverageType"),sddRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),
 						 pcdRoot.get("sumInsured").alias("sumInsured"),pcdRoot.get("rate").alias("rate"),pcdRoot.get("premiumIncludedTaxLc").alias("premiumIncludedTaxLc"),
 						 pcdRoot.get("premiumIncludedTaxFc").alias("premiumIncludedTaxFc"),occDesc.alias("occupationDesc"),
 						 pcdRoot.get("premiumExcludedTaxLc").alias("premiumExcludedTaxLc"),pcdRoot.get("premiumExcludedTaxFc").alias("premiumExcludedTaxFc"),
-						 pcdRoot.get("locationId").alias("locationId"))
+						 sddRoot.get("locationId").alias("locationId"))
 				.where(predicateArray).orderBy(cb.asc(sddRoot.get("sectionId")));
 						
 			List<Tuple> Slist = em.createQuery(cq1).getResultList();
@@ -1937,11 +1936,11 @@ public class JasperCustomServiceImple {
 				}
 			}
 			List<Map<String,Object>> sectionList = new ArrayList<Map<String,Object>>();
-		//	List<Map<String,Object>> coverageDetails = new ArrayList<Map<String,Object>>();
+			List<Map<String,Object>> coverageDetails = new ArrayList<Map<String,Object>>();
 			List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
 			Double OverAllPremium=0.0;
 			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
-			if(Arrays.asList("100002","100028").contains(companyId)) {
+			if("100002".equalsIgnoreCase(companyId)) {
 					if(coverData!=null && !coverData.isEmpty()) {
 						Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T"))
 								.map(m -> m.getTaxRate()).map(BigDecimal::doubleValue)
@@ -2020,25 +2019,29 @@ public class JasperCustomServiceImple {
 				}
 			}
 			
-			List<Map<String,Object>> locationGroupList = new ArrayList<Map<String,Object>>();
+			List<Object> sectionIds = Slist.stream().map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
 			List<Object> locationIds = Slist.stream().map(k -> k.get("locationId")).distinct().collect(Collectors.toList());
 			List<Map<String,Object>> coverageList = new ArrayList<Map<String,Object>>();
 			String productId = map.get("productId")==null?null:map.get("productId").toString();
+			
 			for(int x=0;x<locationIds.size();x++) {
+				Map<String,Object> locmap = new HashMap<String,Object>();
 				String locationId = locationIds.get(x).toString();
-				String locationName="",locationAddress="";
-				List<Object> sectionIds = Slist.stream().filter(f -> f.get("locationId")!=null && f.get("locationId").toString().equals(locationId))
-						.map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
-				
+				List<EserviceBuildingDetails> buildingdtl = eserviceBuildingDetailsRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),"1",Integer.parseInt(locationId));
+				List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
+					LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
+					lmap.put("locationName", k.getLocationName());
+					lmap.put("buildingAddress", k.getAddress());
+					lmap.put("wallType", k.getWallTypeDesc());
+					lmap.put("roofType", k.getRoofTypeDesc());
+					lmap.put("firstlosspayee", k.getFirstLossPercent());
+					lmap.put("buildingSumInsured", k.getBuildingSuminsured());
+					lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+					return lmap;
+				}).collect(Collectors.toList());
 				for(int i=0;i<sectionIds.size();i++) {
 					Map<String,Object> coverMap = new HashMap<String,Object>();
 					String sectionId = sectionIds.get(i).toString();
-					
-					List<BuildingRiskDetails> buildingdtl = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),sectionId,Integer.parseInt(locationId));
-					if(buildingdtl!=null && buildingdtl.size()>0) {
-						locationName = buildingdtl.get(0).getLocationName()==null?"":buildingdtl.get(0).getLocationName();
-						locationAddress = buildingdtl.get(0).getAddress()==null?"":buildingdtl.get(0).getAddress();
-					}
 					
 					/*List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
 						LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
@@ -2080,6 +2083,7 @@ public class JasperCustomServiceImple {
 								cMap.put("sumInsured", l.getValue().stream().map(g -> (BigDecimal) g.get("sumInsured")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 								cMap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 								cMap.put("premium", l.getValue().stream().map(g -> g.get("Premium")).findFirst().get());
+								cMap.put("rate", l.getValue().stream().map(g -> g.get("Rate")).findFirst().get());
 								cMap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
 										.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 								return cMap;
@@ -2131,20 +2135,15 @@ public class JasperCustomServiceImple {
 						List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
 						coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
 						coverMap.put("contentList", contentList);
+						coverMap.put("locationDetails", locationDetails);
 						coverMap.put("employeeList", employeeList);
 						coverMap.put("termsAndconditions", termsAndconditions);
 						coverMap.put("sectionId", sectionId);
 						coverageList.add(coverMap);
 				}
-				
-				Map<String,Object> locationMap = new HashMap<String,Object>();
-				locationMap.put("locationName", locationName);
-				locationMap.put("locationAddress", locationAddress);
-				locationMap.put("coverageDetails", coverageList);
-				locationGroupList.add(locationMap);
 			}
 			
-			/*Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream()
+			Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream()
 					.collect(Collectors.groupingBy(k -> k.get("sectionDesc"), Collectors.toList()));
 			for(Map.Entry<Object, List<Map<String,Object>>> CDEntry : groupBycoverageDetails.entrySet()) {
 				LinkedHashMap<String, Object> coverMap = new LinkedHashMap<String, Object>();
@@ -2162,7 +2161,7 @@ public class JasperCustomServiceImple {
 				coverMap.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
 				coverMap.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
 				coverageDetails.add(coverMap);
-			}*/
+			}
 			
 			List<EserviceBuildingDetails> buildingDtl = eserviceBuildingDetailsRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(QuoteNo, "Y");
 			String buildingOwnerYn = buildingDtl.isEmpty()?"":buildingDtl.get(0).getBuildingOwnerYn()==null?"":buildingDtl.get(0).getBuildingOwnerYn();
@@ -2209,8 +2208,7 @@ public class JasperCustomServiceImple {
 			result.put("premiumDetails", premiumDetailsRes);
 			//result.put("sectionDetails", sectionList);
 			//result.put("locationDetails", locationDetails);
-			//result.put("coverageDetails", coverageDetails);
-			result.put("locationGroupDetails", locationGroupList);
+			result.put("coverageDetails", coverageDetails);
 			result.put("attachMents", attachments);
 			}
 		}catch(Exception e) {
