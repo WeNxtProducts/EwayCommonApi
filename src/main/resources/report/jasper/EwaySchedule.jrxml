@@ -580,7 +580,7 @@
 						<jr:detailCell style="Table 1_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
-								<pen lineWidth="0.0"/>
+								<pen lineWidth="0.5"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="179" height="15" uuid="b89b85ea-804c-4a74-8940-14245327518d"/>
@@ -597,7 +597,7 @@
 						<jr:detailCell style="Table 1_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
-								<pen lineWidth="0.0"/>
+								<pen lineWidth="0.5"/>
 							</box>
 							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="99" height="15" uuid="e41150ec-346c-4aba-859a-a7108dabdb0f"/>
@@ -612,34 +612,33 @@
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="47">
-			<textField>
-				<reportElement x="205" y="15" width="8" height="15" uuid="ab78dcf8-043c-4ea2-9fb7-d34ecbb9a886">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
+		<band height="45">
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="213" y="0" width="95" height="15" uuid="f533d67b-42ab-43b0-848d-d81393bae15c"/>
-				<box rightPadding="2"/>
+				<reportElement x="209" y="0" width="99" height="15" uuid="f533d67b-42ab-43b0-848d-d81393bae15c"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.5"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{NonMotorTotPremium}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="76" y="0" width="129" height="15" uuid="0681e049-17b1-4636-81ee-85f8c0571925">
+				<reportElement x="30" y="0" width="179" height="15" uuid="0681e049-17b1-4636-81ee-85f8c0571925">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<box leftPadding="0" rightPadding="2"/>
+				<box leftPadding="0" rightPadding="2">
+					<pen lineWidth="0.5"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Premium Total"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="213" y="15" width="95" height="15" uuid="82d1e023-8ab1-45b9-a1c3-7ee5a296b188"/>
+				<reportElement x="209" y="15" width="99" height="15" uuid="82d1e023-8ab1-45b9-a1c3-7ee5a296b188"/>
 				<box rightPadding="2">
+					<pen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5" lineStyle="Double"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -648,27 +647,26 @@
 				<textFieldExpression><![CDATA[$F{vatAmount}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="76" y="15" width="129" height="15" uuid="7daa8429-7e13-47a7-8431-b27ce2fd63b9">
+				<reportElement x="30" y="15" width="179" height="15" uuid="7daa8429-7e13-47a7-8431-b27ce2fd63b9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<box leftPadding="0" rightPadding="2"/>
+				<box leftPadding="0" rightPadding="2">
+					<pen lineWidth="0.5"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="205" y="0" width="8" height="15" uuid="ab99a1c5-e163-47ed-8830-320163bce53b">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="213" y="30" width="95" height="15" uuid="cc2da6c0-cbd7-4571-bbdb-af2e98dbbc00">
+				<reportElement x="209" y="30" width="99" height="15" uuid="cc2da6c0-cbd7-4571-bbdb-af2e98dbbc00">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box rightPadding="2">
-					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
@@ -676,27 +674,15 @@
 				<textFieldExpression><![CDATA[$F{overAllPremium}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="145" y="30" width="60" height="15" uuid="ca27d34e-b3a0-40e8-8ad9-5c140d70ea39"/>
-				<box leftPadding="0" rightPadding="2"/>
+				<reportElement x="30" y="30" width="179" height="15" uuid="ca27d34e-b3a0-40e8-8ad9-5c140d70ea39"/>
+				<box leftPadding="0" rightPadding="2">
+					<pen lineWidth="0.5"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Invoice Total"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="205" y="30" width="8" height="15" uuid="b2ad34d9-c697-4ab3-a728-7fb74769ed7e">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement x="213" y="46" width="95" height="1" uuid="6082e55a-362d-4c04-94dd-fcc0767be1d6">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<graphicElement>
-					<pen lineWidth="0.5"/>
-				</graphicElement>
-			</line>
 		</band>
 		<band height="50"/>
 		<band height="42">

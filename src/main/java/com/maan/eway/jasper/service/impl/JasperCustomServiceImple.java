@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -2025,7 +2026,6 @@ public class JasperCustomServiceImple {
 			String productId = map.get("productId")==null?null:map.get("productId").toString();
 			
 			for(int x=0;x<locationIds.size();x++) {
-				Map<String,Object> locmap = new HashMap<String,Object>();
 				String locationId = locationIds.get(x).toString();
 				List<EserviceBuildingDetails> buildingdtl = eserviceBuildingDetailsRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),"1",Integer.parseInt(locationId));
 				List<Map<String,Object>> locationDetails = buildingdtl.stream().map(k ->{
@@ -2133,11 +2133,19 @@ public class JasperCustomServiceImple {
 					List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 					
 						List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+						int conditionsize = termsAndconditions.size();
+						int midIndex = conditionsize / 2;
+
+						List<Map<String, Object>> firstHalf = termsAndconditions.subList(0, midIndex);
+
+						List<Map<String, Object>> secondHalf = termsAndconditions.subList(midIndex, conditionsize);
+					
 						coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
 						coverMap.put("contentList", contentList);
 						coverMap.put("locationDetails", locationDetails);
 						coverMap.put("employeeList", employeeList);
-						coverMap.put("termsAndconditions", termsAndconditions);
+						coverMap.put("firstHalfconditions", firstHalf);
+						coverMap.put("secondHalfconditions", secondHalf);
 						coverMap.put("sectionId", sectionId);
 						coverageList.add(coverMap);
 				}
