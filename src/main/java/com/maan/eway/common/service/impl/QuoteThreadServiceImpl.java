@@ -1402,6 +1402,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	 request2.setMotorYn(request.getMotorYn());
 		            	 request2.setIndividualId(passCount);
 		            	 request2.setIsFinYn(request.getIsFinYn());
+		            	 request2.setLocationId(1);
 		            	 
 		            	 request.setSectionId(sectionId.get(0));
 		            	 request.setGroupId(filterGroup.get(0).getGroupId());
@@ -1437,6 +1438,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	 request2.setMotorYn(request.getMotorYn());
 	            	 request2.setIndividualId(passCount);
 	            	 request2.setIsFinYn(request.getIsFinYn());
+	            	 request2.setLocationId(1);
 	            	 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 								, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
 							    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
@@ -1480,6 +1482,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	    	            	 request2.setMotorYn(request.getMotorYn());
 	    	            	 request2.setIndividualId(passCount);
 	    	            	 request2.setIsFinYn(request.getIsFinYn());
+	    	            	 request2.setLocationId(1);
 //	    	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 //	    	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
 //	    	            			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );

@@ -1589,6 +1589,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			groupData.setOverallPremiumLc(groupOverAllPremiumLc  == 0D ? new BigDecimal(0) : new BigDecimal(df.format(groupOverAllPremiumLc)));
 			groupData.setQuoteNo(request.getQuoteNo());
 			groupData.setCustomerId(request.getCustomerId());
+			groupData.setSectionId(	Integer.valueOf(request.getSectionId()));
+			
 			eserGroupRepo.saveAndFlush(groupData);
 			List<EserviceTravelGroupDetails> groupDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
 			groupDatas.forEach( o -> o.setQuoteNo(request.getQuoteNo()));
