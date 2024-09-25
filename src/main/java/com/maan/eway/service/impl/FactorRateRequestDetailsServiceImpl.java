@@ -1527,6 +1527,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					res.setOriginalPolicyNo(travelData.getOriginalPolicyNo());
 					res.setSourceType(travelData.getSourceType());
 					res.setFinalizeYn(travelData.getFinalizeYn());
+					res.setLocationId("1");
 					
 					//res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
 					Object riskDetails = new Object();
