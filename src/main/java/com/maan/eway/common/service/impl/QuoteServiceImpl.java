@@ -798,6 +798,7 @@ public class QuoteServiceImpl implements QuoteService {
 					locationName=sec.getLocationName();
 					buildSec.setLocationId(StringUtils.isBlank(locationId)?"":locationId);
 					buildSec.setLocationName(StringUtils.isBlank(locationName)?"":locationName);
+				
 					buildingSectionList.add(buildSec);
 				
 			} 
@@ -1028,7 +1029,15 @@ public class QuoteServiceImpl implements QuoteService {
 				contentDesc=StringUtil.isBlank(build.getContentDesc())?"":build.getContentDesc();
 						
 			}
-			
+			//or Electronic Equiment in domestic
+			List<BuildingRiskDetails> filterElecEquip2 = buildings.stream().filter( o -> "76".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk)  ).collect(Collectors.toList());
+			if (filterElecEquip2.size() > 0) {
+				BuildingRiskDetails build = filterElecEquip2.get(0);
+				contentType = StringUtil.isBlank(build.getContentId()) ? "" : build.getContentId();
+				contentDesc = StringUtil.isBlank(build.getContentDesc()) ? "" : build.getContentDesc();
+
+			}
+
 			// Bond
 			if(StringUtils.isNotBlank(sectionId) && "61".equals(productId) ) {
 				String sec=sectionId;
