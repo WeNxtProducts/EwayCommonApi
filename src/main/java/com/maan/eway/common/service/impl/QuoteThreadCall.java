@@ -2315,16 +2315,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				List<EserviceTravelGroupDetails> oldGroupDatas = 	eserGroupRepo.findByQuoteNo(req.getEndtPrevQuoteNo() );
 				List<VehicleNeedToRemove> vehicleNeedberemove = new ArrayList<VehicleNeedToRemove>();
+				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo())){
+				List<EserviceTravelGroupDetails> oldGroupDatas = 	eserGroupRepo.findByQuoteNo(req.getEndtPrevQuoteNo() );
 				oldGroupDatas.forEach( o -> {
 					VehicleNeedToRemove removeVehicle = new VehicleNeedToRemove(); 
 					removeVehicle.setSectionId(o.getSectionId().toString());
 					removeVehicle.setVehicleId(Integer.valueOf(o.getRiskId()));
 					vehicleNeedberemove.add(removeVehicle);
 				});
+				}
 				
 				req.setVehicleNeedberemove(vehicleNeedberemove);
+				
 			
 				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) && req.getEndtType().equalsIgnoreCase("842") ) {
 //					// Endorsement
