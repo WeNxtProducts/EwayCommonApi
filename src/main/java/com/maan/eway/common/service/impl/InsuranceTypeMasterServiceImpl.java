@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 //import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -43,6 +44,9 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 
 //	@Autowired
 //	private PolicyTypeMasterService service;
+	
+	@Value("${api.policytype.url}")
+	private String policyTypeUrl;
 	
 	@Autowired
 	InsuranceTypeMasterRepository ProductStructureRepo;
@@ -324,8 +328,8 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 			policyTypeMasterGetReq.setProductId(sneha.getProductid());
 			policyTypeMasterGetReq.setLoginId(sneha.getLoginId() );
 				
-			String url = "http://192.168.1.42:8084/master/dropdown/policytype";
-			DropdownCommonRes policyTypeCommonRes = restTemplateApiService.callSecondApi(url, policyTypeMasterGetReq, removedBearer);
+//			String url = "http://192.168.1.42:8084/master/dropdown/policytype";
+			DropdownCommonRes policyTypeCommonRes = restTemplateApiService.callSecondApi(policyTypeUrl, policyTypeMasterGetReq, removedBearer);
 
 			List<DropDownRes> commonResponse = policyTypeCommonRes.getCommonResponse();		
 		    if (commonResponse == null || commonResponse.isEmpty()) {
