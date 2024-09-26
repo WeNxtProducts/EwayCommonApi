@@ -1110,6 +1110,9 @@ public class QuoteServiceImpl implements QuoteService {
 
 			for (SectionDataDetails sec : filter) {
 				secRes = new SectionDetailsRes();
+				List<BuildingRiskDetails> build = buildRiskRepo.findByQuoteNoAndSectionIdAndLocationId(req.getQuoteNo(),sec.getSectionId(),d);
+				contentType=StringUtil.isBlank(build.get(0).getContentId())?"":build.get(0).getContentId();
+				contentDesc=StringUtil.isBlank(build.get(0).getContentDesc())?"":build.get(0).getContentDesc();
 				secRes.setRiskId(sec.getRiskId().toString());
 				secRes.setSectionId(sec.getSectionId().toString());
 				secRes.setSectionName(sec.getSectionDesc());
