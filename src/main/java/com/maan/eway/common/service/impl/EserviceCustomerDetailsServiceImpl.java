@@ -275,12 +275,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				if("100040".equalsIgnoreCase(req.getCompanyId())) 
 				{
-			
-					if (StringUtils.isBlank(req.getAddress2())) {
-						errorList.add("3306");
-	
-					}
-					else if (req.getAddress2().length() > 50) {
+					if (req.getAddress2().length() > 50) {
 						errorList.add("1000");
 					}
 				}
@@ -2244,7 +2239,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			res.setMobileCode3(data.get(0).getMobileCode3()==null?"":data.get(0).getMobileCode3());
 			res.setSocioProfessionalCategory(data.get(0).getSocioProfessionalCategory());
 			res.setActivities(data.get(0).getActivities());
-			
+			res.setAddress2(data.get(0).getAddress2()==null?"":data.get(0).getAddress2());	
 					
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2371,7 +2366,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setVrTinNo( data.getIdType().equalsIgnoreCase("6") ? data.getIdNumber() : data.getVrTinNo()  );
 				
 				res.setSocioProfessionalCategory(data.getSocioProfessionalCategory());	
-				res.setActivities(data.getActivities());				
+				res.setActivities(data.getActivities());
+				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());
+				
 				
 				resList.add(res);
 			}
