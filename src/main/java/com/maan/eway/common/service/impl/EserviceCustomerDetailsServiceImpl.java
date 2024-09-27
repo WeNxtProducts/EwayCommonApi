@@ -276,9 +276,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if("100040".equalsIgnoreCase(req.getCompanyId())) 
 				{
 			
-					if (req.getAddress2().length() > 50) {
+					if (StringUtils.isBlank(req.getAddress2())) {
+						errorList.add("3306");
+	
+					}
+					else if (req.getAddress2().length() > 50) {
 						errorList.add("1000");
-						//errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
 					}
 				}
 				
