@@ -1110,14 +1110,12 @@ public class QuoteServiceImpl implements QuoteService {
 
 			for (SectionDataDetails sec : filter) {
 				secRes = new SectionDetailsRes();
-				List<BuildingRiskDetails> build = buildRiskRepo.findByQuoteNoAndSectionIdAndLocationId(req.getQuoteNo(),sec.getSectionId(),d);
-				contentType=StringUtil.isBlank(build.get(0).getContentId())?"":build.get(0).getContentId();
-				contentDesc=StringUtil.isBlank(build.get(0).getContentDesc())?"":build.get(0).getContentDesc();
+				System.out.println("Section :"+sec+"\nSection Id :"+sec.getSectionId()+"\n Location :"+d);
+				
 				secRes.setRiskId(sec.getRiskId().toString());
 				secRes.setSectionId(sec.getSectionId().toString());
 				secRes.setSectionName(sec.getSectionDesc());
-				secRes.setContentType(contentType);
-				secRes.setContentDesc(contentDesc);
+
 				sectionId=sec.getSectionId()==null?"":sec.getSectionId().toString();
 				if( sec.getProductType().equalsIgnoreCase("H") ) {
 //					List<SectionDetails>  pacSectionList = new ArrayList<SectionDetails>();
@@ -1168,6 +1166,8 @@ public class QuoteServiceImpl implements QuoteService {
 				
 					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 					
+					contentType=StringUtil.isBlank(bulData.get(0).getContentId()) || bulData.get(0).getContentId()==null ?"":bulData.get(0).getContentId();
+					contentDesc=StringUtil.isBlank(bulData.get(0).getContentDesc()) || bulData.get(0).getContentDesc()==null?"":bulData.get(0).getContentDesc();
 					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 					// Build
 //				/	SectionDetails buildSec = new SectionDetails(); 
@@ -1206,12 +1206,14 @@ public class QuoteServiceImpl implements QuoteService {
 					secRes.setMoneyOutofSafe(bul.getMoneyOutofSafe()== null?"0" : bul.getMoneyOutofSafe().toPlainString() );
 					secRes.setMoneySafeLimit(bul.getMoneySafeLimit()== null?"0" : bul.getMoneySafeLimit().toPlainString() );
 					secRes.setMoneyMajorLoss(bul.getMoneyMajorLoss() == null?"0" : bul.getMoneyMajorLoss().toPlainString() );
+					secRes.setContentType(contentType);
+					secRes.setContentDesc(contentDesc);
 					buildingSectionList.add(secRes);
 					}
 				
 			}
 //				sectionList.add(secRes);
-				
+								
 			}
 			locRes.setSectionDetails(buildingSectionList);
 			loctionList.add(locRes);
