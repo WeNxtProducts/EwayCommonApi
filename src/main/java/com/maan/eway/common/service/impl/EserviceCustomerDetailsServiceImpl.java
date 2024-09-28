@@ -2576,7 +2576,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				res.setSocioProfessionalCategory(data.getSocioProfessionalCategory());				
 				res.setActivities(data.getActivities());
-				
+				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());	
+					
 				resList.add(res);
 			}
 
