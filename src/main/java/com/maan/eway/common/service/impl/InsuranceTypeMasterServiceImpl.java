@@ -331,10 +331,25 @@ public class InsuranceTypeMasterServiceImpl  implements InsuranceTypeMasterServi
 //			String url = "http://192.168.1.42:8084/master/dropdown/policytype";
 			DropdownCommonRes policyTypeCommonRes = restTemplateApiService.callSecondApi(policyTypeUrl, policyTypeMasterGetReq, removedBearer);
 
-			List<DropDownRes> commonResponse = policyTypeCommonRes.getCommonResponse();		
-		    if (commonResponse == null || commonResponse.isEmpty()) {
-	            return result1;  
-	        }
+			List<DropDownRes> commonResponse = policyTypeCommonRes.getCommonResponse();
+			if(commonResponse == null || commonResponse.isEmpty())
+			{
+				return result1; 
+			}
+			else if(commonResponse!=null)
+			{
+				for(int i=0; i<commonResponse.size(); i++)
+				{
+					if(commonResponse.get(i).getCodeDesc() == null)
+					{
+						 return Collections.emptyList(); 
+					}
+					else if(commonResponse.get(i).getCodeDesc().equalsIgnoreCase("ALL"))
+					{
+						 return result1; 
+					}
+				}
+			}
 		   
 			 List<String> policyType = commonResponse.stream()
 			            .map(D->D.getCodeDesc().trim())
