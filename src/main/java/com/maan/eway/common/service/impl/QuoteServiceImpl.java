@@ -529,7 +529,7 @@ public class QuoteServiceImpl implements QuoteService {
 			Double totalSumInsure=0.0;
 			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
-			
+			List<LocationDetailsRes>  loctionList = new ArrayList<LocationDetailsRes>();
 			List<MotorDriverDetails> driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
 			List<EserviceMotorDetailsRes>   motorResList = new ArrayList<EserviceMotorDetailsRes>();
 			
@@ -640,8 +640,125 @@ public class QuoteServiceImpl implements QuoteService {
 				// Response
 				motorResList.add(vehicleDetails);		
 			}
+			
+			Set<Integer> findlocationid = motorDatas.stream().map(MotorDataDetails::getLocationId).distinct()
+					.collect(Collectors.toSet());
+			LocationDetailsRes locRes = null;
+			SectionDetailsRes secRes = null;
+			for (Integer d : findlocationid) {
+				List<SectionDetailsRes>  sectionList = new ArrayList<SectionDetailsRes>();
+				 locRes = new LocationDetailsRes();
+				List<MotorDataDetails> filter = motorDatas.stream().filter(o -> o.getLocationId().equals(d))
+						.collect(Collectors.toList());
+				locRes.setLocationId((filter.get(0).getLocationId()==null|| StringUtils.isBlank(filter.get(0).getLocationId().toString()))?"1":filter.get(0).getLocationId().toString());
+				locRes.setLocationName("");
+
+				for (MotorDataDetails mot : filter) {
+					secRes = new SectionDetailsRes();
+					System.out.println("Section :"+mot+"\nSection Id :"+mot.getSectionId()+"\n Location :"+d);
+					
+					secRes.setRiskId(mot.getVehicleId().toString());
+					secRes.setSectionId(mot.getSectionId().toString());
+					secRes.setSectionName(mot.getSectionName());
+
+					 String premiumFc = mot.getOverallPremiumFc().toString();
+					 String vatPremiumFc =	mot.getOverallPremiumFc().toString();
+					 BigDecimal commission=	new BigDecimal(premiumFc)
+				 				.multiply(mot.getCommissionPercentage()==null ?  new BigDecimal("0") : mot.getCommissionPercentage())
+		 						.divide(BigDecimal.valueOf(100D))
+		 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+		 						.getPrecision(),RoundingMode.HALF_UP);
+		
+					// Mot
+					dozerMapper.map(mot, secRes);
+					secRes.setOverAllPremiumFc(mot.getOverallPremiumFc()==null?0: mot.getOverallPremiumFc() );
+					secRes.setOverAllPremiumLc(mot.getOverallPremiumLc()==null?0:mot.getOverallPremiumLc());
+					secRes.setPremiumFc(mot.getActualPremiumFc()==null?0:mot.getActualPremiumFc() );
+					secRes.setPremiumLc(mot.getActualPremiumLc()==null?0:mot.getActualPremiumLc());
+					secRes.setCommissionAmount(commission.toString()==null?"":commission.toString());
+					secRes.setCommissionPercentage(mot.getCommissionPercentage()==null?"" : mot.getCommissionPercentage().toPlainString());
+					secRes.setVatCommission(mot.getVatCommission()==null?"" : mot.getVatCommission().toPlainString());	
+					secRes.setFinalizeYn(mot.getFinalizeYn());
+					// Cover Details
+					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
+					
+					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
+					
+					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+					BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscount()!=null ).map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscountLC()!=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscount()!=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscountLC()!=null ).map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumExcluedTax = (coverListRes.stream().filter(o -> o.getPremiumExcluedTax()!=null ).map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumExcluedTaxLC()!=null ).map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumIncludedTax = (coverListRes.stream().filter(o -> o.getPremiumIncludedTax()!=null ).map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumIncludedTaxLC()!=null ).map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+					
+					// Driver Details
+					List<DriverDetailsRes>   driverResList = new ArrayList<DriverDetailsRes>();
+					List<MotorDriverDetails> filterDriverList = driverList.stream().filter( o -> o.getRiskId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
+					for (MotorDriverDetails dri :  filterDriverList) {
+						DriverDetailsRes driverRes  = new DriverDetailsRes();  
+						dozerMapper.map(dri, driverRes);
+						driverRes.setLicenseNo(dri.getIdNumber());
+						
+						driverResList.add(driverRes);
+						
+					}
+					secRes.setRiskId(mot.getVehicleId());
+					driverResList.sort(Comparator.comparing(DriverDetailsRes :: getDriverId  ));
+					secRes.setDriverDetails(driverResList);
+					secRes.setDocumentsTitle(mot.getSectionName());			
+					secRes.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
+					
+					//get Section name Local from session master 
+					List<ProductSectionMaster> PSM = productSectionMasterRepo.findBySectionName(mot.getSectionName()!=null ? mot.getSectionName().toString() : " ");
+				
+					// Section Details
+//					SectionDetails sec = new SectionDetails(); 
+					secRes.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
+					secRes.setSectionName( mot.getSectionName());
+					secRes.setCodeDescLocal((PSM!=null && PSM.size()>0) ? PSM.get(0).getSectionNameLocal() : " ");
+					secRes.setPremiumAfterDiscount(PremiumAfterDiscount.toString()==null?"":PremiumAfterDiscount.toString());
+					secRes.setPremiumAfterDiscountLc(PremiumAfterDiscountLc.toString()==null?"":PremiumAfterDiscountLc.toString());
+					secRes.setPremiumBeforeDiscount(PremiumBeforeDiscount.toString()==null?"":PremiumBeforeDiscount.toString());
+					secRes.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc.toString()==null?"":PremiumBeforeDiscountLc.toString());
+					secRes.setPremiumExcluedTax(PremiumExcluedTax.toString()==null?"":PremiumExcluedTax.toString());
+					secRes.setPremiumExcluedTaxLc(PremiumExcluedTaxLc.toString()==null?"":PremiumExcluedTaxLc.toString());
+					secRes.setPremiumIncludedTax(PremiumIncludedTax.toString()==null?"":PremiumIncludedTax.toString());
+					secRes.setPremiumIncludedTaxLc(PremiumIncludedTaxLc.toString()==null?"":PremiumIncludedTaxLc.toString());
+
+					secRes.setCovers(coverListRes);
+					
+//					if (null != sectionList && !sectionList.isEmpty()) {
+//
+//						sectionList.stream().forEach(a -> {
+//
+//							if (null != a && null != a.getSectionId() && !a.getSectionId().isEmpty()
+//									&& null != secRes && null != secRes.getSectionId()
+//									&& !secRes.getSectionId().isEmpty()
+//									&& a.getSectionId().equals(secRes.getSectionId())) {
+//
+//								secRes.setSectionName(a.getSectionName() != null ? a.getSectionName() : "");
+//							}
+//
+//						});
+//					}
+					secRes.setAcccessoriesSumInsured(mot.getAcccessoriesSumInsured()==null?0.0:mot.getAcccessoriesSumInsured());
+					totalSumInsure = totalSumInsure + secRes.getAcccessoriesSumInsured();		
+					// Response
+					sectionList.add(secRes);	
+				
+				}
+				locRes.setSectionDetails(sectionList);
+				loctionList.add(locRes);
+			}
+			
+	
+			
 			viewRes.setRiskDetails(motorResList);
 			viewRes.setDocumentDetails(documentDetails);
+			viewRes.setLocationDetails(loctionList);
 			List<PolicyCoverData>  accCovers = covers.stream().filter( o -> o.getCoverId().equals(55)  ).collect(Collectors.toList());
 			if(accCovers.size()> 0 )  {
 				viewRes.setTotalAccessoriesSumInsured(totalSumInsure);	
