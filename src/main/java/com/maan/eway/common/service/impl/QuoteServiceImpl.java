@@ -2851,6 +2851,7 @@ public class QuoteServiceImpl implements QuoteService {
 					vehDeh.setCoverIdList(coverList);
 					vehDeh.setVehicleId(mot.getRiskId());
 					vehDeh.setSectionId(mot.getSectionId());
+					vehDeh.setLocationId(mot.getLocationId());	
 					vehicleIdsList.add(vehDeh);
 				}
 				
