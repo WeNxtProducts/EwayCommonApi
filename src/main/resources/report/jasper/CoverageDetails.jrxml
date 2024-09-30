@@ -117,7 +117,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="roofType"/>
 			<fieldDescription><![CDATA[roofType]]></fieldDescription>
 		</field>
-		<field name="buildingSumInsured" class="java.lang.Integer">
+		<field name="buildingSumInsured" class="java.math.BigDecimal">
 			<property name="net.sf.jasperreports.json.field.expression" value="buildingSumInsured"/>
 			<fieldDescription><![CDATA[buildingSumInsured]]></fieldDescription>
 		</field>
