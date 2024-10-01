@@ -4312,13 +4312,13 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate n13 = cb.isNotNull(m.get("sourceType"));
 						Predicate n14 = cb.isNotNull(m.get("loginId"));
 						Predicate n15 = null;
-						Predicate n16 = cb.equal(m.get("sectionId"), "0");
+//						Predicate n16 = cb.equal(m.get("sectionId"), "0");
 						if(req.getType().equalsIgnoreCase("Q"))
 							n15 = cb.isNull(m.get("endorsementTypeDesc")); 
 						else if (req.getType().equalsIgnoreCase("E"))
 							n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
 						Predicate us1 = cb.equal(us.get("loginId"), m.get("loginId"));
-						query.where(n1, n3, n4, n5, n12, n13, n14,n15,n16,us1);
+						query.where(n1, n3, n4, n5, n12, n13, n14,n15,us1);
 						
 
 						TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
@@ -4371,13 +4371,13 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate n5 = cb.equal(m.get("status"), status);
 						Predicate n8 = cb.isNotNull(m.get("bdmCode"));
 						Predicate n15 = null;
-						Predicate n16 = cb.equal(m.get("sectionId"), "0");
+//						Predicate n16 = cb.equal(m.get("sectionId"), "0");
 						if(req.getType().equalsIgnoreCase("Q"))
 							n15 = cb.isNull(m.get("endorsementTypeDesc")); 
 						else if (req.getType().equalsIgnoreCase("E"))
 							n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
 						
-						query.where(n1, n2, n3, n4, n5, n8,n15,n16);
+						query.where(n1, n2, n3, n4, n5, n8,n15);
 						
 
 						TypedQuery<Tuple> typedQuery = em.createQuery(query);
@@ -4410,7 +4410,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
 						Predicate n5 = cb1.equal(m1.get("status"), status);
 						Predicate n6 = cb1.isNull(m1.get("bdmCode"));
-						Predicate n16 = cb1.equal(m1.get("sectionId"), "0");
+//						Predicate n16 = cb1.equal(m1.get("sectionId"), "0");
 						Predicate us1 = cb1.equal(us.get("loginId"), m1.get("loginId"));
 						
 						Predicate n15 = null;
@@ -4419,7 +4419,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						else if (req.getType().equalsIgnoreCase("E"))
 							n15 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
 						
-						query1.where(n1, n2, n3, n4, n5, n6,n16,us1,n15);
+						query1.where(n1, n2, n3, n4, n5, n6,us1,n15);
 
 						TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 						list1 = typedQuery1.getResultList();
@@ -4484,13 +4484,13 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate n5 = cb.equal(m.get("status"), "RP");
 						Predicate n6 = e0.in(uwData);
 						Predicate n8 = cb.isNotNull(m.get("bdmCode"));
-						Predicate n16 = cb.equal(m.get("sectionId"), "0");
+//						Predicate n16 = cb.equal(m.get("sectionId"), "0");
 						Predicate n15 = null;
 						if(req.getType().equalsIgnoreCase("Q"))
 							n15 = cb.isNull(m.get("endorsementTypeDesc")); 
 						else if (req.getType().equalsIgnoreCase("E"))
 							n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
-						query.where(n2,n3,n4,n5,n6, n8,n15,n16);
+						query.where(n2,n3,n4,n5,n6, n8,n15);
 
 						TypedQuery<Tuple> typedQuery = em.createQuery(query);
 						list = typedQuery.getResultList();
@@ -4540,7 +4540,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate np5 = cb1.equal(m1.get("status"), "RP");
 						Predicate np6 = e01.in(uwData1);
 						Predicate np8 = cb1.isNull(m1.get("bdmCode"));
-						Predicate np7 = cb1.equal(m1.get("sectionId"), "0");
+//						Predicate np7 = cb1.equal(m1.get("sectionId"), "0");
 						
 						Predicate np9 = null;
 						if(req.getType().equalsIgnoreCase("Q"))
@@ -4549,7 +4549,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							np9 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
 						Predicate us1 = cb1.equal(us.get("loginId"), m1.get("loginId"));
 						
-						query1.where(np2, np3,np4,np5,np6,np8,np7,np9,us1);
+						query1.where(np2, np3,np4,np5,np6,np8,np9,us1);
 
 						TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 						list1 = typedQuery1.getResultList();
@@ -4599,12 +4599,12 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate n8 = cb.isNotNull(m.get("bdmCode"));
 						
 						Predicate n15 = null;
-						Predicate n16 = cb.equal(m.get("sectionId"), "0");
+//						Predicate n16 = cb.equal(m.get("sectionId"), "0");
 						if(req.getType().equalsIgnoreCase("Q"))
 							n15 = cb.isNull(m.get("endorsementTypeDesc")); 
 						else if (req.getType().equalsIgnoreCase("E"))
 							n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
-						query.where(n1,n3,n4,n5, n8,n15,n16);
+						query.where(n1,n3,n4,n5, n8,n15);
 
 						TypedQuery<Tuple> typedQuery = em.createQuery(query);
 						list = typedQuery.getResultList();
@@ -4638,7 +4638,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
 						Predicate n5 = cb1.equal(m1.get("status"), status);
 						Predicate n8 = cb1.isNull(m1.get("bdmCode"));
-						Predicate n16 = cb1.equal(m1.get("sectionId"), "0");
+//						Predicate n16 = cb1.equal(m1.get("sectionId"), "0");
 						Predicate us1 = cb1.equal(us.get("loginId"), m1.get("loginId"));
 						
 						Predicate n15 = null;
@@ -4648,7 +4648,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						else if (req.getType().equalsIgnoreCase("E"))
 							n15 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
 						
-						query1.where(n1,n3,n4,n5,n8,n16,us1,n15);
+						query1.where(n1,n3,n4,n5,n8,us1,n15);
 
 						TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 						list1 = typedQuery1.getResultList();
