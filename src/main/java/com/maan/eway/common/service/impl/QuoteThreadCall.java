@@ -816,7 +816,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 //	    				if(cov.getCoverId().equals(42)) {// || cov.getCoverId().equals(55) ) {
 //		    				// skip
 //		    			} else {
-		    				motorKeyValue.put(cov.getCoverBasedOn(),  cov.getSumInsured()==null ?  null : cov.getSumInsured().toPlainString());
+	    				String keyvalue = (cov.getSumInsured() == null) ? null : 
+	    	                  (cov.getSumInsured().compareTo(BigDecimal.ONE) < 0) ? "0" : 
+	    	                  cov.getSumInsured().toPlainString();
+                	motorKeyValue.put(cov.getCoverBasedOn(), keyvalue );
+		    			   
 		    	//		}
 	    			}
 	    			
