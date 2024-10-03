@@ -37,12 +37,11 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@ToString
+//@AllArgsConstructor
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Builder
+//@Builder
 @IdClass(EserviceSectionDetailsId.class)
 @Table(name="eservice_section_details")
 
@@ -186,6 +185,69 @@ private static final long serialVersionUID = 1L;
 
    @Column(name="OVERALL_PREMIUM_LC")
    private BigDecimal     overallPremiumLc ;
+   
+   @Column(name = "BRANCH_CODE", length = 20)
+	private String branchCode;
+   
+	@Column(name = "BRANCH_NAME", length = 100)
+	private String branchName;
+
+	@Column(name = "APPLICATION_ID", length = 20)
+	private String applicationId;
+	
+	@Column(name = "BROKER_CODE", length = 20)
+	private String brokerCode;
+
+	@Column(name = "SUB_USER_TYPE", length = 20)
+	private String subUserType;
+
+	@Column(name = "LOGIN_ID", length = 100)
+	private String loginId;
+
+	@Column(name = "AGENCY_CODE", length = 20)
+	private String agencyCode;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "POLICY_START_DATE")
+	private Date policyStartDate;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "POLICY_END_DATE")
+	private Date policyEndDate;
+	
+	@Column(name = "ADMIN_LOGIN_ID", length = 100)
+	private String adminLoginId;
+
+	@Column(name = "ADMIN_REMARKS", length = 1000)
+	private String adminRemarks;
+
+	@Column(name = "REJECT_REASON", length = 1000)
+	private String rejectReason;
+
+	@Column(name = "REFERAL_REMARKS", length = 1000)
+	private String referalRemarks;
+	
+	@Column(name = "BROKER_BRANCH_CODE", length = 20)
+	private String brokerBranchCode;
+
+	@Column(name = "BROKER_BRANCH_NAME", length = 100)
+	private String brokerBranchName;
+	
+	@Column(name = "SOURCE_TYPE_ID")
+	private String sourceTypeId;
+	
+	@Column(name = "SOURCE_TYPE", length = 100)
+	private String sourceType;
+
+	@Column(name = "CUSTOMER_CODE", length = 100)
+	private String customerCode;
+
+	@Column(name = "BDM_CODE", length = 100)
+	private String bdmCode;
+	
+	@Column(name = "CUSTOMER_NAME")
+	private String customerName;
+
     
 }
 
