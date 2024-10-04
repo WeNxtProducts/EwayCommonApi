@@ -368,9 +368,16 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "NO_OF_CYLINDERS")
     private Integer noOfCylinders;
 	
-	
+
 	@Column(name = "DISPLACEMENT_CM3")
     private String displacementInCM3;
+	
+	@Column(name = "PREMIUM_LLD")
+	private BigDecimal premiumLLD;
+	
+	@Column(name = "PREMIUM_TPL")
+	private BigDecimal premiumTPL;
+
 }
 
 

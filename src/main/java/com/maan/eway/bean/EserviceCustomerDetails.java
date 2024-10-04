@@ -14,6 +14,8 @@ package com.maan.eway.bean;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.maan.eway.AttributeEncryptor;
+
 import lombok.*;
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -60,6 +62,7 @@ private static final long serialVersionUID = 1L;
     private Integer    productId ;
 
     //--- ENTITY DATA FIELDS 
+    @Convert(converter = AttributeEncryptor.class)
     @Column(name="CLIENT_NAME", length=100)
     private String     clientName ;
 
