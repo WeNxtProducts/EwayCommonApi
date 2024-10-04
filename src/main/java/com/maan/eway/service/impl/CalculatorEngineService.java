@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,6 +87,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.MsVehicleDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataEndtRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
@@ -138,7 +140,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 	@Autowired
 	private CoverDetailsRepository coverRepo ;
 	/*
-	 * @Autowired private CoverCalculator calc;
+	 * 
+	  @Autowired 
+	  private CoverCalculator calc;
 	 */
 	
 	@Value(value = "${travel.productId}")
@@ -204,7 +208,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 	private PersonalInfoRepository piRepo ;
 	
 	private Boolean isPolicyPeriod=Boolean.FALSE;
-	
+	@Autowired
+	private MsVehicleDetailsRepository msVehicleRepo;
 	/*
 	 * public void LoadSection(CalcEngine engine) {
 	 * 
@@ -274,7 +279,122 @@ public class CalculatorEngineService implements CalculatorEngine {
 		} 		 	
 		return null;
 	}
+	private Map<String,BigDecimal> loadFixedValue(CalcEngine engine){
+		try {
+			List<Tuple> totalcoverstuple = LoadCoverFixedValue(engine);
+			if(totalcoverstuple!=null && totalcoverstuple.size()>0) {
+			List<Tuple> covers = totalcoverstuple.parallelStream()
+					.filter(t -> "N".equals(t.get("dependentCoverYn").toString()))
+					.collect(Collectors.toList());
+			List<Discount> discounts = null;
+			List<Loading> loadings = null;
+			if (covers != null && covers.size() > 0) {
+				SplitDiscountUtils discountUtil = new SplitDiscountUtils(engine.getEffectiveDate(),
+						engine.getPolicyEndDate() ,"");
+				discounts = covers.parallelStream().map(discountUtil).filter(d -> d != null).collect(Collectors.toList());
+				discounts.stream().forEach(t -> t.setEffectiveDate(engine.getEffectiveDate()));
+				SplitLoadingUtils loadingtuils = new SplitLoadingUtils(engine.getEffectiveDate(),
+						engine.getPolicyEndDate());
+				loadings = covers.parallelStream().map(loadingtuils).filter(d -> d != null).collect(Collectors.toList());
+			}
 
+			SplitSubCoverUtil splitsub = new SplitSubCoverUtil("N", engine.getEffectiveDate(),
+					engine.getPolicyEndDate());
+			Map<String, List<Cover>> nonSubcovers = covers.parallelStream().map(splitsub).filter(d -> d != null)
+					.collect(Collectors.groupingBy(Cover::getIsSubCover));
+			if (!nonSubcovers.isEmpty()) {
+				List<Cover> noncovers = nonSubcovers.get("N"); // noncovers
+				if (!discounts.isEmpty() && !noncovers.isEmpty()) {
+					for (Cover c : noncovers) {
+						List<Discount> ds = discounts.stream()
+								.filter(d -> d.getDiscountforId().equals(c.getCoverId()))
+								.collect(Collectors.toList());
+								//.collect(Collectors.toUnmodifiableList());
+						ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
+						
+						c.setDiscounts(ds);
+						
+					}
+				}
+
+				if (!loadings.isEmpty() && !noncovers.isEmpty()) {
+					for (Cover c : noncovers) {
+						List<Loading> ds = loadings.stream().filter(d -> d.getLoadingforId().equals(c.getCoverId()))
+								.collect(Collectors.toList());
+								//.collect(Collectors.toUnmodifiableList());
+						ds.stream().forEach(dss -> dss.setSubCoverId(c.getSubCoverId()));
+						c.setLoadings(ds);
+						
+					}
+				}
+				
+			}
+			
+			List<Cover> totalcovers = new ArrayList<Cover>();
+			if (!nonSubcovers.isEmpty() ) {
+				totalcovers.addAll(nonSubcovers.get("N"));
+			}
+			CoverCalculator calc = new CoverCalculator();
+			calc.setEngine(engine, totalcovers, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
+			totalcovers.parallelStream().forEach(calc);
+			//286,319,287,324
+			BigDecimal premiumLLD = totalcovers.stream().sorted(Comparator.comparing(Cover::getPremiumExcluedTax).reversed()).filter(c-> "324".equals(c.getCoverId())).map(x-> x.getPremiumExcluedTax()).reduce((a, b) -> a.subtract(b)).orElse(BigDecimal.ZERO);
+			BigDecimal premiumTPL = totalcovers.stream().sorted(Comparator.comparing(Cover::getPremiumExcluedTax).reversed()).map(x-> x.getPremiumExcluedTax()).reduce((a, b) -> a.subtract(b)).orElse(BigDecimal.ZERO);
+			
+			MsVehicleDetails details = msVehicleRepo.findByVdRefno(Long.parseLong(engine.getVdRefNo()));	
+			details.setPremiumLLD(premiumLLD);
+			details.setPremiumTPL(premiumTPL);
+			msVehicleRepo.save(details);
+			Map<String,BigDecimal> hap=new HashMap<String,BigDecimal>();
+			hap.put("PremiumLLD",premiumLLD);
+			hap.put("PremiumTPL",premiumTPL);
+			return hap;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	} 
+	private List<Tuple> LoadCoverFixedValue(CalcEngine engine) {
+
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			
+			String search2 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
+					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode()
+					+ ";branchCode:99999;coverId:324";
+
+			String search4 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
+					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:99999;branchCode:99999;coverId:324";
+
+			SpecCriteria commonCriteria = crservice.createCriteria(SectionCoverMaster.class, search4, "coverId");
+			List<Tuple> commonResult = crservice.getResult(commonCriteria, 0, 50);
+			
+			
+			SpecCriteria criteria = null;		
+			//286,319,287,324
+			criteria = crservice.createCriteria(SectionCoverMaster.class, search2, "coverId");
+			List<Long> count = crservice.getCount(criteria, 0, 50);
+			if (!count.isEmpty()) {
+				Long countrec = count.get(0);
+				if (countrec > 0) {
+					List<Tuple> specific = crservice.getResult(criteria, 0, 50);
+					for(Tuple t:specific) {
+						commonResult.removeIf(c-> c.get("coverId").toString().equals(t.get("coverId").toString()));
+						commonResult.add(t);
+					}
+				}
+					
+			}
+
+			return commonResult;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 		 	
+		return null;
+		}
 	public synchronized EserviceMotorDetailsSaveRes calculator(CalcEngine engine, String token) {
 		// Referal Checking.
 		BigDecimal endtCount = BigDecimal.ZERO;
@@ -292,8 +412,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 		
 		List<Cover> retc = new ArrayList<Cover>();
 		try {
-
+			
 			loadOnetimetable(engine);
+			if("100040".equals(engine.getInsuranceId())){
+				Map<String, BigDecimal> fixedValue = loadFixedValue(engine);
+				loadOnetimetable(engine);	 
+			}
 			if ((commontbl == null || commontbl.size() == 0) || (vehicles == null || vehicles.size() == 0)
 					|| (customers == null || customers.size() == 0)) {
 				System.out.println("::: Exception :: ");
@@ -306,6 +430,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 				 */
 			}
 			
+			
+				
 			String promocode=vehicles.get(0).get("promocode")==null?"":vehicles.get(0).get("promocode").toString();
 			List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
 			
