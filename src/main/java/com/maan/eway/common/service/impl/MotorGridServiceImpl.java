@@ -5014,9 +5014,13 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						 for(Tuple data : list) {
 							 GetExistingBrokerListRes res = new GetExistingBrokerListRes();
 							 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-							 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-							 res.setType(data.get("type")==null?"":	data.get("type").toString());
-							 resList.add(res);
+								res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+//								 res.setType(data.get("type")==null?"":	data.get("type").toString());
+								String type = data.get("type") == null ? "" : data.get("type").toString();
+								type = "Premia " + type;
+								res.setType(type);
+								resList.add(res);
+								resList.add(res);
 						
 						 }
 					 }	
@@ -5108,15 +5112,18 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					 
 					 if(list!=null && list.size()>0) {
 						 
-						 for(Tuple data : list) {
-							 GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-							 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-							 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-							 res.setType(data.get("type")==null?"":	data.get("type").toString());
-							 resList.add(res);
-						
-						 }
-					 }	
+							for (Tuple data : list) {
+								GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+								res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+								res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+//								res.setType(data.get("type") == null ? "" : data.get("type").toString());
+								String type = data.get("type") == null ? "" : data.get("type").toString();
+								type = "Premia " + type;
+								res.setType(type);
+								resList.add(res);
+
+							}
+						}
 					}
 					{
 					 CriteriaBuilder cb1 = em.getCriteriaBuilder();

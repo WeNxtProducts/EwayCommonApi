@@ -284,7 +284,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				GetExistingBrokerListRes res = new GetExistingBrokerListRes();
 				res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 				res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-				res.setType(data.get("type") == null ? "" : data.get("type").toString());
+//				res.setType(data.get("type") == null ? "" : data.get("type").toString());
+				String type = data.get("type") == null ? "" : data.get("type").toString();
+				type = "Premia " + type;
+				res.setType(type);
 				resList.add(res);
 
 			}
@@ -427,7 +430,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
 			riskId.where(a3);
 			Predicate n13 = cb.equal(m.get("riskId"), riskId);
-//			Predicate n13 = cb.equal(  m.get("sectionId"),  "0");
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n13).orderBy(orderList);
 
 			// Get Result
@@ -435,7 +437,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			existingQuotes = result.getResultList();
-			
+			if (existingQuotes != null && existingQuotes.size() > 0) {
+				existingQuotes = existingQuotes.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				existingQuotes=null;
+			}
 			resp.setQuoteRes(existingQuotes);
 			
 			resp.setTotalCount(totalcountexisting(req, startDate, endDate, "Y"));
@@ -458,7 +464,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
 
-			query.multiselect(cb.count(m));
+//			query.multiselect(cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 					
 
 			// Order By
@@ -498,6 +505,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10).orderBy(orderList);
 			
 			TypedQuery<Long> result = em.createQuery(query);
+			
 			List<Long> val = result.getResultList();
 			
 			if(val.size()>0)
@@ -599,6 +607,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			lapsedQuotes = result.getResultList();
+			if (lapsedQuotes != null && lapsedQuotes.size() > 0) {
+				lapsedQuotes = lapsedQuotes.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				lapsedQuotes=null;
+			}
 			
 			resp.setQuoteRes(lapsedQuotes);
 			resp.setTotalCount(totallapsedquotes(req, before30));
@@ -623,7 +636,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 
 			// Select
-			query.multiselect(cb.count(m));
+//			query.multiselect(cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -769,6 +783,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			rejectedQuotes = result.getResultList();
+			if (rejectedQuotes != null && rejectedQuotes.size() > 0) {
+				rejectedQuotes = rejectedQuotes.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				rejectedQuotes=null;
+			}
 			
 			resp.setQuoteRes(rejectedQuotes);
 			resp.setTotalCount(totalcountexisting(req, startDate, endDate, "R"));
@@ -871,6 +890,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referrals = result.getResultList();
+			
+			if (referrals != null && referrals.size() > 0) {
+				referrals = referrals.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				referrals=null;
+			}
 	
 			//Counts
 			int totalcount = totalcountuser(req,  status);
@@ -900,7 +925,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class); 
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class); 
 
-			query.multiselect(cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 
 			
 			// Where
@@ -1046,6 +1071,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referrals = result.getResultList();
+			if (referrals != null && referrals.size() > 0) {
+				referrals = referrals.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				referrals=null;
+			}
 			
 			resp.setReferalGridCriteriaRes(referrals);
 			
@@ -1078,7 +1108,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			query.multiselect(cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 		
 		
 			Predicate n7 = cb.isNull(m.get("endorsementTypeDesc")); 
@@ -1142,8 +1172,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			query.multiselect(cb.count(m));
-			
+//			query.multiselect(cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo")));  
 			
 			Predicate n7 = cb.isNotNull(m.get("endorsementTypeDesc")); 
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -3504,6 +3534,11 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					portfolio = portfolio.stream().filter(o -> !o.getIdsCount().equals(0L))
 							.collect(Collectors.toList());
 					
+					if (portfolio != null && portfolio.size() > 0) {
+						portfolio = portfolio.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+					}else {
+						portfolio=null;
+					}
 					resp.setPending(portfolio);
 					resp.setCount(totalProtfolioPending( req,branches,startDate,limit,offset, status) );
 					
@@ -3528,7 +3563,8 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
 			//		Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 					
-					query.multiselect(cb.count(m));
+//					query.multiselect(cb.count(m));
+					query.select(cb.countDistinct(m.get("requestReferenceNo")));  
 					
 					Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 					Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
@@ -4047,7 +4083,10 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							 GetExistingBrokerListRes res = new GetExistingBrokerListRes();
 							 res.setCode(data.get("code")==null?"":	data.get("code").toString());
 							 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-							 res.setType(data.get("type")==null?"":	data.get("type").toString());
+//							 res.setType(data.get("type")==null?"":	data.get("type").toString());
+							 String type = data.get("type") == null ? "" : data.get("type").toString();
+								type = "Premia " + type;
+								res.setType(type);
 							 resList.add(res);
 						
 						 }
@@ -4219,7 +4258,10 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							 GetExistingBrokerListRes res = new GetExistingBrokerListRes();
 							 res.setCode(data.get("code")==null?"":	data.get("code").toString());
 							 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-							 res.setType(data.get("type")==null?"":	data.get("type").toString());
+//							 res.setType(data.get("type")==null?"":	data.get("type").toString());
+							 String type = data.get("type") == null ? "" : data.get("type").toString();
+								type = "Premia " + type;
+								res.setType(type);
 							 resList.add(res);
 						
 						 }

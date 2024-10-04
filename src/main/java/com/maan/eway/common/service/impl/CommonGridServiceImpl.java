@@ -267,7 +267,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 					GetExistingBrokerListRes res = new GetExistingBrokerListRes();
 					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+//					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					String type = data.get("type") == null ? "" : data.get("type").toString();
+					type = "Premia " + type;
+					res.setType(type);
 					resList.add(res);
 
 				}
@@ -414,7 +417,12 @@ public class CommonGridServiceImpl implements CommonGridService {
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			existingQuotes = result.getResultList();
-			
+			existingQuotes = result.getResultList();
+			if (existingQuotes != null && existingQuotes.size() > 0) {
+				existingQuotes = existingQuotes.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				existingQuotes=null;
+			}
 			resp.setQuoteRes(existingQuotes);
 			resp.setTotalCount(totalcountexisting(req, startDate,endDate, "Y"));
 			
@@ -452,7 +460,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			overallPremiumFc.where(a2);
 		
 			// Select
-			query.multiselect( cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 			
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -601,7 +609,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			lapsedQuotes = result.getResultList();
-			
+			if (lapsedQuotes != null && lapsedQuotes.size() > 0) {
+				lapsedQuotes = lapsedQuotes.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				lapsedQuotes=null;
+			}
 			resp.setQuoteRes(lapsedQuotes);
 			resp.setTotalCount(tatallapsedQuotes(req, before30));
 			
@@ -638,7 +650,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			overallPremiumFc.where(a2);
 		
 			// Select
-			query.multiselect(cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 			
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
@@ -787,7 +799,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			rejectedQuotes = result.getResultList();
-			
+			if (rejectedQuotes != null && rejectedQuotes.size() > 0) {
+				rejectedQuotes = rejectedQuotes.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				rejectedQuotes=null;
+			}
 			resp.setQuoteRes(rejectedQuotes);
 			resp.setTotalCount(totalcountexisting(req, startDate,endDate, "R"));
 		
@@ -895,7 +911,12 @@ public class CommonGridServiceImpl implements CommonGridService {
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referrals = result.getResultList();
-		
+			
+			if (referrals != null && referrals.size() > 0) {
+				referrals = referrals.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				referrals=null;
+			}
 			resp.setReferalCommonCriteriaRes(referrals);
 					
 			//Counts
@@ -920,7 +941,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 
-			query.multiselect(cb.count(m));
+//			query.multiselect(cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 
 			Subquery<Long> riskId = query.subquery(Long.class);
 			Root<EserviceCommonDetails> ocpm1 = riskId.from(EserviceCommonDetails.class);
@@ -1085,7 +1107,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referrals = result.getResultList();
-		
+			if (referrals != null && referrals.size() > 0) {
+				referrals = referrals.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			}else {
+				referrals=null;
+			}
 			
 			resp.setReferalCommonCriteriaRes(referrals);
 			
@@ -1117,7 +1143,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 
-			query.multiselect(cb.count(m));
+//			query.multiselect(cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 			
 			//Riskid
 			Subquery<Long> riskId = query.subquery(Long.class);
@@ -1189,7 +1216,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 
-			query.multiselect(cb.count(m));
+//			query.multiselect(cb.count(m));
+			query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 			
 			//Riskid
 			Subquery<Long> riskId = query.subquery(Long.class);
@@ -3310,7 +3338,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 				result.setFirstResult(limit * offset);
 				result.setMaxResults(offset);
 				referrals = result.getResultList();
-				
+				if (referrals != null && referrals.size() > 0) {
+					referrals = referrals.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+				}else {
+					referrals=null;
+				}
 				resp.setReferalGridCriteriaAdminRes(referrals);
 				resp.setCount(totalcountadminreferral(req,  status));
 			
@@ -3332,7 +3364,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				
-				query.multiselect(cb.count(m));
+//				query.multiselect(cb.count(m));
+				query.select(cb.countDistinct(m.get("requestReferenceNo"))); 
 
 				//Riskid
 				Subquery<Long> riskId = query.subquery(Long.class);
@@ -3446,6 +3479,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 				// Get Result
 				TypedQuery<ReferalGridCriteriaAdminRes> result = em.createQuery(query);
 				referrals = result.getResultList();
+				if (referrals != null && referrals.size() > 0) {
+					referrals = referrals.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+				}else {
+					referrals=null;
+				}
 				
 			} catch (Exception e) {
 				e.printStackTrace();
