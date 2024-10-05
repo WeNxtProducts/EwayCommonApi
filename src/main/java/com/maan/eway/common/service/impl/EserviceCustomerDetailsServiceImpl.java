@@ -1318,7 +1318,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			}
 			// From State_master for city name local
 			String cityNameLocal = "";
-			List<StateMaster> stMaster = stateMasterRepo.findByStateIdAndCountryIdAndRegionCode(Integer.valueOf(req.getCityCode()),req.getNationality(),req.getStateCode());
+			List<StateMaster> stMaster = stateMasterRepo.findByStateIdAndCountryIdAndRegionCode(Integer.valueOf(req.getCityCode()!=null?req.getCityCode():"0"),req.getNationality(),req.getStateCode());
 			if(stMaster!= null && stMaster.size()>0) {
 				cityNameLocal = stMaster.get(0).getStateNameLocal();
 			}
