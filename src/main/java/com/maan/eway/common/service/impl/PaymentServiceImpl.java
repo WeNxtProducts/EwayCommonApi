@@ -2138,6 +2138,7 @@ public class PaymentServiceImpl implements PaymentService {
 					JsonObject asJsonObject = asJsonArray.get(0).getAsJsonObject();	
 					String jsonStr = asJsonObject.get("payment_gateway_url").getAsString();					
 					paymentDetail.setShorternUrl(new String(Base64.getDecoder().decode(jsonStr)));
+					res.setPaymentUrl(paymentDetail.getShorternUrl());
 				}else {
 					paymentStatus = "FAILED" ;
 				}
