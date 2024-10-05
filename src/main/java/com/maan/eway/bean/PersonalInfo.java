@@ -67,7 +67,7 @@ private static final long serialVersionUID = 1L;
     private String     customerReferenceNo ;
 
     //--- ENTITY DATA FIELDS 
-    @Convert(converter = AttributeEncryptor.class)
+    //@Convert(converter = AttributeEncryptor.class)
     @Column(name="CLIENT_NAME", length=100)
     private String     clientName ;
 
