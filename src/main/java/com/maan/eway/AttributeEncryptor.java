@@ -20,7 +20,8 @@ public class AttributeEncryptor implements AttributeConverter<String, String> {
         try {
         	return endecryService.encrypt(attribute);
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            e.printStackTrace();
+            return attribute;
         }
     }
 
@@ -36,7 +37,8 @@ public class AttributeEncryptor implements AttributeConverter<String, String> {
             return Base64.getEncoder().encodeToString(cipher.doFinal(dbData.getBytes()));*/
         	return endecryService.decrypt(dbData);
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            //throw new IllegalStateException(e);
+        	return dbData;
         }
     }
 } 
