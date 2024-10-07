@@ -249,7 +249,7 @@ public class JasperCustomServiceImple {
 		// MAKE MASTER TYPE
 		Subquery<Integer> makeTypeAmd = cq.subquery(Integer.class);
 		Root<MotorMakeMaster> makeAmd = makeTypeAmd.from(MotorMakeMaster.class);
-		makeTypeAmd.select(cb.max(makeAmd.get("amendId"))).where(cb.equal(makeAmd.get("makeId"), mddRoot.get("vehicleMake")),
+		makeTypeAmd.select(cb.max(makeAmd.get("amendId"))).where(cb.equal(makeAmd.get("makeId").as(String.class), mddRoot.get("vehicleMake")),
 				cb.equal(makeAmd.get("status"), "Y"),cb.equal(makeAmd.get("companyId"), hpmRoot.get("companyId")));
 		
 		/*Subquery<String> makeType = cq.subquery(String.class);
@@ -261,12 +261,12 @@ public class JasperCustomServiceImple {
 		// MODEL MASTER TYPE
 		Subquery<Integer> modelTypeAmd = cq.subquery(Integer.class);
 		Root<MotorMakeModelMaster> SubmmAmd = modelTypeAmd.from(MotorMakeModelMaster.class);
-		modelTypeAmd.select(cb.max(SubmmAmd.get("amendId"))).where(cb.equal(SubmmAmd.get("vehiclemodelcode"), mddRoot.get("vehcileModel")),
+		modelTypeAmd.select(cb.max(SubmmAmd.get("amendId"))).where(cb.equal(SubmmAmd.get("vehiclemodelcode").as(String.class), mddRoot.get("vehcileModel")),
 				cb.equal(SubmmAmd.get("status"), "Y"),cb.equal(SubmmAmd.get("companyId"), hpmRoot.get("companyId")));
 		
 		Subquery<String> modelType = cq.subquery(String.class);
 		Root<MotorMakeModelMaster> Submm = modelType.from(MotorMakeModelMaster.class);
-		modelType.select(Submm.get("modelNameEn")).where(cb.equal(Submm.get("vehiclemodelcode"), mddRoot.get("vehcileModel")),
+		modelType.select(Submm.get("modelNameEn")).where(cb.equal(Submm.get("vehiclemodelcode").as(String.class), mddRoot.get("vehcileModel")),
 				cb.equal(Submm.get("companyId"), hpmRoot.get("companyId")),cb.equal(Submm.get("status"), "Y"),cb.equal(Submm.get("amendId"), modelTypeAmd));
 		
 		
@@ -333,7 +333,7 @@ public class JasperCustomServiceImple {
 					cb.equal(hpmRoot.get("productId"), "46"),
 					cb.equal(hpmRoot.get("status"), "P"),
 					cb.equal(sddRoot.get("quoteNo"), mddRoot.get("quoteNo")),
-					cb.equal(sddRoot.get("riskId"), mddRoot.get("vehicleId")),
+					cb.equal(sddRoot.get("riskId").as(String.class), mddRoot.get("vehicleId")),
 					cb.equal(hpmRoot.get("policyNo"), policyNo),
 					StringUtils.isNotBlank(vehicleId)?cb.equal(mddRoot.get("vehicleId"), vehicleId):
 						cb.conjunction());
@@ -2004,7 +2004,7 @@ public class JasperCustomServiceImple {
 					Smap.put("premiumIncludedTaxLc", v.get("premiumIncludedTaxLc"));
 					Smap.put("premiumIncludedTaxFc", v.get("premiumIncludedTaxFc"));
 					Smap.put("premiumExcludedTaxLc", v.get("premiumExcludedTaxLc"));
-					Smap.put("premiumExcludedTaxFc", v.get("premiumExcludedTaxFc"));
+					Smap.put("premiumExclhitudedTaxFc", v.get("premiumExcludedTaxFc"));
 					return Smap;
 				}, Collectors.toList())));			
 				for(Map.Entry<Object, List<Map<String,Object>>> entry :sectionRes.entrySet()) {
