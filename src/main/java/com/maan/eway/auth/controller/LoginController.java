@@ -19,6 +19,7 @@ import com.maan.eway.auth.dto.AuthToken2;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.ForgetPasswordReq;
+import com.maan.eway.auth.dto.GetEncryptionkeyReq;
 import com.maan.eway.auth.dto.IpAddressAuthenticationRequest;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.dto.LogoutRequest;
@@ -82,10 +83,8 @@ public class LoginController {
 	@PostMapping("/authentication/doauth")
 	@ApiOperation(value="This method is to Create Token For Access Other Apis")
 	public ResponseEntity<CommonLoginRes> getloginTokenEncrypt(@RequestBody LoginRequest msloginx, HttpServletRequest http)  {
-		
 		Map<String,Object> encValue=new HashMap<String,Object>();
 		try {
-			
 			String decrypt = EncryDecryService.decrypt(URLDecoder.decode(msloginx.getEncryptionkey(), "UTF-8"));
 			if (StringUtils.isNotBlank(decrypt) && decrypt.indexOf(",") != -1) {
 				String[] split = decrypt.replaceAll("\\{", "").replaceAll("\\}", "").split(",");
@@ -267,4 +266,35 @@ public class LoginController {
 		}
 		
 	}
+	
+	@PostMapping("/authentication/getEncryptionkey")
+	public ResponseEntity<?> getEncryptionkey(@RequestBody GetEncryptionkeyReq req){
+		CommonLoginRes data = new CommonLoginRes();
+		reqPrinter.reqPrint(req);
+		List<Error> validation = loginValidationComponent.getEncryptionkeyReq(req);
+		if(validation!= null && validation.size()!=0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			
+			return new ResponseEntity<CommonLoginRes>(data, HttpStatus.OK);
+		}
+		else {
+			// Save 
+			String  res = authservice.getEncryptionkey(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			
+			if( res !=null  ) {
+				return new ResponseEntity<CommonLoginRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	}
+	
 }

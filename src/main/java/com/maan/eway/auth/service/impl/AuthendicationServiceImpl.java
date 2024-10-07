@@ -1,5 +1,6 @@
 package com.maan.eway.auth.service.impl;
 
+import java.net.URLDecoder;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.time.Duration;
@@ -33,6 +34,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.maan.eway.auth.dto.AuthToken2;
 import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
 import com.maan.eway.auth.dto.BrokerProductsGetRes;
@@ -41,6 +43,7 @@ import com.maan.eway.auth.dto.ClaimLoginResponse;
 import com.maan.eway.auth.dto.ClaimLogoutResponse;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.ForgetPasswordReq;
+import com.maan.eway.auth.dto.GetEncryptionkeyReq;
 import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
@@ -1341,6 +1344,31 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			e.printStackTrace();
 		}
 		return res;
+	}
+
+	@Override
+	public String getEncryptionkey(GetEncryptionkeyReq req) {
+		try {
+			LoginMaster data = loginRepo.findByLoginId(req.getLoginId());
+			if(data!=null) {
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("PageType", "B2C");
+				map.put("BranchCode", StringUtils.isBlank(req.getBranchCode())?"01":req.getBranchCode());
+				map.put("ProductId", req.getBranchCode());
+				map.put("InsuranceId", req.getInsuranceId());
+				map.put("RouterLink", "/customerProducts");
+				map.put("SubUserType", data.getSubUserType());
+				map.put("UserType", data.getUserType());
+				map.put("LoginId", data.getLoginId());
+				map.put("TinyUrlId",  StringUtils.isBlank(req.getTinyUrlId())?"169467719656897":req.getTinyUrlId());
+				map.put("TinyGroupId", StringUtils.isBlank(req.getTinyGroupId())?"169467719656897":req.getTinyGroupId());
+				return EncryDecryService.encrypt(new Gson().toJson(map));
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
 

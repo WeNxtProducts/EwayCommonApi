@@ -4,6 +4,7 @@ import com.maan.eway.auth.dto.AuthToken2;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.ForgetPasswordReq;
+import com.maan.eway.auth.dto.GetEncryptionkeyReq;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.dto.LogoutRequest;
 import com.maan.eway.res.SuccessRes;
@@ -21,6 +22,8 @@ public interface AuthendicationService {
 	SuccessRes LoginForgetPassword(ForgetPasswordReq req);
 
 	AuthToken2 loginTokenRegenerate(LoginRequest req, HttpServletRequest http);
+
+	String getEncryptionkey(GetEncryptionkeyReq req);
 
 
 /*	CommonCrmRes LoginChangePassword(ChangePasswordReq req);

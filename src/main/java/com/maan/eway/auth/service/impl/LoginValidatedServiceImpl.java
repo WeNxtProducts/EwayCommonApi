@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.ForgetPasswordReq;
+import com.maan.eway.auth.dto.GetEncryptionkeyReq;
 import com.maan.eway.auth.dto.IpAddressAuthenticationRequest;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.service.LoginCriteriaQueryService;
@@ -752,6 +754,31 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			commonRes.setMessage("Failed");
 		}
 		return commonRes;
+	}
+
+	@Override
+	public List<Error> getEncryptionkeyReq(GetEncryptionkeyReq req) {
+		List<Error> list = new ArrayList<Error>();
+		Optional<LoginMaster> model =  Optional.ofNullable(loginRepo.findByLoginId(req.getLoginId()));
+		try {
+			if(StringUtils.isBlank(req.getLoginId())) {
+				list.add(new Error("","Login Id", "Please Enter Login Id"));
+			}else {
+				if(model.isEmpty()) {
+					list.add(new Error("", "Login", "You are not authorized user..!"));
+					 	
+				} 
+			}
+			if(StringUtils.isBlank(req.getProductId())) {
+				list.add(new Error("", "ProductId", "Please Enter ProductId..!"));
+			}
+			if(StringUtils.isBlank(req.getInsuranceId())) {
+				list.add(new Error("", "InsuranceId", "Please Enter InsuranceId..!"));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 
 
