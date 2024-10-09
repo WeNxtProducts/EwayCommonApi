@@ -372,10 +372,10 @@ public List<IndustryDropDownRes> getOccupationDetails(OccupationDropDownReq req)
 			query.where(n12,n2,n3,n4,n7,n10,n44).orderBy(orderList);
 
 			}
-	
-		query.where(n12,n2,n3,n4,n7,n10).orderBy(orderList);
+			else {
+		    query.where(n12,n2,n3,n4,n7,n10).orderBy(orderList);
 			
-		
+			}
 		TypedQuery<OccupationMaster> result = em.createQuery(query);
 		list = result.getResultList();
 		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
