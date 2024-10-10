@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
@@ -2023,11 +2024,25 @@ public class JasperCustomServiceImple {
 					List<Map<String,Object>> contentDetails = new ArrayList<Map<String,Object>>();
 					List<Map<String,Object>> employeeDetails = new ArrayList<Map<String,Object>>();
 					List<Map<String,Object>> locationDetails = new ArrayList<Map<String,Object>>();
+					List<Map<String,Object>> bonddetils = new ArrayList<Map<String,Object>>();
 					String sectionId = sectionIds.get(i).toString();
 					for(int x=0;x<locationIds.size();x++) {
 						String locationId = locationIds.get(x).toString();
 						String locationName = Slist.stream().filter(f -> f.get("locationId").equals(Integer.parseInt(locationId))).map(r -> r.get("locationName").toString()).findFirst().get();
 						List<EserviceBuildingDetails> buildingdtl = eserviceBuildingDetailsRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),sectionId,Integer.parseInt(locationId));
+						List<BuildingRiskDetails> buildingRiskData = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),sectionId,Integer.parseInt(locationId));
+						List<Map<String,Object>> bond_list = buildingRiskData.stream().map(p -> {
+							LinkedHashMap<String, Object> bond_map = new LinkedHashMap<String,Object>();
+							bond_map.put("locationName", p.getLocationName());
+							bond_map.put("industrydesc", p.getIndustryDesc());
+							bond_map.put("sectiondesc", p.getSectionDesc());
+							bond_map.put("bondyear", p.getBondYear());
+							bond_map.put("coveringdetails", p.getCoveringDetails());
+							bond_map.put("descriptionofrisk", p.getDescriptionOfRisk());
+							bond_map.put("suminsured", p.getSumInsured());
+							return bond_map;
+						}).collect(Collectors.toList());
+						
 						List<Map<String,Object>> locationList = buildingdtl.stream().map(k ->{
 							LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 							lmap.put("locationName", k.getLocationName());
@@ -2046,7 +2061,10 @@ public class JasperCustomServiceImple {
 									LinkedHashMap<String, Object> contentMap = new LinkedHashMap<String, Object>();
 									contentMap.put("locationName", locationName);
 									contentMap.put("itemId", m.getItemId());
-									contentMap.put("contentRiskDesc", m.getContentRiskDesc()+", &nbsp;"+m.getSerialNoDesc()+":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(m.getSumInsured())+"</span>");
+									if("E".equalsIgnoreCase(m.getType()))
+										contentMap.put("contentRiskDesc", m.getSerialNo()+", &nbsp;"+m.getMakeAndModel()/*":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(m.getSumInsured())+"</span>"*/);
+									else
+										contentMap.put("contentRiskDesc", m.getContentRiskDesc()+", &nbsp;"+m.getSerialNoDesc() /*":&nbsp;&nbsp;<span style=\"font-weight:bold;\">"+new DecimalFormat("##,##0.00").format(m.getSumInsured())+"</span>"*/);
 									contentMap.put("sumInsured", m.getSumInsured());
 									contentMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
 											&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(m.getSectionId())
@@ -2103,6 +2121,7 @@ public class JasperCustomServiceImple {
 						contentDetails.addAll(contentList);
 						employeeDetails.addAll(employeeList);
 						locationDetails.addAll(locationList);
+						bonddetils.addAll(bond_list);
 					}
 					// CONDITIONS
 					List<Map<String,Object>> conditionList = getConditionList(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
@@ -2135,9 +2154,10 @@ public class JasperCustomServiceImple {
 						coverMap.put("firstHalfconditions", firstHalf);
 						coverMap.put("secondHalfconditions", secondHalf);
 						coverMap.put("sectionId", sectionId);
+						coverMap.put("bonddetils", bonddetils);
 						coverageList.add(coverMap);
 				}
-			
+				
 			Map<Object,List<Map<String,Object>>> groupBycoverageDetails = coverageList.stream()
 					.collect(Collectors.groupingBy(k -> k.get("sectionDesc"), Collectors.toList()));
 			for(Map.Entry<Object, List<Map<String,Object>>> CDEntry : groupBycoverageDetails.entrySet()) {
