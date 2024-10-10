@@ -2040,6 +2040,9 @@ public class JasperCustomServiceImple {
 							bond_map.put("coveringdetails", p.getCoveringDetails());
 							bond_map.put("descriptionofrisk", p.getDescriptionOfRisk());
 							bond_map.put("suminsured", p.getSumInsured());
+							bond_map.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+									&& f.getSectionId()==Integer.parseInt(p.getSectionId())
+									&& f.getVehicleId()==p.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 							return bond_map;
 						}).collect(Collectors.toList());
 						
@@ -2052,6 +2055,9 @@ public class JasperCustomServiceImple {
 							lmap.put("firstlosspayee", k.getFirstLossPercent());
 							lmap.put("buildingSumInsured", k.getBuildingSuminsured());
 							lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+									&& f.getSectionId()==Integer.parseInt(k.getSectionId())
+									&& f.getVehicleId()==k.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 							return lmap;
 						}).collect(Collectors.toList());
 						
@@ -2071,7 +2077,7 @@ public class JasperCustomServiceImple {
 											&& f.getVehicleId()==m.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
 									contentMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 											&& f.getSectionId()==Integer.parseInt(m.getSectionId())
-											&& f.getVehicleId()==m.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+											&& f.getVehicleId()==m.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 									return contentMap;
 								}, Collectors.toList()))).entrySet()
 								.stream().map(l -> {
