@@ -401,6 +401,9 @@ private static final long serialVersionUID = 1L;
     @Column(name = "ACTIVITIES", length=100)
     private String activities;
     
+    @Column(name = "CUSTOMER_AS_INSURER", length=100)
+ 	private String customerAsInsurer;
+    
 }
 
 

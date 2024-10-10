@@ -26,6 +26,7 @@ import com.maan.eway.common.req.GetByCustomerRefNoReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
+import com.maan.eway.common.res.InsuredDetailsGetRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
@@ -82,6 +83,48 @@ public class EserviceCustomerDetailsController {
 		} else {
 			/////// save
 			SuccessRes res = entityService.saveCustomerDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+    } 
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/saveinsureddetails")
+	public ResponseEntity<CommonRes> saveInsuredDetails(@RequestBody  EserviceCustomerSaveReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = new ArrayList<>();
+		 validationCodes = entityService.validateInsuredDetails(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("1");
+			comErrDescReq.setModuleName("CUSTOMER CREATION");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		//// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			SuccessRes res = entityService.saveInsuredDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -161,6 +204,25 @@ public class EserviceCustomerDetailsController {
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 	}
+	
+	// Get
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+		@PostMapping("/getinsureddetails")
+		public ResponseEntity<CommonRes> getInsuredInfo(@RequestBody GetCustomerDetailsReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		InsuredDetailsGetRes res = entityService.getInsuredDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data,HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(data, HttpStatus.CREATED);
+		}
+		}
 			
 	//Getall
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")

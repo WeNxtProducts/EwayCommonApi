@@ -14,9 +14,6 @@ package com.maan.eway.bean;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.AttributeEncryptor;
-
 import lombok.*;
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -41,11 +38,11 @@ import jakarta.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(EserviceCustomerDetailsId.class)
-@Table(name="eservice_customer_details")
+@IdClass(EserviceInsuredDetailsId.class)
+@Table(name="eservice_insured_details")
 
 
-public class EserviceCustomerDetails implements Serializable {
+public class EserviceInsuredDetails implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
@@ -53,6 +50,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
     private String     customerReferenceNo ;
+    
+    @Id
+    @Column(name="INSURED_REFERENCE_NO", nullable=false, length=20)
+    private String     insuredReferenceNo ;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
@@ -63,7 +64,6 @@ private static final long serialVersionUID = 1L;
     private Integer    productId ;
 
     //--- ENTITY DATA FIELDS 
-   // @Convert(converter = AttributeEncryptor.class)
     @Column(name="CLIENT_NAME", length=100)
     private String     clientName ;
 
@@ -404,6 +404,4 @@ private static final long serialVersionUID = 1L;
     @Column(name = "ACTIVITIES", length=100)
     private String activities;
     
-    @Column(name = "CUSTOMER_AS_INSURER", length=100)
-	private String customerAsInsurer;
 }

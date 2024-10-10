@@ -143,12 +143,16 @@ public class DashBoardServiceV1 {
 
 	private CommonRes getDashBoard(DashBoardGetReq req,Class tablename) {
 		List<DasboardCountRes> total=new ArrayList<DasboardCountRes>();
-		Date date1 = new Date();
+		Date today = new Date();
 		Calendar cal = new GregorianCalendar();
-		cal.setTime(date1);
-		cal.add(Calendar.DATE, -30);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
-		Date startDate = cal.getTime();
-		
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 1);
+		cal.add(Calendar.DAY_OF_MONTH, -30);
+		Date before30 = cal.getTime();
 		
 		List<String> loginIds=new ArrayList<String>();
 		if("Broker".equals(req.getUserType())) {
@@ -181,15 +185,27 @@ public class DashBoardServiceV1 {
 			.where(cb.equal(cpmSub.get("companyId"), hpm.get("companyId")));
 
 			// Construct the main query
-			cq.multiselect(quoteCase.alias("Desc"), cb.count(hpm).alias("Count"), cb.sum(hpm.get("overallPremiumLc")).alias("TotalPremium"), cb.max(cpm.get("currencyId")).alias("Currency"))
-			.where(cb.equal(hpm.get("companyId"), req.getInsuranceId()),
-					cb.equal(hpm.get("productId"), req.getProductId()),
-					cb.equal(hpm.get("status"), "Y"),
-					cb.equal(cpm.get("companyId"), hpm.get("companyId")),
-					cb.greaterThanOrEqualTo(hpm.get("entryDate"), startDate),
-			        cb.lessThanOrEqualTo(hpm.get("entryDate"), new Date()),
-			        cb.in(caseExpression).value(loginIds),
-					cb.equal(cpm.get("amendId"), subquery))
+			cq.multiselect(quoteCase.alias("Desc"), cb.count(hpm).alias("Count"), cb.sum(hpm.get("overallPremiumLc")).alias("TotalPremium"), cb.max(cpm.get("currencyId")).alias("Currency"));
+			
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.equal(hpm.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(hpm.get("productId"), req.getProductId()));
+			predicate.add(cb.equal(hpm.get("status"), "Y"));
+			predicate.add(cb.equal(cpm.get("companyId"), hpm.get("companyId")));
+			predicate.add(cb.between(hpm.get("updatedDate"), before30,today ));
+			predicate.add(cb.in(caseExpression).value(loginIds));
+			predicate.add(cb.equal(cpm.get("amendId"), subquery));
+			if("5".equals(req.getProductId() )) {
+				// Risk Max Filter
+				Subquery<Long> riskId = cq.subquery(Long.class);
+				Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
+				riskId.select(cb.max(ocp.get("riskId")));
+				Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), hpm.get("requestReferenceNo"));
+				riskId.where(a3);
+				
+				predicate.add(cb.equal(hpm.get("riskId"),  riskId ));
+			}
+			cq.where( predicate.toArray(new Predicate[0]))
 			.groupBy(hpm.get("status"), hpm.get("renewalDateYn"))
 			.orderBy(cb.asc(cb.count(hpm)));
 				
@@ -243,7 +259,7 @@ public class DashBoardServiceV1 {
 					cb.equal(hpm.get("productId"),  req.getProductId()),
 					cb.equal(hpm.get("status"), "P"),
 					cb.equal(cpm.get("companyId"), hpm.get("companyId")),
-					cb.greaterThanOrEqualTo(hpm.get("entryDate"), startDate),
+					cb.greaterThanOrEqualTo(hpm.get("entryDate"), before30),
 			         cb.lessThanOrEqualTo(hpm.get("entryDate"), new Date()),
 			         cb.in(caseExpression).value(loginIds),
 					cb.equal(cpm.get("amendId"), subquery))

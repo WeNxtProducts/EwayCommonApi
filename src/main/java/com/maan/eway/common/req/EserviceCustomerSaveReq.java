@@ -18,8 +18,10 @@ public class EserviceCustomerSaveReq {
 	
 	@JsonProperty("SaveOrSubmit")
 	private String saveOrSubmit;
-
 	
+	@JsonProperty("InsuredReferenceNo")
+	private String insuredReferenceNo;
+
 	@JsonProperty("CustomerReferenceNo")
 	private String customerReferenceNo;
 
@@ -260,4 +262,7 @@ public class EserviceCustomerSaveReq {
 		
 	@JsonProperty("Activities")
 	private String activities;
+	
+	@JsonProperty("CustomerAsInsurer")
+	private String customerAsInsurer;
 }

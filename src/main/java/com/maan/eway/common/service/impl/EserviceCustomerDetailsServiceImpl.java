@@ -55,6 +55,7 @@ import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceInsuredDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
@@ -82,6 +83,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.Cover;
 import com.maan.eway.common.res.Covers;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
+import com.maan.eway.common.res.InsuredDetailsGetRes;
 import com.maan.eway.common.res.PolicyDataRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
@@ -91,6 +93,7 @@ import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceInsuredDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
@@ -114,6 +117,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 	@Autowired
 	private EserviceCustomerDetailsRepository repository;
+	
+	@Autowired
+	private EserviceInsuredDetailsRepository insuredRepository;
 
 	@Autowired
 	private ListItemValueRepository listRepo;
@@ -1185,7 +1191,1005 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return errorList;
 
 	}
+	
+	@Override
+	public List<String> validateInsuredDetails(EserviceCustomerSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
+		try {
+			
+			
+			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
+				
+				if("100040".equalsIgnoreCase(req.getCompanyId())) {
+					
+					if("2".equalsIgnoreCase(req.getPolicyHolderType()))
+					{
+						if (StringUtils.isBlank(req.getClientName()) ) {
+							//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+							errorList.add("1100");
+						} else if (req.getClientName().length() > 100) {
+						   errorList.add("1101");
+							//errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
+						} 
+						else if (StringUtils.isNotBlank(req.getClientName()) &&
+						         (req.getClientName().matches("^[0-9].*") || 
+						                 !req.getClientName().matches("[a-zA-ZÀ-ÿ0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?\\s'-]+$"))){
+							errorList.add("1102");		
+							//errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
+						}
+					}
+					else
+					{
+						if (StringUtils.isBlank(req.getClientName()) ) {
+							//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+							errorList.add("1001");
+						} else if (req.getClientName().length() > 100) {
+						   errorList.add("1002");
+							//errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
+						} 
+						else if (StringUtils.isNotBlank(req.getClientName()) &&
+						         (req.getClientName().matches("^[0-9].*") || 
+						                 !req.getClientName().matches("[a-zA-ZÀ-ÿ0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?\\s'-]+$"))){
+							errorList.add("1003");		
+							//errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
+						}
+					}
+									
+				}
+				else {
+					if (StringUtils.isBlank(req.getClientName()) ) {
+						//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+						errorList.add("1001");
+					} else if (req.getClientName().length() > 250) {
+					   errorList.add("1002");
+						//errorList.add(new Error("01", "ClientName", "Please Enter ClientName with in 250 Character "));
+					} 
+					else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+") && !req.getClientName().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")){
+						errorList.add("1003");		
+						//errorList.add(new Error("01", "ClientName", "Please Enter Valid ClientName "));
+					}
+				}
+				
+				
+				
+		
+				
+				
+//				if("100040".equalsIgnoreCase(req.getCompanyId())) 
+//				{
+//					if (StringUtils.isBlank(req.getAddress1())) {
+//						errorList.add("1004");
+//						//errorList.add(new Error("02", "Address1", "Please Enter Address "));
+//					} else if (req.getAddress1().length() > 50) {
+//						errorList.add("1009");
+//						//errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
+//					}
+//				}
+//				else {
+//					if (StringUtils.isBlank(req.getAddress1())) {
+//						errorList.add("1004");
+//						//errorList.add(new Error("02", "Address1", "Please Enter Address "));
+//					} else if (req.getAddress1().length() > 100) {
+//						errorList.add("1009");
+//						//errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
+//					}
+//				}
+//				
+				if("100040".equalsIgnoreCase(req.getCompanyId())) 
+				{
+					if (req.getAddress2().length() > 50) {
+						errorList.add("1000");
+					}
+				}
+				
+				
+//				if (StringUtils.isBlank(req.getStreet())) {
+//					errorList.add(new Error("03", "Street", "Please Enter Street"));
+//				} else if (req.getAddress1().length() > 100) {
+//					errorList.add(new Error("03", "Street", "Please Enter Street within 100 Characters"));
+//				}
+				
+				/*if (StringUtils.isBlank(req.getAddress2())) {
+					errorList.add(new Error("02", "Address2", "Please Enter Address2 "));
+				} else if (req.getAddress2().length() > 100) {
+					errorList.add(new Error("03", "Address2", "Please Enter Address2 within 100 Characters"));
+				}*/
+				
+				if (StringUtils.isBlank(req.getClientStatus())) {
+					//errorList.add(new Error("05", "Client Status", "Please Select Client Status"));
+					errorList.add("1010");
+				}
+				if (StringUtils.isBlank(req.getIdType())) {
+					errorList.add("1011");
+					//errorList.add(new Error("09", "IdType", "Please Select Personal/Corporate"));
+				}
+				
+//				if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
+//					errorList.add("1012");
+//					//errorList.add(new Error("09", " Identity Type", "Please Select Identity Type"));
+//				}
+				
+			
+//				if("100040".equalsIgnoreCase(req.getCompanyId()))	{
+//					if (StringUtils.isBlank(req.getIdNumber())) {
+//						errorList.add("1013");
+//						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
+//					} else if (req.getIdNumber().length() > 15) {
+//						errorList.add("1014");
+//						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
+//					}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
+//						errorList.add("1015");
+//						//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
+//					} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
+//						
+//						errorList.add("1015");
+//					}
+//				}
+//				else
+//				{
+//					if (StringUtils.isBlank(req.getIdNumber())) {
+//						errorList.add("1013");
+//						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
+//					} else if (req.getIdNumber().length() > 100) {
+//						errorList.add("1014");
+//						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
+//					}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
+//						errorList.add("1015");
+//						//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
+//					} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {	
+//						errorList.add("1015");
+//					}
+//				}
+				
+						
+		
+//				else if(!containsOnlyNumbers(req.getIdNumber()))
+//				{
+//					errorList.add("1015");
+//				}
+				
+				
+//				else if (! req.getIdNumber().matches("[A-Za-z0-9]+") ) {
+//					errorList.add(new Error("11", "IdNumber", "Please Enter Valid IdNumber "));
+//				}
+				
+				
+//				if (StringUtils.isBlank(req.getPreferredNotification())) {
+//					errorList.add(new Error("12", "PreferredNotification", "Please select Preferred Notification"));
+//				}
+				
+//				if(StringUtils.isNotBlank(req.getAppointmentDate().toString())) {
+//				cal.add(Calendar.DATE, -1);
+//				Date yesterday = cal.getTime();
+//				String a1 = sdf.format(req.getAppointmentDate());
+//				Date a = sdf.parse(a1);
+//
+//				if (a.before(yesterday)) {
+//					errorList.add(new Error("07", "Appointment Date", "Please Enter Appointment Date as Future Date"));
+//					} 
+//				}
+				//				Date today2 = new Date();
+//				cal.setTime(today2);
+//				cal.set(Calendar.HOUR_OF_DAY, 1);
+//				cal.set(Calendar.MINUTE, 1);
+//				today2 =  cal.getTime()	;
+//				if (req.getAppointmentDate() == null ) {
+//					errorList.add(new Error("12", "AppointmentDate", "Please select AppointmentDate"));
+//				} else {
+//					cal.setTime(req.getAppointmentDate());
+//					cal.set(Calendar.HOUR_OF_DAY, 5);
+//					cal.set(Calendar.MINUTE, 5);
+//					Date appDate =  cal.getTime()	;
+//					if (appDate.before(today2) ) {
+//						errorList.add(new Error("12", "AppointmentDate", "Please Enter AppointmentDate As FuturDate"));
+//					} 
+//				}
+				/*
+				 * if (StringUtils.isBlank(req.getPlaceOfBirth())) { errorList.add(new
+				 * Error("13", "PlaceOfBirth", "Please Enter PlaceOfBirth ")); } else if
+				 * (req.getPlaceOfBirth().length() > 100) { errorList.add(new Error("13",
+				 * "PlaceOfBirth", "Please Enter PlaceOfBirth within 100 Characters")); } if
+				 * (StringUtils.isBlank(req.getGender())) { errorList.add(new Error("14",
+				 * "Gender", "Please Select Gender")); }
+				 * 
+				 * if (StringUtils.isBlank(req.getOccupation())) { errorList.add(new Error("15",
+				 * "Occupation", "Please Select Occupation")); }
+				 */
+
+//
+//			if (req.getVrnGst().length() > 20) {
+//				errorList.add(new Error("17", "VrnGst", "Please Enter VrnGst within 20 Characters"));
+//			}
+				
+				if("100040".equalsIgnoreCase(req.getCompanyId() ))
+				{
+					if (StringUtils.isNotBlank(req.getPinCode())) {
+						 if (! (req.getPinCode().matches("[0-9a-zA-Z]+") ||  req.getPinCode().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")) ) {
+							 errorList.add("3000");
+							 
+//							 new Error("18", "PinCode", "Please Enter Valid Number In Po Box")
+							 
+						 } 
+						if (req.getPinCode().length() > 10) {
+							errorList.add("1016");
+							//errorList.add(new Error("18", "PinCode", "Please Enter Po Box within 20 Characters"));
+						}
+					} 
+				}
+				else
+				{
+					if (StringUtils.isNotBlank(req.getPinCode())) {
+//						 if (! req.getPinCode().matches("[0-9a-bA-Z]+") ) {
+//							 errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
+//							 
+//						 } else
+						if (req.getPinCode().length() > 20) {
+							errorList.add("1016");
+							//errorList.add(new Error("18", "PinCode", "Please Enter Po Box within 20 Characters"));
+						}
+					} 
+				}
+				
+				
+
+				/*if (StringUtils.isBlank(req.getStreet())) {
+					errorList.add(new Error("19", "Street", "Please Enter Street"));
+				}
+				else if (StringUtils.isNotBlank(req.getStreet()) && req.getStreet().length() > 100) {
+					errorList.add(new Error("19", "Street", "Please Enter Street within 100 Characters"));
+				}*/
+				if (StringUtils.isNotBlank(req.getFax()) && req.getFax().length() > 20) {
+					errorList.add("1017");
+					//errorList.add(new Error("20", "Fax", "Please Enter Fax within 20 Characters"));
+				}
+				/*if (StringUtils.isBlank(req.getTelephoneNo1())) {
+					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1"));
+				}
+				else if (StringUtils.isNotBlank(req.getTelephoneNo1()) && req.getTelephoneNo1().length() > 20) {
+					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo within 20 Characters"));
+				} else if (!req.getTelephoneNo1().matches("\\d+")) {
+					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo only in numbers"));
+				} */
+				if (StringUtils.isNotBlank(req.getTelephoneNo2()) && req.getTelephoneNo2().length() > 20) {
+					errorList.add("1018");
+					//errorList.add(new Error("22", "TelephoneNo2", "Please Enter TelephoneNo2 within 20 Characters"));
+				} else if (StringUtils.isNotBlank(req.getTelephoneNo2()) && !req.getTelephoneNo2().matches("\\d+")) {
+					errorList.add("1019");	
+					//errorList.add(new Error("22", "TelephoneNo2", "Please Enter TelephoneNo2 only in numbers"));
+				}
+
+				if (StringUtils.isNotBlank(req.getTelephoneNo3()) && req.getTelephoneNo3().length() > 20) {
+					errorList.add("1020");
+					//errorList.add(new Error("23", "TelephoneNo3", "Please Enter TelephoneNo3 within 20 Characters"));
+				} else if (StringUtils.isNotBlank(req.getTelephoneNo3()) && !req.getTelephoneNo3().matches("\\d+")) {
+					errorList.add("1021");
+					//errorList.add(new Error("23", "TelephoneNo3", "Please Enter TelephoneNo3 only in numbers"));
+				}
+				
+//				if (StringUtils.isBlank(req.getOccupation()) ) {
+//					errorList.add("1022");
+//					//errorList.add(new Error("23", "Occupation", "Please Select Occupation"));
+//				} else if(req.getOccupation().equalsIgnoreCase("99999")){
+//					if (StringUtils.isBlank(req.getOtherOccupation()) ) {
+//						errorList.add("1023");
+//						//errorList.add(new Error("47", "Other Occupation", "Please Enter Other Occupation"));
+//					}else if (req.getOtherOccupation().length() > 100){
+//						errorList.add("1024"); 
+//						//errorList.add(new Error("47","Other Occupation", "Please Enter Other Occupation within 100 Characters")); 
+//					}else if(!req.getOtherOccupation().matches("[a-zA-Z\\s]+")){
+//						errorList.add("1025");
+//						//errorList.add(new Error("47","Other Occupation", "Please Enter Valid Other Occupation"));
+//					}
+//					}
+				
+				if (StringUtils.isBlank(req.getMobileNo1())) {
+					errorList.add("1026");
+					//errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
+				} else if (req.getMobileNo1().length() > 10||req.getMobileNo1().length() < 8) {
+					errorList.add("1027");
+					//errorList.add(new Error("24", "MobileNo", "Please Enter Valid Mobile No"));
+				} else if (!req.getMobileNo1().matches("[0-9]+") ) {
+					errorList.add("1028");
+					//errorList.add(new Error("24", "MobileNo", "Please Enter Mobile No only in numbers"));
+				} else if (req.getMobileNo1().matches("[0-9]+") && Double.valueOf(req.getMobileNo1()) <=0 ) {
+					errorList.add("1029");
+					//errorList.add(new Error("11", "MobileNo", "Please Enter Valid Mobile No "));
+				} 
+
+				
+				
+				if (StringUtils.isNotBlank(req.getMobileNo3()) &&( req.getMobileNo3().length() > 10||req.getMobileNo3().length() < 10)) {
+					errorList.add("1030");
+					//errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 must be 10 digts"));
+				} else if (StringUtils.isNotBlank(req.getMobileNo3()) && !req.getMobileNo3().matches("\\d+")) {
+					errorList.add("1031");
+					//errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 only in numbers"));
+				}
+//				if (StringUtils.isBlank(req.getEmail1())) {
+//					errorList.add(new Error("27", "Email1", "Please Enter Email"));
+//				} else
+				
+				if("100040".equalsIgnoreCase(req.getCompanyId()))
+				{
+					
+					if("2".equalsIgnoreCase(req.getPolicyHolderType()))
+					{
+						if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+							if( req.getEmail1().length() > 50 ) {
+								errorList.add("1032");
+								//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
+							} else if(StringUtils.isNotBlank(req.getEmail1())) {
+								boolean bValue = checkIsValidMail(req.getEmail1());
+								
+								if(req.getEmail1().matches("^[0-9].*") || !req.getEmail1().matches(".*@.*\\..*") )
+								{
+									errorList.add("1033");
+								}		
+								else if (!bValue) {
+									errorList.add("1033");
+								}
+							}
+						} 
+						else {
+							errorList.add("3001");
+						}
+						
+					}
+					else
+					{
+						if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+							if( req.getEmail1().length() > 50 ) {
+								errorList.add("1032");
+								//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
+							} else if(StringUtils.isNotBlank(req.getEmail1())) {
+								boolean bValue = checkIsValidMail(req.getEmail1());
+								
+								if(req.getEmail1().matches("^[0-9].*") || !req.getEmail1().matches(".*@.*\\..*") )
+								{
+									errorList.add("1033");
+								}		
+								else if (!bValue) {
+									errorList.add("1033");
+								}
+							}
+						} 
+					}
+			
+				}
+				else {
+					if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+						if( req.getEmail1().length() > 100 ) {
+							errorList.add("1032");
+							//errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
+						} else if(StringUtils.isNotBlank(req.getEmail1())) {
+							boolean b = isValidMail(req.getEmail1());
+							if (b == false && (!req.getEmail1().matches("^[a-zA-ZÀ-ÿ\\s'-]+$") || !req.getEmail1().matches("^[.@]+$"))) {
+								errorList.add("1033");
+							}
+						}
+					} 
+				}
+				
+				
+				
+				
+	
+
+				if (StringUtils.isNotBlank(req.getEmail2()) && req.getEmail2().length() > 20) {
+					errorList.add("1034");
+					//errorList.add(new Error("28", "Email2", "Please Enter Email2 within 20 Characters"));
+				} else if (StringUtils.isNotBlank(req.getEmail2())) {
+					boolean b = isValidMail(req.getEmail2());
+
+					if (b == false) {
+						errorList.add("1035");
+						//errorList.add(new Error("28", "Email2", "Please Enter Email2 in correct format"));
+					}
+				}
+				if (StringUtils.isNotBlank(req.getEmail3()) && req.getEmail3().length() > 20) {
+					errorList.add("1036");
+					//errorList.add(new Error("29", "Email3", "Please Enter Email3 within 20 Characters"));
+				} else if (StringUtils.isNotBlank(req.getEmail3())) {
+					boolean b = isValidMail(req.getEmail3());
+					if (b == false) {
+						errorList.add("1037");
+						//errorList.add(new Error("29", "Email3", "Please Enter Email3 in correct format"));
+					}
+				}
+				if (StringUtils.isBlank(req.getLanguage())) {
+					errorList.add("1038");
+					//errorList.add(new Error("30", "Language", "Please Select Language"));
+				}
+
+				if (StringUtils.isNotBlank(req.getEmail1()) && StringUtils.isNotBlank(req.getEmail2())
+						&& req.getEmail1().equalsIgnoreCase(req.getEmail2())) {
+					errorList.add("1039");
+					//errorList.add(new Error("28", "Email2", "Email2 Is Already Available In Email"));
+				}
+				if (StringUtils.isNotBlank(req.getEmail1()) && StringUtils.isNotBlank(req.getEmail3())
+						&& req.getEmail1().equalsIgnoreCase(req.getEmail3())) {
+					errorList.add("1040");
+					//errorList.add(new Error("28", "Email2", "Email3 Is Already Available In Email"));
+				}
+				if (StringUtils.isNotBlank(req.getEmail2()) && StringUtils.isNotBlank(req.getEmail3())
+						&& req.getEmail2().equalsIgnoreCase(req.getEmail3())) {
+					errorList.add("1041");
+				}
+
+				if (StringUtils.isNotBlank(req.getTelephoneNo1()) && StringUtils.isNotBlank(req.getTelephoneNo2())
+						&& req.getTelephoneNo1().equalsIgnoreCase(req.getTelephoneNo2())) {
+					errorList.add("1042");
+					//errorList.add(new Error("28", "TelephoneNo2", "TelephoneNo2 Is Already Available In TelephoneNo"));
+				}
+				if (StringUtils.isNotBlank(req.getTelephoneNo1()) && StringUtils.isNotBlank(req.getTelephoneNo3())
+						&& req.getTelephoneNo1().equalsIgnoreCase(req.getTelephoneNo3())) {
+					errorList.add("1042");
+					//errorList.add(new Error("28", "TelephoneNo2", "TelephoneNo2 Is Already Available In TelephoneNo"));
+				}
+				if (StringUtils.isNotBlank(req.getTelephoneNo2()) && StringUtils.isNotBlank(req.getTelephoneNo3())
+						&& req.getTelephoneNo2().equalsIgnoreCase(req.getTelephoneNo3())) {
+					errorList.add("1043");
+					//errorList.add(new Error("28", "TelephoneNo3", "TelephoneNo3 Is Already Available In TelephoneNo2"));
+				}
+
+				if (StringUtils.isNotBlank(req.getMobileNo1()) && StringUtils.isNotBlank(req.getMobileNo2())
+						&& req.getMobileNo1().equalsIgnoreCase(req.getMobileNo2())) {
+					errorList.add("1044");
+					//errorList.add(new Error("28", "MobileNo2", "MobileNo2 Is Already Available In MobileNo"));
+				}
+				if (StringUtils.isNotBlank(req.getMobileNo1()) && StringUtils.isNotBlank(req.getMobileNo3())
+						&& req.getMobileNo1().equalsIgnoreCase(req.getMobileNo3())) {
+					errorList.add("1045");
+					//errorList.add(new Error("28", "MobileNo2", "MobileNo3 Is Already Available In MobileNo"));
+				}
+				if (StringUtils.isNotBlank(req.getMobileNo2()) && StringUtils.isNotBlank(req.getMobileNo3())
+						&& req.getMobileNo2().equalsIgnoreCase(req.getMobileNo3())) {
+					errorList.add("1046");
+					//errorList.add(new Error("28", "MobileNo3", "MobileNo3 Is Already Available In MobileNo2"));
+				}
+//
+//				if (StringUtils.isNotBlank(req.getAddress1()) && StringUtils.isNotBlank(req.getAddress2())
+//						&& req.getAddress1().equalsIgnoreCase(req.getAddress2())) {
+//					errorList.add(new Error("28", "Address2", "Address2 Is Already Available In Address"));
+//				}
+
+				
+				
+				
+				// Status Validation
+//				if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId())) {
+//					//
+//					if(req.getPolicyHolderType().equalsIgnoreCase("2")) {
+//					if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
+//						errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 within 20 Characters"));
+//					} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo2().matches("\\d+")) {
+//						errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 only in numbers"));
+//					}
+//					}
+//					
+//				} else {
+//					if (StringUtils.isBlank(req.getTitle()))  {
+//						errorList.add(new Error("04", "Title", "Please Select Title"));
+//					}
+//					if (StringUtils.isBlank(req.getNationality())) {
+//						errorList.add(new Error("12", "Country", "Please select Country"));
+//					}
+//					if (StringUtils.isBlank(req.getPreferredNotification())) {
+//						errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
+//					}
+//					
+//					if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+//
+//						if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+//							if (StringUtils.isBlank(req.getBusinessType())) {
+//								errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+//							}
+//						}
+//					}
+//					if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
+//						if (StringUtils.isBlank(req.getVrTinNo())) {
+//							errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
+//						} else if (req.getVrTinNo().length() > 20) {
+//							errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
+//						}
+//						
+//					}
+//					if (StringUtils.isBlank(req.getRegionCode())) {
+//						errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode"));
+//					} else if (req.getRegionCode().length() > 20) {
+//						errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
+//					}
+//					
+//					if (StringUtils.isBlank(req.getIsTaxExempted())) {
+//						errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
+//
+//					}else if (req.getIsTaxExempted().equals("Y")) {
+//						if (StringUtils.isBlank(req.getTaxExemptedId())) {
+//							errorList.add(new Error("32", "TaxExemptedId", "Please Enter TaxExemptedId"));
+//						} else if (req.getTaxExemptedId().length() > 20) {
+//							errorList.add(
+//									new Error("33", "TaxExemptedId", "Please Enter TaxExemptedId within 20 Characters"));
+//						}
+//
+//					}
+//					if (StringUtils.isBlank(req.getStatus())) {
+//						errorList.add(new Error("34", "Status", "Please Enter Status"));
+//					} else if (req.getStatus().length() > 1) {
+//						errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
+//					} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())
+//							|| "P".equals(req.getStatus()))) {
+//						errorList.add(new Error("34", "Status", "Plese Enter Status"));
+//					}
+//					if (StringUtils.isBlank(req.getStateCode())) {
+//						errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
+//					}
+//					
+//					if (StringUtils.isBlank(req.getMobileCode1())) {
+//						errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
+//					}
+//				}
+				
+				
+				if (StringUtils.isBlank(req.getTitle()))  {
+					errorList.add("1047");
+					//errorList.add(new Error("04", "Title", "Please Select Title"));
+				}
+				if (StringUtils.isBlank(req.getNationality())) {
+					errorList.add("1048");
+					//errorList.add(new Error("12", "Country", "Please select Country"));
+				}
+//				if (StringUtils.isBlank(req.getPreferredNotification())) {
+//					errorList.add("1049");
+//					//errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
+//				}
+				
+				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+
+					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+//						if (StringUtils.isBlank(req.getBusinessType())) {
+//							errorList.add("1050");
+//							//errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+//						}
+					}
+				}
+				if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
+//					if (StringUtils.isBlank(req.getVrTinNo())) {
+//						errorList.add("1051");
+//						//errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
+//					} else if (req.getVrTinNo().length() > 20) {
+//						errorList.add("1052");
+//						//errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
+//					}
+					
+				}
+				if (StringUtils.isBlank(req.getRegionCode())) {
+					errorList.add("1053");
+					//errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode"));
+				} else if (req.getRegionCode().length() > 20) {
+					errorList.add("1054");
+					//errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
+				}
+				
+//				if (StringUtils.isBlank(req.getIsTaxExempted())) {
+//					errorList.add("1055");
+//					//errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
+//
+//				}else if (req.getIsTaxExempted().equals("Y")) {
+//					if (StringUtils.isBlank(req.getTaxExemptedId())) {
+//						errorList.add("1056");
+//						//errorList.add(new Error("32", "TaxExemptedId", "Please Enter TaxExemptedId"));
+//					} else if (req.getTaxExemptedId().length() > 20) {
+//						errorList.add("1057");
+//						//errorList.add(new Error("33", "TaxExemptedId", "Please Enter TaxExemptedId within 20 Characters"));
+//					}
+//
+//				}
+				if (StringUtils.isBlank(req.getStatus())) {
+					errorList.add("1058");
+					//errorList.add(new Error("34", "Status", "Please Enter Status"));
+				} else if (req.getStatus().length() > 1) {
+					errorList.add("1059");
+					//errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
+				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())
+						|| "P".equals(req.getStatus()))) {
+					errorList.add("1060");
+					//errorList.add(new Error("34", "Status", "Plese Enter Status"));
+				}
+				if (StringUtils.isBlank(req.getStateCode())) {
+					errorList.add("1061");
+					//errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
+				}
+				
+				if (StringUtils.isBlank(req.getMobileCode1())) {
+					errorList.add("1062");
+					//errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
+				}
+				
+				if (StringUtils.isBlank(req.getCreatedBy())) {
+					errorList.add("1063");
+					//errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy "));
+				} else if (req.getCreatedBy().length() > 100) {
+					errorList.add("1064");
+					//errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				}
+				
+
+				// Date Validation
+				Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(today);
+				cal.add(Calendar.DAY_OF_MONTH, -1);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 50);
+				today = cal.getTime();
+//				if(StringUtils.isNotBlank(req.getCompanyId()) && ! (req.getCompanyId().equalsIgnoreCase("100019")|| req.getCompanyId().equalsIgnoreCase("100027"))) {
+//
+//					// DOB Validation	
+//					if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
+//						if( StringUtils.isNotBlank(req.getIdType()) && req.getIdType().equalsIgnoreCase("1")) {
+//							if (req.getDobOrRegDate() == null) {
+//								errorList.add("1065");
+//								//errorList.add(new Error("38", "DobOrRegDate", "Please Select Dob "));
+//							}
+//						}
+//						
+//						try {
+//						if (req.getDobOrRegDate() != null) {
+//							if (req.getDobOrRegDate().after(today)) {
+//								errorList.add("1066");
+//								//errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob as Past Date"));
+//
+//							} else {
+//								LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+//										.toLocalDate();
+//								LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//
+//								Integer years = Period.between(localDate1, localDate2).getYears();
+//								if (years > 100) {
+//									errorList.add("1067");
+//									//errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted More than 100 Years"));
+//
+//								} else if (years < 18) {
+//									errorList.add("1068");
+//									//errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted Less than 18 Years For Induvidual"));
+//
+//								}
+//			
+//							}
+//
+//						}else {
+//							errorList.add("1069");
+//							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+//						}
+//						}catch (Exception e) {
+//							errorList.add("1070");
+//							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+//						}
+//					}
+//					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+//						try {
+//						if (req.getDobOrRegDate() != null) {
+//							cal.setTime(today);
+//							cal.add(Calendar.DAY_OF_MONTH, +1);
+//							cal.set(Calendar.HOUR_OF_DAY, 23);
+//							cal.set(Calendar.MINUTE, 50);
+//							Date tomorrow = cal.getTime();
+//							if (req.getDobOrRegDate().after(tomorrow)) {
+//								errorList.add("1071");
+//								//errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate as Past Date"));
+//
+//							} else if(req.getDobOrRegDate()!=null ) {
+//								LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+//										.toLocalDate();
+//								LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//
+//								Integer years = Period.between(localDate1, localDate2).getYears();
+//								if (years > 100) {
+//									errorList.add("1072");
+//									//errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
+//								}
+//							}
+//
+//						}else {
+//							errorList.add("1073");
+//							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+//						}
+//						}catch (Exception e) {
+//							errorList.add("1073");
+//							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Valid"));
+//						}
+//					}
+//				}
+				
+
+				if (StringUtils.isBlank(req.getBranchCode())) {
+					errorList.add("1074");
+					//errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode "));
+				} else if (req.getBranchCode().length() > 20) {
+					errorList.add("1075");
+				}
+				
+//				if (StringUtils.isBlank(req.getBranchCode())) {
+//					errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode "));
+//				}
+				if (StringUtils.isBlank(req.getProductId())) {
+					errorList.add("1076");
+				} else if (req.getProductId().length() > 20) {
+					errorList.add("1077");
+				}
+				if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add("1078");
+				} else if (req.getCompanyId().length() > 20) {
+					errorList.add("1079");
+				}
+				
+				
+				
+
+//			if (StringUtils.isBlank(req.getStateName())) {
+//				errorList.add(new Error("43", "StateName", "Please Select StateName"));
+//			}
+//				if (req.getCompanyId().equalsIgnoreCase("100004") ) {
+//					if(   StringUtils.isBlank(req.getCityName())) {
+//						errorList.add("1080");
+//						//errorList.add(new Error("11", "CityName", "Please Enter District"));
+//					} else if (req.getCityName().length() > 100) {
+//						errorList.add("1081");
+//						///errorList.add(new Error("11", "CityName", "Please Enter District within 100 Characters"));
+//					}
+//				} else {
+//					if (StringUtils.isBlank(req.getCityName())) {
+//						errorList.add("1082");
+//						//errorList.add(new Error("43", "District", "Please Select District "));
+//					} else if (req.getCityName().length() > 100) {
+//						errorList.add("1083");
+//						//errorList.add(new Error("43", "District", "Please Enter District within 100 Characters"));
+//					}
+//				}
+					
+				 
+
+				/*if (StringUtils.isBlank(req.getStreet())) {
+					errorList.add(new Error("44", "Street", "Please Enter Street "));
+				} else if (req.getStreet().length() > 100) {
+					errorList.add(new Error("44", "Street", "Please Enter Street within 100 Characters"));
+				}*/
+				
+				
+				
+//				if (StringUtils.isBlank(req.getWhatsappCode())) {
+//					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
+//				}
+				
+				List<EserviceInsuredDetails> list = new ArrayList<EserviceInsuredDetails>();
+				if ((StringUtils.isNotBlank(req.getAddress1())) 
+					//	&& (StringUtils.isNotBlank(req.getAddress2()))
+						&& (StringUtils.isNotBlank(req.getBranchCode()))
+					//	&& (StringUtils.isNotBlank(req.getBusinessType()))
+						&& (StringUtils.isNotBlank(req.getCityCode())) && (StringUtils.isNotBlank(req.getCityName()))
+						&& (StringUtils.isNotBlank(req.getClientName()))
+						&& (StringUtils.isNotBlank(req.getClientStatus()))
+						&& (StringUtils.isNotBlank(req.getCompanyId())) && (StringUtils.isNotBlank(req.getCreatedBy()))
+						// && (StringUtils.isNotBlank(req.getCustomerReferenceNo()))
+						&& (StringUtils.isNotBlank(req.getEmail1())) 
+					//	&& (StringUtils.isNotBlank(req.getEmail2()))
+					//	&& (StringUtils.isNotBlank(req.getEmail3())) && (StringUtils.isNotBlank(req.getFax()))
+						&& (StringUtils.isNotBlank(req.getGender())) && (StringUtils.isNotBlank(req.getIdNumber()))
+						&& (StringUtils.isNotBlank(req.getIsTaxExempted()))
+						&& (StringUtils.isNotBlank(req.getLanguage()))
+					//	&& (StringUtils.isNotBlank(req.getLanguageDesc()))
+						&& (StringUtils.isNotBlank(req.getMobileNo1()))
+					//	&& (StringUtils.isNotBlank(req.getMobileNo2()))
+					//	&& (StringUtils.isNotBlank(req.getMobileNo3()))
+						&& (StringUtils.isNotBlank(req.getNationality()))
+						&& (StringUtils.isNotBlank(req.getOccupation()))
+						&& (StringUtils.isNotBlank(req.getPlaceOfBirth()))
+						&& (StringUtils.isNotBlank(req.getPolicyHolderType()))
+						&& (StringUtils.isNotBlank(req.getPolicyHolderTypeid()))
+						&& (StringUtils.isNotBlank(req.getProductId())) && (StringUtils.isNotBlank(req.getRegionCode()))
+						&& (StringUtils.isNotBlank(req.getStateCode())) && (StringUtils.isNotBlank(req.getStateName()))
+						&& (StringUtils.isNotBlank(req.getStatus()))
+					//	&& (StringUtils.isNotBlank(req.getStreet()))
+					//	&& (StringUtils.isNotBlank(req.getTaxExemptedId()))
+					//	&& (StringUtils.isNotBlank(req.getTelephoneNo1()))
+					//	&& (StringUtils.isNotBlank(req.getTelephoneNo2()))
+					//  && (StringUtils.isNotBlank(req.getTelephoneNo3())) && (StringUtils.isNotBlank(req.getTitle()))
+						&& (req.getDobOrRegDate()!=null)
+						&& (StringUtils.isNotBlank(req.getIsTaxExempted()))
+					//	&& (StringUtils.isNotBlank(req.getTaxExemptedId()))
+						&& (StringUtils.isNotBlank(req.getPreferredNotification()))
+					//	&& (req.getAppointmentDate()!=null)
+						
+						){
+
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<EserviceInsuredDetails> query = cb.createQuery(EserviceInsuredDetails.class);
+					// Find all
+					Root<EserviceInsuredDetails> b = query.from(EserviceInsuredDetails.class);
+					// Select
+					query.select(b);
+					// Where
+
+					Predicate n1 = (cb.like(cb.lower(b.get("address1")), req.getAddress1().toLowerCase()));
+				//	Predicate n2 = (cb.like(cb.lower(b.get("address2")), req.getAddress2().toLowerCase()));
+					Predicate n3 = (cb.like(cb.lower(b.get("branchCode")), req.getBranchCode().toLowerCase()));
+				//	Predicate n4 = (cb.like(cb.lower(b.get("businessType")), req.getBusinessType().toLowerCase()));
+				//	Predicate n5 = (cb.like(cb.lower(b.get("cityCode")), req.getCityCode().toLowerCase()));
+					Predicate n5 =	(cb.equal(b.get("cityCode") ,  null != req.getCityCode() && 
+							req.getCityCode().matches("[0-9]+") ? Integer.valueOf(req.getCityCode()) : 0 ));
+					Predicate n6 = (cb.like(cb.lower(b.get("cityName")), req.getCityName().toLowerCase()));
+					Predicate n7 = (cb.like(cb.lower(b.get("clientName")), req.getClientName().toLowerCase()));
+					Predicate n8 = (cb.like(cb.lower(b.get("clientStatus")), req.getClientStatus().toLowerCase()));
+					Predicate n9 = (cb.like(cb.lower(b.get("companyId")), req.getCompanyId().toLowerCase()));
+					Predicate n10 = (cb.like(cb.lower(b.get("createdBy")), req.getCreatedBy().toLowerCase()));
+					// Predicate n11 =
+					// (cb.like(cb.lower(b.get("customerReferenceNo")),req.getCustomerReferenceNo().toLowerCase()));
+					Predicate n12 = (cb.equal(b.get("dobOrRegDate"), req.getDobOrRegDate()));
+					Predicate n13 = (cb.like(cb.lower(b.get("email1")), req.getEmail1().toLowerCase()));
+				//	Predicate n14 = (cb.like(cb.lower(b.get("email2")), req.getEmail2().toLowerCase()));
+				//	Predicate n15 = (cb.like(cb.lower(b.get("email3")), req.getEmail3().toLowerCase()));
+				//	Predicate n16 = (cb.equal(b.get("fax"), req.getFax().toLowerCase()));
+					Predicate n17 = (cb.like(cb.lower(b.get("gender")), req.getGender().toLowerCase()));
+					Predicate n18 = (cb.like(cb.lower(b.get("idNumber")), req.getIdNumber().toLowerCase()));
+					Predicate n19 = (cb.like(cb.lower(b.get("isTaxExempted")), req.getIsTaxExempted().toLowerCase()));
+					Predicate n20 = (cb.like(cb.lower(b.get("language")), req.getLanguage().toLowerCase()));
+				//	Predicate n21 = (cb.like(cb.lower(b.get("languageDesc")), req.getLanguageDesc().toLowerCase()));
+					Predicate n22 = (cb.equal(b.get("mobileNo1"), req.getMobileNo1()));
+				//	Predicate n23 = (cb.equal(b.get("mobileNo2"), req.getMobileNo2()));
+				//	Predicate n24 = (cb.equal(b.get("mobileNo3"), req.getMobileNo3()));
+					Predicate n25 = (cb.like(cb.lower(b.get("nationality")), req.getNationality().toLowerCase()));
+					Predicate n26 = (cb.like(cb.lower(b.get("occupation")), req.getOccupation().toLowerCase()));
+					Predicate n27 = (cb.like(cb.lower(b.get("placeOfBirth")), req.getPlaceOfBirth().toLowerCase()));
+					Predicate n28 = (cb.like(cb.lower(b.get("policyHolderType")),
+							req.getPolicyHolderType().toLowerCase()));
+				//	Predicate n29 = (cb.like(cb.lower(b.get("policyHolderTypeId")),
+				//			req.getPolicyHolderTypeid().toLowerCase()));
+				//	Predicate n30 = (cb.like(cb.lower(b.get("productId")), req.getProductId()));
+					
+					Predicate n30 = (cb.equal(b.get("productId") ,  null != req.getProductId() && 
+							req.getProductId().matches("[0-9]+") ? Integer.valueOf(req.getProductId()) : 0 ));
+					Predicate n31 = (cb.like(cb.lower(b.get("regionCode")), req.getRegionCode().toLowerCase()));
+				//	Predicate n32 = (cb.like(cb.lower(b.get("stateCode")), req.getStateCode().toLowerCase()));
+					Predicate n33 = (cb.like(cb.lower(b.get("stateName")), req.getStateName().toLowerCase()));
+					Predicate n34 = (cb.like(cb.lower(b.get("status")), req.getStatus().toLowerCase()));
+				//	Predicate n35 = (cb.like(cb.lower(b.get("street")), req.getStreet().toLowerCase()));
+				//	Predicate n36 = (cb.like(cb.lower(b.get("taxExemptedId")), req.getTaxExemptedId().toLowerCase()));
+				//	Predicate n37 = (cb.equal(b.get("telephoneNo1"), req.getTelephoneNo1()));
+				//	Predicate n38 = (cb.equal(b.get("telephoneNo2"), req.getTelephoneNo2()));
+				//	Predicate n39 = (cb.equal(b.get("telephoneNo3"), req.getTelephoneNo3()));
+				//	Predicate n40 = (cb.like(cb.lower(b.get("title")), req.getTitle().toLowerCase()));
+				//	Predicate n41 = (cb.equal(b.get("appointmentDate"), req.getAppointmentDate()));
+					Predicate n42 = (cb.like(cb.lower(b.get("preferredNotification")), req.getPreferredNotification().toLowerCase()));
+
+					query.where(n1,  n3,  n6, n7, n8, n9, n10,
+							// n11,
+							n12, n13,  n17, n18, n19, n20,  n22, n25, n26, n27, n28,
+							n30, n31,  n33, n34, /*n35,*/  n42);
+					// Get Result 
+					TypedQuery<EserviceInsuredDetails> result = em.createQuery(query);
+					list = result.getResultList();
+					if (list.size() > 0 && req.getCustomerReferenceNo()==null) {
+						errorList.add("1511");
+
+					}
+				}
+			}
+
+			else if (req.getSaveOrSubmit().equalsIgnoreCase("Save")) {
+				if (StringUtils.isBlank(req.getClientName())) {
+					errorList.add("1084");
+					
+					//errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+				} else if (req.getClientName().length() > 100) {
+					errorList.add("1085");
+					//errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
+				}
+				if (StringUtils.isBlank(req.getPolicyHolderType())) {
+				 errorList.add("1086");
+					//errorList.add(new Error("02", "PolicyHolderType", "Please Select PolicyHolderType "));
+				}
+/*				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+
+					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+						if (StringUtils.isBlank(req.getBusinessType())) {
+							errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+						}
+					}
+				}
+*/
+				// Date Validation
+				Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(today);
+				cal.add(Calendar.DAY_OF_MONTH, -1);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 50);
+				today = cal.getTime();
+//				if (req.getPolicyHolderType().equalsIgnoreCase("1")) {
+//
+//					if (req.getDobOrRegDate() != null) {
+//						if (StringUtils.isBlank(req.getGender()) ) {
+//							errorList.add("1087");
+//							//errorList.add(new Error("23", "Gender", "Please Select Gender"));
+//						}
+//						if (req.getDobOrRegDate().after(today)) {
+//							errorList.add("1088");
+//							//errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+//
+//						}
+//					
+//						LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+//								.toLocalDate();
+//						LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//
+//						Integer years = Period.between(localDate1, localDate2).getYears();
+//						if (years > 100) {
+//							errorList.add("1089");
+//							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+//
+//						}
+//
+//					} 					
+//
+//					
+//					
+//				}
+
+//				if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+//
+//					if (req.getDobOrRegDate() != null) {
+//						 if (req.getDobOrRegDate().after(today)) {
+//								errorList.add("1090");
+//								//errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+//
+//						}
+//						 LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+//									.toLocalDate();
+//						LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//
+//						Integer years = Period.between(localDate1, localDate2).getYears();
+//						if (years > 100) {
+//							errorList.add("1091");
+//							//errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+//
+//						}
+//					} 
+//
+//					
+//				}
+			}
+			
+			
+			/*
+			if (StringUtils.isBlank(req.getMobileNo1())) {
+				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1"));
+			} else if (req.getMobileNo1().length() > 20) {
+				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 within 20 Characters"));
+			} else if (!req.getMobileNo1().matches("\\d+")) {
+				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 only in numbers"));
+			}
+			if (StringUtils.isBlank(req.getEmail1())) {
+				errorList.add(new Error("27", "Email1", "Please Enter Email1"));
+			} else if (req.getEmail1().length() > 20) {
+				errorList.add(new Error("27", "Email1", "Please Enter Email1 within 20 Characters"));
+			} else {
+				boolean b = isValidMail(req.getEmail1());
+				if (b == false) {
+					errorList.add(new Error("37", "Email1", "Please Enter Email in correct format"));
+				}
+			}
+			*/
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			errorList.add("01");
+		}
+		return errorList;
+
+	}
+	
 	public static boolean datevalid(String date) {
 		String regex = "(([0-9]{2})/([0-9]{2})/([0-9]{4}))";
 		Pattern p = Pattern.compile(regex);
@@ -1442,6 +2446,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setIdTypeDescLocal(policyHolderTypeIdLocal);
 			saveData.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
 			saveData.setActivities(req.getActivities());
+			saveData.setCustomerAsInsurer(req.getCustomerAsInsurer());		
 			
 			// Kenya Rating Fields
 			saveData.setMaritalStatus(StringUtils.isBlank(req.getMaritalStatus()) ?"Single" : req.getMaritalStatus() );
@@ -1590,6 +2595,526 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
 				savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
 				savePersonalInfo.setActivities(req.getActivities());
+				savePersonalInfo.setCustomerAsInsurer(req.getCustomerAsInsurer());	
+					
+				personalInforepo.save(savePersonalInfo);
+			}
+			}else if(StringUtils.isNotBlank(req.getType())) {
+				HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+				if("b2c".equalsIgnoreCase(req.getType().toString()) && homedata !=null ) {
+					PersonalInfo savePersonalInfo=new PersonalInfo();
+					
+				//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());
+					dozerMapper.map(req, saveData);
+					savePersonalInfo.setPinCode(req.getPinCode());
+					savePersonalInfo.setCustomerId(homedata.getCustomerId());
+					savePersonalInfo.setIdNumber(req.getIdNumber());
+					savePersonalInfo.setCreatedBy(createdBy);
+					savePersonalInfo.setUpdatedDate(new Date());
+					savePersonalInfo.setUpdatedBy(req.getCreatedBy());
+					savePersonalInfo.setCustomerReferenceNo(custRefNo);
+					savePersonalInfo.setAddress1(req.getAddress1());
+					savePersonalInfo.setAddress2(req.getAddress2());
+					savePersonalInfo.setAge(age);
+					savePersonalInfo.setBranchCode(req.getBranchCode());
+					savePersonalInfo.setBusinessType(req.getBusinessType());
+					if (StringUtils.isNotBlank(req.getBusinessType())) {
+						String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+						savePersonalInfo.setBusinessTypeDesc(businessType);
+					}
+					
+					savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
+					savePersonalInfo.setCityCode(req.getCityCode());
+					savePersonalInfo.setCityName(req.getCityName());
+					savePersonalInfo.setClientName(req.getClientName());
+					savePersonalInfo.setClientStatus(req.getClientStatus());
+					savePersonalInfo.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
+					savePersonalInfo.setCompanyId(req.getCompanyId());
+					savePersonalInfo.setCreatedBy(req.getCreatedBy());
+					savePersonalInfo.setCustomerReferenceNo(req.getCustomerReferenceNo());
+					savePersonalInfo.setDobOrRegDate(req.getDobOrRegDate());
+					savePersonalInfo.setEmail1(req.getEmail1());
+					savePersonalInfo.setEmail2(req.getEmail2());
+					savePersonalInfo.setEmail3(req.getEmail3());
+					savePersonalInfo.setEndorsementDate(req.getEndorsementDate());
+					savePersonalInfo.setEndorsementEffdate(req.getEndorsementEffdate());
+					savePersonalInfo.setEndorsementRemarks(req.getEndorsementRemarks());
+					savePersonalInfo.setEndorsementType(req.getEndorsementType());
+					savePersonalInfo.setEndorsementTypeDesc(req.getEndorsementTypeDesc());
+					savePersonalInfo.setEndtCategDesc(req.getEndtCategDesc());
+					savePersonalInfo.setEndtCount(req.getEndtCount());
+					savePersonalInfo.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
+					savePersonalInfo.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+					savePersonalInfo.setEndtStatus(req.getEndtStatus());
+					savePersonalInfo.setEntryDate(new Date());
+					savePersonalInfo.setFax(req.getFax());
+					savePersonalInfo.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
+					savePersonalInfo.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
+					savePersonalInfo.setGenderDesc(genderDesc);
+					savePersonalInfo.setTitle(req.getTitle());
+					savePersonalInfo.setTitleDesc(titleDesc);
+					savePersonalInfo.setLanguageDesc(languageDesc);
+					savePersonalInfo.setOccupationDesc(occupationDesc);
+					savePersonalInfo.setIdType(req.getIdType()); 
+					savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeIdDesc);
+					
+					// Induvidual / Corporate
+					savePersonalInfo.setPolicyHolderType(req.getPolicyHolderType());
+					savePersonalInfo.setPolicyHolderTypeDesc(policyHolderTypeDesc);
+					
+					// Possport or etc
+					savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
+					savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeIdDesc);
+					savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
+					savePersonalInfo.setIdTypeDesc(policyHolderTypeDesc);
+					
+					savePersonalInfo.setMobileCode1(req.getMobileCode1());
+					savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+					savePersonalInfo.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+					savePersonalInfo.setMobileNo1(req.getMobileNo1());
+					savePersonalInfo.setMobileNo2(req.getMobileNo2());
+					savePersonalInfo.setMobileNo3(req.getMobileNo3());
+					savePersonalInfo.setWhatsappCode(req.getWhatsappCode());
+					if (StringUtils.isNotBlank(req.getMobileCode1())) {
+						ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode1(),req.getCompanyId());
+						savePersonalInfo.setMobileCodeDesc1(mobiledesc1.getItemValue());
+
+					}
+					if (StringUtils.isNotBlank(req.getMobileCode2())) {
+						ListItemValue mobiledesc2 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode2(),req.getCompanyId());
+						savePersonalInfo.setMobileCodeDesc2(mobiledesc2.getItemValue());
+
+					}
+					if (StringUtils.isNotBlank(req.getMobileCode3())) {
+						ListItemValue mobiledesc3 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode3(),req.getCompanyId());
+						savePersonalInfo.setMobileCodeDesc3(mobiledesc3.getItemValue());
+
+					}
+					if (StringUtils.isNotBlank(req.getWhatsappCode())) {
+						ListItemValue whatsappCode = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE",
+								req.getWhatsappCode(),req.getCompanyId());
+						savePersonalInfo.setWhatsappcodeDesc(whatsappCode.getItemValue());
+
+					}
+					savePersonalInfo.setRegionCode(req.getRegionCode());
+					savePersonalInfo.setStateCode(req.getStateCode());
+					savePersonalInfo.setStateName(req.getStateName());
+					savePersonalInfo.setStatus(req.getStatus());
+					savePersonalInfo.setNationality(req.getNationality());
+					savePersonalInfo.setVrTinNo(req.getVrTinNo());
+					savePersonalInfo.setVrnGst(req.getVrTinNo());
+					
+					// local desc 
+					savePersonalInfo.setTitleDescLocal(titleLocal);
+					savePersonalInfo.setGenderDescLocal(genderLocal);
+					savePersonalInfo.setOccupationDescLocal(occupationDescLocal);
+					savePersonalInfo.setBusinessTypeDescLocal(businessTypeLocal);
+					savePersonalInfo.setStateNameLocal(stateNameLocal);
+					savePersonalInfo.setCityNameLocal(cityNameLocal);
+					savePersonalInfo.setIdTypeDescLocal(PolicyHolderTypeLocal);
+					savePersonalInfo.setLanguageDescLocal(languageLocal);
+					savePersonalInfo.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
+					savePersonalInfo.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
+					savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
+					savePersonalInfo.setActivities(req.getActivities());
+					savePersonalInfo.setCustomerAsInsurer(req.getCustomerAsInsurer());	
+
+					personalInforepo.save(savePersonalInfo);
+				}
+			}
+			// Response
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+
+	}
+	
+	
+	@Override
+	@Transactional
+	public SuccessRes saveInsuredDetails(EserviceCustomerSaveReq req) {
+		SuccessRes res = new SuccessRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	//	SimpleDateFormat sdf = new SimpleDateFormat("yyMMddmmssSSS");
+		try {
+			EserviceInsuredDetails saveInsured = new EserviceInsuredDetails();
+			Date entryDate = null;	
+			String createdBy = "";
+			String custRefNo = "";
+			Integer productId;
+        if (StringUtils.isBlank(req.getCustomerReferenceNo())) {
+				// Save
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
+			//	Random rand = new Random();
+			//	int random = rand.nextInt(90) + 10;
+				productId=Integer.valueOf(req.getProductId());
+			//	custRefNo = "Cust-" +   generateCustRefNo() ; // idf.format(new Date()) + random ;
+				// Generate Seq
+	 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+	 		 	generateSeqReq.setInsuranceId(req.getCompanyId());  
+	 		 	generateSeqReq.setProductId(req.getProductId());
+	 		 	generateSeqReq.setType("1");
+	 		 	generateSeqReq.setTypeDesc("CUSTOMER_REFERENCE_NO");
+	 		 	custRefNo =  genSeqNoService.generateSeqCall(generateSeqReq);
+				res.setResponse("Saved Successfully");
+				res.setSuccessId(custRefNo);
+			} else {
+				// Update
+				custRefNo = req.getCustomerReferenceNo();
+				EserviceInsuredDetails findData = insuredRepository.findByCustomerReferenceNo(req.getCustomerReferenceNo());
+				entryDate = findData.getEntryDate();
+				createdBy = findData.getCreatedBy();
+				productId=findData.getProductId();
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(custRefNo);
+			}
+        
+        	// Dob Condition
+	        if(req.getDobOrRegDate() ==null  ) {
+				Date   dobOrReg = new Date() ;
+				if( req.getPolicyHolderType().equalsIgnoreCase("1") ) {
+					// Dob
+					Calendar cal = new GregorianCalendar();
+					cal.setTime(dobOrReg);
+					cal.add(Calendar.YEAR, -18);
+					dobOrReg = cal.getTime();
+				}
+				req.setDobOrRegDate(dobOrReg);
+				
+			}
+        
+			dozerMapper.map(req, saveInsured);
+			saveInsured.setProductId(productId);
+			saveInsured.setEntryDate(entryDate);
+			saveInsured.setCreatedBy(createdBy);
+			saveInsured.setUpdatedDate(new Date());
+			saveInsured.setUpdatedBy(req.getCreatedBy());
+			saveInsured.setCustomerReferenceNo(custRefNo);
+			saveInsured.setStatus(req.getStatus());
+			
+			saveInsured.setZone(StringUtils.isBlank(req.getZone())? 0:Integer.valueOf(req.getZone()));
+			saveInsured.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
+			saveInsured.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
+			saveInsured.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
+			saveInsured.setBrokerBranchCode(req.getBrokerBranchCode());
+			
+			// Age Calculation
+			int age = 0 ;
+			Date dob = null;
+			if (req.getDobOrRegDate() !=null) {
+				dob = req.getDobOrRegDate();
+				Date today = new Date();
+				age = today.getYear() - dob.getYear();
+			}
+
+			// From List Item Value
+			
+			Map<String,String> title = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"NAME_TITLE",req.getTitle());//listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
+			Map<String,String> gender = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"GENDER",req.getGender());// listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
+			Map<String,String> language = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"LANGUAGE",req.getLanguage());//listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
+			Map<String,String> policyHolderType = getListItemLocal ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
+			Map<String,String> policyHolderTypeId = getListItemLocal (req.getCompanyId(), req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+			
+			String genderDesc = Optional.ofNullable(gender).map(map -> map.get("itemDesc")).orElse("");
+			String titleDesc = Optional.ofNullable(title).map(map -> map.get("itemDesc")).orElse("");
+			String languageDesc = Optional.ofNullable(language).map(map -> map.get("itemDesc")).orElse("");
+			String policyHolderTypeDesc = Optional.ofNullable(policyHolderType).map(map -> map.get("itemDesc")).orElse("");
+			String policyHolderTypeIdDesc = Optional.ofNullable(policyHolderTypeId).map(map -> map.get("itemDesc")).orElse("");
+			
+			// From List Item Value (Local)
+			String genderLocal = Optional.ofNullable(gender).map(map -> map.get("itemDescLocal")).orElse("");
+			String titleLocal = Optional.ofNullable(title).map(map -> map.get("itemDescLocal")).orElse("");
+			String languageLocal = Optional.ofNullable(language).map(map -> map.get("itemDescLocal")).orElse("");
+			String PolicyHolderTypeLocal = Optional.ofNullable(policyHolderType).map(map -> map.get("itemDescLocal")).orElse("");
+			String policyHolderTypeIdLocal = Optional.ofNullable(policyHolderTypeId).map(map -> map.get("itemDescLocal")).orElse("");
+			
+			// From Region_mater for state name local
+			String stateNameLocal = "";
+			List<RegionMaster> rgMaster = regionMasterRepo.findByCountryIdAndRegionCode(req.getNationality(),req.getStateCode());
+			if(rgMaster!= null  && rgMaster.size()>0) {
+				stateNameLocal = rgMaster.get(0).getRegionNameLocal();
+			}
+			// From State_master for city name local
+			String cityNameLocal = "";
+			List<StateMaster> stMaster = stateMasterRepo.findByStateIdAndCountryIdAndRegionCode(Integer.valueOf(req.getCityCode()),req.getNationality(),req.getStateCode());
+			if(stMaster!= null && stMaster.size()>0) {
+				cityNameLocal = stMaster.get(0).getStateNameLocal();
+			}
+			
+			if(StringUtils.isNotBlank(req.getMobileCode1())){		        
+				Map<String,String> mobileCode1Desc = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode1());
+				String mobileCode1 = Optional.ofNullable(mobileCode1Desc).map(map -> map.get("itemDesc")).orElse("");
+				String mobileCode1Local = Optional.ofNullable(mobileCode1Desc).map(map -> map.get("itemDescLocal")).orElse("");		
+				saveInsured.setMobileCodeDesc1(mobileCode1);
+
+			}
+	        if(StringUtils.isNotBlank(req.getMobileCode2())){
+	        	Map<String,String> mobileCode2Desc = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode2());
+	        	String mobileCode2 = Optional.ofNullable(mobileCode2Desc).map(map -> map.get("itemDesc")).orElse("");
+				String mobileCode2Local = Optional.ofNullable(mobileCode2Desc).map(map -> map.get("itemDescLocal")).orElse("");		
+				saveInsured.setMobileCodeDesc2(mobileCode2);
+
+	        }
+	       
+	        
+	        if(StringUtils.isNotBlank(req.getMobileCode3())){		        
+	        	Map<String,String> mobileCode3Desc = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode3());
+	        	String mobileCode3 = Optional.ofNullable(mobileCode3Desc).map(map -> map.get("itemDesc")).orElse("");
+				String mobileCode3Local = Optional.ofNullable(mobileCode3Desc).map(map -> map.get("itemDescLocal")).orElse("");
+				saveInsured.setMobileCodeDesc3(mobileCode3);
+
+	        }
+	        if(StringUtils.isNotBlank(req.getWhatsappCode())){		        
+	        	Map<String,String> whatsappCodeDesc = getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getWhatsappCode());
+	        	String whatsappCode = Optional.ofNullable(whatsappCodeDesc).map(map -> map.get("itemDesc")).orElse("");
+				String whatsappCodeLocal = Optional.ofNullable(whatsappCodeDesc).map(map -> map.get("itemDescLocal")).orElse("");
+				saveInsured.setWhatsappCodeDesc(whatsappCode);
+
+	        }			
+	        String businessTypeLocal = "";
+			if (StringUtils.isNotBlank(req.getBusinessType())) {
+				Map<String,String> businessTypeDesc =  getListItemLocal ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+				String businessType = Optional.ofNullable(businessTypeDesc).map(map -> map.get("itemDesc")).orElse("");
+				businessTypeLocal = Optional.ofNullable(businessTypeDesc).map(map -> map.get("itemDescLocal")).orElse("");
+				saveInsured.setBusinessTypeDesc(businessType);
+			}
+ 			Map<String,String> occupation = getByOccupationIdDesc(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
+			String occupationDesc = Optional.ofNullable(occupation).map(map -> map.get("occupationName")).orElse("");
+			String occupationDescLocal = Optional.ofNullable(occupation).map(map -> map.get("occupationNameLocal")).orElse("");
+//			if(StringUtils.isNotBlank(req.getCompanyId()) && "100004".equalsIgnoreCase(req.getCompanyId()) ) {
+//				saveData.setTitleDesc(null);
+//				saveData.setPreferredNotification("Sms");
+//				saveData.setIsTaxExempted("N");
+//				saveData.setRegionCode(null);
+//				saveData.setStatus("Y");
+//				saveData.setBusinessType(null);
+//				saveData.setVrTinNo(null);
+//				saveData.setVrnGst(null);
+//			    String mobileCode2 = getListItem1(req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE");
+//		        saveData.setMobileCode1(mobileCode2);
+//				saveData.setMobileCode2(mobileCode2);
+//		     	String country = getByCountry(req.getCompanyId());
+//				saveData.setNationality(country);
+//			 	
+//			}else {
+//				saveData.setTitleDesc(title);
+//				saveData.setPreferredNotification(req.getPreferredNotification());
+//				saveData.setIsTaxExempted(req.getIsTaxExempted());
+//				saveData.setRegionCode(req.getRegionCode());
+//				saveData.setStatus(req.getStatus());
+//				saveData.setBusinessType(req.getBusinessType());
+//				saveData.setVrTinNo(req.getVrTinNo());
+//				saveData.setVrnGst(req.getVrTinNo());
+//				saveData.setMobileCode1(req.getMobileCode1());
+//				saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+//			}
+			saveInsured.setTitleDesc(titleDesc);
+			saveInsured.setMiddleName(req.getMiddleName());
+			saveInsured.setLastName(req.getLastName());
+			saveInsured.setPreferredNotification(req.getPreferredNotification());
+			saveInsured.setIsTaxExempted(req.getIsTaxExempted());
+			saveInsured.setRegionCode(req.getRegionCode());
+			saveInsured.setStatus(req.getStatus());
+			saveInsured.setBusinessType(req.getBusinessType());
+			saveInsured.setVrTinNo(req.getVrTinNo());
+			saveInsured.setVrnGst(req.getVrTinNo());
+			saveInsured.setMobileCode1(req.getMobileCode1());
+			saveInsured.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+			saveInsured.setGenderDesc(genderDesc);
+			saveInsured.setLanguageDesc(languageDesc);
+			saveInsured.setOccupationDesc(occupationDesc);
+			saveInsured.setOtherOccupation(req.getOtherOccupation());
+			saveInsured.setPolicyHolderTypeDesc(policyHolderTypeDesc);
+			saveInsured.setPolicyHolderTypeIdDesc(policyHolderTypeIdDesc);
+			saveInsured.setIdType(req.getPolicyHolderTypeid());
+			saveInsured.setIdTypeDesc(policyHolderTypeIdDesc);
+			saveInsured.setVrTinNo(req.getVrTinNo());
+			saveInsured.setVrnGst(req.getVrTinNo());
+			saveInsured.setAge(age);
+			saveInsured.setMobileCode1(req.getMobileCode1());
+			//saveData.setStreet(req.getStreet());
+			saveInsured.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+			saveInsured.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+			saveInsured.setWhatsappCode(req.getWhatsappCode());
+			saveInsured.setRegionCode(req.getStateCode());
+			saveInsured.setStateCode(StringUtils.isBlank(req.getStateCode()) ?null :Integer.valueOf(req.getStateCode()));
+			saveInsured.setStateName(req.getStateName());
+			saveInsured.setCityCode(StringUtils.isBlank(req.getCityCode())?null :Integer.valueOf(req.getCityCode()));
+			saveInsured.setCityName(req.getCityName());
+			saveInsured.setRegionCode(req.getRegionCode());
+			
+			//local desc feilds
+			saveInsured.setGenderDescLocal(genderLocal);
+			saveInsured.setTitleDescLocal(titleLocal);
+			saveInsured.setLanguageDescLocal(languageLocal);
+			saveInsured.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
+			saveInsured.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
+			saveInsured.setOccupationDescLocal(occupationDescLocal);
+			//saveData.setMaritalStatusDescLocal(maritalStatusDescLocal);
+			saveInsured.setStateNameLocal(stateNameLocal);
+			saveInsured.setCityNameLocal(cityNameLocal);
+			saveInsured.setMobileCodeDesc1Local(req.getMobileCode1());
+			saveInsured.setMobileCodeDesc2Local(req.getMobileCode2());
+			saveInsured.setMobileCodeDesc3Local(req.getMobileCode3());
+			saveInsured.setWhatsappCodeDescLocal(req.getWhatsappCode());
+			saveInsured.setIdTypeDescLocal(policyHolderTypeIdLocal);
+			saveInsured.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
+			saveInsured.setActivities(req.getActivities());
+			saveInsured.setInsuredReferenceNo(req.getInsuredReferenceNo() );		
+			
+			
+			// Kenya Rating Fields
+			saveInsured.setMaritalStatus(StringUtils.isBlank(req.getMaritalStatus()) ?"Single" : req.getMaritalStatus() );
+			if (req.getLicenseIssuedDate()!=null ) {
+				saveInsured.setLicenseIssuedDate(req.getLicenseIssuedDate());
+				Date licenceIssued = req.getDobOrRegDate();
+				Date today = new Date();
+				int licenseDuration = today.getYear() - licenceIssued.getYear();
+				saveInsured.setLicenseDuration(licenseDuration);
+				
+			} else {
+				saveInsured.setLicenseIssuedDate(new Date());
+				saveInsured.setLicenseDuration(20);
+			}
+			
+			
+//			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
+//			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
+//			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" : stateCityNames.get(0).getStateName().toString());
+//			saveData.setCityName(req.getCityName());
+//			}
+			insuredRepository.save(saveInsured);
+
+			//Personal Info Update
+			
+			//Endorsement flow and B2C Flow
+			//Type=B2C
+			if(StringUtils.isNotBlank(req.getEndtCategDesc())) {
+			if("Non Financial".equalsIgnoreCase(req.getEndtCategDesc().toString())) {
+				PersonalInfo savePersonalInfo=new PersonalInfo();
+				HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());
+				dozerMapper.map(req, saveInsured);
+				savePersonalInfo.setPinCode(req.getPinCode());
+				savePersonalInfo.setCustomerId(homedata.getCustomerId());
+				savePersonalInfo.setIdNumber(req.getIdNumber());
+				savePersonalInfo.setCreatedBy(createdBy);
+				savePersonalInfo.setUpdatedDate(new Date());
+				savePersonalInfo.setUpdatedBy(req.getCreatedBy());
+				savePersonalInfo.setCustomerReferenceNo(custRefNo);
+				savePersonalInfo.setAddress1(req.getAddress1());
+				savePersonalInfo.setAddress2(req.getAddress2());
+				savePersonalInfo.setAge(age);
+				savePersonalInfo.setBranchCode(req.getBranchCode());
+				savePersonalInfo.setBusinessType(req.getBusinessType());
+				savePersonalInfo.setOtherOccupation(req.getOtherOccupation());
+				if (StringUtils.isNotBlank(req.getBusinessType())) {
+					String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+					savePersonalInfo.setBusinessTypeDesc(businessType);
+						
+				}
+				
+				
+				savePersonalInfo.setRegionCode(req.getRegionCode());
+				savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
+				savePersonalInfo.setCityCode(req.getCityCode());
+				savePersonalInfo.setCityName(req.getCityName());
+				savePersonalInfo.setClientName(req.getClientName());
+				savePersonalInfo.setClientStatus(req.getClientStatus());
+				savePersonalInfo.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
+				savePersonalInfo.setCompanyId(req.getCompanyId());
+				savePersonalInfo.setCreatedBy(req.getCreatedBy());
+				savePersonalInfo.setCustomerReferenceNo(req.getCustomerReferenceNo());
+ 				savePersonalInfo.setDobOrRegDate(dob);
+  				savePersonalInfo.setEmail1(req.getEmail1());
+				savePersonalInfo.setEmail2(req.getEmail2());
+				savePersonalInfo.setEmail3(req.getEmail3());
+				savePersonalInfo.setEndorsementDate(req.getEndorsementDate());
+				savePersonalInfo.setEndorsementEffdate(req.getEndorsementEffdate());
+				savePersonalInfo.setEndorsementRemarks(req.getEndorsementRemarks());
+				savePersonalInfo.setEndorsementType(req.getEndorsementType());
+				savePersonalInfo.setEndorsementTypeDesc(req.getEndorsementTypeDesc());
+				savePersonalInfo.setEndtCategDesc(req.getEndtCategDesc());
+				savePersonalInfo.setEndtCount(req.getEndtCount());
+				savePersonalInfo.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
+				savePersonalInfo.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+				savePersonalInfo.setEndtStatus(req.getEndtStatus());
+				savePersonalInfo.setEntryDate(new Date());
+				savePersonalInfo.setFax(req.getFax());
+				savePersonalInfo.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
+				savePersonalInfo.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
+				savePersonalInfo.setGenderDesc(genderDesc);
+				savePersonalInfo.setTitleDesc(titleDesc);
+				savePersonalInfo.setLanguageDesc(languageDesc);
+				savePersonalInfo.setOccupationDesc(occupationDesc);
+				
+						
+				// Induvidual / Corporate
+				savePersonalInfo.setPolicyHolderType(req.getPolicyHolderType());
+				savePersonalInfo.setPolicyHolderTypeDesc(policyHolderTypeDesc);
+				
+				// Possport or etc
+				savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
+				savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeIdDesc);
+				savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
+				savePersonalInfo.setIdTypeDesc(policyHolderTypeIdDesc);
+				 
+				savePersonalInfo.setMobileCode1(req.getMobileCode1());
+				savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+				savePersonalInfo.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+				savePersonalInfo.setMobileNo1(req.getMobileNo1());
+				savePersonalInfo.setMobileNo2(req.getMobileNo2());
+				savePersonalInfo.setMobileNo3(req.getMobileNo3());
+				savePersonalInfo.setWhatsappCode(req.getWhatsappCode());
+				if (StringUtils.isNotBlank(req.getMobileCode1())) {
+ 					ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode1(),req.getCompanyId());
+					savePersonalInfo.setMobileCodeDesc1(mobiledesc1.getItemValue());
+
+				}
+				if (StringUtils.isNotBlank(req.getMobileCode2())) {
+					ListItemValue mobiledesc2 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode2(),req.getCompanyId());
+					savePersonalInfo.setMobileCodeDesc2(mobiledesc2.getItemValue());
+
+				}
+				if (StringUtils.isNotBlank(req.getMobileCode3())) {
+					ListItemValue mobiledesc3 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode3(),req.getCompanyId());
+					savePersonalInfo.setMobileCodeDesc3(mobiledesc3.getItemValue());
+
+				}
+				if (StringUtils.isNotBlank(req.getWhatsappCode())) {
+					ListItemValue whatsappCode = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE",
+							req.getWhatsappCode(),req.getCompanyId());
+					savePersonalInfo.setWhatsappcodeDesc(whatsappCode.getItemValue());
+
+				}
+				savePersonalInfo.setRegionCode(req.getRegionCode());
+				savePersonalInfo.setStateCode(req.getStateCode());
+				savePersonalInfo.setStateName(req.getStateName());
+				savePersonalInfo.setStatus(req.getStatus());
+				savePersonalInfo.setNationality(req.getNationality());
+				savePersonalInfo.setVrTinNo(req.getVrTinNo());
+				savePersonalInfo.setVrnGst(req.getVrTinNo());
+				
+				
+				// local desc 
+				savePersonalInfo.setTitleDescLocal(titleLocal);
+				savePersonalInfo.setGenderDescLocal(genderLocal);
+				savePersonalInfo.setOccupationDescLocal(occupationDescLocal);
+				savePersonalInfo.setBusinessTypeDescLocal(businessTypeLocal);
+				savePersonalInfo.setStateNameLocal(stateNameLocal);
+				savePersonalInfo.setCityNameLocal(cityNameLocal);
+				savePersonalInfo.setIdTypeDescLocal(policyHolderTypeIdLocal);
+				savePersonalInfo.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
+				savePersonalInfo.setLanguageDescLocal(languageLocal);
+				savePersonalInfo.setPolicyHolderTypeDescLocal(PolicyHolderTypeLocal);
+				savePersonalInfo.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
+				savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
+				savePersonalInfo.setActivities(req.getActivities());
 				
 				
 				personalInforepo.save(savePersonalInfo);
@@ -1600,7 +3125,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					PersonalInfo savePersonalInfo=new PersonalInfo();
 					
 				//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());
-					dozerMapper.map(req, saveData);
+					dozerMapper.map(req, saveInsured);
 					savePersonalInfo.setPinCode(req.getPinCode());
 					savePersonalInfo.setCustomerId(homedata.getCustomerId());
 					savePersonalInfo.setIdNumber(req.getIdNumber());
@@ -2239,7 +3764,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			res.setMobileCode3(data.get(0).getMobileCode3()==null?"":data.get(0).getMobileCode3());
 			res.setSocioProfessionalCategory(data.get(0).getSocioProfessionalCategory());
 			res.setActivities(data.get(0).getActivities());
-			res.setAddress2(data.get(0).getAddress2()==null?"":data.get(0).getAddress2());	
+			res.setAddress2(data.get(0).getAddress2()==null?"":data.get(0).getAddress2());
+			res.setCustomerAsInsurer(data.get(0).getCustomerAsInsurer()==null?"":data.get(0).getCustomerAsInsurer());		
 					
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2248,6 +3774,44 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		}
 		return res;
 	}
+	
+	@Override
+	public InsuredDetailsGetRes getInsuredDetails(GetCustomerDetailsReq req) {
+		InsuredDetailsGetRes res = new InsuredDetailsGetRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
+		try {
+			List<EserviceInsuredDetails> data = insuredRepository.findByInsuredReferenceNoOrderByEntryDateDesc(req.getInsuredReferenceNo());
+	
+			if(data != null && !data.isEmpty() && StringUtils.isNotBlank(data.get(0).getInsuredReferenceNo()))	{
+				res = dozerMapper.map(data.get(0), InsuredDetailsGetRes.class);
+				
+				res.setMobileCodeDesc1(data.get(0).getMobileCodeDesc1()==null?"":data.get(0).getMobileCodeDesc1());
+				res.setMobileCodeDesc2(data.get(0).getMobileCodeDesc2()==null?"":data.get(0).getMobileCodeDesc2());
+				res.setMobileCodeDesc3(data.get(0).getMobileCodeDesc3()==null?"":data.get(0).getMobileCodeDesc3());
+				res.setMobileCode1(data.get(0).getMobileCode1()==null?"":data.get(0).getMobileCode1());
+				res.setMobileCode2(data.get(0).getMobileCode2()==null?"":data.get(0).getMobileCode2());
+				res.setMobileCode3(data.get(0).getMobileCode3()==null?"":data.get(0).getMobileCode3());
+				res.setSocioProfessionalCategory(data.get(0).getSocioProfessionalCategory());
+				res.setActivities(data.get(0).getActivities());
+				res.setAddress2(data.get(0).getAddress2()==null?"":data.get(0).getAddress2());	
+				res.setInsuredReferenceNo(data.get(0).getInsuredReferenceNo()==null?"":data.get(0).getInsuredReferenceNo());	
+			}
+			else
+			{
+				return null;
+			}
+	
+		
+					
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
 
 	@Override
 	public List<CustomerDetailsGetRes> getallCustomerDetails(GetAllCustomerDetailsReq req) {
@@ -2368,7 +3932,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setSocioProfessionalCategory(data.getSocioProfessionalCategory());	
 				res.setActivities(data.getActivities());
 				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());
-				
+				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());			
 				
 				resList.add(res);
 			}
@@ -2577,7 +4141,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setSocioProfessionalCategory(data.getSocioProfessionalCategory());				
 				res.setActivities(data.getActivities());
 				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());	
-					
+				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());			
+				
 				resList.add(res);
 			}
 

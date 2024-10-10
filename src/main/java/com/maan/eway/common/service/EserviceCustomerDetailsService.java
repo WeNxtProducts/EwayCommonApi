@@ -12,17 +12,24 @@ import com.maan.eway.common.req.GetByCustomerRefNoReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
+import com.maan.eway.common.res.InsuredDetailsGetRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.SuccessRes;
 
 public interface EserviceCustomerDetailsService {
 
 	List<String> validateCustomerDetails(EserviceCustomerSaveReq req);
+	
+	List<String> validateInsuredDetails(EserviceCustomerSaveReq req);
 
 	SuccessRes saveCustomerDetails(EserviceCustomerSaveReq req);
+	
+	SuccessRes saveInsuredDetails(EserviceCustomerSaveReq req);
 
 	CustomerDetailsGetRes getCustomerDetails(GetCustomerDetailsReq req);
-
+	
+	InsuredDetailsGetRes getInsuredDetails(GetCustomerDetailsReq req);
+	
 	List<CustomerDetailsGetRes> getallCustomerDetails(GetAllCustomerDetailsReq req);
 
 	List<CustomerDetailsGetRes>  getbyvrtinno(EserviceCustomerSearchVrtinReq req);

@@ -39,12 +39,12 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @ToString
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Builder
+//@Builder
 @IdClass(EserviceMotorDetailsId.class)
 @Table(name="eservice_motor_details")
 
@@ -855,8 +855,87 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "NO_OF_CYLINDERS")
     private Integer noOfCylinders;
 	
-	 
+	@Column(name = "REFERAL_CODES", length = 500)
+	private String referalCodes;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "LICENSE_ISSUED_DATE")
+	private Date licenseIssuedDate;
+	
+	@Column(name = "LICESENSE_DURATION")
+	private Integer licesenseDuration;
+	 
+	@Column(name = "CLAIM_TYPE", length = 20)
+	private String claimType;
+	
+	@Column(name = "CLAIM_TYPE_DESC", length = 100)
+	private String claimTypeDesc;
+	
+	@Column(name = "RENEWAL_YN", length = 2)
+	private String renewalYn;
+	
+	@Column(name = "PREVIOUS_INSURED", length = 50)
+	private String previousInsured;
+	
+	@Column(name = "SERIES", length = 50)
+	private String series;
+	
+//	@Column(name = "NO_OF_CYCLINDERS")
+//	private Integer noOfCyclinders;
+	
+	@Column(name = "ENGINE_TYPE", length = 100)
+	private String engineType;
+	
+	@Column(name = "PLATE_COLOR", length = 50)
+	private String plateColor;
+	
+	@Column(name = "NO_OF_DOORS")
+	private Integer noOfDoors;
+	
+	@Column(name = "PLATE_TYPE_ID", length = 5)
+	private String plateTypeId;
+	
+	@Column(name = "PLATE_TYPE_DESC", length = 50)
+	private String plateTypeDesc;
+	
+	@Column(name = "NO_CLAIM_DOCUMENT_ID")
+	private Integer noClaimDocumentId;
+	
+	@Column(name = "NO_CLAIM_DOCUMENT_DESC", length = 100)
+	private String noClaimDocumentDesc;
+	
+	@Column(name = "REGISTERED_AT")
+	private Integer registeredAt;
+	
+	@Column(name = "MODALITY_SELECTION", length = 5)
+	private String modalitySelection;
+	
+	@Column(name = "DEPRECIATION_VEHICLE_VALUE")
+	private BigDecimal depreciationVehicleValue;
+	
+	@Column(name = "DANGEROUS_GOODS_YN", length = 2)
+	private String dangerousGoodsYn;
+	
+	@Column(name = "NEW_VALUE")
+	private Integer newValue;
+	
+	@Column(name = "MARKET_VALUE")
+	private Integer marketValue;
+	
+	@Column(name = "AGGREGATED_VALUE")
+	private Integer aggregatedValue;
+	
+	@Column(name = "MUNICIPALITY_TRAFFIC")
+	private String municipalityTraffic;
+	
+	@Column(name = "TRANSPORT_HYDRO")
+	private String transportHydro;
+	
+	@Column(name = "DISPLACEMENT_CM3")
+    private String displacementInCM3;
+	
+	@Column(name = "PLATE_TYPE")
+	private String plateType;
 }
 
 

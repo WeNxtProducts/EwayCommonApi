@@ -9,10 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class CustomerDetailsGetRes {
+public class InsuredDetailsGetRes {
 
 	@JsonProperty("CustomerReferenceNo")
 	private String customerReferenceNo;
+	
+	@JsonProperty("InsuredReferenceNo")
+    private String insuredReferenceNo ;
 
 	@JsonProperty("PolicyHolderTypeid")
 	private String policyHolderTypeid;

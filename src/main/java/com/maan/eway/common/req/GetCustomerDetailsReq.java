@@ -10,4 +10,7 @@ public class GetCustomerDetailsReq {
 	@JsonProperty("CustomerReferenceNo")
 	private String customerReferenceNo ;
 	
+	@JsonProperty("InsuredReferenceNo")
+    private String insuredReferenceNo ;
+	
 }
