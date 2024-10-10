@@ -773,20 +773,21 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add("1054");
 					//errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
 				}
-				
-				if (StringUtils.isBlank(req.getIsTaxExempted())) {
-					errorList.add("1055");
-					//errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
-
-				}else if (req.getIsTaxExempted().equals("Y")) {
-					if (StringUtils.isBlank(req.getTaxExemptedId())) {
-						errorList.add("1056");
-						//errorList.add(new Error("32", "TaxExemptedId", "Please Enter TaxExemptedId"));
-					} else if (req.getTaxExemptedId().length() > 20) {
-						errorList.add("1057");
-						//errorList.add(new Error("33", "TaxExemptedId", "Please Enter TaxExemptedId within 20 Characters"));
+				if(!"100040".equals(req.getCompanyId())) {
+					if (StringUtils.isBlank(req.getIsTaxExempted())) {
+						errorList.add("1055");
+						//errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
+	
+					}else if (req.getIsTaxExempted().equals("Y")) {
+						if (StringUtils.isBlank(req.getTaxExemptedId())) {
+							errorList.add("1056");
+							//errorList.add(new Error("32", "TaxExemptedId", "Please Enter TaxExemptedId"));
+						} else if (req.getTaxExemptedId().length() > 20) {
+							errorList.add("1057");
+							//errorList.add(new Error("33", "TaxExemptedId", "Please Enter TaxExemptedId within 20 Characters"));
+						}
+	
 					}
-
 				}
 				if (StringUtils.isBlank(req.getStatus())) {
 					errorList.add("1058");
