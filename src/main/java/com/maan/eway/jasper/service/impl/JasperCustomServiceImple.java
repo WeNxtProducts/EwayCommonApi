@@ -2106,7 +2106,7 @@ public class JasperCustomServiceImple {
 											&& f.getVehicleId()==o.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
 									empMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 											&& f.getSectionId()==Integer.parseInt(o.getSectionId())
-											&& f.getVehicleId()==o.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).findAny().orElse(BigDecimal.ZERO));
+											&& f.getVehicleId()==o.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 									empMap.put("salary", o.getSalary());
 									return empMap;
 								}, Collectors.toList()))).entrySet()

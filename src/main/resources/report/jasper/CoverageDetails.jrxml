@@ -75,9 +75,6 @@
 		<variable name="tot_sumInsured" class="java.math.BigDecimal" calculation="Sum">
 			<variableExpression><![CDATA[$F{sumInsured}]]></variableExpression>
 		</variable>
-		<variable name="tot_premium" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{premium}]]></variableExpression>
-		</variable>
 	</subDataset>
 	<subDataset name="Conditions" uuid="ff92c7a7-a7a1-4c21-b3b6-e71b67535bfb">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -129,9 +126,6 @@
 		<variable name="tot_sumInsured" class="java.math.BigDecimal" calculation="Sum">
 			<variableExpression><![CDATA[$F{buildingSumInsured}]]></variableExpression>
 		</variable>
-		<variable name="tot_premium" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{premium}]]></variableExpression>
-		</variable>
 	</subDataset>
 	<subDataset name="employeeInfo" uuid="cff86464-708c-4c7a-b209-4d2652e42fa4">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
@@ -163,9 +157,6 @@
 		<field name="locationName" class="java.lang.String"/>
 		<variable name="tot_salary" class="java.math.BigDecimal" calculation="Sum">
 			<variableExpression><![CDATA[$F{salary}]]></variableExpression>
-		</variable>
-		<variable name="tot_premium" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{premium}]]></variableExpression>
 		</variable>
 	</subDataset>
 	<subDataset name="bondDetails" uuid="d85bced6-9aa9-4814-9c60-1024bd98eb06">
@@ -207,9 +198,6 @@
 		</field>
 		<variable name="tot_sumInsured" class="java.math.BigDecimal" calculation="Sum">
 			<variableExpression><![CDATA[$F{suminsured}]]></variableExpression>
-		</variable>
-		<variable name="tot_premium" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{premium}]]></variableExpression>
 		</variable>
 	</subDataset>
 	<parameter name="pvSubReportPath" class="java.lang.String"/>
@@ -497,6 +485,7 @@
 						<jr:tableFooter style="Table_TD" height="30" rowSpan="1">
 							<box>
 								<pen lineWidth="0.0"/>
+								<topPen lineWidth="0.5"/>
 							</box>
 							<textField textAdjust="StretchHeight">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="60" height="15" uuid="8031a841-9267-402f-9335-0a96b3e9677e"/>
@@ -567,7 +556,7 @@
 								<textFieldExpression><![CDATA[$V{tot_sumInsured}]]></textFieldExpression>
 							</textField>
 							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="85" height="15" uuid="bc40467f-0071-47ff-ab03-7832bc6da323"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="85" height="15" uuid="93a2f8d3-c99a-4bd2-a66c-ee0e9aa5de2a"/>
 								<box rightPadding="2">
 									<pen lineWidth="0.5" lineStyle="Double"/>
 									<topPen lineWidth="0.5" lineStyle="Double" lineColor="#000000"/>
@@ -578,7 +567,7 @@
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$V{tot_premium}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:columnHeader height="20" rowSpan="1">
@@ -819,7 +808,7 @@
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$V{tot_premium}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:columnHeader height="20" rowSpan="1">
@@ -1045,7 +1034,7 @@
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$V{tot_premium}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:detailCell height="20">
@@ -1312,7 +1301,7 @@
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$V{tot_premium}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:columnHeader style="Table_TD" height="20" rowSpan="1">
