@@ -2918,7 +2918,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveInsured.setMiddleName(req.getMiddleName());
 			saveInsured.setLastName(req.getLastName());
 			saveInsured.setPreferredNotification(req.getPreferredNotification());
-			saveInsured.setIsTaxExempted(req.getIsTaxExempted());
+			saveInsured.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 			saveInsured.setRegionCode(req.getRegionCode());
 			saveInsured.setStatus(req.getStatus());
 			saveInsured.setBusinessType(req.getBusinessType());
@@ -3022,7 +3022,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				
 				savePersonalInfo.setRegionCode(req.getRegionCode());
-				savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
+				savePersonalInfo.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 				savePersonalInfo.setCityCode(req.getCityCode());
 				savePersonalInfo.setCityName(req.getCityName());
 				savePersonalInfo.setClientName(req.getClientName());
@@ -3144,7 +3144,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						savePersonalInfo.setBusinessTypeDesc(businessType);
 					}
 					
-					savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
+					savePersonalInfo.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 					savePersonalInfo.setCityCode(req.getCityCode());
 					savePersonalInfo.setCityName(req.getCityName());
 					savePersonalInfo.setClientName(req.getClientName());
@@ -3796,7 +3796,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setSocioProfessionalCategory(data.get(0).getSocioProfessionalCategory());
 				res.setActivities(data.get(0).getActivities());
 				res.setAddress2(data.get(0).getAddress2()==null?"":data.get(0).getAddress2());	
-				res.setInsuredReferenceNo(data.get(0).getInsuredReferenceNo()==null?"":data.get(0).getInsuredReferenceNo());	
+				res.setInsuredReferenceNo(data.get(0).getInsuredReferenceNo()==null?"":data.get(0).getInsuredReferenceNo());
+				res.setIsTaxExempted(data.get(0).getIsTaxExempted()==null?"":data.get(0).getIsTaxExempted());		
+				
 			}
 			else
 			{
