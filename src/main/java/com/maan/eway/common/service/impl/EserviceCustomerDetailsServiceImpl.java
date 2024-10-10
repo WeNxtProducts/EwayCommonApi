@@ -788,6 +788,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						}
 	
 					}
+				}else {
+					req.setIsTaxExempted("N");
 				}
 				if (StringUtils.isBlank(req.getStatus())) {
 					errorList.add("1058");
