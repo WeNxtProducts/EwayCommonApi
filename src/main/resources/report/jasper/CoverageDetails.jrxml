@@ -1097,7 +1097,7 @@
 							</jr:columnHeader>
 							<jr:detailCell style="Table_TD" height="15">
 								<property name="com.jaspersoft.studio.unit.height" value="px"/>
-								<textField textAdjust="StretchHeight">
+								<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 									<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="70" height="15" uuid="de738997-15be-4c63-950b-95b3d2299a63"/>
 									<box leftPadding="2"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -1120,7 +1120,7 @@
 								</textField>
 							</jr:columnHeader>
 							<jr:detailCell style="Table_TD" height="15">
-								<textField textAdjust="StretchHeight">
+								<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 									<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="80" height="15" uuid="82e65285-380f-4aa6-8081-b7b9534108d6"/>
 									<box leftPadding="2"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -1150,7 +1150,7 @@
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="15">
-							<textField textAdjust="StretchHeight">
+							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="70" height="15" uuid="9a6f3713-aa98-42d2-9738-425ec36bd7e2"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -1179,7 +1179,7 @@
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="15">
-							<textField textAdjust="StretchHeight">
+							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="50" height="15" uuid="1a6f4550-e4bd-4b2f-bac4-d278a5e9392a"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -1208,7 +1208,7 @@
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="15">
-							<textField textAdjust="StretchHeight">
+							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="79" height="15" uuid="1917fdd2-459e-412f-8029-6885bb7904a4"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -1263,7 +1263,7 @@
 							<box>
 								<pen lineWidth="0.5"/>
 							</box>
-							<textField textAdjust="StretchHeight">
+							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="15" uuid="8e8c0853-789a-4742-a9f3-aa2d0151cbd5"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -1324,7 +1324,7 @@
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="15">
-							<textField textAdjust="StretchHeight">
+							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="65" height="15" uuid="6f71552a-246e-49e5-9c5a-0c041b03ca9e"/>
 								<box leftPadding="0" rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
