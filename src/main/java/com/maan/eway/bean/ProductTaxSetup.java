@@ -157,6 +157,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="TAX_DESC_LOCAL", length=100)
     private String     taxDescLocal ;
+    
+    @Column(name="EXTEND_CUST_TAX", length=100)
+    private String extend_Cust_tax;
 
     
 }

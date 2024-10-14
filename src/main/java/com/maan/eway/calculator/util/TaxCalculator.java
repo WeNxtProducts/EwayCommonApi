@@ -3,6 +3,7 @@ package com.maan.eway.calculator.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import jakarta.persistence.Tuple;
@@ -15,13 +16,15 @@ public class TaxCalculator   implements Consumer<Tax> {
 	private BigDecimal exchangeRate;
 	
 	protected Tuple customer =null;
+	protected List<Tuple> customerChoiceTaxes;
 	
-	public TaxCalculator(BigDecimal premium, BigDecimal exchangeRate, CommonCalculator calc, Tuple customer) {
+	public TaxCalculator(BigDecimal premium, BigDecimal exchangeRate, CommonCalculator calc, Tuple customer, List<Tuple> customerChoiceTaxes) {
 		super();
 		this.premium = premium;
 		this.exchangeRate = exchangeRate;
 		this.calc = calc;
 		this.customer=customer;
+		this.customerChoiceTaxes=customerChoiceTaxes;
 	}
 
 
@@ -37,17 +40,32 @@ public class TaxCalculator   implements Consumer<Tax> {
 	 try {
 		 String calctype= t.getCalcType();
 		 
-		 String isTaxExempted=customer.get("isTaxExempted")==null?"N":customer.get("isTaxExempted").toString();
+		 String isTaxExempted=customer.get("isTaxExempted")==null?"2":customer.get("isTaxExempted").toString(); //default 2 not 
 		 String taxExemptedId=customer.get("taxExemptedId")==null?"":customer.get("taxExemptedId").toString();
+		 Optional<Tuple> first = customerChoiceTaxes.stream().filter(tx ->  isTaxExempted.equals(tx.get("itemCode"))).findFirst();
+		 String Percentage="0";
+		 if(!first.isEmpty()) {
+			 Tuple tuple = first.get();
+			 Percentage=tuple.get("param1")==null?"0":tuple.get("param1").toString();
+		 }
 		 
+		 //isTaxExempted
 		 t.setIsTaxExempted(isTaxExempted);
 		 t.setTaxExemptCode(taxExemptedId);
 		 
 		 BigDecimal domath_Fc = BigDecimal.ZERO;
 		 t.setTaxAmount(BigDecimal.ZERO);
 		 t.setTaxAmountLc(BigDecimal.ZERO);
-		 if( ("Y".equals(t.getTaxExemptedAllowed()) && t.getIsTaxExempted().equals("N")) || t.getTaxExemptedAllowed().equals("N") ) {
-			 domath_Fc= calc.domath(calctype, t.getTaxRate(), premium,exchangeRate); 
+		 if( ("Y".equals(t.getTaxExemptedAllowed()) && !t.getIsTaxExempted().equals("1")) || t.getTaxExemptedAllowed().equals("N") ) {
+			 
+			 Double taxRate = t.getTaxRate();
+			 if(Integer.parseInt(t.getIsTaxExempted()) >2) {
+				Double percentage=(Double) Double.parseDouble(Percentage)/100;
+				 taxRate=taxRate * percentage;
+				 t.setTaxRate(taxRate);
+			 }
+			 domath_Fc= calc.domath(calctype, taxRate, premium,exchangeRate); 
+			   
 			 BigDecimal domath_Lc = domath_Fc.multiply(exchangeRate);
 			 t.setTaxAmount(domath_Fc);
 			 t.setTaxAmountLc(domath_Lc);

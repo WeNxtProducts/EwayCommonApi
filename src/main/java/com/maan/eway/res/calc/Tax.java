@@ -55,4 +55,6 @@ public class Tax implements Serializable  {
     
     @JsonProperty("TaxFor")
     private String taxFor;
+    @JsonProperty("extend_Cust_tax")
+    private String extend_Cust_tax;
 }

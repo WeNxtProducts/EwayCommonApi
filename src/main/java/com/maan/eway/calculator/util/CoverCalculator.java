@@ -178,7 +178,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 }*/else {
 					 t.setRate((t.getRate()*Double.parseDouble(rateFor)));
 					 CommonCalculator calcul=new CommonCalculator();
-					 calcul.setEngine(engine, calculatedcover, result, vehicles, customers, prorata, crservice, dcf,drivers);
+					 calcul.setEngine(engine, calculatedcover, result, vehicles, customers, prorata, crservice, dcf,drivers,this.customerChoiceTaxes);
 					// System.out.println(t.getCoverDesc()+ "---"+t.getRate() +"---"+si);
 					 BigDecimal domath = calcul.domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
 					// System.out.println(t.getCoverDesc()+ "---"+domath);
@@ -228,12 +228,12 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 Double totaltax=0D;
 				 if(t.getTaxes()!=null && t.getTaxes().size()>0 && customers!=null && customers.get(0)!=null ) {
-					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
+					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0),this.customerChoiceTaxes);
 					 t.getTaxes().stream().filter(f -> "N".equals(f.getDependentYn())).forEach(tcal);
 					 Double totaltax_N = t.getTaxes().stream().filter(f -> "N".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 					 
 					 
-					 tcal=new TaxCalculator(t.getPremiumExcluedTax().add(new BigDecimal(totaltax_N)),t.getExchangeRate(),this,customers.get(0));
+					 tcal=new TaxCalculator(t.getPremiumExcluedTax().add(new BigDecimal(totaltax_N)),t.getExchangeRate(),this,customers.get(0),customerChoiceTaxes);
 					 t.getTaxes().stream().filter(f -> "Y".equals(f.getDependentYn())).forEach(tcal);
 					 Double totaltax_Y = t.getTaxes().stream().filter(f -> "Y".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 					 

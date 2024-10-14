@@ -14,17 +14,22 @@ import com.maan.eway.res.calc.Tax;
 public class TaxUtils  implements Function<Tuple,Tax>{
 	private BigDecimal endtCount;
 	private String endtTypeId;
+	//private  List<Tuple> customerChoiceTaxes;
 	//private boolean isEndt;
 
-	public TaxUtils(BigDecimal endtCount,String endtTypeId) {
+	public TaxUtils(BigDecimal endtCount,String endtTypeId/*, List<Tuple> customerChoiceTaxes*/) {
 		super();
 		this.endtCount = endtCount;
 		this.endtTypeId=endtTypeId;
+	//	this.customerChoiceTaxes=customerChoiceTaxes;
 		//this.isEndt=isEndt;
 	}
 	@Override
 	public Tax apply(Tuple t) {
 		try {
+			
+			 
+			
 			Tax d=Tax.builder()
 				 	.isTaxExempted(null)
 				 	.taxAmount(BigDecimal.ZERO)
@@ -43,6 +48,7 @@ public class TaxUtils  implements Function<Tuple,Tax>{
 					.minimumTaxAmount(t.get("minimumAmount")==null?BigDecimal.ZERO:new BigDecimal(t.get("minimumAmount").toString()))
 					.taxAmountLc(BigDecimal.ZERO)
 					.taxFor(t.get("taxFor")==null?"":t.get("taxFor").toString())
+					.extend_Cust_tax(t.get("extend_Cust_tax")==null?"":t.get("extend_Cust_tax").toString())
 				 	.build();
 			return d;
 		}catch (Exception e) {

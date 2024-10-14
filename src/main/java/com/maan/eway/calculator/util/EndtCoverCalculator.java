@@ -37,7 +37,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 
 	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers
 			,List<Tuple> prorata, RatingFactorsUtil crservice,Date effectiveDate,DecimalFormat decimalFormat,List<Tuple> drivers) {		
-		this.setEngine(engine, c, result, vehicles, customers, prorata, crservice,decimalFormat,drivers);
+		this.setEngine(engine, c, result, vehicles, customers, prorata, crservice,decimalFormat,drivers,this.customerChoiceTaxes);
 		this.effectiveDate=effectiveDate;
 	}
 
@@ -144,7 +144,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				}		 
 				Double totaltax=0D;
 				if(t.getTaxes()!=null && t.getTaxes().size()>0) {
-					TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
+					TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0),this.customerChoiceTaxes);
 					t.getTaxes().stream().forEach(tcal);
 					totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 				}		 
@@ -421,19 +421,19 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						List<Tax> inendtfees=endorsement.getTaxes().stream().filter(v -> v.getTaxId().equals(endtTypeId)).collect(Collectors.toList());
 						Double endtFee=0D;
 						if(inendtfees.size()>0) {
-							TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().abs(),t.getExchangeRate(),this,customers.get(0));
+							TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().abs(),t.getExchangeRate(),this,customers.get(0),this.customerChoiceTaxes);
 							inendtfees.stream().forEach(tcal);
 							endtFee= inendtfees.stream().mapToDouble(o -> o.getTaxAmount().doubleValue()).sum();
 						}
 
 
 
-						TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().abs().add(new BigDecimal(endtFee)),t.getExchangeRate(),this,customers.get(0));  
+						TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().abs().add(new BigDecimal(endtFee)),t.getExchangeRate(),this,customers.get(0),this.customerChoiceTaxes);  
 						notendtfees.stream().filter(f -> "N".equals(f.getDependentYn())).forEach(tcal);
 						Double totaltax_N = notendtfees.stream().filter(f -> "N".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 
 
-						tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().abs().add(new BigDecimal(endtFee)).add(new BigDecimal(totaltax_N)),t.getExchangeRate(),this,customers.get(0));
+						tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().abs().add(new BigDecimal(endtFee)).add(new BigDecimal(totaltax_N)),t.getExchangeRate(),this,customers.get(0),this.customerChoiceTaxes);
 						notendtfees.stream().filter(f -> "Y".equals(f.getDependentYn())).forEach(tcal);
 						Double totaltax_Y = notendtfees.stream().filter(f -> "Y".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();						 
 						totaltax=totaltax_N+totaltax_Y;  

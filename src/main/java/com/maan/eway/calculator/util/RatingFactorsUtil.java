@@ -36,6 +36,7 @@ import com.maan.eway.bean.EwayVehicleMakemodelMasterDetail;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.LifePolicytermsMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.OneTimeTableDetails;
@@ -1307,6 +1308,28 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
- 
+
+	public List<Tuple> customerTaxList(CalcEngine engine) {
+		try {
+		
+			String search="companyId:"+ engine.getInsuranceId() +";status:Y;";
+			List<Tuple> result=null;
+			SpecCriteria criteria = crservice.createCriteria(ListItemValue.class, search, "itemId"); 
+
+			result=crservice.getResult(criteria, 0, 50);
+			if(result.isEmpty()) {
+				search="companyId:99999;status:Y;";
+				criteria = crservice.createCriteria(ListItemValue.class, search, "itemId"); 
+				result=crservice.getResult(criteria, 0, 50);
+				return result.size()>0?result:new ArrayList<Tuple>();
+			}
+			return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
 }
 

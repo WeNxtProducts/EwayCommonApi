@@ -281,6 +281,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 	}
 	private Map<String,BigDecimal> loadFixedValue(CalcEngine engine){
 		try {
+			List<Tuple> customerChoiceTaxes	=ratingutil.customerTaxList(engine);
+			
 			List<Tuple> totalcoverstuple = LoadCoverFixedValue(engine);
 			if(totalcoverstuple!=null && totalcoverstuple.size()>0) {
 			List<Tuple> covers = totalcoverstuple.parallelStream()
@@ -335,7 +337,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				totalcovers.addAll(nonSubcovers.get("N"));
 			}
 			CoverCalculator calc = new CoverCalculator();
-			calc.setEngine(engine, totalcovers, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
+			calc.setEngine(engine, totalcovers, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers,customerChoiceTaxes);
 			totalcovers.parallelStream().forEach(calc);
 			//286,319,287,324
 			BigDecimal premiumLLD = totalcovers.stream().sorted(Comparator.comparing(Cover::getPremiumExcluedTax).reversed()).filter(c-> "324".equals(c.getCoverId())).map(x-> x.getPremiumExcluedTax()).reduce((a, b) -> a.subtract(b)).orElse(BigDecimal.ZERO);
@@ -435,8 +437,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 			String promocode=vehicles.get(0).get("promocode")==null?"":vehicles.get(0).get("promocode").toString();
 			List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
 			
+			List<Tuple> customerChoiceTaxes	=ratingutil.customerTaxList(engine);
+			
 			TaxUtils tzx = new TaxUtils(endtCount,"");
 			List<Tuple> excludedTaxes = ratingutil.LoadExcludedTax(engine,NORMAL_TAX_LIST);
+			
 			TaxRemover taxRemov=new TaxRemover(excludedTaxes,null);
 			
 			List<String> dependedcovers = new ArrayList<String>();
@@ -603,7 +608,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				 */
 
 				CoverCalculator calc = new CoverCalculator();
-				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
+				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers,customerChoiceTaxes);
 
 				totalcovers.parallelStream().forEach(calc);
 				// remove error records
@@ -623,7 +628,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				List<Cover> minies=new ArrayList<Cover>(1);
 				minies.add(mini);
 				CoverCalculator calc = new CoverCalculator();
-				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
+				calc.setEngine(engine, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers,customerChoiceTaxes);
 				minies.stream().forEach(calc);
 				retc.add(mini);
 				
@@ -1230,7 +1235,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				 * .isError(true).build();
 				 */
 			}
-
+			List<Tuple> customerChoiceTaxes	=ratingutil.customerTaxList(request);
 			List<String> dependedcovers = new ArrayList<String>();
 
 			dependedcovers.add("N");
@@ -1382,7 +1387,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				
 				
 				AdminCoverCalculator calc = new AdminCoverCalculator();
-				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
+				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers,customerChoiceTaxes);
 
 				totalcovers.stream().forEach(calc);
 				// remove error records
@@ -1404,7 +1409,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				List<Cover> minies=new ArrayList<Cover>(1);
 				minies.add(mini);
 				CoverCalculator calc = new CoverCalculator();
-				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers);
+				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat,drivers,customerChoiceTaxes);
 				minies.stream().forEach(calc);
 				retc.add(mini);
 				

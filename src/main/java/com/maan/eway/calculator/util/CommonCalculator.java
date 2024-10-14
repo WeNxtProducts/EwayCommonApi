@@ -35,13 +35,14 @@ public class CommonCalculator {
 	protected List<Tuple> prorata=null;
 	protected List<Tuple> drivers=null;
 	protected DecimalFormat decimalFormat = null;
+	protected  List<Tuple> customerChoiceTaxes;
 
 	/*public void setEngine(CalcEngine engine,List<Cover> c) {
 		this.engine = engine;
 		this.calculatedcover=c;
 	}
 	*/
-	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers,List<Tuple> prorata, RatingFactorsUtil crservice,DecimalFormat decimalFormat, List<Tuple> drivers) {
+	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers,List<Tuple> prorata, RatingFactorsUtil crservice,DecimalFormat decimalFormat, List<Tuple> drivers, List<Tuple> customerChoiceTaxes) {
 		this.engine = engine;
 		this.calculatedcover=c;
 		this.result=result;
@@ -50,9 +51,9 @@ public class CommonCalculator {
 		this.prorata=prorata;
 		this.crservice=crservice;
 		this.decimalFormat=decimalFormat;
-		this.decimalFormat.setParseBigDecimal(true);
-		
+		this.decimalFormat.setParseBigDecimal(true);		
 		this.drivers=drivers;
+		this.customerChoiceTaxes=customerChoiceTaxes;
 		
 	}
 	
