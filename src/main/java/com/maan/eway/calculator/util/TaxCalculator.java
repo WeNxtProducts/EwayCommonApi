@@ -40,7 +40,7 @@ public class TaxCalculator   implements Consumer<Tax> {
 	 try {
 		 String calctype= t.getCalcType();
 		 
-		 String isTaxExempted=customer.get("isTaxExempted")==null?"2":customer.get("isTaxExempted").toString(); //default 2 not 
+		 String isTaxExempted=customer.get("isTaxExempted")==null?"N":customer.get("isTaxExempted").toString(); //default 2 not 
 		 String taxExemptedId=customer.get("taxExemptedId")==null?"":customer.get("taxExemptedId").toString();
 		 Optional<Tuple> first = customerChoiceTaxes.stream().filter(tx ->  isTaxExempted.equals(tx.get("itemCode"))).findFirst();
 		 String Percentage="0";
@@ -56,10 +56,10 @@ public class TaxCalculator   implements Consumer<Tax> {
 		 BigDecimal domath_Fc = BigDecimal.ZERO;
 		 t.setTaxAmount(BigDecimal.ZERO);
 		 t.setTaxAmountLc(BigDecimal.ZERO);
-		 if( ("Y".equals(t.getTaxExemptedAllowed()) && !t.getIsTaxExempted().equals("1")) || t.getTaxExemptedAllowed().equals("N") ) {
+		 if( ("Y".equals(t.getTaxExemptedAllowed()) && !t.getIsTaxExempted().equals("N")) || t.getTaxExemptedAllowed().equals("N") ) {
 			 
 			 Double taxRate = t.getTaxRate();
-			 if(Integer.parseInt(t.getIsTaxExempted()) >2) {
+			 if(!(t.getIsTaxExempted().equals("N") || t.getIsTaxExempted().equals("Y"))) {
 				Double percentage=(Double) Double.parseDouble(Percentage)/100;
 				 taxRate=taxRate * percentage;
 				 t.setTaxRate(taxRate);
