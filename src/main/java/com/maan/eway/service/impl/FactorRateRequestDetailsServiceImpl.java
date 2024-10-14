@@ -563,7 +563,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 //								saveSubCover.setTax3(subCoverData.getTaxes().get(2).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(2).getTaxAmount())) );
 //						}
 						//String userOpt=(!"D".equals(saveSubCover.getIsSelected()))?"N":(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt());						saveSubCover.setRegulatoryCode(subCoverData.getRegulatoryCode());
-						String userOpt=(!"D".equals(saveSubCover.getIsSelected()) )?(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt()):(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt());
+						String userOpt=(!"D".equals(saveSubCover.getIsSelected()) )?(StringUtils.isBlank(saveSubCover.getUserOpt())?"N":saveSubCover.getUserOpt()):(StringUtils.isBlank(saveSubCover.getUserOpt())?"N":saveSubCover.getUserOpt());
 						saveSubCover.setMinimumPremiumYn(StringUtils.isBlank(subCoverData.getMinimumPremiumYn())?"N":subCoverData.getMinimumPremiumYn());
 						saveSubCover.setEndtCount(coverData.getEndtCount()==null?BigDecimal.ZERO:coverData.getEndtCount());
 						saveSubCover.setFreeCoverLimit(coverData.getFreeCoverLimit()==null?BigDecimal.ZERO:coverData.getFreeCoverLimit());

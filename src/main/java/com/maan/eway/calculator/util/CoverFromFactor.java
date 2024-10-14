@@ -1,6 +1,7 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.function.Function;
 
 import jakarta.persistence.Column;
@@ -70,7 +71,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.excessPercent(t.getExcessPercent()==null?BigDecimal.ZERO:t.getExcessPercent())
 					.minimumPremiumYn(t.getMinimumPremiumYn())
 					.proRataYn(t.getProRataYn())
-					.proRata(t.getProRataPercent())
+					.proRata(t.getProRataPercent().divide(new BigDecimal("100"), MathContext.DECIMAL32))
 					.endtCount(t.getEndtCount())
 					.status(t.getStatus())
 					.effectiveDate(t.getCoverPeriodFrom())
