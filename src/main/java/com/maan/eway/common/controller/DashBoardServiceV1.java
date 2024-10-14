@@ -20,6 +20,7 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.DashBoardGetReq;
@@ -252,15 +253,39 @@ public class DashBoardServiceV1 {
 
 			// Construct the main query
 			
+			Date todayDate = new Date();
+			cal.setTime(todayDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			todayDate = cal.getTime();
 			
+			CriteriaQuery<PortfolioGridCriteriaRes> query = cb.createQuery(PortfolioGridCriteriaRes.class);
+			
+			// Endt Count Max Filter
+			Subquery<Long> endtCount = query.subquery(Long.class);
+			Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
+			endtCount.select(cb.max(ocpm1.get("endtCount")));
+			Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), hpm.get("originalPolicyNo"));
+			//Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
+			endtCount.where(a1);
+			
+			Predicate endtTypeIdNotEqual = cb.notEqual(hpm.get("endtTypeId"), "842"); // policy cancellation
+			Predicate endtTypeIdIsNull = cb.isNull(hpm.get("endtTypeId"));     
+			Predicate endtTypeIdCondition = cb.or(endtTypeIdNotEqual, endtTypeIdIsNull);
 			
 			cq.multiselect(quoteCase.alias("Desc"), cb.count(hpm).alias("Count"), cb.sum(hpm.get("overallPremiumLc")).alias("TotalPremium"), cb.max(cpm.get("currencyId")).alias("Currency"))
 			.where(cb.equal(hpm.get("companyId"), req.getInsuranceId()),
 					cb.equal(hpm.get("productId"),  req.getProductId()),
 					cb.equal(hpm.get("status"), "P"),
 					cb.equal(cpm.get("companyId"), hpm.get("companyId")),
-					cb.greaterThanOrEqualTo(hpm.get("entryDate"), before30),
-			         cb.lessThanOrEqualTo(hpm.get("entryDate"), new Date()),
+					cb.greaterThanOrEqualTo(hpm.get("expiryDate"), todayDate),
+			         cb.lessThanOrEqualTo(hpm.get("entryDate"), todayDate),
+			         cb.equal(hpm.get("integrationStatus"), "S"),
+			         cb.equal(hpm.get("endtCount"), endtCount),
+//			         cb.notEqual(hpm.get("endtTypeId"),"842"),
+//			         cb.isNull(hpm.get("endtTypeId")),
+			         endtTypeIdCondition,
+			        
 			         cb.in(caseExpression).value(loginIds),
 					cb.equal(cpm.get("amendId"), subquery))
 			.groupBy(hpm.get("status"), hpm.get("renewalDateYn"))

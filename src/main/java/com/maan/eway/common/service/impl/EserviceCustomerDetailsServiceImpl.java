@@ -1309,42 +1309,42 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					//errorList.add(new Error("09", "IdType", "Please Select Personal/Corporate"));
 				}
 				
-//				if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
-//					errorList.add("1012");
-//					//errorList.add(new Error("09", " Identity Type", "Please Select Identity Type"));
-//				}
+				if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
+					errorList.add("1012");
+					//errorList.add(new Error("09", " Identity Type", "Please Select Identity Type"));
+				}
 				
 			
-//				if("100040".equalsIgnoreCase(req.getCompanyId()))	{
-//					if (StringUtils.isBlank(req.getIdNumber())) {
-//						errorList.add("1013");
-//						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
-//					} else if (req.getIdNumber().length() > 15) {
-//						errorList.add("1014");
-//						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
-//					}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
-//						errorList.add("1015");
-//						//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
-//					} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
-//						
-//						errorList.add("1015");
-//					}
-//				}
-//				else
-//				{
-//					if (StringUtils.isBlank(req.getIdNumber())) {
-//						errorList.add("1013");
-//						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
-//					} else if (req.getIdNumber().length() > 100) {
-//						errorList.add("1014");
-//						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
-//					}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
-//						errorList.add("1015");
-//						//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
-//					} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {	
-//						errorList.add("1015");
-//					}
-//				}
+				if("100040".equalsIgnoreCase(req.getCompanyId()))	{
+					if (StringUtils.isBlank(req.getIdNumber())) {
+						errorList.add("1013");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
+					} else if (req.getIdNumber().length() > 15) {
+						errorList.add("1014");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
+					}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
+						errorList.add("1015");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
+					} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
+						
+						errorList.add("1015");
+					}
+				}
+				else
+				{
+					if (StringUtils.isBlank(req.getIdNumber())) {
+						errorList.add("1013");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number"));
+					} else if (req.getIdNumber().length() > 100) {
+						errorList.add("1014");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Id Number within 100 Characters"));
+					}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
+						errorList.add("1015");
+						//errorList.add(new Error("11", "IdNumber", "Please Enter Valid Id Number "));
+					} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {	
+						errorList.add("1015");
+					}
+				}
 				
 						
 		
