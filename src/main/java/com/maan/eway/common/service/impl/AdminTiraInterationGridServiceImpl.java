@@ -119,8 +119,11 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 					m.get("overallPremiumLc").alias("overallPremiumLc"),m.get("overallPremiumFc").alias("overallPremiumFc"),
 					m.get("status").alias("status"),m.get("policyNo").alias("policyNo"),
 					m.get("debitNoteNo").alias("debitNoteNo"),m.get("creditNo").alias("creditNo"),
-					m.get("tiraCoverNoteNo").alias("tiraCoverNoteNo"),m.get("tiraRequestId").alias("tiraRequestId"),
-					m.get("tiraResponseId").alias("tiraResponseId"),m.get("stickerNumber").alias("stickerNumber"),
+					
+					m.get("tiraRequestId").alias("tiraRequestId"),
+					s.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),
+					m.get("tiraResponseId").alias("tiraResponseId"),
+					s.get("stickerNumber").alias("stickerNumber"),
 					s.get("responseStatusCode").alias("responseStatusCode"),s.get("responseStatusDesc").alias("responseStatusDesc"),
 					m.get("bdmCode").alias("bdmCode"),m.get("branchName").alias("branchName"),
 					m.get("productName").alias("productName"),m.get("brokerCode").alias("brokerCode"),
@@ -267,12 +270,17 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n4 = cb.equal(m.get("status"), "P");
 			Predicate n5 = cb.notEqual(s.get("responseStatusCode"), "TIRA001");
 			Predicate n6 = cb.notEqual(s.get("responseStatusCode"), "TIRA214");
-			Predicate n7 = cb.and(n5,n6);
+			Predicate n88 = cb.notEqual(s.get("responseStatusCode"), "TIRA233");
+			Predicate n7 = cb.and(n5,n6,n88);
 			Predicate n8 = cb.isNotNull(s.get("responseStatusCode"));
+			Predicate n12 = cb.isNull(s.get("stickerNumber"));
+			Predicate n13 = cb.isNull(s.get("coverNoteReferenceNo"));
+
+
 //			Predicate n9 = cb.isNotNull(s.get("tiraResponseId"));
 			Predicate n10=cb.between(m.get("entryDate"), startDate, endDate);
 			Predicate n11 = cb.equal(  m.get("quoteNo"),  s.get("quoteNo"));
-			query.where(n1,n2,n3,n4,n7,n8,n10,n11).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n7,n8,n10,n11,n12,n13).orderBy(orderList);
 			
 			
 			// Get Result
