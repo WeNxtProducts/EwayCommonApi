@@ -25,6 +25,17 @@ public class SectionDetailsRes {
 
 	@JsonProperty("Count")
 	private String count;
+	
+	@JsonProperty("GroupDesc")
+	private  String groupDesc;
+	
+	@JsonProperty("GroupId")
+	private  String groupId;
+	@JsonProperty("PassengerId")
+	private  String passengerId;	
+	
+	@JsonProperty("PassengerName")
+	private  String passengerName;
 
 	@JsonProperty("OccupationId")
 	private String occupationId;

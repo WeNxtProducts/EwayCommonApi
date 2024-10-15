@@ -669,7 +669,7 @@ public class QuoteServiceImpl implements QuoteService {
 		 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
 		 						.getPrecision(),RoundingMode.HALF_UP);
 		
-					// Mot
+					// Mots
 					dozerMapper.map(mot, secRes);
 					secRes.setOverAllPremiumFc(mot.getOverallPremiumFc()==null?0: mot.getOverallPremiumFc() );
 					secRes.setOverAllPremiumLc(mot.getOverallPremiumLc()==null?0:mot.getOverallPremiumLc());
@@ -1564,6 +1564,9 @@ public class QuoteServiceImpl implements QuoteService {
 		ViewQuoteRes viewRes = new ViewQuoteRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			List<LocationDetailsRes>  loctionList = new ArrayList<LocationDetailsRes>();
+			List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
+			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();
 			// Find Travel Data
 			List<TravelPassengerDetails> travelDatas =  traPassRepo.findByQuoteNo(req.getQuoteNo());
 			List<TravelPassengerDetails> adultDatas  = travelDatas.stream().filter( o -> o.getGroupId().equals(2)  ).collect(Collectors.toList());
@@ -1580,9 +1583,6 @@ public class QuoteServiceImpl implements QuoteService {
 				List<ProductGroupMasterDropDownRes> groupRes =	groupService.getProductGroupMasterDropdown(groupReq);
 				
 				List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
-				
-				List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
-				List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();
 				
 				
 				for (TravelPassengerDetails tra :  totalDatas) {
@@ -1699,7 +1699,144 @@ public class QuoteServiceImpl implements QuoteService {
 				viewRes.setDocumentDetails(documentDetails);
 			}
 			
-		
+			Set<Integer> findlocationid = travelDatas.stream().map(TravelPassengerDetails::getLocationId).distinct()
+					.collect(Collectors.toSet());
+			LocationDetailsRes locRes = null;
+			SectionDetailsRes secRes = null;
+			List<TravelPassengerDetails> travelDatas1 =  traPassRepo.findByQuoteNo(req.getQuoteNo());
+			List<TravelPassengerDetails> adultDatas1  = travelDatas1.stream().filter( o -> o.getGroupId().equals(2)  ).collect(Collectors.toList());
+			List<TravelPassengerDetails> otherDatas1  =  travelDatas1.stream().filter( o -> ! o.getGroupId().equals(2)  ).collect(Collectors.toList());
+			List<TravelPassengerDetails> totalDatas1  = new ArrayList<TravelPassengerDetails>();	
+			totalDatas1.addAll(adultDatas1);
+			totalDatas1.addAll(otherDatas1);
+			ProductGroupDropDownReq groupReq = new ProductGroupDropDownReq();
+			groupReq.setBranchCode(travelDatas1.get(0).getBranchCode());
+			groupReq.setInsuranceId(travelDatas1.get(0).getCompanyId());
+			groupReq.setProductId(travelDatas1.get(0).getProductId().toString());
+
+			List<ProductGroupMasterDropDownRes> groupRes = groupService.getProductGroupMasterDropdown(groupReq);
+
+			List<PolicyCoverData> covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+			for (Integer d : findlocationid) {
+				List<SectionDetailsRes> sectionList = new ArrayList<SectionDetailsRes>();
+				locRes = new LocationDetailsRes();
+				List<TravelPassengerDetails> filter = travelDatas.stream().filter(o -> o.getLocationId().equals(d))
+						.collect(Collectors.toList());
+				locRes.setLocationId((filter.get(0).getLocationId() == null
+						|| StringUtils.isBlank(filter.get(0).getLocationId().toString())) ? "1"
+								: filter.get(0).getLocationId().toString());
+				locRes.setLocationName("");
+
+				for (TravelPassengerDetails tra : totalDatas1) {
+					secRes = new SectionDetailsRes();
+					System.out.println("Section :" + tra + "\nSection Id :" + tra.getSectionId() + "\n Location :" + d);
+
+//					EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
+//					dozerMapper.map(tra, travelDetails);
+					secRes.setRiskId(tra.getPassengerId().toString());
+					secRes.setSectionId(tra.getSectionId() == null ? "" : tra.getSectionId().toString());
+					secRes.setPassengerId(tra.getPassengerId().toString());
+					secRes.setPassengerName(tra.getPassengerName());
+
+					List<PassengerSectionDetails> SectionList = new ArrayList<PassengerSectionDetails>();
+					String premiumFc = tra.getOverallPremiumFc().toString();
+					String vatPremiumFc = tra.getOverallPremiumFc().toString();
+					BigDecimal commission = new BigDecimal(premiumFc)
+							.multiply(tra.getCommissionPercentage() == null ? BigDecimal.ZERO
+									: tra.getCommissionPercentage())
+							.divide(BigDecimal.valueOf(100D))
+							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
+
+					secRes
+							.setOverAllPremiumFc(tra.getOverallPremiumFc() == null ? 0 : tra.getOverallPremiumFc());
+					secRes
+							.setOverAllPremiumLc(tra.getOverallPremiumLc() == null ? 0 : tra.getOverallPremiumLc());
+					secRes.setPremiumFc(tra.getActualPremiumFc() == null ? 0 : tra.getActualPremiumFc());
+					secRes.setPremiumLc(tra.getActualPremiumLc() == null ? 0 : tra.getActualPremiumLc());
+					secRes.setCommissionAmount(commission.toString() == null ? "" : commission.toString());
+					secRes.setCommissionPercentage(
+							tra.getCommissionPercentage() == null ? "" : tra.getCommissionPercentage().toPlainString());
+					secRes.setVatCommission(
+							tra.getVatCommission() == null ? "" : tra.getVatCommission().toPlainString());
+
+					// Cover Details
+					List<PolicyCoverData> filterCovers = covers.stream()
+							.filter(o -> o.getVehicleId().equals(Integer.valueOf(tra.getGroupId())))
+							.collect(Collectors.toList());
+
+					List<CoverRes> coverListRes = new ArrayList<CoverRes>();
+					BigDecimal PremiumAfterDiscount = new BigDecimal(0);
+					BigDecimal PremiumAfterDiscountLc = new BigDecimal(0);
+					BigDecimal PremiumBeforeDiscount = new BigDecimal(0);
+					BigDecimal PremiumBeforeDiscountLc = new BigDecimal(0);
+					BigDecimal PremiumExcluedTax = new BigDecimal(0);
+					BigDecimal PremiumExcluedTaxLc = new BigDecimal(0);
+					BigDecimal PremiumIncludedTax = new BigDecimal(0);
+					BigDecimal PremiumIncludedTaxLc = new BigDecimal(0);
+
+					if (filterCovers.size() > 0) {
+						Map<Integer, List<PolicyCoverData>> groupByCover = filterCovers.stream()
+								.collect(Collectors.groupingBy(PolicyCoverData::getCoverId));
+						coverListRes = getCoverDetails(groupByCover);
+						PremiumAfterDiscount = (coverListRes.stream().map(CoverRes::getPremiumAfterDiscount)
+								.reduce((x, y) -> x.add(y)).get());
+						PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes::getPremiumAfterDiscountLC)
+								.reduce((x, y) -> x.add(y)).get());
+						PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes::getPremiumBeforeDiscount)
+								.reduce((x, y) -> x.add(y)).get());
+						PremiumBeforeDiscountLc = (coverListRes.stream().map(CoverRes::getPremiumBeforeDiscountLC)
+								.reduce((x, y) -> x.add(y)).get());
+						PremiumExcluedTax = (coverListRes.stream().map(CoverRes::getPremiumExcluedTax)
+								.reduce((x, y) -> x.add(y)).get());
+						PremiumExcluedTaxLc = (coverListRes.stream().map(CoverRes::getPremiumExcluedTaxLC)
+								.reduce((x, y) -> x.add(y)).get());
+						PremiumIncludedTax = (coverListRes.stream().map(CoverRes::getPremiumIncludedTax)
+								.reduce((x, y) -> x.add(y)).get());
+						PremiumIncludedTaxLc = (coverListRes.stream().map(CoverRes::getPremiumIncludedTaxLC)
+								.reduce((x, y) -> x.add(y)).get());
+
+					}
+
+					// get Section name Local from session master
+					List<ProductSectionMaster> PSM = productSectionMasterRepo
+							.findBySectionName(tra.getSectionName() != null ? tra.getSectionName().toString() : " ");
+
+//					PassengerSectionDetails sec = new PassengerSectionDetails();
+					secRes.setSectionId(tra.getSectionId() == null ? "" : tra.getSectionId().toString());
+					secRes.setSectionName(tra.getSectionName());
+					secRes.setCodeDescLocal((PSM != null && PSM.size() > 0) ? PSM.get(0).getSectionNameLocal() : " ");
+					secRes.setPassengerId(tra.getPassengerId().toString());
+					secRes.setPassengerName(tra.getPassengerName());
+					secRes.setCovers(coverListRes);
+					secRes.setGroupDesc(
+							groupRes.stream().filter(o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()))
+									.collect(Collectors.toList()).get(0).getCodeDesc());
+					secRes.setGroupId(tra.getGroupId().toString());
+					secRes.setPremiumAfterDiscount(
+							PremiumAfterDiscount.toString() == null ? "" : PremiumAfterDiscount.toString());
+					secRes.setPremiumAfterDiscountLc(
+							PremiumAfterDiscountLc.toString() == null ? "" : PremiumAfterDiscountLc.toString());
+					secRes.setPremiumBeforeDiscount(
+							PremiumBeforeDiscount.toString() == null ? "" : PremiumBeforeDiscount.toString());
+					secRes.setPremiumBeforeDiscountLc(
+							PremiumBeforeDiscountLc.toString() == null ? "" : PremiumBeforeDiscountLc.toString());
+					secRes.setPremiumExcluedTax(PremiumExcluedTax.toString() == null ? "" : PremiumExcluedTax.toString());
+					secRes.setPremiumExcluedTaxLc(
+							PremiumExcluedTaxLc.toString() == null ? "" : PremiumExcluedTaxLc.toString());
+					secRes.setPremiumIncludedTax(
+							PremiumIncludedTax.toString() == null ? "" : PremiumIncludedTax.toString());
+					secRes.setPremiumIncludedTaxLc(
+							PremiumIncludedTaxLc.toString() == null ? "" : PremiumIncludedTaxLc.toString());
+
+					sectionList.add(secRes);
+				}
+
+				locRes.setSectionDetails(sectionList);
+				loctionList.add(locRes);
+
+			}
+
+			viewRes.setLocationDetails(loctionList);		
 			
 			
 		} catch ( Exception e) {
@@ -1839,7 +1976,8 @@ public class QuoteServiceImpl implements QuoteService {
 					secRes.setRiskId(com.getRiskId().toString());
 					secRes.setSectionId(com.getSectionId().toString());
 					secRes.setSectionName(com.getSectionDesc());
-					secRes.setCount((com.getTotalNoOfEmployees()==null ||com.getTotalNoOfEmployees()==0)?com.getFidEmpCount().toString():com.getTotalNoOfEmployees().toString());
+//					secRes.setCount((com.getTotalNoOfEmployees()==null ||com.getTotalNoOfEmployees()==0)?com.getFidEmpCount().toString():com.getTotalNoOfEmployees().toString());
+					secRes.setCount(com.getCount()==null ?"0":com.getCount().toString());
 					secRes.setOccupationId(com.getOccupationType());
 					secRes.setOccupationDesc(com.getOccupationDesc());
 					secRes.setSumInsured(com.getSumInsured()==null?null:com.getSumInsured().toString());
