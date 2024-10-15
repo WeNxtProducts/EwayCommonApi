@@ -255,7 +255,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 				
 				
-				
+				if("100040".equalsIgnoreCase(req.getCompanyId()))
+				{
+					if(StringUtils.isBlank(req.getCustomerAsInsurer()))
+					{
+						errorList.add("2000");
+					}
+				}
 		
 				
 				
@@ -773,7 +779,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add("1054");
 					//errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
 				}
-				if(!"100040".equals(req.getCompanyId())) {
+				
 					if (StringUtils.isBlank(req.getIsTaxExempted())) {
 						errorList.add("1055");
 						//errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
@@ -788,9 +794,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						}
 	
 					}
-				}else {
-					req.setIsTaxExempted("N");
-				}
+				
 				if (StringUtils.isBlank(req.getStatus())) {
 					errorList.add("1058");
 					//errorList.add(new Error("34", "Status", "Please Enter Status"));
@@ -2401,7 +2405,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setMiddleName(req.getMiddleName());
 			saveData.setLastName(req.getLastName());
 			saveData.setPreferredNotification(req.getPreferredNotification());
-			saveData.setIsTaxExempted(req.getIsTaxExempted());
+			saveData.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 			saveData.setRegionCode(req.getRegionCode());
 			saveData.setStatus(req.getStatus());
 			saveData.setBusinessType(req.getBusinessType());
@@ -2504,7 +2508,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				
 				savePersonalInfo.setRegionCode(req.getRegionCode());
-				savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
+				savePersonalInfo.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 				savePersonalInfo.setCityCode(req.getCityCode());
 				savePersonalInfo.setCityName(req.getCityName());
 				savePersonalInfo.setClientName(req.getClientName());
@@ -2626,7 +2630,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						savePersonalInfo.setBusinessTypeDesc(businessType);
 					}
 					
-					savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
+					savePersonalInfo.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 					savePersonalInfo.setCityCode(req.getCityCode());
 					savePersonalInfo.setCityName(req.getCityName());
 					savePersonalInfo.setClientName(req.getClientName());
@@ -3768,7 +3772,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			res.setSocioProfessionalCategory(data.get(0).getSocioProfessionalCategory());
 			res.setActivities(data.get(0).getActivities());
 			res.setAddress2(data.get(0).getAddress2()==null?"":data.get(0).getAddress2());
-			res.setCustomerAsInsurer(data.get(0).getCustomerAsInsurer()==null?"":data.get(0).getCustomerAsInsurer());		
+			res.setCustomerAsInsurer(data.get(0).getCustomerAsInsurer()==null?"":data.get(0).getCustomerAsInsurer());	
+			res.setIsTaxExempted(data.get(0).getIsTaxExempted()==null?"":data.get(0).getIsTaxExempted());
+			
+			
 					
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3937,7 +3944,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setSocioProfessionalCategory(data.getSocioProfessionalCategory());	
 				res.setActivities(data.getActivities());
 				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());
-				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());			
+				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());
+				res.setIsTaxExempted(data.getIsTaxExempted()==null?"":data.getIsTaxExempted());		
+				
 				
 				resList.add(res);
 			}
@@ -4146,7 +4155,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setSocioProfessionalCategory(data.getSocioProfessionalCategory());				
 				res.setActivities(data.getActivities());
 				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());	
-				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());			
+				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());		
+				res.setIsTaxExempted(data.getIsTaxExempted()==null?"":data.getIsTaxExempted());	
 				
 				resList.add(res);
 			}
