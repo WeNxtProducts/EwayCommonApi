@@ -268,10 +268,16 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n3 = cb.equal(  s.get("productId"),  req.getProductId());
 //			Predicate n11 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			Predicate n4 = cb.equal(m.get("status"), "P");
-			Predicate n5 = cb.notEqual(s.get("responseStatusCode"), "TIRA001");
-			Predicate n6 = cb.notEqual(s.get("responseStatusCode"), "TIRA214");
-			Predicate n88 = cb.notEqual(s.get("responseStatusCode"), "TIRA233");
-			Predicate n7 = cb.and(n5,n6,n88);
+			/*
+			 * Predicate n5 = cb.notEqual(s.get("responseStatusCode"), "TIRA001"); Predicate
+			 * n6 = cb.notEqual(s.get("responseStatusCode"), "TIRA214"); Predicate n88 =
+			 * cb.notEqual(s.get("responseStatusCode"), "TIRA233");
+			 */
+			CriteriaBuilder.In<String> notInPredicate = cb.in(s.get("responseStatusCode"));
+			notInPredicate.value("TIRA001")
+            .value("TIRA214")
+            .value("TIRA233");
+			Predicate n7 = cb.not(notInPredicate);
 			Predicate n8 = cb.isNotNull(s.get("responseStatusCode"));
 			Predicate n12 = cb.isNull(s.get("stickerNumber"));
 			Predicate n13 = cb.isNull(s.get("coverNoteReferenceNo"));
