@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.integration.req.PremiaListRequest;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.service.IntegrationService;
@@ -51,7 +52,24 @@ public class IntegrationController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PostMapping("/hitByQuoteNo")
+	public ResponseEntity<CommonRes> hitByQuoteNo(@RequestBody PremiaListRequest req){
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		PremiaResponse res = service.hitByQuoteNo(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 	
 	

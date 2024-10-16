@@ -37,6 +37,7 @@ import com.maan.eway.bean.YiPolicyDetail;
 import com.maan.eway.bean.YiPremCal;
 import com.maan.eway.bean.YiSectionDetail;
 import com.maan.eway.bean.YiVatDetail;
+import com.maan.eway.integration.req.PremiaListRequest;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.service.FrameReqService;
@@ -77,7 +78,8 @@ public class IntegrationServiceImpl implements IntegrationService {
 private PremiaConfigDataMasterRepository pcdatarepo;
 @Autowired
 private PremiaConfigMasterRepository pcmasterrepo;
-
+@Autowired
+private IntegrationService intSer;
 @Autowired
 private HomePositionMasterRepository homeRepo;
 
@@ -800,4 +802,42 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		}
 		return product;
 	}
+
+	@Override
+	public PremiaResponse hitByQuoteNo(PremiaListRequest req) {
+		  PremiaResponse response = new PremiaResponse();
+
+	      try {
+	         List<HomePositionMaster> data = this.homeRepo.findAllByOrderByEntryDateDesc();
+	         List<String> quoteNo=new ArrayList<>();
+	         List<String> premiaIds = new ArrayList<>();
+	         if (data.size() > 0 && data != null && !data.isEmpty() && req.getQuoteNo() == null) {
+	            quoteNo = data.stream().map(HomePositionMaster::getQuoteNo).collect(Collectors.toList());
+	            premiaIds.add("1");
+	            premiaIds.add("2");
+	            premiaIds.add("3");
+	            premiaIds.add("4");
+	            premiaIds.add("5");
+	            premiaIds.add("6");
+	            premiaIds.add("7");
+	            premiaIds.add("8");
+	            premiaIds.add("9");
+	            premiaIds.add("10");
+	            premiaIds.add("11");
+	            premiaIds.add("12");
+	         } else if (req.getQuoteNo() != null) {
+	            quoteNo = req.getQuoteNo();
+	            premiaIds = req.getPremiaIds();
+	         }
+
+	         PushIntegrationThread hit = new PushIntegrationThread(this.intSer,quoteNo,premiaIds);
+	         Thread push = new Thread(hit);
+	         push.start();
+	         return response;
+	      } catch (Exception var8) {
+	         var8.printStackTrace();
+	         return null;
+	      }
+	}
+	
 }

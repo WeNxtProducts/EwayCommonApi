@@ -63,5 +63,7 @@ public interface HomePositionMasterRepository  extends JpaRepository<HomePositio
 	
 	HomePositionMaster findTop1ByPolicyNo(String policyNo);
 
+	List<HomePositionMaster> findAllByOrderByEntryDateDesc();
+
 
 }
