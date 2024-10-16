@@ -1709,6 +1709,7 @@ public class QuoteServiceImpl implements QuoteService {
 			List<TravelPassengerDetails> totalDatas1  = new ArrayList<TravelPassengerDetails>();	
 			totalDatas1.addAll(adultDatas1);
 			totalDatas1.addAll(otherDatas1);
+			if(travelDatas.size() > 0 ) {
 			ProductGroupDropDownReq groupReq = new ProductGroupDropDownReq();
 			groupReq.setBranchCode(travelDatas1.get(0).getBranchCode());
 			groupReq.setInsuranceId(travelDatas1.get(0).getCompanyId());
@@ -1717,6 +1718,7 @@ public class QuoteServiceImpl implements QuoteService {
 			List<ProductGroupMasterDropDownRes> groupRes = groupService.getProductGroupMasterDropdown(groupReq);
 
 			List<PolicyCoverData> covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+			
 			for (Integer d : findlocationid) {
 				List<SectionDetailsRes> sectionList = new ArrayList<SectionDetailsRes>();
 				locRes = new LocationDetailsRes();
@@ -1832,9 +1834,9 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 
 				locRes.setSectionDetails(sectionList);
-				loctionList.add(locRes);
 
 			}
+		}
 
 			viewRes.setLocationDetails(loctionList);		
 			
