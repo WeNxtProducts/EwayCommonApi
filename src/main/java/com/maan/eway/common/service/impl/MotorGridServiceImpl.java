@@ -444,7 +444,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
 			riskId.select(cb.max(ocp.get("riskId")));
 			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
-			riskId.where(a3);
+			Predicate a4 = cb.equal(ocp.get("customerReferenceNo"), m.get("customerReferenceNo"));
+			riskId.where(a3,a4);
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 		
@@ -517,7 +518,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
 			riskId.select(cb.max(ocp.get("riskId")));
 			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
-			riskId.where(a3);
+			Predicate a4 = cb.equal(ocp.get("customerReferenceNo"), m.get("customerReferenceNo"));
+			riskId.where(a3,a4);
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11);
@@ -1594,14 +1596,14 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n4 = null;
 				Predicate n5 = null;
 		
-
+ 
 				// Where
 				if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
-					n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+					n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue.toLowerCase());
 				} else if (searchKey.equalsIgnoreCase("CustomerReferenceNo")) {
-					n1 = cb.equal(cb.lower(c.get("customerReferenceNo")), searchValue);
+					n1 = cb.equal(cb.lower(c.get("customerReferenceNo")), searchValue.toLowerCase());
 				} else if (searchKey.equalsIgnoreCase("RegistrationNumber")) {
-					n1 = cb.equal(cb.lower(c.get("registrationNumber")), searchValue);
+					n1 = cb.equal(cb.lower(c.get("registrationNumber")), searchValue.toLowerCase());
 				} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
 					n1 = cb.equal(c.get("quoteNo"), searchValue);
 				} else if (searchKey.equalsIgnoreCase("EntryDate")) {
@@ -1618,12 +1620,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					n1=cb.between(c.get("entryDate"), startDate, endDate);
 					
 				} else if (searchKey.equalsIgnoreCase("ChassisNumber")) {
-					n1 = cb.equal(cb.lower(c.get("chassisNumber")), searchValue);
+					n1 = cb.equal(cb.lower(c.get("chassisNumber")), searchValue.toLowerCase());
 				} else if (searchKey.equalsIgnoreCase("ClientName")) {
 					n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
 					n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
 				} else if (searchKey.equalsIgnoreCase("PolicyNo")) {
-					n1 = cb.like(cb.lower(c.get("policyNo")), searchValue );
+					n1 = cb.like(cb.lower(c.get("policyNo")), searchValue.toLowerCase() );
 				
 				}
 
@@ -2029,7 +2031,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 				// Where
 				if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
-					n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+					n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue.toLowerCase());
 				}
 
 //				Predicate n2 = cb.equal(c.get("companyId"), companyId);

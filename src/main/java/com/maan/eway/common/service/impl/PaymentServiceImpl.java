@@ -22,6 +22,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -2289,7 +2290,33 @@ public class PaymentServiceImpl implements PaymentService {
 				if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("Y") || paymentInfo.getInstallmentMonth().equalsIgnoreCase(installment) )  ) {
 					//List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
 					List<PolicyDrcrDetail> policyDetails =  generatePolicyNew(paymentInfo,req,paymentDetail,token);
-					
+					if(!CollectionUtils.isEmpty(policyDetails)) {
+						String policyNo = policyDetails.get(0).getPolicyNo();
+						List<PolicyDrcrDetail> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+						List<PolicyDrcrDetail> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
+						// Debit
+						String debitNo = filterDebit.size() > 0 ? filterDebit.get(0).getDocNo() : "";
+						// Credit
+						String creditNo ="";
+						if(filterCredit!=null && !filterCredit.isEmpty()){
+							creditNo =filterCredit.get(0).getDocNo();
+						}
+						
+						res.setPolicyNo(policyNo);
+						res.setDebitNoteNo(debitNo);
+						res.setCreditNoteNo(creditNo);
+						res.setResponse("Policy Converted");
+					}else {
+						res.setResponse("CRDR Premium does not calculated or something went wrong");
+					}
+				
+			}
+			}else {
+			
+			if(paymentStatus.equalsIgnoreCase("ACCEPTED")&& paymentInfo.getEmiYn().equalsIgnoreCase("N")) {
+				//List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
+				 List<PolicyDrcrDetail> policyDetails =  generatePolicyNew(paymentInfo,req,paymentDetail,token);
+				 if(!CollectionUtils.isEmpty(policyDetails)) {
 					String policyNo = policyDetails.get(0).getPolicyNo();
 					List<PolicyDrcrDetail> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
 					List<PolicyDrcrDetail> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
@@ -2299,36 +2326,15 @@ public class PaymentServiceImpl implements PaymentService {
 					String creditNo ="";
 					if(filterCredit!=null && !filterCredit.isEmpty()){
 						creditNo =filterCredit.get(0).getDocNo();
-				}
+					}
 					
 					res.setPolicyNo(policyNo);
 					res.setDebitNoteNo(debitNo);
 					res.setCreditNoteNo(creditNo);
 					res.setResponse("Policy Converted");
-
-				
-			}
-			}else {
-			
-			if(paymentStatus.equalsIgnoreCase("ACCEPTED")&& paymentInfo.getEmiYn().equalsIgnoreCase("N")) {
-				//List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
-				 List<PolicyDrcrDetail> policyDetails =  generatePolicyNew(paymentInfo,req,paymentDetail,token);
-				
-				String policyNo = policyDetails.get(0).getPolicyNo();
-				List<PolicyDrcrDetail> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
-				List<PolicyDrcrDetail> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
-				// Debit
-				String debitNo = filterDebit.size() > 0 ? filterDebit.get(0).getDocNo() : "";
-				// Credit
-				String creditNo ="";
-				if(filterCredit!=null && !filterCredit.isEmpty()){
-					creditNo =filterCredit.get(0).getDocNo();
-			}
-				
-				res.setPolicyNo(policyNo);
-				res.setDebitNoteNo(debitNo);
-				res.setCreditNoteNo(creditNo);
-				res.setResponse("Policy Converted");
+				 }else {
+					res.setResponse("CRDR Premium does not calculated or something went wrong");
+				}
 
 			}
 			

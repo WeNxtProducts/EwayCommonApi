@@ -202,7 +202,8 @@ public class DashBoardServiceV1 {
 				Root<EserviceMotorDetails> ocp = riskId.from(EserviceMotorDetails.class);
 				riskId.select(cb.max(ocp.get("riskId")));
 				Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), hpm.get("requestReferenceNo"));
-				riskId.where(a3);
+				Predicate a4 = cb.equal(ocp.get("customerReferenceNo"), hpm.get("customerReferenceNo"));
+				riskId.where(a3,a4);
 				
 				predicate.add(cb.equal(hpm.get("riskId"),  riskId ));
 			}
