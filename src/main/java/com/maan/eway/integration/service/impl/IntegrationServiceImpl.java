@@ -833,6 +833,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 	         PushIntegrationThread hit = new PushIntegrationThread(this.intSer,quoteNo,premiaIds);
 	         Thread push = new Thread(hit);
 	         push.start();
+	         response.setResponse("Processing.....");
 	         return response;
 	      } catch (Exception var8) {
 	         var8.printStackTrace();
