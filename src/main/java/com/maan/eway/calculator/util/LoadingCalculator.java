@@ -35,6 +35,12 @@ public class LoadingCalculator   implements Consumer<Loading> {
 			 t.setRegulatoryCode(regulatoryCode);
 			 t.setLoadingCalcType(calctype);
 		 }
+		 
+		 if("90001".equals(t.getLoadingId())) {
+			String LoadIngrate=calc.vehicles.get(0).get("uwLoading")==null?"0":calc.vehicles.get(0).get("uwLoading").toString();	
+			if( Double.parseDouble(LoadIngrate)>0D)
+				t.setLoadingRate(LoadIngrate);
+		 }
 		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getLoadingRate()), premium,exchangeRate);
 		 t.setLoadingAmount(domath);
 		/* if(t.getLoadingAmount().compareTo(t.getMaxAmount())==1) {

@@ -61,6 +61,13 @@ public class DiscountCalculator   implements Consumer<Discount> {
 			 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
 			 t.setRegulatoryCode(regulatoryCode);
 		 }
+		 
+		 if("90002".equals(t.getDiscountId())) {
+				String LoadIngrate=calc.vehicles.get(0).get("uwLoading")==null?"0":calc.vehicles.get(0).get("uwLoading").toString();	
+				if( Double.parseDouble(LoadIngrate)<0D)
+					t.setDiscountRate(LoadIngrate);
+			 }
+		 
 		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getDiscountRate()), premium,exchangeRate);
 		 t.setDiscountAmount(domath);
 		 if(t.getDiscountAmount().compareTo(t.getMaxAmount())==1) {

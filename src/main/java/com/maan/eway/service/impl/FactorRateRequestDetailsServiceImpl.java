@@ -1133,7 +1133,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveLod.setActualRate(lod.getLoadingRate()==null ? null :new BigDecimal(lod.getLoadingRate()));
 				saveLod.setNoOfDays(new BigDecimal(diff));
 			//	repository.saveAndFlush(saveLod);
-				saveLodings.add(saveLod)	;		
+				
+				if(!(saveLod.getDiscLoadId()==90001 && saveLod.getPremiumExcludedTaxFc().compareTo(BigDecimal.ZERO)==0) )
+					saveLodings.add(saveLod)	;		
 			}
 			repository.saveAllAndFlush(saveLodings);
 			res = "Success" ;
@@ -1198,7 +1200,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveDiscounts.setActualRate(disc.getDiscountRate()==null ? null :new BigDecimal(disc.getDiscountRate()));
 				
 				//repository.saveAndFlush(saveDiscounts);
-				saveDiscountList.add(saveDiscounts);
+				if(!(saveDiscounts.getDiscLoadId()==90002 && saveDiscounts.getPremiumExcludedTaxFc().compareTo(BigDecimal.ZERO)==0) )
+					saveDiscountList.add(saveDiscounts);
 				
 			}
 			repository.saveAllAndFlush(saveDiscountList);
