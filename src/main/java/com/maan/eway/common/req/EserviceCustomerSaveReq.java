@@ -265,4 +265,14 @@ public class EserviceCustomerSaveReq {
 	
 	@JsonProperty("CustomerAsInsurer")
 	private String customerAsInsurer;
+	
+	@JsonProperty("Country")
+	private String     country ;
+	
+	@JsonProperty("CountryName")
+	private String     countryName ;
+	
+	@JsonProperty("NationalityName")
+	private String     nationalityName ;
+	
 }
