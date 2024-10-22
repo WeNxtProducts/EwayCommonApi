@@ -40,7 +40,7 @@ public class UserSearchQueryCriteriaConsumer implements Consumer<SearchCriteria>
         		 if(param.getValues()!=null && param.getValues().size()>0) {
         			 predicate = builder.and(predicate,r.get(param.getKey()).in(param.getValues()));
             	 }else if(r.get(param.getKey()).getJavaType() == String.class)  {     		 
-            		 predicate = builder.and(predicate, builder.equal(builder.upper(r.get(param.getKey())),param.getValue().toString().toUpperCase()));
+            		 predicate = builder.and(predicate, builder.equal(/*builder.upper()*/r.get(param.getKey()),param.getValue().toString()/*.toUpperCase()*/));
             	 }else {
             		 predicate = builder.and(predicate, builder.equal(r.get(param.getKey()),param.getValue())); 
             	 }

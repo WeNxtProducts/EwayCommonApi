@@ -34,4 +34,6 @@ public interface EwayVehicleMakemodelMasterDetailRepository  extends JpaReposito
 
 	List<EwayVehicleMakemodelMasterDetail> findByVehicleid(String string);
 
+	List<EwayVehicleMakemodelMasterDetail> findByModelId(Integer string);
+
 }

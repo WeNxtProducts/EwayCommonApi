@@ -879,7 +879,7 @@ public class RatingFactorsUtil {
 			for(Entry<String, List<Tuple>> entrySet :minRateLoadingResult.entrySet()) {
 				String key=entrySet.getKey();
 				List<Tuple> value = entrySet.getValue();
-				Double rate=value.get(0).get("minPremium")==null?0D:Double.valueOf(decimalFormat.format( Double.parseDouble(value.get(0).get("minPremium").toString())));
+				Double rate=value.isEmpty()?0D:(value.get(0).get("minPremium")==null?0D:Double.valueOf(decimalFormat.format( Double.parseDouble(value.get(0).get("minPremium").toString()))));
 				minPremiumRates.add(rate);
 			}
 				
@@ -1184,7 +1184,7 @@ public class RatingFactorsUtil {
 	private EwayVehicleMakemodelMasterDetailRepository makemodel;
 	public EwayVehicleMakemodelMasterDetail collectMakeModelDetails(CalcEngine engine, List<Tuple> vehicles) {
 		try {
-			List<EwayVehicleMakemodelMasterDetail> models=makemodel.findByVehicleid(vehicles.get(0).get("vehicleModelId").toString());
+			List<EwayVehicleMakemodelMasterDetail> models=makemodel.findByModelId(Integer.parseInt(vehicles.get(0).get("vehicleModelId").toString()));
 			if(models!=null && models.size()>0)
 				return models.get(0);
 		}catch (Exception e) {

@@ -54,9 +54,9 @@ public class WorkflowController {
 	
 	@PostMapping("/createquotation")
 	@ApiOperation(value = "This method is Create Json")
-	public ResponseEntity<List<Map<String,Object>>> createquotation(@RequestBody Map<String,Object> request) {
+	public ResponseEntity<List<Map<String,Object>>> createquotation(@RequestBody WorkEngine engine) {
 		
-		List<Map<String,Object>> data=jsonMapper.createQuotation(request); 
+		List<Map<String,Object>> data=jsonMapper.createQuotation(engine); 
 		if (data != null) {
 			return new ResponseEntity<List<Map<String,Object>>>(data, HttpStatus.CREATED);
 		} else {

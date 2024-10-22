@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -65,9 +66,11 @@ public class FieldToMapConverter implements Function<JsonField,Map<String,Object
 					}
 					
 				}else {				
-					collect = t.getChildField().stream().map(this).filter(d -> d != null).collect(Collectors.toMap(
-	                    map -> map.keySet().iterator().next(), // Key mapper
-	                    map -> map.values().iterator().next()  // Value mapper
+					collect = t.getChildField().stream().map(this).filter(d -> d != null)
+							.filter(Objects::nonNull)
+							.collect(Collectors.toMap(
+	                    map -> map.keySet()==null?"":map.keySet().iterator().next(), // Key mapper
+	                    map -> map.values()==null?"":map.values().iterator().next()  // Value mapper
 	                ));
 					
 					Map<String, Object> element=new HashMap<String, Object>(1);
@@ -91,25 +94,30 @@ public class FieldToMapConverter implements Function<JsonField,Map<String,Object
 				String value="";
 				if(dynamicQuery !=null && !dynamicQuery.isEmpty()) {
 					List<Map<String, Object>> list = dynamicQuery.get(t.getQueryId().toPlainString());
-					Map<String, Object> map=list.get(this.index);
-					
+					if(list!=null && !list.isEmpty()) {
+						Map<String, Object> map=list.get(this.index);
 
-					if("Y".equals(t.getDefaultYn())) {
-						value=t.getDefaultValue();
-					}else if("Date".equals(t.getDatatype())  ) {
-						value=map.get(t.getQueryAlias())==null?"":map.get(t.getQueryAlias()).toString();
-						/*if(!"".equals(value)) {
+
+						if("Y".equals(t.getDefaultYn())) {
+							value=t.getDefaultValue();
+						}else if("Date".equals(t.getDatatype())  ) {
+							value=map.get(t.getQueryAlias())==null?"":map.get(t.getQueryAlias()).toString();
+							/*if(!"".equals(value)) {
 							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 							LocalDateTime dateTime = LocalDateTime.parse(value, formatter); 
 							DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern(t.getPattern());
 							value = dateTime.format(outputFormatter);
 						}*/
-					} else
-						value=map.get(t.getQueryAlias())==null?"":map.get(t.getQueryAlias()).toString();
-				
+						}else
+							value=map.get(t.getQueryAlias())==null?"":map.get(t.getQueryAlias()).toString();
+
+					}
 				}
 				
-				element.put(t.getJsonKey(),value);
+				if("Yes".equals(t.getIsarray())) {
+					element.put(t.getJsonKey(),new ArrayList<>());
+				}else			
+					element.put(t.getJsonKey(),value);
 				System.out.println("\t"+t.getJsonKey());
 				return element;
 				

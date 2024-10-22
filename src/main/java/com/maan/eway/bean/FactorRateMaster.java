@@ -46,7 +46,27 @@ import jakarta.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(FactorRateMasterId.class)
-@Table(name="factor_rate_master")
+@Table(name="factor_rate_master" ,indexes = {
+       /* @Index(name = "INDX_CONDITION1" , columnList = "factorTypeId,companyId,productId,branchCode,agencyCode,sectionId,coverId,effectiveDateStart,effectiveDateEnd,status"),
+        @Index(name = "INDX_CONDITION2" , columnList = "factorTypeId,companyId,productId,branchCode,agencyCode,sectionId,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,status"),
+        @Index(name = "INDX_DISCRETE1" , columnList = "factorTypeId,param9,param10,param11,param12"),
+        @Index(name = "INDX_DISCRETE2" , columnList = "param13,param14,param15,param16,param17,param18,param19,param20"),
+        @Index(name = "Indx_eagle" , columnList = "factorTypeId,companyId,productId,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,param1,param2,param3,param4,param5,param6"),
+        @Index(name = "Indx_eagle_1" , columnList = "factorTypeId,companyId,productId,agencyCode,sectionId,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,param1,param2,param3,param4,param5,param6,param9"),
+        @Index(name = "INDX_EFFDATE" , columnList = "effectiveDateStart"),
+        @Index(name = "INDX_EFFDATE1" , columnList = "effectiveDateEnd"),
+        @Index(name = "INDX_PARAM" , columnList = "param1,param2,param3,param4,param5,param6,param9,param10,param11,param12"),
+        @Index(name = "INDX_PARAM2" , columnList = "param13,param14,param15,param16,param17,param18,param19,param20,param21,param22,param23,param24,param25,param26,param27,param28"),
+        @Index(name = "Indx_sanlam_ivory" , columnList = "companyId,productId,agencyCode,sectionId,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,status,param3,param4,param10,param12,param15,factorTypeId"),
+        @Index(name = "Indx_sanlam_ivory2" , columnList = "factorTypeId,companyId,productId,agencyCode,sectionId,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,status,param3,param4"),
+        @Index(name = "Indx_sanlam_ivory3" , columnList = "factorTypeId,companyId,productId,sectionId,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,status,param3,param4"),
+        @Index(name = "INDX_STATUS" , columnList = "status"),       */ 
+        @Index(name = "trubleshoot_1" , columnList = "companyId,productId,sectionId,status,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,factorTypeId,param5,param6,param1,param2,param3,param4"),
+        @Index(name="_1",columnList = "companyId,productId,sectionId,status,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,param9"),
+        @Index(name="_2",columnList = "companyId,productId,sectionId,status,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,param1,param2"),
+        @Index(name="_3",columnList = "companyId,productId,sectionId,status,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,param21,param22"),
+        @Index(name="_4",columnList = "companyId,productId,sectionId,status,coverId,subCoverId,effectiveDateStart,effectiveDateEnd,param9,param10"),
+} )
 
 
 public class FactorRateMaster implements Serializable {
@@ -64,7 +84,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=100)
-    private String     companyId ;
+    private Long     companyId ;
 
     @Id
     @Column(name="PRODUCT_ID", nullable=false)
@@ -76,7 +96,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="AGENCY_CODE", nullable=false, length=20)
-    private String     agencyCode ;
+    private Long     agencyCode ;
 
     @Id
     @Column(name="SECTION_ID", nullable=false)

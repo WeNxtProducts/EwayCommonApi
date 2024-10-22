@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -112,7 +113,7 @@ public class CriteriaService {
 					if(parameterType.isAssignableFrom(Double.class) )
 						value=Double.parseDouble(keyas.getValue().toString());
 					else if(parameterType.isAssignableFrom(BigDecimal.class) )
-						value=new BigDecimal(keyas.getValue().toString());
+						value=StringUtils.isNotBlank(keyas.getValue().toString())?new BigDecimal(keyas.getValue().toString()):BigDecimal.ZERO;
 					else if(parameterType.isAssignableFrom(Integer.class) )
 						value=new Integer(keyas.getValue().toString());
 					else if(parameterType.isAssignableFrom(Long.class) )
@@ -778,7 +779,7 @@ public class CriteriaService {
 					if(parameterType.isAssignableFrom(Double.class) )
 						value=Double.parseDouble(keyas.getValue().toString());
 					else if(parameterType.isAssignableFrom(BigDecimal.class) )
-						value=new BigDecimal(keyas.getValue().toString());
+						value=StringUtils.isNotBlank(keyas.getValue().toString())?new BigDecimal(keyas.getValue().toString()):BigDecimal.ZERO;
 					else if(parameterType.isAssignableFrom(Integer.class) )
 						value=new Integer(keyas.getValue().toString());
 					else if(parameterType.isAssignableFrom(Long.class) )
@@ -796,8 +797,7 @@ public class CriteriaService {
 		reqPrinter.reqPrint(cr.getWheres());
 		list =  result.getResultList();
 
-
-
+		
 		return list;
 	}
 	public SpecCriteria createCriteriaForGroupBy(Class<FactorRateMaster> tablename, String search, String orderBy,List<String> groupBy) {

@@ -33,13 +33,13 @@ public class FactorRateMasterId implements Serializable {
     
     private Integer    sNo ;
     
-    private String     companyId ;
+    private Long     companyId ;
     
     private Integer    productId ;
     
     private String     branchCode ;
     
-    private String     agencyCode ;
+    private Long     agencyCode ;
     
     private Integer    sectionId ;
     
