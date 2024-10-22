@@ -220,8 +220,10 @@ public class SanlamEserviceCustomerDetails {
 			if (StringUtils.isBlank(req.getStateCode())) {
 				errorList.add("1061");
 			}
-			if (StringUtils.isBlank(req.getCountry())) {
-				errorList.add("1048");
+			if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
+				if (StringUtils.isBlank(req.getCountry())) {
+					errorList.add("1048");
+				}
 			}
 			
 			/*

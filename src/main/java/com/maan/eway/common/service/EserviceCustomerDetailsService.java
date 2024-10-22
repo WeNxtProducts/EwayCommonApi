@@ -3,7 +3,6 @@ package com.maan.eway.common.service;
 import java.util.Date;
 import java.util.List;
 
-import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.common.req.CustomerChangesSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
@@ -35,8 +34,6 @@ public interface EserviceCustomerDetailsService {
 	List<CustomerDetailsGetRes>  getbyvrtinno(EserviceCustomerSearchVrtinReq req);
 
 	List<CustomerDetailsGetRes> getActiveCustomerDetails(GetAllCustomerDetailsReq req);
-
-	List<String> validateCustomer(EserviceCustomerSaveReq req);
 
 	SuccessRes updatebycustrefno(GetByCustomerRefNoReq req);
 
