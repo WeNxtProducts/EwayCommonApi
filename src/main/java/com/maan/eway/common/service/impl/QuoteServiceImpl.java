@@ -3281,7 +3281,8 @@ public class QuoteServiceImpl implements QuoteService {
 							}
 							vehDeh.setCoverIdList(coverList);
 							vehDeh.setVehicleId(com.getRiskId());
-							vehDeh.setSectionId(sec.getSectionId());	
+							vehDeh.setSectionId(sec.getSectionId());
+							vehDeh.setLocationId(sec.getLocationId());
 							vehicleIdsList.add(vehDeh);
 						}
 						
@@ -3306,6 +3307,7 @@ public class QuoteServiceImpl implements QuoteService {
 						vehDeh.setCoverIdList(coverList);
 						vehDeh.setVehicleId(sec.getRiskId());
 						vehDeh.setSectionId(sec.getSectionId());	
+						vehDeh.setLocationId(sec.getLocationId());
 						vehicleIdsList.add(vehDeh);
 					}
 					

@@ -96,7 +96,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="TAX_ID", nullable=false)
     private Integer    taxId ;
     
-    @Id
+    //@Id
     @Column(name="INDIVIDUAL_ID")
     private Integer    individualId ;
     

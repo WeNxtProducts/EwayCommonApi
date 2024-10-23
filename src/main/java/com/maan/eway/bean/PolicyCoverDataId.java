@@ -54,7 +54,7 @@ public class PolicyCoverDataId implements Serializable {
     
     private BigDecimal     endtCount ;
     
-    private Integer    individualId ;
+    //private Integer    individualId ;
     
     private Integer    locationId ;
     
