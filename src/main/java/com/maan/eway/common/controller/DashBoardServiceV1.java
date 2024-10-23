@@ -250,7 +250,7 @@ public class DashBoardServiceV1 {
 			Subquery<Integer> subquery = cq.subquery(Integer.class);
 			Root<InsuranceCompanyMaster> cpmSub = subquery.from(InsuranceCompanyMaster.class);
 			subquery.select(cb.max(cpmSub.get("amendId")))
-			.where(cb.equal(cpmSub.get("companyId"), hpm.get("companyId")));
+			.where(cb.equal(cpmSub.get("companyId"), cpm.get("companyId")));
 
 			// Construct the main query
 			
@@ -282,12 +282,13 @@ public class DashBoardServiceV1 {
 					cb.greaterThanOrEqualTo(hpm.get("expiryDate"), todayDate),
 			         cb.lessThanOrEqualTo(hpm.get("entryDate"), todayDate),
 			         cb.equal(hpm.get("integrationStatus"), "S"),
-			         cb.equal(hpm.get("endtCount"), endtCount),
+			         
 //			         cb.notEqual(hpm.get("endtTypeId"),"842"),
 //			         cb.isNull(hpm.get("endtTypeId")),
 			         endtTypeIdCondition,
 			        
 			         cb.in(caseExpression).value(loginIds),
+			         cb.equal(hpm.get("endtCount"), endtCount),
 					cb.equal(cpm.get("amendId"), subquery))
 			.groupBy(hpm.get("status"), hpm.get("renewalDateYn"))
 			.orderBy(cb.asc(cb.count(hpm)));
