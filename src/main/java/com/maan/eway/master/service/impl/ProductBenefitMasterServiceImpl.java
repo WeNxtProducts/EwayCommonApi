@@ -366,7 +366,9 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			saveData.setProductDesc(productName);
 			saveData.setSectionDesc(sectionName);
 			if(StringUtils.isNotBlank(req.getCalcType())){
-				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
+				String data = calcTypes.stream().filter(a->a.getItemCode().equalsIgnoreCase(req.getCalcType())).
+						map(ListItemValue::getItemValue).findFirst().orElse(" ");
+				saveData.setCalcTypeDesc(data);
 			}
 			saveData.setCoverName(coverList.get(0).getCoverName());
 			saveData.setSubCoverId(coverList.get(0).getSubCoverId());
