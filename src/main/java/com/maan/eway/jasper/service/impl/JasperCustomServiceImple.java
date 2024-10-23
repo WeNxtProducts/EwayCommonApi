@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.Put;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -2216,12 +2217,21 @@ public class JasperCustomServiceImple {
 				});
 			}
 			
+			List<Map<String,Object>> customerList = new ArrayList<Map<String,Object>>();
 			List<FirstLossPayee> firstLossPayees = firstLossPayeeRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
 			if(!firstLossPayees.isEmpty()) {
-				String firstlosspayee = firstLossPayees.stream().map(m -> m.getFirstLossPayeeDesc()).collect(Collectors.joining(","));
-				result.put("customerName", firstlosspayee+"  "+(map.get("customerName")==null?"":map.get("customerName").toString()));
+				firstLossPayees.forEach(k -> {
+					Map<String,Object> custMap = new HashMap<String,Object>();
+					custMap.put("customerName", k.getFirstLossPayeeDesc());
+					customerList.add(custMap);
+				});
+				Map<String,Object> custMap = new HashMap<String,Object>();
+				custMap.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
+				customerList.add(custMap);
 			}else {
-				result.put("customerName",map.get("customerName")==null?"":map.get("customerName").toString());
+				Map<String,Object> custMap = new HashMap<String,Object>();
+				custMap.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
+				customerList.add(custMap);
 			}
 			
 			result.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
@@ -2252,6 +2262,7 @@ public class JasperCustomServiceImple {
 			result.put("taxName", map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":"Vat");
 			result.put("overAllPremium", OverAllPremium);
 			result.put("premiumDetails", premiumDetailsRes);
+			result.put("customerList", customerList);
 			//result.put("sectionDetails", sectionList);
 			//result.put("locationDetails", locationDetails);
 			result.put("coverageDetails", coverageDetails);

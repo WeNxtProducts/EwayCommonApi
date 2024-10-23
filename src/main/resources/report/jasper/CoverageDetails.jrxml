@@ -1449,16 +1449,6 @@
 					</datasetRun>
 					<jr:column width="119" uuid="37527923-6169-45ce-85b1-117f1e37b8c6">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:tableHeader style="Table_TD" height="20" rowSpan="1">
-							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="119" height="20" uuid="4c47ec04-fe7b-49a1-b170-134eeb896c63"/>
-								<box leftPadding="2"/>
-								<textElement textAlignment="Justified" verticalAlignment="Middle" markup="none">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Excess :"]]></textFieldExpression>
-							</textField>
-						</jr:tableHeader>
 						<jr:columnHeader style="EXCESS_TD" height="20" rowSpan="1">
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="119" height="20" uuid="1eb65ca5-67cd-438c-b4a7-8b1feaa77603"/>
@@ -1466,7 +1456,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["Percent"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Excess Percent"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="EXCESS_TD" height="17">
@@ -1497,7 +1487,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["Amount"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Excess Amount"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="EXCESS_TD" height="17">
@@ -1526,7 +1516,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Excess Description"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="EXCESS_TD" height="17">
