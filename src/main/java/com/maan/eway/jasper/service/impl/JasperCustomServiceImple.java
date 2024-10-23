@@ -42,6 +42,7 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.FactorRateRequestDetails;
+import com.maan.eway.bean.FirstLossPayee;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -90,6 +91,7 @@ import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
+import com.maan.eway.repository.FirstLossPayeeRepository;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
@@ -160,6 +162,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private FactorRateRequestDetailsRepository factorRateRequestDetailsRepo;
+	
+	@Autowired
+	private FirstLossPayeeRepository firstLossPayeeRepo; 
 	
 //	@Autowired
 //	private MultiplePolicyDrCrDetailRepository multiPolicyDrCrDtlRepo;
@@ -2025,6 +2030,7 @@ public class JasperCustomServiceImple {
 					List<Map<String,Object>> employeeDetails = new ArrayList<Map<String,Object>>();
 					List<Map<String,Object>> locationDetails = new ArrayList<Map<String,Object>>();
 					List<Map<String,Object>> bonddetils = new ArrayList<Map<String,Object>>();
+					List<Map<String,Object>> excessConDetails = new ArrayList<Map<String,Object>>();
 					String sectionId = sectionIds.get(i).toString();
 					for(int x=0;x<locationIds.size();x++) {
 						String locationId = locationIds.get(x).toString();
@@ -2151,7 +2157,18 @@ public class JasperCustomServiceImple {
 						List<Map<String, Object>> firstHalf = termsAndconditions.subList(0, midIndex);
 
 						List<Map<String, Object>> secondHalf = termsAndconditions.subList(midIndex, conditionsize);
-					
+						
+						List<PolicyCoverData> excessCon = coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getCoverageType().equalsIgnoreCase("B") && f.getSectionId()==Integer.parseInt(sectionId)).collect(Collectors.toList());
+						if(!excessCon.isEmpty()) {
+							excessCon.forEach(k -> {
+								Map<String,Object> excessMap = new HashMap<String,Object>();
+								excessMap.put("excessPercent", k.getExcessPercent());
+								excessMap.put("excessAmount", k.getExcessAmount());
+								excessMap.put("excessDesc", k.getExcessDesc());
+								excessConDetails.add(excessMap);
+							});
+						}
+						
 						coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
 						coverMap.put("contentList", contentDetails);
 						if("1".equalsIgnoreCase(sectionId))
@@ -2159,6 +2176,7 @@ public class JasperCustomServiceImple {
 						coverMap.put("employeeList", employeeDetails);
 						coverMap.put("firstHalfconditions", firstHalf);
 						coverMap.put("secondHalfconditions", secondHalf);
+						coverMap.put("excessConditions", excessConDetails);
 						coverMap.put("sectionId", sectionId);
 						coverMap.put("bonddetils", bonddetils);
 						coverageList.add(coverMap);
@@ -2198,9 +2216,16 @@ public class JasperCustomServiceImple {
 				});
 			}
 			
+			List<FirstLossPayee> firstLossPayees = firstLossPayeeRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
+			if(!firstLossPayees.isEmpty()) {
+				String firstlosspayee = firstLossPayees.stream().map(m -> m.getFirstLossPayeeDesc()).collect(Collectors.joining(","));
+				result.put("customerName", firstlosspayee+"  "+(map.get("customerName")==null?"":map.get("customerName").toString()));
+			}else {
+				result.put("customerName",map.get("customerName")==null?"":map.get("customerName").toString());
+			}
+			
 			result.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
 			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
-			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
 			result.put("address", map.get("address")==null?"":map.get("address").toString());
 			result.put("inceptionDate", map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
 			result.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
