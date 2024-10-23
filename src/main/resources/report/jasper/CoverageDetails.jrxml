@@ -693,17 +693,23 @@
 					</jr:column>
 					<jr:column width="85" uuid="ad6a543f-1d0b-4866-9c02-1821c78d0749">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_TD" height="20" rowSpan="1">
+						<jr:columnHeader height="20" rowSpan="1">
+							<box>
+								<pen lineWidth="0.5"/>
+							</box>
 							<textField>
 								<reportElement x="0" y="0" width="85" height="20" uuid="a0d40ebc-5220-4777-bb34-a840a9cb3604"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["LocationName"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Location Name"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="20">
+						<jr:detailCell height="20">
+							<box>
+								<pen lineWidth="0.5"/>
+							</box>
 							<textField textAdjust="StretchHeight">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="85" height="20" uuid="7203ffbf-37d4-4df6-9999-ed1fce49a0e2"/>
 								<box leftPadding="2" rightPadding="0"/>
