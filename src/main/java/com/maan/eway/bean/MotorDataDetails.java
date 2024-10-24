@@ -171,7 +171,7 @@ private static final long serialVersionUID = 1L;
     private String     fuelTypeDesc ;
 
     @Column(name="SEATING_CAPACITY")
-    private Double    seatingCapacity ;
+    private Integer    seatingCapacity ;
 
     @Column(name="CUBIC_CAPACITY")
     private Double     cubicCapacity ;

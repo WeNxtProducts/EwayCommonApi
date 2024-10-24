@@ -818,7 +818,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 //		    			} else {
 	    				String keyvalue = (cov.getSumInsured() == null) ? null : 
 	    	                  (cov.getSumInsured().compareTo(BigDecimal.ONE) < 0) ? "0" : 
-	    	                  cov.getSumInsured().toPlainString();
+	    	                (cov.getSumInsured() != null) ? String.valueOf(cov.getSumInsured().intValue()) : null;
                 	motorKeyValue.put(cov.getCoverBasedOn(), keyvalue );
 		    			   
 		    	//		}
