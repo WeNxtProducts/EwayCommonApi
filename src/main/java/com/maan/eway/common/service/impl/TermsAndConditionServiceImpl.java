@@ -586,13 +586,14 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 	@Override
 	public SuccessRes insertTermsAndCondition(TermsAndConditionInsertReq req) {
-		// TODO Auto-generated method stub
-		SuccessRes res = new SuccessRes();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-		try {
-			
-			Integer idValue = Integer.valueOf(req.getTermsAndConditionReq().size() >0  ?  req.getTermsAndConditionReq().get(0).getId() : "0" );
+		
+    	SuccessRes res = new SuccessRes();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+       try {
+			// delete 
+            Integer idValue = Integer.valueOf(req.getTermsAndConditionReq().size() >0  ?  req.getTermsAndConditionReq().get(0).getId() : "0" );
 			
 			List<TermsAndCondition> data = termsRepo.findByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndId(req.getRequestReferenceNo(),
 					req.getRiskId(), req.getProductId(), req.getSectionId(),  idValue);
@@ -602,88 +603,88 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			}
 			
 			if( req.getTermsAndConditionReq()!=null && req.getTermsAndConditionReq().size() > 0   ) {
+				Long count = termsRepo.count();
+				Integer count1 = count.intValue();
+				Integer a = 1000;
+				TermsAndCondition saveData = new TermsAndCondition();
+				List<TermsAndCondition> savelist  = new ArrayList<>();
+				List<InsuranceCompanyMaster> insurance = inuranceRepo
+						.findTopByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
+				List<BranchMaster> branch = branchRepo.findTopByCompanyIdAndBranchCodeOrderByAmendIdDesc(req.getCompanyId(),
+						req.getBranchCode());
+				List<ProductMaster> product = productRepo
+						.findTopByProductIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()));
+				List<SectionMaster> section = sectionRepo
+						.findTopBySectionIdOrderByAmendIdDesc(Integer.valueOf(req.getSectionId()));
+
 				
-				List<TermsAndConditionListReq> val = req.getTermsAndConditionReq().stream().filter(o ->o.getTypeId().equalsIgnoreCase("D") ).collect(Collectors.toList());
+				saveData.setCompanyId(req.getCompanyId());
+				saveData.setBranchCode(req.getBranchCode());
+				saveData.setProductId(req.getProductId());
+				saveData.setSectionId(req.getSectionId());
+				saveData.setCompanyName(insurance.get(0).getCompanyName());
+				saveData.setBranchName(branch.get(0).getBranchName());
+				saveData.setProductName(product.get(0).getProductName());
+				saveData.setSectionName(section.size() > 0 ? section.get(0).getSectionName() : "All") ;
+				saveData.setEntryDate(new Date());
+				saveData.setStatus("Y");
+				saveData.setCreatedBy(req.getCreatedBy());
+				saveData.setUpdatedBy(req.getCreatedBy());
+				saveData.setUpdatedDate(new Date());
+				saveData.setQuoteNo(req.getQuoteNo());
+				saveData.setRiskId(req.getRiskId());
+				saveData.setAmendId(0);
+				saveData.setRequestReferenceNo(req.getRequestReferenceNo());
 				
+				// Remove D type 
+			    // Insert O TYpe
 				
-				
-			//	if(val.size()>0) { //anyone ticked
+			for(TermsAndConditionListReq req1: req.getTermsAndConditionReq())
+			{
+				if(req1.getTypeId().equalsIgnoreCase("O"))
+				{
+                    ListItemValue id = listRepo.findByItemTypeAndItemCode("TERMS_AND_CONDITION", req1.getId());
+    				TermsAndCondition saveDatas = new TermsAndCondition();
+    				saveDatas = dozermapper.map(saveData,TermsAndCondition.class );
+    				saveDatas.setSno(count1 + 1);
+    				saveDatas.setId(Integer.valueOf(req1.getId()));
+    				saveDatas.setIdDesc(id.getItemValue());
+    				saveDatas.setDocRefNo(req1.getDocRefNo());
 					
+    				saveDatas.setTypeId(req1.getTypeId());
 
-					Long count = termsRepo.count();
-					Integer count1 = count.intValue();
-					Integer a = 1000;
-					TermsAndCondition saveData = new TermsAndCondition();
-					List<InsuranceCompanyMaster> insurance = inuranceRepo
-							.findTopByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
-					List<BranchMaster> branch = branchRepo.findTopByCompanyIdAndBranchCodeOrderByAmendIdDesc(req.getCompanyId(),
-							req.getBranchCode());
-					List<ProductMaster> product = productRepo
-							.findTopByProductIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()));
-					List<SectionMaster> section = sectionRepo
-							.findTopBySectionIdOrderByAmendIdDesc(Integer.valueOf(req.getSectionId()));
+					if (StringUtils.isNotBlank(req1.getSubId())) {
+						saveDatas.setSubId(Integer.valueOf(req1.getSubId()));
+						saveDatas.setSubIdDesc(req1.getSubIdDesc());
+					}
 
+					else {
+						saveDatas.setSubId(a++);
+						saveDatas.setSubIdDesc(req1.getSubIdDesc());
+					}
 					
-					saveData.setCompanyId(req.getCompanyId());
-					saveData.setBranchCode(req.getBranchCode());
-					saveData.setProductId(req.getProductId());
-					saveData.setSectionId(req.getSectionId());
-					saveData.setCompanyName(insurance.get(0).getCompanyName());
-					saveData.setBranchName(branch.get(0).getBranchName());
-					saveData.setProductName(product.get(0).getProductName());
-					saveData.setSectionName(section.size() > 0 ? section.get(0).getSectionName() : "All") ;
-					saveData.setEntryDate(new Date());
-					saveData.setStatus("Y");
-					saveData.setCreatedBy(req.getCreatedBy());
-					saveData.setUpdatedBy(req.getCreatedBy());
-					saveData.setUpdatedDate(new Date());
-					saveData.setQuoteNo(req.getQuoteNo());
-					saveData.setRiskId(req.getRiskId());
-					saveData.setAmendId(0);
-					saveData.setRequestReferenceNo(req.getRequestReferenceNo());
-
-					for (TermsAndConditionListReq req1 : req.getTermsAndConditionReq()) {
-						if(req1.getTypeId().equalsIgnoreCase("D") || !(val.size()>0) ) {
-							
-							ListItemValue id = listRepo.findByItemTypeAndItemCode("TERMS_AND_CONDITION", req1.getId());
-	
-							saveData.setSno(count1 + 1);
-							saveData.setId(Integer.valueOf(req1.getId()));
-							saveData.setIdDesc(id.getItemValue());
-							saveData.setDocRefNo(req1.getDocRefNo());
-							
-							saveData.setTypeId(req1.getTypeId());
-	
-							if (StringUtils.isNotBlank(req1.getSubId())) {
-								saveData.setSubId(Integer.valueOf(req1.getSubId()));
-								saveData.setSubIdDesc(req1.getSubIdDesc());
-							}
-	
-							else {
-								saveData.setSubId(a++);
-								saveData.setSubIdDesc(req1.getSubIdDesc());
-							}
-							termsRepo.saveAndFlush(saveData);
-							count1++;
-						} 
-						}
-
-					termsRepo.saveAndFlush(saveData);
-					
+					count1++;
+					savelist.add(saveDatas);
 				}
+			}
+			if(savelist!=null &&!savelist.isEmpty())
+			{
+			termsRepo.saveAllAndFlush(savelist);
 			
-		//	}
-		
-			res.setResponse("Saved Successful");
-			res.setSuccessId(req.getQuoteNo());
-		}
-
-		catch (Exception e) {
+			
+			}
+			res.setResponse("Saved Successful"); res.setSuccessId(req.getQuoteNo()); 
+			}
+		}catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --> " + e.getMessage());
 			return null;
-		}
-		return res;
+			
+			}
+    	
+    	return res;
+    	
+    
 	}
 
 	@Override
