@@ -80,8 +80,8 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 			
 			if("N".equals(req.getDiscountYn())) {
 				
-				Integer del_count =policyDRCRRepo.deleteDrCrDataByQuoteNo(req.getQuoteNo());
-				Integer count_=policyDRCRRepo.deleteMultipleDrCrDataByQuoteNo(req.getQuoteNo());
+				Integer del_count =chatParentMasterRepo.deleteDrCrDataByQuoteNo(req.getQuoteNo());
+				Integer count_=chatParentMasterRepo.deleteMultipleDrCrDataByQuoteNo(req.getQuoteNo());
 				
 				log.info("policyDRCRRepo.deleteDrCrDataByQuoteNo(req.getQuoteNo()) count :: "+del_count);
 				log.info("policyDRCRRepo.deleteMultipleDrCrDataByQuoteNo(req.getQuoteNo()) count :: "+count_);

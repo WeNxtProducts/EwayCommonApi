@@ -54,14 +54,5 @@ public interface PolicyDrcrDetailRepository  extends JpaRepository<PolicyDrcrDet
 	@Query(value = "SELECT (CASE WHEN pcd.currency IN (cm.currency_id) THEN premium_excluded_tax_lc ELSE premium_excluded_tax_fc END) AS stamp_duty FROM policy_cover_data pcd INNER JOIN eway_insurance_company_master cm  WHERE cover_id='119' AND policy_no=?1 AND cm.company_id=pcd.company_id AND SYSDATE() BETWEEN effective_date_start AND effective_date_end",nativeQuery=true)
 	String getStampDutyforUganda(String pNumber);
 	
-	@Transactional
-	@Modifying
-	@Query(nativeQuery=true,value="DELETE FROM policy_drcr_detail WHERE quote_no=?1")
-	Integer deleteDrCrDataByQuoteNo(String quoteNo);
-	
-	@Transactional
-	@Modifying
-	@Query(nativeQuery=true,value="DELETE FROM multiple_policy_drcr_detail WHERE quote_no=?1")
-	Integer deleteMultipleDrCrDataByQuoteNo(String quoteNo);
 
 }
