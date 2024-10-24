@@ -80,6 +80,12 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 			
 			if("N".equals(req.getDiscountYn())) {
 				
+				Integer del_count =policyDRCRRepo.deleteDrCrDataByQuoteNo(req.getQuoteNo());
+				Integer count_=policyDRCRRepo.deleteMultipleDrCrDataByQuoteNo(req.getQuoteNo());
+				
+				log.info("policyDRCRRepo.deleteDrCrDataByQuoteNo(req.getQuoteNo()) count :: "+del_count);
+				log.info("policyDRCRRepo.deleteMultipleDrCrDataByQuoteNo(req.getQuoteNo()) count :: "+count_);
+
 				String quoteNo =req.getQuoteNo();
 				HomePositionMaster hpm =hpmRepo.findByQuoteNo(quoteNo);
 				Integer companyId =Integer.valueOf(hpm.getCompanyId());
@@ -833,7 +839,6 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 	private List<PolicyDrcrDetail> saveDRCR(List<Map<String, Object>> list) {
 
 		try {
-			
 			return list.stream().map(p ->{
 				
 				String vehicle_type=p.get("vehicle_type")==null?"":p.get("vehicle_type").toString();
