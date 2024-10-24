@@ -255,7 +255,6 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 					
 				}
 			}
-			
 			// Framing External Api
 			String policyNo = "";
 			String reqRefNo = "";
@@ -282,6 +281,70 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 		e.printStackTrace();
 	}
 	return false;
+}
+
+private void updateIntegrationStatus(String quoteNo, HomePositionMaster home) {
+	boolean status=false,status1=false,status2=false,status3=false,status4=false,status5=false,status6=false,status7=false,status8=false,status9=false;
+	String policyNo=home.getPolicyNo();
+	try {
+		List<YiPolicyDetail> list=yiPolicyReo.findByQuotationPolicyNo(policyNo);
+		if(list.size()>0 && list!=null) {
+			status=true;
+		}
+	
+		List<YiSectionDetail> list1=yisecRepo.findByQuotationPolicyNo(policyNo);
+		if(list1.size()>0 && list1!=null) {
+			status1=true;
+		}
+	
+		List<PgithPolRiskAddlInfo> list2=pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
+		if(list2.size()>0 && list2!=null) {
+			status2=true;
+		}
+	
+		List<MotDriverDetail> list3=motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
+		if(list3.size()>0 && list3!=null) {
+			status3=true;
+		}
+		List<YiCoverDetail> list4=yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
+		if(list4.size()>0 && list4!=null) {
+			status4=true;
+		}
+
+		List<MotCommDiscountDetail> list5=motComRepo.findByQuotationPolicyNo(policyNo);
+		if(list5.size()>0 && list5!=null) {
+			status5=true;
+		}
+	
+		List<YiChargeDetail> list6=yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
+		if(list6.size()>0 && list6!=null) {
+			status6=true;
+		}
+	
+		List<YiVatDetail> list7=yivatRepo.findByQuotationPolicyNo(policyNo);
+		if(list7.size()>0 && list7!=null) {
+			status7=true;
+		}
+		List<YiPremCal> list8=yipremRepo.findByQuotationPolicyNo(policyNo);
+		if(list8.size()>0 && list8!=null) {
+			status8=true;
+		}
+	
+		List<YiPolicyApproval> list9=yipolicyRepo.findByQuotationPolicyNo(policyNo);
+		if(list9.size()>0 && list9!=null) {
+			status9=true;
+		}
+		if(status && status1 && status2 && status3 && status4 && status5 && status6 && status7 && status8 && status9) {
+			home.setCoreIntgStatus("S");
+		}else {
+			home.setCoreIntgStatus("F");
+		}
+		
+	}catch (Exception e) {
+		e.printStackTrace();
+		home.setCoreIntgStatus("F");
+	}
+	homeRepo.saveAndFlush(home);
 }
 
 public void ewayMotorPremiaPush(String policyNo,String reqRefNo,PremiaConfigMaster configMas) {
@@ -380,62 +443,72 @@ public Boolean delete(String quoteNo,String tableName) {
 			productId= home.getProductId().toString();
 		}
 		if("Yi_Policy_Detail".equalsIgnoreCase(tableName)) {
-			List<YiPolicyDetail> list=yiPolicyReo.findByQuotationPolicyNo(policyNo);
+			//List<YiPolicyDetail> list=yiPolicyReo.findByQuotationPolicyNo(policyNo);
+			List<YiPolicyDetail> list=yiPolicyReo.findByRequestreferenceno(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				yiPolicyReo.deleteAll(list);
 				result=true;
 			}
 		}else if("Yi_Section_Detail".equalsIgnoreCase(tableName)) {
-			List<YiSectionDetail> list=yisecRepo.findByQuotationPolicyNo(policyNo);
+			//List<YiSectionDetail> list=yisecRepo.findByQuotationPolicyNo(policyNo);
+			List<YiSectionDetail> list=yisecRepo.findByRequestreferenceno(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				yisecRepo.deleteAll(list);
 				result=true;
 			}
 		}else if("PGIT_POL_RISK_ADDL_INFO_01".equalsIgnoreCase(tableName)) {
-			List<PgithPolRiskAddlInfo> list=pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
+			//List<PgithPolRiskAddlInfo> list=pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
+			List<PgithPolRiskAddlInfo> list=pgitPolRiskRepo.findByRequestReferenceNo(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				pgitPolRiskRepo.deleteAll(list);
 				result=true;
 			}
 		}else if("Mot_Driver_Detail".equalsIgnoreCase(tableName)) {
-			List<MotDriverDetail> list=motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
+			//List<MotDriverDetail> list=motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
+			List<MotDriverDetail> list=motDrivDetailsRepo.findByRequestreferenceno(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				motDrivDetailsRepo.deleteAll(list);
 				result=true;
 			}
 		}else if("Yi_Cover_Detail".equalsIgnoreCase(tableName)) {
-			List<YiCoverDetail> list=yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
+			//List<YiCoverDetail> list=yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
+			List<YiCoverDetail> list=yiCoverDetailRepo.findByRequestreferenceno(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				yiCoverDetailRepo.deleteAll(list);
 				result=true;
 			}
 		}else if("Mot_Comm_Discount_Detail".equalsIgnoreCase(tableName)) {
-			List<MotCommDiscountDetail> list=motComRepo.findByQuotationPolicyNo(policyNo);
+			//List<MotCommDiscountDetail> list=motComRepo.findByQuotationPolicyNo(policyNo);
+			List<MotCommDiscountDetail> list=motComRepo.findByRequestreferenceno(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				motComRepo.deleteAll(list);
 				result=true;
 			}
 		}else if("Yi_Charge_Detail".equalsIgnoreCase(tableName)) {
-			List<YiChargeDetail> list=yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
+			//List<YiChargeDetail> list=yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
+			List<YiChargeDetail> list=yiChargeDetailRepo.findByRequestreferenceno(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				yiChargeDetailRepo.deleteAll(list);
 				result=true;
 			}
 		}else if("Yi_Vat_Detail".equalsIgnoreCase(tableName)) {
-			List<YiVatDetail> list=yivatRepo.findByQuotationPolicyNo(policyNo);
+			//List<YiVatDetail> list=yivatRepo.findByQuotationPolicyNo(policyNo);
+			List<YiVatDetail> list=yivatRepo.findByRequestreferenceno(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				yivatRepo.deleteAll(list);
 				result=true;
 			}
 		}
 		else if("Yi_Prem_Cal".equalsIgnoreCase(tableName)) {
-			List<YiPremCal> list=yipremRepo.findByQuotationPolicyNo(policyNo);
+			//List<YiPremCal> list=yipremRepo.findByQuotationPolicyNo(policyNo);
+			List<YiPremCal> list=yipremRepo.findByRequestreferenceno(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				yipremRepo.deleteAll(list);
 				result=true;
 			}
 		}else if("Yi_Policy_Approval".equalsIgnoreCase(tableName)) {
-			List<YiPolicyApproval> list=yipolicyRepo.findByQuotationPolicyNo(policyNo);
+			//List<YiPolicyApproval> list=yipolicyRepo.findByQuotationPolicyNo(policyNo);
+			List<YiPolicyApproval> list=yipolicyRepo.findByRequestreferenceno(reqRefNo);
 			if(list.size()>0 && list!=null) {
 				yipolicyRepo.deleteAll(list);
 				result=true;
@@ -558,6 +631,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			} 
 			
 		}
+		updateIntegrationStatus(request.getQuoteNo(),home);
 		if ("100004".equalsIgnoreCase(companyId)) {
 			 SeqPiftTranId entity=new SeqPiftTranId();
 			 List<SeqPiftTranId> data=seqPiftTranIdRepo.findAllByOrderByTranIdDesc();
@@ -632,9 +706,9 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			Predicate n7 = cb.equal(c.get("productId"), "99999");
 			Predicate n8 = cb.or(n5,n7);
 			//In 
-			Expression<String>e0= c.get("premiaId");
-			Predicate n6 = e0.in(premiaIds);
-			query.where(n1,n2,n3,n4,n8,n6).orderBy(orderList);
+			//Expression<String>e0= c.get("premiaId");
+			//Predicate n6 = e0.in(premiaIds);
+			query.where(n1,n2,n3,n4,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigMaster> result = em.createQuery(query);

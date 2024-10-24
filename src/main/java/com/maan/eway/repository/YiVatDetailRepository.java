@@ -10,4 +10,6 @@ public interface YiVatDetailRepository extends JpaRepositoryImplementation<YiVat
 
 	List<com.maan.eway.bean.YiVatDetail> findByQuotationPolicyNo(String policyNo);
 
+	List<YiVatDetail> findByRequestreferenceno(String reqRefNo);
+
 }

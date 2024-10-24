@@ -12,7 +12,6 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -37,6 +36,8 @@ import com.maan.eway.bean.MotDriverDetailId;
 public interface MotDriverDetailRepository  extends JpaRepository<MotDriverDetail,MotDriverDetailId > , JpaSpecificationExecutor<MotDriverDetail> {
 
 	List<MotDriverDetail> findByQuotationPolicyNo(String policyNo);
+
+	List<MotDriverDetail> findByRequestreferenceno(String reqRefNo);
 
 
 

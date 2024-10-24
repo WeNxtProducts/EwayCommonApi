@@ -26,6 +26,8 @@ public interface PgitPolRiskAddlInfoRepository  extends JpaRepository<PgithPolRi
 
 	List<PgithPolRiskAddlInfo> findByQuotationPolicyNo(String policyNo);
 
+	List<PgithPolRiskAddlInfo> findByRequestReferenceNo(String reqRefNo);
+
 
 
 }

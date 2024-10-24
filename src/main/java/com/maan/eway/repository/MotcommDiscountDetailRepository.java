@@ -12,7 +12,6 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -36,6 +35,8 @@ import com.maan.eway.bean.MotCommDiscountDetailId;
 public interface MotcommDiscountDetailRepository  extends JpaRepository<MotCommDiscountDetail,MotCommDiscountDetailId > , JpaSpecificationExecutor<MotCommDiscountDetail> {
 
 	List<MotCommDiscountDetail> findByQuotationPolicyNo(String policyNo);
+
+	List<MotCommDiscountDetail> findByRequestreferenceno(String reqRefNo);
 
 
 

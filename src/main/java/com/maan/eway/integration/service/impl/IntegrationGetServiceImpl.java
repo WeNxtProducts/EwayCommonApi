@@ -14,6 +14,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -173,7 +175,7 @@ public synchronized GetMotorProtfolioActiveRes getAllPolicy(GetAllPolicy req,int
 		// Find All
 		Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
 		Root<PersonalInfo> c = query.from(PersonalInfo.class);
-
+				
 		// Select
 		query.multiselect(
 				// Customer Info
@@ -196,7 +198,8 @@ public synchronized GetMotorProtfolioActiveRes getAllPolicy(GetAllPolicy req,int
 				m.get("noOfInstallment").alias("noOfInstallment"),m.get("paymentStatus").alias("paymentStatus"),
 				m.get("emiPremium").alias("emiPremium"),
 				m.get("effectiveDate").alias("effectiveDate"), m.get("currency").alias("currency"),
-				m.get("originalPolicyNo").alias("originalPolicyNo")
+				m.get("originalPolicyNo").alias("originalPolicyNo"),
+				m.get("coreIntgStatus").alias("coreIntgStatus")
 
 		);
 

@@ -12,4 +12,6 @@ public interface YiPolicyApprovalRepository extends JpaRepository<YiPolicyApprov
 
 	List<com.maan.eway.bean.YiPolicyApproval> findByQuotationPolicyNo(String policyNo);
 
+	List<YiPolicyApproval> findByRequestreferenceno(String reqRefNo);
+
 }

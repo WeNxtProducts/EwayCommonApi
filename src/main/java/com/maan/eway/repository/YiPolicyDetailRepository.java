@@ -12,7 +12,6 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -27,6 +26,8 @@ import com.maan.eway.bean.YiPolicyDetail;
 public interface YiPolicyDetailRepository  extends JpaRepository<YiPolicyDetail,String > , JpaSpecificationExecutor<YiPolicyDetail> {
 
 	List<YiPolicyDetail> findByQuotationPolicyNo(String policyNo);
+
+	List<YiPolicyDetail> findByRequestreferenceno(String reqRefNo);
 
 
 
