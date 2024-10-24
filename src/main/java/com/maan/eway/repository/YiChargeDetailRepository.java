@@ -26,6 +26,8 @@ public interface YiChargeDetailRepository  extends JpaRepository<YiChargeDetail,
 
 	List<YiChargeDetail> findByQuotationPolicyNo(String policyNo);
 
+	List<YiChargeDetail> findByRequestreferenceno(String reqRefNo);
+
 
 
 }

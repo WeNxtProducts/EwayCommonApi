@@ -11,4 +11,6 @@ public interface YiPremCalRepository extends JpaRepositoryImplementation<YiPremC
 
 	List<com.maan.eway.bean.YiPremCal> findByQuotationPolicyNo(String policyNo);
 
+	List<YiPremCal> findByRequestreferenceno(String reqRefNo);
+
 }

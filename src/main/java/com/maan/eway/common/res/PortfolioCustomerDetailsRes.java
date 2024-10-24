@@ -139,5 +139,8 @@ public class PortfolioCustomerDetailsRes {
 	
 	@JsonProperty("StickerNo")
 	private String stickerno;
+	
+	@JsonProperty("CoreIntgStatus")
+	private String coreIntgStatus;
 
 }

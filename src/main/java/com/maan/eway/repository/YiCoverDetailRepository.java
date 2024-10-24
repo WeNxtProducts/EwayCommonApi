@@ -12,7 +12,6 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -35,6 +34,8 @@ import com.maan.eway.bean.YiCoverDetailId;
 public interface YiCoverDetailRepository  extends JpaRepository<YiCoverDetail,YiCoverDetailId > , JpaSpecificationExecutor<YiCoverDetail> {
 
 	List<YiCoverDetail> findByQuotationPolicyNo(String policyNo);
+
+	List<YiCoverDetail> findByRequestreferenceno(String reqRefNo);
 
 
 

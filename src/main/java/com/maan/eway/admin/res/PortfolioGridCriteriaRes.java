@@ -66,5 +66,6 @@ public class PortfolioGridCriteriaRes {
 	
 	private String currency;
 	private String originalPolicyNo;
+	private String coreIntgStatus;
 }
 
