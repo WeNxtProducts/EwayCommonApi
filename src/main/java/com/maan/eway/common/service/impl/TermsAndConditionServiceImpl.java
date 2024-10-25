@@ -586,8 +586,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 	@Override
 	public SuccessRes insertTermsAndCondition(TermsAndConditionInsertReq req) {
-
-		
+	
     	SuccessRes res = new SuccessRes();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
@@ -641,7 +640,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				
 			for(TermsAndConditionListReq req1: req.getTermsAndConditionReq())
 			{
-				if(req1.getTypeId().equalsIgnoreCase("O"))
+				//if(req1.getTypeId().equalsIgnoreCase("O"))
 				{
                     ListItemValue id = listRepo.findByItemTypeAndItemCode("TERMS_AND_CONDITION", req1.getId());
     				TermsAndCondition saveDatas = new TermsAndCondition();
