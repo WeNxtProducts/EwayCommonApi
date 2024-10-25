@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -2389,10 +2390,19 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				repository.saveAllAndFlush(unOptCovs);
 				
 			}
+			//sectionids
+			List<Integer> sectionid = req.getCoverIdList().stream().map(CoverIdReq2::getSectionId).filter(Objects::nonNull).map(Integer::valueOf).collect(Collectors.toList());
 			// delete unselected cover block end
 			
-			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
-					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,LocationId ) ;	
+			/*
+			 * List<FactorRateRequestDetails> findCovers = repository.
+			 * findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdOrderByCoverIdAsc
+			 * (req.getRequestReferenceNo() , req.getVehicleId() , req.getCompanyId() ,
+			 * Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())
+			 * ,LocationId ) ;
+			 */
+			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdInAndLocationIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
+					req.getCompanyId() , Integer.valueOf(req.getProductId()) , sectionid ,LocationId ) ;	
 		
 			List<ProductSectionMaster> sectionList = getProductSectionDropdown(req.getCompanyId(), req.getProductId(), req.getSectionId() ) ;
 			String productType  =sectionList.size()> 0 ? sectionList.get(0).getMotorYn() :  "M" ; 
@@ -2501,8 +2511,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			List<PolicyCoverDataEndt> oldPolicyData = policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
 					Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 					Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()));
+			
 			for (CoverIdReq2 covReq :    req.getCoverIdList()  ) {
-				
+			
 				if(StringUtils.isBlank(covReq.getSubCoverYn()) || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
 					List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
 					
@@ -2516,6 +2527,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						updateCover.setExcessDesc(covReq.getExcessDesc());
 						updateCover.setUserOpt("Y");
 						updateCoverList.add(updateCover);
+						
 						//repository.save(updateCover);
 						
 						// Loadings
