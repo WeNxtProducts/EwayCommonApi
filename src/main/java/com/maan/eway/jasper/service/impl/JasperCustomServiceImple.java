@@ -32,6 +32,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.ClausesMaster;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CountryMaster;
@@ -88,6 +89,7 @@ import com.maan.eway.jasper.res.TravelDataSetTwoRes;
 import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
@@ -165,6 +167,9 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private FirstLossPayeeRepository firstLossPayeeRepo; 
+	
+	@Autowired
+	private CommonDataDetailsRepository commonDataDetailsRepo;
 	
 //	@Autowired
 //	private MultiplePolicyDrCrDetailRepository multiPolicyDrCrDtlRepo;
@@ -1227,6 +1232,7 @@ public class JasperCustomServiceImple {
 			response.setSignImg(map.get("signImg")==null?"":map.get("signImg").toString());
 			response.setBrokerLogo(map.get("brokerLogo")==null?"":map.get("brokerLogo").toString());
 			response.setVatPercent(map.get("vatPercent")==null?"":map.get("vatPercent").toString());
+			response.setSubUserType(subUserType);
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
 			response.setAccessoriesDetails(accessoriesDetailsRes);
@@ -2028,6 +2034,7 @@ public class JasperCustomServiceImple {
 					Map<String,Object> coverMap = new HashMap<String,Object>();
 					List<Map<String,Object>> contentDetails = new ArrayList<Map<String,Object>>();
 					List<Map<String,Object>> employeeDetails = new ArrayList<Map<String,Object>>();
+					List<Map<String,Object>> commonDetails = new ArrayList<Map<String,Object>>();
 					List<Map<String,Object>> locationDetails = new ArrayList<Map<String,Object>>();
 					List<Map<String,Object>> bonddetils = new ArrayList<Map<String,Object>>();
 					List<Map<String,Object>> excessConDetails = new ArrayList<Map<String,Object>>();
@@ -2129,7 +2136,36 @@ public class JasperCustomServiceImple {
 									eMap.put("salary", g.getValue().stream().map(h -> (BigDecimal) h.get("salary")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 									return eMap;
 								}).collect(Collectors.toList());
-						
+						if("35".equalsIgnoreCase(sectionId)) {
+							List<CommonDataDetails> comDetails = commonDataDetailsRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),sectionId,Integer.parseInt(locationId));
+							List<Map<String,Object>> commonList = comDetails.stream()
+									.collect(Collectors.groupingBy(k -> k.getRiskId(), Collectors.mapping(o -> {
+										LinkedHashMap<String,Object> empMap = new LinkedHashMap<String,Object>();
+										empMap.put("locationName", locationName);
+										empMap.put("occupationDesc", o.getOccupationDesc());
+										empMap.put("sumInsured", o.getSumInsured());
+										empMap.put("Rate", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+												&& f.getTaxId()!=0 && f.getSectionId()==Integer.parseInt(o.getSectionId())
+												&& f.getVehicleId()==o.getRiskId()).map(u -> u.getRate()).findAny().orElse(BigDecimal.ZERO));
+										empMap.put("Premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+												&& f.getSectionId()==Integer.parseInt(o.getSectionId())
+												&& f.getVehicleId()==o.getRiskId()).map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+										return empMap;
+									}, Collectors.toList()))).entrySet()
+									.stream().map(g -> {
+										LinkedHashMap<String,Object> eMap = new LinkedHashMap<String,Object>();
+										eMap.put("occupationDesc", g.getValue().stream().map(t -> String.valueOf(t.get("occupationDesc"))).collect(Collectors.joining("<br>")));
+										eMap.put("Rate", g.getValue().stream().map(t -> t.get("Rate")).findFirst().get());
+										eMap.put("sumInsured", g.getValue().stream().map(j -> (BigDecimal) j.get("sumInsured")).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+										eMap.put("premium", g.getValue().stream().map(h -> h.get("Premium")).findFirst().get());
+										eMap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+												.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
+										eMap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+										eMap.put("locationName", g.getValue().stream().map(j -> j.get("locationName")).findFirst().get());
+										return eMap;
+									}).collect(Collectors.toList());
+							commonDetails.addAll(commonList);
+						}
 						contentDetails.addAll(contentList);
 						employeeDetails.addAll(employeeList);
 						locationDetails.addAll(locationList);
@@ -2174,6 +2210,7 @@ public class JasperCustomServiceImple {
 						if("1".equalsIgnoreCase(sectionId))
 						coverMap.put("locationDetails", locationDetails);
 						coverMap.put("employeeList", employeeDetails);
+						coverMap.put("commonDtlList",commonDetails);
 						coverMap.put("firstHalfconditions", firstHalf);
 						coverMap.put("secondHalfconditions", secondHalf);
 						coverMap.put("excessConditions", excessConDetails);
