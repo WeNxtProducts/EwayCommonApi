@@ -127,6 +127,9 @@ public class MotorPrivateRes {
 	@JsonProperty("OverAllPremium")
 	private String overAllPremium;
 	
+	@JsonProperty("SubUserType")
+	private String subUserType;
+	
 	@JsonProperty("AttachmentList")
 	private List<AttachMentRes> attachmentList;
 	

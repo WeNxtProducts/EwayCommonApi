@@ -365,9 +365,9 @@
 				<textFieldExpression><![CDATA["POLICY NO :"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="20">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="180" height="15" uuid="b46597a1-24b4-4037-97c0-249dfa6bd5b8">
+				<reportElement x="0" y="0" width="180" height="15" uuid="b46597a1-24b4-4037-97c0-249dfa6bd5b8">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -379,7 +379,7 @@
 				<textFieldExpression><![CDATA["INSURED :"]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement x="180" y="0" width="375" height="15" uuid="a70d3b10-3928-4e2b-9a2b-56680718d30a">
+				<reportElement x="180" y="0" width="375" height="20" uuid="a70d3b10-3928-4e2b-9a2b-56680718d30a">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 4_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 4_CH"/>
@@ -409,6 +409,16 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="15" width="2" height="5" uuid="1b30da92-b3af-4131-aa93-40713b3e2847">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="15">
 			<textField>
