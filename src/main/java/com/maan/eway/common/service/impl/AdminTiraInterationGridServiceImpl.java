@@ -124,7 +124,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 					s.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),
 					m.get("tiraResponseId").alias("tiraResponseId"),
 					s.get("stickerNumber").alias("stickerNumber"),
-					s.get("tiraCoverNoteNo").alias("tiraCoverNoteNo"),
+					m.get("tiraCoverNoteNo").alias("tiraCoverNoteNo"),
 
 					s.get("responseStatusCode").alias("responseStatusCode"),s.get("responseStatusDesc").alias("responseStatusDesc"),
 					m.get("bdmCode").alias("bdmCode"),m.get("branchName").alias("branchName"),
