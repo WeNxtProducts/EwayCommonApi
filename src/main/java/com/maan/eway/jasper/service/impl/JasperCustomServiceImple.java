@@ -2187,7 +2187,12 @@ public class JasperCustomServiceImple {
 					//WARRANTY
 					List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 					
-						List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+						List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct()
+								.map(u -> {
+									return u.entrySet().stream()
+											.collect(Collectors.toMap(Map.Entry::getKey, e -> capitalizeFirstLetter(e.getValue())));
+								})
+								.collect(Collectors.toList());
 						int conditionsize = termsAndconditions.size();
 						int midIndex = conditionsize / 2;
 
@@ -2971,22 +2976,23 @@ public class JasperCustomServiceImple {
 					hpm.get("productName").alias("productName"),cb.selectCase().when(cb.equal(hpm.get("productId"), 4), sectionName).when(cb.equal(hpm.get("productId"), 5), policyTypeDesc)
 					.otherwise(policyTypeName).alias("policyTypeDesc"),hpm.get("debitNoteNo").alias("debitNoteNo"),sumInsured.alias("sumInsured"),
 					cb.selectCase().when(cb.in(hpm.get("currency")).value(currencyId), cb.selectCase().when(cb.in(hpm.get("productId")).value(Arrays.asList(5,46)),
-							icm))
-					
-					
-					
-					);
-			
-			
-			
-			
-			
-			
+							icm)));
 		log.info("Exit into EwayPremiumRegister");
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private Object capitalizeFirstLetter(Object obj) {
+	    if (obj == null) {
+	        return null;
+	    }
+	    String str = obj.toString();
+	    if (str.isEmpty()) {
+	        return str;
+	    }
+	    return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
 	
 	
