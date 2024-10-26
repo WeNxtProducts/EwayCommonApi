@@ -1,7 +1,12 @@
 package com.maan.eway.common.service.impl;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,9 +48,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 @Service
 @Transactional
-public class TanzaniaEserviceCustomerDetails {
+public class AngolaEserviceCustomerDetails {
 	
-	private Logger log = LogManager.getLogger(TanzaniaEserviceCustomerDetails.class);
+	private Logger log = LogManager.getLogger(AngolaEserviceCustomerDetails.class);
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ;
@@ -75,27 +80,86 @@ public class TanzaniaEserviceCustomerDetails {
 	private EntityManager em;
 	
 	public List<String> validateCustomerDetails(EserviceCustomerSaveReq req) {
-	List<String> errorList = new ArrayList<String>();
+		List<String> errorList = new ArrayList<String>();
 	try {
 		if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
 			
 			if (StringUtils.isBlank(req.getTitle()))  {
 				errorList.add("1047");
 			}
-			if (StringUtils.isBlank(req.getClientName()) ) {
-				errorList.add("1001");
-			} else if (req.getClientName().length() > 250) {
-			   errorList.add("1002");
-			} 
-			else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z.&() ]+") && !req.getClientName().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")){
-				errorList.add("1003");		
-			}
-			if("1".equalsIgnoreCase(req.getPolicyHolderType())) {
-				if(StringUtils.isBlank(req.getGender())) {
-					errorList.add("1087");
+			if("2".equalsIgnoreCase(req.getPolicyHolderType()))
+			{
+				if (StringUtils.isBlank(req.getClientName()) ) {
+					errorList.add("1100");
+				} else if (req.getClientName().length() > 100) {
+				   errorList.add("1101");
+				} 
+				else if (StringUtils.isNotBlank(req.getClientName()) && (req.getClientName().matches("^[0-9].*") || !req.getClientName().matches("[a-zA-ZÀ-ÿ0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?\\s'-]+$"))){
+					errorList.add("1102");		
 				}
 			}
-			if (StringUtils.isBlank(req.getOccupation()) ) {
+			else
+			{
+				if (StringUtils.isBlank(req.getClientName()) ) {
+					errorList.add("1001");
+				} else if (req.getClientName().length() > 100) {
+				   errorList.add("1002");
+				} 
+				else if (StringUtils.isNotBlank(req.getClientName()) && (req.getClientName().matches("^[0-9].*") || !req.getClientName().matches("[a-zA-ZÀ-ÿ0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?\\s'-]+$"))){
+					errorList.add("1003");		
+				}
+				if (StringUtils.isBlank(req.getLastName()) ) {
+					errorList.add("3307");
+				} else if (req.getLastName().length() > 100) {
+				   errorList.add("3308");
+				} 
+				else if (StringUtils.isNotBlank(req.getLastName()) && (req.getLastName().matches("^[0-9].*") || !req.getLastName().matches("[a-zA-ZÀ-ÿ0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?\\s'-]+$"))){
+					errorList.add("3309");		
+				}
+			}
+				// Date Validation
+				Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(today);
+				cal.add(Calendar.DAY_OF_MONTH, -1);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 50);
+				today = cal.getTime();
+				if ("1".equalsIgnoreCase(req.getPolicyHolderType())) {
+					if (req.getDobOrRegDate() == null) {
+						errorList.add("1065");
+					}else if (req.getDobOrRegDate() != null) {
+						if (req.getDobOrRegDate().after(today)) {
+							errorList.add("1088");
+						}
+						LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+								.toLocalDate();
+						LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+						Integer years = Period.between(localDate1, localDate2).getYears();
+						if (years > 100) {
+							errorList.add("1089");
+
+						}
+					} 					
+				}else if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
+					if (req.getDobOrRegDate() == null) {
+						errorList.add("1065");
+					}else if (req.getDobOrRegDate() != null) {
+						if (req.getDobOrRegDate().after(today)) {
+								errorList.add("1090");
+						}
+						LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+						LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+						Integer years = Period.between(localDate1, localDate2).getYears();
+						if (years > 100) {
+							errorList.add("1091");
+
+						}
+					} 
+				}
+			/*if (StringUtils.isBlank(req.getOccupation()) ) {
 				errorList.add("1022");
 			} else if(req.getOccupation().equalsIgnoreCase("99999")){
 				if (StringUtils.isBlank(req.getOtherOccupation()) ) {
@@ -105,21 +169,7 @@ public class TanzaniaEserviceCustomerDetails {
 				}else if(!req.getOtherOccupation().matches("[a-zA-Z\\s]+")){
 					errorList.add("1025");
 				}
-			}
-			if("2".equalsIgnoreCase(req.getPolicyHolderType())) {
-				if ( StringUtils.isBlank(req.getEmail1()) ) {
-					errorList.add("1440");
-				}else if ( StringUtils.isNotBlank(req.getEmail1()) ) {
-					if( req.getEmail1().length() > 100 ) {
-						errorList.add("1032");
-					} else if(StringUtils.isNotBlank(req.getEmail1())) {
-						boolean b = isValidMail(req.getEmail1());
-						if (b == false && (!req.getEmail1().matches("^[a-zA-ZÀ-ÿ\\s'-]+$") || !req.getEmail1().matches("^[.@]+$"))) {
-							errorList.add("1033");
-						}
-					}
-				}
-			}
+			}*/
 			if (StringUtils.isBlank(req.getMobileCode1())) {
 				errorList.add("1062");
 			}
@@ -142,32 +192,20 @@ public class TanzaniaEserviceCustomerDetails {
 				
 				if (StringUtils.isBlank(req.getIdNumber())) {
 					errorList.add("1013");
-				} else if (req.getIdNumber().length() > 100) {
+				} else if (req.getIdNumber().length() > 15) {
 					errorList.add("1014");
 				}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
 					errorList.add("1015");
-				} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {	
+				} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
 					errorList.add("1015");
 				}
 				
-			}
-			if (StringUtils.isBlank(req.getPreferredNotification())) {
-				errorList.add("1049");
-			}
-			if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
-				if(StringUtils.isBlank(req.getVrTinNo())) {
-					errorList.add("1051");
-				}else if (req.getVrTinNo().length() > 20) {
-					errorList.add("1052");
-				}
 				if(StringUtils.isBlank(req.getStreet()) ) {
 					errorList.add("3310");
 				}else if (req.getStreet().length() > 100) {
 					errorList.add("3311");
 				}
-				if (StringUtils.isBlank(req.getCountry())) {
-					errorList.add("1048");
-				}
+				
 				if (StringUtils.isBlank(req.getCityName())) {
 					errorList.add("1082");
 				} else if (req.getCityName().length() > 100) {
@@ -179,16 +217,65 @@ public class TanzaniaEserviceCustomerDetails {
 			} else if (req.getRegionCode().length() > 20) {
 				errorList.add("1054");
 			}
+			if (StringUtils.isBlank(req.getStateCode())) {
+				errorList.add("1061");
+			}
+			if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
+				if (StringUtils.isBlank(req.getCountry())) {
+					errorList.add("1048");
+				}
+			}
+			
+			/*
+			
+			
+			
+			
+			
+			if("100040".equalsIgnoreCase(req.getCompanyId()))
+			{
+				if(StringUtils.isBlank(req.getCustomerAsInsurer()))
+				{
+					errorList.add("2000");
+				}
+			}
+	
+			
+			
+			if("100040".equalsIgnoreCase(req.getCompanyId())) 
+			{
+				if (StringUtils.isBlank(req.getAddress1())) {
+					errorList.add("1004");
+				} else if (req.getAddress1().length() > 50) {
+					errorList.add("1009");
+				}
+				if (req.getAddress2().length() > 50) {
+					errorList.add("1000");
+				}
+			}
+			else {
+				if (StringUtils.isBlank(req.getAddress1())) {
+					errorList.add("1004");
+				} else if (req.getAddress1().length() > 100) {
+					errorList.add("1009");
+				}
+			}
+
+			*/
+			
 			
 			if (StringUtils.isBlank(req.getClientStatus())) {
 				errorList.add("1010");
 			}
+	
 			if (StringUtils.isNotBlank(req.getPinCode())) {
-				if (req.getPinCode().length() > 20) {
+				 if (! (req.getPinCode().matches("[0-9a-zA-Z]+") ||  req.getPinCode().matches("^[a-zA-ZÀ-ÿ\\s'-]+$")) ) {
+					 errorList.add("3000");
+				 } 
+				if (req.getPinCode().length() > 10) {
 					errorList.add("1016");
 				}
 			} 
-			
 			if (StringUtils.isNotBlank(req.getFax()) && req.getFax().length() > 20) {
 				errorList.add("1017");
 			}
@@ -198,7 +285,7 @@ public class TanzaniaEserviceCustomerDetails {
 			} else if (StringUtils.isNotBlank(req.getTelephoneNo2()) && !req.getTelephoneNo2().matches("\\d+")) {
 				errorList.add("1019");	
 			}
-
+			
 			if (StringUtils.isNotBlank(req.getTelephoneNo3()) && req.getTelephoneNo3().length() > 20) {
 				errorList.add("1020");
 			} else if (StringUtils.isNotBlank(req.getTelephoneNo3()) && !req.getTelephoneNo3().matches("\\d+")) {
@@ -211,8 +298,47 @@ public class TanzaniaEserviceCustomerDetails {
 				errorList.add("1031");
 			}
 
-			 
-			
+			if("2".equalsIgnoreCase(req.getPolicyHolderType()))
+			{
+				if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+					if( req.getEmail1().length() > 50 ) {
+						errorList.add("1032");
+					} else if(StringUtils.isNotBlank(req.getEmail1())) {
+						boolean bValue = checkIsValidMail(req.getEmail1());
+						
+						if(req.getEmail1().matches("^[0-9].*") || !req.getEmail1().matches(".*@.*\\..*") )
+						{
+							errorList.add("1033");
+						}		
+						else if (!bValue) {
+							errorList.add("1033");
+						}
+					}
+				} 
+				else {
+					errorList.add("3001");
+				}
+				
+			}
+			else
+			{
+				if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+					if( req.getEmail1().length() > 50 ) {
+						errorList.add("1032");
+					} else if(StringUtils.isNotBlank(req.getEmail1())) {
+						boolean bValue = checkIsValidMail(req.getEmail1());
+						
+						if(req.getEmail1().matches("^[0-9].*") || !req.getEmail1().matches(".*@.*\\..*") )
+						{
+							errorList.add("1033");
+						}		
+						else if (!bValue) {
+							errorList.add("1033");
+						}
+					}
+				} 
+			}
+		
 			if (StringUtils.isNotBlank(req.getEmail2()) && req.getEmail2().length() > 20) {
 				errorList.add("1034");
 			} else if (StringUtils.isNotBlank(req.getEmail2())) {
@@ -254,7 +380,7 @@ public class TanzaniaEserviceCustomerDetails {
 				errorList.add("1043");
 			}
 
-			if (StringUtils.isNotBlank(req.getMobileNo1()) && StringUtils.isNotBlank(req.getMobileNo2())&& req.getMobileNo1().equalsIgnoreCase(req.getMobileNo2())) {
+			if (StringUtils.isNotBlank(req.getMobileNo1()) && StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo1().equalsIgnoreCase(req.getMobileNo2())) {
 				errorList.add("1044");
 			}
 			if (StringUtils.isNotBlank(req.getMobileNo1()) && StringUtils.isNotBlank(req.getMobileNo3())&& req.getMobileNo1().equalsIgnoreCase(req.getMobileNo3())) {
@@ -264,7 +390,6 @@ public class TanzaniaEserviceCustomerDetails {
 				errorList.add("1046");
 			}
 			
-
 			if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
 
 				if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
@@ -273,7 +398,18 @@ public class TanzaniaEserviceCustomerDetails {
 					}
 				}
 			}
-			
+	
+			/*if (StringUtils.isBlank(req.getIsTaxExempted())) {
+				errorList.add("1055");
+
+			}else if (req.getIsTaxExempted().equals("Y")) {
+				if (StringUtils.isBlank(req.getTaxExemptedId())) {
+					errorList.add("1056");
+				} else if (req.getTaxExemptedId().length() > 20) {
+					errorList.add("1057");
+				}
+
+			}*/
 			
 			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add("1058");
@@ -282,9 +418,7 @@ public class TanzaniaEserviceCustomerDetails {
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "P".equals(req.getStatus()))) {
 				errorList.add("1060");
 			}
-			if (StringUtils.isBlank(req.getStateCode())) {
-				errorList.add("1061");
-			}
+			
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add("1063");
@@ -292,12 +426,13 @@ public class TanzaniaEserviceCustomerDetails {
 				errorList.add("1064");
 			}
 			
+
 			if (StringUtils.isBlank(req.getBranchCode())) {
 				errorList.add("1074");
 			} else if (req.getBranchCode().length() > 20) {
 				errorList.add("1075");
 			}
-			
+	
 			if (StringUtils.isBlank(req.getProductId())) {
 				errorList.add("1076");
 			} else if (req.getProductId().length() > 20) {
@@ -308,6 +443,9 @@ public class TanzaniaEserviceCustomerDetails {
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add("1079");
 			}
+		
+			
+			
 			
 			
 			List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
@@ -434,14 +572,13 @@ public class TanzaniaEserviceCustomerDetails {
 				errorList.add("1086");
 			}
 
+							
 		}
-		
-		}catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			errorList.add("01");
-		}
-		
+	}catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		errorList.add("01");
+	}
 		return errorList;
 	}
 	public static boolean isValidMail(String mail) {
@@ -492,7 +629,19 @@ public class TanzaniaEserviceCustomerDetails {
 				res.setSuccessId(custRefNo);
 			}
         
-        	
+        	// Dob Condition
+	        if(req.getDobOrRegDate() ==null  ) {
+				Date   dobOrReg = new Date() ;
+				if( req.getPolicyHolderType().equalsIgnoreCase("1") ) {
+					// Dob
+					Calendar cal = new GregorianCalendar();
+					cal.setTime(dobOrReg);
+					cal.add(Calendar.YEAR, -18);
+					dobOrReg = cal.getTime();
+				}
+				req.setDobOrRegDate(dobOrReg);
+				
+			}
         
 			dozerMapper.map(req, saveData);
 			saveData.setProductId(productId);
@@ -510,10 +659,16 @@ public class TanzaniaEserviceCustomerDetails {
 			
 			saveData.setTitle(req.getTitle());
 			saveData.setFirstName(req.getClientName());
+			saveData.setMiddleName(req.getMiddleName());
+			saveData.setLastName(req.getLastName());
 			saveData.setBusinessType(req.getBusinessType());
 			saveData.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
+			saveData.setDobOrRegDate(req.getDobOrRegDate());
+			saveData.setNationality(req.getNationality());
+			saveData.setNationalityName(req.getNationalityName());
 			saveData.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
 			saveData.setOtherOccupation(req.getOtherOccupation());
+			saveData.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
 			saveData.setEmail1(req.getEmail1());
 			saveData.setWhatsappCode(req.getWhatsappCode());
 			saveData.setMobileCode1(req.getMobileCode1());
@@ -528,16 +683,18 @@ public class TanzaniaEserviceCustomerDetails {
 			saveData.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 			saveData.setPreferredNotification(req.getPreferredNotification());
 			saveData.setStatus(req.getStatus());
+			saveData.setCustomerAsInsurer(req.getCustomerAsInsurer());		
 			
 			saveData.setCountry(req.getCountry());
 			saveData.setCountryName(req.getCountryName());
 			saveData.setCityCode(StringUtils.isBlank(req.getCityCode())?null :Integer.valueOf(req.getCityCode()));
 			saveData.setCityName(req.getCityName());
+			saveData.setStateName(req.getStateName());
 			saveData.setPinCode(req.getPinCode());
 			saveData.setRegionCode(req.getRegionCode());
-			
+			saveData.setStateCode(StringUtils.isBlank(req.getStateCode()) ?null :Integer.valueOf(req.getStateCode()));
 			saveData.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
-			saveData.setVrTinNo(req.getVrTinNo());
+			//saveData.setVrTinNo(req.getVrTinNo());
 			//saveData.setVrnGst(req.getVrTinNo());
 			
 			// Age Calculation
@@ -933,7 +1090,6 @@ public class TanzaniaEserviceCustomerDetails {
 		return res;
 	
 	}
-	
 	public CustomerDetailsGetRes getCustomerDetails(GetCustomerDetailsReq req) {
 		CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -945,10 +1101,15 @@ public class TanzaniaEserviceCustomerDetails {
 				
 				res.setTitle(cdate.getTitle()==null?"":cdate.getTitle());
 				res.setFirstName(cdate.getClientName()==null?"":cdate.getClientName());
+				res.setMiddleName(cdate.getMiddleName()==null?"":cdate.getMiddleName());
+				res.setLastName(cdate.getLastName()==null?"":cdate.getLastName());
 				res.setBusinessType(cdate.getBusinessType()==null?"":cdate.getBusinessType());
 				res.setGender(cdate.getGender()==null?"":cdate.getGender());
+				res.setDobOrRegDate(cdate.getDobOrRegDate());
+				res.setNationality(cdate.getNationality()==null?"":cdate.getNationality());
 				res.setOccupation(cdate.getOccupation()==null?"":cdate.getOccupation());
 				res.setOtherOccupation(cdate.getOtherOccupation()==null?"":cdate.getOtherOccupation());
+				res.setSocioProfessionalCategory(cdate.getSocioProfessionalCategory()==null?"":cdate.getSocioProfessionalCategory());
 				res.setEmail1(cdate.getEmail1()==null?"":cdate.getEmail1());
 				res.setWhatsappCode(cdate.getWhatsappCode()==null?"":cdate.getWhatsappCode());
 				res.setMobileCode1(cdate.getMobileCode1()==null?"":cdate.getMobileCode1());
@@ -966,6 +1127,7 @@ public class TanzaniaEserviceCustomerDetails {
 				res.setIsTaxExempted(cdate.getIsTaxExempted()==null?"":cdate.getIsTaxExempted());
 				res.setPreferredNotification(cdate.getPreferredNotification()==null?"":cdate.getPreferredNotification());
 				res.setStatus(cdate.getStatus()==null?"":cdate.getStatus());
+				res.setCustomerAsInsurer(cdate.getCustomerAsInsurer()==null?"":cdate.getCustomerAsInsurer());		
 				
 				res.setCountry(cdate.getCountry()==null?"":cdate.getCountry());
 				res.setCityCode(cdate.getCityCode()==null?"":cdate.getCityCode().toString());
@@ -973,8 +1135,9 @@ public class TanzaniaEserviceCustomerDetails {
 				res.setStateName(cdate.getStateName()==null?"":cdate.getStateName());
 				res.setPinCode(cdate.getPinCode()==null?"":cdate.getPinCode());
 				res.setRegionCode(cdate.getRegionCode()==null?"":cdate.getRegionCode());
+				res.setStateCode(cdate.getStateCode()==null?"":cdate.getStateCode().toString());
 				res.setPolicyHolderTypeid(cdate.getPolicyHolderTypeid()==null?"":cdate.getPolicyHolderTypeid());
-				res.setVrTinNo(cdate.getVrTinNo()==null?"":cdate.getVrTinNo());
+				
 			}
 			
 					
