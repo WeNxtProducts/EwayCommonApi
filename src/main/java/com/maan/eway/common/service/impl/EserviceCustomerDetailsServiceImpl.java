@@ -2948,7 +2948,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());
 				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());
 				res.setIsTaxExempted(data.getIsTaxExempted()==null?"":data.getIsTaxExempted());		
-				
+				res.setExpiryDate(data.getExpiryDate());
 				
 				resList.add(res);
 			}
@@ -3159,7 +3159,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());	
 				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());		
 				res.setIsTaxExempted(data.getIsTaxExempted()==null?"":data.getIsTaxExempted());	
-				
+				res.setExpiryDate(data.getExpiryDate());
 				resList.add(res);
 			}
 

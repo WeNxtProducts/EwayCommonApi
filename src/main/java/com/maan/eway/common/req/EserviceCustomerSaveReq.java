@@ -275,4 +275,8 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("NationalityName")
 	private String     nationalityName ;
 	
+	@JsonProperty("ExpiryDate")
+	@JsonFormat(pattern ="dd/MM/yyyy")
+	private Date expiryDate;
+	
 }

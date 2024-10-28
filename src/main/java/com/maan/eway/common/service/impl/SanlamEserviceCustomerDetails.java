@@ -443,11 +443,15 @@ public class SanlamEserviceCustomerDetails {
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add("1079");
 			}
-		
 			
+			if(req.getExpiryDate() ==null) {
+				errorList.add("3307");
+			}
+			else if(!req.getExpiryDate().after(new Date())) {
+					errorList.add("3307");
+			}
 			
-			
-			
+						
 			List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 			if ((StringUtils.isNotBlank(req.getAddress1())) 
 				//	&& (StringUtils.isNotBlank(req.getAddress2()))
@@ -824,8 +828,8 @@ public class SanlamEserviceCustomerDetails {
 				saveData.setLicenseIssuedDate(new Date());
 				saveData.setLicenseDuration(20);
 			}
+			saveData.setExpiryDate(req.getExpiryDate());
 			
-
 			repository.save(saveData);
 
 			//Personal Info Update
@@ -953,7 +957,8 @@ public class SanlamEserviceCustomerDetails {
 				savePersonalInfo.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
 				savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
 				savePersonalInfo.setActivities(req.getActivities());
-				savePersonalInfo.setCustomerAsInsurer(req.getCustomerAsInsurer());	
+				savePersonalInfo.setCustomerAsInsurer(req.getCustomerAsInsurer());
+				savePersonalInfo.setExpiryDate(req.getExpiryDate());
 					
 				personalInforepo.save(savePersonalInfo);
 			}
@@ -1075,7 +1080,8 @@ public class SanlamEserviceCustomerDetails {
 					savePersonalInfo.setPolicyHolderTypeIdDescLocal(policyHolderTypeIdLocal);
 					savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
 					savePersonalInfo.setActivities(req.getActivities());
-					savePersonalInfo.setCustomerAsInsurer(req.getCustomerAsInsurer());	
+					savePersonalInfo.setCustomerAsInsurer(req.getCustomerAsInsurer());
+					savePersonalInfo.setExpiryDate(req.getExpiryDate());
 
 					personalInforepo.save(savePersonalInfo);
 				}
@@ -1137,7 +1143,7 @@ public class SanlamEserviceCustomerDetails {
 				res.setRegionCode(cdate.getRegionCode()==null?"":cdate.getRegionCode());
 				res.setStateCode(cdate.getStateCode()==null?"":cdate.getStateCode().toString());
 				res.setPolicyHolderTypeid(cdate.getPolicyHolderTypeid()==null?"":cdate.getPolicyHolderTypeid());
-				
+				res.setExpiryDate(cdate.getExpiryDate());
 			}
 			
 					
