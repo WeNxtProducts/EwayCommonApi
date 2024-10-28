@@ -187,6 +187,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Autowired
 	private AngolaEserviceCustomerDetails angolaEcustdetails;
 	
+	@Autowired
+	private PhoenixEserviceCustomerDetails phoenixEcustdetails;
+	
 	
 	
 	
@@ -230,6 +233,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			errorList=sanlamEcustdetails.validateCustomerDetails(req);
 		}else if("100042".equalsIgnoreCase(req.getCompanyId()))	{
 			errorList=burkinoEcustdetails.validateCustomerDetails(req);
+		}else if("100046".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=phoenixEcustdetails.validateCustomerDetails(req);
 		}else {
 			errorList=tanzaniaEcustdetails.validateCustomerDetails(req);
 		}
@@ -1734,6 +1739,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			res=sanlamEcustdetails.saveCustomerDetails(req);
 		}else if("100042".equalsIgnoreCase(req.getCompanyId())){
 			res=burkinoEcustdetails.saveCustomerDetails(req);
+		}else if("100046".equalsIgnoreCase(req.getCompanyId()))	{
+			res=phoenixEcustdetails.saveCustomerDetails(req);
 		}else {
 			res=tanzaniaEcustdetails.saveCustomerDetails(req);
 		}
@@ -2772,6 +2779,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			res=sanlamEcustdetails.getCustomerDetails(req);
 		}else if("100042".equalsIgnoreCase(req.getCompanyId()))	{
 			res=burkinoEcustdetails.getCustomerDetails(req);
+		}else if("100046".equalsIgnoreCase(req.getCompanyId()))	{
+			res=phoenixEcustdetails.getCustomerDetails(req);
 		}else {
 			res=tanzaniaEcustdetails.getCustomerDetails(req);
 		}
