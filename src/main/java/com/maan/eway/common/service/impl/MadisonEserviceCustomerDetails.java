@@ -1,7 +1,12 @@
 package com.maan.eway.common.service.impl;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,9 +48,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 @Service
 @Transactional
-public class TanzaniaEserviceCustomerDetails {
+public class MadisonEserviceCustomerDetails {
 	
-	private Logger log = LogManager.getLogger(TanzaniaEserviceCustomerDetails.class);
+	private Logger log = LogManager.getLogger(MadisonEserviceCustomerDetails.class);
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ;
@@ -309,6 +314,12 @@ public class TanzaniaEserviceCustomerDetails {
 				errorList.add("1079");
 			}
 			
+			if( StringUtils.isBlank(req.getCityName())) {
+				errorList.add("1080");
+			} else if (req.getCityName().length() > 100) {
+				errorList.add("1081");
+			}
+			 
 			
 			List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 			if ((StringUtils.isNotBlank(req.getAddress1())) 
@@ -431,11 +442,11 @@ public class TanzaniaEserviceCustomerDetails {
 				errorList.add("1085");
 			}
 			if (StringUtils.isBlank(req.getPolicyHolderType())) {
-				errorList.add("1086");
+			 errorList.add("1086");
 			}
-
+							
 		}
-		
+	
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

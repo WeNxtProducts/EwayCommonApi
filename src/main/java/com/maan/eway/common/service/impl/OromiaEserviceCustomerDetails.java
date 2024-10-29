@@ -43,9 +43,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 @Service
 @Transactional
-public class TanzaniaEserviceCustomerDetails {
+public class OromiaEserviceCustomerDetails {
 	
-	private Logger log = LogManager.getLogger(TanzaniaEserviceCustomerDetails.class);
+	private Logger log = LogManager.getLogger(OromiaEserviceCustomerDetails.class);
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ;
@@ -431,10 +431,11 @@ public class TanzaniaEserviceCustomerDetails {
 				errorList.add("1085");
 			}
 			if (StringUtils.isBlank(req.getPolicyHolderType())) {
-				errorList.add("1086");
+			 errorList.add("1086");
 			}
-
+					
 		}
+		
 		
 		}catch (Exception e) {
 			e.printStackTrace();

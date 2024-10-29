@@ -90,7 +90,6 @@ import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
-import com.maan.eway.repository.OccupationMasterRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
@@ -167,6 +166,33 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Autowired
 	private TanzaniaEserviceCustomerDetails tanzaniaEcustdetails;
 	
+	@Autowired
+	private MadisonEserviceCustomerDetails madisonEcustdetails;
+	
+	@Autowired
+	private OromiaEserviceCustomerDetails oromiaEcustdetails;
+	
+	@Autowired
+	private UgandaEserviceCustomerDetails ugandaEcustdetails;
+	
+	@Autowired
+	private KenyaEserviceCustomerDetails kenyaEcustdetails;
+	
+	@Autowired
+	private EagalEserviceCustomerDetails eagalEcustdetails;
+	
+	@Autowired
+	private BurkinoEserviceCustomerDetails burkinoEcustdetails;
+	
+	@Autowired
+	private AngolaEserviceCustomerDetails angolaEcustdetails;
+	
+	@Autowired
+	private PhoenixEserviceCustomerDetails phoenixEcustdetails;
+	
+	
+	
+	
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -191,8 +217,24 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Override
 	public List<String> validateCustomerDetails(EserviceCustomerSaveReq req) {
 		List<String> errorList = new ArrayList<String>();
-		if("100040".equalsIgnoreCase(req.getCompanyId()))	{
+		if("100004".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=madisonEcustdetails.validateCustomerDetails(req);
+		}else if("100018".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=oromiaEcustdetails.validateCustomerDetails(req);
+		}else if("100019".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=ugandaEcustdetails.validateCustomerDetails(req);
+		}else if("100020".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=kenyaEcustdetails.validateCustomerDetails(req);
+		}else if("100027".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=angolaEcustdetails.validateCustomerDetails(req);
+		}else if("100028".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=eagalEcustdetails.validateCustomerDetails(req);
+		}else if("100040".equalsIgnoreCase(req.getCompanyId())){
 			errorList=sanlamEcustdetails.validateCustomerDetails(req);
+		}else if("100042".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=burkinoEcustdetails.validateCustomerDetails(req);
+		}else if("100046".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=phoenixEcustdetails.validateCustomerDetails(req);
 		}else {
 			errorList=tanzaniaEcustdetails.validateCustomerDetails(req);
 		}
@@ -1681,8 +1723,24 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Transactional
 	public SuccessRes saveCustomerDetails(EserviceCustomerSaveReq req) {
 		SuccessRes res = new SuccessRes();
-		if("100040".equalsIgnoreCase(req.getCompanyId())){
+		if("100004".equalsIgnoreCase(req.getCompanyId()))	{
+			res=madisonEcustdetails.saveCustomerDetails(req);
+		}else if("100018".equalsIgnoreCase(req.getCompanyId()))	{
+			res=oromiaEcustdetails.saveCustomerDetails(req);
+		}else if("100019".equalsIgnoreCase(req.getCompanyId()))	{
+			res=ugandaEcustdetails.saveCustomerDetails(req);
+		}else if("100020".equalsIgnoreCase(req.getCompanyId()))	{
+			res=kenyaEcustdetails.saveCustomerDetails(req);
+		}else if("100027".equalsIgnoreCase(req.getCompanyId()))	{
+			res=angolaEcustdetails.saveCustomerDetails(req);
+		}else if("100028".equalsIgnoreCase(req.getCompanyId()))	{
+			res=eagalEcustdetails.saveCustomerDetails(req);
+		}else if("100040".equalsIgnoreCase(req.getCompanyId())){
 			res=sanlamEcustdetails.saveCustomerDetails(req);
+		}else if("100042".equalsIgnoreCase(req.getCompanyId())){
+			res=burkinoEcustdetails.saveCustomerDetails(req);
+		}else if("100046".equalsIgnoreCase(req.getCompanyId()))	{
+			res=phoenixEcustdetails.saveCustomerDetails(req);
 		}else {
 			res=tanzaniaEcustdetails.saveCustomerDetails(req);
 		}
@@ -2705,12 +2763,27 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Override
 	public CustomerDetailsGetRes getCustomerDetails(GetCustomerDetailsReq req) {
 		CustomerDetailsGetRes res = new CustomerDetailsGetRes();
-		if("100040".equalsIgnoreCase(req.getCompanyId()))	{
+		if("100004".equalsIgnoreCase(req.getCompanyId()))	{
+			res=madisonEcustdetails.getCustomerDetails(req);
+		}else if("100018".equalsIgnoreCase(req.getCompanyId()))	{
+			res=oromiaEcustdetails.getCustomerDetails(req);
+		}else if("100019".equalsIgnoreCase(req.getCompanyId()))	{
+			res=ugandaEcustdetails.getCustomerDetails(req);
+		}else if("100020".equalsIgnoreCase(req.getCompanyId()))	{
+			res=kenyaEcustdetails.getCustomerDetails(req);
+		}else if("100027".equalsIgnoreCase(req.getCompanyId()))	{
+			res=angolaEcustdetails.getCustomerDetails(req);
+		}else if("100028".equalsIgnoreCase(req.getCompanyId()))	{
+			res=eagalEcustdetails.getCustomerDetails(req);
+		}else if("100040".equalsIgnoreCase(req.getCompanyId()))	{
 			res=sanlamEcustdetails.getCustomerDetails(req);
+		}else if("100042".equalsIgnoreCase(req.getCompanyId()))	{
+			res=burkinoEcustdetails.getCustomerDetails(req);
+		}else if("100046".equalsIgnoreCase(req.getCompanyId()))	{
+			res=phoenixEcustdetails.getCustomerDetails(req);
 		}else {
 			res=tanzaniaEcustdetails.getCustomerDetails(req);
 		}
-		
 		return res;
 	}
 	
@@ -2875,7 +2948,6 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());
 				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());
 				res.setIsTaxExempted(data.getIsTaxExempted()==null?"":data.getIsTaxExempted());		
-				
 				
 				resList.add(res);
 			}
@@ -3086,7 +3158,6 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());	
 				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());		
 				res.setIsTaxExempted(data.getIsTaxExempted()==null?"":data.getIsTaxExempted());	
-				
 				resList.add(res);
 			}
 

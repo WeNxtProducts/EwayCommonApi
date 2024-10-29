@@ -924,10 +924,10 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 				Predicate n12 = cb.equal(c.get("bodyId"),"99999");
 				Predicate n13 = cb.or(n11,n12);
 				
-				query.where(n10,n2,n3,n4,n7,n13,n15).orderBy(orderList);
+				query.where(n10,n4,n7,n13,n15,n2,n3).orderBy(orderList);
 				
 			} else {*/
-				query.where(n10,n2,n3,n4,n7,n15).orderBy(orderList);
+				query.where(n10,n4,n7,n15,n2,n3).orderBy(orderList);
 		//	}
 			
 			// Get Result

@@ -43,9 +43,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 @Service
 @Transactional
-public class TanzaniaEserviceCustomerDetails {
+public class PhoenixEserviceCustomerDetails {
 	
-	private Logger log = LogManager.getLogger(TanzaniaEserviceCustomerDetails.class);
+	private Logger log = LogManager.getLogger(PhoenixEserviceCustomerDetails.class);
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ;
