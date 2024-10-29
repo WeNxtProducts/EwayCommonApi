@@ -14,17 +14,10 @@ package com.maan.eway.bean;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.AttributeEncryptor;
-
 import lombok.*;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
-
 import java.util.Date;
-import jakarta.persistence.*;
 
 /**
 * Domain class for entity "EserviceCustomerDetails"

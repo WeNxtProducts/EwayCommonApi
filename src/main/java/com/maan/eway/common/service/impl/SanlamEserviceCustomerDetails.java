@@ -445,10 +445,10 @@ public class SanlamEserviceCustomerDetails {
 			}
 			
 			if(req.getExpiryDate() ==null) {
-				errorList.add("3307");
+				errorList.add("3319");
 			}
 			else if(!req.getExpiryDate().after(new Date())) {
-					errorList.add("3307");
+				errorList.add("3320");
 			}
 			
 						
