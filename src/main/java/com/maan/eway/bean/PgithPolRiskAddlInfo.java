@@ -61,11 +61,11 @@ private static final long serialVersionUID = 1L;
     
     @Id
     @Column(name="PRAI_CODE_23") //TIRA PROD CODE
-    private BigDecimal     praiCode23;
+    private String     praiCode23;
 
     @Id
-    @Column(name="PRAI_CODE_24")  //TIRA RISK CODE
-    private BigDecimal     praiCode24;
+    @Column(name="PRAI_CODE_24")  
+    private String     praiCode24;
     
     @Id 
     @Column(name="PRAI_DATA_01") //Chassis No.
@@ -708,7 +708,7 @@ private static final long serialVersionUID = 1L;
     private BigDecimal     praiData40;
 
     @Column(name="PRAI_CODE_21")
-    private BigDecimal     praiCode21;
+    private String     praiCode21;
 
     @Column(name="PRAI_CODE_22")
     private BigDecimal     praiCode22;
