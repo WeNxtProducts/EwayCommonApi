@@ -186,6 +186,11 @@ private static final long serialVersionUID = 1L;
    @Column(name="GENDER", length=100)
    private String gender ;
    
+   @Temporal(TemporalType.TIMESTAMP)
+   @Column(name="DRIVER_LICENSE_EXPIRY_DATE")
+   private Date  driverLicenseExpiryDate ;
+   
+   
  
 }
 

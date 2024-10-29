@@ -284,57 +284,68 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 }
 
 private void updateIntegrationStatus(String quoteNo, HomePositionMaster home) {
+	log.info("updateIntegrationStatus Enter :: "+home.getPolicyNo());
 	boolean status=false,status1=false,status2=false,status3=false,status4=false,status5=false,status6=false,status7=false,status8=false,status9=false;
 	String policyNo=home.getPolicyNo();
 	try {
 		List<YiPolicyDetail> list=yiPolicyReo.findByQuotationPolicyNo(policyNo);
 		if(list.size()>0 && list!=null) {
+			log.info("status=true;");
 			status=true;
 		}
 	
 		List<YiSectionDetail> list1=yisecRepo.findByQuotationPolicyNo(policyNo);
 		if(list1.size()>0 && list1!=null) {
+			log.info("status1=true;");
 			status1=true;
 		}
 	
 		List<PgithPolRiskAddlInfo> list2=pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
 		if(list2.size()>0 && list2!=null) {
+			log.info("status2=true;");
 			status2=true;
 		}
 	
 		List<MotDriverDetail> list3=motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
 		if(list3.size()>0 && list3!=null) {
+			log.info("status3=true;");
 			status3=true;
 		}
 		List<YiCoverDetail> list4=yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
 		if(list4.size()>0 && list4!=null) {
+			log.info("status4=true;");
 			status4=true;
 		}
 
 		List<MotCommDiscountDetail> list5=motComRepo.findByQuotationPolicyNo(policyNo);
 		if(list5.size()>0 && list5!=null) {
+			log.info("status5=true;");
 			status5=true;
 		}
 	
 		List<YiChargeDetail> list6=yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
 		if(list6.size()>0 && list6!=null) {
+			log.info("status6=true;");
 			status6=true;
 		}
 	
 		List<YiVatDetail> list7=yivatRepo.findByQuotationPolicyNo(policyNo);
 		if(list7.size()>0 && list7!=null) {
+			log.info("status7=true;");
 			status7=true;
 		}
 		List<YiPremCal> list8=yipremRepo.findByQuotationPolicyNo(policyNo);
 		if(list8.size()>0 && list8!=null) {
+			log.info("status8=true;");
 			status8=true;
 		}
 	
 		List<YiPolicyApproval> list9=yipolicyRepo.findByQuotationPolicyNo(policyNo);
 		if(list9.size()>0 && list9!=null) {
+			log.info("status9=true;");
 			status9=true;
 		}
-		if(status && status1 && status2 && status3 && status4 && status5 && status6 && status7 && status8 && status9) {
+		if(status && status1 && status2 && status3 && status4  && status6 && status7 && status8 && status9) {
 			home.setCoreIntgStatus("S");
 		}else {
 			home.setCoreIntgStatus("F");
@@ -345,6 +356,7 @@ private void updateIntegrationStatus(String quoteNo, HomePositionMaster home) {
 		home.setCoreIntgStatus("F");
 	}
 	homeRepo.saveAndFlush(home);
+	log.info("updateIntegrationStatus Exit :: ");
 }
 
 public void ewayMotorPremiaPush(String policyNo,String reqRefNo,PremiaConfigMaster configMas) {

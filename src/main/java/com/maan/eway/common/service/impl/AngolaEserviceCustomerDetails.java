@@ -182,24 +182,24 @@ public class AngolaEserviceCustomerDetails {
 			} else if (req.getMobileNo1().matches("[0-9]+") && Double.valueOf(req.getMobileNo1()) <=0 ) {
 				errorList.add("1029");
 			}
-			if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
-				if (StringUtils.isBlank(req.getIdType())) {
-					errorList.add("1011");
-				}
-				if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
-					errorList.add("1012");
-				}
-				
-				if (StringUtils.isBlank(req.getIdNumber())) {
-					errorList.add("1013");
-				} else if (req.getIdNumber().length() > 15) {
-					errorList.add("1014");
-				}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
-					errorList.add("1015");
-				} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
-					errorList.add("1015");
-				}
-				
+			
+			if (StringUtils.isBlank(req.getIdType())) {
+				errorList.add("1011");
+			}
+			if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
+				errorList.add("1012");
+			}
+			
+			if (StringUtils.isBlank(req.getIdNumber())) {
+				errorList.add("1013");
+			} else if (req.getIdNumber().length() > 15) {
+				errorList.add("1014");
+			}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
+				errorList.add("1015");
+			} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
+				errorList.add("1015");
+			}
+			if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {	
 				if(StringUtils.isBlank(req.getStreet()) ) {
 					errorList.add("3310");
 				}else if (req.getStreet().length() > 100) {

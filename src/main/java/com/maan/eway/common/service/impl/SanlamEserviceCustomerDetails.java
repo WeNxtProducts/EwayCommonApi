@@ -1143,7 +1143,7 @@ public class SanlamEserviceCustomerDetails {
 				res.setRegionCode(cdate.getRegionCode()==null?"":cdate.getRegionCode());
 				res.setStateCode(cdate.getStateCode()==null?"":cdate.getStateCode().toString());
 				res.setPolicyHolderTypeid(cdate.getPolicyHolderTypeid()==null?"":cdate.getPolicyHolderTypeid());
-				res.setExpiryDate(cdate.getExpiryDate());
+				//res.setExpiryDate(cdate.getExpiryDate());
 			}
 			
 					

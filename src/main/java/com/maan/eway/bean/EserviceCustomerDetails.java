@@ -409,7 +409,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="NATIONALITY_NAME", length=100)
     private String     nationalityName ;
     
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EXPIRY_DATE")
     private Date expiryDate;
 }

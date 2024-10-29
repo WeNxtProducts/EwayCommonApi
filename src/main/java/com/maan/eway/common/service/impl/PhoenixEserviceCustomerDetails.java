@@ -132,7 +132,7 @@ public class PhoenixEserviceCustomerDetails {
 			} else if (req.getMobileNo1().matches("[0-9]+") && Double.valueOf(req.getMobileNo1()) <=0 ) {
 				errorList.add("1029");
 			}
-			if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
+			//if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
 				if (StringUtils.isBlank(req.getIdType())) {
 					errorList.add("1011");
 				}
@@ -150,7 +150,7 @@ public class PhoenixEserviceCustomerDetails {
 					errorList.add("1015");
 				}
 				
-			}
+			//}
 			if (StringUtils.isBlank(req.getPreferredNotification())) {
 				errorList.add("1049");
 			}
