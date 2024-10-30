@@ -2259,23 +2259,17 @@ public class JasperCustomServiceImple {
 				});
 			}
 			
-			List<Map<String,Object>> customerList = new ArrayList<Map<String,Object>>();
+			List<Map<String,Object>> firstLossPayeesList = new ArrayList<Map<String,Object>>();
 			List<FirstLossPayee> firstLossPayees = firstLossPayeeRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
 			if(!firstLossPayees.isEmpty()) {
 				firstLossPayees.forEach(k -> {
 					Map<String,Object> custMap = new HashMap<String,Object>();
-					custMap.put("customerName", k.getFirstLossPayeeDesc());
-					customerList.add(custMap);
+					custMap.put("firstLossPayee", k.getFirstLossPayeeDesc());
+					firstLossPayeesList.add(custMap);
 				});
-				Map<String,Object> custMap = new HashMap<String,Object>();
-				custMap.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
-				customerList.add(custMap);
-			}else {
-				Map<String,Object> custMap = new HashMap<String,Object>();
-				custMap.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
-				customerList.add(custMap);
 			}
 			
+			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
 			result.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
 			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			result.put("address", map.get("address")==null?"":map.get("address").toString());
@@ -2304,9 +2298,9 @@ public class JasperCustomServiceImple {
 			result.put("taxName", map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":"Vat");
 			result.put("overAllPremium", OverAllPremium);
 			result.put("premiumDetails", premiumDetailsRes);
-			result.put("customerList", customerList);
 			//result.put("sectionDetails", sectionList);
 			//result.put("locationDetails", locationDetails);
+			result.put("firstLossPayeesList", firstLossPayeesList);
 			result.put("coverageDetails", coverageDetails);
 			result.put("attachMents", attachments);
 			}

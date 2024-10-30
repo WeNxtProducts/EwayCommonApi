@@ -160,7 +160,7 @@
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
-		<field name="customerName" class="java.lang.String"/>
+		<field name="firstLossPayee" class="java.lang.String"/>
 	</subDataset>
 	<parameter name="pvImagepath" class="java.lang.String"/>
 	<parameter name="pvSubReportPath" class="java.lang.String"/>
@@ -299,6 +299,9 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="coreAppBrokerCode"/>
 		<fieldDescription><![CDATA[coreAppBrokerCode]]></fieldDescription>
 	</field>
+	<field name="firstLossPayeesList" class="java.lang.String">
+		<fieldDescription><![CDATA[firstLossPayeesList]]></fieldDescription>
+	</field>
 	<variable name="NonMotorTotPremium" class="java.math.BigDecimal"/>
 	<background>
 		<band height="802">
@@ -365,9 +368,55 @@
 				<textFieldExpression><![CDATA["POLICY NO :"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="20">
+		<band height="15">
+			<printWhenExpression><![CDATA[$F{firstLossPayeesList}!=null && $F{firstLossPayeesList}.length()>2]]></printWhenExpression>
+			<componentElement>
+				<reportElement x="180" y="0" width="375" height="15" uuid="3487a6d1-9707-4235-9a84-9b7020f20a11">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 4_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 4_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 4_TD"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="customerList" uuid="b3bee14b-37f4-4028-8d11-93b5699a655f">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("firstLossPayeesList")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="375" uuid="4a98d446-7052-4688-b8c4-3fdc258bbbd7">
+						<jr:detailCell style="Table 4_TD" height="15">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<box>
+								<pen lineWidth="0.0"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="375" height="15" uuid="ad72a08e-c290-4520-ad51-74b77d225738"/>
+								<box leftPadding="2"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{firstLossPayee}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="180" height="15" uuid="b46597a1-24b4-4037-97c0-249dfa6bd5b8">
+				<reportElement x="0" y="0" width="180" height="15" uuid="e73afd74-9928-495e-bc1e-09170b222e22">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FIRST LOSS PAYEE :"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="15">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="180" height="15" uuid="685ebe04-1772-488f-ad54-0196147d86f1">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -378,46 +427,18 @@
 				</textElement>
 				<textFieldExpression><![CDATA["INSURED :"]]></textFieldExpression>
 			</textField>
-			<componentElement>
-				<reportElement x="180" y="0" width="375" height="20" uuid="a70d3b10-3928-4e2b-9a2b-56680718d30a">
-					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 4_TH"/>
-					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 4_CH"/>
-					<property name="com.jaspersoft.studio.table.style.detail" value="Table 4_TD"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="customerList" uuid="742870ca-1b84-4a0b-923e-1346c530472b">
-						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("customerList")]]></dataSourceExpression>
-					</datasetRun>
-					<jr:column width="375" uuid="a018f150-d0e1-4ae9-bf86-7ac425510a4b">
-						<jr:detailCell style="Table 4_TD" height="15">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<box>
-								<pen lineWidth="0.0"/>
-								<rightPen lineWidth="0.5"/>
-							</box>
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="375" height="15" uuid="4715da81-3581-4500-afdc-4344ef69fa87"/>
-								<box leftPadding="2"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-				</jr:table>
-			</componentElement>
 			<textField>
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="15" width="2" height="5" uuid="1b30da92-b3af-4131-aa93-40713b3e2847">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<reportElement x="180" y="0" width="375" height="15" uuid="c965b68d-eb48-492a-96be-49177cd21439">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<box>
-					<leftPen lineWidth="0.5"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.5"/>
 				</box>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
