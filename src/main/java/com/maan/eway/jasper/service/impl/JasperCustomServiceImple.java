@@ -2064,9 +2064,13 @@ public class JasperCustomServiceImple {
 							LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 							lmap.put("locationName", k.getLocationName());
 							lmap.put("buildingAddress", k.getAddress());
+							lmap.put("occupation", k.getCategoryDesc());
+							lmap.put("sectionId", sectionId);
 							lmap.put("wallType", k.getWallTypeDesc());
 							lmap.put("roofType", k.getRoofTypeDesc());
 							lmap.put("firstlosspayee", k.getFirstLossPercent());
+							lmap.put("coveringdetails", k.getCoveringDetails());
+							lmap.put("descriptionofrisk", k.getDescriptionOfRisk());
 							lmap.put("buildingSumInsured", k.getBuildingSuminsured());
 							lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
@@ -2213,7 +2217,6 @@ public class JasperCustomServiceImple {
 						
 						coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
 						coverMap.put("contentList", contentDetails);
-						if("1".equalsIgnoreCase(sectionId))
 						coverMap.put("locationDetails", locationDetails);
 						coverMap.put("employeeList", employeeDetails);
 						coverMap.put("commonDtlList",commonDetails);
