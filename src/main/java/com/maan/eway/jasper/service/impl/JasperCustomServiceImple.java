@@ -2304,7 +2304,9 @@ public class JasperCustomServiceImple {
 			//result.put("sectionDetails", sectionList);
 			//result.put("locationDetails", locationDetails);
 			result.put("firstLossPayeesList", firstLossPayeesList);
-			result.put("coverageDetails", coverageDetails);
+			result.put("coverageDetails",  coverageDetails.stream()
+				    .sorted(Comparator.comparing(o -> (String) o.get("coverId")))
+				    .collect(Collectors.toList()));
 			result.put("attachMents", attachments);
 			}
 		}catch(Exception e) {
