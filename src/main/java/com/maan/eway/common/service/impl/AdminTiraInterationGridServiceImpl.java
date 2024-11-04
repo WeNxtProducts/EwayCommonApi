@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +24,7 @@ import com.maan.eway.bean.TiraTrackingDetails;
 import com.maan.eway.common.req.AdminTiraIntegrationGridReq;
 import com.maan.eway.common.res.AdminTiraIntegrationGirdRes;
 import com.maan.eway.common.res.TiraRes;
+import com.maan.eway.common.res.TiraResList;
 import com.maan.eway.common.service.AdminTiraIntegrationService;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -31,6 +33,7 @@ import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TiraTrackingDetailsRepository;
 
 import jakarta.persistence.EntityManager;
@@ -72,6 +75,9 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
+	
+	@Autowired
+	private SectionDataDetailsRepository secRepo;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -465,18 +471,28 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 
 	@Override
 	public List<TiraRes> getallTiraDetails(AdminTiraIntegrationGridReq req) {
-		List<TiraRes> resList=new ArrayList<TiraRes>();
+		List<TiraResList> resList=new ArrayList<TiraResList>();
+		List<TiraRes> tiraresList=new ArrayList<TiraRes>();
+		TiraRes tirares=new TiraRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			List<TiraTrackingDetails> tiraList=tiraRepo.findByPolicyNoOrderByRequestIdAsc(req.getQuoteNo());
-			HomePositionMaster homepositiondetails=homeRepo.findByPolicyNo(req.getQuoteNo());
-
-			for(TiraTrackingDetails data:tiraList) {
-				TiraRes res=new TiraRes();
-				res=dozerMapper.map(data, TiraRes.class);
-				res.setEntryDate(data.getEntryDate()==null?null:data.getEntryDate());
-			
-				resList.add(res);
+			List<SectionDataDetails> section=secRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			for (SectionDataDetails sec : section) {
+				tiraList=tiraList.stream()
+						.filter(o -> o.getVehicleId().equals(sec.getRiskId().toString()))
+						.collect(Collectors.toList());
+				for (TiraTrackingDetails data : tiraList) {
+					TiraResList res = new TiraResList();
+					res = dozerMapper.map(data, TiraResList.class);
+					res.setEntryDate(data.getEntryDate() == null ? null : data.getEntryDate());
+					resList.add(res);
+				}
+				tirares.setCoverNoteNo(sec.getCoverNoteReferenceNo());
+				tirares.setStickerNo(sec.getStickerNumber());
+				tirares.setQuoteNo(req.getQuoteNo());
+				tirares.setTiraTrackingDetails(resList);
+				tiraresList.add(tirares);
 				}
 			
 		}catch (Exception e) {
@@ -484,6 +500,6 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			log.info("Log Details" + e.getMessage());
 			return null;
 		}
-		return resList;
+		return tiraresList;
 	}
 }

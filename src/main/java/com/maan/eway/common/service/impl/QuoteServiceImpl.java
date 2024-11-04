@@ -1325,6 +1325,10 @@ public class QuoteServiceImpl implements QuoteService {
 					secRes.setMoneyMajorLoss(bul.getMoneyMajorLoss() == null?"0" : bul.getMoneyMajorLoss().toPlainString() );
 					secRes.setContentType(contentType);
 					secRes.setContentDesc(contentDesc);
+					secRes.setWallType(bul.getWallType()==null?"":bul.getWallType());
+					secRes.setWallTypeDesc(bul.getWallTypeDesc()==null?"":bul.getWallTypeDesc());
+					secRes.setRoofType(bul.getRoofType()==null?"":bul.getRoofType());
+					secRes.setRoofTypeDesc(bul.getRoofTypeDesc()==null?"":bul.getRoofTypeDesc());
 					buildingSectionList.add(secRes);
 					}
 				
