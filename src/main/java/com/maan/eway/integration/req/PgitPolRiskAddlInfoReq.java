@@ -36,10 +36,10 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 	private String riskId;
 
 	@JsonProperty("PraiCode23") // TIRA PROD CODE
-	private BigDecimal praiCode23;
+	private String praiCode23;
 
 	@JsonProperty("PraiCode24") // TIRA RISK CODE
-	private BigDecimal praiCode24;
+	private String praiCode24;
 
 	@JsonProperty("PRAI_DATA_01") // Chassis No.
 	private String praiData01;
@@ -664,7 +664,7 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 	private BigDecimal praiData40;
 
 	@JsonProperty("PRAI_CODE_21")
-	private BigDecimal praiCode21;
+	private String praiCode21;
 
 	@JsonProperty("PRAI_CODE_22")
 	private BigDecimal praiCode22;
