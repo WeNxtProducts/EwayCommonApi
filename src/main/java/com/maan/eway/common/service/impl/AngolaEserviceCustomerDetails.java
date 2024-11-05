@@ -109,7 +109,7 @@ public class AngolaEserviceCustomerDetails {
 					errorList.add("1003");		
 				}
 				if (StringUtils.isBlank(req.getLastName()) ) {
-					errorList.add("3307");
+				//	errorList.add("3307");
 				} else if (req.getLastName().length() > 100) {
 				   errorList.add("3308");
 				} 
