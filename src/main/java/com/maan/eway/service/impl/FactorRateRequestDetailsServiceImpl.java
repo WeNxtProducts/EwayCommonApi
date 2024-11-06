@@ -2315,9 +2315,11 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						errors.add(new Error("01","Rate","Please Enter Valid Rate")) ;				
 					} else if ( cov.getRate().equalsIgnoreCase("0") &&  cov.getCoverageType().equalsIgnoreCase("D")    ) {
 						errors.add(new Error("01","Rate","Please Enter Valid Number In Rate")) ;				
-					}else if( cov.getMinrate()>=Double.parseDouble(cov.getRate())  && Double.parseDouble(cov.getRate())<=cov.getActualrate() ) {
+					}
+					if( cov.getMinrate()>Double.parseDouble(cov.getRate())  && Double.parseDouble(cov.getRate())<cov.getActualrate() ) {
 						errors.add(new Error("01","Rate","Please Enter Rate between "+cov.getMinrate()+"& "+cov.getActualrate())) ;
 					}
+				
 					
 					if(StringUtils.isNotBlank(cov.getUserOpt())  && cov.getUserOpt().equalsIgnoreCase("Y")  ) {
 						if (StringUtils.isBlank(cov.getExcessAmount() ) ) {
