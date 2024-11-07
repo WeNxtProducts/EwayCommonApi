@@ -1867,7 +1867,7 @@
 				<textFieldExpression><![CDATA["Additional Conditions, Exclusion, Clauses and Warranties"]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement x="30" y="10" width="239" height="15" isRemoveLineWhenBlank="true" uuid="4ca97dc8-5289-48db-8679-63aef4174ada"/>
+				<reportElement x="10" y="10" width="239" height="15" isRemoveLineWhenBlank="true" uuid="4ca97dc8-5289-48db-8679-63aef4174ada"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 					<datasetRun subDataset="Conditions" uuid="173cd424-4604-4212-9c36-5c76145cdfdd">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.firstHalfconditions")]]></dataSourceExpression>
@@ -1895,7 +1895,7 @@
 				</jr:list>
 			</componentElement>
 			<componentElement>
-				<reportElement x="280" y="10" width="240" height="15" uuid="89fa6845-bc4e-4405-ab45-a39886cdc971"/>
+				<reportElement x="260" y="10" width="240" height="15" uuid="89fa6845-bc4e-4405-ab45-a39886cdc971"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 					<datasetRun subDataset="Conditions" uuid="671ff4f3-6cda-4358-ad4f-91dfb6ebff8b">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.secondHalfconditions")]]></dataSourceExpression>
@@ -1925,7 +1925,7 @@
 		</band>
 		<band height="20">
 			<componentElement>
-				<reportElement x="30" y="5" width="490" height="15" uuid="fdf9023c-ec31-44b6-87c5-db2b9d9e29d1">
+				<reportElement x="10" y="5" width="490" height="15" uuid="fdf9023c-ec31-44b6-87c5-db2b9d9e29d1">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 3_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 3_CH"/>
@@ -2025,10 +2025,10 @@
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="15">
+		<band height="30">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField textAdjust="StretchHeight">
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="555" height="15" uuid="3aa135f7-68e6-4a25-ac51-6c7f9c28a65b">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="15" width="555" height="15" uuid="3aa135f7-68e6-4a25-ac51-6c7f9c28a65b">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2"/>

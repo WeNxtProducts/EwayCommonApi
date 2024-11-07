@@ -160,7 +160,7 @@ public class JasperServiceImpl implements JasperService {
 					theDir.mkdirs();
 				}
 				if(StringUtils.isBlank(homeData.getPolicyNo()) &&  (Arrays.asList(5,46,63).contains(homeData.getProductId()))) {
-					if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getProductId() != 63) {
+					if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getProductId() != 63 && !homeData.getCompanyId().equalsIgnoreCase("100028")) {
 						Map<String,Object> brokerQuotation = jasperCustomeImple.getMotorBrokerQuotation(homeData.getQuoteNo());
 						String jsonString = gson.toJson(brokerQuotation);
 						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
@@ -168,6 +168,11 @@ public class JasperServiceImpl implements JasperService {
 					}else if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getProductId() == 63) {
 						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
 						res = getJasperPdfFile("/report/jasper/HomePremierQuotation.jrxml", jasperSaveLocation, input);
+					}else if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getCompanyId().equalsIgnoreCase("100028")) {
+						List<MotorCoverNoteRes> brokerQuotation = jasperCustomeImple.getMotorCoverNote("",req.getVehicleId(),homeData.getQuoteNo());
+						String jsonString = gson.toJson(brokerQuotation);
+						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+						res = getCommonJasperPdfFileByJson("/report/jasper/EagleMotorSchedule.jrxml", jasperSaveLocation, jsonString, input, "- EagleBrokerQuotation.json");
 					}else {
 						String JasperName = "MotorPrivate";
 						if("100019".equalsIgnoreCase(homeData.getCompanyId())) {
@@ -230,7 +235,7 @@ public class JasperServiceImpl implements JasperService {
 					Map<String,Object> map = new HashMap<String,Object>();
 					map.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					List<MotorCoverNoteRes> MotorCoverNote = jasperCustomeImple.getMotorCoverNote(homeData.getPolicyNo(),req.getVehicleId());
+					List<MotorCoverNoteRes> MotorCoverNote = jasperCustomeImple.getMotorCoverNote(homeData.getPolicyNo(),req.getVehicleId(),"");
 					String jsonString = gson.toJson(MotorCoverNote);
 					res = getCommonJasperPdfFileByJson("/report/jasper/EwayMotorCoverNote.jrxml",jasperSaveLocation,jsonString,map,"- MotorCoveNote.json");
 				}else {
@@ -942,7 +947,7 @@ public class JasperServiceImpl implements JasperService {
 					}else if(hpmData.getProductId() == 42) {
 						Result = jasperCustomeImple.getCyberInsurance(hpmData.getPolicyNo());
 					}else if(hpmData.getProductId() == 46) {
-						List<MotorCoverNoteRes> res = jasperCustomeImple.getMotorCoverNote(hpmData.getPolicyNo(),req.getVehicleId());
+						List<MotorCoverNoteRes> res = jasperCustomeImple.getMotorCoverNote(hpmData.getPolicyNo(),req.getVehicleId(),"");
 						Result = res;
 					}else if(hpmData.getProductId() == 5){
 						if("100004".equalsIgnoreCase(hpmData.getCompanyId())) {

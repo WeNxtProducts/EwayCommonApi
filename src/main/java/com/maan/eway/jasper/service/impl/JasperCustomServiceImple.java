@@ -241,8 +241,8 @@ public class JasperCustomServiceImple {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List<MotorCoverNoteRes> getMotorCoverNote(String policyNo,String vehicleId) {
-	  log.info("Enter into getMotorCoverNote.\nArgument ==> PolicyNo :"+policyNo);
+	public List<MotorCoverNoteRes> getMotorCoverNote(String policyNo,String vehicleId,String quoteNo) {
+	  log.info("Enter into getMotorCoverNote.\nArgument ==> PolicyNo :"+policyNo+",QuoteNo : "+quoteNo+",VehicleId : "+vehicleId);
 	  List<MotorCoverNoteRes> response = new  ArrayList<MotorCoverNoteRes>();
   try {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -295,6 +295,7 @@ public class JasperCustomServiceImple {
 				hpmRoot.get("inceptionDate").alias("inceptionDate"),
 				hpmRoot.get("expiryDate").alias("expiryDate"),
 				mddRoot.get("registrationNumber").alias("registrationNumber"),
+				mddRoot.get("requestReferenceNo").alias("requestReferenceNo"),
 				mddRoot.get("vehicleTypeDesc").alias("vehicleTypeDesc"),
 				cb.selectCase().when(cb.isNotNull(mddRoot.get("vehcileModelDesc")), mddRoot.get("vehcileModelDesc"))
 						.otherwise(modelType).alias("modelType"),
@@ -318,6 +319,7 @@ public class JasperCustomServiceImple {
 				sddRoot.get("coverNoteReferenceNo").alias("covernoteNo"),sddRoot.get("stickerNumber").alias("stickerNumber"));
 			List<Selection> selections = selectionList.stream().collect(Collectors.toList());
 		//if(StringUtils.isNotBlank(vehicleId)) {
+			selections.add(mddRoot.get("sumInsuredLc").alias("sumInsured"));
 			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), mddRoot.get("actualPremiumLc"))
 					.otherwise(mddRoot.get("actualPremiumFc")).alias("premium"));
 			selections.add(mddRoot.get("vatPremium").alias("vatPremium"));
@@ -342,10 +344,11 @@ public class JasperCustomServiceImple {
 					cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),
 					cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
 					cb.equal(icmRoot.get("amendId"), icmAmd),
-					cb.equal(hpmRoot.get("productId"), "46"),
-					cb.equal(hpmRoot.get("status"), "P"),
+					cb.equal(hpmRoot.get("productId"), StringUtils.isBlank(policyNo)?"5":"46"),
+					cb.equal(hpmRoot.get("status"), StringUtils.isBlank(policyNo)?"Y":"P"),
 					cb.equal(sddRoot.get("quoteNo"), mddRoot.get("quoteNo")),
 					cb.equal(sddRoot.get("riskId").as(String.class), mddRoot.get("vehicleId")),
+					StringUtils.isBlank(policyNo)?cb.equal(hpmRoot.get("quoteNo"), quoteNo):
 					cb.equal(hpmRoot.get("policyNo"), policyNo),
 					StringUtils.isNotBlank(vehicleId)?cb.equal(mddRoot.get("vehicleId"), vehicleId):
 						cb.conjunction());
@@ -363,6 +366,7 @@ public class JasperCustomServiceImple {
 						.covernoteNo(map.get("covernoteNo")==null?"":map.get("covernoteNo").toString())
 						.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
 						.registrationNumber(map.get("registrationNumber")==null?"":map.get("registrationNumber").toString())
+						.requestReferenceNo(map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString())
 						.vehicleTypeDesc(map.get("vehicleTypeDesc")==null?"":map.get("vehicleTypeDesc").toString())
 						.modelType(map.get("modelType")==null?"":map.get("modelType").toString())
 						.colorDesc(map.get("colorDesc")==null?"":map.get("colorDesc").toString())
@@ -382,6 +386,7 @@ public class JasperCustomServiceImple {
 						.sectionName(map.get("sectionName")==null?"":map.get("sectionName").toString())
 						.modelNumber(map.get("vehcileModel")==null?"":map.get("vehcileModel").toString())
 						.premium(map.get("premium")==null?"":map.get("premium").toString())
+						.sumInsured(map.get("sumInsured")==null?"":map.get("sumInsured").toString())
 						.vatPremium(map.get("vatPremium")==null?"":map.get("vatPremium").toString())
 						.overallPremium(map.get("overallPremium")==null?"":map.get("overallPremium").toString())
 						.build();
