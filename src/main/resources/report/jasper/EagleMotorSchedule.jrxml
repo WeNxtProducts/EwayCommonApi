@@ -266,7 +266,7 @@
 				<textFieldExpression><![CDATA[java.time.temporal.ChronoUnit.MONTHS.between(
             java.time.LocalDate.ofInstant($F{startDate}.toInstant(), java.time.ZoneId.systemDefault()),
             java.time.LocalDate.ofInstant($F{endDate}.toInstant(), java.time.ZoneId.systemDefault())
-        )+" Months (dates to be advised)"]]></textFieldExpression>
+        )+1+" Months (dates to be advised)"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="18">
@@ -430,7 +430,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
