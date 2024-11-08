@@ -205,12 +205,14 @@ public class AngolaEserviceCustomerDetails {
 				}else if (req.getStreet().length() > 100) {
 					errorList.add("3311");
 				}
-				
+			
+				/*
 				if (StringUtils.isBlank(req.getCityName())) {
 					errorList.add("1082");
 				} else if (req.getCityName().length() > 100) {
 					errorList.add("1083");
 				}
+				*/
 			}
 			if (StringUtils.isBlank(req.getRegionCode())) {
 				errorList.add("1053");
