@@ -77,6 +77,9 @@ public interface EserviceCustomerDetailsRepository  extends JpaRepository<Eservi
 	int countByCompanyIdAndCreatedByAndIdTypeAndIdNumber(String companyId, String createdBy, String idType,
 			String idNumber);
 
+	List<EserviceCustomerDetails> findByCompanyIdAndIdNumberAndClientStatus(String companyId, String idNumber,
+			String string);
+
 
 	
 
