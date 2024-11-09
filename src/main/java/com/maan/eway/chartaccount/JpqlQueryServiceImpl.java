@@ -235,9 +235,11 @@ public class JpqlQueryServiceImpl {
 							.collect(Collectors.toList());
 					
 					String sqlQuery ="select sum(fac.premiumExcludedTaxFc) from FactorRateRequestDetails fac  where fac.requestReferenceNo=:requestReferenceNo and fac.coverId in(:coverId) "
-							+ "and fac.coverageType=:coverageType and (fac.isSelected =:isSelected or fac.userOpt=:userOpt) and fac.minimumPremiumYn in (:minimumPremiumYn) and fac.vehicleId in(:vehicleId)";
+							//+ "and fac.coverageType=:coverageType "
+							+ "and (fac.isSelected =:isSelected or fac.userOpt=:userOpt) and fac.minimumPremiumYn in (:minimumPremiumYn) and fac.vehicleId in(:vehicleId)";
 					
-					extraCoverPremium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", ids).setParameter("coverageType", "B")
+					extraCoverPremium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", ids)
+							//.setParameter("coverageType", "B")
 					.setParameter("isSelected", "D").setParameter("userOpt", "Y").setParameter("minimumPremiumYn", minPremium).setParameter("vehicleId", a)
 					
 					.getSingleResult();
@@ -250,10 +252,11 @@ public class JpqlQueryServiceImpl {
 			}
 			 
 				String sqlQuery ="select sum(fac.premiumExcludedTaxFc) from FactorRateRequestDetails fac  where fac.requestReferenceNo=:requestReferenceNo and fac.coverId in(:coverId) "
-						+ "and fac.coverageType=:coverageType and fac.isSelected =:isSelected and fac.minimumPremiumYn in (:minimumPremiumYn) and fac.vehicleId not in(:vehicleId)";
+						//+ "and fac.coverageType=:coverageType "
+						+ "and fac.isSelected =:isSelected and fac.minimumPremiumYn in (:minimumPremiumYn) and fac.vehicleId not in(:vehicleId)";
 				//
 				
-				premium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", coverIds).setParameter("coverageType", "B")
+				premium =(BigDecimal)em.createQuery(sqlQuery).setParameter("requestReferenceNo", refNo).setParameter("coverId", coverIds)/*.setParameter("coverageType", "B")*/
 				.setParameter("isSelected", "D").setParameter("minimumPremiumYn", minPremium).setParameter("vehicleId", 99999).getSingleResult();
 			
 			return (premium==null?BigDecimal.ZERO:premium).add(extraCover);
