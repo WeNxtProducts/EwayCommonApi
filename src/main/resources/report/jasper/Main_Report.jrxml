@@ -1,0 +1,1111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Main_Report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1dc5efea-f3d4-48e9-9623-151913afeb82">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
+	<subDataset name="Dataset1" uuid="ab7aa36b-3f50-425c-b76e-d6f0a2bf9f2a">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
+		<queryString language="json">
+			<![CDATA[sectionDetails]]>
+		</queryString>
+		<field name="locationName" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="locationName"/>
+			<fieldDescription><![CDATA[locationName]]></fieldDescription>
+		</field>
+		<field name="sectionList" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="sectionList"/>
+			<fieldDescription><![CDATA[sectionList]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="Dataset2" uuid="a1d908fa-db5c-4405-9749-948a199bfa9b">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
+		<queryString language="json">
+			<![CDATA[sectionDetails.sectionList]]>
+		</queryString>
+		<field name="covername" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="covername"/>
+			<fieldDescription><![CDATA[covername]]></fieldDescription>
+		</field>
+		<field name="annually" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="annually"/>
+			<fieldDescription><![CDATA[annually]]></fieldDescription>
+		</field>
+		<field name="monthly" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="monthly"/>
+			<fieldDescription><![CDATA[monthly]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="pvSubReportPath" class="java.lang.String"/>
+	<parameter name="pvImagepath" class="java.lang.String"/>
+	<queryString language="JSON">
+		<![CDATA[]]>
+	</queryString>
+	<field name="debitNoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="debitNoteNo"/>
+		<fieldDescription><![CDATA[debitNoteNo]]></fieldDescription>
+	</field>
+	<field name="quoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="quoteNo"/>
+		<fieldDescription><![CDATA[quoteNo]]></fieldDescription>
+	</field>
+	<field name="premiumDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="premiumDetails"/>
+		<fieldDescription><![CDATA[premiumDetails]]></fieldDescription>
+	</field>
+	<field name="firstLossPayeesList" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="firstLossPayeesList"/>
+		<fieldDescription><![CDATA[firstLossPayeesList]]></fieldDescription>
+	</field>
+	<field name="signature" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="signature"/>
+		<fieldDescription><![CDATA[signature]]></fieldDescription>
+	</field>
+	<field name="companyName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
+		<fieldDescription><![CDATA[companyName]]></fieldDescription>
+	</field>
+	<field name="policyNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
+		<fieldDescription><![CDATA[policyNo]]></fieldDescription>
+	</field>
+	<field name="agencyCode" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="agencyCode"/>
+		<fieldDescription><![CDATA[agencyCode]]></fieldDescription>
+	</field>
+	<field name="productName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="productName"/>
+		<fieldDescription><![CDATA[productName]]></fieldDescription>
+	</field>
+	<field name="taxName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="taxName"/>
+		<fieldDescription><![CDATA[taxName]]></fieldDescription>
+	</field>
+	<field name="expiryDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="expiryDate"/>
+		<fieldDescription><![CDATA[expiryDate]]></fieldDescription>
+	</field>
+	<field name="email1" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="email1"/>
+		<fieldDescription><![CDATA[email1]]></fieldDescription>
+	</field>
+	<field name="premium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
+		<fieldDescription><![CDATA[premium]]></fieldDescription>
+	</field>
+	<field name="cityName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="cityName"/>
+		<fieldDescription><![CDATA[cityName]]></fieldDescription>
+	</field>
+	<field name="overAllPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="overAllPremium"/>
+		<fieldDescription><![CDATA[overAllPremium]]></fieldDescription>
+	</field>
+	<field name="stateName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="stateName"/>
+		<fieldDescription><![CDATA[stateName]]></fieldDescription>
+	</field>
+	<field name="companylogo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companylogo"/>
+		<fieldDescription><![CDATA[companylogo]]></fieldDescription>
+	</field>
+	<field name="inceptionDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="inceptionDate"/>
+		<fieldDescription><![CDATA[inceptionDate]]></fieldDescription>
+	</field>
+	<field name="userMobile" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="userMobile"/>
+		<fieldDescription><![CDATA[userMobile]]></fieldDescription>
+	</field>
+	<field name="sectionDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="sectionDetails"/>
+		<fieldDescription><![CDATA[sectionDetails]]></fieldDescription>
+	</field>
+	<field name="brokerBranchName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="brokerBranchName"/>
+		<fieldDescription><![CDATA[brokerBranchName]]></fieldDescription>
+	</field>
+	<field name="customerId" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerId"/>
+		<fieldDescription><![CDATA[customerId]]></fieldDescription>
+	</field>
+	<field name="currency" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="currency"/>
+		<fieldDescription><![CDATA[currency]]></fieldDescription>
+	</field>
+	<field name="place" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="place"/>
+		<fieldDescription><![CDATA[place]]></fieldDescription>
+	</field>
+	<field name="attachMents" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="attachMents"/>
+		<fieldDescription><![CDATA[attachMents]]></fieldDescription>
+	</field>
+	<field name="address" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="address"/>
+		<fieldDescription><![CDATA[address]]></fieldDescription>
+	</field>
+	<field name="vatPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="vatPremium"/>
+		<fieldDescription><![CDATA[vatPremium]]></fieldDescription>
+	</field>
+	<field name="productId" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="productId"/>
+		<fieldDescription><![CDATA[productId]]></fieldDescription>
+	</field>
+	<field name="coverageDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="coverageDetails"/>
+		<fieldDescription><![CDATA[coverageDetails]]></fieldDescription>
+	</field>
+	<field name="branchName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="branchName"/>
+		<fieldDescription><![CDATA[branchName]]></fieldDescription>
+	</field>
+	<field name="totalPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="totalPremium"/>
+		<fieldDescription><![CDATA[totalPremium]]></fieldDescription>
+	</field>
+	<field name="mobileNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="mobileNo"/>
+		<fieldDescription><![CDATA[mobileNo]]></fieldDescription>
+	</field>
+	<field name="customerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerName"/>
+		<fieldDescription><![CDATA[customerName]]></fieldDescription>
+	</field>
+	<field name="branchCode" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="branchCode"/>
+		<fieldDescription><![CDATA[branchCode]]></fieldDescription>
+	</field>
+	<field name="companyId" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyId"/>
+		<fieldDescription><![CDATA[companyId]]></fieldDescription>
+	</field>
+	<field name="brokerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="brokerName"/>
+		<fieldDescription><![CDATA[brokerName]]></fieldDescription>
+	</field>
+	<field name="coreAppBrokerCode" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="coreAppBrokerCode"/>
+		<fieldDescription><![CDATA[coreAppBrokerCode]]></fieldDescription>
+	</field>
+	<field name="vatPercent" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<image scaleImage="RetainShape" hAlign="Right" vAlign="Middle">
+				<reportElement x="0" y="0" width="555" height="80" uuid="0ffc4e0a-f6ad-4cb1-9d83-dd36ce157c01"/>
+				<imageExpression><![CDATA[$P{pvImagepath}+"Pheonix.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="10" width="555" height="30" uuid="24166216-fb0a-43f4-807b-2d3966b224f2"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phoenix Namibia Assurance Company"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="45" width="555" height="30" uuid="9d507d94-d6d8-472a-9b30-bf608fe1894b"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Commercial Lines"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="93" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="10" width="555" height="20" uuid="0a220875-512b-44d2-8c03-7cc6dae0fe97"/>
+				<textField>
+					<reportElement x="0" y="0" width="555" height="20" uuid="55980b0b-4b93-4647-953b-cbea689800ef"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["DETAILS OF THE INSURED"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="40" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="3267c28a-f8c7-4071-a1dd-b2030fc79364"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="81ed0722-309b-45a1-8a95-b67aa793e4ce"/>
+					<textFieldExpression><![CDATA["Insured Name"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="1afbe162-cf9d-4449-a641-b3c55d4ab693"/>
+					<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="d9234707-986c-42c8-a828-47e0bace8a91"/>
+					<textFieldExpression><![CDATA["Company Registration"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="146" height="13" uuid="e3c417ec-5ce6-49f9-a2bd-fb02c45bcf70"/>
+					<textFieldExpression><![CDATA[$F{companyId}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="60" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="f304bae0-46d6-4476-821d-743439bc22d7"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="5e94d11a-8b5f-436e-a4bf-36857650d5a7"/>
+					<textFieldExpression><![CDATA["Postal Address"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="6e23d85b-213d-4e30-a281-4addcffaf20b"/>
+					<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="d1e4c8ee-274c-42fa-bcd8-6efacb028377"/>
+					<textFieldExpression><![CDATA["Physical Address"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="146" height="13" uuid="f48ec142-a76a-46b4-afc6-7415917b29bc"/>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="80" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="f0f6ec7a-0dbf-4383-951b-8a92082a2898"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="90b7b67f-896f-41ae-8f0d-0979b2e506ca"/>
+					<textFieldExpression><![CDATA["Email Address"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="907a87eb-911e-4a69-99d2-355898a97863"/>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="6755813c-367e-4589-80c9-3762c90d5e15"/>
+					<textFieldExpression><![CDATA["Physical Address"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="146" height="13" uuid="4465ce58-739a-4080-8db4-96dfd7424530"/>
+				</textField>
+			</frame>
+		</band>
+		<band height="122">
+			<frame>
+				<reportElement x="0" y="9" width="555" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="4f6ad1a8-9d39-46f1-b678-70d3b377cb88"/>
+				<textField>
+					<reportElement x="0" y="0" width="555" height="20" uuid="f8fa6fb8-6144-4df5-93be-d0e6efcd99a5"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["DEBIT ORDER DETAILS"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="49" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="4035b012-2603-41dc-8eab-340818ac89ce"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="a118d23f-30af-4dbd-8b81-ef44e75b18dc"/>
+					<textFieldExpression><![CDATA["Account Holder"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="b24f119a-4d51-41ae-ac7d-4fce8bf9bc22"/>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="e699189d-d9b4-4df9-b25d-dbe0e57d15c7"/>
+					<textFieldExpression><![CDATA["Account Number"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="f9b03ebb-bd74-4a90-97aa-8fb8cc9517ef"/>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="69" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="8ae27843-3139-4d3a-97bd-9f8f3f8d1ecd"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="060a2425-4c8b-4afa-937b-ab4b1fe083aa"/>
+					<textFieldExpression><![CDATA["Financial Institution"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="8f21c40b-74b6-41b7-96ea-dc655b615785"/>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="a07930b9-9941-4c5e-9b51-5decc528010d"/>
+					<textFieldExpression><![CDATA["Branch Code"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="85136104-af5c-41d2-bc9e-ecfdbaca4651"/>
+					<textFieldExpression><![CDATA[$F{branchName}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="89" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="8054a68d-69f7-4aa5-bdba-79fc69c33c95"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="f2e143fe-807b-4be7-93c2-47c166f641fa"/>
+					<textFieldExpression><![CDATA["Signed Debit Order No"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="4991c298-2c75-474f-8851-afa65172c678"/>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="95c523a8-1c8d-46ec-b33a-5ef6067f2541"/>
+					<textFieldExpression><![CDATA["Premium Payment"]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="94e01a51-00d4-4bf7-b5dc-dd41bebf58be"/>
+					<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="109" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="6bad1504-bcb8-4321-9fcd-6af4fdf94397"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="cd265067-6a66-4689-9004-d253c668aedf"/>
+					<textFieldExpression><![CDATA["Monthly"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="e33ba86d-d80c-4419-a98b-2b93ba3bc175"/>
+				</textField>
+			</frame>
+		</band>
+		<band height="82">
+			<frame>
+				<reportElement x="0" y="9" width="555" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ff626702-5e1d-4d94-9e44-5999fdb4c81b"/>
+				<textField>
+					<reportElement x="0" y="0" width="555" height="20" uuid="2c4120ab-11fd-4f8c-a86e-d52b2115d304"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["BROKER DETAILS"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="49" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ffbc798c-f146-4abf-b330-04c4b6adea6c"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="531d799c-6400-4c83-9480-f665d478dea1"/>
+					<textFieldExpression><![CDATA["Broker House"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="5e51e8ab-0b36-4f18-82bd-63aa50892503"/>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="d6b86d5e-c8e2-4be9-9d52-f2e97f4cfb1a"/>
+					<textFieldExpression><![CDATA["Contact Number"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="491b2234-a942-4fc8-9fe4-1183a55f5f8e"/>
+					<textFieldExpression><![CDATA[$F{userMobile}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="69" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="6fedbcdc-19bb-4e68-a0a0-36c8fdbb055d"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="a582ce35-1700-4159-89cc-1339576d7bba"/>
+					<textFieldExpression><![CDATA["Broker Name"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="2f02ece9-9666-42de-ace9-f13fee4d94e4"/>
+					<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="f1eba9c0-db85-485a-9f62-755c05f4a920"/>
+					<textFieldExpression><![CDATA["Agency Code"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="a7b06be1-f510-4e5f-85e0-f05b12bac558"/>
+					<textFieldExpression><![CDATA[$F{agencyCode}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="109">
+			<frame>
+				<reportElement x="0" y="9" width="555" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="bf06d0a0-b73f-44a5-92af-bc2d44d7b077"/>
+				<textField>
+					<reportElement x="0" y="0" width="555" height="20" uuid="8e6fd44e-1f96-444a-94df-a26cb8f6d246"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["POLICY DETAILS"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="39" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="64dcdb25-3884-4f72-8f0a-31c739dbc3b7"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="17043b15-e0b8-4dad-861c-8ff5f1ee47f4"/>
+					<textFieldExpression><![CDATA["Policy Number"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="7c2ddcec-809a-413d-83cb-0fd0f48e9bec"/>
+					<textFieldExpression><![CDATA[$F{policyNo}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="7f22025c-c7e1-4808-9103-2db694e2cc09"/>
+					<textFieldExpression><![CDATA["Premium Collection"]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="9a91fb2f-def5-4ad0-b74a-5e8ef0c248e3"/>
+					<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="59" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="96bd87d2-ca59-4712-b52a-b5467957a408"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="d3cdaa3b-da0e-4f3e-885d-9dd1ad41669a"/>
+					<textFieldExpression><![CDATA["Inception Date"]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="90cca830-4b6f-4aa8-bdf2-b2784a032c28"/>
+					<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="0037cca0-a236-447c-9da4-ef31f91b27a4"/>
+					<textFieldExpression><![CDATA["Anniversary Date"]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="a37810c5-d690-4a3c-bdc3-83f381e0d45b"/>
+					<textFieldExpression><![CDATA[$F{expiryDate}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="79" width="555" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="f04f1382-c777-4ab0-a484-1a7f98096520"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="f6cd232f-d023-4e7b-9515-931b28e84c76"/>
+					<textFieldExpression><![CDATA["Territorial Limits"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="0" width="455" height="29" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="f8dc51c3-91fc-4b80-9f8b-8a4f5de04f6e"/>
+					<textElement>
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["All premises as stated in each section of this policy owned or occupied or used by the Insured for the purpose of The Business all situated in the area which on 1st January 1976 constituted the Republic of Namibia, South Africa, Botswana, Lesotho, Swaziland, Zimbabwe, Malawi, Zambia, Mozambique and any other country incidental to the business as stated in the schedule."]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="122">
+			<frame>
+				<reportElement x="0" y="9" width="555" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="21c854fd-bcf6-4872-a84e-26fdf54c4fa3"/>
+				<textField>
+					<reportElement x="0" y="0" width="555" height="20" uuid="4b879b90-094e-439e-8591-7ba3d63be693"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["TRANSACTION DETAILS"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="49" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="d61e0c04-ff99-42ca-82d6-a2d0178bc58d"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="de67db6a-b0ec-436c-be9b-62631e41c94c"/>
+					<textFieldExpression><![CDATA["Type"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="9924ed22-c0d3-4bdd-8187-5ddd53b17152"/>
+					<textFieldExpression><![CDATA["Quote - Valid for 30 days only"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="098d50f1-abb4-4cc5-be4d-7c859167446f"/>
+					<textFieldExpression><![CDATA["Date"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="6724cf1e-a97d-46ba-8c90-875aeeb29092"/>
+					<textFieldExpression><![CDATA["21/05/2024"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="69" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="64072aff-73a7-4b97-92c3-bb52b5e3ecdf"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="2303e5f1-9e09-473b-b15f-36dd4f3ec40a"/>
+					<textFieldExpression><![CDATA["Comment"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="b31a8a1e-dbec-4d63-962a-07a99e4808a6"/>
+					<textFieldExpression><![CDATA["New quote request received "]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="89" width="555" height="33" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ed935d33-689e-4f7d-bfe4-04e49afaa8c0"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="33" uuid="7d3b8e6b-d9ca-4a1e-80e8-e60683a58f1c"/>
+					<textFieldExpression><![CDATA["Comment"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="c2ab0d9a-c16d-480c-97d7-3029f1fe911e"/>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="20" width="160" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="eb61e5a7-ec60-4d93-913c-8c41886f3ebc"/>
+					<box>
+						<pen lineWidth="1.0" lineStyle="Solid"/>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textFieldExpression><![CDATA["Name of Authorized Person"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement x="290" y="20" width="110" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="03fd15e7-ea02-4e8c-9e3e-4b5bcc440838"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textFieldExpression><![CDATA["Name of Authorized Person"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="440" y="20" width="110" height="13" uuid="31c81332-8458-4208-bf52-1dbe2a52d05a"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textFieldExpression><![CDATA["Signature Date"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="125">
+			<frame>
+				<reportElement x="0" y="9" width="555" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="dabb156a-5705-4871-b79a-b86eb9c0b17a"/>
+				<textField>
+					<reportElement x="0" y="0" width="555" height="20" uuid="02aa9d91-d0cc-464c-ad37-b497492f3921"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["INSURER DETAILS"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="49" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="09de5b00-babc-433c-877c-887d96f4d03c"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="276f1f1c-c877-4120-9f8c-c532c0030833"/>
+					<textFieldExpression><![CDATA["The Company"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" isPrintWhenDetailOverflows="true" uuid="22d7f80d-33ff-49bb-93f1-085e74fde978"/>
+					<textFieldExpression><![CDATA["Phoenix Namibia Assurance Company Limited"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="e9ba0005-fe49-4dca-bcf3-67786097078b"/>
+					<textFieldExpression><![CDATA["VAT Registration Number"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="9d1664d8-fac8-4123-a49a-a7dd757c571f"/>
+					<textFieldExpression><![CDATA["'06188181-015"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="69" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="e8f7e6c1-e8bb-4ae4-91ea-d5bec133bdf1"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="74f51b69-d21c-4414-b38e-7b032c1d86fa"/>
+					<textFieldExpression><![CDATA["Registration Number"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="c35aec5c-099b-4ccf-bf93-9c10db0ed5e2"/>
+					<textFieldExpression><![CDATA["'2012/0519"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="58edc57f-33f5-4214-9041-cfb48b8c977c"/>
+					<textFieldExpression><![CDATA["Postal Address"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="8fe498cc-dfcb-4987-829c-168f3a79b472"/>
+					<textFieldExpression><![CDATA["Namibia"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="89" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="898cc30e-a832-49ec-a46e-58ccd990a8ba"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="4557fb62-f500-48a6-9d34-5d6583a28e4c"/>
+					<textFieldExpression><![CDATA["Physical Address"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="3ba7ba9c-8592-4d26-a0da-8acb4ae171b2"/>
+					<textFieldExpression><![CDATA["4 Lindequist Street"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="280" y="0" width="120" height="13" uuid="f16950a5-d502-435a-b6c6-28e171af061c"/>
+					<textFieldExpression><![CDATA["Telephone Number"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="400" y="0" width="155" height="13" uuid="de04d4b8-e378-4196-afb5-8a265173dca1"/>
+					<textFieldExpression><![CDATA["'+264 61 256 633"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="109" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="31a2c009-b910-454e-98da-8aa379e455ab"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="13" uuid="534a8e1b-d35d-4598-8d59-b4ef925217e5"/>
+					<textFieldExpression><![CDATA["Email Address"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="160" height="13" uuid="c9921e34-ca50-4305-9e61-7b44445afe82"/>
+					<textFieldExpression><![CDATA["info@phoenixassurancenamibia.com"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<break>
+				<reportElement x="0" y="124" width="111" height="1" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="cdf5ee77-46f7-4c95-9e2a-27900fc968a7"/>
+			</break>
+		</band>
+		<band height="21">
+			<frame>
+				<reportElement positionType="Float" x="0" y="4" width="555" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="8e023efd-160f-4215-bbec-5f5055936916"/>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="0" y="0" width="555" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#D7DADB" uuid="c06a3830-dbb1-4e8a-bd5d-1a011688dc54"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["TAX INVOICE"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="15">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="15" uuid="7c390665-3478-4045-b685-42304503e5a5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("sectionDetails")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{pvSubReportPath}+"Sub_Main_Report.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="40">
+			<frame>
+				<reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="14" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="2fb8fad5-4dbf-4fa8-aea8-a1ee957966ff"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="210" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="642b2e73-3d50-4bc7-b5c1-540497343ee8"/>
+					<box topPadding="0">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["  SUB-TOTAL PREMIUM VAT EXCLUSIVE"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="260" y="0" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="bfe28936-791a-46fd-b6a1-0e9583e8d508"/>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{premium})]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="360" y="0" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="687bea58-c517-4d84-9ab9-5efe843e75fd"/>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{premium}.compareTo(BigDecimal.ZERO) != 0 ? $F{premium}.divide(new BigDecimal(12), 2, BigDecimal.ROUND_HALF_UP) : $F{premium})]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="460" y="0" width="95" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="f4c4b23a-fd93-4bf5-958c-744c85591cc6"/>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["$  0.00"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="-6" width="555" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="4a181e89-3e74-48bb-8913-bdff827f17a7"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="6" width="210" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="004e2b89-9c26-45c9-8129-a5f834ef44cc"/>
+					<box topPadding="0">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["  SUB-TOTAL PREMIUM VAT INCLUSIVE"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="260" y="6" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="026dbdf3-78a6-4c23-bf79-4086076c8ff7"/>
+					<box>
+						<pen lineWidth="1.0" lineStyle="Solid"/>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium})
+]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="360" y="6" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="5cebcf96-581e-4bf1-a0af-49d5de8c6859"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium}.compareTo(BigDecimal.ZERO) != 0 ? $F{totalPremium}.divide(new BigDecimal(12), 2, BigDecimal.ROUND_HALF_UP) : $F{totalPremium})
+]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="460" y="6" width="95" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="53032575-039b-4bd8-a6d8-5210ba60a49e"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["$  0.00"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="27" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="74b0e6fc-2b08-44e9-8ddf-1bb58f203c88"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="210" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="5ad413d7-2b2f-44c8-8b6b-daff29273d1c"/>
+					<box topPadding="0">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["  VAT @ 15%"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="260" y="0" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="3246b217-dff7-45fe-afd4-e1edcbdc3052"/>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{vatPremium})]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="360" y="0" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ccf8228a-a2ac-4919-ba70-31063cf2870c"/>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{vatPremium}.compareTo(BigDecimal.ZERO) != 0 ? $F{vatPremium}.divide(new BigDecimal(12), 2, BigDecimal.ROUND_HALF_UP) : $F{vatPremium})]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="460" y="0" width="95" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="4478d128-a0da-496b-97fd-50663483f037"/>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["$  0.00"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="56">
+			<frame>
+				<reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="1" width="555" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="d230abcf-be66-4887-ad87-5ec3ca5058ec"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="6" width="210" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="2bb4950d-c1ef-4796-813d-9f3e535bf575"/>
+					<box topPadding="0">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["  TOTAL PREMIUM PAYABLE + ADD/REFUND"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="260" y="6" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="0f5f297e-2e71-413b-af0e-fbd173d6dd8c"/>
+					<box>
+						<pen lineWidth="1.0" lineStyle="Solid"/>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium})]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="360" y="6" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="9ef73c7e-1bc7-4947-be04-1f2cbdbae044"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium}.compareTo(BigDecimal.ZERO) != 0 ? $F{totalPremium}.divide(new BigDecimal(12), 2, BigDecimal.ROUND_HALF_UP) : $F{totalPremium})]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="460" y="6" width="95" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="e77f45f8-c4e1-4760-a251-d90a4b61b59a"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["$  0.00"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="0" y="21" width="554" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#FFFFFF" uuid="49a016d9-fe8a-474d-9519-5c1e8e6913b8"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["VAT is included at 15%. Phoenix Namibia Assurance Co Ltd is a VAT vendor under registration number 6188181-01-5."]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="0" y="39" width="554" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#FFFFFF" uuid="62487c70-51fc-4e79-93f1-4c85410482e1"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["This Policy Schedule becomes a TAX INVOICE after the inception date when payment has been done."]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="179">
+			<frame>
+				<reportElement positionType="Float" x="0" y="4" width="555" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="5b082216-0d0d-4d6a-9b60-f78bedbda756"/>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="0" y="0" width="555" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#D7DADB" uuid="72dcc2ee-2f70-4f92-8d2e-00ed4bf62ba0"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["GENERAL ENDORSEMENTS"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<break>
+				<reportElement x="0" y="2" width="71" height="1" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ba1972a9-5b2e-4bb3-bb21-866a2311222d"/>
+			</break>
+			<frame>
+				<reportElement positionType="Float" x="0" y="22" width="555" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ed9f7c02-bf74-45fc-929d-7db2e971c716"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ef0457a7-b32e-4cf4-96f9-ffc38d3a06d4"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA["Mariental Fish River and Tributaries Flood Exclusion"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="0" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="055e1bde-3efe-49dc-b2bb-d28def920499"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Notwithstanding any provision of this policy, including any exclusion, exception or extension or other provision, which would otherwise override a general exception, this policy does not cover any loss, destruction, damage, cost or expense whatsoever or any consequential loss directly or indirectly caused by, arising out of, resulting from or in consequence of flooding to any property or insured person or legal entity situated downstream of the Hardap Dam and the lower Fish River and it's tributaries within the area downstream of the Hardap Dam, irrespective of whether or not the property, insured person or legal entity was situated permanently, temporarily or incidentally at the location in question.							"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="55" width="555" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="d7d13610-e166-42b2-bceb-7df15b8c1822"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="fdf223da-4e1c-4a61-8aec-b8ba52829b30"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA["Sanction Limitation and Exclusion Clause"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="0" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="13af1adc-796e-4323-828a-763de24d93f4"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["The Insurer is deemed not to provide cover and to pay any claim or provide any benefit hereunder to the extent that the provision of such cover, payment of such claim or provision of such benefit would expose the Insurer to any sanction, prohibition or restriction under United Nations resolutions or the trade or economic sanctions, laws or regulations of the European Union, United Kingdom or United States of America."]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="89" width="555" height="90" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="1bcbe597-4c5b-4d0f-8cda-c06ba3cb4f4f"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="a3163569-8ae5-4bab-8ea4-b9ef2847e677"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA["Communicable Disease Exclusion"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="0" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="f7342604-7d2e-4278-aa7f-09ee37f2e362"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["1. Notwithstanding any provision to the contrary within this insurance policy, this insurance policy excludes any loss, damage, liability, claim, cost or expense of whatsoever nature, directly or indirectly caused by, contributed to by, resulting from, arising out of, or in connection with a Communicable Disease or the fear or threat (whether actual or perceived) of a Communicable Disease regardless of any other cause or event contributing concurrently or in any other sequence thereto."]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="30" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="45ff945c-0cee-4bcb-abe4-3db1ae4c94df"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["2. Subject to the other terms, conditions and exclusions contained in this insurance policy, this insurance policy will cover physical damage to property insured under this policy and any Time Element Loss directly resulting therefrom where such physical damage is directly caused by or arising from any of the following perils:"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="60" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="9526df22-ea54-40f9-b7fe-370be0c993a5"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Mechanical or electrical breakdown, fire, lightning, explosion, aircraft or vehicle impact, power failure or surge, falling objects, windstorm, rainstorm, hail, tornado, cyclone, typhoon, hurricane, earthquake, seaquake, seismic and/or volcanic disturbance/eruption, tsunami, flood, storm surge, water damage, liquefaction, freeze, ice storm, sleet, weight of snow or ice, avalanche, smoke, sprinkler leakage, meteor/asteroid impact, landslip, landslide, mudslide, sinkhole, collapse, bush fire, forest fire, vandalism, and malicious mischief."]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="91">
+			<frame>
+				<reportElement positionType="Float" x="0" y="1" width="555" height="90" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="484975d2-31e4-427e-b8cd-7f46fbf35317"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="0b48399a-c0f4-42d6-8c52-820c608ec7ce"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA["Cyber Loss Definitions"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="0" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="8fe83510-39cb-460f-aa6c-54f0d5751229"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["1. Computer System means any computer, hardware, software, communication systems, electronic device (including, but not limited to, smart phone, laptop, tablet, wearable device) server, cloud or microcontroller including any similar system or any configuration of the aforementioned and including any associated input, output, data storage device, networking equipment or backup facility."]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="30" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="a6d53cdb-1b61-4f35-9bca-bdecf24a65f2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["2. Data means information, facts, concepts, code or any other information of any kind that is recorded or transmitted in a form to be used, accessed, processed, transmitted or stored by a Computer System."]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="60" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="14601eb6-c714-4d33-ab65-a16cfa80c2ac"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["3. Time Element Loss means business interruption,contingent business interruption or any other consequential losses."]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="132">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="555" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="c536bc98-3e96-4110-b6ad-46bb96ef1a9b"/>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="0" y="0" width="555" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#D7DADB" uuid="629b49ad-b568-4bbe-ad78-dc677cc9e265"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["IMPORTANT INFORMATION"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="18" width="555" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="c916605c-7a80-47fc-a9af-ca0c0e6ce37b"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="172128bc-635a-4fbb-b6ef-ed6e155f5384"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA["Unoccupancy"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="0" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="4b9c2e35-89de-475d-9595-505e326c154e"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["You must inform us if you intend on leaving your private home unoccupied for more than 60 consecutive days in any 12-month period. If you  do not inform us, it may result in claims being declined."]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="48" width="555" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="002a0386-90d7-4973-b6dc-4b0fb3fb4b6d"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="fbe7ffce-6e33-47da-ac53-6590c5f1bf66"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA["Disclosure"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="0" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="f03021c4-7fee-463e-bbba-39d46b002735"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Herewith an example of questions, as may be posed to you and the answers you provided in the proposal are material, and shold there be discrepancies, it could have an effect on the cover of your policy and in the event of a claim.."]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="78" width="555" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="243add6d-5f2d-468d-8c76-e96c4e29ab1a"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="100" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="bdfcb965-dcfb-4e03-8975-3ff7e2d8252f"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA["Policy wording"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="100" y="0" width="455" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="f1cb2cb1-5503-4bb2-89fd-01dff0902ae5"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["This schedule forms part of the commercial lines wording signed and approved on 01/02/2024, and must be read in conjuntion thereof. "]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

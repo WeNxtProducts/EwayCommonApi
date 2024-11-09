@@ -260,17 +260,31 @@ public class JasperServiceImpl implements JasperService {
 						input2.put("policyNo", EwaySchedule.get("policyNo"));
 						res = getCommonJasperPdfFileByJson("/report/jasper/MadisonSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- MadisonSchedule.json");
 					}else {
-						String obj[] =new String[1];
-						obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
-						//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
-						/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
-						obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
-						for(String s :obj) {
-							String jrxml_path=s.replace(".jasper", ".jrxml");
-							String path = JasperCompileManager.compileReportToFile(jrxml_path);
-							System.out.println("Jasper compileToReport path" +path);
+						if("100046".equalsIgnoreCase(homeData.getCompanyId())) {
+							String obj[] =new String[1];
+							obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/Sub_Main_Report.jrxml";
+							//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
+							/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
+							obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
+							for(String s :obj) {
+								String jrxml_path=s.replace(".jasper", ".jrxml");
+								String path = JasperCompileManager.compileReportToFile(jrxml_path);
+								System.out.println("Jasper compileToReport path" +path);
+							}
+							res = getCommonJasperPdfFileByJson("/report/jasper/Main_Report.jrxml", jasperSaveLocation, jsonString, input2, "- Main_Report.json");
+						}else {
+							String obj[] =new String[1];
+							obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
+							//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
+							/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
+							obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
+							for(String s :obj) {
+								String jrxml_path=s.replace(".jasper", ".jrxml");
+								String path = JasperCompileManager.compileReportToFile(jrxml_path);
+								System.out.println("Jasper compileToReport path" +path);
+							}
+							res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
 						}
-						res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
 					}
 				}
 			}
