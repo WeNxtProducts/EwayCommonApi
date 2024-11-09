@@ -1,4 +1,4 @@
- package com.maan.eway.jasper.service.impl;
+package com.maan.eway.jasper.service.impl;
 
 
 import java.math.BigDecimal;
@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1841,7 +1842,7 @@ public class JasperCustomServiceImple {
 			cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("requestReferenceNo").alias("requestReferenceNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
 					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "")
 							.when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),
-									cb.concat(",", countryName)))))))).alias("address"),
+									cb.concat(",", countryName)))))))).alias("address"),piRoot.get("email1").alias("email1"),hpmRoot.get("branchCode").alias("branchCode"),luiRoot.get("agencyCode").alias("agencyCode"),
 					hpmRoot.get("inceptionDate").alias("inceptionDate"),hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("brokerBranchName").alias("brokerBranchName"),
 					hpmRoot.get("productName").alias("productName"),piRoot.get("stateName").alias("stateName"),piRoot.get("cityName").alias("cityName"),cb.concat(piRoot.get("mobileCodeDesc1"), cb.concat("-", piRoot.get("mobileNo1"))).alias("mobileNo"),
 					piRoot.get("customerId").alias("customerId"),cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Agent","Premia Direct","Premia Broker")), hpmRoot.get("customerName"))
@@ -1850,7 +1851,7 @@ public class JasperCustomServiceImple {
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),
 					cb.selectCase().when(cb.equal(icmRoot.get("currencyId"), hpmRoot.get("currency")), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),
 					icmRoot.get("signature").alias("signature"),lbmRoot.get("branchName").alias("place"),companyName.alias("companyName"),imageURL.alias("companylogo"),hpmRoot.get("companyId").alias("companyId"),hpmRoot.get("productId").alias("productId"),
-					hpmRoot.get("debitNoteNo").alias("debitNoteNo"))
+					hpmRoot.get("debitNoteNo").alias("debitNoteNo"),luiRoot.get("userMobile").alias("userMobile"))
 			.where(cb.equal(hpmRoot.get("customerId"), piRoot.get("customerId")),cb.equal(hpmRoot.get("agencyCode").as(String.class), luiRoot.get("agencyCode")),cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
 					cb.equal(hpmRoot.get("loginId"), lbmRoot.get("loginId")),cb.equal(hpmRoot.get("companyId"), lbmRoot.get("companyId")),cb.equal(hpmRoot.get("branchCode"), lbmRoot.get("branchCode")),cb.equal(lbmRoot.get("status"), "Y"),
 					cb.equal(icmRoot.get("status"), "Y"),cb.between(cb.literal(new Date()), icmRoot.get("effectiveDateStart"), icmRoot.get("effectiveDateEnd")),cb.equal(icmRoot.get("amendId"), icmAmd),cb.equal(hpmRoot.get("quoteNo"), QuoteNo));
@@ -1899,7 +1900,6 @@ public class JasperCustomServiceImple {
 				.where(predicateArray).orderBy(cb.asc(sddRoot.get("sectionId")));
 						
 			List<Tuple> Slist = em.createQuery(cq1).getResultList();
-						
 			List<Map<String,Object>>sectList=new ArrayList<>();
 			Double minAdjPrem=0.0,minAdjPremFc=0.0,basePremium=0.0,basePremiumFc=0.0,
 					minAdjExPrem=0.0,minAdjExPremFc=0.0,baseExPremium=0.0,baseExPremiumFc=0.0;
@@ -2261,6 +2261,31 @@ public class JasperCustomServiceImple {
 				result.put("customerName",map.get("customerName")==null?"":map.get("customerName").toString());
 			}
 			
+			if("100046".equalsIgnoreCase(map.get("companyId")==null?"":map.get("companyId").toString())) {
+				Map<Object, List<Tuple>> sectionDetails = Slist.stream().collect(Collectors.groupingBy(k -> k.get("locationName"), Collectors.toList()));
+				LinkedList<Map<String,Object>> secdetails = new LinkedList<Map<String,Object>>();
+				for(Map.Entry<Object, List<Tuple>> secEntry : sectionDetails.entrySet()) {
+					LinkedHashMap<String, Object> sec_map = new LinkedHashMap<String, Object>();
+					LinkedList<Map<String,Object>> sec_list = new LinkedList<Map<String,Object>>();
+					sec_map.put("locationName", secEntry.getKey());
+					for(int i =0;i<secEntry.getValue().size();i++) {
+						Tuple o = secEntry.getValue().get(i);
+						LinkedHashMap<String,Object> s = new LinkedHashMap<String,Object>();
+						s.put("covername", o.get("sectionDesc")==null?"":o.get("sectionDesc").toString());
+						s.put("annually", o.get("premiumExcludedTaxFc")==null?0.00:Double.parseDouble(o.get("premiumExcludedTaxFc").toString()));
+						s.put("monthly", o.get("premiumExcludedTaxFc")==null?0.00:Double.parseDouble(o.get("premiumExcludedTaxFc").toString())/12);
+						sec_list.add(s);
+					}
+					sec_map.put("sectionList", sec_list);
+					secdetails.add(sec_map);
+				}
+				result.put("sectionDetails", secdetails);
+			}
+			
+			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
+			result.put("email1", map.get("email1")==null?"":map.get("email1").toString());
+			result.put("branchCode", map.get("branchCode")==null?"":map.get("branchCode").toString());
+			result.put("agencyCode", map.get("agencyCode")==null?"":map.get("agencyCode").toString());
 			result.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
 			result.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 			result.put("address", map.get("address")==null?"":map.get("address").toString());
@@ -2279,6 +2304,7 @@ public class JasperCustomServiceImple {
 			result.put("debitNoteNo", map.get("debitNoteNo")==null?"":map.get("debitNoteNo").toString());
 			result.put("premium", map.get("premium")==null?"":new BigDecimal(Double.parseDouble(map.get("premium").toString())).toString());
 			result.put("vatPremium", map.get("vatPremium")==null?"":Double.parseDouble(map.get("vatPremium").toString()));
+			result.put("vatPercent", map.get("vatPercent")==null?"":Double.parseDouble(map.get("vatPercent").toString()));
 			result.put("totalPremium", map.get("totalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("totalPremium").toString())).toString());
 			result.put("signature", map.get("signature")==null?"":map.get("signature").toString());
 			result.put("place", map.get("place")==null?"":map.get("place").toString());
@@ -2287,6 +2313,7 @@ public class JasperCustomServiceImple {
 			result.put("productId", map.get("productId")==null?"":map.get("productId").toString());
 			result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
 			result.put("taxName", map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":"Vat");
+			result.put("userMobile", map.get("userMobile")==null?"":map.get("userMobile").toString());
 			result.put("overAllPremium", OverAllPremium);
 			result.put("premiumDetails", premiumDetailsRes);
 			//result.put("sectionDetails", sectionList);
