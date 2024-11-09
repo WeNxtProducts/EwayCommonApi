@@ -3802,6 +3802,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setUpdateas(isEndt);
 			response.setUwList(referr);
 			response.setReferals(masterreferral);
+			response.setLocationId(engine.getLocationId());
 			fservice.saveFactorRateRequestDetails(response); 
 			return response;
 		}catch (Exception e) {
