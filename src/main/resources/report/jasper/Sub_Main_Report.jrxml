@@ -31,9 +31,6 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="sectionList"/>
 		<fieldDescription><![CDATA[sectionList]]></fieldDescription>
 	</field>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
 	<columnHeader>
 		<band height="10">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -62,7 +59,7 @@
 		<band height="15">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<componentElement>
-				<reportElement x="0" y="0" width="555" height="15" uuid="5b6fde2d-5dda-434f-a4ab-de5d9cdf6984">
+				<reportElement mode="Transparent" x="0" y="0" width="555" height="15" uuid="5b6fde2d-5dda-434f-a4ab-de5d9cdf6984">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 2_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 2_CH"/>
