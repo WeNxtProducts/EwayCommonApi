@@ -2295,6 +2295,10 @@ public class JasperCustomServiceImple {
 					secdetails.add(sec_map);
 				}
 				result.put("sectionDetails", secdetails);
+				result.put("phoenixVatPercent", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+						&& f.getTaxId()!=0).map(u -> u.getTaxRate()).findAny().orElse(BigDecimal.ZERO));
+				result.put("phoenixVatAmount", coverData.stream().filter(f -> f.getCoverageType().equalsIgnoreCase("T")
+						&& f.getTaxId()!=0).map(u -> u.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 			}
 			
 			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
