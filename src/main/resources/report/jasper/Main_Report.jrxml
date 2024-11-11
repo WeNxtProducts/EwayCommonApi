@@ -188,8 +188,20 @@
 		<fieldDescription><![CDATA[coreAppBrokerCode]]></fieldDescription>
 	</field>
 	<field name="vatPercent" class="java.math.BigDecimal"/>
+	<field name="phoenixVatPercent" class="java.math.BigDecimal"/>
+	<field name="phoenixVatAmount" class="java.math.BigDecimal"/>
 	<background>
-		<band splitType="Stretch"/>
+		<band height="802" splitType="Stretch">
+			<textField>
+				<reportElement x="106" y="335" width="343" height="133" forecolor="#FA100C" uuid="179ba1e0-94cf-4d5d-a579-58bb38cc4e90">
+					<printWhenExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="60"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{policyNo} !=null && $F{policyNo}!=""?"POLICY":"DRAFT")]]></textFieldExpression>
+			</textField>
+		</band>
 	</background>
 	<title>
 		<band height="80" splitType="Stretch">
@@ -213,6 +225,22 @@
 			</textField>
 		</band>
 	</title>
+	<columnHeader>
+		<band height="21">
+			<textField>
+				<reportElement x="0" y="5" width="555" height="16" uuid="6e4945ac-3140-455f-b0a3-1b744a0e8a45">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} >1]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="0" rightPadding="2">
+					<pen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""?"SCHEDULE FORMING PART AND ATTACHED TO  QUOTE NO : "+$F{quoteNo}:"SCHEDULE FORMING PART AND ATTACHED TO POLICY NO  : "+$F{policyNo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
 	<detail>
 		<band height="93" splitType="Stretch">
 			<frame>
@@ -347,9 +375,9 @@
 					<reportElement x="280" y="0" width="120" height="13" uuid="95c523a8-1c8d-46ec-b33a-5ef6067f2541"/>
 					<textFieldExpression><![CDATA["Premium Payment"]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<textField isBlankWhenNull="true">
 					<reportElement x="400" y="0" width="155" height="13" uuid="94e01a51-00d4-4bf7-b5dc-dd41bebf58be"/>
-					<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium})]]></textFieldExpression>
 				</textField>
 			</frame>
 			<frame>
@@ -435,19 +463,19 @@
 				<reportElement positionType="Float" x="0" y="39" width="555" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="64dcdb25-3884-4f72-8f0a-31c739dbc3b7"/>
 				<textField isBlankWhenNull="true">
 					<reportElement x="0" y="0" width="100" height="13" uuid="17043b15-e0b8-4dad-861c-8ff5f1ee47f4"/>
-					<textFieldExpression><![CDATA["Policy Number"]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo} == ""?"Quote No :":"Policy Number :"]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement x="100" y="0" width="160" height="13" uuid="7c2ddcec-809a-413d-83cb-0fd0f48e9bec"/>
-					<textFieldExpression><![CDATA[$F{policyNo}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{policyNo}==null || $F{policyNo} ==""?$F{quoteNo}:$F{policyNo}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement x="280" y="0" width="120" height="13" uuid="7f22025c-c7e1-4808-9103-2db694e2cc09"/>
 					<textFieldExpression><![CDATA["Premium Collection"]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<textField isBlankWhenNull="true">
 					<reportElement x="400" y="0" width="155" height="13" uuid="9a91fb2f-def5-4ad0-b74a-5e8ef0c248e3"/>
-					<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium})]]></textFieldExpression>
 				</textField>
 			</frame>
 			<frame>
@@ -672,7 +700,7 @@
 		</band>
 		<band height="15">
 			<subreport>
-				<reportElement x="0" y="0" width="555" height="15" uuid="7c390665-3478-4045-b685-42304503e5a5">
+				<reportElement mode="Transparent" x="0" y="0" width="555" height="15" uuid="7c390665-3478-4045-b685-42304503e5a5">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("sectionDetails")]]></dataSourceExpression>
@@ -766,8 +794,7 @@
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium})
-]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium})]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="360" y="6" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="5cebcf96-581e-4bf1-a0af-49d5de8c6859"/>
@@ -778,8 +805,7 @@
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium}.compareTo(BigDecimal.ZERO) != 0 ? $F{totalPremium}.divide(new BigDecimal(12), 2, BigDecimal.ROUND_HALF_UP) : $F{totalPremium})
-]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{totalPremium}.compareTo(BigDecimal.ZERO) != 0 ? $F{totalPremium}.divide(new BigDecimal(12), 2, BigDecimal.ROUND_HALF_UP) : $F{totalPremium})]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="460" y="6" width="95" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="53032575-039b-4bd8-a6d8-5210ba60a49e"/>
@@ -812,7 +838,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font isBold="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA["  VAT @ 15%"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["  VAT @ "+$F{phoenixVatPercent}+"%"]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="260" y="0" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="3246b217-dff7-45fe-afd4-e1edcbdc3052"/>
@@ -823,7 +849,7 @@
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{vatPremium})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{phoenixVatAmount})]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="360" y="0" width="100" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ccf8228a-a2ac-4919-ba70-31063cf2870c"/>
@@ -834,7 +860,7 @@
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{vatPremium}.compareTo(BigDecimal.ZERO) != 0 ? $F{vatPremium}.divide(new BigDecimal(12), 2, BigDecimal.ROUND_HALF_UP) : $F{vatPremium})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{phoenixVatAmount}.compareTo(BigDecimal.ZERO) != 0 ? $F{phoenixVatAmount}.divide(new BigDecimal(12), 2, BigDecimal.ROUND_HALF_UP) : $F{phoenixVatAmount})]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="ElementGroupHeight" x="460" y="0" width="95" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="4478d128-a0da-496b-97fd-50663483f037"/>
@@ -1108,4 +1134,17 @@
 			</frame>
 		</band>
 	</detail>
+	<columnFooter>
+		<band height="15">
+			<textField>
+				<reportElement x="435" y="0" width="80" height="15" uuid="0d6b944a-54a8-4b28-b197-120291c70fc2"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="0" width="40" height="15" uuid="5adcfa90-a2a3-4db3-b5f5-8e1a983160d9"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
 </jasperReport>
