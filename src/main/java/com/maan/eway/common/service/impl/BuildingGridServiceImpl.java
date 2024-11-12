@@ -357,16 +357,16 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 			// Over All Premium Fc
 			Subquery<Long> overAllPremiumFc = query.subquery(Long.class);
-			Root<HomePositionMaster> ocpm1 = overAllPremiumFc.from(HomePositionMaster.class);
+			Root<EserviceBuildingDetails> ocpm1 = overAllPremiumFc.from(EserviceBuildingDetails.class);
 			overAllPremiumFc.select(cb.sum(ocpm1.get("overallPremiumFc")));
-			Predicate a1 = cb.equal(m.get("quoteNo"),ocpm1.get("quoteNo") );
+			Predicate a1 = cb.equal(m.get("requestReferenceNo"),ocpm1.get("requestReferenceNo") );
 			overAllPremiumFc.where(a1);
 			
 			// Over All Premium Lc
 			Subquery<Long> overAllPremiumLc = query.subquery(Long.class);
-			Root<HomePositionMaster> ocpm2 = overAllPremiumLc.from(HomePositionMaster.class);
+			Root<EserviceBuildingDetails> ocpm2 = overAllPremiumLc.from(EserviceBuildingDetails.class);
 			overAllPremiumLc.select(cb.sum(ocpm2.get("overallPremiumLc")));
-			Predicate a2 = cb.equal(m.get("quoteNo"),ocpm2.get("quoteNo") );
+			Predicate a2 = cb.equal(m.get("requestReferenceNo"),ocpm2.get("requestReferenceNo") );
 			overAllPremiumLc.where(a2);
 			
 		
@@ -391,7 +391,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
+			orderList.add(cb.desc(m.get("requestReferenceNo")));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -430,7 +430,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
 			riskId.where(a3);
 			Predicate n13 = cb.equal(m.get("riskId"), riskId);
-			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n13).orderBy(orderList);
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n13).orderBy(orderList).distinct(true) ;
 
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
@@ -438,7 +438,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			result.setMaxResults(offset);
 			existingQuotes = result.getResultList();
 			if (existingQuotes != null && existingQuotes.size() > 0) {
-				existingQuotes = existingQuotes.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+				//existingQuotes = existingQuotes.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
 			}else {
 				existingQuotes=null;
 			}
@@ -500,9 +500,15 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				
 				n8 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			}
-
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceBuildingDetails> ocp = riskId.from(EserviceBuildingDetails.class);
+			riskId.select(cb.max(ocp.get("riskId")));
+			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			riskId.where(a3);
+			Predicate n13 = cb.equal(m.get("riskId"), riskId);
 //			Predicate n13 = cb.equal(  m.get("sectionId"),  "0");
-			query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10).orderBy(orderList);
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10,n13).orderBy(orderList);
 			
 			TypedQuery<Long> result = em.createQuery(query);
 			
