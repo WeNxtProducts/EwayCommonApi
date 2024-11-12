@@ -111,7 +111,7 @@ public class PerilCalculator {
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+73+";param9:"+vehicles.get(0).get("motorUsage").toString()+";";
 */
 				String DriveClaimNum_12m_0m="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+4+";"+vehicles.get(0).get("claimNum12m0m").toString()+"~param1&param2;";
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+4+";"+drivers.get(0).get("claimExperience").toString()+"~param1&param2;";
 
 				/*countBody =crservice.getCountFromRating(DriveClaimNum_12m_0m);
 				if(countBody<=0) {

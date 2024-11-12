@@ -20,6 +20,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.BuildingRiskDetailsId;
+import com.maan.eway.bean.EserviceBuildingDetails;
 
 import jakarta.transaction.Transactional;
 /**
@@ -71,6 +72,7 @@ public interface BuildingRiskDetailsRepository  extends JpaRepository<BuildingRi
 
 	List<BuildingRiskDetails> findByRequestReferenceNoAndSectionIdAndLocationId(String string, String sectionId,
 			int locationId);
+
 
 
 }

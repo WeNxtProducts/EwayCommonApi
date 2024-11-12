@@ -936,6 +936,13 @@ private static final long serialVersionUID = 1L;
 	
 	@Column(name = "PLATE_TYPE")
 	private String plateType;
+	
+	@Column(name = "QUOTE_EXPIRY_DAYS")
+	private Integer quoteExpiryDays;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "QUOTE_EXPIRY_DATE")
+    private Date quoteExpiryDate;
 }
 
 

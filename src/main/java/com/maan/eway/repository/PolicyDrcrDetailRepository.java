@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.maan.eway.bean.PolicyDrcrDetail;
@@ -27,6 +28,8 @@ import com.maan.eway.bean.PolicyDrcrDetailId;
  * <p>
  * Description: "PolicyDrcrDetail" Repository
  */
+
+import jakarta.transaction.Transactional;
  
  
  
@@ -50,5 +53,6 @@ public interface PolicyDrcrDetailRepository  extends JpaRepository<PolicyDrcrDet
 
 	@Query(value = "SELECT (CASE WHEN pcd.currency IN (cm.currency_id) THEN premium_excluded_tax_lc ELSE premium_excluded_tax_fc END) AS stamp_duty FROM policy_cover_data pcd INNER JOIN eway_insurance_company_master cm  WHERE cover_id='119' AND policy_no=?1 AND cm.company_id=pcd.company_id AND SYSDATE() BETWEEN effective_date_start AND effective_date_end",nativeQuery=true)
 	String getStampDutyforUganda(String pNumber);
+	
 
 }

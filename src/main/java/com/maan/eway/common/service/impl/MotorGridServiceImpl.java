@@ -449,7 +449,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 		
-			query.where(n1, n2, n3, n4, n5 , n7,n11, n8,n9,n10).orderBy(orderList);	
+			Predicate n12 = cb.or(cb.notEqual(m.get("savedFrom"),  "SQ" ), cb.and(cb.equal(m.get("savedFrom"),  "SQ" ), m.get("quoteNo").isNotNull())); 
+			
+			query.where(n1, n2, n3, n4, n5 , n7,n11, n8,n9,n10,n12).orderBy(orderList);	
 		
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
@@ -522,7 +524,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			riskId.where(a3,a4);
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
-			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11);
+			Predicate n12 = cb.or(cb.notEqual(m.get("savedFrom"),  "SQ" ), cb.and(cb.equal(m.get("savedFrom"),  "SQ" ), m.get("quoteNo").isNotNull()));
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11,n12);
 
 
 		
@@ -597,7 +600,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(m.get("status"), "Y");
-			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), before30);
+			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"),m.get("quoteExpiryDate"));
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
 			Predicate n11 = null;
@@ -6177,8 +6180,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 			Predicate n12 = cb.equal(m.get("savedFrom"),  "SQ" );
-		
-			query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10,n12).orderBy(orderList);	
+			Predicate n13 = m.get("quoteNo").isNull();
+			query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10,n12,n13).orderBy(orderList);	
 		
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);

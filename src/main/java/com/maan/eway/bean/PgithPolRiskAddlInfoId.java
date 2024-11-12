@@ -22,8 +22,8 @@ public class PgithPolRiskAddlInfoId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private String     quotationPolicyNo ;
     private String     riskId ;
-    private BigDecimal     praiCode23;
-    private BigDecimal     praiCode24;
+    private String     praiCode23;
+    private String     praiCode24;
     private String     praiData01 ;
     private String     praiData03 ;
     

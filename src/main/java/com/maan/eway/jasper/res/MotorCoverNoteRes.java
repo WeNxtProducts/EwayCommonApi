@@ -41,6 +41,9 @@ public class MotorCoverNoteRes {
 	@JsonProperty("RegistrationNumber")
 	private String registrationNumber;
 	
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
+	
 	@JsonProperty("VehicleTypeDesc")
 	private String vehicleTypeDesc;
 	
@@ -103,5 +106,8 @@ public class MotorCoverNoteRes {
 	
 	@JsonProperty("MotorUsageDesc")
 	private String motorUsageDesc;
+	
+	@JsonProperty("sumInsured")
+	private String sumInsured;
 
 }

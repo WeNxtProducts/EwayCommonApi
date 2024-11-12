@@ -15,6 +15,9 @@ import lombok.Data;
 @Data
 public class CoverIdReq2 {
 	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
 	@JsonProperty("CoverId")
 	private Integer coverId;
 	

@@ -28,4 +28,6 @@ public interface CalculatorEngine {
 	EserviceMotorDetailsSaveRes policyCalculator(CalcEngine request, String string);
 
 	void policyReferralCalc(CalcEngine engine);
+
+	List<EserviceMotorDetailsSaveRes> getCalc(CalcEngine request, String string);
 }

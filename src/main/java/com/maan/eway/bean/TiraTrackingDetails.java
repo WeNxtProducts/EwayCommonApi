@@ -107,6 +107,9 @@ private static final long serialVersionUID = 1L;
     private String     requestFilePath ;
     @Column(name="RESPONSE_FILE_PATH")
     private String     responseFilePath ;
+    
+    @Column(name="VEHICLE_ID")
+    private String     vehicleId ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

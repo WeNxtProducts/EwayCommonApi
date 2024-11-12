@@ -241,8 +241,8 @@ public class JasperCustomServiceImple {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List<MotorCoverNoteRes> getMotorCoverNote(String policyNo,String vehicleId) {
-	  log.info("Enter into getMotorCoverNote.\nArgument ==> PolicyNo :"+policyNo);
+	public List<MotorCoverNoteRes> getMotorCoverNote(String policyNo,String vehicleId,String quoteNo) {
+	  log.info("Enter into getMotorCoverNote.\nArgument ==> PolicyNo :"+policyNo+",QuoteNo : "+quoteNo+",VehicleId : "+vehicleId);
 	  List<MotorCoverNoteRes> response = new  ArrayList<MotorCoverNoteRes>();
   try {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -295,6 +295,7 @@ public class JasperCustomServiceImple {
 				hpmRoot.get("inceptionDate").alias("inceptionDate"),
 				hpmRoot.get("expiryDate").alias("expiryDate"),
 				mddRoot.get("registrationNumber").alias("registrationNumber"),
+				mddRoot.get("requestReferenceNo").alias("requestReferenceNo"),
 				mddRoot.get("vehicleTypeDesc").alias("vehicleTypeDesc"),
 				cb.selectCase().when(cb.isNotNull(mddRoot.get("vehcileModelDesc")), mddRoot.get("vehcileModelDesc"))
 						.otherwise(modelType).alias("modelType"),
@@ -318,6 +319,7 @@ public class JasperCustomServiceImple {
 				sddRoot.get("coverNoteReferenceNo").alias("covernoteNo"),sddRoot.get("stickerNumber").alias("stickerNumber"));
 			List<Selection> selections = selectionList.stream().collect(Collectors.toList());
 		//if(StringUtils.isNotBlank(vehicleId)) {
+			selections.add(mddRoot.get("sumInsuredLc").alias("sumInsured"));
 			selections.add(cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), mddRoot.get("actualPremiumLc"))
 					.otherwise(mddRoot.get("actualPremiumFc")).alias("premium"));
 			selections.add(mddRoot.get("vatPremium").alias("vatPremium"));
@@ -342,10 +344,11 @@ public class JasperCustomServiceImple {
 					cb.equal(hpmRoot.get("currency"), icmRoot.get("currencyId")),
 					cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")),
 					cb.equal(icmRoot.get("amendId"), icmAmd),
-					cb.equal(hpmRoot.get("productId"), "46"),
-					cb.equal(hpmRoot.get("status"), "P"),
+					cb.equal(hpmRoot.get("productId"), StringUtils.isBlank(policyNo)?"5":"46"),
+					cb.equal(hpmRoot.get("status"), StringUtils.isBlank(policyNo)?"Y":"P"),
 					cb.equal(sddRoot.get("quoteNo"), mddRoot.get("quoteNo")),
 					cb.equal(sddRoot.get("riskId").as(String.class), mddRoot.get("vehicleId")),
+					StringUtils.isBlank(policyNo)?cb.equal(hpmRoot.get("quoteNo"), quoteNo):
 					cb.equal(hpmRoot.get("policyNo"), policyNo),
 					StringUtils.isNotBlank(vehicleId)?cb.equal(mddRoot.get("vehicleId"), vehicleId):
 						cb.conjunction());
@@ -363,6 +366,7 @@ public class JasperCustomServiceImple {
 						.covernoteNo(map.get("covernoteNo")==null?"":map.get("covernoteNo").toString())
 						.stickerNumber(map.get("stickerNumber")==null?"":map.get("stickerNumber").toString())
 						.registrationNumber(map.get("registrationNumber")==null?"":map.get("registrationNumber").toString())
+						.requestReferenceNo(map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString())
 						.vehicleTypeDesc(map.get("vehicleTypeDesc")==null?"":map.get("vehicleTypeDesc").toString())
 						.modelType(map.get("modelType")==null?"":map.get("modelType").toString())
 						.colorDesc(map.get("colorDesc")==null?"":map.get("colorDesc").toString())
@@ -382,6 +386,7 @@ public class JasperCustomServiceImple {
 						.sectionName(map.get("sectionName")==null?"":map.get("sectionName").toString())
 						.modelNumber(map.get("vehcileModel")==null?"":map.get("vehcileModel").toString())
 						.premium(map.get("premium")==null?"":map.get("premium").toString())
+						.sumInsured(map.get("sumInsured")==null?"":map.get("sumInsured").toString())
 						.vatPremium(map.get("vatPremium")==null?"":map.get("vatPremium").toString())
 						.overallPremium(map.get("overallPremium")==null?"":map.get("overallPremium").toString())
 						.build();
@@ -2063,9 +2068,13 @@ public class JasperCustomServiceImple {
 							LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 							lmap.put("locationName", k.getLocationName());
 							lmap.put("buildingAddress", k.getAddress());
+							lmap.put("occupation", k.getCategoryDesc());
+							lmap.put("sectionId", sectionId);
 							lmap.put("wallType", k.getWallTypeDesc());
 							lmap.put("roofType", k.getRoofTypeDesc());
 							lmap.put("firstlosspayee", k.getFirstLossPercent());
+							lmap.put("coveringdetails", k.getCoveringDetails());
+							lmap.put("descriptionofrisk", k.getDescriptionOfRisk());
 							lmap.put("buildingSumInsured", k.getBuildingSuminsured());
 							lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
@@ -2186,7 +2195,12 @@ public class JasperCustomServiceImple {
 					//WARRANTY
 					List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 					
-						List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+						List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct()
+								.map(u -> {
+									return u.entrySet().stream()
+											.collect(Collectors.toMap(Map.Entry::getKey, e -> capitalizeFirstLetter(e.getValue())));
+								})
+								.collect(Collectors.toList());
 						int conditionsize = termsAndconditions.size();
 						int midIndex = conditionsize / 2;
 
@@ -2207,7 +2221,6 @@ public class JasperCustomServiceImple {
 						
 						coverMap.put("sectionDesc", Slist.stream().filter(k -> sectionId.equalsIgnoreCase(k.get("sectionId").toString())).map(e -> e.get("sectionDesc").toString()).findFirst().orElse(""));
 						coverMap.put("contentList", contentDetails);
-						if("1".equalsIgnoreCase(sectionId))
 						coverMap.put("locationDetails", locationDetails);
 						coverMap.put("employeeList", employeeDetails);
 						coverMap.put("commonDtlList",commonDetails);
@@ -2253,12 +2266,14 @@ public class JasperCustomServiceImple {
 				});
 			}
 			
+			List<Map<String,Object>> firstLossPayeesList = new ArrayList<Map<String,Object>>();
 			List<FirstLossPayee> firstLossPayees = firstLossPayeeRepo.findByRequestReferenceNo(map.get("requestReferenceNo").toString());
 			if(!firstLossPayees.isEmpty()) {
-				String firstlosspayee = firstLossPayees.stream().map(m -> m.getFirstLossPayeeDesc()).collect(Collectors.joining(","));
-				result.put("customerName", firstlosspayee+"  "+(map.get("customerName")==null?"":map.get("customerName").toString()));
-			}else {
-				result.put("customerName",map.get("customerName")==null?"":map.get("customerName").toString());
+				firstLossPayees.forEach(k -> {
+					Map<String,Object> custMap = new HashMap<String,Object>();
+					custMap.put("firstLossPayee", k.getFirstLossPayeeDesc());
+					firstLossPayeesList.add(custMap);
+				});
 			}
 			
 			if("100046".equalsIgnoreCase(map.get("companyId")==null?"":map.get("companyId").toString())) {
@@ -2322,7 +2337,10 @@ public class JasperCustomServiceImple {
 			result.put("premiumDetails", premiumDetailsRes);
 			//result.put("sectionDetails", sectionList);
 			//result.put("locationDetails", locationDetails);
-			result.put("coverageDetails", coverageDetails);
+			result.put("firstLossPayeesList", firstLossPayeesList);
+			result.put("coverageDetails",  coverageDetails.stream()
+				    .sorted(Comparator.comparing(o -> (String) o.get("coverId")))
+				    .collect(Collectors.toList()));
 			result.put("attachMents", attachments);
 			}
 		}catch(Exception e) {
@@ -2991,22 +3009,23 @@ public class JasperCustomServiceImple {
 					hpm.get("productName").alias("productName"),cb.selectCase().when(cb.equal(hpm.get("productId"), 4), sectionName).when(cb.equal(hpm.get("productId"), 5), policyTypeDesc)
 					.otherwise(policyTypeName).alias("policyTypeDesc"),hpm.get("debitNoteNo").alias("debitNoteNo"),sumInsured.alias("sumInsured"),
 					cb.selectCase().when(cb.in(hpm.get("currency")).value(currencyId), cb.selectCase().when(cb.in(hpm.get("productId")).value(Arrays.asList(5,46)),
-							icm))
-					
-					
-					
-					);
-			
-			
-			
-			
-			
-			
+							icm)));
 		log.info("Exit into EwayPremiumRegister");
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private Object capitalizeFirstLetter(Object obj) {
+	    if (obj == null) {
+	        return null;
+	    }
+	    String str = obj.toString();
+	    if (str.isEmpty()) {
+	        return str;
+	    }
+	    return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
 	
 	

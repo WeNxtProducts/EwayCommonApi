@@ -3081,6 +3081,8 @@ List<Error> errorList = new ArrayList<Error>();
 				saveData.setCreditYn(req.getCreditYn()==null?"N":req.getCreditYn());
 				saveData.setBackDays(req.getBackDays()==null?0:Integer.valueOf(req.getBackDays()));
 				saveData.setLoginId(login.getLoginId());
+				saveData.setSumInsuredStart(new BigDecimal(req.getSumInsuredStart()));
+				saveData.setSumInsuredEnd(new BigDecimal(req.getSumInsuredEnd()));
 				if ("5".equalsIgnoreCase(req.getProductId().toString())) {
 					saveData.setPolicyTypeId(req.getPolicyTypeId());
 					saveData.setPolicyTypeDesc(req.getPolicyTypeDesc());

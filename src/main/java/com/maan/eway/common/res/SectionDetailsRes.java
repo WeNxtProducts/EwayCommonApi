@@ -295,5 +295,16 @@ public class SectionDetailsRes {
 
 	@JsonProperty("BankName")
 	private String bankName;
+	
+	@JsonProperty("WallType")
+	private String wallType;
+	
+	@JsonProperty("WallTypeDesc")
+	private String wallTypeDesc;
 
+	@JsonProperty("RoofType")
+	private String roofType;
+	
+	@JsonProperty("RoofTypeDesc")
+	private String roofTypeDesc;
 }

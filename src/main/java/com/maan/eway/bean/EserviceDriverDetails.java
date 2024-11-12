@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import jakarta.persistence.Table;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -199,6 +198,12 @@ private static final long serialVersionUID = 1L;
     private String     licenseNumber;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
+    
+    @Column(name = "OLD_REQ_REF_NO", length = 20)
+	private String oldReqRefNo;
+    
+    @Column(name = "CLAIM_EXPERIENCE")
+	private Integer claimExperience;
 
 }
 

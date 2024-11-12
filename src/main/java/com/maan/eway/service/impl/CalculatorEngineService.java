@@ -14,10 +14,12 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,9 @@ import com.maan.eway.bean.ChartOfAccount;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -82,6 +87,9 @@ import com.maan.eway.endorsment.util.LoadingFromPolicy;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
+import com.maan.eway.repository.EServiceSectionDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
@@ -206,6 +214,15 @@ public class CalculatorEngineService implements CalculatorEngine {
 	
 	@Autowired
 	private PersonalInfoRepository piRepo ;
+	
+	@Autowired
+	private EServiceSectionDetailsRepository esSecRepo;
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository eservicebuildingRepo;
+	
+	@Autowired
+	private EserviceCommonDetailsRepository eservicecommonRepo;
 	
 	private Boolean isPolicyPeriod=Boolean.FALSE;
 	@Autowired
@@ -3785,6 +3802,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setUpdateas(isEndt);
 			response.setUwList(referr);
 			response.setReferals(masterreferral);
+			response.setLocationId(engine.getLocationId());
 			fservice.saveFactorRateRequestDetails(response); 
 			return response;
 		}catch (Exception e) {
@@ -3906,5 +3924,94 @@ public class CalculatorEngineService implements CalculatorEngine {
 		calendar.set(Calendar.MILLISECOND, 0);
 		date = calendar.getTime();
 		return date;
-	}	
+	}
+
+	@Override
+	public List<EserviceMotorDetailsSaveRes> getCalc(CalcEngine request, String token) {
+		 List<EserviceMotorDetailsSaveRes> resList=new ArrayList<EserviceMotorDetailsSaveRes>();
+		try {
+			Integer locationId=0;
+			String riskId="";
+			String sectionId="";
+			
+			CalcEngine engine=new CalcEngine();
+			System.out.println("Calculator Calling Api");
+			List<EserviceSectionDetails> secList= esSecRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
+			if(secList!=null) {
+			Set<Integer> findlocationid = secList.stream().map(EserviceSectionDetails::getLocationId)
+					.distinct().collect(Collectors.toSet());
+			System.out.println("Total Location Ids :"+findlocationid);
+			if(findlocationid!=null ) {
+			for (Integer data : findlocationid) {
+				locationId=data;
+				System.out.println("Location Id "+data);
+				List<EserviceSectionDetails> secFilter = secList.stream()
+					.filter(o -> o.getLocationId().equals(data))
+					.collect(Collectors.toList());
+				for(EserviceSectionDetails s:secFilter) {
+					 if("A".equalsIgnoreCase(s.getProductType())) {
+							List<EserviceBuildingDetails> buildingdata =eservicebuildingRepo
+									.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo(),data);
+							List<EserviceBuildingDetails> building=buildingdata.stream()
+									.filter(o -> o.getLocationId().equals(data) && o.getSectionId().equals(s.getSectionId())
+											&& o.getRiskId().equals(s.getRiskId()))
+									.collect(Collectors.toList());
+							
+							for (EserviceBuildingDetails bd : building) {
+								{
+									engine.setLocationId(bd.getLocationId().toString());
+									engine.setBranchCode(bd.getBranchCode());
+									engine.setInsuranceId(bd.getCompanyId());
+									engine.setSectionId(bd.getSectionId());
+									engine.setProductId(bd.getProductId());
+									engine.setMsrefno(bd.getMsRefno().toString());
+									engine.setCdRefNo(bd.getCdRefno().toString());
+									engine.setVdRefNo(bd.getVdRefNo().toString());
+									engine.setCreatedBy(bd.getCreatedBy());
+									engine.setRequestReferenceNo(bd.getRequestReferenceNo());
+									engine.setEffectiveDate(bd.getPolicyStartDate());
+									engine.setPolicyEndDate(bd.getPolicyEndDate());
+									engine.setCoverModification("N");
+									engine.setVehicleId(bd.getRiskId().toString());		
+									EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+									resList.add(res);
+									}
+							}
+					 }else  if("H".equalsIgnoreCase(s.getProductType())) {
+						 List<EserviceCommonDetails> comdata = eservicecommonRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo(),data);
+						 List<EserviceCommonDetails> common=comdata.stream()
+									.filter(o -> o.getLocationId().equals(data) && o.getSectionId().equals(s.getSectionId())
+											&& o.getRiskId().equals(s.getRiskId()))
+									.collect(Collectors.toList());
+						 for (EserviceCommonDetails cd : common) {
+								engine.setLocationId(cd.getLocationId().toString());
+								engine.setBranchCode(cd.getBranchCode());
+								engine.setInsuranceId(cd.getCompanyId());
+								engine.setSectionId(cd.getSectionId());
+								engine.setProductId(cd.getProductId());
+								engine.setMsrefno(cd.getMsRefno().toString());
+								engine.setCdRefNo(cd.getCdRefno().toString());
+								engine.setVdRefNo(cd.getVdRefNo().toString());
+								engine.setCreatedBy(cd.getCreatedBy());
+								engine.setRequestReferenceNo(cd.getRequestReferenceNo());
+								engine.setEffectiveDate(cd.getPolicyStartDate());
+								engine.setPolicyEndDate(cd.getPolicyEndDate());
+								engine.setCoverModification("N");
+								engine.setVehicleId(cd.getRiskId().toString());		
+								EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+								resList.add(res);
+						 }
+						 
+					 }
+				}
+			}
+			}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return resList;
+	}
 }

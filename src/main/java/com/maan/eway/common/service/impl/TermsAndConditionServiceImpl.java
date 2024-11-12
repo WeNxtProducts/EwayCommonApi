@@ -915,11 +915,13 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 									.findAllByCompanyIdAndBranchCodeAndProductIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
 											req.getCompanyId(),  "99999", req.getProductId(), 
 											today, todayEnd, "Y");
-
-							list = clausesRepo
-									.findAllByCompanyIdAndBranchCodeAndProductIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
-											req.getCompanyId(),  "99999", req.getProductId(),
-											today, todayEnd, "Y");
+							/*
+							 * list = clausesRepo
+							 * .findAllByCompanyIdAndBranchCodeAndProductIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(
+							 * req.getCompanyId(), "99999", req.getProductId(), today, todayEnd, "Y");
+							 */
+							list=clausesRepo.findAllByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus
+									(req.getCompanyId(),  "99999", req.getProductId(), req.getSectionId(), today, todayEnd, "Y");
 
 							list2 = exclusionRepo
 									.findAllByCompanyIdAndBranchCodeAndProductIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatus(

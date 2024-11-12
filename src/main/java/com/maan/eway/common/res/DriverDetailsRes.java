@@ -33,4 +33,8 @@ public class DriverDetailsRes {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+
+    @JsonProperty("ClaimExperience")
+	private Integer claimExperience;
 }

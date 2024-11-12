@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,9 +45,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 @Service
 @Transactional
-public class TanzaniaEserviceCustomerDetails {
+public class EagalEserviceCustomerDetails {
 	
-	private Logger log = LogManager.getLogger(TanzaniaEserviceCustomerDetails.class);
+	private Logger log = LogManager.getLogger(EagalEserviceCustomerDetails.class);
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ;
@@ -142,14 +144,38 @@ public class TanzaniaEserviceCustomerDetails {
 			
 			if (StringUtils.isBlank(req.getIdNumber())) {
 				errorList.add("1013");
-			} else if (req.getIdNumber().length() > 100) {
-				errorList.add("1014");
-			}  else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
-				errorList.add("1015");
-			} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {	
-				errorList.add("1015");
+			}else {
+				if ("1".equalsIgnoreCase(req.getPolicyHolderType())) {
+					if("7".equals(req.getPolicyHolderTypeid())) {
+						if (!req.getIdNumber().matches("^[A-Za-z0-9]{14}$")) {
+							errorList.add("1014");
+						} else if(!req.getIdNumber().matches("^[A-Za-z][A-Za-z0-9]*$")) {	
+							errorList.add("1015");
+						}
+					}else if("3".equals(req.getPolicyHolderTypeid())) {
+						 if(!req.getIdNumber().matches("^[A-Za-z0-9]+$")) {	
+							errorList.add("1015");
+						}
+					}
+				}else {
+					if("8".equals(req.getPolicyHolderTypeid())) {
+						 if(!req.getIdNumber().matches("^[A-Za-z][A-Za-z0-9]*$")) {	
+							errorList.add("1015");
+						}
+					}else if("9".equals(req.getPolicyHolderTypeid())) {
+						 if(!req.getIdNumber().matches("^F[A-Za-z0-9]$")) {	
+							errorList.add("1015");
+						}
+					}
+				}
 			}
-				
+			if(StringUtils.isNotBlank(req.getIdNumber())) {
+				List<EserviceCustomerDetails>list=repository.findByCompanyIdAndIdNumberAndClientStatus(req.getCompanyId(), req.getIdNumber(),"Y");
+				list=list.stream().filter(i ->!(i.getCustomerReferenceNo().equals(req.getCustomerReferenceNo()))).collect(Collectors.toList());
+				if(!CollectionUtils.isEmpty(list)) {
+					errorList.add("3312");
+				}
+			}
 			//}
 			if (StringUtils.isBlank(req.getPreferredNotification())) {
 				errorList.add("1049");
@@ -431,9 +457,9 @@ public class TanzaniaEserviceCustomerDetails {
 				errorList.add("1085");
 			}
 			if (StringUtils.isBlank(req.getPolicyHolderType())) {
-				errorList.add("1086");
+			 errorList.add("1086");
 			}
-
+							
 		}
 		
 		}catch (Exception e) {

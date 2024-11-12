@@ -620,10 +620,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 
 								if ("104".equals(vehicle.getSectionId())) {
 									motor.setSectionId(vehicle.getSectionId());
-									motor.setSectionName("Comprehensive");
+									motor.setSectionName("TPL");
 								} else if ("103".equals(vehicle.getSectionId())) {
 									motor.setSectionId(vehicle.getSectionId());
-									motor.setSectionName("TPl");
+									motor.setSectionName("Comprehensive");
 
 								}
 								eserviceMotorDetailsRepo.saveAndFlush(motor);

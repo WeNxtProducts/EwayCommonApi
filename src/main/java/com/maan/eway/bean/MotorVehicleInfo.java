@@ -196,9 +196,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="ROAD_WORTHEXP_DT")
     private Date       roadWorthexpDt ;
     
+    @Column(name="RES_MAKE_ID", length=20)
+    private String     resMakeId ;
+
+    @Column(name="RES_MODEL_ID", length=20)
+    private String     resModelId ;
+
     
- 
-}
+    }
 
 
 

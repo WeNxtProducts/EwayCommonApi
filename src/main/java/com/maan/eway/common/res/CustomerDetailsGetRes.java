@@ -264,5 +264,8 @@ public class CustomerDetailsGetRes {
 		@JsonProperty("NationalityName")
 		private String     nationalityName ;
 		
+		@JsonFormat(pattern = "dd/MM/yyyy")
+		@JsonProperty("ExpiryDate")
+		private Date expiryDate;
 
 }
