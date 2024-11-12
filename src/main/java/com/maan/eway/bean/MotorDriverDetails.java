@@ -190,7 +190,8 @@ private static final long serialVersionUID = 1L;
    @Column(name="DRIVER_LICENSE_EXPIRY_DATE")
    private Date  driverLicenseExpiryDate ;
    
-   
+   @Column(name = "CLAIM_EXPERIENCE")
+	private Integer claimExperience;
  
 }
 

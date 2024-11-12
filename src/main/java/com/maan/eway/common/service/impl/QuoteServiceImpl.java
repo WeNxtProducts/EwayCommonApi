@@ -577,8 +577,7 @@ public class QuoteServiceImpl implements QuoteService {
 					DriverDetailsRes driverRes  = new DriverDetailsRes();  
 					dozerMapper.map(dri, driverRes);
 					driverRes.setLicenseNo(dri.getIdNumber());
-					
-					driverResList.add(driverRes);
+					driverRes.setClaimExperience(dri.getClaimExperience()==null?0:dri.getClaimExperience());				driverResList.add(driverRes);
 					
 				}
 				vehicleDetails.setRiskId(mot.getVehicleId());
