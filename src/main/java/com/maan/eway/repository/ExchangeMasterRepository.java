@@ -12,4 +12,6 @@ public interface ExchangeMasterRepository extends JpaRepository<ExchangeMaster, 
 
 	List<ExchangeMaster> findByCurrencyIdOrderByAmendIdDesc(String currency);
 
+	List<ExchangeMaster> findByCurrencyIdAndCompanyIdOrderByAmendIdDesc(String currency, String companyId);
+
 }
