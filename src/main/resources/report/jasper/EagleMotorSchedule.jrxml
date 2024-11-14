@@ -75,7 +75,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vehicleMakeDesc"/>
 		<fieldDescription><![CDATA[vehicleMakeDesc]]></fieldDescription>
 	</field>
-	<field name="chassisNumber" class="java.math.BigDecimal">
+	<field name="chassisNumber" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="chassisNumber"/>
 		<fieldDescription><![CDATA[chassisNumber]]></fieldDescription>
 	</field>
