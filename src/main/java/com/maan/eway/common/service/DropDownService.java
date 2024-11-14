@@ -15,6 +15,7 @@ import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.MotDropdownReq;
 import com.maan.eway.master.req.PlanTypeReq;
+import com.maan.eway.master.req.PolicyTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.MotorWithAccessoriesRes;
@@ -260,5 +261,7 @@ public interface DropDownService {
 	List<DropDownRes> municipalityTraffic(LovDropDownReq req);
 	
 	List<DropDownRes> aggregatedValue(LovDropDownReq req);
+
+	List<DropDownRes> policyTypeReferral(LovDropDownReq req);
 
 }

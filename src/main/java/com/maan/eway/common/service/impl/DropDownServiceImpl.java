@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,7 @@ import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.MotDropdownReq;
 import com.maan.eway.master.req.PlanTypeReq;
+import com.maan.eway.master.req.PolicyTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
@@ -3775,6 +3777,49 @@ public class DropDownServiceImpl implements DropDownService {
 			return null;
 		}
 		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> policyTypeReferral(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		
+		try {
+			DropDownRes res = new DropDownRes();
+
+			String itemType = "VECHILE_AGE_REFERRAL";
+
+			List<ListItemValue> getList = getListItem(req, itemType, req.getInsuranceId());
+			
+			if(!getList.isEmpty()) {
+				Optional<ListItemValue> first = getList.stream().filter(i -> i.getItemCode().equals(req.getPolicyTypeId())).findFirst();
+				String age=StringUtils.isBlank(first.get().getItemValue())?"0":first.get().getItemValue();
+				String manufactAge=req.getManufactureAge();
+				// Refral block
+				
+				if (Integer.parseInt(manufactAge)>Integer.parseInt(age)) {
+					res.setCode(manufactAge);
+					res.setCodeDesc("Vehicle Age Referral");
+					res.setStatus("R");
+
+				}else {
+					res.setCode(manufactAge);
+					res.setCodeDesc("Not a Referral");
+					res.setStatus("Y");
+				} 
+
+			} else {
+				res.setCode("Not Available");
+				res.setCodeDesc("Not Available");
+				res.setStatus("R");
+			}
+			resList.add(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	
 	}
 
 	/*

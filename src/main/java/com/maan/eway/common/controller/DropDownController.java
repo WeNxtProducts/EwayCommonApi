@@ -29,6 +29,7 @@ import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.MotDropdownReq;
 import com.maan.eway.master.req.PlanTypeReq;
+import com.maan.eway.master.req.PolicyTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.MotorWithAccessoriesRes;
@@ -2113,4 +2114,21 @@ public class DropDownController {
 		}
 
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value = "/policytypereferral",produces = "application/json")
+	public ResponseEntity<CommonRes> policyTypeReferral(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.policyTypeReferral(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 }

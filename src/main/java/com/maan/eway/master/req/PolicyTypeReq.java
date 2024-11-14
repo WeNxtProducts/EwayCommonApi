@@ -5,21 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class LovDropDownReq {
-
+public class PolicyTypeReq {
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
-	@JsonProperty("BranchCode")
-	private String branchCode;
+	
 	@JsonProperty("ProductId")
 	private String productId;
 	
-
 	@JsonProperty("PolicyTypeId")
 	private String policyTypeId;
 	
-	@JsonProperty("ManufactureAge")
-	private String manufactureAge;
-	
-
 }
