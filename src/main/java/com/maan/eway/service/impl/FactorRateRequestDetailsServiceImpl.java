@@ -736,6 +736,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				
 			}
 			
+			
+			
 			// Save Master Referals
 			if(req.getReferals()!=null && req.getReferals().size()>0 ) {
 				
@@ -779,6 +781,15 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					
 				}
 					
+			}
+			else if(req.getReferals()==null || req.getReferals().isEmpty()) {
+				System.out.println(" Deleting Previous Records in MasterReferralDetails : RequestReferenceNo :"+req.getRequestReferenceNo());
+				Long refCount  = masReferralRepo.countByRequestReferenceNoAndRiskIdAndProductIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
+	                      Integer.valueOf(req.getProductId()),req.getInsuranceId() );
+				if(refCount!=null && refCount > 0 ) {
+					masReferralRepo.deleteByRequestReferenceNoAndRiskIdAndProductIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
+				            Integer.valueOf(req.getProductId()),req.getInsuranceId() );
+				}
 			}
 			
 			
