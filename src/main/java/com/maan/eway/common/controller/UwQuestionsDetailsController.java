@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,7 +48,7 @@ public class UwQuestionsDetailsController {
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/saveuwquestions")
 	@ApiOperation(value = "This method is Save UW Questions")
-	public ResponseEntity<CommonRes> saveUwQuestions(@RequestBody List<UwQuestionsDetailsSaveReq> req) {
+	public ResponseEntity<CommonRes> saveUwQuestions(@RequestBody List<UwQuestionsDetailsSaveReq> req, @RequestHeader("Authorization") String token) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
@@ -64,7 +65,7 @@ public class UwQuestionsDetailsController {
 		} else {
 
 			// Get All
-			SuccessRes res = uwService.saveUwQuestions(req);
+			SuccessRes res = uwService.saveUwQuestion(req,token);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

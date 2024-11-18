@@ -1,6 +1,7 @@
 package com.maan.eway.common.req;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -23,7 +24,12 @@ public class UwQuestionsDetailsSaveReq implements Serializable {
     
 	@JsonProperty("BranchCode")
     private String   branchCode ;
-    
+	
+	@JsonProperty("SectionId")
+    private String    sectionId ;
+	
+	@JsonProperty("LocationId")
+    private String    LocationId ;
 	
 	@JsonProperty("RequestReferenceNo")
     private String    requestReferenceNo ;   
@@ -68,7 +74,7 @@ public class UwQuestionsDetailsSaveReq implements Serializable {
 	private String textValue;
 	
 	@JsonProperty("LoadingPercent")
-	private String loadingPercent;
+	private BigDecimal loadingPercent;
 	
 	@JsonProperty("QuestionCategory")
 	private String questionCategory;

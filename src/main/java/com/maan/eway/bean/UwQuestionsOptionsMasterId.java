@@ -15,20 +15,22 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class UwQuestionsOptionsMasterId  implements Serializable {
+public class UwQuestionsOptionsMasterId implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    //--- ENTITY KEY ATTRIBUTES 
-    
-    private String     companyId ;
+	// --- ENTITY KEY ATTRIBUTES
+
+	private String companyId;
 
 	private String branchCode;
 
-	  private Integer  productId;
+	private Integer productId;
 
-	  private Integer  dependentUwQuestionId;
-    
-	   private Integer  uwQuesOptionId;
-	
+	private Integer dependentUwQuestionId;
+
+	private Integer uwQuesOptionId;
+
+	//private String sectionId;
+
 }

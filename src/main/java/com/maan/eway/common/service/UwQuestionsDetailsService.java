@@ -7,6 +7,8 @@ package com.maan.eway.common.service;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.RequestHeader;
+
 import com.maan.eway.common.req.UwQuestionsDetailsGetReq;
 import com.maan.eway.common.req.UwQuestionsDetailsSaveReq;
 import com.maan.eway.common.res.UwQuestionsDetailsRes;
@@ -23,6 +25,8 @@ public interface UwQuestionsDetailsService  {
 	SuccessRes saveUwQuestions(List<UwQuestionsDetailsSaveReq> req);
 
 	List<UwQuestionsDetailsRes> getUwQuestionsDetails(UwQuestionsDetailsGetReq req);
+
+	SuccessRes saveUwQuestion(List<UwQuestionsDetailsSaveReq> req,@RequestHeader("Authorization") String token);
 
 	
 

@@ -22,6 +22,9 @@ public class UwQuestionMasterSaveReq implements Serializable {
     
 	@JsonProperty("BranchCode")
     private String    branchCode ;
+	
+	@JsonProperty("SectionId")
+    private String    sectionId ;
     
 	
 	@JsonProperty("UwQuestionId")
