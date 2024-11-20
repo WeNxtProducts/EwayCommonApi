@@ -151,12 +151,14 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n4 = cb.equal(  s.get("productId"),  req.getProductId());
 //			Predicate n9 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			Predicate n5 = cb.equal(m.get("status"), "P");
+			Predicate n14 = cb.equal(m.get("status"), "D");
+			Predicate n15 = cb.or(n5,n14);
 			Predicate n6 = cb.equal(s.get("responseStatusCode"), "TIRA001");
 			Predicate n7 = cb.equal(s.get("responseStatusCode"), "TIRA214");
 			Predicate n8 = cb.or(n6,n7);
 		
 			Predicate n9=cb.between(m.get("entryDate"), startDate, endDate);
-			query.where(n1,n2,n3,n4,n5,n8,n9).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n15,n8,n9).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
@@ -276,6 +278,8 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n3 = cb.equal(  s.get("productId"),  req.getProductId());
 //			Predicate n11 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			Predicate n4 = cb.equal(m.get("status"), "P");
+			Predicate n14 = cb.equal(m.get("status"), "D");
+			Predicate n15 = cb.or(n4,n14);
 			/*
 			 * Predicate n5 = cb.notEqual(s.get("responseStatusCode"), "TIRA001"); Predicate
 			 * n6 = cb.notEqual(s.get("responseStatusCode"), "TIRA214"); Predicate n88 =
@@ -294,7 +298,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 //			Predicate n9 = cb.isNotNull(s.get("tiraResponseId"));
 			Predicate n10=cb.between(m.get("entryDate"), startDate, endDate);
 			Predicate n11 = cb.equal(  m.get("quoteNo"),  s.get("quoteNo"));
-			query.where(n1,n2,n3,n4,n7,n8,n10,n11,n12,n13).orderBy(orderList);
+			query.where(n1,n2,n3,n15,n7,n8,n10,n11,n12,n13).orderBy(orderList);
 			
 			
 			// Get Result
@@ -406,6 +410,8 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 			Predicate n3 = cb.equal(  s.get("productId"),  req.getProductId());
 //			Predicate n12 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			Predicate n4 = cb.equal(m.get("status"), "P");
+			Predicate n14 = cb.equal(m.get("status"), "D");
+			Predicate n15 = cb.or(n4,n14);
 //			Predicate n5 = cb.notEqual(m.get("responseStatusCode"), "TIRA001");
 //			Predicate n6 = cb.notEqual(m.get("responseStatusCode"), "TIRA214");
 //			Predicate n7 = cb.and(n5,n6);
@@ -414,7 +420,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 //			Predicate n10 = cb.or(n8);
 			Predicate n11=cb.between(m.get("entryDate"), startDate, endDate);
 			Predicate n12 = cb.equal(  m.get("quoteNo"),  s.get("quoteNo"));
-			query.where(n1,n2,n3,n4,n8,n11,n12).orderBy(orderList);
+			query.where(n1,n2,n3,n15,n8,n11,n12).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
