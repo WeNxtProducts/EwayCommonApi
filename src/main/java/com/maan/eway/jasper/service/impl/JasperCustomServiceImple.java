@@ -2009,20 +2009,22 @@ public class JasperCustomServiceImple {
 						
 						
 						List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999
-								&& (f.getCoverageType().equals("O") && (f.getIsSelected().equalsIgnoreCase("Y")?"Y":"N").equalsIgnoreCase("Y") 
+								&& (f.getCoverageType().equals("O") && Arrays.asList("Y","D").contains(f.getIsSelected().equalsIgnoreCase("Y")?"Y":f.getIsSelected().equalsIgnoreCase("D")?"D":"N") 
 								|| !f.getCoverageType().equalsIgnoreCase("O")))
-								.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverName(),Collectors.reducing(
+								.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverId(),Collectors.reducing(
 									BigDecimal.ZERO, PolicyCoverData::getPremiumExcludedTaxLc, BigDecimal::add))))
 								.entrySet().stream()
-								.flatMap((Map.Entry<Integer,Map<String,BigDecimal>> s ) -> {
+								.flatMap((Map.Entry<Integer,Map<Integer,BigDecimal>> s ) -> {
 									Integer sectionId = s.getKey();
 									return s.getValue().entrySet().stream()
-											.map((Map.Entry<String,BigDecimal> g )-> {
-												String coverDesc = g.getKey();
+											.map((Map.Entry<Integer,BigDecimal> g )-> {
+												Integer coverId = g.getKey();
 												BigDecimal totPremium = g.getValue();
 												Map<String,Object> secMap = new HashMap<String,Object>();
 												secMap.put("SectionId", sectionId);
-												secMap.put("CoverDesc", coverDesc.toUpperCase());
+												secMap.put("CoverDesc", coverData.stream().filter(f -> f.getTaxId()==0
+														&& f.getDiscLoadId()==0 && f.getSectionId()==sectionId && f.getCoverId()==coverId)
+														.map(m -> m.getCoverName()).findFirst().orElse("N/A"));
 												secMap.put("TotPremium", totPremium);
 												return secMap;
 											});
