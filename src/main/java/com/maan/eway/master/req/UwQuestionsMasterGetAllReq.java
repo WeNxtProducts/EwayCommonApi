@@ -11,24 +11,31 @@ import lombok.Data;
 @Data
 public class UwQuestionsMasterGetAllReq implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    
-    @JsonProperty("InsuranceId")
-   	private String companyId;
-   	
-   	@JsonProperty("BranchCode")
-   	private String branchCode;
-   	
-	@JsonProperty("ProductId")
-   	private String productId;
-	
-	  @JsonProperty("LoginId")
-	  private String loginId;
-	  
-		@JsonProperty("QuestionCategory")
-		private String questionCategory;
-		
+	private static final long serialVersionUID = 1L;
 
-		@JsonProperty("questionCategoryDesc")
-		private String questionCategoryDesc;
+	@JsonProperty("InsuranceId")
+	private String companyId;
+
+	@JsonProperty("BranchCode")
+	private String branchCode;
+
+	@JsonProperty("ProductId")
+	private String productId;
+
+	@JsonProperty("LoginId")
+	private String loginId;
+
+	@JsonProperty("SectionId")
+	private String sectionId;
+
+	@JsonProperty("QuestionCategory")
+	private String questionCategory;
+
+	@JsonProperty("questionCategoryDesc")
+	private String questionCategoryDesc;
+	
+	 @JsonFormat(pattern ="dd/MM/yyyy")
+	 @JsonProperty("EffectiveDateStart")
+	 private Date effectiveDateStart;
+
 }

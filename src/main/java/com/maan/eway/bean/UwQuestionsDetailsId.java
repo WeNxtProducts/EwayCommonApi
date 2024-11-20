@@ -52,6 +52,12 @@ public class UwQuestionsDetailsId implements Serializable {
     
     private String questionCategory;
     
+   private String    sectionId;
+    
+   private String locationId;
+    
+   
+    
 
      
 }

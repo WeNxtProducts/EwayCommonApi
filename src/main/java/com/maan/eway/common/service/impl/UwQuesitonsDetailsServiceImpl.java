@@ -1,22 +1,36 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
+import com.maan.eway.admin.req.PolicyTypeMasterGetReq;
+import com.maan.eway.admin.service.RestTemplateApiService;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -25,20 +39,29 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.MsAssetDetails;
 import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsVehicleDetails;
+import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.bean.UwQuestionsDetailsArch;
 import com.maan.eway.common.req.UwQuestionsDetailsGetReq;
 import com.maan.eway.common.req.UwQuestionsDetailsSaveReq;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.res.PremiaCommonRes;
 import com.maan.eway.common.res.UwQuestionsDetailsRes;
 import com.maan.eway.common.service.UwQuestionsDetailsService;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.MsAssetDetailsRepository;
+import com.maan.eway.repository.MsCommonDetailsRepository;
 import com.maan.eway.repository.MsHumanDetailsRepository;
 import com.maan.eway.repository.MsVehicleDetailsRepository;
+import com.maan.eway.repository.ProductSectionMasterRepository;
+import com.maan.eway.repository.SectionCoverMasterRepository;
 import com.maan.eway.repository.UwQuestionsDetailsArchRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.res.SuccessRes;
@@ -84,10 +107,29 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 	@Autowired
 	private EserviceTravelDetailsRepository eserTraRepo ;
 	
+	@Autowired
+	private MsCommonDetailsRepository msCommanRepo;
 	
+	@Autowired
+    private ProductSectionMasterRepository productsectionrepo;
+	
+	
+	@Autowired
+	private RestTemplateApiService restTemplateApiService;
+	 
+	
+	@Autowired
+	private SectionCoverMasterRepository sectionCoverMaster;
+	
+	
+
+	@Value(value = "${DefaultInsertcover}")
+	private String DefaultInsertcover;
 	
 	@PersistenceContext
 	private EntityManager em;
+	
+	
 
 	Gson json = new Gson();
 
@@ -228,13 +270,13 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 				else {
 					saveData.setIsReferral("N");							
 				}
-				saveData.setLoading(data.getLoadingPercent()==null? BigDecimal.ZERO : new BigDecimal (data.getLoadingPercent()));
+				//saveData.setLoading(data.getLoadingPercent()==null? BigDecimal.ZERO : new BigDecimal (data.getLoadingPercent()));
 				totalUwLoading = totalUwLoading.add(saveData.getLoading());
 				saveList.add(saveData);
 			
 			}
 						
-			res.setSuccessId(vehId.toString());			
+			
 			CompanyProductMaster product = getCompanyProductMasterDropdown(companyId , productId); 
 			Integer cdRefNo = null;
 			Integer vdRefNo = null;
@@ -313,6 +355,327 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 		return res;
 	}
 	
+	public SuccessRes saveUwQuestion(List<UwQuestionsDetailsSaveReq> req, @RequestHeader("Authorization") String token) {
+		SuccessRes res = new SuccessRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+
+			Date entryDate = new Date();
+			String refNo = req.get(0).getRequestReferenceNo();
+			Integer vehId = Integer.valueOf(req.get(0).getVehicleId());
+			String companyId = req.get(0).getCompanyId();
+			String productId = req.get(0).getProductId();
+			String sectionId = req.get(0).getSectionId();
+					
+			// Check for old Records 
+		
+			List<UwQuestionsDetails> oldDatas = uwRepo.findByRequestReferenceNo(refNo);
+			List<UwQuestionsDetailsArch> saveArchs = new ArrayList<UwQuestionsDetailsArch>();
+			Long count = uwArchRepo.countByRequestReferenceNo(refNo);
+			//Integer sno = Integer.valueOf(count.toString())+1;
+			if(count > 0 ) {
+//				uwArchRepo.deleteByRequestReferenceNoAndVehicleId(refNo , vehId);
+
+				uwArchRepo.deleteByRequestReferenceNo(refNo);
+			}
+			if ( oldDatas.size() > 0 ) {
+				entryDate = oldDatas.get(0).getEntryDate() !=null ? oldDatas.get(0).getEntryDate() : new Date()  ;
+			}
+			
+			oldDatas.forEach( o -> {
+				UwQuestionsDetailsArch arch = new UwQuestionsDetailsArch();
+				dozerMapper.map(o, arch);
+				arch.setArchId(o.getVehicleId());
+				saveArchs.add(arch);
+					
+			});
+			uwArchRepo.saveAllAndFlush(saveArchs);
+			uwRepo.deleteAll(oldDatas);	
+			
+			// Save for new Records 
+			List<UwQuestionsDetails> saveList = new ArrayList<UwQuestionsDetails>();
+			for(UwQuestionsDetailsSaveReq data : req) {
+				UwQuestionsDetails saveData = new UwQuestionsDetails();
+				
+				saveData = dozerMapper.map(data,UwQuestionsDetails.class);
+				saveData.setEntryDate(entryDate);		
+				saveData.setUpdatedDate(new Date());			
+				saveData.setStatus(data.getStatus());
+				saveData.setTextValue(data.getTextValue());
+				saveData.setStatus(data.getStatus());
+				//saveData.setQuestfionCategory(data.getQuestionCategory());
+				saveData.setQuestionCategory(data.getQuestionCategory());
+				saveData.setQuestionCategoryDesc(data.getQuestionCategoryDesc());
+				if((StringUtils.isNotBlank(data.getStatus())) && (data.getStatus().equalsIgnoreCase("R")) ){
+					saveData.setIsReferral("Y");
+				}
+				else {
+					saveData.setIsReferral("N");							
+				}
+				
+				// save Uw Loading in One Time Tabel..
+				UwQuestionsDetails loadingdetails=	OTTUwLoading(saveData,data.getLocationId(),req);
+				if(loadingdetails!=null )
+				{
+					saveData.setVdRefNo(loadingdetails.getVdRefNo());
+					saveData.setCdRefno(loadingdetails.getCdRefno());
+					saveData.setMsRefno(loadingdetails.getMsRefno());
+					saveData.setSectionId(loadingdetails.getSectionId());
+					saveData.setLoading(loadingdetails.getLoading());
+				}
+				saveList.add(saveData);
+			
+			}
+			uwRepo.saveAllAndFlush(saveList);	
+			
+			// Default Cover Insert .............
+			Map<String, BigDecimal> sectionLoading = saveList.stream()
+				    .collect(Collectors.toMap(
+				        UwQuestionsDetails::getSectionId,   // Key: sectionId
+				        UwQuestionsDetails::getLoading,     // Value: loading
+				        (existing, replacement) -> replacement // Replace old value with new one
+				    ));
+			InsertDEfaultCover(sectionLoading,productId,companyId,req.get(0).getCreatedBy(),token);
+			res.setResponse("Updated Successfully");
+			
+		} catch (Exception Ex) {
+			System.out.println("Exception Occured In SaveUW Question Details ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+			Ex.printStackTrace();
+			log.info("Exception is --->" + Ex.getMessage());
+			res.setResponse("Failed");
+		}
+	return res;
+	}
+	
+	public void InsertDEfaultCover(Map<String, BigDecimal> sectionLoading,String pid,String Cid,String createdby,String token)
+	{
+		try {
+			Date entryDate = new Date();
+			String url = DefaultInsertcover;
+			List<Integer> coverid = List.of(90001, 90002);
+			for (Map.Entry<String, BigDecimal> entry : sectionLoading.entrySet()) {
+				Integer sectionId = Integer.valueOf(entry.getKey());
+				Integer loading = entry.getValue().intValue();
+				Integer pid1 = Integer.valueOf(pid);
+				System.out.println("Section: " + sectionId + ", Loading: " + loading);
+
+				List<SectionCoverMaster> covermaster2 = sectionCoverMaster
+						.findByCompanyIdAndProductIdAndSectionIdAndCoverIdOrderByAmendIdDesc(Cid, pid1, sectionId,
+								90001);
+				List<SectionCoverMaster> covermaster1 = sectionCoverMaster
+						.findByCompanyIdAndProductIdAndSectionIdAndCoverIdOrderByAmendIdDesc(Cid, pid1, sectionId,
+								90002);
+               
+				List<SectionCoverMasterSaveReq> reqlist = new ArrayList();
+				if (covermaster2 == null || covermaster2.isEmpty() || covermaster2.size() < 0) {
+					// Request Mapping
+					
+					SectionCoverMasterSaveReq req = new SectionCoverMasterSaveReq();
+					req.setSectionId(sectionId.toString());
+					req.setProductId(pid1.toString());
+					req.setCoverId("90001");
+					req.setCompanyId(Cid);
+					req.setCreatedBy(createdby);
+					req.setStatus("Y");
+					req.setEffectiveDateStart(entryDate);
+					req.setAgencyCode("99999");
+					req.setBranchCode("99999");
+					reqlist.add(req);
+				}
+				else if(covermaster1 == null || covermaster1.isEmpty() || covermaster1.size() < 0) {
+					SectionCoverMasterSaveReq req = new SectionCoverMasterSaveReq();
+					req.setSectionId(sectionId.toString());
+					req.setProductId(pid1.toString());
+					req.setCoverId("90002");
+					req.setCompanyId(Cid);
+					req.setCreatedBy(createdby);
+					req.setStatus("Y");
+					req.setEffectiveDateStart(entryDate);
+					req.setAgencyCode("99999");
+					req.setBranchCode("99999");
+					reqlist.add(req);
+				}
+
+				
+				System.out.println("The Cover Insert :"+reqlist);	
+					String removedBearer = token.replaceAll("Bearer ", "").split(",")[0];
+					CommonRes CommonRes1 = restTemplateApiService.callcoverinsertapi(url, reqlist, removedBearer);
+                  
+					
+					List<SectionCoverMaster> basecover = sectionCoverMaster
+							.findByCompanyIdAndProductIdAndSectionIdAndStatusOrderByAmendIdDesc(Cid, pid1, sectionId,
+									"Y");
+					Integer Discouncoverid = basecover.stream().filter(a -> a.getCoverageType().equals("B"))
+							.map(SectionCoverMaster::getCoverId).findFirst().orElse(null);
+					
+					// update the base rate 1
+					List<SectionCoverMaster> coverdetails =	sectionCoverMaster.findByCompanyIdAndProductIdAndSectionIdAndCoverIdInOrderByAmendIdDesc(Cid,pid1,sectionId,coverid);
+                      if(coverdetails != null || !coverdetails.isEmpty() || coverdetails.size() > 0)
+                      {
+                    	  coverdetails= coverdetails.stream().map(a->{
+                    		 a.setBaseRate(BigDecimal.ONE);
+                    		 a.setCoverBasedOn("uwLoading");
+                    		 a.setDiscountCoverId(Discouncoverid);
+                    		 a.setCoverageLimit(new BigDecimal("1000000000"));
+                    		 return a;
+                    	  }).collect(Collectors.toList());
+                    	  
+                    	  sectionCoverMaster.saveAll(coverdetails); 
+                      }
+                 }	
+
+				
+
+			
+
+		} catch (Exception EE) {
+			EE.printStackTrace();
+			log.info("Exception is --->" + EE.getMessage());
+		}
+	}
+			
+	
+	
+	public UwQuestionsDetails OTTUwLoading(UwQuestionsDetails d,String Locationid,List<UwQuestionsDetailsSaveReq> req)
+	{
+		UwQuestionsDetails data = new UwQuestionsDetails();
+	try {
+		
+		String Companyid=d.getCompanyId();
+		String pid= d.getProductId()!=null?d.getProductId().toString():"0";
+		Integer LocationId= Locationid!=null?Integer.parseInt(Locationid):0;
+	// check Product Type 
+      // CompanyProductMaster product = getCompanyProductMasterDropdown(Companyid,pid); 
+		List<ProductSectionMaster> product=productsectionrepo.findByProductIdAndSectionIdAndCompanyIdOrderByAmendIdDesc(Integer.valueOf(pid),Integer.valueOf(d.getSectionId()),d.getCompanyId());
+     	String ProductType =product.isEmpty()?"Empty": product.get(0).getMotorYn();
+		//update Loading For Motor
+           if(ProductType.equalsIgnoreCase("M") ) {
+        	   System.out.println(" Motor ---------");
+			EserviceMotorDetails motData = eserMotRepo.findByRequestReferenceNoAndRiskId(d.getRequestReferenceNo(), d.getVehicleId())	;	
+			MsVehicleDetails vehicleData = msVehRepo.findByVdRefno(Long.valueOf(motData.getVdRefNo()) );
+			if(vehicleData!=null) {
+				BigDecimal uwloading = req.stream().filter(a->a.getSectionId().equals(motData.getSectionId())).map(a -> {
+			        try {
+			            return a.getLoadingPercent();
+			        } catch (Exception e) {
+			            return BigDecimal.ZERO;  // Handle exception and default to 0
+			        }
+			    }).reduce(BigDecimal.ZERO, BigDecimal::add);
+				log.info("UwLoading is  --->" +uwloading);
+				log.info("SectionId is  --->" +motData.getSectionId());
+
+				data.setCdRefno( motData.getCdRefno()) ;
+				data.setVdRefNo(motData.getVdRefNo());
+				data.setMsRefno(motData.getMsRefno());
+ 				data.setSectionId(motData.getSectionId());
+ 				data.setLocationId(motData.getLocationId().toString());
+				data.setLoading(uwloading);
+				vehicleData.setUwLoading(uwloading);
+				msVehRepo.saveAndFlush(vehicleData);
+				
+			}}
+           //Update Loading for Common 
+           else if(ProductType.equalsIgnoreCase("H"))
+           {
+        	   System.out.println(" Common ---------");
+        	   
+        	EserviceCommonDetails comDatas = eserHumanRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(d.getRequestReferenceNo(),d.getVehicleId(),d.getSectionId(),LocationId );
+			if(comDatas!=null) {
+        	MsHumanDetails humanData = msHumanRepo.findByVdRefno(Long.valueOf(comDatas.getVdRefNo()) );
+        	if(humanData !=null) {
+        		BigDecimal uwloading = req.stream().filter(a->a.getSectionId().equals(comDatas.getSectionId())).map(a -> {
+			        try {
+			            return a.getLoadingPercent();
+			        } catch (Exception e) {
+			            return BigDecimal.ZERO;  // Handle exception and default to 0
+			        }
+			    }).reduce(BigDecimal.ZERO, BigDecimal::add);
+				log.info("UwLoading is  --->" +uwloading);
+				log.info("SectionId is  --->" +comDatas.getSectionId());
+        		data.setCdRefno( comDatas.getCdRefno()) ;
+				data.setVdRefNo(comDatas.getVdRefNo());
+				data.setMsRefno(comDatas.getMsRefno());
+				data.setSectionId(comDatas.getSectionId());
+				data.setLocationId(comDatas.getLocationId().toString());
+				data.setLoading(uwloading);
+				humanData.setUwLoading(uwloading);
+				msHumanRepo.saveAndFlush(humanData);
+				
+			}
+			}
+
+           }
+           //Travel
+           else if(ProductType.equalsIgnoreCase("H") && "4".equalsIgnoreCase(pid) ) {
+        	   System.out.println(" Travel ---------");
+				EserviceTravelDetails traData = eserTraRepo.findByRequestReferenceNo(d.getRequestReferenceNo())	;
+				MsHumanDetails humanData = msHumanRepo.findByVdRefno(Long.valueOf(traData.getVdRefNo()) );
+				if(humanData!=null) {
+					BigDecimal uwloading = req.stream().filter(a->a.getSectionId().equals(traData.getSectionId())).map(a -> {
+				        try {
+				            return a.getLoadingPercent();
+				        } catch (Exception e) {
+				            return BigDecimal.ZERO;  // Handle exception and default to 0
+				        }
+				    }).reduce(BigDecimal.ZERO, BigDecimal::add);
+					log.info("UwLoading is  --->" +uwloading);
+					log.info("SectionId is  --->" +traData.getSectionId());
+					data.setCdRefno( traData.getCdRefno()) ;
+					data.setVdRefNo(traData.getVdRefNo());
+					data.setMsRefno(traData.getMsRefno());
+					data.setSectionId(traData.getSectionId());
+                    data.setLocationId(traData.getLocationId());
+                	data.setLoading(uwloading);
+					humanData.setUwLoading(uwloading);
+					msHumanRepo.saveAndFlush(humanData);
+					
+				}
+			}
+           else {
+        	   System.out.println(" Assest ---------");
+        	   EserviceBuildingDetails buildings = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(d.getRequestReferenceNo(),d.getVehicleId(),d.getSectionId(),LocationId )	;
+				 if(buildings!=null) {
+					MsAssetDetails assetData = msAssetRepo.findByVdRefno(Long.valueOf(buildings.getVdRefNo()) );
+					if(assetData !=null) {
+						
+						BigDecimal uwloading = req.stream().filter(a->a.getSectionId().equals(buildings.getSectionId())).map(a -> {
+					        try {
+					            return a.getLoadingPercent();
+					        } catch (Exception e) {
+					            return BigDecimal.ZERO;  // Handle exception and default to 0
+					        }
+					    }).reduce(BigDecimal.ZERO, BigDecimal::add);
+						log.info("UwLoading is  --->" +uwloading);
+						log.info("SectionId is  --->" +buildings.getSectionId());
+						
+						
+						data.setCdRefno( buildings.getCdRefno()) ;
+						data.setVdRefNo(buildings.getVdRefNo());
+						data.setMsRefno(buildings.getMsRefno());
+						data.setSectionId(buildings.getSectionId());
+						data.setLoading(uwloading);
+						data.setLocationId(buildings.getLocationId().toString());
+						assetData .setUwLoading(uwloading);
+						
+						msAssetRepo.saveAndFlush(assetData);
+					
+				}  }
+        	   
+           }
+           
+           System.out.println(" The Update UwLoading details in One Time Table "+data);
+		
+	}catch(Exception cc)
+	{
+		System.out.println("Exception Occured In One Time Table ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		cc.printStackTrace();
+		log.info("Exception is --->" + cc.getMessage());
+		return null;
+		
+	}
+	return data;	
+	}
+	
 	public CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
 		CompanyProductMaster product = new CompanyProductMaster();
 		try {
@@ -380,7 +743,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 		
 		try {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		List<UwQuestionsDetails> datas = uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(req.getCompanyId(),Integer.valueOf(req.getProductId()),req.getRequestReferenceNo());
+		List<UwQuestionsDetails> datas = uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndSectionId(req.getCompanyId(),Integer.valueOf(req.getProductId()),req.getRequestReferenceNo(),req.getSectionId());
 		for(UwQuestionsDetails data : datas) {
 			UwQuestionsDetailsRes res = new UwQuestionsDetailsRes();
 			res=dozerMapper.map(data,UwQuestionsDetailsRes.class);

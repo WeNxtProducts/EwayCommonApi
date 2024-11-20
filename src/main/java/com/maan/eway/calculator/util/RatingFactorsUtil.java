@@ -885,11 +885,13 @@ public class RatingFactorsUtil {
 				
 			for(Entry<String, List<Tuple>> entrySet :queriesResult.entrySet()) {
 				String key=entrySet.getKey();
+				
 				List<Tuple> value = entrySet.getValue();
 				EwayFactorDetails fd=null;
 				if("Base".equalsIgnoreCase(key)) {
 					 fd=createBaseFactor(value,engine,vehicles,t);
 				}else {
+				//	if (minRateLoadingResult.get(key)!=null) break;
 					 fd=EwayFactorDetails.builder()
 							.amendId(0)
 							.cdRefno(engine.getCdRefNo())
@@ -1080,7 +1082,12 @@ public class RatingFactorsUtil {
 			String SumInsured="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+101+";param2<"+vehicles.get(0).get("sumInsured").toString()+";";
 			List<Tuple> result = getResult(SumInsured);
-			
+			if(result.size()==1) {
+				SumInsured="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+101+";sNo:1;";
+				List<Tuple> result2 = getResult(SumInsured);
+				result.addAll(result2);
+			}
 			/*
 				step 1 : take prev values
 				step 2: take upper level si

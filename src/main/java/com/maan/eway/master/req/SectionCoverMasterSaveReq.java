@@ -9,7 +9,6 @@ import lombok.Data;
 
 @Data
 public class SectionCoverMasterSaveReq {
-
 	@JsonProperty("CoverId")
 	private String coverId;
 	
@@ -24,6 +23,20 @@ public class SectionCoverMasterSaveReq {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+
+	@JsonProperty("Status")
+	private String status;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+
 	
 	
 }

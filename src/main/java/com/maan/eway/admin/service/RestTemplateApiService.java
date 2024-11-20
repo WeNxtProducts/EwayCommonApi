@@ -1,14 +1,18 @@
 package com.maan.eway.admin.service;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import java.util.List;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.admin.req.PolicyTypeMasterGetReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 
 
 @Service
@@ -36,4 +40,23 @@ public class RestTemplateApiService {
 	            return null; 
 	        }
 	    }
+	    
+	    public CommonRes callcoverinsertapi(String url, List<SectionCoverMasterSaveReq> reqlist,  String token) {
+		       
+
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.set("Authorization", "Bearer " + token); 
+	        headers.setContentType(MediaType.APPLICATION_JSON); 
+
+	        HttpEntity<List<SectionCoverMasterSaveReq>> requestEntity = new HttpEntity<>(reqlist, headers);
+	        ResponseEntity<CommonRes> responseEntity = 
+	                restTemplate.postForEntity(url, requestEntity, CommonRes.class);
+	        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+	            return responseEntity.getBody(); 
+	        } else {
+	            return null; 
+	        }
+	    }
+	  
+	    
 }

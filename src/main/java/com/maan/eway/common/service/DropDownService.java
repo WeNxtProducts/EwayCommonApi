@@ -2,15 +2,14 @@ package com.maan.eway.common.service;
 
 import java.util.List;
 
-
+import com.maan.eway.common.req.CertificateDetailsReq;
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
-import com.maan.eway.common.req.GetPlanBenefitsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
+import com.maan.eway.common.res.CertificateTypeRes;
 import com.maan.eway.common.res.GetMachineryContentRes;
 import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
-
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.MotDropdownReq;
@@ -260,5 +259,13 @@ public interface DropDownService {
 	List<DropDownRes> municipalityTraffic(LovDropDownReq req);
 	
 	List<DropDownRes> aggregatedValue(LovDropDownReq req);
+
+	List<DropDownRes> policyTypeReferral(LovDropDownReq req);
+
+	CertificateTypeRes getcertificateType(CertificateDetailsReq req);
+
+	CertificateTypeRes getBookIds();
+
+	CertificateTypeRes getcertificateNo(CertificateDetailsReq req);
 
 }

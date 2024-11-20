@@ -50,8 +50,10 @@ public class UwQuestionsOptionsMaster implements Serializable {
 	    @Id
 	    @Column(name="PRODUCT_ID", nullable=false)
 	    private Integer  productId;
-
-	
+        
+	    @Column(name="SECTION_ID",length=100) 
+		 private String sectionId ;
+	    
 	    @Id
 	    @Column(name="DEPENDENT_UW_QUESTION_ID", nullable=false)
 	    private Integer  dependentUwQuestionId;  //2  QuestionId

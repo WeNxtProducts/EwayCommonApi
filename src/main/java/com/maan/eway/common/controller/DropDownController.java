@@ -1,7 +1,6 @@
 package com.maan.eway.common.controller;
 
 import java.util.Collections;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +15,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.CertificateDetailsReq;
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
+import com.maan.eway.common.res.CertificateTypeRes;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.common.res.GetMachineryContentRes;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.integration.req.QueryKeyReq;
+import com.maan.eway.master.req.BodyTypeDropDownReq;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
-
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.MotDropdownReq;
 import com.maan.eway.master.req.PlanTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
+import com.maan.eway.master.req.UsageDropDownReq;
+import com.maan.eway.master.service.MotorBodyTypeMasterService;
+import com.maan.eway.master.service.impl.MotorVehicleUsageMasterServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.MotorWithAccessoriesRes;
 
@@ -44,6 +49,15 @@ public class DropDownController {
 
 	@Autowired
 	private DropDownService dropDownService;
+	
+	
+	@Autowired
+	private MotorVehicleUsageMasterServiceImpl  entityService;
+	
+	
+
+	@Autowired
+	private MotorBodyTypeMasterService service;
 
 
 //	@PostMapping("/insurancetype")
@@ -2113,4 +2127,109 @@ public class DropDownController {
 		}
 
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value = "/policytypereferral",produces = "application/json")
+	public ResponseEntity<CommonRes> policyTypeReferral(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.policyTypeReferral(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value = "/getCertificateType",produces = "application/json")
+	public ResponseEntity<CertificateTypeRes> getcertificateType(@RequestBody CertificateDetailsReq req) {
+		//CommonRes data = new CommonRes()
+		CertificateTypeRes res = dropDownService.getcertificateType(req);
+		
+		if (res != null) {
+			return new ResponseEntity<CertificateTypeRes>(res, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value = "/getBookId",produces = "application/json")
+	public ResponseEntity<CertificateTypeRes> getBookId() {
+		//CommonRes data = new CommonRes()
+		CertificateTypeRes res = dropDownService.getBookIds();
+		
+		if (res != null) {
+			return new ResponseEntity<CertificateTypeRes>(res, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value = "/getCertificateNo",produces = "application/json")
+	public ResponseEntity<CertificateTypeRes> getcertificateNo(@RequestBody CertificateDetailsReq req) {
+		//CommonRes data = new CommonRes()
+		CertificateTypeRes res = dropDownService.getcertificateNo(req);
+		
+		if (res != null) {
+			return new ResponseEntity<CertificateTypeRes>(res, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value="/vehicleBodyType",produces = "application/json")
+	@ApiOperation(value = "This method is get Motor Vehicle Body Type Drop Down")
+
+	public ResponseEntity<DropdownCommonRes> getInduvidualVehicleBodyType(@RequestBody UsageDropDownReq req) {
+
+		DropdownCommonRes data = new DropdownCommonRes();
+
+		// Save
+		List<DropDownRes> res = entityService.getInduvidualVehicleUsageDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/vehicleusage")
+	@ApiOperation(value = "This method is get Body Type Drop Down")
+
+	public ResponseEntity<DropdownCommonRes> getVehicleUsage(@RequestBody BodyTypeDropDownReq req) {
+
+		DropdownCommonRes data = new DropdownCommonRes();
+
+		// Save
+		List<DropDownRes> res = service.getInduvidualBodyTypeMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	
+
+
 }

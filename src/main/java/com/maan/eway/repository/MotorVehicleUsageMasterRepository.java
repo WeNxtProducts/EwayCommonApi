@@ -31,6 +31,8 @@ import org.springframework.data.domain.Pageable;
  
 public interface MotorVehicleUsageMasterRepository  extends JpaRepository<MotorVehicleUsageMaster,MotorVehicleUsageMasterId > , JpaSpecificationExecutor<MotorVehicleUsageMaster> {
 
+	//List<MotorVehicleUsageMaster> findBycompanyIdAndvehicleUsageIdOrderByAmendIdDesc(String companyid,Integer usageid);
+	List<MotorVehicleUsageMaster> findByCompanyIdAndVehicleUsageIdOrderByAmendIdDesc(String companyId, Integer vehicleUsageId);
 	
 
 }

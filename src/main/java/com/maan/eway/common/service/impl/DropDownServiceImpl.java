@@ -1,9 +1,9 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -12,8 +12,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -21,12 +27,15 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.query.sql.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
+import com.maan.eway.bean.EaglePremiaIntegration;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
@@ -35,9 +44,11 @@ import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
+import com.maan.eway.common.req.CertificateDetailsReq;
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
+import com.maan.eway.common.res.CertificateTypeRes;
 import com.maan.eway.common.res.GetMachineryContentRes;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.integration.req.QueryKeyReq;
@@ -55,6 +66,7 @@ import com.maan.eway.repository.CompanyCityMasterRepository;
 import com.maan.eway.repository.CompanyRegionMasterRepository;
 import com.maan.eway.repository.CompanyStateMasterRepository;
 import com.maan.eway.repository.CountryMasterRepository;
+import com.maan.eway.repository.EaglePremiaIntegrationRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.res.DropDownRes;
@@ -73,6 +85,9 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+
+
+
 
 @Service
 public class DropDownServiceImpl implements DropDownService {
@@ -112,6 +127,26 @@ public class DropDownServiceImpl implements DropDownService {
 
 	@Autowired
 	private MotorDataDetailsRepository motorRepo;
+	
+	@Autowired
+	private EaglePremiaIntegrationRepository usagerepo;
+	
+	
+	
+	@Autowired 
+	private RestTemplate restTemplate;
+	
+	@Value(value = "${CertificateType}")
+	private String certificateTypeBaseurl;
+
+	@Value(value = "${BookIds}")
+	private String BookIdsUrl;
+	
+	@Value(value = "${CertificateNo}")
+	private String CertificateNoURL;
+	
+
+	
 
 	// Cover Note Type Drop Down
 
@@ -3777,6 +3812,147 @@ public class DropDownServiceImpl implements DropDownService {
 		return resList;
 	}
 
+	@Override
+	public List<DropDownRes> policyTypeReferral(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		
+		try {
+			DropDownRes res = new DropDownRes();
+
+			String itemType = "VECHILE_AGE_REFERRAL";
+
+			List<ListItemValue> getList = getListItem(req, itemType, req.getInsuranceId());
+			
+			if(!getList.isEmpty()) {
+				Optional<ListItemValue> first = getList.stream().filter(i -> i.getItemCode().equals(req.getPolicyTypeId())).findFirst();
+				String age=StringUtils.isBlank(first.get().getItemValue())?"0":first.get().getItemValue();
+				String manufactAge=req.getManufactureAge();
+				// Refral block
+				
+				if (Integer.parseInt(manufactAge)>Integer.parseInt(age)) {
+					res.setCode(manufactAge);
+					res.setCodeDesc("Vehicle Age Referral");
+					res.setStatus("R");
+
+				}else {
+					res.setCode(manufactAge);
+					res.setCodeDesc("Not a Referral");
+					res.setStatus("Y");
+				} 
+
+			} else {
+				res.setCode("Not Available");
+				res.setCodeDesc("Not Available");
+				res.setStatus("R");
+			}
+			resList.add(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	
+	}
+
+	
+	 public CertificateTypeRes getcertificateType(CertificateDetailsReq req)
+	 {
+			CertificateTypeRes res = null;
+			try {
+				EaglePremiaIntegration usagedetails =usagerepo.findByCompanyIdAndItemTypeAndItemId(req.getCompanyid(), "VehicleUsage", req.getUsageId());
+				String UsageCoreAppCode=usagedetails!=null?usagedetails.getCoreAppCode():"0";
+				String apiurl = certificateTypeBaseurl + UsageCoreAppCode;
+				// Configure SSL to trust all certificates
+				TrustManager[] trustAllCerts = new TrustManager[] { (TrustManager) new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+
+					public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+
+					public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+				} };
+
+				SSLContext sc = SSLContext.getInstance("SSL");
+				sc.init(null, trustAllCerts, new java.security.SecureRandom());
+				HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+				res = restTemplate.getForObject(apiurl, CertificateTypeRes.class);
+				return res;
+			} catch (Exception Ex) {
+				System.out.println("The Exception Occured :" + Ex.getMessage());
+			}
+			return res;
+		 }
+	 
+	 public CertificateTypeRes getBookIds()
+	 {
+			CertificateTypeRes res = null;
+			try {
+
+				String apiurl = BookIdsUrl;
+				// Configure SSL to trust all certificates
+				TrustManager[] trustAllCerts = new TrustManager[] { (TrustManager) new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+
+					public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+
+					public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+				} };
+
+				SSLContext sc = SSLContext.getInstance("SSL");
+				sc.init(null, trustAllCerts, new java.security.SecureRandom());
+				HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+				res = restTemplate.getForObject(apiurl, CertificateTypeRes.class);
+				return res;
+			} catch (Exception Ex) {
+				System.out.println("The Exception Occured :" + Ex.getMessage());
+			}
+			return res;
+ 
+	 }
+	 public CertificateTypeRes getcertificateNo(CertificateDetailsReq req)
+	 {
+			CertificateTypeRes res = new CertificateTypeRes() ;
+			try {
+
+				String apiurl = CertificateNoURL + req.getCertificateNo();
+				// Configure SSL to trust all certificates
+				TrustManager[] trustAllCerts = new TrustManager[] { (TrustManager) new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+
+					public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+
+					public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+				} };
+
+				SSLContext sc = SSLContext.getInstance("SSL");
+				sc.init(null, trustAllCerts, new java.security.SecureRandom());
+				HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+				res = restTemplate.getForObject(apiurl, CertificateTypeRes.class);
+				return res;
+			} catch (Exception Ex) {
+				System.out.println("The Exception Occured :" + Ex.getMessage());
+			}
+			return res;
+		 }
+
+	
+	 
+	 
 	/*
 	 * public synchronized List<ListItemValue> getListItems(LovDropDownReq req ,
 	 * String itemType) { List<ListItemValue> list = new ArrayList<ListItemValue>();

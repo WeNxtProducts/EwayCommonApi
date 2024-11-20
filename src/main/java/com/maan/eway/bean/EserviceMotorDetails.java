@@ -943,6 +943,13 @@ private static final long serialVersionUID = 1L;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "QUOTE_EXPIRY_DATE")
     private Date quoteExpiryDate;
+
+	@Column(name ="NO_OF_MALE")
+	private Integer noOfMale;
+	
+    @Column(name ="NO_OF_FEMALE")
+	private Integer noOfFemale;
+     
 }
 
 

@@ -33,5 +33,14 @@ public interface SectionCoverMasterRepository  extends JpaRepository<SectionCove
 
 	List<SectionCoverMaster> findByCompanyIdAndSectionIdAndCoverIdOrderByAmendIdDesc(String companyId,
 			Integer sectionId, Integer coverId);
+	
+	List<SectionCoverMaster> findByCompanyIdAndProductIdAndSectionIdAndCoverIdOrderByAmendIdDesc(String companyId,Integer pp,
+			Integer sectionId, Integer coverId);
+	
+	List<SectionCoverMaster> findByCompanyIdAndProductIdAndSectionIdAndCoverIdInOrderByAmendIdDesc(String companyId,Integer pp,
+			Integer sectionId, List<Integer> coverId);
+	
+	
+	List<SectionCoverMaster> findByCompanyIdAndProductIdAndSectionIdAndStatusOrderByAmendIdDesc(String companyId,Integer pp,Integer sectionId,String sts);
 
 }

@@ -9,28 +9,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Builder
-public class UwQuestionsOptionsMasterId implements Serializable {
+public class EaglePremiaIntegrationId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// --- ENTITY KEY ATTRIBUTES
+	private Integer companyId;
 
-	private String companyId;
-
-	private String branchCode;
+	private Integer sectionId;
 
 	private Integer productId;
 
-	private Integer dependentUwQuestionId;
+	private Integer amendId;
 
-	private Integer uwQuesOptionId;
+	private String itemType;
 
-	//private String sectionId;
+	private Integer itemId;
 
 }

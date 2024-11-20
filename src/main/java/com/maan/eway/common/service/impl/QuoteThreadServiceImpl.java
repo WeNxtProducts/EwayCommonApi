@@ -1752,7 +1752,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			String endtFields = "" ;
 			String originalPolicyNo = "" ;
 			String isFinYn = "" ;
-			String locationId="";
+			Integer locationId=1;
 			DecimalFormat df = new DecimalFormat("####");
 			// Find Old QuoteNo
 			 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
@@ -1786,7 +1786,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString()))  ;
 				originalPolicyNo = data.getOriginalPolicyNo();
 				isFinYn 	 = data.getIsFinaceYn()==null ? "N" :data.getIsFinaceYn() ;
-			
+				locationId=data.getLocationId()==null?1:	data.getLocationId();	
 			} else if( req.getMotorYn().equalsIgnoreCase("A")) {
 				List<EserviceBuildingDetails> datas =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
 				EserviceBuildingDetails data = datas.get(0);

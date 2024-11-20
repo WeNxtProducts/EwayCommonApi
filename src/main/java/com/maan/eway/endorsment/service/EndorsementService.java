@@ -235,7 +235,7 @@ public class EndorsementService {
 				VehicleIdsReq v=new VehicleIdsReq();
 				
 				v.setVehicleId(Integer.parseInt(motors.getVehicleId()));
-				
+				v.setLocationId(motors.getLocationId()==null?1:Integer.parseInt(motors.getLocationId()));
 				
 				List<Cover> coverList = motors.getCoverList();
 				List<Cover> distinctSections = coverList.stream().filter(distinctByKey(c->c.getSectionId())).collect(Collectors.toList());
