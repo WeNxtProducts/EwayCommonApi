@@ -377,6 +377,10 @@ private static final long serialVersionUID = 1L;
 	
 	@Column(name = "PREMIUM_TPL")
 	private BigDecimal premiumTPL;
+	
+	@Column(name ="NO_OF_PASSENGERS")
+	private Integer noOfPassengers;
+    
 
 }
 

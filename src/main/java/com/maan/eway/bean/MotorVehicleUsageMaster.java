@@ -110,6 +110,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="VEHICLE_USAGE_DESC_LOCAL", length=100)
     private String vehicleUsageDescLocal;
+    
+    @Column(name="CORE_APP_CODE", length=50)
+    private String coreAppCode;
+    
 }
 
 
