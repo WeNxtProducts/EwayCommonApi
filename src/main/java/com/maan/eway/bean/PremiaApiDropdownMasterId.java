@@ -16,7 +16,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class EaglePremiaIntegrationId implements Serializable {
+public class PremiaApiDropdownMasterId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
