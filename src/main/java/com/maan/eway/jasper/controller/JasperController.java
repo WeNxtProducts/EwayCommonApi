@@ -1,7 +1,8 @@
 package com.maan.eway.jasper.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
-
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
@@ -23,6 +25,7 @@ import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.service.PrintReqService;
+import com.maan.eway.service.ValidationService;
 
 import io.swagger.annotations.Api;
 
@@ -36,20 +39,27 @@ public class JasperController {
 	@Autowired
 	private  PrintReqService printReq;
 	
+	@Autowired
+	private ValidationService servicevali;
+	
 	@PostMapping("/policyform") 
 	private ResponseEntity<CommonRes> policyform(@RequestBody JasperDocumentReq req) {
 		printReq.reqPrint(req);
 		CommonRes data = new CommonRes();
-		
-		JasperDocumentRes res = jasper.policyform(req);;
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-		if (res != null) {
+		List<Error> validation =servicevali.validateMotorSchedule(req);
+		if(validation != null && !validation.isEmpty()){
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		}else {
+			JasperDocumentRes res = jasper.policyform(req);;
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
 	

@@ -1,12 +1,14 @@
 package com.maan.eway.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -14,12 +16,18 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.error.Error;
+import com.maan.eway.jasper.req.JasperDocumentReq;
+import com.maan.eway.jasper.service.impl.JasperCustomServiceImple;
 import com.maan.eway.master.req.CustomerSaveReq;
 import com.maan.eway.master.req.ProductSectionsSaveReq;
 import com.maan.eway.master.req.ProductsRiskSaveReq;
 import com.maan.eway.master.req.SectionListReq;
 import com.maan.eway.repository.CustomerDetailsRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.req.AccidentDetailsReq;
 import com.maan.eway.req.EserviceAllRisksListReq;
 import com.maan.eway.req.EserviceAllRisksSaveReq;
@@ -36,6 +44,15 @@ public class ValidationServiceImpl implements ValidationService {
 	
 	@Autowired
 	private CustomerDetailsRepository custRepo ;
+	
+	@Autowired
+	private HomePositionMasterRepository homeRepo;
+	
+	@Autowired
+	private MotorDataDetailsRepository motorDataDetailsRepo;
+	
+	@Autowired
+	private JasperCustomServiceImple jasperCustServiceImple;
 	
 	@Override
 	public List<Error> validateCustomerSave(CustomerSaveReq req) {
@@ -661,6 +678,27 @@ try {
 	errors.add(new Error("01","CommonError",e.getMessage()));
 }
 	return null;
+}
+
+@Override
+public List<Error> validateMotorSchedule(JasperDocumentReq req) {
+	List<Error> errors = new ArrayList<>();
+	try {
+		HomePositionMaster hpmData = homeRepo.findByQuoteNo(req.getQuoteNo());
+		if(hpmData!=null && Arrays.asList(5,46).contains(hpmData.getProductId())) {
+			List<MotorDataDetails> m = motorDataDetailsRepo.findByQuoteNo(req.getQuoteNo());
+			IntStream.range(0,m.size()).forEach(i -> {
+				MotorDataDetails k = m.get(i);
+				String stickerNo = jasperCustServiceImple.getStrickerNo(k.getQuoteNo(),k.getVehicleId());
+				if(StringUtils.isBlank(stickerNo) || stickerNo == null) {
+					errors.add(new Error(String.valueOf(i), "StrickerNumber", "Cannot generate report because the Stricker Number is missing for Quote No: " + k.getQuoteNo() + " and Vehicle ID: " + k.getVehicleId()));
+				}
+			});
+		}
+	}catch(Exception e) {
+		e.printStackTrace();
+	}
+	return errors;
 }
 
 
