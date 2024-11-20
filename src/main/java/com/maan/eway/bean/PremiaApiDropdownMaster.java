@@ -26,10 +26,10 @@ import lombok.Setter;
 @Entity
 @DynamicInsert
 @DynamicUpdate
-//@Builder
-@IdClass(EaglePremiaIntegrationId.class)
-@Table(name = "eagle_premia_integration")
-public class EaglePremiaIntegration {
+//@Builder   PremiaApiDropdownMaster
+@IdClass(PremiaApiDropdownMasterId.class)
+@Table(name = "premia_api_dropdown_master")
+public class PremiaApiDropdownMaster {
 
 	@Id
 	@Column(name = "COMPANY_ID", nullable = false)

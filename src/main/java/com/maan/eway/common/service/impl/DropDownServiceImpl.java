@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +36,6 @@ import org.springframework.web.client.RestTemplate;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
-import com.maan.eway.bean.EaglePremiaIntegration;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
@@ -43,6 +43,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PlanTypeMaster;
+import com.maan.eway.bean.PremiaApiDropdownMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CertificateDetailsReq;
 import com.maan.eway.common.req.GetMachineryContentReq;
@@ -66,9 +67,9 @@ import com.maan.eway.repository.CompanyCityMasterRepository;
 import com.maan.eway.repository.CompanyRegionMasterRepository;
 import com.maan.eway.repository.CompanyStateMasterRepository;
 import com.maan.eway.repository.CountryMasterRepository;
-import com.maan.eway.repository.EaglePremiaIntegrationRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.PremiaApiDropdownMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.MachineryDropDownRes;
 import com.maan.eway.res.MotorWithAccessoriesRes;
@@ -129,7 +130,7 @@ public class DropDownServiceImpl implements DropDownService {
 	private MotorDataDetailsRepository motorRepo;
 	
 	@Autowired
-	private EaglePremiaIntegrationRepository usagerepo;
+	private PremiaApiDropdownMasterRepository usagerepo;
 	
 	
 	
@@ -3860,7 +3861,7 @@ public class DropDownServiceImpl implements DropDownService {
 	 {
 			CertificateTypeRes res = null;
 			try {
-				EaglePremiaIntegration usagedetails =usagerepo.findByCompanyIdAndItemTypeAndItemId(req.getCompanyid(), "VehicleUsage", req.getUsageId());
+				PremiaApiDropdownMaster usagedetails =usagerepo.findByCompanyIdAndItemTypeAndItemId(req.getCompanyid(), "VehicleUsage", req.getUsageId());
 				String UsageCoreAppCode=usagedetails!=null?usagedetails.getCoreAppCode():"0";
 				String apiurl = certificateTypeBaseurl + UsageCoreAppCode;
 				// Configure SSL to trust all certificates
