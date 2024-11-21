@@ -603,13 +603,21 @@ private Map<String,String> fromListToMaps(List<String> arrays){
 public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 	PremiaResponse response = new PremiaResponse();
 	try {
+		String quoteNo = "";
 		String policyNo = "";
 		String reqRefNo = "";
 		String companyId="";
 		String productId="";
-		HomePositionMaster home = homeRepo.findByQuoteNo(request.getQuoteNo()); //get all tables names and details
+		HomePositionMaster home=null;
+		//HomePositionMaster home = homeRepo.findByQuoteNo(request.getPolicyNo());
+		if(StringUtils.isBlank(request.getQuoteNo())) {
+			home = homeRepo.findByPolicyNo(request.getPolicyNo());
+		}else{
+			home = homeRepo.findByQuoteNo(request.getQuoteNo());
+		}
 		if (home != null) {
-			policyNo = home.getPolicyNo();
+			policyNo=home.getPolicyNo();
+			quoteNo = home.getQuoteNo();
 			reqRefNo = home.getRequestReferenceNo();
 			companyId= home.getCompanyId();
 			productId= home.getProductId().toString();
@@ -619,10 +627,10 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		 List<PremiaConfigMaster> configMasterList =   getPremiaConfigMaster(home.getCompanyId() , home.getProductId() , request.getPremiaIds() );
 		
 		List<String> param=new ArrayList<String>();
-		param.add(request.getQuoteNo());
+		param.add(quoteNo);
 		 
 		for (PremiaConfigMaster configMas :  configMasterList ) {
-			boolean push = push(configMas , param,request.getQuoteNo());
+			boolean push = push(configMas , param,quoteNo);
 			if(push ==true  ) {
 				response.setResponse("Success");	
 				
@@ -631,7 +639,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			} 
 			
 		}
-		updateIntegrationStatus(request.getQuoteNo(),home);
+		updateIntegrationStatus(quoteNo,home);
 		if ("100004".equalsIgnoreCase(companyId)) {
 			 SeqPiftTranId entity=new SeqPiftTranId();
 			 List<SeqPiftTranId> data=seqPiftTranIdRepo.findAllByOrderByTranIdDesc();
