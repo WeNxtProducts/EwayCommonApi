@@ -165,7 +165,7 @@ public class KenyaEserviceCustomerDetails {
 				}else if (req.getStreet().length() > 100) {
 					errorList.add("3311");
 				}
-				if (StringUtils.isBlank(req.getCountry())) {
+				if (StringUtils.isBlank(req.getNationality())) {
 					errorList.add("1048");
 				}
 				if (StringUtils.isBlank(req.getCityName())) {
