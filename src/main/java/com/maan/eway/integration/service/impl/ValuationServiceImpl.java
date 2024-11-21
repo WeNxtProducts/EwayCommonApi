@@ -26,6 +26,7 @@ import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ValuationIntegration;
 import com.maan.eway.integration.req.PremiaListRequest;
+import com.maan.eway.integration.req.ValuationDetailsReq;
 import com.maan.eway.integration.req.ValuationReq;
 import com.maan.eway.integration.req.ValuationStatusReq;
 import com.maan.eway.integration.res.ValuationTokenRes;
@@ -234,6 +235,51 @@ public class ValuationServiceImpl implements ValuationService {
 							vdata.setStatusrequest(request.toString());
 							vdata.setStatusresponse(res);
 							vdata.setStatus(status);
+							valuationIntegrationRepository.saveAndFlush(vdata);
+							resp.setResponse("Success");
+						}
+					}
+				}
+			}
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		return resp;
+	}
+
+	@Override
+	public PremiaResponse getDetails(ValuationDetailsReq req) {
+		PremiaResponse resp=new PremiaResponse();
+		try {
+			ListItemValue list=listItemValueRepository.findByItemTypeAndItemCode("VALUATION_INTEGRATION", "4");
+			if(list!=null) {
+				List<ValuationIntegration>vlist=valuationIntegrationRepository.findByRecordIdOrderByVehicleId(req.getRecordId());
+				if(!CollectionUtils.isEmpty(vlist)) {
+					String token=getAccessTokern();
+					for (ValuationIntegration vdata : vlist) {
+						Map<String ,Object> request=new HashMap<String, Object>();
+						request.put("id", req.getRecordId());
+						ResponseEntity<Map> response=null;
+						String res="";
+						try {
+							RestTemplate restTemplate = new RestTemplate();
+							HttpHeaders headers = new HttpHeaders();
+							headers.set("Authorization",token);
+							headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+							headers.setContentType(MediaType.APPLICATION_JSON);
+							HttpEntity<Object> entityReq = new HttpEntity<>(request, headers);
+							System.out.println(entityReq.getBody());
+							response = restTemplate.exchange(list.getItemValue(),  HttpMethod.POST,entityReq,Map.class);
+							System.out.println(response.getBody());
+							res=response.getBody().toString();
+						}catch (Exception e) {
+							e.printStackTrace();
+							res=e.getLocalizedMessage();
+							resp.setResponse("Failed");
+						}
+						if(response.getBody()!=null) {
+							vdata.setIdrequest(request.toString());
+							vdata.setIdresponse(res);
 							valuationIntegrationRepository.saveAndFlush(vdata);
 							resp.setResponse("Success");
 						}
