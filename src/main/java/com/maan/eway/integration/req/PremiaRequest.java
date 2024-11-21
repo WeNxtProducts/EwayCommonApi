@@ -20,6 +20,9 @@ import lombok.ToString;
 @ToString
 public class PremiaRequest {
 
+	@JsonProperty("PolicyNo")
+	private String policyNo;
+	
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
