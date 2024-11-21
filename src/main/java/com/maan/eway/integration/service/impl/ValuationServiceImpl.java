@@ -1,5 +1,6 @@
 package com.maan.eway.integration.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,11 +28,13 @@ import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ValuationIntegration;
 import com.maan.eway.integration.req.PremiaListRequest;
 import com.maan.eway.integration.req.ValuationDetailsReq;
+import com.maan.eway.integration.req.ValuationListReq;
 import com.maan.eway.integration.req.ValuationReq;
 import com.maan.eway.integration.req.ValuationStatusReq;
 import com.maan.eway.integration.res.ValuationTokenRes;
 import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.res.ValuationCreateRes;
+import com.maan.eway.integration.res.ValuationListRes;
 import com.maan.eway.integration.res.ValuationQuoteDetailsRes;
 import com.maan.eway.integration.res.ValuationStatusDetailsRes;
 import com.maan.eway.integration.service.ValuationService;
@@ -290,6 +293,55 @@ public class ValuationServiceImpl implements ValuationService {
 				e.printStackTrace();
 			}
 		return resp;
+	}
+
+	@Override
+	public List<ValuationListRes> getValuationList(ValuationListReq req) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		List<ValuationListRes>list=null;
+		try {
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ValuationListRes> query = cb.createQuery(ValuationListRes.class);
+
+		// Find All
+		Root<ValuationIntegration> a = query.from(ValuationIntegration.class);
+
+		// Select
+		query.multiselect(a.get("quoteNo").alias("quoteNo"),
+				a.get("vehicleId").alias("vehicleId"),a.get("vehicleRegNo").alias("vehicleRegNo"),a.get("firstName").alias("firstName"),
+				a.get("email").alias("email"),a.get("customerMobile").alias("customerMobile"),a.get("policyNo").alias("policyNo"),
+				a.get("createRequest").alias("createRequest"),a.get("createResponse").alias("createResponse"),a.get("idrequest").alias("idrequest"),
+				a.get("idresponse").alias("statusrequest"),a.get("statusrequest").alias("statusresponse"),a.get("statusresponse").alias("idresponse"),a.get("recordId").alias("recordId"));
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(a.get("vehicleId")));
+
+		
+		List<Predicate> predics1 = new ArrayList<Predicate>();
+		predics1.add(cb.equal(a.get("companyId"), req.getCompanyId()));
+		if("quoteNo".equals(req.getSearchBy())) {
+			predics1.add(cb.equal(a.get("quoteNo"), req.getSearchValue()));
+		}else if("policyNo".equals(req.getSearchBy())) {
+			predics1.add(cb.equal(a.get("policyNo"), req.getSearchValue()));
+		}else if("vehicleRegNo".equals(req.getSearchBy())) {
+			predics1.add(cb.equal(a.get("vehicleRegNo"), req.getSearchValue()));
+		}else {
+			predics1.add(cb.between(a.get("entryDate"), sdf.parse(req.getStartDate()), sdf.parse(req.getEndDate())));
+		}
+		
+		
+
+		query.where(predics1.toArray(new Predicate[0])).orderBy(orderList);
+
+		// Get Result
+		TypedQuery<ValuationListRes> result = em.createQuery(query);
+		list = result.getResultList();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 	
 }
