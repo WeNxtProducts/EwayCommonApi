@@ -4,7 +4,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.error.Error;
-
+import lombok.Data;
+@Data
 public class CoInsuranceInfoRes {
 	@JsonProperty("Message")
 	private String message;

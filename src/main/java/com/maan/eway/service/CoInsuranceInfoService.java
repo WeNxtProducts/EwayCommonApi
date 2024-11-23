@@ -15,12 +15,12 @@ public interface CoInsuranceInfoService  {
 	
 	CommonRes CoInsuranceInfosaveupdate(@RequestBody CoInsuranceDetails req);
 
-	List<Error> validatecoinsurancedetails(CoInsuranceInfoReq req);
+	List<Error> validatecoinsurancedetails(CoInsuranceDetails req);
 
 	CommonRes CoInsuranceInfodelete(String QUOTENO);
     CommonRes getAllByQuoteNo(String QUOTENO);
 
-	List<String> validatecoinsurancedetails(CoInsuranceDetails req);
+
 
 	
   

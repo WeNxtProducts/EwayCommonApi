@@ -1,17 +1,23 @@
-package com.maan.eway.req;
-
+package com.maan.eway.res;
 import java.math.BigDecimal;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.bean.CoInsuranceInfo;
 import lombok.Data;
 
 
 @Data
-public class CoInsuranceInfoReq {
+public class CoInsurance {
+	
+	
+	
 	
 	
 	@JsonProperty("Sno")
 	private int sno ;
+	
+
 	
 	@JsonProperty("Insurancecompanyid")
 	private int insurancecompanyid ;
@@ -26,5 +32,15 @@ public class CoInsuranceInfoReq {
 	@JsonProperty("Leaderparticipant")
 	private String leaderparticipant ;
 	
+	
 
- }
+	@JsonProperty("Requestreferenceno")
+	private String requestreferenceno ;
+	
+	
+	
+	
+
+	
+
+}

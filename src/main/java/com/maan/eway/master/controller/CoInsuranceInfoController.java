@@ -40,7 +40,7 @@ public class CoInsuranceInfoController  {
 	    CommonRes data = new CommonRes();
 	    
 	    List<Error> validations = null;
-	    List<String> validation = service.validatecoinsurancedetails(req);
+	    List<Error> validation = service.validatecoinsurancedetails(req);
 	    
 	   
 	    if (validation != null && validation.size() != 0) {

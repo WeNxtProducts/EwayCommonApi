@@ -18,6 +18,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.repository.CoInsuranceInfoRepository;
 import com.maan.eway.req.CoInsuranceDetails;
 import com.maan.eway.req.CoInsuranceInfoReq;
+import com.maan.eway.res.CoInsurance;
 import com.maan.eway.service.CoInsuranceInfoService;
 
 import net.sf.jsqlparser.util.validation.ValidationError;
@@ -101,19 +102,32 @@ public CommonRes CoInsuranceInfodelete(String QUOTENO) {
 	return response;
 }
    
+
+
+
+
+
+
+
+
+
 @Override
 public CommonRes getAllByQuoteNo(String QUOTENO) {
     CommonRes response = new CommonRes();
 
     List<CoInsuranceInfo> resList = new ArrayList<>();
+    CoInsurance ds=new CoInsurance();
     
-
     List<CoInsuranceInfo> d = GetdataReq.findByQuoteno(QUOTENO);   
-    
-   
+    ModelMapper mapper = new ModelMapper();
+  List<CoInsurance> result = new ArrayList<>();
+  for(CoInsuranceInfo info : d) {
+	  CoInsurance map = mapper.map(info, CoInsurance.class);
+	  result.add(map);
+  }
     if (d != null) {
     	resList.addAll(d);
-        response.setCommonResponse(resList);
+        response.setCommonResponse(result);
         response.setErrorMessage(Collections.EMPTY_LIST);
         response.setMessage("Success");
     } else {
@@ -128,29 +142,30 @@ public CommonRes getAllByQuoteNo(String QUOTENO) {
 
  @Override
 
- public List<Error> validatecoinsurancedetails(CoInsuranceInfoReq req) {
+ public List<Error> validatecoinsurancedetails(CoInsuranceDetails req) {
      List<ValidationError> errors = new ArrayList<>();
      CoInsuranceDetails entity = new CoInsuranceDetails();
+     CoInsuranceInfoReq ra=new CoInsuranceInfoReq();
      List<Error> error = null;
 	try {
-         // Validation checks
-         if (req.getSno() == 0) {
+        
+         if (ra.getSno() == 0) {
              errors.add(new ValidationError("Please Enter SNo"));
          }
 
-         if (req.getInsurancecompanyid() == 0) {
+         if (ra.getInsurancecompanyid() == 0) {
              errors.add(new ValidationError("Please Enter Insurance Company ID"));
          }
 
-         if (StringUtils.isBlank(req.getInsurancecompanyname())) {
+         if (StringUtils.isBlank(ra.getInsurancecompanyname())) {
              errors.add(new ValidationError("Please Enter Insurance Company Name"));
          }
 
-         if (req.getSharedpercentage() == null || req.getSharedpercentage().compareTo(BigDecimal.ZERO) == 0) {
+         if (ra.getSharedpercentage() == null || ra.getSharedpercentage().compareTo(BigDecimal.ZERO) == 0) {
              errors.add(new ValidationError("Please Enter Shared Percentage"));
          }
 
-         if (StringUtils.isBlank(req.getLeaderparticipant())) {
+         if (StringUtils.isBlank(ra.getLeaderparticipant())) {
              errors.add(new ValidationError("Please Enter Leader Participant"));
          }
 
@@ -177,10 +192,5 @@ public CommonRes getAllByQuoteNo(String QUOTENO) {
 
 
 
-@Override
-public List<String> validatecoinsurancedetails(CoInsuranceDetails req) {
-	// TODO Auto-generated method stub
-	return null;
-}
 
 }
