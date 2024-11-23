@@ -1275,7 +1275,7 @@ public class QuoteServiceImpl implements QuoteService {
 					}
 					
 				}else {
-					List<BuildingRiskDetails> bulData =  	buildRiskRepo.findByQuoteNoAndSectionIdAndLocationIdOrderByLocationIdAsc(req.getQuoteNo() , sec.getSectionId(),d);
+					List<BuildingRiskDetails> bulData =  	buildRiskRepo.findByQuoteNoAndSectionIdAndLocationIdAndRiskIdOrderByLocationIdAsc(req.getQuoteNo() , sec.getSectionId(),d,sec.getRiskId());
 					for (BuildingRiskDetails	 bul : bulData ) {
 					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(bul.getRiskId())) &&
 							o.getCompanyId().equals(bul.getCompanyId()) && o.getProductId().toString().equals(bul.getProductId()) && o.getSectionId().toString().equals(bul.getSectionId()) &&  o.getLocationId().equals(bul.getLocationId())).collect(Collectors.toList());
