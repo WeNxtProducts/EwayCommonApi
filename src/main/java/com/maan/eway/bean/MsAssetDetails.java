@@ -482,6 +482,9 @@ private static final long serialVersionUID = 1L;
    private BigDecimal     sumInsuredLc ;
    @Column(name="INDEMITY_PERIOD")
    private String indemityPeriod;
+   
+   @Column(name="CONTENT_ID")
+   private String contentId;
 
 }
 

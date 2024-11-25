@@ -691,7 +691,7 @@ public List<Error> validateMotorSchedule(JasperDocumentReq req) {
 				MotorDataDetails k = m.get(i);
 				String stickerNo = jasperCustServiceImple.getStrickerNo(k.getQuoteNo(),k.getVehicleId());
 				if(StringUtils.isBlank(stickerNo) || stickerNo == null) {
-					errors.add(new Error(String.valueOf(i), "StrickerNumber", "Cannot generate report because the Stricker Number is missing for Quote No: " + k.getQuoteNo() + " and Vehicle ID: " + k.getVehicleId()));
+					errors.add(new Error(String.valueOf(i), "StickerNumber", "Cannot generate report because the StickerNumber is missing for Quote No: " + k.getQuoteNo() + " and Vehicle ID: " + k.getVehicleId()));
 				}
 			});
 		}
