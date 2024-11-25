@@ -2153,7 +2153,7 @@ public class DropDownController {
 		if (res != null) {
 			return new ResponseEntity<CertificateTypeRes>(res, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.OK);
 		}
 	}
 	
@@ -2166,7 +2166,7 @@ public class DropDownController {
 		if (res != null) {
 			return new ResponseEntity<CertificateTypeRes>(res, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.OK);
 		}
 	}
 	
@@ -2179,7 +2179,7 @@ public class DropDownController {
 		if (res != null) {
 			return new ResponseEntity<CertificateTypeRes>(res, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.OK);
 		}
 	}
 	
