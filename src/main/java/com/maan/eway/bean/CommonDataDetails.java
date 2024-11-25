@@ -476,6 +476,9 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "PTD_SUM_INSURED_LC")
 	private Integer ptdSumInsuredLc;
+	
+	@Column(name="CATEGORY_DESC")
+    private String categoryDesc;
 }
 
 
