@@ -32,6 +32,11 @@ public class RenewalCopyQuoteReq {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
+	
+	@JsonProperty("BrokerBranchCode")
+	private String brokerBranchCode;
+	
+	
 
 	
 }

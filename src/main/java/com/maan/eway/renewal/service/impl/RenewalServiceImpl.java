@@ -1,6 +1,7 @@
 package com.maan.eway.renewal.service.impl;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,9 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginBranchMaster;
+import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
@@ -44,6 +48,8 @@ import com.maan.eway.renewal.req.PullrenewalReq;
 import com.maan.eway.renewal.req.RenewDataRequest;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
 import com.maan.eway.renewal.req.RenewalPendingRequest;
+import com.maan.eway.renewal.req.RenewalTransDetailReq;
+import com.maan.eway.renewal.req.RenewalTransactionReq;
 import com.maan.eway.renewal.res.RenewQuotePolicyResponse;
 import com.maan.eway.renewal.res.RenewalDetailRes;
 import com.maan.eway.renewal.res.RenewalPendingResponse;
@@ -54,6 +60,9 @@ import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.RenewDriverDetailsRepository;
@@ -127,6 +136,14 @@ public class RenewalServiceImpl implements RenewalService{
 	@Autowired
 	private MotorDriverDetailsRepository driverRepo;
 	
+	@Autowired
+	private LoginUserInfoRepository loginUserRepo;
+	
+	@Autowired
+	private LoginBranchMasterRepository lbranchRepo;
+	
+	@Autowired
+	private LoginMasterRepository loginRepo;
 	
 	private Logger log=LogManager.getLogger(RenewalServiceImpl.class);
 	@Value(value = "${spring.jpa.database}")
@@ -740,12 +757,31 @@ public class RenewalServiceImpl implements RenewalService{
 								savedata.setQuoteNo("");
 								savedata.setStatus("Y");
 								
-								savedata.setAgencyCode("1111");
+								savedata.setApplicationId(StringUtils.isBlank(req.getApplicationId()) ? "1" : req.getApplicationId());
+								
+								LoginUserInfo loginUserData = loginUserRepo.findByLoginId(req.getLoginId());
+							
+								LoginBranchMaster brokerBranch =lbranchRepo.findByLoginIdAndBrokerBranchCodeAndCompanyIdAndBranchCode( req.getLoginId(), req.getBrokerBranchCode(), req.getInsuranceId(),req.getBranchCode());
+								
+				                LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+
+								savedata.setBrokerCode(loginData.getOaCode().toString());
+								savedata.setAgencyCode(loginData.getAgencyCode());
+								savedata.setCustomerCode(loginUserData.getCustomerCode());
+								savedata.setLoginId(req.getLoginId());
+								savedata.setCustomerName(loginUserData.getCustomerName());
+								savedata.setBdmCode(null);
+								savedata.setBrokerBranchCode(brokerBranch.getBrokerBranchCode());
+								savedata.setBrokerBranchName(brokerBranch.getBrokerBranchName());
+								savedata.setSalePointCode(brokerBranch.getSalePointCode());
+								savedata.setBrokerTiraCode(loginUserData.getRegulatoryCode());
+
 								
 								savedata.setProductId(data.getProductCode());
 								savedata.setCompanyId(data.getCompanyId());
 								savedata.setSectionId(data.getSectionCode());
 								savedata.setBranchCode(data.getBranchCode());
+								savedata.setBranchName(data.getBranchName());
 								savedata.setIdNumber(data.getIdentityNumber());
 								savedata.setRiskId(Integer.parseInt(mdata.getVehicleId()));
 								savedata.setEndorsementYn("N");
@@ -952,16 +988,25 @@ public class RenewalServiceImpl implements RenewalService{
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(r.get("newendDate")));
-					
+			orderList.add(cb.desc(r.get("newstartDate")));
+			
+			List<String>status=new ArrayList<>()	;
+			status.add("RS");status.add("ACV");status.add("APG");status.add("ASS");status.add("ASF");status.add("ASC");
 			// Where
-			Predicate n1 = cb.equal(r.get("companyId"), req.getInsuranceId());
-			Predicate n2 = cb.equal(r.get("productCode"), req.getProductId());
-			Predicate n3 = cb.between(r.get("newendDate"), today, dateAfter30Days);
-			Predicate n4 = cb.equal(r.get("loginId"), req.getLoginId());
-			Predicate n5 = cb.equal(r.get("branchCode"), req.getBranchCode());
-
-			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+				
+			List<Predicate>	predicate=new ArrayList<Predicate>();
+			predicate.add(cb.equal(r.get("companyId"), req.getInsuranceId()));	
+			predicate.add(cb.equal(r.get("productCode"), req.getProductId()));
+			predicate.add(r.get("currentStatusCode").in(status));
+			
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				predicate.add(cb.equal(r.get("loginId"), req.getLoginId()));
+				predicate.add(cb.equal(r.get("applicationId"), req.getApplicationId()));
+			}
+			predicate.add(cb.equal(r.get("branchCode"), req.getBranchCode()));
+				
+	
+			query.where(predicate.toArray(new Predicate[0])).orderBy(orderList);
 
 
 			// Get Result
@@ -1026,14 +1071,20 @@ public class RenewalServiceImpl implements RenewalService{
 			orderList.add(cb.desc(r.get("newendDate")));
 					
 			// Where
-			Predicate n1 = cb.equal(r.get("companyId"), req.getInsuranceId());
-			Predicate n2 = cb.equal(r.get("productCode"), req.getProductId());
-			Predicate n3 = cb.lessThan(r.get("newendDate"), today);
-			Predicate n4 = cb.equal(r.get("loginId"), req.getLoginId());
-			Predicate n5 = cb.equal(r.get("branchCode"), req.getBranchCode());
-
-			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
-
+			List<Predicate>	predicate=new ArrayList<Predicate>();
+			predicate.add(cb.equal(r.get("companyId"), req.getInsuranceId()));	
+			predicate.add(cb.equal(r.get("productCode"), req.getProductId()));
+			predicate.add(cb.equal(r.get("currentStatusCode"), "ASE"));
+			predicate.add(cb.equal(r.get("applicationId"), req.getApplicationId()));
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				predicate.add(cb.equal(r.get("loginId"), req.getLoginId()));
+				predicate.add(cb.equal(r.get("applicationId"), req.getApplicationId()));
+			}
+			predicate.add(cb.equal(r.get("branchCode"), req.getBranchCode()));
+				
+	
+			query.where(predicate.toArray(new Predicate[0])).orderBy(orderList);
+			
 
 			// Get Result
 			TypedQuery<RenewalDetailRes> result = em.createQuery(query);
@@ -1093,16 +1144,21 @@ public class RenewalServiceImpl implements RenewalService{
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.desc(r.get("newendDate")));
-						
-				// Where
-				Predicate n1 = cb.equal(r.get("companyId"), req.getInsuranceId());
-				Predicate n2 = cb.equal(r.get("productCode"), req.getProductId());
-				Predicate n3 = cb.equal(r.get("currentStatusCode"), "RS");
-				Predicate n4 = cb.equal(r.get("loginId"), req.getLoginId());
-				Predicate n5 = cb.equal(r.get("branchCode"), req.getBranchCode());
-
-				query.where(n1, n2, n3, n4, n5).orderBy(orderList);
-
+				
+				List<Predicate>	predicate=new ArrayList<Predicate>();
+				predicate.add(cb.equal(r.get("companyId"), req.getInsuranceId()));	
+				predicate.add(cb.equal(r.get("productCode"), req.getProductId()));
+				predicate.add(cb.equal(r.get("currentStatusCode"), "CS"));
+				predicate.add(cb.equal(r.get("applicationId"), req.getApplicationId()));
+				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+					predicate.add(cb.equal(r.get("loginId"), req.getLoginId()));
+					predicate.add(cb.equal(r.get("applicationId"), req.getApplicationId()));
+				}
+				predicate.add(cb.equal(r.get("branchCode"), req.getBranchCode()));
+					
+		
+				query.where(predicate.toArray(new Predicate[0])).orderBy(orderList);
+				
 
 				// Get Result
 				TypedQuery<RenewalDetailRes> result = em.createQuery(query);
@@ -1116,7 +1172,7 @@ public class RenewalServiceImpl implements RenewalService{
 	}
 
 	@Override
-	public CommonRes getRenewalTransaction(RenewalPendingRequest req) {
+	public CommonRes getRenewalTransaction(RenewalTransactionReq req) {
 		CommonRes data = new CommonRes();
 		try {
 			List<RenewalTransactionDetailsRes> res = new ArrayList<RenewalTransactionDetailsRes>();
@@ -1132,23 +1188,26 @@ public class RenewalServiceImpl implements RenewalService{
 		return data;
 	}
 
-	private List<RenewalTransactionDetailsRes> getAllRenewalTransactionDetails(RenewalPendingRequest req) {
+	private List<RenewalTransactionDetailsRes> getAllRenewalTransactionDetails(RenewalTransactionReq req) {
 		List<RenewalTransactionDetailsRes> res = new ArrayList<RenewalTransactionDetailsRes>();
-		
+		SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy"); 
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<RenewalTransactionDetailsRes> cq = cb.createQuery(RenewalTransactionDetailsRes.class);
 
 			// Root for RenewalTransactionDetails table
-			Root<RenewalTransactionDetails> renewalTransactionDetailsRoot = cq.from(RenewalTransactionDetails.class);
+			Root<RenewalTransactionDetails> root = cq.from(RenewalTransactionDetails.class);
 
 			// Subquery for success count
 			Subquery<String> successCountSubquery = cq.subquery(String.class);
 			Root<RenewQuotePolicy> successSubqueryRoot = successCountSubquery.from(RenewQuotePolicy.class);
 			successCountSubquery.select(cb.count(successSubqueryRoot).as(String.class))
 			    .where(
-			        cb.equal(successSubqueryRoot.get("tranId"), renewalTransactionDetailsRoot.get("tranId")),
-			        cb.equal(successSubqueryRoot.get("currentStatusCode"), "RS")
+			        cb.equal(successSubqueryRoot.get("tranId"), root.get("tranId")),
+			        cb.equal(successSubqueryRoot.get("currentStatusCode"), "RS"),
+			        cb.equal(successSubqueryRoot.get("companyId"), req.getInsuranceId()),
+			        cb.equal(successSubqueryRoot.get("branchCode"), req.getBranchCode())
+			        
 			    );
 
 			// Subquery for Converted count
@@ -1156,8 +1215,10 @@ public class RenewalServiceImpl implements RenewalService{
 			Root<RenewQuotePolicy> convertedSubqueryRoot = convertedCountSubquery.from(RenewQuotePolicy.class);
 			convertedCountSubquery.select(cb.count(convertedSubqueryRoot).as(String.class))
 			    .where(
-			        cb.equal(convertedSubqueryRoot.get("tranId"), renewalTransactionDetailsRoot.get("tranId")),
-			        cb.equal(convertedSubqueryRoot.get("currentStatusCode"), "CS")
+			        cb.equal(convertedSubqueryRoot.get("tranId"), root.get("tranId")),
+			        cb.equal(convertedSubqueryRoot.get("currentStatusCode"), "CS"),
+			        cb.equal(convertedSubqueryRoot.get("companyId"), req.getInsuranceId()),
+			        cb.equal(convertedSubqueryRoot.get("branchCode"), req.getBranchCode())
 			    );
 
 			// Subquery for pending count
@@ -1165,9 +1226,11 @@ public class RenewalServiceImpl implements RenewalService{
 			Root<RenewQuotePolicy> pendingSubqueryRoot = pendingCountSubquery.from(RenewQuotePolicy.class);
 			pendingCountSubquery.select(cb.count(pendingSubqueryRoot).as(String.class))
 			    .where(
-			        cb.equal(pendingSubqueryRoot.get("tranId"), renewalTransactionDetailsRoot.get("tranId")),
+			        cb.equal(pendingSubqueryRoot.get("tranId"), root.get("tranId")),
 			        cb.notEqual(pendingSubqueryRoot.get("currentStatusCode"), "RS"),
-			        cb.notEqual(pendingSubqueryRoot.get("currentStatusCode"), "CS")
+			        cb.notEqual(pendingSubqueryRoot.get("currentStatusCode"), "CS"),
+			        cb.equal(pendingSubqueryRoot.get("companyId"), req.getInsuranceId()),
+			        cb.equal(pendingSubqueryRoot.get("branchCode"), req.getBranchCode())
 			    );
 			
 			// Subquery for total count
@@ -1175,7 +1238,7 @@ public class RenewalServiceImpl implements RenewalService{
 	        Root<RenewQuotePolicy> totalCountSubqueryRoot = totalCountSubquery.from(RenewQuotePolicy.class);
 	        totalCountSubquery.select(cb.count(totalCountSubqueryRoot).as(String.class))
 	            .where(
-	                cb.equal(totalCountSubqueryRoot.get("tranId"), renewalTransactionDetailsRoot.get("tranId"))
+	                cb.equal(totalCountSubqueryRoot.get("tranId"), root.get("tranId"))
 	            );
 	        
 			// Define predicates for the query
@@ -1183,20 +1246,20 @@ public class RenewalServiceImpl implements RenewalService{
 
 			// Select fields and subqueries in multiselect
 			cq.multiselect(
-			    renewalTransactionDetailsRoot.get("tranId").alias("tranId"),
-			    renewalTransactionDetailsRoot.get("requestTime").alias("requestTime"),
-			    renewalTransactionDetailsRoot.get("responseTime").alias("responseTime"),
-			    totalCountSubquery.getSelection().alias("totalCount"),
-			    successCountSubquery.getSelection().alias("successCount"),
-			    convertedCountSubquery.getSelection().alias("convertedCount"),
-			    pendingCountSubquery.getSelection().alias("pendingCount")
+					root.get("tranId").alias("tranId"),
+					root.get("requestTime").alias("requestTime"),
+					root.get("responseTime").alias("responseTime"),
+					totalCountSubquery.alias("totalCount"),
+					successCountSubquery.alias("successCount"),
+					convertedCountSubquery.alias("convertedCount"),
+					pendingCountSubquery.alias("pendingCount")
 			);
 
 			// Apply the predicates
-			//cq.where(tranIdPredicate);
+			cq.where(cb.between(root.get("requestTime"), sdf.parse(req.getStartDate())  , sdf.parse(req.getEndDate())));
 			
 			// Apply the order by clause
-	        cq.orderBy(cb.asc(renewalTransactionDetailsRoot.get("responseTime")));
+	        cq.orderBy(cb.asc(root.get("responseTime")));
 	        
 			// Execute the query
 			res =  em.createQuery(cq).getResultList();
@@ -1209,11 +1272,11 @@ public class RenewalServiceImpl implements RenewalService{
 	}
 
 	@Override
-	public CommonRes getRenewalTransactionSuccess(RenewalPendingRequest req) {
+	public CommonRes getRenewalTransactionSuccess(RenewalTransDetailReq req) {
 	    CommonRes data = new CommonRes();
 	    try {
 	        // Fetch the list of RenewQuotePolicy where status is "RS" (Success)
-	        List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCurrentStatusCode(req.getTranId(), "RS");
+	    	List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCompanyIdAndBranchCodeAndCurrentStatusCode(req.getTranId(),req.getInsuranceId(),req.getBranchCode(),"RS");
 
 	        // Map the entities to response objects
 	        List<RenewQuotePolicyResponse> res = mapRenewQuotePolicyResponse(list);
@@ -1232,12 +1295,12 @@ public class RenewalServiceImpl implements RenewalService{
 	}
 
 	@Override
-	public CommonRes getRenewalTransactionConverted(RenewalPendingRequest req) {
+	public CommonRes getRenewalTransactionConverted(RenewalTransDetailReq req) {
 		CommonRes data = new CommonRes();
 		try {
 			List<RenewQuotePolicyResponse> res = new ArrayList<RenewQuotePolicyResponse>();
 			
-			List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCurrentStatusCode(req.getTranId(),"CS");
+			List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCompanyIdAndBranchCodeAndCurrentStatusCode(req.getTranId(),req.getInsuranceId(),req.getBranchCode(),"CS");
 			
 			res = mapRenewQuotePolicyResponse(list);
 
@@ -1311,12 +1374,11 @@ public class RenewalServiceImpl implements RenewalService{
 	}
 
 	@Override
-	public CommonRes getRenewalTransactionPending(RenewalPendingRequest req) {
+	public CommonRes getRenewalTransactionPending(RenewalTransDetailReq req) {
 	    CommonRes data = new CommonRes();
 	    try {
 	        // Fetch the list of RenewQuotePolicy where status is neither "RS" nor "CS" (Pending)
-	        List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCurrentStatusCodeNotIn(req.getTranId(), Arrays.asList("RS", "CS"));
-
+	        List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCompanyIdAndBranchCodeAndCurrentStatusCodeNotIn(req.getTranId(),req.getInsuranceId(),req.getBranchCode(),Arrays.asList("RS", "CS"));
 	        // Map the entities to response objects
 	        List<RenewQuotePolicyResponse> res = mapRenewQuotePolicyResponse(list);
 

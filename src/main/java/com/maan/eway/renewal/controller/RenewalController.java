@@ -12,6 +12,8 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.renewal.req.PullrenewalReq;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
 import com.maan.eway.renewal.req.RenewalPendingRequest;
+import com.maan.eway.renewal.req.RenewalTransDetailReq;
+import com.maan.eway.renewal.req.RenewalTransactionReq;
 import com.maan.eway.renewal.service.RenewalService;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 
@@ -76,7 +78,7 @@ public class RenewalController {
 	}
 	
 	@PostMapping("/transaction")
-	public ResponseEntity<CommonRes> getRenewalTransaction(@RequestBody RenewalPendingRequest request) {
+	public ResponseEntity<CommonRes> getRenewalTransaction(@RequestBody RenewalTransactionReq request) {
 	 	CommonRes data = renewalservice.getRenewalTransaction(request);
 	 	if (data != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
@@ -86,7 +88,7 @@ public class RenewalController {
 	}
 	
 	@PostMapping("/transaction/success")
-	public ResponseEntity<CommonRes> getRenewalTransactionSuccess(@RequestBody RenewalPendingRequest request) {
+	public ResponseEntity<CommonRes> getRenewalTransactionSuccess(@RequestBody RenewalTransDetailReq request) {
 	 	CommonRes data = renewalservice.getRenewalTransactionSuccess(request);
 	 	if (data != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
@@ -96,7 +98,7 @@ public class RenewalController {
 	}
 	
 	@PostMapping("/transaction/converted")
-	public ResponseEntity<CommonRes> getRenewalTransactionCoverted(@RequestBody RenewalPendingRequest request) {
+	public ResponseEntity<CommonRes> getRenewalTransactionCoverted(@RequestBody RenewalTransDetailReq request) {
 	 	CommonRes data = renewalservice.getRenewalTransactionConverted(request);
 	 	if (data != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
@@ -106,7 +108,7 @@ public class RenewalController {
 	}
 	
 	@PostMapping("/transaction/pending")
-	public ResponseEntity<CommonRes> getRenewalTransactionPending(@RequestBody RenewalPendingRequest request) {
+	public ResponseEntity<CommonRes> getRenewalTransactionPending(@RequestBody RenewalTransDetailReq request) {
 	 	CommonRes data = renewalservice.getRenewalTransactionPending(request);
 	 	if (data != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);

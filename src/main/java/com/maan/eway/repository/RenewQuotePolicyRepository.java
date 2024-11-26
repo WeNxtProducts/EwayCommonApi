@@ -32,6 +32,12 @@ public interface RenewQuotePolicyRepository  extends JpaRepository<RenewQuotePol
 
 	List<RenewQuotePolicy> findByTranIdAndCurrentStatusCodeNotIn(String tranId, List<String> asList);
 
+	List<RenewQuotePolicy> findByTranIdAndCompanyIdAndBranchCodeAndCurrentStatusCode(String tranId, String insuranceId,
+			String branchCode, String string);
+
+	List<RenewQuotePolicy> findByTranIdAndCompanyIdAndBranchCodeAndCurrentStatusCodeNotIn(String tranId,
+			String insuranceId, String branchCode, List<String> asList);
+
 	
 
 

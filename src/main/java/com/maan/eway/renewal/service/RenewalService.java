@@ -7,6 +7,8 @@ import com.maan.eway.renewal.req.PullrenewalReq;
 import com.maan.eway.renewal.req.RenewDataRequest;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
 import com.maan.eway.renewal.req.RenewalPendingRequest;
+import com.maan.eway.renewal.req.RenewalTransDetailReq;
+import com.maan.eway.renewal.req.RenewalTransactionReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 
 
@@ -34,12 +36,12 @@ public interface RenewalService {
 
 	CommonRes getRenewalCompleted(RenewalPendingRequest request);
 
-	CommonRes getRenewalTransaction(RenewalPendingRequest request);
+	CommonRes getRenewalTransaction(RenewalTransactionReq request);
 
-	CommonRes getRenewalTransactionSuccess(RenewalPendingRequest request);
+	CommonRes getRenewalTransactionSuccess(RenewalTransDetailReq request);
 
-	CommonRes getRenewalTransactionConverted(RenewalPendingRequest request);
+	CommonRes getRenewalTransactionConverted(RenewalTransDetailReq request);
 
-	CommonRes getRenewalTransactionPending(RenewalPendingRequest request);
+	CommonRes getRenewalTransactionPending(RenewalTransDetailReq request);
 
 }
