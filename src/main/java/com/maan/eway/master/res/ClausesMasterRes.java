@@ -98,5 +98,8 @@ public class ClausesMasterRes {
 //	private String policyType;
 	@JsonProperty("CodeDescLocal")
     private String codeDescLocal;
+	
+	@JsonProperty("CategoryDescription")
+	private String categoryDescription;
 
 }

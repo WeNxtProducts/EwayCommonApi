@@ -346,6 +346,7 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 		saveData.setOptionalType(req.getOptionalType()==null?"":req.getOptionalType());		
 		saveData.setIntCode(req.getIntCode()==null?"":req.getIntCode());
 		saveData.setClausesDescriptionLocal(req.getCodeDescLocal());
+		saveData.setCategoryDescription(req.getCategoryDescription()==null?"":req.getCategoryDescription());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}

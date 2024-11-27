@@ -122,5 +122,8 @@ public class ClausesMaster {
 	
 	@Column(name="CLAUSES_DESCRIPTION_LOCAL",length=300)
 	private String clausesDescriptionLocal;
+	
+	@Column(name="CATEGORY_DESCRIPTION",length=500)
+	private String categoryDescription;
 
 }

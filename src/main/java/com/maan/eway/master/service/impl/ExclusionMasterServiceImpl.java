@@ -324,6 +324,7 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 		saveData.setTypeId(req.getTypeId());
 		saveData.setTypeDesc(data.getItemValue());
 		saveData.setExclusionDescriptionLocal(req.getCodeDescLocal());
+		saveData.setCategoryDescription(req.getCategoryDescription()==null?"":req.getCategoryDescription());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}

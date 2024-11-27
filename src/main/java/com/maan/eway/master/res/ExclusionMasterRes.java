@@ -80,4 +80,7 @@ public class ExclusionMasterRes {
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
 	
+	@JsonProperty("CategoryDescription")
+	private String categoryDescription;
+	
 }

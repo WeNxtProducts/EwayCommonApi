@@ -70,4 +70,7 @@ public class WarrantyMasterSaveReq {
 	
 	@JsonProperty("CodeDescLocal")
     private String codeDescLocal;
+	
+	@JsonProperty("CategoryDescription")
+	private String categoryDescription;
 }

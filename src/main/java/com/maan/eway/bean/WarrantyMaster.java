@@ -101,6 +101,9 @@ public class WarrantyMaster {
 	
 	@Column(name="WARRANTY_DESCRIPTION_LOCAL",length=100)
 	private String warrantyDescriptionLocal;
+	
+	@Column(name="CATEGORY_DESCRIPTION",length=500)
+	private String categoryDescription;
 
 	 
 }

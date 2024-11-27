@@ -326,6 +326,7 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 		saveData.setTypeDesc(data.getItemValue());
 		saveData.setTypeId(req.getTypeId());
 		saveData.setWarrantyDescriptionLocal(req.getCodeDescLocal());
+		saveData.setCategoryDescription(req.getCategoryDescription()==null?"":req.getCategoryDescription());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 	}

@@ -102,4 +102,7 @@ public class ExclusionMaster {
 
 	@Column(name="EXCLUSION_DESCRIPTION_LOCAL",length=1000)
 	private String exclusionDescriptionLocal;
+	
+	@Column(name="CATEGORY_DESCRIPTION",length=500)
+	private String categoryDescription;
 }

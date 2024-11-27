@@ -66,5 +66,8 @@ public class ExclusionMasterSaveReq {
 //	@JsonProperty("PolicyType")
 //	private String policyType;
 	
+	@JsonProperty("CategoryDescription")
+	private String categoryDescription;
+	
 	
 }
