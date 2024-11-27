@@ -106,7 +106,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="QUERY_ALIAS")
     private String queryAlias;
-        
+    
+    @Column(name="INTEG_TYPE")
+    private String integType;    
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

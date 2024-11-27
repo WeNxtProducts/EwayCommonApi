@@ -44,7 +44,7 @@ public class WorkflowController {
 	public ResponseEntity<Map<String, List<Map<String, Object>>>> dynamicQuery() {
 		List<BigDecimal> list=new ArrayList<BigDecimal>() ;
 		list.add(new BigDecimal("1001"));
-		Map<String, List<Map<String, Object>>> data=jsonMapper.dynamicQuery(list,null);
+		Map<String, List<Map<String, Object>>> data=jsonMapper.dynamicQuery(list,null,null);
 		if (data != null) {
 			return new ResponseEntity<Map<String, List<Map<String, Object>>>>(data, HttpStatus.CREATED);
 		} else {

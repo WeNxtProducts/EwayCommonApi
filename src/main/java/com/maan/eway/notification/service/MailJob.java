@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
 import com.maan.eway.notification.req.Mail;
 
 public class MailJob implements Consumer<Mail> {
@@ -111,7 +112,7 @@ public class MailJob implements Consumer<Mail> {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("Authorization", "Basic dmlzaW9uOnZpc2lvbkAxMjMj");
 			HttpEntity<Object> entityReq = new HttpEntity<>(m, headers);
-			System.out.println(entityReq.getBody());
+			System.out.println(new Gson().toJson(m));
 			 ResponseEntity<Object> response = restTemplate.postForEntity(kafkaLink, entityReq, Object.class);
 			System.out.println(response.getBody());
 		}catch (Exception e) {

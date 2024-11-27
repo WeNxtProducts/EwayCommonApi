@@ -33,6 +33,10 @@ public class WorkEngine {
 		private String vdRefNo;
 		@JsonProperty("CreatedBy")
 		private String createdBy;
+	
+		@JsonProperty("QuoteNo")
+		private String quoteNo;
 		
-
+		@JsonProperty("Integ_Type")
+		private String integType;
 }

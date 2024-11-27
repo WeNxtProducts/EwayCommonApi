@@ -1,7 +1,9 @@
 package com.maan.eway.workflow.util;
 
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,11 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.maan.eway.bean.ApiIntegMaster;
+import com.maan.eway.bean.PremiaTransactionLog;
+import com.maan.eway.repository.PremiaTransactionLogRepository;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
 import com.maan.eway.workflow.dto.WorkEngine;
@@ -38,7 +44,9 @@ public class AzentoApiService {
 	@Autowired
 	private CriteriaService crservice;
 	
-	 	
+
+	@Autowired
+	private PremiaTransactionLogRepository transRepo;
 	 
 	private String getAzentoToken(WorkEngine engine) {
 		if(StringUtils.isNotBlank(azentoToken)) {
@@ -89,27 +97,48 @@ public class AzentoApiService {
 	}
 
 	public Map<String, Object> createQuote(WorkEngine engine, Map<String, Object> request) {
+		PremiaTransactionLog log=new PremiaTransactionLog();
 		try {
 			String token = getAzentoToken(engine);
-			
+			log.setEntryDate(new Date());
+			log.setQuoteNo(StringUtils.isBlank(engine.getQuoteNo())?engine.getRequestReferenceNo():engine.getQuoteNo());
+			log.setRequestTime(LocalDateTime.now());
 			try {
-				String search4 = "companyId:" + engine.getCompanyId() + ";productId:" + engine.getProductId()+";status:{Y,R};apiType:CREATEQUOTE";
+				 Gson gson = new GsonBuilder() .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter()) .create();
+				 
+				String search4 = "companyId:" + engine.getCompanyId() + ";productId:" + engine.getProductId()+";status:{Y,R};apiType:"+engine.getIntegType()+";";
 				SpecCriteria commonCriteria = crservice.createCriteria(ApiIntegMaster.class, search4, "productId");
 				List<Tuple> commonResult = crservice.getResult(commonCriteria, 0, 50);				
 				String url=commonResult.get(0).get("apiUrl").toString();
+				log.setEndpoint(url);
 				RestTemplate restTemplate = new RestTemplate();
 		   		HttpHeaders headers = new HttpHeaders();
 		   		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		   		headers.setContentType(MediaType.APPLICATION_JSON);
 		   		 headers.set("Authorization","Bearer "+token);		   		
 		   		HttpEntity<Object> entityReq = new HttpEntity<Object>(request, headers);
+		   		
+		   		log.setRequest(gson.toJson(entityReq.getBody()));		
 		   		ResponseEntity<Map> response = restTemplate.postForEntity(url, entityReq, Map.class);
+		   		log.setResponse(gson.toJson(response.getBody()));
+		   		log.setResponseTime(LocalDateTime.now());
+		   		log.setStatus((Boolean) response.getBody().get("hasError") ?"F":"Y");
+		   		if((Boolean) response.getBody().get("hasError")) {
+		   			Map<String, Object> data=(Map<String, Object>) response.getBody().get("data");
+		   			List<Map<String, Object>> errorlist=((List<Map<String, Object>>)data.get("errorDetailsList"));
+		   			log.setErrorMessage(errorlist.get(0).get("errorDescription").toString());
+		   		}else {
+		   			log.setErrorMessage("Success");
+		   		} 
 		   		return response.getBody();
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
+		}finally {
+			System.out.println(log);
+			transRepo.save(log);
 		}
 		return null;
 	}

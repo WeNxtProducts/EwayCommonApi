@@ -33,4 +33,7 @@ public class DropDownRes {
 	
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
+	
+	@JsonProperty("IsCommercial")
+	private String isCommercial;
 }

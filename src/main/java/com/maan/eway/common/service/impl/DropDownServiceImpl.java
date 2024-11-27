@@ -3483,6 +3483,7 @@ public class DropDownServiceImpl implements DropDownService {
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
 				res.setCodeDescLocal(data.getItemValueLocal());
+				res.setIsCommercial(data.getParam1());
 				resList.add(res);
 			}
 		} catch (Exception e) {

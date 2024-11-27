@@ -41,28 +41,30 @@ public class FieldToMapConverter implements Function<JsonField,Map<String,Object
 					if(dynamicQuery !=null && !dynamicQuery.isEmpty()) {
 						
 						List<Map<String, Object>> list = dynamicQuery.get(t.getQueryId().toPlainString());
-						Map<String, Object> element=new HashMap<String, Object>(list.size());
-						for (int i = 0; i < list.size(); i++) {
-							FieldToMapConverter convt=new FieldToMapConverter(dynamicQuery,i);
-							collect = t.getChildField().stream().map(convt).filter(d -> d != null).collect(Collectors.toMap(
-				                    map -> map.keySet().iterator().next(), // Key mapper
-				                    map -> map.values().iterator().next()  // Value mapper
-				                ));
-								
-								
+						if(list.size()>0) {
+							Map<String, Object> element=new HashMap<String, Object>(list.size());
+							for (int i = 0; i < list.size(); i++) {
+								FieldToMapConverter convt=new FieldToMapConverter(dynamicQuery,i);
+								collect = t.getChildField().stream().map(convt).filter(d -> d != null).collect(Collectors.toMap(
+										map -> map.keySet().iterator().next(), // Key mapper
+										map -> map.values().iterator().next()  // Value mapper
+										));
+
+
 								if("Yes".equals(t.getIsarray())) {
 									List<Map<String, Object>> objects=null;
 									if(element.get(t.getJsonKey())==null) {  
-										 objects=new ArrayList<Map<String, Object>>(1);	
-										 element.put(t.getJsonKey(), objects);
+										objects=new ArrayList<Map<String, Object>>(1);	
+										element.put(t.getJsonKey(), objects);
 									}else
 										objects=(List<Map<String, Object>>) element.get(t.getJsonKey());
 									objects.add(collect);					
 								}else
 									element.put(t.getJsonKey(), collect);
-								
+
+							}
+							return element;
 						}
-						return element;
 					}
 					
 				}else {				

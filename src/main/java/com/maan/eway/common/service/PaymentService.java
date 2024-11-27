@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
+import com.maan.eway.bean.PolicyDrcrDetail;
 import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
@@ -52,7 +53,7 @@ public interface PaymentService {
 
 	LoginEncryptResponse decryptTinyUrl(PaymentResUrlReq req);
 
-	List<DebitAndCredit>  generatePolicy(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail, String token);
+	List<PolicyDrcrDetail>  generatePolicy(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail, String token);
 
 	CommonRes getCreditLimit(String brokerId);
  

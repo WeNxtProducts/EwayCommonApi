@@ -421,7 +421,7 @@ public class NotificationService {
 
 							
 								
-								PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0),smsc.get(0));
+								PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0),smsc.isEmpty()?null:smsc.get(0));
 								collect = n.stream().map(p).filter(dd->dd!=null).collect(Collectors.toList());					
 								List<Mail> totalMailJob=new ArrayList<Mail>();
 								

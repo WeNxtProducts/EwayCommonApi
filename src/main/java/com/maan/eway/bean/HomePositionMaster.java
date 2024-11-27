@@ -697,6 +697,13 @@ private String brokerTiraCode;
 
 @Column(name="SOURCE_TYPE_ID")
 private String sourceTypeId;
+
+@Column(name="CORE_QUOTE_NO")
+private String coreQuoteNo;
+ 
+@Column(name="CORE_SGS_ID")
+private String coreSgsId;
+ 
 }
 
 
