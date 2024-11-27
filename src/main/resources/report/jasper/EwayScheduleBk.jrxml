@@ -2,13 +2,12 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwaySchedule" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="34db4777-6d02-4a2b-85ad-a339988880c1">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="96"/>
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="633"/>
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="353"/>
-	<property name="com.jaspersoft.studio.report.description" value=""/>
 	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -161,7 +160,7 @@
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
-		<field name="firstLossPayee" class="java.lang.String"/>
+		<field name="customerName" class="java.lang.String"/>
 	</subDataset>
 	<parameter name="pvImagepath" class="java.lang.String"/>
 	<parameter name="pvSubReportPath" class="java.lang.String"/>
@@ -300,9 +299,6 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="coreAppBrokerCode"/>
 		<fieldDescription><![CDATA[coreAppBrokerCode]]></fieldDescription>
 	</field>
-	<field name="firstLossPayeesList" class="java.lang.String">
-		<fieldDescription><![CDATA[firstLossPayeesList]]></fieldDescription>
-	</field>
 	<variable name="NonMotorTotPremium" class="java.math.BigDecimal"/>
 	<background>
 		<band height="802">
@@ -369,9 +365,9 @@
 				<textFieldExpression><![CDATA["POLICY NO :"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="20">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="180" height="15" uuid="685ebe04-1772-488f-ad54-0196147d86f1">
+				<reportElement x="0" y="0" width="180" height="15" uuid="b46597a1-24b4-4037-97c0-249dfa6bd5b8">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -382,35 +378,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA["INSURED :"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="180" y="0" width="375" height="15" uuid="c965b68d-eb48-492a-96be-49177cd21439">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box leftPadding="2">
-					<leftPen lineWidth="0.0"/>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
-			</textField>
-		</band>
-		<band height="15">
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="180" height="15" uuid="1fd8e5e5-0433-48a1-a0a2-87835e346b99">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box leftPadding="2">
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["FIRST LOSS PAYEE :"]]></textFieldExpression>
-			</textField>
 			<componentElement>
-				<reportElement x="180" y="0" width="375" height="15" uuid="5c00f214-8895-43ed-ab91-715e93cfeb76">
+				<reportElement x="180" y="0" width="375" height="20" uuid="a70d3b10-3928-4e2b-9a2b-56680718d30a">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 4_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 4_CH"/>
@@ -418,10 +387,10 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="customerList" uuid="1dbfc898-ae27-470c-b46b-8ceebdd3a5c2">
-						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("firstLossPayeesList")]]></dataSourceExpression>
+					<datasetRun subDataset="customerList" uuid="742870ca-1b84-4a0b-923e-1346c530472b">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("customerList")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="375" uuid="6e71552f-a9bd-4c6d-8642-8230d61ef9d0">
+					<jr:column width="375" uuid="a018f150-d0e1-4ae9-bf86-7ac425510a4b">
 						<jr:detailCell style="Table 4_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<box>
@@ -429,17 +398,27 @@
 								<rightPen lineWidth="0.5"/>
 							</box>
 							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="375" height="15" uuid="8b75d2a1-7f4e-44f5-a6fb-bbba525d65f2"/>
+								<reportElement x="0" y="0" width="375" height="15" uuid="4715da81-3581-4500-afdc-4344ef69fa87"/>
 								<box leftPadding="2"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{firstLossPayee}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
 				</jr:table>
 			</componentElement>
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="15" width="2" height="5" uuid="1b30da92-b3af-4131-aa93-40713b3e2847">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="15">
 			<textField>
@@ -682,13 +661,13 @@
 							<box>
 								<pen lineWidth="0.5"/>
 							</box>
-							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="99" height="15" uuid="e41150ec-346c-4aba-859a-a7108dabdb0f"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{amount})]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -696,7 +675,7 @@
 			</componentElement>
 		</band>
 		<band height="45">
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="209" y="0" width="99" height="15" uuid="f533d67b-42ab-43b0-848d-d81393bae15c"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.5"/>
@@ -704,7 +683,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{NonMotorTotPremium})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{NonMotorTotPremium}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="30" y="0" width="179" height="15" uuid="0681e049-17b1-4636-81ee-85f8c0571925">
@@ -718,7 +697,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Premium Total"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="209" y="15" width="99" height="15" uuid="82d1e023-8ab1-45b9-a1c3-7ee5a296b188"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.5"/>
@@ -727,7 +706,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{vatAmount})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vatAmount}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="30" y="15" width="179" height="15" uuid="7daa8429-7e13-47a7-8431-b27ce2fd63b9">
@@ -741,7 +720,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="209" y="30" width="99" height="15" uuid="cc2da6c0-cbd7-4571-bbdb-af2e98dbbc00">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -754,7 +733,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{overAllPremium})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{overAllPremium}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="30" y="30" width="179" height="15" uuid="ca27d34e-b3a0-40e8-8ad9-5c140d70ea39"/>
@@ -777,7 +756,7 @@
 					<subreportParameterExpression><![CDATA[$P{pvSubReportPath}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverageDetails")]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{pvSubReportPath}+"/CoverageDetailsNew.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{pvSubReportPath}+"/CoverageDetails.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
