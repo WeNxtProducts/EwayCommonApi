@@ -758,6 +758,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="Certificate_No", length=20)
     private String   certificateNo ; 
+    
+    @Column(name="VAL_COMPANY_ID", length=100)
+    private String   valCompanyId ; 
+    
+    @Column(name="VAL_COMPANY_NAME", length=100)
+    private String   valCompanyName ; 
    
     
    
