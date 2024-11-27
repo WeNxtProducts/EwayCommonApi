@@ -46,7 +46,8 @@ public class JasperController {
 	private ResponseEntity<CommonRes> policyform(@RequestBody JasperDocumentReq req) {
 		printReq.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation =servicevali.validateMotorSchedule(req);
+		//List<Error> validation =servicevali.validateMotorSchedule(req);
+		List<Error> validation =null;
 		if(validation != null && !validation.isEmpty()){
 			data.setCommonResponse(null);
 			data.setIsError(true);
