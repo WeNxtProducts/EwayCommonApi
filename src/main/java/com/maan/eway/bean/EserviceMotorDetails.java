@@ -949,6 +949,13 @@ private static final long serialVersionUID = 1L;
 	
     @Column(name ="NO_OF_FEMALE")
 	private Integer noOfFemale;
+    
+    @Column(name="VAL_COMPANY_ID", length=100)
+    private String   valCompanyId ; 
+    
+    @Column(name="VAL_COMPANY_NAME", length=100)
+    private String   valCompanyName ; 
+  
      
 }
 
