@@ -160,7 +160,7 @@ public class JsonMapperFromDB {
 						hm.setPolicyNo(data.get("policyNumber").toString());
 						hm.setCorePolicyNo(data.get("policyNumber").toString());
 						hm.setStatus("P");
-						hm.setCoreIntgRemarks(data.get("message").toString());
+						hm.setCoreIntgRemarks(response.get("message").toString());
 						hm.setCoreQuoteNo(data.get("quotationNumber").toString());
 						//hm.setCoreSgsId(data.get("policyId").toString());
 						homePositionRepo.save(hm);
