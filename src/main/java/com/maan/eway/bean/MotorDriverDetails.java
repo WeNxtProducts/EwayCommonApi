@@ -103,7 +103,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="POLICY_HOLDER_TYPE", length=2)
     private String     policyHolderType ;
 
-    @Column(name="ID_TYPE", nullable=false, length=100)
+    @Column(name="ID_TYPE", length=100)
     private String     idType ;
 
     @Column(name="ID_TYPE_DESC", length=100)
@@ -176,6 +176,9 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="LICENSE_DURATION", length=100)
    private Integer licenseDuration ;
+   
+   @Column(name="LICENSE_EXPERIENCE")
+   private Integer    licenseExperience ;
 
    @Column(name="AGE", length=100)
    private Integer age ;

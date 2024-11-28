@@ -226,6 +226,7 @@ public class RenewalServiceImpl implements RenewalService{
 				rvd.setOldrequestReferenceNo(mdata.getRequestReferenceNo());
 				rvd.setOldquoteNo(quoteNo);
 				rvd.setEntryDate(new Date());
+				rvd.setOldPolicyNumber(mdata.getPolicyNo());
 				renewVehicleDetailsRepository.saveAndFlush(rvd);
 			}
 		}
@@ -756,7 +757,8 @@ public class RenewalServiceImpl implements RenewalService{
 								savedata.setOverallPremiumLc(BigDecimal.ZERO);
 								savedata.setQuoteNo("");
 								savedata.setStatus("Y");
-								
+								savedata.setSavedFrom("WEB");
+								savedata.setRenewalYn("Y");
 								savedata.setApplicationId(StringUtils.isBlank(req.getApplicationId()) ? "1" : req.getApplicationId());
 								
 								LoginUserInfo loginUserData = loginUserRepo.findByLoginId(req.getLoginId());

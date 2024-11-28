@@ -765,6 +765,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="VAL_COMPANY_NAME", length=100)
     private String   valCompanyName ; 
    
+    @Column(name="OLD_POLICY_NUMBER", length=100)
+    private String   oldPolicyNumber ; 
     
    
 }

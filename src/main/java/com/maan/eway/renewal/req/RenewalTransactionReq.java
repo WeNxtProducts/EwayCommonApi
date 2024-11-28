@@ -19,7 +19,5 @@ public class RenewalTransactionReq {
 	@JsonProperty("EndDate")
 	private String endDate;
 	
-	@JsonProperty("TranId")
-	private String tranId;
 
 }

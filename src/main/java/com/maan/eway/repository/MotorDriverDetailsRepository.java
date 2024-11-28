@@ -69,6 +69,11 @@ public interface MotorDriverDetailsRepository  extends JpaRepository<MotorDriver
 
 	List<MotorDriverDetails> findByQuoteNoOrderByRiskIdAsc(String quoteNo);
 
+	Long countByRequestReferenceNo(String requestReferenceNo);
+	
+	@Transactional
+	void deleteByRequestReferenceNo(String requestReferenceNo);
+
 	
 
 

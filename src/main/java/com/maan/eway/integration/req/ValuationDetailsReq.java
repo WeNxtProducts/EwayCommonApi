@@ -6,8 +6,16 @@ import lombok.Data;
 
 @Data
 public class ValuationDetailsReq {
-private static final long serialVersionUID = 1L;
 	
 	@JsonProperty("RecordId")
 	private String recordId;
+	
+	@JsonProperty("ValCompanyId")
+	private String valCompanyId;
+	
+	@JsonProperty("CompanyId")
+	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }

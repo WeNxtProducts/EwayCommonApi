@@ -42,6 +42,7 @@ import com.maan.eway.bean.DocumentUniqueDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceDriverDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
@@ -53,6 +54,8 @@ import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
+import com.maan.eway.bean.MsDriverDetails;
+import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
@@ -74,6 +77,7 @@ import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.DocumentUniqueDetailsRepository;
+import com.maan.eway.repository.EServiceDriverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -85,6 +89,7 @@ import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
+import com.maan.eway.repository.MsDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
@@ -157,15 +162,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private DocumentUniqueDetailsRepository docUniqueRepo ;
 	private DocumentTransactionDetailsRepository docTranRepo ;
 	private ProductEmployeesDetailsRepository empRepo;
-
-	
+	private EServiceDriverDetailsRepository eservicedriverRepo;
+	private MsDriverDetailsRepository msDriverRepo;
 	public QuoteThreadCall(String type , QuoteThreadReq request , EntityManager em ,EserviceCustomerDetailsRepository eserCustRepo ,
 			EServiceMotorDetailsRepository eserMotRepo  ,FactorRateRequestDetailsRepository facRateRepo  ,PersonalInfoRepository perInfoRepo  , MotorDataDetailsRepository motorRepo , MotorDriverDetailsRepository driverRepo ,
 			 CoverDetailsRepository coverRepo  , HomePositionMasterRepository homeRepo  ,EserviceTravelDetailsRepository eserTraRepo ,EserviceTravelGroupDetailsRepository eserGroupRepo ,
 			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  ,String travelProductId
 			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo ,
 			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , DocumentTransactionDetailsRepository docRepo, BuildingDetailsRepository locRepo ,ContentAndRiskRepository  contentRepo  ,ProductEmployeesDetailsRepository pacRepo
-			 , DocumentUniqueDetailsRepository docUniqueRepo ,DocumentTransactionDetailsRepository docTranRepo,ProductEmployeesDetailsRepository empRepo   ) {
+			 , DocumentUniqueDetailsRepository docUniqueRepo ,DocumentTransactionDetailsRepository docTranRepo,ProductEmployeesDetailsRepository empRepo ,EServiceDriverDetailsRepository eservicedriverRepo,MsDriverDetailsRepository msDriverRepo  ) {
 		this.type = type;
 		this.request = request;
 		this.em=em;
@@ -195,6 +200,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 		this.docUniqueRepo = docUniqueRepo ;
 		this.docTranRepo = docTranRepo ;
 		this.empRepo = empRepo;
+		this.eservicedriverRepo = eservicedriverRepo;
+		this.msDriverRepo=msDriverRepo;
 		
 	} 
 	
@@ -214,6 +221,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			} else if (type.equalsIgnoreCase("MotorSave")) {
 
 				map.put("MotorSave", call_MotorSave(request));
+
+			}else if (type.equalsIgnoreCase("DriverSave")) {
+
+				map.put("DriverSave", call_DriverSave(request));
 
 			} else if (type.equalsIgnoreCase("TravelSave")) {
 
@@ -243,7 +254,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 
 				map.put("SectionSave", call_SectionSave(request));
 
-			}
+			} 
 			
 			
 
@@ -252,7 +263,50 @@ public class QuoteThreadCall implements Callable<Object>  {
 		}
 		return map;
 	}
+	private synchronized Map<String,Object> call_DriverSave(QuoteThreadReq request2) {
+
+		Map<String,Object> res= new HashMap<String,Object>() ;
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			EserviceDriverDetails driverData = eservicedriverRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
+			if(driverData!=null) {
+				Long driveInfo =  driverRepo.countByRequestReferenceNo(request.getRequestReferenceNo());
+				if(driveInfo > 0 ) {
+					driverRepo.deleteByRequestReferenceNo(request.getRequestReferenceNo());	
+				}
+				MotorDataDetails mdd=motorRepo.findByQuoteNoAndVehicleId(request.getQuoteNo(),String.valueOf(request.getVehicleId()));
+			
+				// Find Driver
+				
+				MsDriverDetails msd=msDriverRepo.findByDdRefno(driverData.getDdRefno());
+				// Save Driver INfo
+				MotorDriverDetails driverInfo = new MotorDriverDetails();
+				dozerMapper.map(driverData, driverInfo);
+				driverInfo.setIdNumber(mdd!=null?mdd.getIdNumber():"9999");
+				driverInfo.setAge(msd.getAge());
+				driverInfo.setLicenseExperience(msd.getLicenseExperience());
+				driverInfo.setLicenseIssueDt(msd.getLicenseIssueDt());
+				driverInfo.setGender(msd.getGender());
+				driverInfo.setEntryDate(new Date());
+				driverInfo.setCreatedBy(request.getCreatedBy());
+				driverRepo.save(driverInfo);
+				
+				log.error("Save Driver Info is ---> " + json.toJson(driverInfo));
+			}
+			res.put("Response", "Success") ;
+			res.put("Errors", null) ;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			res.put("Response", "Failed") ;
+			res.put("Errors", "Failed To Save Driver Details") ;
+		}
 	
+		return res;
+	
+	}
+
 	private Map<String,Object> call_CommonDataSave(QuoteThreadReq request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();

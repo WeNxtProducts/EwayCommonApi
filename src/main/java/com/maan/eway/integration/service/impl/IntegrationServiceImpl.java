@@ -39,6 +39,7 @@ import com.maan.eway.bean.YiSectionDetail;
 import com.maan.eway.bean.YiVatDetail;
 import com.maan.eway.integration.req.PremiaListRequest;
 import com.maan.eway.integration.req.PremiaRequest;
+import com.maan.eway.integration.req.ValuationReq;
 import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.service.FrameReqService;
 import com.maan.eway.integration.service.IntegrationService;
@@ -120,7 +121,8 @@ private PtintgFlexTransRepository ptTransRepo;
 private FrameReqService frameReqService;
 @Autowired
 private OracleQuery oracle;
-
+@Autowired
+private ValuationServiceImpl  valuationServiceImpl ;
 @PersistenceContext
 private EntityManager em;
 
@@ -653,6 +655,13 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				madisonMotorPremiaPush(policyNo, reqRefNo);
 			}
 
+		}
+		if ("100020".equalsIgnoreCase(companyId)) {
+			ValuationReq vreq=new ValuationReq();
+			vreq.setBranchCode(home.getBranchCode());
+			vreq.setCompanyId(companyId);
+			vreq.setQuoteNo(quoteNo);
+			valuationServiceImpl.pushValuation(vreq);
 		}
 	}catch(Exception e){
 		e.printStackTrace();

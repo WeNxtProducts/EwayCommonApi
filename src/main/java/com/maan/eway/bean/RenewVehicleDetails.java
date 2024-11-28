@@ -340,6 +340,9 @@ private Integer     companyId ;
 @Column(name="COMPANY_NAME", length=500)
 private String   companyName ;
 
+@Column(name="OLD_POLICY_NUMBER", length=100)
+private String   oldPolicyNumber ; 
+
 }
 
 

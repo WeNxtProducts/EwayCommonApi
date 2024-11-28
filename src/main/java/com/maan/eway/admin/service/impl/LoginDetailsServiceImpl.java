@@ -477,7 +477,7 @@ this.repository = repo;
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
 			
 			Integer oaCode = StringUtils.isBlank(loginReq.getOaCode()) ? 0 : Integer.valueOf(loginReq.getOaCode());
-			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,oaCode);
+			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCodeAndCompanyId(loginReq.getOaCode() ,oaCode,loginReq.getCompanyId());
 			String companies = loginReq.getAttachedCompanies()==null || loginReq.getAttachedCompanies().size()==0 ?"" : String.join(",", loginReq.getAttachedCompanies());
 			String regions   = loginReq.getAttachedRegions()==null   || loginReq.getAttachedRegions().size()==0 ?"" : String.join(",", loginReq.getAttachedRegions());
 			
@@ -875,7 +875,7 @@ this.repository = repo;
 			
 			// Update Login Master
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
-			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,Integer.valueOf(loginReq.getOaCode()));
+			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCodeAndCompanyId(loginReq.getOaCode() ,Integer.valueOf(loginReq.getOaCode()),loginReq.getCompanyId());
 			
 			// Branch Setup
 			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());

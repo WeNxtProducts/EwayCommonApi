@@ -1988,7 +1988,7 @@ List<Error> errorList = new ArrayList<Error>();
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
 			
-			LoginMaster brokerData = loginRepo.findByAgencyCodeAndOaCode(req.getOaCode(),Integer.valueOf(req.getOaCode()));
+			LoginMaster brokerData = loginRepo.findByAgencyCodeAndOaCodeAndCompanyId(req.getOaCode(),Integer.valueOf(req.getOaCode()),req.getInsuranceId());
 			
 			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
 			
@@ -2341,7 +2341,7 @@ List<Error> errorList = new ArrayList<Error>();
 			LoginMaster login = loginRepo.findByLoginId(req.getLoginId());
 			Integer oaCode = login.getOaCode();
 			
-			LoginMaster loginid =  loginRepo.findByAgencyCodeAndOaCode(oaCode.toString(),oaCode);
+			LoginMaster loginid =  loginRepo.findByAgencyCodeAndOaCodeAndCompanyId(oaCode.toString(),oaCode,req.getInsuranceId());
 			List<CompanyProductMaster> companylist = new ArrayList<CompanyProductMaster>();
 
 			CriteriaBuilder cb = em.getCriteriaBuilder();

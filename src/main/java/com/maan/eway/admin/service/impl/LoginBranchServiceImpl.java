@@ -735,7 +735,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		List<GetBrokerBranchRes> resList = new ArrayList<GetBrokerBranchRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			LoginMaster brokerData = loginRepo.findByAgencyCodeAndOaCode(req.getOaCode(),Integer.valueOf(req.getOaCode()));
+			LoginMaster brokerData = loginRepo.findByAgencyCodeAndOaCodeAndCompanyId(req.getOaCode(),Integer.valueOf(req.getOaCode()),req.getInsuranceId());
 			
 			List<LoginBranchMaster> branchList = loginBrokerRepo.findByLoginIdAndStatus(brokerData.getLoginId(),"Y");
 			List<LoginBranchMaster> userbranchList = loginBrokerRepo.findByLoginIdAndStatus(req.getLoginId(),"Y");
