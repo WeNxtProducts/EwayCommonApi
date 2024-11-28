@@ -282,6 +282,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				// Save Driver INfo
 				MotorDriverDetails driverInfo = new MotorDriverDetails();
 				dozerMapper.map(driverData, driverInfo);
+				driverInfo.setQuoteNo(request.getQuoteNo());
 				driverInfo.setIdNumber(mdd!=null?mdd.getIdNumber():"9999");
 				driverInfo.setAge(msd.getAge());
 				driverInfo.setLicenseExperience(msd.getLicenseExperience());
