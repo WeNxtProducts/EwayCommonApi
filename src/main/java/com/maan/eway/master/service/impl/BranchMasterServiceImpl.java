@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.el.stream.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -127,7 +128,8 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 		String createdBy = "" ;
 		if (StringUtils.isBlank(req.getBranchCode())) {
 				// Save
-				Integer totalCount=getMasterTableCount();
+				//Integer totalCount=getMasterTableCount();
+				Integer totalCount=getcount();
 				if(totalCount<=9) {
 					branchCode = "0"+ totalCount+1 ;
 							
@@ -659,7 +661,13 @@ public List<BranchMaster> getCoreAppCodeExistDetails(String companyId, String br
 	}
 	return list;
 }
+public Integer getcount() {
 
+List<BranchMaster> datas = branchRepo.findAll();
+Integer maxBranchCodeValue = datas.stream() .map(a -> Integer.valueOf(a.getBranchCode())) .max(Integer::compareTo) .orElse(null);
+return maxBranchCodeValue;
+	
+}
 
 public Integer getMasterTableCount() {
 
