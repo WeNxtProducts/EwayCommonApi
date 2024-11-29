@@ -196,6 +196,14 @@ private static final long serialVersionUID = 1L;
    @Column(name = "CLAIM_EXPERIENCE")
 	private Integer claimExperience;
  
+   
+   @Column(name="CLAIM_TYPE", length=5)
+   private String     claimType ;
+
+   @Column(name="CLAIM_TYPE_DESC", length=100)
+   private String     claimTypeDesc ;
+
+
 }
 
 

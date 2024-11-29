@@ -290,6 +290,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				driverInfo.setGender(msd.getGender());
 				driverInfo.setEntryDate(new Date());
 				driverInfo.setCreatedBy(request.getCreatedBy());
+				driverInfo.setClaimType(driverData.getClaimType());
+				driverInfo.setClaimTypeDesc(driverData.getClaimTypeDesc());
 				driverRepo.save(driverInfo);
 				
 				log.error("Save Driver Info is ---> " + json.toJson(driverInfo));
