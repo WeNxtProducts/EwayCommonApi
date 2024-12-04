@@ -2271,6 +2271,7 @@ public class JasperCustomServiceImple {
 								excessMap.put("excessPercent", k.getExcessPercent());
 								excessMap.put("excessAmount", k.getExcessAmount());
 								excessMap.put("excessDesc", k.getExcessDesc());
+								excessMap.put("currency", k.getCurrency());
 								excessConDetails.add(excessMap);
 							});
 						}

@@ -777,7 +777,7 @@
 					<subreportParameterExpression><![CDATA[$P{pvSubReportPath}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverageDetails")]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{pvSubReportPath}+"/CoverageDetailsNew.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{pvSubReportPath}+"/CoverageDetails.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>

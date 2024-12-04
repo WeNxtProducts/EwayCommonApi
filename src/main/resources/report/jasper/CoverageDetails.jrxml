@@ -173,6 +173,7 @@
 		<field name="excessPercent" class="java.math.BigDecimal"/>
 		<field name="excessAmount" class="java.math.BigDecimal"/>
 		<field name="excessDesc" class="java.lang.String"/>
+		<field name="currency" class="java.lang.String"/>
 	</subDataset>
 	<subDataset name="assetDetails" uuid="c1e536f9-86d8-429b-b098-7df7a7ff3ad2">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -2160,7 +2161,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Additional Conditions, Exclusion, Clauses and Warranties"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Warranties and conditions."]]></textFieldExpression>
 			</textField>
 			<componentElement>
 				<reportElement x="10" y="10" width="239" height="15" isRemoveLineWhenBlank="true" uuid="4ca97dc8-5289-48db-8679-63aef4174ada"/>
@@ -2219,9 +2220,9 @@
 				</jr:list>
 			</componentElement>
 		</band>
-		<band height="20">
+		<band height="15">
 			<componentElement>
-				<reportElement x="10" y="5" width="490" height="15" uuid="fdf9023c-ec31-44b6-87c5-db2b9d9e29d1">
+				<reportElement x="10" y="0" width="490" height="15" uuid="fdf9023c-ec31-44b6-87c5-db2b9d9e29d1">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 3_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 3_CH"/>
@@ -2232,89 +2233,19 @@
 					<datasetRun subDataset="excessConditions" uuid="02fdfcb3-6665-4cce-bc35-75c3a26417ad">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.excessConditions")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="119" uuid="37527923-6169-45ce-85b1-117f1e37b8c6">
+					<jr:column width="490" uuid="3dad484f-1689-4c48-bca6-496dbc65a1c9">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:columnHeader style="EXCESS_TD" height="20" rowSpan="1">
+						<jr:detailCell height="15">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="119" height="20" uuid="1eb65ca5-67cd-438c-b4a7-8b1feaa77603"/>
-								<box leftPadding="2"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Excess Percent"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="EXCESS_TD" height="17">
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
-							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="119" height="17" uuid="9df99857-451f-4f2a-b998-695aaa9593e5"/>
-								<box leftPadding="0" rightPadding="2">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="490" height="15" uuid="14539c7f-5d3f-49de-a2df-3610d008b04c"/>
+								<box leftPadding="2" rightPadding="0">
 									<pen lineWidth="0.0"/>
 								</box>
-								<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+								<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{excessPercent}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="169" uuid="a1c5e327-2ffc-4db7-8c2d-ecaf9b71d5ac">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:columnHeader style="EXCESS_TD" height="20" rowSpan="1">
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
-							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="169" height="20" uuid="e727a6b4-13e9-49d5-b8bd-02e0cb7e2efb"/>
-								<box leftPadding="2"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Excess Amount"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="EXCESS_TD" height="17">
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
-							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="169" height="17" uuid="59febc58-87d8-4665-aa56-6ce0f2e49d0d"/>
-								<box leftPadding="0" rightPadding="2"/>
-								<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{excessPercent}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="202" uuid="3ad1a970-c72e-4f07-bcc9-5a2590f27b7a">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="EXCESS_TD" height="20" rowSpan="1">
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
-							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="202" height="20" uuid="74557a39-11de-4f85-9490-69d8bfdc2787"/>
-								<box leftPadding="2"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Excess Description"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="EXCESS_TD" height="17">
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
-							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="202" height="17" uuid="7b5ff380-9933-49b1-a7a0-a418379a5dab"/>
-								<box leftPadding="2"/>
-								<textElement textAlignment="Justified" verticalAlignment="Middle" markup="none">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{excessDesc}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{excessPercent}==null || ($F{excessPercent}.compareTo( BigDecimal.ZERO))==0?"":"* Excess "+$F{excessPercent}+"% each and every loss subject to a minimum of "+new DecimalFormat("#,##0.00").format($F{excessAmount})+" "+$F{currency}+" or Equivalent to "+$F{currency}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
