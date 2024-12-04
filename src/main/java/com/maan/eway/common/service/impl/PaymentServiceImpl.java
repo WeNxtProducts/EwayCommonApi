@@ -2409,6 +2409,9 @@ public class PaymentServiceImpl implements PaymentService {
 					Boolean hasError=(Boolean) response.get("hasError");
 					if(!hasError) {
 						policyNo=(String) response.get("policyNumber");					
+						e.setIntegType("GENDOC_INTEG");
+						quotation = jsonMapper.createQuotation(e);					
+						 
 					}			
 			}else {					
 				List<DebitAndCredit> policyDetails = new ArrayList<DebitAndCredit>();

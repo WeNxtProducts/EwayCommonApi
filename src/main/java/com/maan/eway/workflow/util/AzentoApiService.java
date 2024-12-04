@@ -1,8 +1,17 @@
 package com.maan.eway.workflow.util;
 
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,16 +26,24 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.itextpdf.text.pdf.qrcode.ByteArray;
 import com.maan.eway.bean.ApiIntegMaster;
 import com.maan.eway.bean.PremiaTransactionLog;
 import com.maan.eway.repository.PremiaTransactionLogRepository;
@@ -111,30 +128,73 @@ public class AzentoApiService {
 				List<Tuple> commonResult = crservice.getResult(commonCriteria, 0, 50);				
 				String url=commonResult.get(0).get("apiUrl").toString();
 				log.setEndpoint(url);
-				RestTemplate restTemplate = new RestTemplate();
-		   		HttpHeaders headers = new HttpHeaders();
-		   		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		   		headers.setContentType(MediaType.APPLICATION_JSON);
-		   		 headers.set("Authorization","Bearer "+token);		   		
-		   		HttpEntity<Object> entityReq = new HttpEntity<Object>(request, headers);
+				
 		   		
-		   		log.setRequest(gson.toJson(entityReq.getBody()));		
-		   		ResponseEntity<Map> response = restTemplate.postForEntity(url, entityReq, Map.class);
-		   		log.setResponse(gson.toJson(response.getBody()));
-		   		log.setResponseTime(LocalDateTime.now());
-		   		log.setStatus((Boolean) response.getBody().get("hasError") ?"F":"Y");
-		   		if((Boolean) response.getBody().get("hasError")) {
-		   			Map<String, Object> data=(Map<String, Object>) response.getBody().get("data");
-		   			List<Map<String, Object>> errorlist=((List<Map<String, Object>>)data.get("errorDetailsList"));
-		   			log.setErrorMessage(errorlist.get(0).get("errorDescription").toString());
+		   		
+		   				
+		   		
+		   		if("DOWNLD_INTEG".equals(engine.getIntegType())) {
+		   			
+					
+
+		   			RestTemplate restTemplate = new RestTemplate();
+		   		/*	List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+		   			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		   			converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
+		   			messageConverters.add(converter);
+		   			restTemplate.setMessageConverters(messageConverters);*/
+		   			restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());
+		   			HttpHeaders headers = new HttpHeaders();
+			   		headers.setAccept(Arrays.asList(MediaType.ALL));
+			   		headers.set("Authorization","Bearer "+token);
+			   		headers.setContentType(MediaType.APPLICATION_JSON);
+			   		HttpEntity<Object> entityReq = new HttpEntity<Object>(request, headers);
+		   			
+		   			entityReq = new HttpEntity<Object>(request, headers);
+		   			log.setRequest(gson.toJson(entityReq.getBody()));		   			
+		   			ResponseEntity<byte[]> response = restTemplate.exchange(url,HttpMethod.POST, entityReq,byte[].class);
+		   			
+		   			log.setResponse(Base64.getEncoder().encodeToString(response.getBody()));
+		   			log.setResponseTime(LocalDateTime.now());
+		   			log.setStatus(response.getBody()!=null ?"Y":"F");
+			   		if(response.getBody()==null) {
+			   			log.setErrorMessage("File Not Received");
+			   		}else {
+			   			log.setErrorMessage("Success");
+			   		} 
+			   		Map<String, Object> r=new HashMap<>();
+			   		r.put("File", response.getBody());
+			   		return r;
 		   		}else {
-		   			log.setErrorMessage("Success");
-		   		} 
-		   		return response.getBody();
+		   			RestTemplate restTemplate = new RestTemplate();
+		   			HttpHeaders headers = new HttpHeaders();
+			   		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+			   		headers.setContentType(MediaType.APPLICATION_JSON);
+			   		headers.set("Authorization","Bearer "+token);		   		
+			   		HttpEntity<Object> entityReq = new HttpEntity<Object>(request, headers);
+			   		log.setRequest(gson.toJson(entityReq.getBody()));
+		   			ResponseEntity<Map> response = restTemplate.postForEntity(url, entityReq, Map.class);
+		   			log.setResponse(gson.toJson(response.getBody()));
+		   			log.setResponseTime(LocalDateTime.now());
+			   		log.setStatus((Boolean) response.getBody().get("hasError") ?"F":"Y");
+			   		if((Boolean) response.getBody().get("hasError")) {
+			   			Map<String, Object> data=(Map<String, Object>) response.getBody().get("data");
+			   			List<Map<String, Object>> errorlist=((List<Map<String, Object>>)data.get("errorDetailsList"));
+			   			log.setErrorMessage(errorlist.get(0).get("errorDescription").toString());
+			   		}else {
+			   			log.setErrorMessage("Success");
+			   		} 
+			   		return response.getBody();
+		   		}
+		   		
 			}catch(Exception e) {
+				log.setResponseTime(LocalDateTime.now());
+				log.setStatus("F");
+				log.setErrorMessage(e.getLocalizedMessage());
 				e.printStackTrace();
 			}
 		}catch(Exception e) {
+			log.setResponseTime(LocalDateTime.now());
 			e.printStackTrace();
 		}finally {
 			System.out.println(log);
@@ -142,6 +202,10 @@ public class AzentoApiService {
 		}
 		return null;
 	}
-	
+
+	public static void saveStringAsPdf(String content, Path destination) throws IOException { // Ensure the directories exist 
+		Files.createDirectories(destination.getParent()); // Write the content to the PDF file
+		Files.writeString(destination, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING); 
+	}
 	
 }

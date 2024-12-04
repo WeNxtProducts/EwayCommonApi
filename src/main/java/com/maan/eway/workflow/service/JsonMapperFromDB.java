@@ -2,7 +2,6 @@ package com.maan.eway.workflow.service;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -19,15 +18,14 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.FieldQueryTablequery;
 import com.maan.eway.bean.FlowFieldDetails;
 import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.PremiaTransactionLog;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
-import com.maan.eway.repository.PremiaTransactionLogRepository;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
 import com.maan.eway.workflow.dto.JsonField;
 import com.maan.eway.workflow.dto.WorkEngine;
 import com.maan.eway.workflow.util.AzentoApiService;
+import com.maan.eway.workflow.util.DownloadDocService;
 import com.maan.eway.workflow.util.FieldFromTuple;
 import com.maan.eway.workflow.util.FieldToMapConverter;
 import com.maan.eway.workflow.util.JsonModules;
@@ -51,6 +49,9 @@ public class JsonMapperFromDB {
 	
 	@Autowired
 	private HomePositionMasterRepository homePositionRepo;
+	
+	@Autowired
+	private DownloadDocService downloadService;
 	
 	public Map<String,Object> createRequest(WorkEngine engine) {
 		try {
@@ -146,13 +147,14 @@ public class JsonMapperFromDB {
 			Map<String, Object> a2=(Map<String, Object>)a1.get(0).get("Root");
 			Map<String, Object> response = azentoService.createQuote(engine,a2);
 			List<Map<String, Object>> retObj=new ArrayList<Map<String,Object>>();
-			Map<String, Object> data = (Map<String, Object>) response.get("data");
 			Map<String,Object> responseMap=new HashMap<String,Object>();
 			responseMap.put("Request",a2);
-			responseMap.put("Response",data);
+			responseMap.put("Response",response);
 			
 			if("POL_INTEG".equals(engine.getIntegType())) {
 				try {
+					
+					Map<String, Object> data = (Map<String, Object>) response.get("data");					
 					HomePositionMaster hm = homePositionRepo.findByQuoteNo(engine.getQuoteNo());
 					if(hm!=null && data!=null && !data.isEmpty()) {
 						hm.setIntegrationError((Boolean) data.get("hasError")?"Y":"N");
@@ -170,13 +172,22 @@ public class JsonMapperFromDB {
 					e.printStackTrace();
 				}
 			}else if("GENDOC_INTEG".equals(engine.getIntegType())) {
-				try {
-					
-						HomePositionMaster hm = homePositionRepo.findByQuoteNo(engine.getQuoteNo());
-						if(hm!=null && data!=null && !data.isEmpty()) {
-							hm.setCoreSgsId(data.get("sgsId").toString());
-							homePositionRepo.save(hm);
-						}
+				try {					
+					List<Map<String, Object>> data = (List<Map<String, Object>>) response.get("data");
+					//Generate Doc
+					{
+						WorkEngine e=new WorkEngine();
+						e.setCompanyId(engine.getCompanyId());
+						e.setProductId(engine.getProductId());
+						e.setQuoteNo(engine.getQuoteNo());
+						e.setRequestReferenceNo(engine.getRequestReferenceNo());
+						e.setIntegType("DOWNLD_INTEG");
+						
+						Map<String, Object> request1 = createRequest(e);
+						List<Map<String, Object>> aa1=(List<Map<String, Object>>)request1.get("Data");
+						Map<String, Object> downloadReq=(Map<String, Object>)aa1.get(0).get("Root");
+						downloadService.downloadDocs(data,engine,downloadReq,e);
+					}	
 				}catch (Exception e) {
 					e.printStackTrace();;
 				}
