@@ -2700,7 +2700,7 @@ public class JasperCustomServiceImple {
 					cb.concat(" Street",cb.concat(",", cb.concat(piRoot.get("stateName"), cb.concat(",", countryName))))))))).otherwise("").alias("postalAddress"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
 				hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("currency").alias("currency"),hpmRoot.get("stickerNumber").alias("stickerNumber"),hpmRoot.get("policyPeriod").alias("policyPeriod"),
 				mddRoot.get("insuranceTypeDesc").alias("insuranceTypeDesc"),mddRoot.get("vehicleId").alias("vehicleId"),mddRoot.get("registrationNumber").alias("registrationNumber"),
-				mddRoot.get("vehicleMake").alias("vehicleMake"),mddRoot.get("vehcileModel").alias("vehcileModel"),mddRoot.get("vehicleTypeDesc").alias("vehicleTypeDesc"),
+				mddRoot.get("vehicleMakeDesc").alias("vehicleMake"),mddRoot.get("vehcileModelDesc").alias("vehcileModel"),mddRoot.get("vehicleTypeDesc").alias("vehicleTypeDesc"),
 				mddRoot.get("cubicCapacity").alias("cubicCapacity"),mddRoot.get("manufactureYear").alias("manufactureYear"),mddRoot.get("seatingCapacity").alias("seatingCapacity"),
 				mddRoot.get("colorDesc").alias("colorDesc"),mddRoot.get("policyTypeDesc").alias("policyTypeDesc"),mddRoot.get("sumInsured").alias("sumInsured"),
 				mddRoot.get("engineNumber").alias("engineNumber"),mddRoot.get("chassisNumber").alias("chassisNumber"),

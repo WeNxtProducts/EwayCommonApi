@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PolicyCertificateNew" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2b9d1f19-7fa5-415e-a4a3-24c35ee46c4b">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MadisonMotorSchedule"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="motorprivate.xml"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -265,7 +265,7 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<imageExpression><![CDATA[$P{pvImagepath}+"PolicyCert-Header.jpg"]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -381,7 +381,7 @@
 				<textFieldExpression><![CDATA["Vehicle Owner"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="489" y="0" width="56" height="56" uuid="b6e2f251-9944-484a-8d48-37c79972b11e">
+				<reportElement x="479" y="0" width="76" height="76" uuid="b6e2f251-9944-484a-8d48-37c79972b11e">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -390,14 +390,14 @@
 				</box>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="492" y="3" width="50" height="50" uuid="6186c5f1-5f5d-4d03-850f-eebad33929ee">
+			<image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
+				<reportElement x="482" y="3" width="70" height="70" uuid="6186c5f1-5f5d-4d03-850f-eebad33929ee">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
     new com.google.zxing.qrcode.QRCodeWriter().encode(
-       "PolicyNo : "+$F{policyNo}+"\n"+"VehicleRegisterNumber : "+$F{registrationNumber}+"\n"+"Date of Issue : "+$F{inceptionDate}+"\n"+"ExpiryDate : "+$F{expiryDate}+"\n"+"CertificateNo : "+""+"\n"+"MGen ZM",
+       "PolicyNo : "+$F{policyNo}+"\n"+"VehicleRegisterNumber : "+$F{registrationNumber}+"\n"+"Date of Issue : "+$F{inceptionDate}+"\n"+"ExpiryDate : "+$F{expiryDate}+"\n"+"CertificateNo : "+""+"\n"+($F{companyId}==100046?"Phoenix Zambia":"MGen ZM"),
         com.google.zxing.BarcodeFormat.QR_CODE, 300, 300
     )
 )]]></imageExpression>
@@ -1041,16 +1041,16 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Issued by Madison General Insurance Company Zambia Limited"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Issued by "+$F{companyName}]]></textFieldExpression>
 			</textField>
 			<frame>
 				<reportElement x="382" y="192" width="76" height="30" uuid="512b63ef-b7a1-4174-8796-b3880a3fc6c8"/>
-				<image>
+				<image scaleImage="RetainShape" hAlign="Center">
 					<reportElement x="0" y="0" width="76" height="30" uuid="ff4a10d2-7cbf-46f6-ac10-91472bcf2dbe">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
-					<imageExpression><![CDATA[$P{pvImagepath}+"PolicyCert-Disc4.jpg"]]></imageExpression>
+					<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}]]></imageExpression>
 				</image>
 			</frame>
 		</band>
@@ -1460,6 +1460,11 @@
 				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
 			</textField>
 		</band>
+		<band height="1">
+			<break>
+				<reportElement x="0" y="0" width="100" height="1" uuid="3b67e8ef-b8eb-4e77-ba4f-efece30494b2"/>
+			</break>
+		</band>
 	</detail>
 	<pageFooter>
 		<band height="40" splitType="Stretch">
@@ -1471,14 +1476,15 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA["For detailed terms and conditions, refer to the policy wording provided to you(or) download from our website http://www.madison.co.zm/downloads/ "]]></textFieldExpression>
+				<textFieldExpression><![CDATA["For detailed terms and conditions, refer to the policy wording provided to you(or) download from our website "+($F{companyId}==100046?"https://www.phoenixzambia.com/":"http://www.madison.co.zm/downloads/")]]></textFieldExpression>
 			</textField>
 			<image>
 				<reportElement x="512" y="0" width="34" height="40" uuid="e4dc1fdc-b603-45bb-95b0-721ab138da15">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<imageExpression><![CDATA[$P{pvImagepath}+"PolicyCert-Footer.jpg"]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}+$F{companylogo}
+/*"PolicyCert-Footer.jpg" */]]></imageExpression>
 			</image>
 		</band>
 	</pageFooter>
