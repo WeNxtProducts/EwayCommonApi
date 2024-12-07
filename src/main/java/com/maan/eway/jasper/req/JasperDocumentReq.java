@@ -30,6 +30,9 @@ public class JasperDocumentReq {
 	@JsonProperty("StrickerYn")
 	private String strickerYn;
 	
+	@JsonProperty("CertificateYn")
+	private String certificateYn;
+	
 	@JsonProperty("VehicleId")
 	private String vehicleId;
 	
