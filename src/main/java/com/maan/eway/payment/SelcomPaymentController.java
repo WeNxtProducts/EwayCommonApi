@@ -31,7 +31,7 @@ public class SelcomPaymentController {
 	@PostMapping("/v1/checkout/create-order/{merchantRefernceNo}")
 	@ApiOperation(value = "This method is to Payment Sava")
 	//@RequestBody
-	public ResponseEntity<JsonObject> createOrder(@RequestParam String merchantRefernceNo) {
+	public ResponseEntity<JsonObject> createOrder(@PathVariable("merchantRefernceNo") String merchantRefernceNo) {
 		
 		JsonObject data =service.createOrderForPayment(merchantRefernceNo);
 		if (data != null) {

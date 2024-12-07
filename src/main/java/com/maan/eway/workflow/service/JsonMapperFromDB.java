@@ -29,6 +29,7 @@ import com.maan.eway.workflow.util.DownloadDocService;
 import com.maan.eway.workflow.util.FieldFromTuple;
 import com.maan.eway.workflow.util.FieldToMapConverter;
 import com.maan.eway.workflow.util.JsonModules;
+import com.maan.eway.workflow.util.SaveResponseToTable;
 
 import jakarta.persistence.Tuple;
 
@@ -53,6 +54,8 @@ public class JsonMapperFromDB {
 	@Autowired
 	private DownloadDocService downloadService;
 	
+	@Autowired
+	private SaveResponseToTable saveResponse;
 	public Map<String,Object> createRequest(WorkEngine engine) {
 		try {
 			String search="companyId:"+engine.getCompanyId()+";productId:"+engine.getProductId()+";status:{Y,R};integType:"+engine.getIntegType()+";";
@@ -190,6 +193,12 @@ public class JsonMapperFromDB {
 					}	
 				}catch (Exception e) {
 					e.printStackTrace();;
+				}
+			}else if("QUOT_INTEG".equals(engine.getIntegType())){
+				try {
+					saveResponse.saveIntoFactorRequestTable(response,engine,a2);
+				}catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			retObj.add(responseMap);

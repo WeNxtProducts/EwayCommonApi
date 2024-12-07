@@ -763,7 +763,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				for ( MasterReferal referal : req.getReferals() ){
 					MasterReferralDetails saveRef = new MasterReferralDetails();
 					
-					if (referal.getIsreferral()==true && ! referal.getReferralDesc().contains("Exception") ) {
+					if (referal.getIsreferral()==true /*&& ! referal.getReferralDesc().contains("Exception") */) {
 						row = row + 1 ;
 						saveRef.setRequestReferenceNo(req.getRequestReferenceNo());
 						saveRef.setApiInfo(referal.getApiInfo());

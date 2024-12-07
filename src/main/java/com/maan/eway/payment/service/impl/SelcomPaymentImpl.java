@@ -1,23 +1,37 @@
 package com.maan.eway.payment.service.impl;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,6 +146,8 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					asJsonArray.add(innerResponse);
 					response.add("data", asJsonArray);
 					return response;
+				}else if("ipayafrica".equals(vendor.getVendorName())) {
+					return ipayafrica(vendor,payment);
 				}else {
 					return selcomPayment(vendor,payment);
 				}
@@ -143,6 +159,114 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		}
 		return null;
 	}
+	private JsonObject ipayafrica(PaymentVendorMaster vendor, PaymentDetail payment) {
+		try {
+			String apiKey = null;
+			String apiSecret = null;
+			String baseUrl = null;
+			String orderPath =null;
+			String vendorCode=null;
+			String redirect_url=null;
+			String cancel_url=null;
+			String webHookUrl=null;
+			String signedFields="";
+			String remarks="";
+			if(vendor!=null) {
+				apiKey=vendor.getApiKey();
+				apiSecret=vendor.getApiSecretKey();
+				baseUrl=vendor.getApiBaseUrl();
+				orderPath=vendor.getPaymentUrlLink();
+				vendorCode=vendor.getVendorCode();
+				redirect_url=vendor.getReturnUrlLink();
+				cancel_url=vendor.getCancelUrlLink();
+				webHookUrl=vendor.getWebhookUrlLink();
+
+				redirect_url=redirect_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
+				cancel_url=cancel_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
+				signedFields=vendor.getSignedFields();
+				remarks=vendor.getRemarks();
+			}
+			// Data needed by iPay
+			LinkedHashMap<String, String> fields = new LinkedHashMap<>();
+			String[] defaultfield = signedFields.split("&");
+			for (int i = 0; i < defaultfield.length; i++) {
+				String[] keyValue = defaultfield[i].split("=");
+				fields.put(keyValue[0], keyValue[1]);
+			}
+			fields.put("oid", payment.getMerchantReference());
+			fields.put("inv", payment.getQuoteNo());
+			List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+			if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
+				fields.put("ttl",  payment.getPremiumLc().toPlainString());
+			else
+				fields.put("ttl",  payment.getPremiumFc().toPlainString());
+			fields.put("tel", payment.getReqBillToPhone());
+			fields.put("eml", StringUtils.isBlank(payment.getCustomerEmail())?"hoinfo@firstassurance.co.ke":payment.getCustomerEmail());
+			fields.put("vid", vendor.getApiKey());
+			fields.put("curr", payment.getCurrencyId());
+			/*fields.put("p1", "");
+			fields.put("p2", "");
+			fields.put("p3", "");
+			fields.put("p4", "");*/
+			fields.put("cbk", webHookUrl);
+			//fields.put("lbk", "");
+			fields.put("cst", "2");
+			fields.put("crl", "0");
+			StringBuilder datastring = new StringBuilder();
+			fields.forEach((key, value) -> datastring.append(value));
+			fields.put("hsh",  ipayafricaHash(datastring.toString().trim(),vendor.getApiSecretKey()));
+
+			List<NameValuePair> nparms=new ArrayList<>();
+			for( Entry<String, String> key:fields.entrySet()) {
+				nparms.add(new BasicNameValuePair(key.getKey(), key.getValue()));
+			}
+			String []remarksArray=remarks.split("&");
+			for (int i = 0; i < remarksArray.length; i++) {
+				String[] keyValue = remarksArray[i].split("=");
+				nparms.add(new BasicNameValuePair(keyValue[0], keyValue[1]));
+			}
+			String url=vendor.getApiBaseUrl()+vendor.getPaymentUrlLink();  
+			try {
+				URI uri = new URIBuilder(url).addParameters(nparms).build();
+				String responseUrl=uri.toURL().toString();
+				System.out.println( payment.getMerchantReference()+"-->"+responseUrl);
+				JsonObject response = new JsonObject();
+				response.addProperty("result", "SUCCESS");				
+				JsonObject innerResponse=new JsonObject();
+				innerResponse.addProperty("payment_gateway_url",responseUrl);
+				JsonArray asJsonArray =new JsonArray(1);
+				asJsonArray.add(innerResponse);
+				response.add("data", asJsonArray);
+				return response;
+				
+				/*try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+					String responseBody = EntityUtils.toString(response.getEntity());
+					System.out.println(responseBody);
+				}*/
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	 public static String ipayafricaHash(String data, String key) throws Exception {
+	        Mac sha1Hmac = Mac.getInstance("HmacSHA1");
+	        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA1");
+	        sha1Hmac.init(secretKey);
+	        byte[] hashBytes = sha1Hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+	        //return Base64.getEncoder().encodeToString(hashBytes);
+			StringBuilder hexString = new StringBuilder();
+			for (byte b : hashBytes) {
+				String hex = Integer.toHexString(0xff & b);
+				if (hex.length() == 1)
+					hexString.append('0');
+				hexString.append(hex);
+			}
+			return hexString.toString();
+	    }
+	 
 	private JsonObject selcomPayment(PaymentVendorMaster vendor,PaymentDetail payment) {
 		try {
 
