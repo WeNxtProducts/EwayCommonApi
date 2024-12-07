@@ -998,7 +998,7 @@ public class JasperCustomServiceImple {
 			driverDtl.multiselect(dRoot.get("driverId").alias("driverId"),dRoot.get("driverName").alias("driverName"),
 					dRoot.get("driverTypedesc").alias("driverTypedesc"),dRoot.get("driverDob").alias("driverDob"),
 					dRoot.get("idNumber").alias("idNumber"),dmdRoot.get("chassisNumber").alias("chassisNumber"),
-					dmdRoot.get("driverType").alias("driverType"));
+					dRoot.get("driverType").alias("driverType"));
 			List<Predicate> dPredicate = new ArrayList<Predicate>();
 			dPredicate.add(cb.equal(dRoot.get("quoteNo"), map.get("quoteNo").toString()));
 			dPredicate.add(cb.equal(dRoot.get("quoteNo"), dmdRoot.get("quoteNo")));
