@@ -2037,7 +2037,7 @@ public class PaymentServiceImpl implements PaymentService {
 			String paymentMode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_MODE",req.getPaymentType());
 			String refShortCode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_REF_SHORTCODE","1");
 			PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
-			String refno = refShortCode +"-"+ generateMerchantReferenceNo();
+			String refno = refShortCode + generateMerchantReferenceNo();
 			
 			// Tiny Url
 			String tinyUrl = "" ; 
