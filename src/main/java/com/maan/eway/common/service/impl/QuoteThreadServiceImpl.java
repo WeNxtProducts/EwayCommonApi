@@ -885,27 +885,31 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							
 							branchCode = build.getBranchCode();
 							
-							// Building Suminsured 
-							if(build.getBuildingSumInsuredLC()!=null ) {
-								overAllSuminsured =  build.getBuildingSumInsuredLC().add(overAllSuminsured) ;
-							} 
-							
-							// Content
-							if(build.getContentSumInsuredLC()!=null && overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) 
-								overAllSuminsured =  build.getContentSumInsuredLC().add(overAllSuminsured) ;
-							
-							// All Risk , Plant All Risk , Business All Risk
-							if(build.getAllRiskSumInsuredLC()!=null && overAllSuminsured.compareTo(new BigDecimal("0"))==0  ) 
-								overAllSuminsured =  build.getAllRiskSumInsuredLC().add(overAllSuminsured) ;
-						    
-							if(build.getMiningPlantSiLC()!=null ) 
-								overAllSuminsured = build.getMiningPlantSiLC().add(overAllSuminsured)  ;
-								
-					    	if(build.getNonMiningPlantSiLC()!=null ) 
-					    		overAllSuminsured = build.getNonMiningPlantSiLC().add(overAllSuminsured)  ;
-					    	
-					    	if(build.getGensetsSiLC()!=null ) 
-					    		overAllSuminsured = build.getGensetsSiLC().add(overAllSuminsured)  ;
+							// Building Suminsured
+
+							if(build.getSumInsuredLc()!=null ) {
+								overAllSuminsured =  build.getSumInsuredLc().add(overAllSuminsured) ;
+							}
+//							if(build.getBuildingSumInsuredLC()!=null ) {
+//								overAllSuminsured =  build.getBuildingSumInsuredLC().add(overAllSuminsured) ;
+//							} 
+//							
+//							// Content
+//							if(build.getContentSumInsuredLC()!=null && overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) 
+//								overAllSuminsured =  build.getContentSumInsuredLC().add(overAllSuminsured) ;
+//							
+//							// All Risk , Plant All Risk , Business All Risk
+//							if(build.getAllRiskSumInsuredLC()!=null && overAllSuminsured.compareTo(new BigDecimal("0"))==0  ) 
+//								overAllSuminsured =  build.getAllRiskSumInsuredLC().add(overAllSuminsured) ;
+//						    
+//							if(build.getMiningPlantSiLC()!=null ) 
+//								overAllSuminsured = build.getMiningPlantSiLC().add(overAllSuminsured)  ;
+//								
+//					    	if(build.getNonMiningPlantSiLC()!=null ) 
+//					    		overAllSuminsured = build.getNonMiningPlantSiLC().add(overAllSuminsured)  ;
+//					    	
+//					    	if(build.getGensetsSiLC()!=null ) 
+//					    		overAllSuminsured = build.getGensetsSiLC().add(overAllSuminsured)  ;
 					    	
 							// Burgalry
 					    	if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
@@ -924,18 +928,24 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							
 							// Fire And Material Damage
 					    	if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
-					    		if(build.getEquipmentSiLC()!=null ) 
-									overAllSuminsured = build.getEquipmentSiLC().add(overAllSuminsured)  ;
-								if(build.getFirePlantSiLc()!=null ) 
-									overAllSuminsured = build.getFirePlantSiLc().add(overAllSuminsured)  ;
+//					    		if(build.getEquipmentSiLC()!=null ) 
+//									overAllSuminsured = build.getEquipmentSiLC().add(overAllSuminsured)  ;
+//								if(build.getFirePlantSiLc()!=null ) 
+//									overAllSuminsured = build.getFirePlantSiLc().add(overAllSuminsured)  ;
+					    		if(build.getSumInsuredLc()!=null ) {
+									overAllSuminsured =  build.getSumInsuredLc().add(overAllSuminsured) ;
+								}
 								
 					    	}
 							
 					    	// Electronic Equipment
 					    	if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
-					    		if(build.getElecEquipSumInsuredLC()!=null ) {
-									overAllSuminsured = build.getElecEquipSumInsuredLC().add(overAllSuminsured)  ;
-									
+//					    		if(build.getElecEquipSumInsuredLC()!=null ) {
+//									overAllSuminsured = build.getElecEquipSumInsuredLC().add(overAllSuminsured)  ;
+//									
+//								}
+					    		if(build.getSumInsuredLc()!=null ) {
+									overAllSuminsured =  build.getSumInsuredLc().add(overAllSuminsured) ;
 								}
 					    	}
 							
@@ -959,18 +969,21 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							
 							// Machinery
 					    	if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
-					    		if(build.getElecMachinesSiLC()!=null ) 
-									overAllSuminsured = build.getElecMachinesSiLC().add(overAllSuminsured)  ;
-								if(build.getBoilerPlantsSiLC()!=null ) 
-									overAllSuminsured = build.getBoilerPlantsSiLC().add(overAllSuminsured)  ;
-								if(build.getGeneralMachineSiLC()!=null ) 
-									overAllSuminsured = build.getGeneralMachineSiLC().add(overAllSuminsured)  ;
-								if(build.getMachineEquipSiLC()!=null ) 
-									overAllSuminsured = build.getMachineEquipSiLC().add(overAllSuminsured)  ;
-								if(build.getManuUnitsSiLC()!=null ) 
-									overAllSuminsured = build.getManuUnitsSiLC().add(overAllSuminsured)  ;
-								if(build.getPowerPlantSiLC()!=null ) 
-									overAllSuminsured = build.getPowerPlantSiLC().add(overAllSuminsured)  ;
+//					    		if(build.getElecMachinesSiLC()!=null ) 
+//									overAllSuminsured = build.getElecMachinesSiLC().add(overAllSuminsured)  ;
+//								if(build.getBoilerPlantsSiLC()!=null ) 
+//									overAllSuminsured = build.getBoilerPlantsSiLC().add(overAllSuminsured)  ;
+//								if(build.getGeneralMachineSiLC()!=null ) 
+//									overAllSuminsured = build.getGeneralMachineSiLC().add(overAllSuminsured)  ;
+//								if(build.getMachineEquipSiLC()!=null ) 
+//									overAllSuminsured = build.getMachineEquipSiLC().add(overAllSuminsured)  ;
+//								if(build.getManuUnitsSiLC()!=null ) 
+//									overAllSuminsured = build.getManuUnitsSiLC().add(overAllSuminsured)  ;
+//								if(build.getPowerPlantSiLC()!=null ) 
+//									overAllSuminsured = build.getPowerPlantSiLC().add(overAllSuminsured)  ;
+					    		if(build.getSumInsuredLc()!=null ) {
+									overAllSuminsured =  build.getSumInsuredLc().add(overAllSuminsured) ;
+								}
 									
 					    	}
 							
@@ -981,7 +994,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							for (EserviceCommonDetails commonData : commonDatas ) {
 								if(! "D".equalsIgnoreCase(commonData.getStatus()) ) {
 									overAllSuminsured = commonData.getSumInsuredLc()==null ? overAllSuminsured : commonData.getSumInsuredLc().add(overAllSuminsured) ;
-									overAllSuminsured = commonData.getAooSuminsuredLc()==null ? overAllSuminsured : commonData.getAooSuminsuredLc().add(overAllSuminsured) ;
+//									overAllSuminsured = commonData.getAooSuminsuredLc()==null ? overAllSuminsured : commonData.getAooSuminsuredLc().add(overAllSuminsured) ;
 								//	overAllSuminsured = commonData.getAggSuminsuredLc()==null ? overAllSuminsured : commonData.getAggSuminsuredLc().add(overAllSuminsured) ;
 									
 								}
@@ -1010,7 +1023,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							
 							if(! "D".equalsIgnoreCase(commonData.getStatus()) ) {
 								overAllSuminsured = commonData.getSumInsuredLc()==null ? overAllSuminsured : commonData.getSumInsuredLc().add(overAllSuminsured) ;
-								overAllSuminsured = commonData.getAooSuminsuredLc()==null ? overAllSuminsured : commonData.getAooSuminsuredLc().add(overAllSuminsured) ;
+//								overAllSuminsured = commonData.getAooSuminsuredLc()==null ? overAllSuminsured : commonData.getAooSuminsuredLc().add(overAllSuminsured) ;
 								//overAllSuminsured = commonData.getAggSuminsuredLc()==null ? overAllSuminsured : commonData.getAggSuminsuredLc().add(overAllSuminsured) ;
 							}
 						}
@@ -1810,7 +1823,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
 				endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString()))  ;
 				originalPolicyNo = data.getOriginalPolicyNo();
-				isFinYn 	 = data.getIsFinaceYn()==null ? "N" :data.getIsFinaceYn() ;
+				isFinYn 	 = data.getIsFinyn()==null ? "N" :data.getIsFinyn() ;
 				
 			} else {
 				List<EserviceCommonDetails> datas =  eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );

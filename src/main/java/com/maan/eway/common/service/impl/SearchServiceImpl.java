@@ -620,7 +620,8 @@ public class SearchServiceImpl implements SearchService {
 	    		AdminViewQuoteContentRes contentres = new AdminViewQuoteContentRes();	    		
 	    		
 	    			dozerMapper.map(contentres, data);
-		    	    contentres.setContentSumInsured(id.getContentSuminsured());
+//		    	    contentres.setContentSumInsured(id.getContentSuminsured());
+	    			contentres.setContentSumInsured(id.getSumInsured());
 		    	    res.setContentRisk(contentres);
 	    		
 	    	 }
@@ -635,7 +636,8 @@ public class SearchServiceImpl implements SearchService {
 		    	    
 		    	    
 		    			dozerMapper.map(allriskres, data);
-		    			allriskres.setAllRiskSumInsured(id.getAllriskSuminsured());
+//		    			allriskres.setAllRiskSumInsured(id.getSumInsured());
+		    			allriskres.setAllRiskSumInsured(id.getSumInsured());
 			    	    res.setAllRisk(allriskres);		    		}
 		    	
 		  }
@@ -650,14 +652,15 @@ public class SearchServiceImpl implements SearchService {
 		    	    
 		    		
 		    			dozerMapper.map(machineryBreakres, data);
-		    			machineryBreakres.setBoilerPlantsSi(id.getBoilerPlantsSi());
-		    			machineryBreakres.setElecMachinesSi(id.getElecMachinesSi());
-		    			machineryBreakres.setEquipmentSi(id.getEquipmentSi());
-		    			machineryBreakres.setGeneralMachineSi(id.getGeneralMachineSi());
-		    			machineryBreakres.setMachineEquipSi(id.getMachineEquipSi());	 
-		    			machineryBreakres.setManuUnitsSi(id.getManuUnitsSi());
-		    			machineryBreakres.setPowerPlantSi(id.getPowerPlantSi());  
-		    			machineryBreakres.setMachinerySi(id.getMachinerySi());
+//		    			machineryBreakres.setBoilerPlantsSi(id.getBoilerPlantsSi());
+//		    			machineryBreakres.setElecMachinesSi(id.getElecMachinesSi());
+//		    			machineryBreakres.setEquipmentSi(id.getEquipmentSi());
+//		    			machineryBreakres.setGeneralMachineSi(id.getGeneralMachineSi());
+//		    			machineryBreakres.setMachineEquipSi(id.getMachineEquipSi());	 
+//		    			machineryBreakres.setManuUnitsSi(id.getManuUnitsSi());
+//		    			machineryBreakres.setPowerPlantSi(id.getPowerPlantSi());  
+//		    			machineryBreakres.setMachinerySi(id.getMachinerySi());
+		    			machineryBreakres.setSumInsured(id.getSumInsured());
 		    			res.setMachineryBreakDownRisk(machineryBreakres);   		
 			    	
 		    	 }
@@ -724,7 +727,7 @@ public class SearchServiceImpl implements SearchService {
 		    			burglaryres.setOccupiedYearDesc(id.getOccupationTypeDesc());
 		    			burglaryres.setRegionCode(id.getRegionCode());
 		    			burglaryres.setRoofType(id.getRoofType());
-		    			burglaryres.setShowWindow(id.getShowWindow());;
+//		    			burglaryres.setShowWindow(id.getShowWindow());
 		    			burglaryres.setStockLossPercent(id.getStockLossPercent());
 		    			burglaryres.setOccupion(id.getOccupationType());
 		    			burglaryres.setOccupionDesc(id.getOccupationTypeDesc());
@@ -733,7 +736,8 @@ public class SearchServiceImpl implements SearchService {
 		    			burglaryres.setWatchmanGuardHours(id.getWatchmanGuardHours());
 		    			burglaryres.setWallTypeDesc(id.getWallTypeDesc());;
 		    			burglaryres.setWindowsMaterialId(id.getWindowsMaterialId());	 
-		    			burglaryres.setBurglarySi(id.getBurglarySi());
+//		    			burglaryres.setBurglarySi(id.getBurglarySi());
+		    			burglaryres.setBurglarySi(id.getSumInsured());
 		    			burglaryres.setWindowsMaterialDesc(id.getWindowsMaterialDesc());	
 		    			burglaryres.setDoorsMaterialIdDesc(id.getDoorsMaterialDesc());
 		    			burglaryres.setNightLeftDoorDesc(id.getNightLeftDoorDesc());
@@ -752,7 +756,7 @@ public class SearchServiceImpl implements SearchService {
 		    	    
 		    	    
 		    		dozerMapper.map(businessres, data);
-		    			businessres.setAllriskSumInsured(id.getAllriskSuminsured());
+		    			businessres.setAllriskSumInsured(id.getSumInsured());
 		    			res.setBusinessRisk(businessres);    	
 		    		
 		    	 }
@@ -768,7 +772,7 @@ public class SearchServiceImpl implements SearchService {
 		    	    
 		    	    
 		    		dozerMapper.map(elecequipres, data);
-		    		elecequipres.setElecEquipSumInsured(id.getElecEquipSuminsured());	
+		    		elecequipres.setElecEquipSumInsured(id.getSumInsured());	
 		    		res.setElecEquipRisk(elecequipres);	
 		    		
 		    	 }
@@ -784,7 +788,7 @@ public class SearchServiceImpl implements SearchService {
 		    	    
 		    	    
 		    		dozerMapper.map(plateglassres, data);
-		    		plateglassres.setPlateGlassSi(id.getPlateGlassSi());
+		    		plateglassres.setPlateGlassSi(id.getSumInsured());
 		    		plateglassres.setPlateGlassType(id.getPlateGlassType());	    		
 		    		res.setPlateGlassRisk(plateglassres);		    		
 		    	 }
@@ -800,8 +804,8 @@ public class SearchServiceImpl implements SearchService {
 		    	    
 		    	    
 		    		dozerMapper.map(busiIntter, data);
-		    		busiIntter.setGrossProfitSi(id.getGrossProfitFc()); 
-		    		busiIntter.setIndemnityPeriodSi(id.getIndemnityPeriodFc());		    		
+		    		busiIntter.setGrossProfitSi(id.getSumInsured()); 
+		    		busiIntter.setIndemnityPeriodSi(id.getSumInsured());		    		
 		    		res.setBusinessInterruptionRisk(busiIntter);		    		
 		    	 }
 		  }
@@ -819,8 +823,8 @@ public class SearchServiceImpl implements SearchService {
 		    		goodsintrans.setTransportedBy(id.getTransportedBy());
 		    		goodsintrans.setGeographicalCoverage(id.getGeographicalCoverage());
 		    		goodsintrans.setModeOfTransport(id.getModeOfTransport());
-		    		goodsintrans.setSingleRoadSiFc(id.getSingleRoadSiFc());
-		    		goodsintrans.setEstAnnualCarriesSiFc(id.getEstAnnualCarriesSiFc());
+//		    		goodsintrans.setSingleRoadSiFc(id.getSingleRoadSiFc());
+//		    		goodsintrans.setEstAnnualCarriesSiFc(id.getEstAnnualCarriesSiFc());
 		    		res.setGoodsInTransitRisk(goodsintrans);   		
 		    	 }
 		  }
@@ -835,7 +839,7 @@ public class SearchServiceImpl implements SearchService {
 		    	    
 		    	    
 		    		dozerMapper.map(fireperils, data);
-		    		fireperils.setBuildingSumInsured(id.getBuildingSuminsured());
+		    		fireperils.setBuildingSumInsured(id.getSumInsured());
 		    		fireperils.setIndemityPeriod(id.getIndemityPeriod());
 		    		fireperils.setMakutiYn(id.getMakutiYn());
 		    		res.setFirePerilsRisk(fireperils); 		
@@ -860,7 +864,8 @@ public class SearchServiceImpl implements SearchService {
 		    	    
 		    		dozerMapper.map(fidelityres, data);
 		    		fidelityres.setFidEmpCount(ids.getFidEmpCount());
-		    		fidelityres.setFidEmpSi(ids.getFidEmpSi());
+//		    		fidelityres.setFidEmpSi(ids.getFidEmpSi());
+		    		fidelityres.setSumInsured(ids.getSumInsured());
 		    		fidelityres.setOccupationTypeDesc(ids.getOccupationDesc());
 		    		res.setFidelityRisk(fidelityres);		    		
 		    	 }
@@ -896,7 +901,8 @@ public class SearchServiceImpl implements SearchService {
 				    		dozerMapper.map(pares, data);
 				    		pares.setOccupationType(ids.getOccupationType());
 				    		pares.setOccupationTypeDesc(ids.getOccupationDesc());
-				    		pares.setSumInsured(ids.getEmpLiabilitySiLc());	    		
+//				    		pares.setSumInsured(ids.getEmpLiabilitySiLc());
+				    		pares.setSumInsured(ids.getSumInsured());
 				    		res.setPersonalLiability(pares);
 				    		
 				    	 }
@@ -911,7 +917,8 @@ public class SearchServiceImpl implements SearchService {
 				    	    
 				    	    
 				    		dozerMapper.map(empliability, data);
-				    		empliability.setEmpLiabilitySi(ids.getEmpLiabilitySi());
+//				    		empliability.setEmpLiabilitySi(ids.getEmpLiabilitySi());
+				    		empliability.setSumInsured(ids.getSumInsured());	
 				    		empliability.setTotalNoOfEmployees(ids.getTotalNoOfEmployees());	
 				    		empliability.setOccupationTypeDesc(ids.getOccupationDesc());
 				    		res.setEmpLiability(empliability);				    		
@@ -929,8 +936,9 @@ public class SearchServiceImpl implements SearchService {
 				    	    
 				    		dozerMapper.map(publiability, data);
 				    		publiability.setLiabilitySi(ids.getLiabilitySi());
-				    		publiability.setAggSumInsured(ids.getAggSuminsured());
-				    		publiability.setAooSumInsured(ids.getAooSuminsured());
+//				    		publiability.setAggSumInsured(ids.getAggSuminsured());
+//				    		publiability.setAooSumInsured(ids.getAooSuminsured());
+				    		publiability.setSumInsured(ids.getSumInsured());	
 				    		publiability.setProductTurnoverSi(ids.getProductTurnoverSi());
 				    		publiability.setCategory(ids.getCategoryId());
 				    		res.setPublicLiabilityRisk(publiability);	    		

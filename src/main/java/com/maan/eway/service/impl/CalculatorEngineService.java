@@ -3966,7 +3966,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									engine.setProductId(bd.getProductId());
 									engine.setMsrefno(bd.getMsRefno().toString());
 									engine.setCdRefNo(bd.getCdRefno().toString());
-									engine.setVdRefNo(bd.getVdRefNo().toString());
+									engine.setVdRefNo(bd.getVdRefno().toString());
 									engine.setCreatedBy(bd.getCreatedBy());
 									engine.setRequestReferenceNo(bd.getRequestReferenceNo());
 									engine.setEffectiveDate(bd.getPolicyStartDate());

@@ -3190,7 +3190,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setEndtPrevQuoteNo(prevQuoteNo);
 						savedata.setEndtCount(new BigDecimal(count));
 						savedata.setEndtStatus("P");
-						savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+						savedata.setIsFinyn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
 						savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
 						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());

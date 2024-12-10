@@ -243,7 +243,7 @@ public class CopyBuildingRaw {
 				newObject.setEndtPrevQuoteNo(prevQuoteNo);
 				newObject.setEndtCount(new BigDecimal(count));
 				newObject.setEndtStatus("P");
-				newObject.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
+				newObject.setIsFinyn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
 				newObject.setEndtCategDesc(entMaster.getEndtTypeCategory());
 				newObject.setEndorsementType(Integer.parseInt(ent.getEndtType()));
 				newObject.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
@@ -281,7 +281,7 @@ public class CopyBuildingRaw {
 			res.setEndtCount(new BigDecimal(count));
 			res.setOriginalPolicyNo(newBuildingList.get(0).getOriginalPolicyNo());
 			res.setEndtStatus(newBuildingList.get(0).getEndtStatus());
-			res.setIsFinanceYn(newBuildingList.get(0).getIsFinaceYn());
+			res.setIsFinanceYn(newBuildingList.get(0).getIsFinyn());
 			res.setEndtCategoryDesc(newBuildingList.get(0).getEndtCategDesc());
 			res.setEndTypeDesc(newBuildingList.get(0).getEndorsementTypeDesc());
 			res.setApplicationId(newBuildingList.get(0).getApplicationId());

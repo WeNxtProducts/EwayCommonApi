@@ -1101,9 +1101,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 						if (data.getSectionId().equals("0")) {
 							continue;
-						} else if ((data.getSectionId().equals("1") && data.getBuildingSuminsured() == null)
-								|| (data.getSectionId().equals("3") && data.getAllriskSuminsured() == null)
-								|| data.getSectionId().equals("47") && data.getContentSuminsured() == null) {
+						} else if ((data.getSectionId().equals("1") && data.getSumInsured() == null)
+								|| (data.getSectionId().equals("3") && data.getSumInsured() == null)
+								|| data.getSectionId().equals("47") && data.getSumInsured() == null) {
 
 							continue;
 

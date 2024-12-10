@@ -615,7 +615,8 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 					buildingRes.setLocationId(buildData.getRiskId().toString());
 					buildingRes.setLocationName(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
 					buildingRes.setRiskId(buildData.getRiskId().toString());
-					buildingRes.setSuminsured(buildData.getBuildingSuminsured()==null?"" : buildData.getBuildingSuminsured().toPlainString());
+//					buildingRes.setSuminsured(buildData.getBuildingSuminsured()==null?"" : buildData.getBuildingSuminsured().toPlainString());
+					buildingRes.setSuminsured(buildData.getSumInsured()==null?"" : buildData.getSumInsured().toPlainString());
 					buildingRes.setSectionId(StringUtils.isNotBlank(buildData.getSectionId() ) ?  buildData.getSectionId() :  "99999"  );
 				
 					List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildData.getRequestReferenceNo());
@@ -631,14 +632,17 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 					List<BuildingRiskDetails> filterBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
 					if(filterBuilding.size() > 0 ) {
 						BuildingRiskDetails build = filterBuilding.get(0);
-						buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
+//						buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
+//						buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
+						buildingRes.setSuminsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 					} 
 					
 					// Content
 					List<BuildingRiskDetails> filterContent = buildings.stream().filter( o -> "47".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
 					if(filterContent.size() > 0 ) {
 						BuildingRiskDetails build = filterContent.get(0);
-						buildingRes.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
+//						buildingRes.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
+						buildingRes.setSuminsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 						
 					} 
 					
@@ -647,17 +651,17 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 					List<BuildingRiskDetails> filterAllRisk = buildings.stream().filter( o -> "3".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
 					if(filterAllRisk.size() > 0 ) {
 						BuildingRiskDetails build = filterAllRisk.get(0);
-						buildingRes.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
-						buildingRes.setMiningPlantSi(build.getMiningPlantSi()== null?"0" :build.getMiningPlantSi().toPlainString());
-						buildingRes.setNonminingPlantSi(build.getNonminingPlantSi() == null?"0" :build.getNonminingPlantSi().toPlainString());
-						buildingRes.setGensetsSi(build.getGensetsSi() == null?"0" :build.getGensetsSi().toPlainString());
-						buildingRes.setEquipmentSi(build.getEquipmentSi() == null?BigDecimal.ZERO :build.getEquipmentSi());
+//						buildingRes.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
+//						buildingRes.setMiningPlantSi(build.getMiningPlantSi()== null?"0" :build.getMiningPlantSi().toPlainString());
+//						buildingRes.setNonminingPlantSi(build.getNonminingPlantSi() == null?"0" :build.getNonminingPlantSi().toPlainString());
+//						buildingRes.setGensetsSi(build.getGensetsSi() == null?"0" :build.getGensetsSi().toPlainString());
+//						buildingRes.setEquipmentSi(build.getEquipmentSi() == null?BigDecimal.ZERO :build.getEquipmentSi());
 					//	Double MiningPlantSi = build.getMiningPlantSi() == null?0D :Double.valueOf(build.getMiningPlantSi().toPlainString()) ;
 					//	Double NonminingPlantSi = build.getNonminingPlantSi() == null?0D :Double.valueOf(build.getNonminingPlantSi().toPlainString()) ;
 					//	Double GensetsSi = build.getGensetsSi() == null?0D :Double.valueOf(build.getGensetsSi().toPlainString()) ;
 					//	Double plantAllRiskSi = MiningPlantSi +NonminingPlantSi  + GensetsSi ;
 						//res.setPlantAllriskSi( plantAllRiskSi==null ? "" :plantAllRiskSi.toString());
-						
+						buildingRes.setSuminsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 					} 
 					
 					// Accidental Damage
@@ -720,17 +724,18 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 					if(filterFire.size() > 0 ) {
 						BuildingRiskDetails build = filterFire.get(0);
 						buildingRes.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());
-						buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());	
-						buildingRes.setFireEquipSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
-						buildingRes.setFirePlantSi(build.getFirePlantSi() == null?"0" :build.getFirePlantSi().toPlainString());
-						
+//						buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());	
+//						buildingRes.setFireEquipSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
+//						buildingRes.setFirePlantSi(build.getFirePlantSi() == null?"0" :build.getFirePlantSi().toPlainString());
+						buildingRes.setSuminsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 					}
 					
 					// Electronic Equipment
 					List<BuildingRiskDetails> filterElecEquip = buildings.stream().filter( o -> "39".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
 					if(filterElecEquip.size() > 0 ) {
 						BuildingRiskDetails build = filterElecEquip.get(0);
-						buildingRes.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?BigDecimal.ZERO :build.getElecEquipSuminsured());
+//						buildingRes.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?BigDecimal.ZERO :build.getElecEquipSuminsured());
+						buildingRes.setSuminsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 					}
 					
 					// Money
@@ -750,17 +755,17 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 					List<BuildingRiskDetails> filterMachienry = buildings.stream().filter( o -> "41".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
 					if(filterMachienry.size() > 0 ) {
 						BuildingRiskDetails build = filterMachienry.get(0);
-						Double ElecMachinesSi = build.getElecMachinesSi() == null?0D :Double.valueOf(build.getElecMachinesSi().toPlainString());
-						Double BoilerPlantsSi = build.getBoilerPlantsSi() == null?0D :Double.valueOf(build.getBoilerPlantsSi().toPlainString()) ;
-						Double EquipmentSi = build.getEquipmentSi() == null?0D :Double.valueOf(build.getEquipmentSi().toPlainString()) ;
-						Double GeneralMachineSi = build.getGeneralMachineSi() == null?0D :Double.valueOf(build.getGeneralMachineSi().toPlainString()) ;
-						Double MachineEquipSi = build.getMachineEquipSi() == null?0D :Double.valueOf(build.getMachineEquipSi().toPlainString()) ;
-						Double ManuUnitsSi = build.getManuUnitsSi() == null?0D :Double.valueOf(build.getManuUnitsSi().toPlainString()) ;
-						Double plantSi = build.getPowerPlantSi() == null?0D :Double.valueOf(build.getPowerPlantSi().toPlainString()) ;
-						Double machinerySi = ElecMachinesSi + BoilerPlantsSi + EquipmentSi + GeneralMachineSi + MachineEquipSi + ManuUnitsSi + plantSi ;
-								
-						buildingRes.setMachinerySi( machinerySi==null ? "" :machinerySi.toString());
-						
+//						Double ElecMachinesSi = build.getElecMachinesSi() == null?0D :Double.valueOf(build.getElecMachinesSi().toPlainString());
+//						Double BoilerPlantsSi = build.getBoilerPlantsSi() == null?0D :Double.valueOf(build.getBoilerPlantsSi().toPlainString()) ;
+//						Double EquipmentSi = build.getEquipmentSi() == null?0D :Double.valueOf(build.getEquipmentSi().toPlainString()) ;
+//						Double GeneralMachineSi = build.getGeneralMachineSi() == null?0D :Double.valueOf(build.getGeneralMachineSi().toPlainString()) ;
+//						Double MachineEquipSi = build.getMachineEquipSi() == null?0D :Double.valueOf(build.getMachineEquipSi().toPlainString()) ;
+//						Double ManuUnitsSi = build.getManuUnitsSi() == null?0D :Double.valueOf(build.getManuUnitsSi().toPlainString()) ;
+//						Double plantSi = build.getPowerPlantSi() == null?0D :Double.valueOf(build.getPowerPlantSi().toPlainString()) ;
+//						Double machinerySi = ElecMachinesSi + BoilerPlantsSi + EquipmentSi + GeneralMachineSi + MachineEquipSi + ManuUnitsSi + plantSi ;
+//								
+//						buildingRes.setMachinerySi( machinerySi==null ? "" :machinerySi.toString());
+						buildingRes.setSuminsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 					}
 				
 				buildingRes.setSectionDetails(buildingSectionList);

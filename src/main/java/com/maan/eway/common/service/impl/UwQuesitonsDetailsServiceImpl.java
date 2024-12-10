@@ -324,10 +324,10 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			}else  {
 					List<EserviceBuildingDetails> buildings = eserBuildRepo.findByRequestReferenceNo(refNo )	;
 					for (EserviceBuildingDetails buildData : buildings) {
-						MsAssetDetails assetData = msAssetRepo.findByVdRefno(Long.valueOf(buildData.getVdRefNo()) );
+						MsAssetDetails assetData = msAssetRepo.findByVdRefno(Long.valueOf(buildData.getVdRefno()) );
 						if(assetData !=null) {
 							cdRefNo = buildData.getCdRefno() ;
-							vdRefNo = buildData.getVdRefNo();
+							vdRefNo = buildData.getVdRefno();
 							msRefNo = buildData.getMsRefno();
 							
 							assetData.setUwLoading(totalUwLoading);
@@ -635,7 +635,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
         	   System.out.println(" Assest ---------");
         	   EserviceBuildingDetails buildings = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(d.getRequestReferenceNo(),d.getVehicleId(),d.getSectionId(),LocationId )	;
 				 if(buildings!=null) {
-					MsAssetDetails assetData = msAssetRepo.findByVdRefno(Long.valueOf(buildings.getVdRefNo()) );
+					MsAssetDetails assetData = msAssetRepo.findByVdRefno(Long.valueOf(buildings.getVdRefno()) );
 					if(assetData !=null) {
 						
 						BigDecimal uwloading = req.stream().filter(a->a.getSectionId().equals(buildings.getSectionId())).map(a -> {
@@ -650,7 +650,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 						
 						
 						data.setCdRefno( buildings.getCdRefno()) ;
-						data.setVdRefNo(buildings.getVdRefNo());
+						data.setVdRefNo(buildings.getVdRefno());
 						data.setMsRefno(buildings.getMsRefno());
 						data.setSectionId(buildings.getSectionId());
 						data.setLoading(uwloading);

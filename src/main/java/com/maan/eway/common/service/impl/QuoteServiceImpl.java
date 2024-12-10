@@ -809,7 +809,7 @@ public class QuoteServiceImpl implements QuoteService {
 			Map<Integer, List<SectionDataDetails>> riskGroup =null;
 			Map<Integer, List<SectionDataDetails>> locationGroup =null;
 			locationGroup = secDatas.stream().filter( o -> o.getLocationId()!=null  ).collect( Collectors.groupingBy(SectionDataDetails :: getLocationId )) ;
-			for (Integer locId :  locationGroup.keySet()) {
+		/*	for (Integer locId :  locationGroup.keySet()) {
 			riskGroup = secDatas.stream().filter( o -> o.getRiskId()!=null && locId.equals(o.getLocationId())  ).collect( Collectors.groupingBy(SectionDataDetails :: getRiskId )) ;
 			for (Integer risk :  riskGroup.keySet()) {
 			List<SectionDataDetails> filterData = secDatas.stream().filter( o -> o.getRiskId().equals(risk) && o.getLocationId().equals(locId)).collect(Collectors.toList());
@@ -964,7 +964,8 @@ public class QuoteServiceImpl implements QuoteService {
 			
 //			buildingRes.setLocationName(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
 			buildingRes.setRiskId(buildData.getRiskId().toString());
-			buildingRes.setSuminsured(buildData.getBuildingSuminsured()==null?"" : buildData.getBuildingSuminsured().toPlainString());
+//			buildingRes.setSuminsured(buildData.getBuildingSuminsured()==null?"" : buildData.getBuildingSuminsured().toPlainString());
+			buildingRes.setSuminsured(buildData.getSumInsured()==null?"" : buildData.getSumInsured().toPlainString());
 			buildingRes.setSectionId(StringUtils.isNotBlank(buildData.getSectionId() ) ?  buildData.getSectionId() :  "99999"  );
 		
 			List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildData.getRequestReferenceNo());
@@ -972,28 +973,7 @@ public class QuoteServiceImpl implements QuoteService {
 			buildingRes.setRiskId(buildData.getRiskId().toString());
 			locationId=buildData.getLocationId().toString();
 			locationName=buildData.getLocationName();
-			List<BuildingDetails> buildingRiskDatas = BuildingRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-				
-				if(buildingRiskDatas.size()  > 0) {
-					for(BuildingDetails data : buildingRiskDatas) {
-						// Document 
-						DocumentDetails  document = new DocumentDetails();
-						document.setDocumentTitle(StringUtils.isNotBlank(data.getSectionDesc() ) ? data.getSectionDesc() :  "Location - " +  data.getLocationName());
-						document.setRiskId(data.getRiskId().toString());
-						document.setSectionId(StringUtils.isNotBlank(data.getSectionId() ) ?  data.getSectionId() :  "99999"  )  ;
-						documentDetails.add(document);
-							
-					}
-				} else {
-					// Document 
-					DocumentDetails  document = new DocumentDetails();
-					document.setDocumentTitle(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
-					document.setRiskId(buildingRes.getRiskId().toString());
-					document.setSectionId(StringUtils.isNotBlank(buildData.getSectionId() ) ?  buildData.getSectionId() :  "99999"  )  ;
-					documentDetails.add(document);
-				}
-			
-			}
+		c
 			
 			// (i) Asset Related Sections
 			
@@ -1001,7 +981,8 @@ public class QuoteServiceImpl implements QuoteService {
 			List<BuildingRiskDetails> filterBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId())).collect(Collectors.toList());
 			if(filterBuilding.size() > 0 ) {
 				BuildingRiskDetails build = filterBuilding.get(0);
-				buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
+//				buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
+				buildingRes.setBuildingSuminsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 				buildingRes.setBuidingAreaSqm(build.getBuildingAreaSqm() == null ? "0" :build.getBuildingAreaSqm().toPlainString());
 				buildingRes.setBuildingOwnerYn(StringUtils.isBlank(build.getBuildingOwnerYn())  ? "N":build.getBuildingOwnerYn());
 				buildingRes.setBuildingBuildYear(build.getBuildingBuildYear()==null ?"": build.getBuildingBuildYear().toString());
@@ -1013,17 +994,18 @@ public class QuoteServiceImpl implements QuoteService {
 				buildingRes.setBuildingUsageDesc(build.getBuildingUsageDesc());
 				locationId=build.getLocationId().toString();
 				locationName=build.getLocationName();
-				sumInsured=build.getBuildingSuminsured().toString();
+				sumInsured=build.getSumInsured().toString();
 				} 
 			
 			// Content
 			List<BuildingRiskDetails> filterContent = buildings.stream().filter( o -> "47".equalsIgnoreCase(o.getSectionId()) && o.getRiskId().equals(risk) ).collect(Collectors.toList());
 			if(filterContent.size() > 0 ) {
 				BuildingRiskDetails build = filterContent.get(0);
-				buildingRes.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
+//				buildingRes.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
+				buildingRes.setSuminsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 				locationId=build.getLocationId().toString();
 				locationName=build.getLocationName();
-				sumInsured=build.getContentSuminsured().toString();
+				sumInsured=build.getSumInsured().toString();
 				contentType=StringUtil.isBlank(build.getContentId())?"":build.getContentId();
 				contentDesc=StringUtil.isBlank(build.getContentDesc())?"":build.getContentDesc();
 				
@@ -1059,8 +1041,7 @@ public class QuoteServiceImpl implements QuoteService {
 				}else if(build.getEquipmentSi()!=null && Double.valueOf(build.getEquipmentSi().toString())>0.0) {
 					sumInsured=build.getEquipmentSi()==null?null:build.getEquipmentSi().toString();	
 				}
-				
-				
+				sumInsured=build.getSumInsured()==null?"" : build.getSumInsured().toPlainString();
 			} 
 			
 			// Accidental Damage
@@ -1126,7 +1107,7 @@ public class QuoteServiceImpl implements QuoteService {
 			if(filterFire.size() > 0 ) {
 				BuildingRiskDetails build = filterFire.get(0);
 				buildingRes.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());
-				buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());	
+				buildingRes.setBuildingSuminsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());	
 				buildingRes.setFireEquipSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
 				buildingRes.setFirePlantSi(build.getFirePlantSi() == null?"0" :build.getFirePlantSi().toPlainString());
 				locationId=build.getLocationId().toString();
@@ -1158,10 +1139,10 @@ public class QuoteServiceImpl implements QuoteService {
 			if(StringUtils.isNotBlank(sectionId) && "61".equals(productId) ) {
 				String sec=sectionId;
 				List<BuildingRiskDetails> filterBond = buildings.stream().filter( o -> sec.equalsIgnoreCase(o.getSectionId())
-					/*|| "118".equalsIgnoreCase(o.getSectionId()) 
-					|| "119".equalsIgnoreCase(o.getSectionId()) 
-					|| "120".equalsIgnoreCase(o.getSectionId()))*/
-					&& o.getRiskId().equals(risk)  ).collect(Collectors.toList());
+//					|| "118".equalsIgnoreCase(o.getSectionId()) 
+//					|| "119".equalsIgnoreCase(o.getSectionId()) 
+//					|| "120".equalsIgnoreCase(o.getSectionId()))
+				&& o.getRiskId().equals(risk)  ).collect(Collectors.toList());
 			if(filterBond.size() > 0 ) {
 				BuildingRiskDetails build = filterBond.get(0);
 				buildingRes.setBondSuminsured(build.getBondSuminsured() == null?BigDecimal.ZERO :build.getBondSuminsured());
@@ -1207,7 +1188,7 @@ public class QuoteServiceImpl implements QuoteService {
 			buildList.add(buildingRes);
 			}
 		}
-			totalList.addAll(buildList);
+			totalList.addAll(buildList);*/
 //			totalList.addAll(paccGetResList);
 			// Location Wise Details
 		//	List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
@@ -3517,10 +3498,10 @@ public class QuoteServiceImpl implements QuoteService {
 				List<BuildingRiskDetails> filterBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus())  ).collect(Collectors.toList());
 				if(filterBuilding.size() > 0 ) {
 					BuildingRiskDetails build = filterBuilding.get(0);
-					res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
-					res.setWaterTankSi(build.getWaterTankSi() == null?"0" :build.getWaterTankSi().toPlainString());
-					res.setLossOfRentSi(build.getLossOfRentSi()== null?"0" :build.getLossOfRentSi().toPlainString());
-					res.setArchitectsSi(build.getArchitectsSi() == null?"0" :build.getArchitectsSi().toPlainString());
+					res.setSumInsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
+//					res.setWaterTankSi(build.getWaterTankSi() == null?"0" :build.getWaterTankSi().toPlainString());
+//					res.setLossOfRentSi(build.getLossOfRentSi()== null?"0" :build.getLossOfRentSi().toPlainString());
+//					res.setArchitectsSi(build.getArchitectsSi() == null?"0" :build.getArchitectsSi().toPlainString());
 					
 				} 
 				
@@ -3528,20 +3509,21 @@ public class QuoteServiceImpl implements QuoteService {
 				List<BuildingRiskDetails> filterContent = buildings.stream().filter( o -> "47".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus())  ).collect(Collectors.toList());
 				if(filterContent.size() > 0 ) {
 					BuildingRiskDetails build = filterContent.get(0);
-					res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
-					res.setEquipmentSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
-					res.setJewellerySi(build.getJewellerySi() == null?"0" :build.getJewellerySi().toPlainString());
-					res.setPaitingsSi(build.getPaitingsSi() == null?"0" :build.getPaitingsSi().toPlainString());
-					res.setCarpetsSi(build.getCarpetsSi() == null?"0" :build.getCarpetsSi().toPlainString());
-				    if(build.getContentSuminsured() == null || build.getContentSuminsured().compareTo(BigDecimal.ZERO) ==0 ) {
-				    	BigDecimal Si1 = build.getEquipmentSi() == null? BigDecimal.ZERO :build.getEquipmentSi();
-				    	BigDecimal Si2 = build.getJewellerySi() == null? BigDecimal.ZERO :build.getJewellerySi();
-				    	BigDecimal Si3 = build.getPaitingsSi() == null? BigDecimal.ZERO :build.getPaitingsSi();
-				    	BigDecimal Si4 = build.getCarpetsSi() == null? BigDecimal.ZERO :build.getCarpetsSi();
-				    	
-				    	BigDecimal totalContentSi = Si1.add(Si2).add(Si3).add(Si4);
-				    	res.setContentSuminsured(totalContentSi.toPlainString());
-				    }
+					res.setSumInsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
+//					res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
+//					res.setEquipmentSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
+//					res.setJewellerySi(build.getJewellerySi() == null?"0" :build.getJewellerySi().toPlainString());
+//					res.setPaitingsSi(build.getPaitingsSi() == null?"0" :build.getPaitingsSi().toPlainString());
+//					res.setCarpetsSi(build.getCarpetsSi() == null?"0" :build.getCarpetsSi().toPlainString());
+//				    if(build.getContentSuminsured() == null || build.getContentSuminsured().compareTo(BigDecimal.ZERO) ==0 ) {
+//				    	BigDecimal Si1 = build.getEquipmentSi() == null? BigDecimal.ZERO :build.getEquipmentSi();
+//				    	BigDecimal Si2 = build.getJewellerySi() == null? BigDecimal.ZERO :build.getJewellerySi();
+//				    	BigDecimal Si3 = build.getPaitingsSi() == null? BigDecimal.ZERO :build.getPaitingsSi();
+//				    	BigDecimal Si4 = build.getCarpetsSi() == null? BigDecimal.ZERO :build.getCarpetsSi();
+//				    	
+//				    	BigDecimal totalContentSi = Si1.add(Si2).add(Si3).add(Si4);
+//				    	res.setContentSuminsured(totalContentSi.toPlainString());
+//				    }
 					
 				} 
 				
@@ -3550,17 +3532,17 @@ public class QuoteServiceImpl implements QuoteService {
 				List<BuildingRiskDetails> filterAllRisk = buildings.stream().filter( o -> "3".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus()) ).collect(Collectors.toList());
 				if(filterAllRisk.size() > 0 ) {
 					BuildingRiskDetails build = filterAllRisk.get(0);
-					res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
-					res.setMiningPlantSi(build.getMiningPlantSi()== null?"0" :build.getMiningPlantSi().toPlainString());
-					res.setNonminingPlantSi(build.getNonminingPlantSi() == null?"0" :build.getNonminingPlantSi().toPlainString());
-					res.setGensetsSi(build.getGensetsSi() == null?"0" :build.getGensetsSi().toPlainString());
-					res.setEquipmentSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
-					Double MiningPlantSi = build.getMiningPlantSi() == null?0D :Double.valueOf(build.getMiningPlantSi().toPlainString()) ;
-					Double NonminingPlantSi = build.getNonminingPlantSi() == null?0D :Double.valueOf(build.getNonminingPlantSi().toPlainString()) ;
-					Double GensetsSi = build.getGensetsSi() == null?0D :Double.valueOf(build.getGensetsSi().toPlainString()) ;
-					Double plantAllRiskSi = MiningPlantSi +NonminingPlantSi  + GensetsSi ;
-					res.setPlantAllriskSi( plantAllRiskSi==null ? "" :plantAllRiskSi.toString());
-					
+//					res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
+//					res.setMiningPlantSi(build.getMiningPlantSi()== null?"0" :build.getMiningPlantSi().toPlainString());
+//					res.setNonminingPlantSi(build.getNonminingPlantSi() == null?"0" :build.getNonminingPlantSi().toPlainString());
+//					res.setGensetsSi(build.getGensetsSi() == null?"0" :build.getGensetsSi().toPlainString());
+//					res.setEquipmentSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
+//					Double MiningPlantSi = build.getMiningPlantSi() == null?0D :Double.valueOf(build.getMiningPlantSi().toPlainString()) ;
+//					Double NonminingPlantSi = build.getNonminingPlantSi() == null?0D :Double.valueOf(build.getNonminingPlantSi().toPlainString()) ;
+//					Double GensetsSi = build.getGensetsSi() == null?0D :Double.valueOf(build.getGensetsSi().toPlainString()) ;
+//					Double plantAllRiskSi = MiningPlantSi +NonminingPlantSi  + GensetsSi ;
+//					res.setPlantAllriskSi( plantAllRiskSi==null ? "" :plantAllRiskSi.toString());
+					res.setSumInsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 				} 
 				
 				// Accidental Damage
@@ -3589,11 +3571,11 @@ public class QuoteServiceImpl implements QuoteService {
 				List<BuildingRiskDetails> filterFire = buildings.stream().filter( o -> "40".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus()) ).collect(Collectors.toList());
 				if(filterFire.size() > 0 ) {
 					BuildingRiskDetails build = filterFire.get(0);
-					res.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());
-					res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());	
-					res.setFireEquipSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
-					res.setFirePlantSi(build.getFirePlantSi() == null?"0" :build.getFirePlantSi().toPlainString());
-					
+//					res.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());
+//					res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());	
+//					res.setFireEquipSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
+//					res.setFirePlantSi(build.getFirePlantSi() == null?"0" :build.getFirePlantSi().toPlainString());
+					res.setSumInsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 					
 				}
 				
@@ -3601,7 +3583,8 @@ public class QuoteServiceImpl implements QuoteService {
 				List<BuildingRiskDetails> filterElecEquip = buildings.stream().filter( o -> "39".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus()) ).collect(Collectors.toList());
 				if(filterElecEquip.size() > 0 ) {
 					BuildingRiskDetails build = filterElecEquip.get(0);
-					res.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?"0" :build.getElecEquipSuminsured().toPlainString());
+//					res.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?"0" :build.getElecEquipSuminsured().toPlainString());
+					res.setSumInsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 				}
 				
 				// Money
@@ -3621,18 +3604,18 @@ public class QuoteServiceImpl implements QuoteService {
 				List<BuildingRiskDetails> filterMachienry = buildings.stream().filter( o -> "41".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus())  ).collect(Collectors.toList());
 				if(filterMachienry.size() > 0 ) {
 					BuildingRiskDetails build = filterMachienry.get(0);
-					Double ElecMachinesSi = build.getElecMachinesSi() == null?0D :Double.valueOf(build.getElecMachinesSi().toPlainString());
-					Double BoilerPlantsSi = build.getBoilerPlantsSi() == null?0D :Double.valueOf(build.getBoilerPlantsSi().toPlainString()) ;
-					Double EquipmentSi = build.getEquipmentSi() == null?0D :Double.valueOf(build.getEquipmentSi().toPlainString()) ;
-					Double GeneralMachineSi = build.getGeneralMachineSi() == null?0D :Double.valueOf(build.getGeneralMachineSi().toPlainString()) ;
-					Double MachineEquipSi = build.getMachineEquipSi() == null?0D :Double.valueOf(build.getMachineEquipSi().toPlainString()) ;
-					Double ManuUnitsSi = build.getManuUnitsSi() == null?0D :Double.valueOf(build.getManuUnitsSi().toPlainString()) ;
-					Double plantSi = build.getPowerPlantSi() == null?0D :Double.valueOf(build.getPowerPlantSi().toPlainString()) ;
-					Double machineSi = build.getMachinerySi() == null?0D :Double.valueOf(build.getMachinerySi().toPlainString()) ;
-					Double machinerySi = ElecMachinesSi + BoilerPlantsSi + EquipmentSi + GeneralMachineSi + MachineEquipSi + ManuUnitsSi + plantSi + machineSi ;
-							
-					res.setMachinerySi( machinerySi==null ? "" :machinerySi.toString());
-					
+//					Double ElecMachinesSi = build.getElecMachinesSi() == null?0D :Double.valueOf(build.getElecMachinesSi().toPlainString());
+//					Double BoilerPlantsSi = build.getBoilerPlantsSi() == null?0D :Double.valueOf(build.getBoilerPlantsSi().toPlainString()) ;
+//					Double EquipmentSi = build.getEquipmentSi() == null?0D :Double.valueOf(build.getEquipmentSi().toPlainString()) ;
+//					Double GeneralMachineSi = build.getGeneralMachineSi() == null?0D :Double.valueOf(build.getGeneralMachineSi().toPlainString()) ;
+//					Double MachineEquipSi = build.getMachineEquipSi() == null?0D :Double.valueOf(build.getMachineEquipSi().toPlainString()) ;
+//					Double ManuUnitsSi = build.getManuUnitsSi() == null?0D :Double.valueOf(build.getManuUnitsSi().toPlainString()) ;
+//					Double plantSi = build.getPowerPlantSi() == null?0D :Double.valueOf(build.getPowerPlantSi().toPlainString()) ;
+//					Double machineSi = build.getMachinerySi() == null?0D :Double.valueOf(build.getMachinerySi().toPlainString()) ;
+//					Double machinerySi = ElecMachinesSi + BoilerPlantsSi + EquipmentSi + GeneralMachineSi + MachineEquipSi + ManuUnitsSi + plantSi + machineSi ;
+//							
+//					res.setMachinerySi( machinerySi==null ? "" :machinerySi.toString());
+					res.setSumInsured(build.getSumInsured() == null?"0" :build.getSumInsured().toPlainString());
 				}
 				
 				// (ii)  Human Related Sections
@@ -3664,12 +3647,12 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 				
 				// Employer Liablity
-				Double empliabiltiySi = humanDatas.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") &&  o.getSectionId().equalsIgnoreCase("45") && o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
-				res.setEmpLiabilitySi(empliabiltiySi==null ? "" : empliabiltiySi.toString());
+//				Double empliabiltiySi = humanDatas.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") &&  o.getSectionId().equalsIgnoreCase("45") && o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
+//				res.setEmpLiabilitySi(empliabiltiySi==null ? "" : empliabiltiySi.toString());
 				
 				// Fideltiy
-				Double fidEmpSi = humanDatas.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") && o.getSectionId().equalsIgnoreCase("43") &&  o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
-				res.setFidEmpSi(fidEmpSi==null ? "" :fidEmpSi.toString());
+//				Double fidEmpSi = humanDatas.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") && o.getSectionId().equalsIgnoreCase("43") &&  o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
+//				res.setFidEmpSi(fidEmpSi==null ? "" :fidEmpSi.toString());
 				
 				// Public Liability
 				Double liabiltiySi = humanDatas.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") && o.getSectionId().equalsIgnoreCase("54") && o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
@@ -3789,12 +3772,12 @@ public class QuoteServiceImpl implements QuoteService {
 				Double sumInsured = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&  o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
 				res.setSumInsured(sumInsured.toString());
 				
-				Double empliabiltiySi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&  o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
-				Double fidEmpSi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&   o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
+//				Double empliabiltiySi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&  o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
+//				Double fidEmpSi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&   o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
 				Double liabiltiySi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&   o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
 				
-				res.setEmpLiabilitySi(empliabiltiySi.toString());
-				res.setFidEmpSi(fidEmpSi.toString());
+//				res.setEmpLiabilitySi(empliabiltiySi.toString());
+//				res.setFidEmpSi(fidEmpSi.toString());
 				res.setLiabilitySi(liabiltiySi.toString());
 				
 				res.setSectionId(sectionIds);

@@ -2882,118 +2882,134 @@ public class DropDownServiceImpl implements DropDownService {
 			for (ListItemValue data : getList) {
 				MachineryDropDownRes res = new MachineryDropDownRes();
 				if (data.getItemCode().equals("1")) {
-					if (build.getBoilerPlantsSi() != null || build.getMachinerySi() != null) {
-						if (build.getBoilerPlantsSi().compareTo(BigDecimal.ZERO) > 0
-								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
-							res.setCode(data.getItemCode());
-							res.setCodeDesc(data.getItemValue());
-							res.setStatus(data.getStatus());
-							res.setSumInsured(build.getBoilerPlantsSi());
-							resList.add(res);
-
-							sumInsured = sumInsured.add(build.getBoilerPlantsSi() != null ? build.getBoilerPlantsSi()
-									: build.getMachinerySi());
-
-						}
-
-					}
+//					if (build.getBoilerPlantsSi() != null || build.getMachinerySi() != null) {
+//						if (build.getBoilerPlantsSi().compareTo(BigDecimal.ZERO) > 0
+//								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
+//							res.setCode(data.getItemCode());
+//							res.setCodeDesc(data.getItemValue());
+//							res.setStatus(data.getStatus());
+//							res.setSumInsured(build.getBoilerPlantsSi());
+//							resList.add(res);
+//
+//							sumInsured = sumInsured.add(build.getBoilerPlantsSi() != null ? build.getBoilerPlantsSi()
+//									: build.getMachinerySi());
+//
+//						}
+//
+//					}
+					sumInsured = sumInsured.add(build.getSumInsured() != null ? build.getSumInsured()
+							: build.getSumInsured());
 				}
 				if (data.getItemCode().equals("2")) {
-					if (build.getElecMachinesSi() != null || build.getMachinerySi() != null) {
-						if (build.getElecMachinesSi().compareTo(BigDecimal.ZERO) > 0
-								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
-							res.setCode(data.getItemCode());
-							res.setCodeDesc(data.getItemValue());
-							res.setStatus(data.getStatus());
-							res.setSumInsured(build.getElecMachinesSi());
-							resList.add(res);
-
-							// sumInsured = sumInsured.add(build.getElecMachinesSi());
-							sumInsured = sumInsured.add(build.getElecMachinesSi() != null ? build.getElecMachinesSi()
-									: build.getMachinerySi());
-						}
-					}
+//					if (build.getElecMachinesSi() != null || build.getMachinerySi() != null) {
+//						if (build.getElecMachinesSi().compareTo(BigDecimal.ZERO) > 0
+//								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
+//							res.setCode(data.getItemCode());
+//							res.setCodeDesc(data.getItemValue());
+//							res.setStatus(data.getStatus());
+//							res.setSumInsured(build.getElecMachinesSi());
+//							resList.add(res);
+//
+//							// sumInsured = sumInsured.add(build.getElecMachinesSi());
+//							sumInsured = sumInsured.add(build.getElecMachinesSi() != null ? build.getElecMachinesSi()
+//									: build.getMachinerySi());
+//						}
+//					}
+					sumInsured = sumInsured.add(build.getSumInsured() != null ? build.getSumInsured()
+							: build.getSumInsured());
 				}
 				if (data.getItemCode().equals("3")) {
-					if (build.getMachineEquipSi() != null || build.getMachinerySi() != null) {
-						if (build.getMachineEquipSi().compareTo(BigDecimal.ZERO) > 0
-								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
-
-							res.setCode(data.getItemCode());
-							res.setCodeDesc(data.getItemValue());
-							res.setStatus(data.getStatus());
-							res.setSumInsured(build.getMachineEquipSi());
-							resList.add(res);
-
-							// sumInsured = sumInsured.add(build.getMachineEquipSi());
-							sumInsured = sumInsured.add(build.getMachineEquipSi() != null ? build.getMachineEquipSi()
-									: build.getMachinerySi());
-						}
-					}
+//					if (build.getMachineEquipSi() != null || build.getMachinerySi() != null) {
+//						if (build.getMachineEquipSi().compareTo(BigDecimal.ZERO) > 0
+//								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
+//
+//							res.setCode(data.getItemCode());
+//							res.setCodeDesc(data.getItemValue());
+//							res.setStatus(data.getStatus());
+//							res.setSumInsured(build.getMachineEquipSi());
+//							resList.add(res);
+//
+//							// sumInsured = sumInsured.add(build.getMachineEquipSi());
+//							sumInsured = sumInsured.add(build.getMachineEquipSi() != null ? build.getMachineEquipSi()
+//									: build.getMachinerySi());
+//						}
+//					}
+					sumInsured = sumInsured.add(build.getSumInsured() != null ? build.getSumInsured()
+							: build.getSumInsured());
 				}
 				if (data.getItemCode().equals("4")) {
-					if (build.getEquipmentSi() != null || build.getMachinerySi() != null) {
-						if (build.getEquipmentSi().compareTo(BigDecimal.ZERO) > 0
-								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
-
-							res.setCode(data.getItemCode());
-							res.setCodeDesc(data.getItemValue());
-							res.setStatus(data.getStatus());
-							res.setSumInsured(build.getEquipmentSi());
-							resList.add(res);
-							// sumInsured = sumInsured.add(build.getEquipmentSi());
-							sumInsured = sumInsured.add(
-									build.getEquipmentSi() != null ? build.getEquipmentSi() : build.getMachinerySi());
-						}
-					}
+//					if (build.getEquipmentSi() != null || build.getMachinerySi() != null) {
+//						if (build.getEquipmentSi().compareTo(BigDecimal.ZERO) > 0
+//								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
+//
+//							res.setCode(data.getItemCode());
+//							res.setCodeDesc(data.getItemValue());
+//							res.setStatus(data.getStatus());
+//							res.setSumInsured(build.getEquipmentSi());
+//							resList.add(res);
+//							// sumInsured = sumInsured.add(build.getEquipmentSi());
+//							sumInsured = sumInsured.add(
+//									build.getEquipmentSi() != null ? build.getEquipmentSi() : build.getMachinerySi());
+//						}
+//					}
+					sumInsured = sumInsured.add(build.getSumInsured() != null ? build.getSumInsured()
+							: build.getSumInsured());
+				
 				}
 				if (data.getItemCode().equals("5")) {
-					if (build.getGeneralMachineSi() != null || build.getMachinerySi() != null) {
-						if (build.getGeneralMachineSi().compareTo(BigDecimal.ZERO) > 0
-								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
-
-							res.setCode(data.getItemCode());
-							res.setCodeDesc(data.getItemValue());
-							res.setStatus(data.getStatus());
-							res.setSumInsured(build.getGeneralMachineSi());
-							resList.add(res);
-
-							// sumInsured = sumInsured.add(build.getGeneralMachineSi());
-							sumInsured = sumInsured
-									.add(build.getGeneralMachineSi() != null ? build.getGeneralMachineSi()
-											: build.getMachinerySi());
-						}
-					}
+//					if (build.getGeneralMachineSi() != null || build.getMachinerySi() != null) {
+//						if (build.getGeneralMachineSi().compareTo(BigDecimal.ZERO) > 0
+//								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
+//
+//							res.setCode(data.getItemCode());
+//							res.setCodeDesc(data.getItemValue());
+//							res.setStatus(data.getStatus());
+//							res.setSumInsured(build.getGeneralMachineSi());
+//							resList.add(res);
+//
+//							// sumInsured = sumInsured.add(build.getGeneralMachineSi());
+//							sumInsured = sumInsured
+//									.add(build.getGeneralMachineSi() != null ? build.getGeneralMachineSi()
+//											: build.getMachinerySi());
+//						}
+//					}
+					sumInsured = sumInsured.add(build.getSumInsured() != null ? build.getSumInsured()
+							: build.getSumInsured());
 				}
 				if (data.getItemCode().equals("6")) {
-					if (build.getManuUnitsSi() != null || build.getMachinerySi() != null) {
-						if (build.getManuUnitsSi().compareTo(BigDecimal.ZERO) > 0
-								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
-							res.setCode(data.getItemCode());
-							res.setCodeDesc(data.getItemValue());
-							res.setStatus(data.getStatus());
-							res.setSumInsured(build.getManuUnitsSi());
-							resList.add(res);
-							// sumInsured = sumInsured.add(build.getManuUnitsSi());
-							sumInsured = sumInsured.add(
-									build.getManuUnitsSi() != null ? build.getManuUnitsSi() : build.getMachinerySi());
-						}
-					}
+//					if (build.getManuUnitsSi() != null || build.getMachinerySi() != null) {
+//						if (build.getManuUnitsSi().compareTo(BigDecimal.ZERO) > 0
+//								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
+//							res.setCode(data.getItemCode());
+//							res.setCodeDesc(data.getItemValue());
+//							res.setStatus(data.getStatus());
+//							res.setSumInsured(build.getManuUnitsSi());
+//							resList.add(res);
+//							// sumInsured = sumInsured.add(build.getManuUnitsSi());
+//							sumInsured = sumInsured.add(
+//									build.getManuUnitsSi() != null ? build.getManuUnitsSi() : build.getMachinerySi());
+//						}
+//					}
+					
+					sumInsured = sumInsured.add(build.getSumInsured() != null ? build.getSumInsured()
+							: build.getSumInsured());
 				}
 				if (data.getItemCode().equals("7")) {
-					if (build.getPowerPlantSi() != null || build.getMachinerySi() != null) {
-						if (build.getPowerPlantSi().compareTo(BigDecimal.ZERO) > 0
-								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
-							res.setCode(data.getItemCode());
-							res.setCodeDesc(data.getItemValue());
-							res.setStatus(data.getStatus());
-							res.setSumInsured(build.getPowerPlantSi());
-							resList.add(res);
-							sumInsured = sumInsured.add(build.getPowerPlantSi());
-							sumInsured = sumInsured.add(
-									build.getPowerPlantSi() != null ? build.getPowerPlantSi() : build.getMachinerySi());
-						}
-					}
+//					if (build.getPowerPlantSi() != null || build.getMachinerySi() != null) {
+//						if (build.getPowerPlantSi().compareTo(BigDecimal.ZERO) > 0
+//								|| build.getMachinerySi().compareTo(BigDecimal.ZERO) > 0) {
+//							res.setCode(data.getItemCode());
+//							res.setCodeDesc(data.getItemValue());
+//							res.setStatus(data.getStatus());
+//							res.setSumInsured(build.getPowerPlantSi());
+//							resList.add(res);
+//							sumInsured = sumInsured.add(build.getPowerPlantSi());
+//							sumInsured = sumInsured.add(
+//									build.getPowerPlantSi() != null ? build.getPowerPlantSi() : build.getMachinerySi());
+//						}
+//					}
+					sumInsured = sumInsured.add(build.getSumInsured() != null ? build.getSumInsured()
+							: build.getSumInsured());
 				}
 
 				if (data.getItemCode().equals("8")) {
@@ -3006,7 +3022,9 @@ public class DropDownServiceImpl implements DropDownService {
 
 			}
 
-			sumInsured = sumInsured.add(build.getMachinerySi() == null ? new BigDecimal(0) : build.getMachinerySi());
+//			sumInsured = sumInsured.add(build.getMachinerySi() == null ? new BigDecimal(0) : build.getMachinerySi());
+			sumInsured = sumInsured.add(build.getSumInsured() != null ? build.getSumInsured()
+					: build.getSumInsured());
 			resp.setTotalSumInsured(sumInsured);
 			resList.stream().filter(o -> o.getCode().equalsIgnoreCase("8"))
 					.forEach(o -> o.setSumInsured(resp.getTotalSumInsured()));

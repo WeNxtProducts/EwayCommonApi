@@ -1627,7 +1627,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 
 						} else {
 
-							if (null == building.get(0).getBuildingSuminsured()
+							if (null == building.get(0).getSumInsured()
 									&& StringUtils.isNotBlank(building.get(0).getSectionId())
 									&& building.get(0).getSectionId().equals("1")) {
 
@@ -1636,7 +1636,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 									&& building.get(0).getSectionId().equals("47")) {
 								
 								skipRiskIds = building.stream()
-										.filter(a -> a.getSectionId().equals("47") && a.getContentSuminsured() == null)
+										.filter(a -> a.getSectionId().equals("47") && a.getSumInsured() == null)
 										.map(a -> a.getRiskId()).collect(Collectors.toList());
 
 							}
@@ -1656,7 +1656,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 									&& building.get(0).getSectionId().equals("3")) {
 
 								skipRiskIds = building.stream()
-										.filter(a -> a.getSectionId().equals("3") && a.getAllriskSuminsured() == null)
+										.filter(a -> a.getSectionId().equals("3") && a.getSumInsured() == null)
 										.map(a -> a.getRiskId()).collect(Collectors.toList());
 
 							}

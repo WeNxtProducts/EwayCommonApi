@@ -1728,7 +1728,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						savedata.setVatPremium(null);
 						savedata.setCdRefno(null);
 						savedata.setMsRefno(null);
-						savedata.setVdRefNo(null);
+						savedata.setVdRefno(null);
 						repo.saveAndFlush(savedata);
 					}
 				
@@ -2300,7 +2300,7 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 				savedata.setEndtPrevQuoteNo(prevQuoteNo);
 				savedata.setEndtCount(new BigDecimal(count));
 				savedata.setEndtStatus("P");
-				savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+				savedata.setIsFinyn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
 				savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
 				savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());

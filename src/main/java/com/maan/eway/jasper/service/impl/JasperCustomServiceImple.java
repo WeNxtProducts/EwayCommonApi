@@ -2114,6 +2114,7 @@ public class JasperCustomServiceImple {
 							lmap.put("industrydesc", k.getIndustryDesc());
 							lmap.put("bondyear", k.getBondYear());
 							lmap.put("sumInsured", k.getSumInsured());
+							lmap.put("buildingSumInsured", k.getSumInsured());
 							lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(sectionId))

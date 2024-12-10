@@ -285,17 +285,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="FID_EMP_COUNT")
     private BigDecimal       fidEmpCount;
     
-    @Column(name="FID_EMP_SI")
-    private BigDecimal       fidEmpSi;
+//    @Column(name="FID_EMP_SI")
+//    private BigDecimal       fidEmpSi;
 
-    @Column(name="EMP_LIABILITY_SI")
-    private BigDecimal       empLiabilitySi;
+//    @Column(name="EMP_LIABILITY_SI")
+//    private BigDecimal       empLiabilitySi;
     
     @Column(name="PERSONAL_LIABILITY_OCCUPATION")
     private String       personalLiabilityOccupation; 
     
-    @Column(name="PERSONAL_LIABILITY_SI")
-    private BigDecimal       personalLiabilitySi; 
+//    @Column(name="PERSONAL_LIABILITY_SI")
+//   private BigDecimal       personalLiabilitySi; 
     
     @Column(name="PERSONAL_LIABILITY_CATEGORY")
     private BigDecimal       personalLiabilityCategory;
@@ -355,31 +355,31 @@ private static final long serialVersionUID = 1L;
    @Column(name="SUM_INSURED_LC")
    private BigDecimal     sumInsuredLc;
    
-   @Column(name="LIABILITY_SI_LC")
-   private BigDecimal       liabilitySiLc;
+//   @Column(name="LIABILITY_SI_LC")
+//   private BigDecimal       liabilitySiLc;
    
    
-   @Column(name="FID_EMP_SI_LC")
-   private BigDecimal       fidEmpSiLc;
+//   @Column(name="FID_EMP_SI_LC")
+//   private BigDecimal       fidEmpSiLc;
    //--- ENTITY LINKS ( RELATIONSHIP )
-   @Column(name="EMP_LIABILITY_SI_LC")
-   private BigDecimal       empLiabilitySiLc;
+//   @Column(name="EMP_LIABILITY_SI_LC")
+//   private BigDecimal       empLiabilitySiLc;
    
-   @Column(name="PERSONAL_LIABILITY_SI_LC")
-   private BigDecimal       personalLiabilitySiLc;
+//   @Column(name="PERSONAL_LIABILITY_SI_LC")
+//   private BigDecimal       personalLiabilitySiLc;
    
    
-   @Column(name="AOO_SUMINSURED")
-   private BigDecimal       aooSuminsured;
+//   @Column(name="AOO_SUMINSURED")
+//   private BigDecimal       aooSuminsured;
    
-   @Column(name="AOO_SUMINSURED_LC")
-   private BigDecimal       aooSuminsuredLc;
+//   @Column(name="AOO_SUMINSURED_LC")
+//   private BigDecimal       aooSuminsuredLc;
    
-   @Column(name="AGG_SUMINSURED")
-   private BigDecimal       aggSuminsured;
+//   @Column(name="AGG_SUMINSURED")
+//   private BigDecimal       aggSuminsured;
    
-   @Column(name="AGG_SUMINSURED_LC")
-   private BigDecimal       aggSuminsuredLc;
+//   @Column(name="AGG_SUMINSURED_LC")
+//   private BigDecimal       aggSuminsuredLc;
    
    @Column(name="VD_REFNO")
    private Integer     vdRefNo ;
@@ -407,26 +407,26 @@ private static final long serialVersionUID = 1L;
    @Column(name="FINALIZE_YN")
    private String finalizeYn;
    
-   @Column(name = "PRODUCT_TURNOVER_SI")
-  	private BigDecimal productTurnoverSi;
+//   @Column(name = "PRODUCT_TURNOVER_SI")
+//  	private BigDecimal productTurnoverSi;
       
-   @Column(name = "PRODUCT_TURNOVER_SI_LC")
-  	private BigDecimal productTurnoverSiLc;
+//   @Column(name = "PRODUCT_TURNOVER_SI_LC")
+//   private BigDecimal productTurnoverSiLc;
    
    @Column(name="BROKER_TIRA_CODE")
    private String brokerTiraCode;
    
-   @Column(name = "ANY_ACCIDENT_SI")
-   private BigDecimal anyAccidentSi;
+//   @Column(name = "ANY_ACCIDENT_SI")
+//   private BigDecimal anyAccidentSi;
    
-   @Column(name = "ANY_ACCIDENT_SI_LC")
-   private BigDecimal anyAccidentSiLc;
+//   @Column(name = "ANY_ACCIDENT_SI_LC")
+//   private BigDecimal anyAccidentSiLc;
    
-   @Column(name = "INSURANCE_PERIOD_SI")
-   private BigDecimal insurancePeriodSi;
+//   @Column(name = "INSURANCE_PERIOD_SI")
+//   private BigDecimal insurancePeriodSi;
    
-   @Column(name = "INSURANCE_PERIOD_SI_LC")
-   private BigDecimal insurancePeriodSiLc;
+//   @Column(name = "INSURANCE_PERIOD_SI_LC")
+//   private BigDecimal insurancePeriodSiLc;
    
    @Column(name="SOURCE_TYPE_ID")
    private String sourceTypeId;
@@ -453,32 +453,34 @@ private static final long serialVersionUID = 1L;
    @Column(name="AGE")
    private Integer age;
    
-   @Column(name = "TTD_SUM_INSURED")
-   private Integer ttdSumInsured;
+//   @Column(name = "TTD_SUM_INSURED")
+//   private Integer ttdSumInsured;
    
-   @Column(name = "ME_SUM_INSURED")
-   private Integer meSumInsured;
+//   @Column(name = "ME_SUM_INSURED")
+//   private Integer meSumInsured;
    
-   @Column(name = "FE_SUM_INSURED")
-   private Integer feSumInsured; 
+//   @Column(name = "FE_SUM_INSURED")
+//   private Integer feSumInsured; 
    
-   @Column(name = "TTD_SUM_INSURED_LC")
-   private Integer ttdSumInsuredLc;
+//   @Column(name = "TTD_SUM_INSURED_LC")
+//   private Integer ttdSumInsuredLc;
    
-   @Column(name = "ME_SUM_INSURED_LC")
-   private Integer meSumInsuredLc;
+//   @Column(name = "ME_SUM_INSURED_LC")
+//   private Integer meSumInsuredLc;
    
-   @Column(name = "FE_SUM_INSURED_LC")
-   private Integer feSumInsuredLc;
+//   @Column(name = "FE_SUM_INSURED_LC")
+//   private Integer feSumInsuredLc;
    
-   @Column(name = "PTD_SUM_INSURED")
-	private Integer ptdSumInsured;
+//   @Column(name = "PTD_SUM_INSURED")
+//	private Integer ptdSumInsured;
 
-	@Column(name = "PTD_SUM_INSURED_LC")
-	private Integer ptdSumInsuredLc;
+//	@Column(name = "PTD_SUM_INSURED_LC")
+//	private Integer ptdSumInsuredLc;
 	
 	@Column(name="CATEGORY_DESC")
     private String categoryDesc;
+//	@Column(name = "PTD_SUM_INSURED_LC")
+//	private Integer ptdSumInsuredLc;
 }
 
 

@@ -15,11 +15,14 @@ public class AdminViewQuotePubLiabilityRes {
 	@JsonProperty("ProductTurnoverSi")
     private BigDecimal productTurnoverSi    ;
 	
-	@JsonProperty("AooSumInsured")
-    private BigDecimal aooSumInsured ;
+//	@JsonProperty("AooSumInsured")
+//    private BigDecimal aooSumInsured ;
 	
-	@JsonProperty("AggSumInsured")
-    private BigDecimal aggSumInsured ;
+//	@JsonProperty("AggSumInsured")
+//    private BigDecimal aggSumInsured ;
+	
+	@JsonProperty("SumInsured")
+	private BigDecimal sumInsured;
 
 	@JsonProperty("Category")
     private String category;

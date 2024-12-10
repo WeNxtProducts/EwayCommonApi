@@ -4968,16 +4968,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 											  BigDecimal sumInsured = null;
 											  if( "1".equals( building.getSectionId()) ) {
 												  
-												  sumInsured = building.getBuildingSuminsured();
+												  sumInsured = building.getSumInsured();
 											  }
 											  else  if( "47".equals( building.getSectionId()) ) {
 												  
-												  sumInsured = building.getContentSuminsured();
+												  sumInsured = building.getSumInsured();
 											  }
  
 											  else if( "3".equals( building.getSectionId()) ) {
 	  
-	                                            sumInsured = building.getAllriskSuminsured();
+												  sumInsured = building.getSumInsured();
                                                   }
 // 
 //											  else  if( "36".equals( building.getSectionId()) ) {
