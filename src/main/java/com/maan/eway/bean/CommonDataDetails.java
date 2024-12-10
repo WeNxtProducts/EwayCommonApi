@@ -279,8 +279,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="TOTAL_OUTSTANDING_AMOUNT")
     private Long       totalOutstandingAmount;
     
-    @Column(name="LIABILITY_SI")
-    private BigDecimal       liabilitySi;
+//    @Column(name="LIABILITY_SI")
+//    private BigDecimal       liabilitySi;
     
     @Column(name="FID_EMP_COUNT")
     private BigDecimal       fidEmpCount;
