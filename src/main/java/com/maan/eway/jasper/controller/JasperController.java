@@ -1,6 +1,5 @@
 package com.maan.eway.jasper.controller;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.jasper.req.GetApiDocReportReq;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.req.PdfJsonReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
+import com.maan.eway.jasper.res.ApiDocListRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.service.PrintReqService;
@@ -193,6 +194,33 @@ public class JasperController {
 		}
 	}
 	
+	@GetMapping("/getApiDocList/{quoteNo}")
+	public ResponseEntity<?> getApiDocList(@PathVariable(value = "quoteNo") String quoteNo){
+		CommonRes data = new CommonRes();
+		List<ApiDocListRes> res = jasper.getApiDocList(quoteNo);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if(res !=null) {
+			return new ResponseEntity<CommonRes>(data,HttpStatus.CREATED);
+		}else {
+			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+		}
+	}
 	
-	
+	@PostMapping("/download/ApiDoc")
+	public ResponseEntity<?> getApiDocReport(@RequestBody GetApiDocReportReq req){
+		CommonRes data = new CommonRes();
+		JasperDocumentRes res = jasper.getApiDocReport(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if(res !=null) {
+			return new ResponseEntity<CommonRes>(data,HttpStatus.CREATED);
+		}else {
+			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+		}
+	}
 }

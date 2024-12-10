@@ -38,18 +38,21 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
+import com.maan.eway.bean.ApiDocDownloadDetail;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ReportJasperConfigMaster;
 import com.maan.eway.chartaccount.JpqlQueryServiceImpl;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.jasper.req.GetApiDocReportReq;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.req.PdfJsonReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.req.ReportRes;
+import com.maan.eway.jasper.res.ApiDocListRes;
 import com.maan.eway.jasper.res.AttachMentRes;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
@@ -59,6 +62,7 @@ import com.maan.eway.jasper.res.PremiumReportRes;
 import com.maan.eway.jasper.res.TaxInvoiceRes;
 import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.jasper.service.JasperService;
+import com.maan.eway.repository.ApiDocDownloadDetailRepository;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.thread.GetFileFromPath;
@@ -100,6 +104,9 @@ public class JasperServiceImpl implements JasperService {
 
 	@Autowired
 	private BranchMasterRepository branchRepo ;
+	
+	@Autowired
+	private ApiDocDownloadDetailRepository apiDocDownloadDetailRepo;
 	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
@@ -1021,6 +1028,41 @@ public class JasperServiceImpl implements JasperService {
 				String jsonString = gson.toJson(resMap);
 				String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+requestRefNo.replaceAll("[\\/:*?\"<>|]*", "");
 				res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, map, "- BrokerQuotation.json");
+				return res;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<ApiDocListRes> getApiDocList(String quoteNo) {
+		log.info("Enter into getApiDocList :: "+quoteNo);
+		List<ApiDocListRes> res = new ArrayList<ApiDocListRes>();
+		try {
+			res = jasperCustomeImple.getApiDocList(quoteNo);
+			return res;
+		}catch(Exception e) {
+			log.info("Error in getApiDocList || "+e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public JasperDocumentRes getApiDocReport(GetApiDocReportReq req) {
+		log.info("Enter Into getApiDocReport \n Argument ==> "+ gson.toJson(req));
+		JasperDocumentRes res = new JasperDocumentRes();
+		try {
+			ApiDocDownloadDetail resMap = apiDocDownloadDetailRepo.findByQuoteNoAndSgsId(req.getQuoteNo(),req.getFileCode());
+			if(resMap!=null) {
+				File file = new File(resMap.getFilePath()+resMap.getDocName());
+				if(file.exists()) {
+					GetFileFromPath filePath = new GetFileFromPath(resMap.getFilePath()+resMap.getDocName());
+					res.setPdfoutfile(filePath.call().getImgUrl());
+					res.setPdfoutfilepath(resMap.getFilePath()+resMap.getDocName());
+				}
 				return res;
 			}
 		}catch(Exception e) {

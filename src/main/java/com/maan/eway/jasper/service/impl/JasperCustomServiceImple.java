@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.ApiDocDownloadDetail;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.ClausesMaster;
@@ -70,6 +71,7 @@ import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
+import com.maan.eway.jasper.res.ApiDocListRes;
 import com.maan.eway.jasper.res.AttachMentRes;
 import com.maan.eway.jasper.res.CoverDetailsRes;
 import com.maan.eway.jasper.res.CreditDataSetOne;
@@ -109,6 +111,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -3084,6 +3087,46 @@ public class JasperCustomServiceImple {
 	        return str;
 	    }
 	    return str.substring(0, 1).toUpperCase() + str.substring(1);
+	}
+
+	public List<ApiDocListRes> getApiDocList(String quoteNo) {
+		List<ApiDocListRes> resList = new ArrayList<>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+			Root<ApiDocDownloadDetail> aRoot = cq.from(ApiDocDownloadDetail.class);
+			Root<HomePositionMaster> hRoot = cq.from(HomePositionMaster.class);
+			Root<PersonalInfo> pRoot = cq.from(PersonalInfo.class);
+			
+			cq.multiselect(aRoot.get("sgsId").alias("sgsId"),aRoot.get("docName").alias("docName"),
+					aRoot.get("docType").alias("docType"),aRoot.get("filePath").alias("filePath"),
+					hRoot.get("policyNo").alias("policyNo"),hRoot.get("quoteNo").alias("quoteNo"),
+					pRoot.get("clientName").alias("clientName"))
+			.where(cb.equal(aRoot.get("quoteNo"), hRoot.get("quoteNo")),cb.equal(hRoot.get("customerId"), pRoot.get("customerId")),
+					cb.equal(hRoot.get("status"), "P"),cb.equal(hRoot.get("quoteNo"), quoteNo));
+			
+			TypedQuery<Tuple> r = em.createQuery(cq);
+			
+			List<Tuple> result = r.getResultList();
+			if(result!=null && result.size()>0) {
+				result.forEach(k -> {
+					ApiDocListRes m = ApiDocListRes.builder()
+					.customerName(k.get("clientName")==null?"":k.get("clientName").toString())
+					.fileCode(k.get("sgsId")==null?"":k.get("sgsId").toString())
+					.fileName(k.get("docName")==null?"":k.get("docName").toString())
+					.policyNo(k.get("policyNo")==null?"":k.get("policyNo").toString())
+					.quoteNo(k.get("quoteNo")==null?"":k.get("quoteNo").toString())
+					.fileType(k.get("docType")==null?"":k.get("docType").toString())
+					.filePath(k.get("filePath")==null?"":k.get("filePath").toString())
+					.build();
+					resList.add(m);
+				});
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return resList;
 	}
 	
 	

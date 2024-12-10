@@ -1,11 +1,15 @@
 package com.maan.eway.jasper.service;
 
+import java.util.List;
+
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.jasper.req.GetApiDocReportReq;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.JasperScheduleReq;
 import com.maan.eway.jasper.req.PdfJsonReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
+import com.maan.eway.jasper.res.ApiDocListRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 
 public interface JasperService {
@@ -33,6 +37,10 @@ public interface JasperService {
 	public CommonRes PdfJsonResponse(PdfJsonReq req);
 
 	public JasperDocumentRes GetReportByRequestRefNo(String requestRefNo);
+
+	public List<ApiDocListRes> getApiDocList(String quoteNo);
+
+	public JasperDocumentRes getApiDocReport(GetApiDocReportReq req);
 
 
 }

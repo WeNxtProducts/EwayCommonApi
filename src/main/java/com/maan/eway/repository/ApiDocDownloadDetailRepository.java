@@ -29,4 +29,6 @@ import com.maan.eway.bean.ApiDocDownloadDetailId;
  
 public interface ApiDocDownloadDetailRepository  extends JpaRepository<ApiDocDownloadDetail,ApiDocDownloadDetailId > , JpaSpecificationExecutor<ApiDocDownloadDetail> {
 
+	ApiDocDownloadDetail findByQuoteNoAndSgsId(String quoteNo, String fileCode);
+
 }
