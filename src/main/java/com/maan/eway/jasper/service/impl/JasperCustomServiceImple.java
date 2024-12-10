@@ -3101,7 +3101,7 @@ public class JasperCustomServiceImple {
 			cq.multiselect(aRoot.get("sgsId").alias("sgsId"),aRoot.get("docName").alias("docName"),
 					aRoot.get("docType").alias("docType"),aRoot.get("filePath").alias("filePath"),
 					hRoot.get("policyNo").alias("policyNo"),hRoot.get("quoteNo").alias("quoteNo"),
-					pRoot.get("clientName").alias("clientName"))
+					pRoot.get("clientName").alias("clientName"),aRoot.get("hasError").alias("hasError"))
 			.where(cb.equal(aRoot.get("quoteNo"), hRoot.get("quoteNo")),cb.equal(hRoot.get("customerId"), pRoot.get("customerId")),
 					cb.equal(hRoot.get("status"), "P"),cb.equal(hRoot.get("quoteNo"), quoteNo));
 			
@@ -3118,6 +3118,7 @@ public class JasperCustomServiceImple {
 					.quoteNo(k.get("quoteNo")==null?"":k.get("quoteNo").toString())
 					.fileType(k.get("docType")==null?"":k.get("docType").toString())
 					.filePath(k.get("filePath")==null?"":k.get("filePath").toString())
+					.hasError(k.get("hasError")==null?"":k.get("hasError").toString())
 					.build();
 					resList.add(m);
 				});

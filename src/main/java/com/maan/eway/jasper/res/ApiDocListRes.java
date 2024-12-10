@@ -32,4 +32,7 @@ public class ApiDocListRes {
 	@JsonProperty("CustomerName")
 	private String customerName;
 	
+	@JsonProperty("HasError")
+	private String hasError;
+	
 }
