@@ -3643,7 +3643,7 @@ public class QuoteServiceImpl implements QuoteService {
 						&& o.getSectionId().equals("36") ).collect(Collectors.toList());
 				if( filterlialbity.size() > 0 ) {
 					CommonDataDetails liability = filterlialbity.get(0);
-					res.setLiabilityOccupationId(liability.getOccupationType());
+//					res.setLiabilityOccupationId(liability.getOccupationType());
 					res.setLiabilityOccupationDesc(liability.getOccupationDesc());
 					res.setPersonalIntermediarySuminsured(liability.getSumInsured()==null ? "" : liability.getSumInsured().toPlainString() );
 					
@@ -3658,9 +3658,9 @@ public class QuoteServiceImpl implements QuoteService {
 //				res.setFidEmpSi(fidEmpSi==null ? "" :fidEmpSi.toString());
 				
 				// Public Liability
-				Double liabiltiySi = humanDatas.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") && o.getSectionId().equalsIgnoreCase("54") && o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
-				res.setLiabilitySi(liabiltiySi==null ? "" : liabiltiySi.toString());
-				
+//				Double liabiltiySi = humanDatas.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") && o.getSectionId().equalsIgnoreCase("54") && o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
+//				res.setLiabilitySi(liabiltiySi==null ? "" : liabiltiySi.toString());
+//				
 				 List<OccupationReqClass> occupation = new ArrayList<OccupationReqClass>(); 
 			}
 			
@@ -3777,11 +3777,11 @@ public class QuoteServiceImpl implements QuoteService {
 				
 //				Double empliabiltiySi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&  o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
 //				Double fidEmpSi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&   o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
-				Double liabiltiySi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&   o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
+//				Double liabiltiySi = paccDatas.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) &&   o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
 				
 //				res.setEmpLiabilitySi(empliabiltiySi.toString());
 //				res.setFidEmpSi(fidEmpSi.toString());
-				res.setLiabilitySi(liabiltiySi.toString());
+//				res.setLiabilitySi(liabiltiySi.toString());
 				
 				res.setSectionId(sectionIds);
 			}
