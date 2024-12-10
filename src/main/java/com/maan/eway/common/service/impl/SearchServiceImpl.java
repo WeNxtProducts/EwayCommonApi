@@ -935,11 +935,11 @@ public class SearchServiceImpl implements SearchService {
 				    	    
 				    	    
 				    		dozerMapper.map(publiability, data);
-				    		publiability.setLiabilitySi(ids.getLiabilitySi());
+//				    		publiability.setLiabilitySi(ids.getLiabilitySi());
 //				    		publiability.setAggSumInsured(ids.getAggSuminsured());
 //				    		publiability.setAooSumInsured(ids.getAooSuminsured());
 				    		publiability.setSumInsured(ids.getSumInsured());	
-				    		publiability.setProductTurnoverSi(ids.getProductTurnoverSi());
+//				    		publiability.setProductTurnoverSi(ids.getProductTurnoverSi());
 				    		publiability.setCategory(ids.getCategoryId());
 				    		res.setPublicLiabilityRisk(publiability);	    		
 				    	 }
