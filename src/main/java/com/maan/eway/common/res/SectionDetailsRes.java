@@ -307,4 +307,7 @@ public class SectionDetailsRes {
 	
 	@JsonProperty("RoofTypeDesc")
 	private String roofTypeDesc;
+	
+	@JsonProperty("CoverId")
+	private Integer coverid;
 }
