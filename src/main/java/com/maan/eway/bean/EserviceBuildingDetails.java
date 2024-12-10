@@ -841,5 +841,8 @@ public class EserviceBuildingDetails implements Serializable {
 
 	@Column(name = "SUM_INSURED_LC")
 	private BigDecimal sumInsuredLc;
+	
+	@Column(name = "COVER_ID")
+	private Integer coverId;
 
 }

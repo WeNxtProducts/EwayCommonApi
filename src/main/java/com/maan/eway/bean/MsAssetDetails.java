@@ -485,6 +485,9 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="CONTENT_ID")
    private String contentId;
+   
+   @Column(name = "COVER_ID")
+	private Integer coverId;
 
 }
 
