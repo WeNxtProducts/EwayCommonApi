@@ -1245,12 +1245,14 @@ public class QuoteServiceImpl implements QuoteService {
 							secRes.setPremiumExcluedTaxLc(PremiumExcluedTaxLc==null?"":PremiumExcluedTaxLc.toString());
 							secRes.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
 							secRes.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
+							
 							secRes.setCovers(coverListRes);
 						}
 					secRes.setRiskId(acc.getRiskId().toString());
 					secRes.setLocationId(acc.getLocationId().toString());
 					secRes.setLocationName(acc.getLocationName());
 					secRes.setSumInsured(acc.getSumInsured()==null?"" : acc.getSumInsured().toPlainString());
+					secRes.setCoverid(acc.getCoverId());
 					buildingSectionList.add(secRes);
 						
 					}
@@ -1309,6 +1311,7 @@ public class QuoteServiceImpl implements QuoteService {
 					secRes.setWallTypeDesc(bul.getWallTypeDesc()==null?"":bul.getWallTypeDesc());
 					secRes.setRoofType(bul.getRoofType()==null?"":bul.getRoofType());
 					secRes.setRoofTypeDesc(bul.getRoofTypeDesc()==null?"":bul.getRoofTypeDesc());
+					secRes.setCoverid(bul.getCoverId());
 					buildingSectionList.add(secRes);
 					}
 				
@@ -1918,7 +1921,7 @@ public class QuoteServiceImpl implements QuoteService {
 				sec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc.toString()==null?"":PremiumIncludedTaxLc.toString());
 
 				sec.setCovers(coverListRes);
-				
+			
 				List<SectionDetails>  sectionList = new ArrayList<SectionDetails>();
 				sectionList.add(sec);
 				commonDetails.setSectionDetails(sectionList);
