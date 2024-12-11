@@ -64,6 +64,9 @@ public class CalcEngine {
 		@JsonProperty("LocationId") 
 		private String locationId;
 		
+
+		@JsonProperty("CoverId")
+		private String coverId; 		// this key we will not get value from api we have to take from One time table
 		
 		
 }

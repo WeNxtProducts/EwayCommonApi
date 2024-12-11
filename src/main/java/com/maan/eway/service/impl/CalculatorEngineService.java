@@ -256,23 +256,38 @@ public class CalculatorEngineService implements CalculatorEngine {
 					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode() + ";branchCode:"
 					+ engine.getBranchCode() + ";";
 			 */
+			
 			String search2 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
 					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode()
 					+ ";branchCode:99999;";
-/*
-			String search3 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
-					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
-					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:" + engine.getAgencyCode()
-					+ ";branchCode:99999;";*/
+			List<Tuple> commonResult =null;
+			if(!"0".equals(engine.getCoverId())) {
+				
+				String search4 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+				+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
+				+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:99999;branchCode:99999;coverId:"+engine.getCoverId()+";";
 
-			String search4 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
-					+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
-					+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:99999;branchCode:99999;";
+				SpecCriteria commonCriteria = crservice.createCriteria(SectionCoverMaster.class, search4, "coverId");
+				commonResult= crservice.getResult(commonCriteria, 0, 50);
+				
+				search4 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+				+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
+				+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:99999;branchCode:99999;discountCoverId:"+engine.getCoverId()+";";
 
-			SpecCriteria commonCriteria = crservice.createCriteria(SectionCoverMaster.class, search4, "coverId");
-			List<Tuple> commonResult = crservice.getResult(commonCriteria, 0, 50);
-			
+				commonCriteria = crservice.createCriteria(SectionCoverMaster.class, search4, "coverId");
+				List<Tuple> commonResult1= crservice.getResult(commonCriteria, 0, 50);
+				commonResult.addAll(commonResult1);
+
+			}else {
+
+				String search4 = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
+				+ ";sectionId:" + engine.getSectionId() + ";status:{Y,R};" + todayInString
+				+ "~effectiveDateStart&effectiveDateEnd;" + "agencyCode:99999;branchCode:99999;";
+
+				SpecCriteria commonCriteria = crservice.createCriteria(SectionCoverMaster.class, search4, "coverId");
+				commonResult= crservice.getResult(commonCriteria, 0, 50);
+			}
 			
 			SpecCriteria criteria = null;		
 			
@@ -1212,6 +1227,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 							: vehicles.get(0).get("periodOfInsurance").toString());
 					String policyTypeId = (vehicles.get(0).get("insuranceClass") == null ? "99999"
 							: vehicles.get(0).get("insuranceClass").toString());
+					
+					String coverId =(vehicles.get(0).get("coverId") == null ? "0"
+							: vehicles.get(0).get("coverId").toString());
+					engine.setCoverId(coverId);
 					
 					prorata = ratingutil.loadProRataData(engine, periodOfInsurance,policyTypeId);
 
