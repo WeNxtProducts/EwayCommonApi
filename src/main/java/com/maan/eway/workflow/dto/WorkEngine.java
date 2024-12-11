@@ -1,10 +1,6 @@
 package com.maan.eway.workflow.dto;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.bean.MsVehicleDetails;
 
 import lombok.Data;
 
@@ -39,4 +35,7 @@ public class WorkEngine {
 		
 		@JsonProperty("Integ_Type")
 		private String integType;
+		
+		@JsonProperty("PolicyNo")
+		private String policyNo;
 }

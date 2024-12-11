@@ -130,7 +130,9 @@ public class JsonMapperFromDB {
 						.map(t-> t.getQueryCol()+" "+t.getQueryAlias()).collect(Collectors.toList());
 				
 				String sql="SELECT "+(collect.isEmpty()? "*": String.join(",",collect)) +" "+ result.get(0).get("sqlQuery").toString();
-				sql=sql.replaceAll("\\{quoteno\\}","'"+ engine.getQuoteNo() +"'").replaceAll("\\{RequestReferenceNo\\}","'"+ engine.getRequestReferenceNo()+"'");				
+				sql=sql.replaceAll("\\{quoteno\\}","'"+ engine.getQuoteNo() +"'")
+						.replaceAll("\\{RequestReferenceNo\\}","'"+ engine.getRequestReferenceNo()+"'")
+						.replaceAll("\\{PolicyNo\\}","'"+ engine.getPolicyNo()+"'");				
 						
 			  List<Map<String, Object>> resultList = template.queryForList(sql);			  
 			  hashMap.put(id.toPlainString(), resultList);
