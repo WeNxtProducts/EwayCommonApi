@@ -33,6 +33,7 @@ import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
@@ -87,6 +88,7 @@ import com.maan.eway.endorsment.util.LoadingFromPolicy;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
+import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
@@ -223,6 +225,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 	
 	@Autowired
 	private EserviceCommonDetailsRepository eservicecommonRepo;
+	
+	@Autowired
+	private EServiceMotorDetailsRepository eservicemotorRepo;
 	
 	private Boolean isPolicyPeriod=Boolean.FALSE;
 	@Autowired
@@ -3955,6 +3960,31 @@ public class CalculatorEngineService implements CalculatorEngine {
 			
 			CalcEngine engine=new CalcEngine();
 			System.out.println("Calculator Calling Api");
+			
+			List<EserviceMotorDetails> motorList=eservicemotorRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
+			if(!motorList.isEmpty()) {
+				for(EserviceMotorDetails data:motorList) {
+					engine.setLocationId(data.getLocationId()==null?"1":data.getLocationId().toString());
+					engine.setBranchCode(data.getBranchCode());
+					engine.setInsuranceId(data.getCompanyId());
+					engine.setSectionId(data.getSectionId());
+					engine.setProductId(data.getProductId());
+					engine.setMsrefno(data.getMsRefno().toString());
+					engine.setCdRefNo(data.getCdRefno().toString());
+					engine.setVdRefNo(data.getVdRefNo().toString());
+					engine.setCreatedBy(data.getCreatedBy());
+					engine.setRequestReferenceNo(data.getRequestReferenceNo());
+					engine.setEffectiveDate(data.getPolicyStartDate());
+					engine.setPolicyEndDate(data.getPolicyEndDate());
+					engine.setCoverModification("N");
+					engine.setVehicleId(data.getRiskId().toString());		
+					EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+					resList.add(res);
+				}
+			}else {
+			
+			
+			
 			List<EserviceSectionDetails> secList= esSecRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 			if(secList!=null) {
 			Set<Integer> findlocationid = secList.stream().map(EserviceSectionDetails::getLocationId)
@@ -3971,13 +4001,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 					 if("A".equalsIgnoreCase(s.getProductType())) {
 							List<EserviceBuildingDetails> buildingdata =eservicebuildingRepo
 									.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo(),data);
+							 if(!buildingdata.isEmpty()&&buildingdata.size()>0 && buildingdata!=null) {
 							List<EserviceBuildingDetails> building=buildingdata.stream()
 									.filter(o -> o.getLocationId().equals(data) && o.getSectionId().equals(s.getSectionId())
 											&& o.getRiskId().equals(s.getRiskId()))
 									.collect(Collectors.toList());
 							
 							for (EserviceBuildingDetails bd : building) {
-								{
+								
 									engine.setLocationId(bd.getLocationId().toString());
 									engine.setBranchCode(bd.getBranchCode());
 									engine.setInsuranceId(bd.getCompanyId());
@@ -3998,34 +4029,38 @@ public class CalculatorEngineService implements CalculatorEngine {
 							}
 					 }else  if("H".equalsIgnoreCase(s.getProductType())) {
 						 List<EserviceCommonDetails> comdata = eservicecommonRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo(),data);
+						 if(!comdata.isEmpty()&&comdata.size()>0 && comdata!=null) {
 						 List<EserviceCommonDetails> common=comdata.stream()
-									.filter(o -> o.getLocationId().equals(data) && o.getSectionId().equals(s.getSectionId())
-											&& o.getRiskId().equals(s.getRiskId()))
-									.collect(Collectors.toList());
-						 for (EserviceCommonDetails cd : common) {
-								engine.setLocationId(cd.getLocationId().toString());
-								engine.setBranchCode(cd.getBranchCode());
-								engine.setInsuranceId(cd.getCompanyId());
-								engine.setSectionId(cd.getSectionId());
-								engine.setProductId(cd.getProductId());
-								engine.setMsrefno(cd.getMsRefno().toString());
-								engine.setCdRefNo(cd.getCdRefno().toString());
-								engine.setVdRefNo(cd.getVdRefNo().toString());
-								engine.setCreatedBy(cd.getCreatedBy());
-								engine.setRequestReferenceNo(cd.getRequestReferenceNo());
-								engine.setEffectiveDate(cd.getPolicyStartDate());
-								engine.setPolicyEndDate(cd.getPolicyEndDate());
-								engine.setCoverModification("N");
-								engine.setVehicleId(cd.getRiskId().toString());		
-								EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
-								resList.add(res);
-						 }
-						 
+								.filter(o -> o.getLocationId().equals(data) && o.getSectionId().equals(s.getSectionId())
+										&& o.getRiskId().equals(s.getRiskId()))
+								.collect(Collectors.toList());
+						for (EserviceCommonDetails cd : common) {
+							engine.setLocationId(cd.getLocationId().toString());
+							engine.setBranchCode(cd.getBranchCode());
+							engine.setInsuranceId(cd.getCompanyId());
+							engine.setSectionId(cd.getSectionId());
+							engine.setProductId(cd.getProductId());
+							engine.setMsrefno(cd.getMsRefno().toString());
+							engine.setCdRefNo(cd.getCdRefno().toString());
+							engine.setVdRefNo(cd.getVdRefNo().toString());
+							engine.setCreatedBy(cd.getCreatedBy());
+							engine.setRequestReferenceNo(cd.getRequestReferenceNo());
+							engine.setEffectiveDate(cd.getPolicyStartDate());
+							engine.setPolicyEndDate(cd.getPolicyEndDate());
+							engine.setCoverModification("N");
+							engine.setVehicleId(cd.getRiskId().toString());		
+							EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+							resList.add(res);
+						}
 					 }
+					}
+
 				}
 			}
 			}
+			System.out.println("Section List is Empty for this  Request Reference Number : "+request.getRequestReferenceNo());
 			}
+		}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
