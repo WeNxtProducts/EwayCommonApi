@@ -113,6 +113,8 @@ import com.maan.eway.document.res.DocumentTypeDetails;
 import com.maan.eway.document.res.LocationWiseSections;
 import com.maan.eway.document.service.impl.DocumentServiceImpl;
 import com.maan.eway.error.Error;
+import com.maan.eway.integration.req.ValuationReq;
+import com.maan.eway.integration.service.impl.ValuationServiceImpl;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
 import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
@@ -223,7 +225,8 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo ;
-	
+	@Autowired
+	private ValuationServiceImpl  valuationServiceImpl ;
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -2375,6 +2378,13 @@ public class PaymentServiceImpl implements PaymentService {
 						tiraReq.setQuoteNo(data.getQuoteNo());					
 						tiraIntegService.callTiraIntegeration(tiraReq , token );
 		}*/
+			if ("100020".equalsIgnoreCase(req.getInsuranceId())) {
+				ValuationReq vreq=new ValuationReq();
+				vreq.setBranchCode(data.getBranchCode());
+				vreq.setCompanyId(req.getInsuranceId());
+				vreq.setQuoteNo(req.getQuoteNo());
+				valuationServiceImpl.pushValuation(vreq);
+			}
 	}catch(Exception e) {
 			e.printStackTrace();
 			log.info("Log Details"+e.getMessage());

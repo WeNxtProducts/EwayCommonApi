@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class ValuationListRes {
 	
+	@JsonProperty("ValCompanyId")
+	private String valCompanyId;
+	
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	

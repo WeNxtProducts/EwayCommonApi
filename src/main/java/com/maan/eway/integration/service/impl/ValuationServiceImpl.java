@@ -101,7 +101,8 @@ public class ValuationServiceImpl implements ValuationService {
 				a.get("vehicleId").alias("vehicleId"),a.get("vehicleRegNo").alias("vehicleRegNo"),a.get("firstName").alias("firstName"),
 				a.get("email").alias("email"),a.get("customerMobile").alias("customerMobile"),a.get("policyNo").alias("policyNo"),
 				a.get("createRequest").alias("createRequest"),a.get("createResponse").alias("createResponse"),a.get("idrequest").alias("idrequest"),
-				a.get("idresponse").alias("statusrequest"),a.get("statusrequest").alias("statusresponse"),a.get("statusresponse").alias("idresponse"),a.get("recordId").alias("recordId"));
+				a.get("idresponse").alias("statusrequest"),a.get("statusrequest").alias("statusresponse"),a.get("statusresponse").alias("idresponse"),
+				a.get("recordId").alias("recordId"),a.get("status").alias("status"),a.get("valCompanyId").alias("valCompanyId"));
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();

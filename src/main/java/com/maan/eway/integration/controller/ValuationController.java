@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.integration.req.PremiaListRequest;
 import com.maan.eway.integration.req.ValuationDetailsReq;
 import com.maan.eway.integration.req.ValuationListReq;
 import com.maan.eway.integration.req.ValuationReq;
