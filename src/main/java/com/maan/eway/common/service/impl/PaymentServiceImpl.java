@@ -2418,8 +2418,10 @@ public class PaymentServiceImpl implements PaymentService {
 					Map<String, Object> response = (Map<String, Object>)  quotation.get(0).get("Response");
 					Boolean hasError=(Boolean) response.get("hasError");
 					if(!hasError) {
-						policyNo=(String) response.get("policyNumber");					
+						Map<String, Object> dataq = (Map<String, Object>) response.get("data");	
+						policyNo=(String) dataq.get("policyNumber");					
 						e.setIntegType("GENDOC_INTEG");
+						e.setPolicyNo(policyNo);
 						quotation = jsonMapper.createQuotation(e);					
 						 
 					}			

@@ -1,11 +1,8 @@
 package com.maan.eway.workflow.util;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +13,6 @@ import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 import com.maan.eway.workflow.dto.WorkEngine;
-
-import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class SaveResponseToTable {
@@ -53,29 +48,31 @@ public class SaveResponseToTable {
 				
 			}
 			
-			Map<String, Object> object5 =null;
+			Map<String, Object> object6 =null;
 			try {
 
 				Map<String, Object> object1 = (Map<String, Object>) response.get("data");
-				Map<String, Object> object2 = (Map<String, Object>) object1.get("riskInfo");
-				Map<String, Object> object3 = (Map<String, Object>) object2.get("riskDetails");
-				Map<String, Object> object4 = (Map<String, Object>) object3.get("riskDetailsArray");
-				object5=(Map<String, Object>) object4.get("coverages");
+				Map<String, Object> object2 = (Map<String, Object>) object1.get("summaryDetails");
+				Map<String, Object> quoteInfo = (Map<String, Object>) object2.get("quoteInfo");
+				Map<String, Object> object3 = (Map<String, Object>) quoteInfo.get("riskInfo");
+				Map<String, Object> object4 = (Map<String, Object>) object3.get("riskDetails");
+				List<Map<String, Object>> object5 = (List<Map<String, Object>>) object4.get("riskDetailsArray");
+				object6=(Map<String, Object>) object5.get(0).get("coverages");
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
 			List<Cover> retc=new ArrayList<Cover>();
 			
-			if(object5!=null && object5.get("mandatoryCoveragesArray")!=null) {
-				List<Map<String, Object>> mandatory=(List<Map<String, Object>>) object5.get("mandatoryCoveragesArray");
+			if(object6!=null && object6.get("mandatoryCoveragesArray")!=null) {
+				List<Map<String, Object>> mandatory=(List<Map<String, Object>>) object6.get("mandatoryCoveragesArray");
 				if(mandatory.size()>0) {
 					CoverFromAzentoResponse c=new CoverFromAzentoResponse("B");
 					List<Cover> mainCover = mandatory.stream().map(c).collect(Collectors.toList());
 					retc.addAll(mainCover);
 				}
 			}
-			if(object5!=null && object5.get("selectedOptionalCoveragesArray")!=null) {
-				List<Map<String, Object>> optional=(List<Map<String, Object>>) object5.get("selectedOptionalCoveragesArray");
+			if(object6!=null && object6.get("selectedOptionalCoveragesArray")!=null) {
+				List<Map<String, Object>> optional=(List<Map<String, Object>>) object6.get("selectedOptionalCoveragesArray");
 				if(optional.size()>0) {
 					CoverFromAzentoResponse c=new CoverFromAzentoResponse("O");
 					List<Cover> optinalC = optional.stream().map(c).collect(Collectors.toList());

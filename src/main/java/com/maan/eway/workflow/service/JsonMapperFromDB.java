@@ -163,12 +163,13 @@ public class JsonMapperFromDB {
 					HomePositionMaster hm = homePositionRepo.findByQuoteNo(engine.getQuoteNo());
 					if(hm!=null && data!=null && !data.isEmpty()) {
 						hm.setIntegrationError((Boolean) data.get("hasError")?"Y":"N");
-						hm.setIntegrationStatus((Boolean) data.get("hasError")?"F":"Y");
+						hm.setIntegrationStatus((Boolean) data.get("hasError")?"F":"S");
 						hm.setPolicyNo(data.get("policyNumber").toString());
 						hm.setCorePolicyNo(data.get("policyNumber").toString());
 						hm.setStatus("P");
 						hm.setCoreIntgRemarks(response.get("message").toString());
 						hm.setCoreQuoteNo(data.get("quotationNumber").toString());
+						hm.setOriginalPolicyNo(data.get("policyNumber").toString());
 						//hm.setCoreSgsId(data.get("policyId").toString());
 						homePositionRepo.save(hm);
 					}
