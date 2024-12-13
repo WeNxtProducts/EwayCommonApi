@@ -773,7 +773,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		try { 
 			
 			LoginMaster agencyCode = loginRepo.findByLoginId(req.getLoginId());
-			LoginMaster brokerData = loginRepo.findByAgencyCode(req.getOaCode());
+			LoginMaster brokerData = loginRepo.findByAgencyCodeAndCompanyId(req.getOaCode(),req.getInsuranceId());
 			
 			List<LoginBranchMaster> list =   loginBrokerRepo.findByLoginId(brokerData.getLoginId());
 			
