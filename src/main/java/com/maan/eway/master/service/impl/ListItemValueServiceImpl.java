@@ -932,8 +932,12 @@ this.repository = repo;
 //			Predicate a2 = cb.equal(ocpm1.get("itemCode"), b.get("itemCode"));
 			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
 			Predicate a4 = cb.equal(b.get("branchCode"), ocpm1.get("branchCode"));
-			amendId.where(a1,a3,a4);
-			
+			if(StringUtils.isNotBlank(req.getParam1())) {
+				Predicate a5 = cb.equal(b.get("param1"), ocpm1.get("param1"));
+				amendId.where(a1,a3,a4,a5);
+			}else {
+				amendId.where(a1,a3,a4);
+			}
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
@@ -948,8 +952,12 @@ this.repository = repo;
 			 * n9=cb.equal(b.get("param1"),req.getTitletype());
 			 * query.where(n1,n2,n4,n8,n9).orderBy(orderList); }
 			 */
-			
-			query.where(n1,n2,n4,n8).orderBy(orderList);
+			if(StringUtils.isNotBlank(req.getParam1())) {
+				Predicate n9 = cb.equal(b.get("param1"), req.getParam1());
+				query.where(n1,n2,n4,n8,n9).orderBy(orderList);
+			}else {
+				query.where(n1,n2,n4,n8).orderBy(orderList);
+			}
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();

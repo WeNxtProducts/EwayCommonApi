@@ -22,4 +22,7 @@ public class LovGetReq {
 	
 	@JsonProperty("TitleType")
 	private String titletype;
+	
+	@JsonProperty("Param1")
+	private String param1;
 }
