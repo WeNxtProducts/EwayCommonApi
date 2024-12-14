@@ -2003,6 +2003,7 @@ public class JasperCustomServiceImple {
 			List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
 			Double OverAllPremium=0.0;
 			String companyId = map.get("companyId")==null?"":map.get("companyId").toString();
+			List<Object> sectionIds = Slist.stream().map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
 			if("100002".equalsIgnoreCase(companyId)) {
 					if(coverData!=null && !coverData.isEmpty()) {
 						Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T"))
@@ -2013,7 +2014,30 @@ public class JasperCustomServiceImple {
 								.map(i -> i.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 						
 						
-						List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999
+						List<Map<String,Object>> sectionPremium = new ArrayList<Map<String,Object>>();
+						for(int x=0;x<sectionIds.size();x++) {
+							int s = Integer.parseInt(sectionIds.get(x).toString());
+							System.out.println(new Gson().toJson(coverData.stream().filter(f -> f.getSectionId()==s)
+									.collect(Collectors.toList())));
+							List<Integer> coverids = coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s)
+									.map(m -> m.getCoverageType().equalsIgnoreCase("L")?m.getDiscLoadId():m.getCoverId()).distinct()
+									.collect(Collectors.toList());
+							for(int j=0;j<coverids.size();j++) {
+								int c = coverids.get(j);
+								Map<String,Object> o = new HashMap<String,Object>();
+								o.put("SectionId", s);
+								o.put("CoverDesc", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
+										&& (f.getCoverageType().equalsIgnoreCase("L")?f.getDiscLoadId():f.getCoverId())==c)
+										.map(m -> m.getCoverName()).findFirst().orElse("N/A"));
+								o.put("TotPremium", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
+										&& (f.getCoverageType().equalsIgnoreCase("L")?f.getDiscLoadId():f.getCoverId())==c)
+										.map(m -> m.getPremiumExcludedTaxFc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+								sectionPremium.add(o);
+							}
+						}
+						
+						
+/*						List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && (f.getDiscLoadId()==0 || f.getCoverageType().equalsIgnoreCase("L")) && f.getSectionId()!=99999
 								&& (f.getCoverageType().equals("O") && Arrays.asList("Y","D").contains(f.getIsSelected().equalsIgnoreCase("Y")?"Y":f.getIsSelected().equalsIgnoreCase("D")?"D":"N") 
 								|| !f.getCoverageType().equalsIgnoreCase("O")))
 								.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverId(),Collectors.reducing(
@@ -2028,12 +2052,14 @@ public class JasperCustomServiceImple {
 												Map<String,Object> secMap = new HashMap<String,Object>();
 												secMap.put("SectionId", sectionId);
 												secMap.put("CoverDesc", coverData.stream().filter(f -> f.getTaxId()==0
-														&& f.getDiscLoadId()==0 && f.getSectionId()==sectionId && f.getCoverId()==coverId)
+														&& (f.getDiscLoadId()==0 || f.getCoverageType().equalsIgnoreCase("L")) && f.getSectionId()==sectionId && f.getCoverId()==coverId)
 														.map(m -> m.getCoverName()).findFirst().orElse("N/A"));
 												secMap.put("TotPremium", totPremium);
 												return secMap;
 											});
 								}).sorted(Comparator.comparing(p -> (String) p.get("CoverDesc")))
+								.collect(Collectors.toList());*/
+						sectionPremium = sectionPremium.stream().sorted(Comparator.comparing(p -> (String) p.get("CoverDesc")))
 								.collect(Collectors.toList());
 						sectionPremium.forEach(k -> {
 							TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
@@ -2084,7 +2110,6 @@ public class JasperCustomServiceImple {
 				}
 			}
 			
-			List<Object> sectionIds = Slist.stream().map(k -> k.get("sectionId")).distinct().collect(Collectors.toList());
 			List<Object> locationIds = Slist.stream().map(k -> k.get("locationId")).distinct().collect(Collectors.toList());
 			List<Map<String,Object>> coverageList = new ArrayList<Map<String,Object>>();
 				for(int i=0;i<sectionIds.size();i++) {
