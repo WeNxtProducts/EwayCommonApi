@@ -10,6 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
@@ -103,6 +110,7 @@ public class SolvitValuation  {
 				ResponseEntity<ValuationCreateRes> response=null;
 				String res="",recordId="";
 				try {
+					sslverification();
 					RestTemplate restTemplate = new RestTemplate();
 					HttpHeaders headers = new HttpHeaders();
 					headers.set("Authorization",token);
@@ -183,6 +191,7 @@ public class SolvitValuation  {
 			Map<String ,Object> request=new HashMap<String, Object>();
 			request.put("email", list.getAuthUserName());
 			request.put("password", list.getAuthPassword());
+			sslverification();
 			RestTemplate restTemplate = new RestTemplate();
 			HttpHeaders headers = new HttpHeaders();
 			headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
@@ -214,6 +223,7 @@ public class SolvitValuation  {
 						ResponseEntity<List<ValuationStatusDetailsRes>> response=null;
 						String res="",status="Pending";
 						try {
+							sslverification();
 							RestTemplate restTemplate = new RestTemplate();
 							HttpHeaders headers = new HttpHeaders();
 							headers.set("Authorization",token);
@@ -260,6 +270,7 @@ public class SolvitValuation  {
 						ResponseEntity<Map> response=null;
 						String res="";
 						try {
+							sslverification();
 							RestTemplate restTemplate = new RestTemplate();
 							HttpHeaders headers = new HttpHeaders();
 							headers.set("Authorization",token);
@@ -359,5 +370,29 @@ public class SolvitValuation  {
 			return null;
 		}
 	}
+public void sslverification() {
+	try {
+	 TrustManager[] trustAllCerts = new TrustManager[]{
+	            new X509TrustManager() {
+	                public java.security.cert.X509Certificate[] getAcceptedIssuers() {return null;}
+	                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType){}
+	                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType){}
+	            }
+	        };
 
+	        SSLContext sc = SSLContext.getInstance("SSL");
+	        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+	        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+	        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+				
+				@Override
+				public boolean verify(String hostname, SSLSession session) {
+					// TODO Auto-generated method stub
+					return true;
+				}
+			});
+	}catch (Exception e) {
+		e.printStackTrace();
+	}
+}
 }

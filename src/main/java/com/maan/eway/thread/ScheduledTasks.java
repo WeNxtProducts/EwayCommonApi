@@ -22,6 +22,8 @@ public class ScheduledTasks {
 	private RenewSchedular renewSchedular;
 	@Autowired
 	private NotificationSchedular notificationSchedular;
+	@Autowired
+	private EmiNotificationSchedular eminotificationSchedular;
 
 	private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -42,6 +44,17 @@ public class ScheduledTasks {
 		}
 	}
 
+	public void startPremiaRenewSchedular() {
+		log.info("The time is now {startPremiaRenewSchedular}", dateFormat.format(new Date()));
+
+		if (service.getDbStatus()) {
+			renewSchedular.startPremiaRenewSchedular();
+		} else {
+			System.out.println(
+					"|************|  RENEWAL QUOTE TO POLICY API THREAD is Switched OFF from DB  |*************|");
+		}
+	}
+	
 	// @Scheduled(fixedRate=86400000)
 	// @Scheduled(cron = "0 0 8 * * ?")
 	//@Scheduled(cron = "0 30 1 * * ?")
@@ -67,6 +80,17 @@ public class ScheduledTasks {
 
 		if (service.getDbStatus()) {
 			service.startExpiredPolicyUpdateData();
+		} else {
+			System.out.println(
+					"|************|  RENEWAL QUOTE TO POLICY API THREAD is Switched OFF from DB  |*************|");
+		}
+	}
+	@EventListener(ApplicationReadyEvent.class)
+	public void startEmiNotificationSMSSchedular() {
+		log.info("The time is now {startEmiNotificationSMSSchedular}", dateFormat.format(new Date()));
+
+		if (service.getDbStatus()) {
+			eminotificationSchedular.Emischedule();
 		} else {
 			System.out.println(
 					"|************|  RENEWAL QUOTE TO POLICY API THREAD is Switched OFF from DB  |*************|");

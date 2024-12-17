@@ -44,4 +44,10 @@ public interface RenewalService {
 
 	CommonRes getRenewalTransactionPending(RenewalTransDetailReq request);
 
+	CommonRes pullPremiarenewal();
+
+	void insertMotRenDetFromView();
+
+	List<RenewDataRequest> getPolicyRequestList();
+
 }

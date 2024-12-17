@@ -27,6 +27,16 @@ public class RenewalController {
 	@Autowired
 	private RenewalService renewalservice;
 	
+	@PostMapping("/pullPremiarenewal")
+	public ResponseEntity<CommonRes> pullPremiarenewal() {
+	 	CommonRes data = renewalservice.pullPremiarenewal();
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	@PostMapping("/pullrenewal")
 	public ResponseEntity<CommonRes> pullrenewal(@RequestBody PullrenewalReq request) {
 	 	CommonRes data = renewalservice.pullrenewal(request);

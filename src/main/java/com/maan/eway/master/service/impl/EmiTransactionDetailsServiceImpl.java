@@ -9,15 +9,18 @@ package com.maan.eway.master.service.impl;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +41,11 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PaymentDetail;
+import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.RenewQuotePolicy;
+import com.maan.eway.bean.RenewalNotificationMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EmiInstallmentDetailsReq;
 import com.maan.eway.master.req.EmiTransactionDetailsGetReq;
@@ -51,6 +58,11 @@ import com.maan.eway.master.res.EmiDisplayRes;
 import com.maan.eway.master.res.EmiInfoListRes;
 import com.maan.eway.master.res.EmiTransactionDetailsRes;
 import com.maan.eway.master.service.EmiTransactionDetailsService;
+import com.maan.eway.notification.bean.NotifTransactionDetails;
+import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
+import com.maan.eway.notification.service.NotificationService;
+import com.maan.eway.renewal.req.EmiDataRequest;
+import com.maan.eway.renewal.req.RenewDataRequest;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -67,6 +79,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -81,6 +94,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
+	
+	@Value(value = "${spring.jpa.database}")
+	private String dataBaseType;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -111,6 +127,12 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	
 	@Autowired
 	private EserviceLifeDetailsRepository lifeRepo;
+	
+	@Autowired 
+	private NotifTransactionDetailsRepository notifTrans;
+	
+	@Autowired
+	private NotificationService notificationService;
 	
 	Gson json = new Gson();
 
@@ -1278,6 +1300,123 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		}
 
 		return res;
+	}
+
+	@Override
+	public void sendSmsEmail(EmiDataRequest req) {
+
+		boolean sms=true,mail=true;
+		//String remarks="",currenctStatus="",currentStatusCode="";
+		try {
+			
+		if(StringUtils.isBlank(req.getMobileno())) {
+			//remarks="Mobile Not Available";
+			//currentStatusCode="ACV";
+			//currenctStatus="ADMIN-CALL-ALLIANCE";
+			sms=false;
+		}else if(StringUtils.isBlank(req.getMobileno())) {
+			//remarks="Email Not Available";
+			mail=false;
+		}
+		if(sms || mail) {
+			Calendar calend = Calendar.getInstance();
+			calend.setTime(new Date()); 
+			calend.add(Calendar.DATE, 1); 
+			NotifTransactionDetails nt = NotifTransactionDetails.builder()
+					.brokerCompanyName(req.getCustomerName())
+					.brokerMailId(req.getEmail())					
+					.companyName(req.getCompanyName())
+					.customerPhoneCode(Integer.parseInt(req.getMobileCode()))
+					.customerPhoneNo(req.getMobileno()==null?null:new BigDecimal(req.getMobileno()))
+					.customerMailid(req.getEmail())					
+					.customerName(req.getCustomerName())
+					.entryDate(new Date())
+					.notifcationPushDate(new Date())
+					.notifcationEndDate(calend.getTime())
+					.regNo(req.getDueAmount())
+					.expiryDate(req.getDueDate())
+					//.notifDescription(tempPassword)
+					.notifNo(Instant.now().toEpochMilli())
+					//.notifNo(null)
+					.notifPriority(1)
+					.notifPushedStatus("P")
+					.notifTemplatename("EMI_NOTIFICATION1")											
+					.productName("Common")					
+					//.tinyUrl(n.getTinyUrl())
+					.companyid(req.getCompanyId())
+					.productid(99999)
+					//.companyLogo(cm.getCompanyLogo())
+					//.companyAddress(cm.getCompanyAddress())											
+					.tinyUrlActive("N")
+					//.tinyGroupId(tinyGroupId)
+					.build();
+			NotifTransactionDetails sv = notifTrans.save(nt);
+			List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
+			text.add(sv);
+			notificationService.jobProcess(text);
+			//currentStatusCode="ASS";
+			//currenctStatus="ALLIANCE-SMS-SENT";
+		}
+		}catch (Exception e) {
+			e.printStackTrace();
+			//currentStatusCode="ASF";
+			//currenctStatus="ALLIANCE-SMS-FAILED";
+		}
+		/*if(sms) {
+			updateRenewalStatusAndStage("V",currentStatusCode,currenctStatus,req.getPolicyNo());
+			if("Y".equalsIgnoreCase(req.getLastNotifyYN()))
+			updateNotifyStatus(req.getLastNotifyYN(),req.getPolicyNo());
+		}
+		updateCurrentStatus(remarks,req.getPolicyNo());*/
+	
+	}
+
+	@Override
+	public List<EmiDataRequest> getEmiNotificationRequestList() {
+		try {
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EmiDataRequest> query = cb.createQuery(EmiDataRequest.class);
+
+			Root<EmiTransactionDetails> m = query.from(EmiTransactionDetails.class);
+			Root<HomePositionMaster> hpm = query.from(HomePositionMaster.class);
+			Root<PersonalInfo> pi = query.from(PersonalInfo.class);
+			// Select
+			query.multiselect(m.get("quoteNo").alias("quoteNo"),pi.get("title").alias("title"),pi.get("clientName").alias("customerName"),
+					pi.get("mobileCode1").alias("mobileCode"),pi.get("mobileNo1").alias("mobileno"),pi.get("email1").alias("email"),
+					hpm.get("companyId").alias("companyId"), hpm.get("productId").as(String.class).alias("productCode"),hpm.get("sectionId").as(String.class).alias("sectionCode"),
+					hpm.get("branchCode").alias("branchCode"),m.get("instalment").alias("instalment"),m.get("dueDate").alias("dueDate"),
+					m.get("dueAmount").as(String.class).alias("dueAmount"));
+
+			Predicate n1=null;
+			if("mysql".equalsIgnoreCase(dataBaseType)) {
+				Expression<Integer> dateDiffExpression = cb.function("DATEDIFF",Integer.class, m.get("dueDate"),cb.currentDate());
+				n1 = cb.equal(dateDiffExpression,0);
+			}
+			else {
+				Expression<Long> dateDiffExpression = cb.diff(
+				    cb.function("TRUNC", Date.class, m.get("dueDate")).as(Long.class),
+				    cb.function("TRUNC", Date.class, cb.currentDate()).as(Long.class)
+				);
+				n1 = cb.equal(dateDiffExpression,0);
+			}
+			Predicate n2=cb.equal(m.get("paymentStatus"),"Pending");
+			Predicate n3 = cb.equal(m.get("quoteNo"), hpm.get("quoteNo")); 
+			Predicate n4 = cb.equal(hpm.get("customerId"), pi.get("customerId")); 
+			Predicate n5 = cb.isNull(hpm.get("endtTypeId"));
+			
+			query.where(n1,n2,n3,n4,n5);
+			
+			// Get Result
+			TypedQuery<EmiDataRequest> result = em.createQuery(query);
+			return result.getResultList();
+
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
 	}
 
 	

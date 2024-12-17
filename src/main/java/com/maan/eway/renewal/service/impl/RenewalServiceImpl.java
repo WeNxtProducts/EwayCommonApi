@@ -1,6 +1,7 @@
 package com.maan.eway.renewal.service.impl;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -34,6 +36,8 @@ import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.RenewDriverDetails;
+import com.maan.eway.bean.RenewPremiaPolicy;
+import com.maan.eway.bean.RenewPremiaPolicyRaw;
 import com.maan.eway.bean.RenewQuotePolicy;
 import com.maan.eway.bean.RenewVehicleDetails;
 import com.maan.eway.bean.RenewalNotificationMaster;
@@ -66,12 +70,13 @@ import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.RenewDriverDetailsRepository;
+import com.maan.eway.repository.RenewPremiaPolicyRawRepository;
+import com.maan.eway.repository.RenewPremiaPolicyRepository;
 import com.maan.eway.repository.RenewQuotePolicyRepository;
 import com.maan.eway.repository.RenewVehicleDetailsRepository;
 import com.maan.eway.repository.RenewalNotificationMasterRepository;
 import com.maan.eway.repository.RenewalTransactionDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -145,10 +150,18 @@ public class RenewalServiceImpl implements RenewalService{
 	@Autowired
 	private LoginMasterRepository loginRepo;
 	
+	@Autowired
+	private RenewPremiaPolicyRawRepository rqprRepo;
+	
+	@Autowired
+	private RenewPremiaPolicyRepository rppRepo;
+	
 	private Logger log=LogManager.getLogger(RenewalServiceImpl.class);
 	@Value(value = "${spring.jpa.database}")
 	private String dataBaseType;
 	
+	DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+
 	@Override
 	public CommonRes pullrenewal(PullrenewalReq req) {
 		CommonRes res=new CommonRes();
@@ -1396,5 +1409,162 @@ public class RenewalServiceImpl implements RenewalService{
 	    }
 	    return data;
 	}
+
+	@Override
+	public CommonRes pullPremiarenewal() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void insertMotRenDetFromView() {
+		try {
+			System.out.println("***insertMotRenDetFromView Start****");
+			//List<Map<String,Object>> renewalList=renewQuotePolicyRepo.getRenewalViewList();
+			//SaveRanewalRawDetail(renewalList);
+			
+			System.out.println("***insertMotRenDetFromView End****");
+		} catch (Exception e) {
+			System.out.println("***Exception occurs while inserting data from Renew View to motor renewal detail****");
+			log.error(e);
+		}
+	}
+
+	private void SaveRanewalRawDetail(List<Map<String, Object>> renewalList) {
+
+		if(renewalList!=null && renewalList.size()>0) {
+			System.out.println("***SaveRanewalRawDetail Start****");
+			for(int i=0;i<renewalList.size();i++) {
+				try {
+					Map<String,Object>map=renewalList.get(i);
+					RenewPremiaPolicyRaw rqp=new RenewPremiaPolicyRaw();
+					
+					rqp.setDivisionCode(map.get("DIVISION_CODE")==null?"":map.get("DIVISION_CODE").toString());
+					rqp.setDivisionName(map.get("DIVISION_NAME")==null?"":map.get("DIVISION_NAME").toString());
+					rqp.setPolProdCode(map.get("POL_PROD_CODE")==null?"":map.get("POL_PROD_CODE").toString());
+					rqp.setProdName(map.get("PROD_NAME")==null?"":map.get("PROD_NAME").toString());
+					rqp.setPolType(map.get("POL_TYPE")==null?"":map.get("POL_TYPE").toString());
+					
+					rqp.setCustomerCode(map.get("CUSTOMER_CODE")==null?"":map.get("CUSTOMER_CODE").toString());
+					rqp.setCustomerName(map.get("CUSTOMER_NAME")==null?"":map.get("CUSTOMER_NAME").toString());
+					rqp.setPolAssrCode(map.get("POL_ASSR_CODE")==null?"":map.get("POL_ASSR_CODE").toString());
+					rqp.setPolAssrName(map.get("POL_ASSR_NAME")==null?"":map.get("POL_ASSR_NAME").toString());
+					rqp.setSourceCode(map.get("SOURCE_CODE")==null?"":map.get("SOURCE_CODE").toString());
+					rqp.setSourceName(map.get("SOURCE_NAME")==null?"":map.get("SOURCE_NAME").toString());
+					
+					rqp.setPolNo(map.get("POL_NO")==null?"":map.get("POL_NO").toString());
+					rqp.setPolSysId(map.get("POL_SYS_ID")==null?"":map.get("POL_SYS_ID").toString());
+					rqp.setIndexNo(map.get("INDEX_NO")==null?"":map.get("INDEX_NO").toString());
+					
+					rqp.setPolFmDt(map.get("POL_FM_DT")==null?null:inputFormat.parse(map.get("POL_FM_DT").toString()));
+					rqp.setPolExpDt(map.get("POL_EXP_DT")==null?null:inputFormat.parse(map.get("POL_EXP_DT").toString()));
+					rqp.setNewStartDate(map.get("NEW_START_DATE")==null?null:inputFormat.parse((map.get("NEW_START_DATE").toString())));
+					rqp.setPolPrem(map.get("POL_PREM")==null?null:Double.valueOf(map.get("POL_PREM").toString()));
+					rqp.setPolSiLc1(map.get("POL_SI_LC_1")==null?null:Double.valueOf(map.get("POL_SI_LC_1").toString()));
+					rqp.setNetPrem(map.get("NET_PREM")==null?null:Double.valueOf(map.get("NET_PREM").toString()));
+					rqp.setChargeAmt(map.get("CHARGE_AMT")==null?null:Double.valueOf(map.get("CHARGE_AMT").toString()));
+					rqp.setLoadingPremium(map.get("LOADING_PREMIUM")==null?null:Double.valueOf(map.get("LOADING_PREMIUM").toString()));
+					rqp.setDiscountPremium(map.get("DISCOUNT_PREMIUM")==null?null:Double.valueOf(map.get("DISCOUNT_PREMIUM").toString()));
+					rqp.setInsuredCivilId(map.get("INSURED_CIVIL_ID")==null?"":map.get("INSURED_CIVIL_ID").toString());
+					rqp.setInsuredMobile(map.get("INSURED_MOBILE")==null?"":map.get("INSURED_MOBILE").toString());
+					rqp.setInsuredEmailId(map.get("INSURED_EMAIL_ID")==null?"":map.get("INSURED_EMAIL_ID").toString());
+					rqp.setMakeId(map.get("MAKE_ID")==null?"":map.get("MAKE_ID").toString());
+					rqp.setMakeIdName(map.get("MAKE_ID_NAME")==null?"":map.get("MAKE_ID_NAME").toString());
+					rqp.setModelId(map.get("MODEL_ID")==null?"":map.get("MODEL_ID").toString());
+					rqp.setModelIdName(map.get("MODEL_ID_NAME")==null?"":map.get("MODEL_ID_NAME").toString());
+					rqp.setBodyType(map.get("BODY_TYPE")==null?"":map.get("BODY_TYPE").toString());
+					rqp.setBodyTypeName(map.get("BODY_TYPE_NAME")==null?"":map.get("BODY_TYPE_NAME").toString());
+					rqp.setPlateNumber(map.get("PLATE_NUMBER")==null?"":map.get("PLATE_NUMBER").toString());
+					rqp.setChassNo(map.get("CHASS_NO")==null?"":map.get("CHASS_NO").toString());
+					rqp.setEngineNumber(map.get("ENGINE_NUMBER")==null?"":map.get("ENGINE_NUMBER").toString());
+					rqp.setManufactureYear(map.get("MANUFACTURE_YEAR")==null?null:map.get("MANUFACTURE_YEAR").toString());
+					rqp.setTypeOfCover(map.get("TYPE_OF_COVER")==null?null:(map.get("TYPE_OF_COVER").toString()));
+					rqp.setTypeOfCoverName(map.get("TYPE_OF_COVER_NAME")==null?"":map.get("TYPE_OF_COVER_NAME").toString());
+					
+					rqp.setUsageType(map.get("USAGE_TYPE")==null?"":map.get("USAGE_TYPE").toString());
+					rqp.setUsageTypeName(map.get("USAGE_TYPE_NAME")==null?"":map.get("USAGE_TYPE_NAME").toString());
+					rqp.setVehicleAge(map.get("VEHICLE_AGE")==null?null:(map.get("VEHICLE_AGE").toString()));
+					rqp.setNoOfPassenger(map.get("NO_OF_PASSENGER")==null?null:(map.get("NO_OF_PASSENGER").toString()));
+					rqp.setSeating(map.get("SEATING")==null?"":map.get("SEATING").toString());
+					rqp.setCc(map.get("CC")==null?"":map.get("CC").toString());
+					rqp.setClaimFreeYears(map.get("CLAIM_FREE_YEARS")==null?null:(map.get("CLAIM_FREE_YEARS").toString()));
+					rqp.setRequestTime(new Date());
+					rqp.setResponseTime(new Date());
+					rqp.setRenewalCount(map.get("RENEWAL_COUNT")==null?"":map.get("RENEWAL_COUNT").toString());
+					rqp.setColor(map.get("COLOR")==null?"":map.get("COLOR").toString());
+					rqp.setColorName(map.get("COLOR_NAME")==null?"":map.get("COLOR_NAME").toString());
+					rqp.setPlateColor(map.get("PLATE_COLOR")==null?"":map.get("PLATE_COLOR").toString());
+					rqp.setPlateColorName(map.get("PLATE_COLOR_NAME")==null?"":map.get("PLATE_COLOR_NAME").toString());
+					rqp.setVehicleValue(map.get("VEHICLE_VALUE")==null?null:Double.parseDouble(map.get("VEHICLE_VALUE").toString()));
+					rqp.setTonnage(map.get("TONNAGE")==null?"":map.get("TONNAGE").toString());
+					
+					rqp.setEntryDate(new Date());
+
+					rqprRepo.save(rqp);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println("***SaveRanewalRawDetail Start****");
+			}
+		}
 	
+		
+	}
+
+	@Override
+	public List<RenewDataRequest> getPolicyRequestList() {
+		List<RenewDataRequest>res=new ArrayList<>();
+		try {
+			String tranId=saveRenewPremiaPolicy();
+			List<RenewPremiaPolicy> rqplist=rppRepo.findByStatusAndTransactionId("RP",tranId);
+			log.info("getPolicyRequestList--> transactionId: " + tranId);
+			for (RenewPremiaPolicy rdata : rqplist) {
+				RenewDataRequest rdr = new RenewDataRequest();
+				
+				rdr.setCompanyId(rdata.getCompanyId());		
+				rdr.setCompanyName(null);
+				rdr.setCustomerName(rdata.getCustomerName());
+				rdr.setEmail(rdata.getInsuredEmailId());
+				rdr.setMobileCode(rdata.getMobileCode());
+				rdr.setMobileno(rdata.getInsuredMobile());
+				rdr.setPolicyNo(rdata.getPolNo());
+				rdr.setTransId(tranId);	
+				rdr.setRegistrationNo(rdata.getPlateNumber());
+				rdr.setExpiryDate(rdata.getPolExpDt());
+				
+				res.add(rdr);
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+		return res;
+	}
+
+	private String saveRenewPremiaPolicy() {
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		String tranId="";
+		try {
+		List<RenewPremiaPolicyRaw> findAll = rqprRepo.findAll();
+		if(!CollectionUtils.isEmpty(findAll)) {
+			PullrenewalReq req=new PullrenewalReq();
+			req.setInsuranceId("100020");
+			tranId=InsertTransactionDetails(req);
+			log.info("RenewQuotePolicyRaw--> count: " + findAll.size());
+			for (RenewPremiaPolicyRaw data : findAll) {
+				RenewPremiaPolicy rpp=new RenewPremiaPolicy();
+				rpp=dozerMapper.map(data, RenewPremiaPolicy.class);
+				rpp.setTransactionId(tranId);
+				rpp.setStatus("RP");
+				rpp.setMobileCode("+254");
+				rpp.setCompanyId(req.getInsuranceId());
+				rpp.setEntryDate(new Date());		
+				rppRepo.saveAndFlush(rpp);
+			} 
+		}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return tranId;
+	}
+
 }

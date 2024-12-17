@@ -100,4 +100,55 @@ public class RenewSchedular {
 		//}
 	}
 
+	public void startPremiaRenewSchedular() {
+		boolean threadStatus = !isProcessExist("PREMIA_RENEW_THREAD_Job");
+		boolean xgenWsdlStatus = false;
+
+		if (threadStatus) {
+			xgenWsdlStatus = true;
+		}
+		System.out.println("Thread (PREMIA_RENEW_THREAD_Job) Status=" + threadStatus);
+		// && xgenWsdlStatus
+		if (threadStatus && xgenWsdlStatus) {
+			// Allocate the request
+			Premiaallocate();
+		}
+	}
+
+	private void Premiaallocate() {
+		// ----------------- Insert data from view to motor_renewal_detail-------------
+				System.out.println("***allocate insertMotRenDetFromView Start****");
+				service.insertMotRenDetFromView();
+				System.out.println("***allocate insertMotRenDetFromView End****");
+				// ----------------- Getting data from motor_renewal_detail and framing request-------------
+				List<RenewDataRequest> List = service.getPolicyRequestList();
+				System.out.println(new Date() + "    Motor-Renewal Request COUNT:  " + List.size());
+				// ----------------- Insert data to ttrn_renew_request and Notification_master table (tran_id)-------------
+				///String tranId = service.saveTransactionTable(List);
+				try {
+					if (List != null && List.size() > 0) {
+						int splitValue = 0;
+						if (List.size() > 10) {
+							splitValue = (int) Math.round(List.size() * (0.10));
+						} else {
+							splitValue = List.size();
+						}
+
+						for (int i = 0; i < List.size();) {
+							List<RenewDataRequest> res = null;
+							res = List.subList(i, (i + splitValue) > List.size() ? List.size() : (i + splitValue));
+							i = i + splitValue;
+							// Run each request in THREAD
+							RenewThreadExecuter job = new RenewThreadExecuter(res, service);
+							Thread thread = new Thread(job);
+							thread.start();
+
+						}
+						
+					}
+				} catch (Exception e) {
+					log.error(e);
+				}
+	}
+
 }

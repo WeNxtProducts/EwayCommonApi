@@ -8,13 +8,13 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.EmiEndtDetailsReq;
 import com.maan.eway.master.req.EmiInstallmentDetailsReq;
 import com.maan.eway.master.req.EmiTransactionDetailsGetReq;
 import com.maan.eway.master.req.EmiTransactionDetailsNextReq;
 import com.maan.eway.master.req.EmiTransactionDetailsSaveReq;
 import com.maan.eway.master.req.EmiTransactionDetailsUpdateReq;
 import com.maan.eway.master.res.EmiTransactionDetailsRes;
+import com.maan.eway.renewal.req.EmiDataRequest;
 import com.maan.eway.master.res.EmiDisplayRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -37,5 +37,9 @@ public interface EmiTransactionDetailsService  {
 	List<EmiTransactionDetailsRes> getNextEmiDetails(EmiTransactionDetailsNextReq req);
 
 	SuccessRes getEndorsementEmiDetails(EmiTransactionDetailsSaveReq req);
+
+	void sendSmsEmail(EmiDataRequest res);
+
+	List<EmiDataRequest> getEmiNotificationRequestList();
 
 }
