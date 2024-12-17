@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CoverageDetails" pageWidth="594" pageHeight="842" columnWidth="594" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="fe31f29b-8d95-4863-a7bc-19b4276b243b">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule.xml"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -362,7 +362,6 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="expiryDate"/>
 		<fieldDescription><![CDATA[expiryDate]]></fieldDescription>
 	</field>
-	<variable name="sectionId" class="java.lang.Integer"/>
 	<detail>
 		<band height="11">
 			<break>
@@ -947,7 +946,6 @@
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="locationDetails" uuid="49f7fc2b-0185-42fd-b595-0f6d52fe7c34">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.locationDetails")]]></dataSourceExpression>
-						<returnValue fromVariable="sectionId" toVariable="sectionId"/>
 					</datasetRun>
 					<jr:column width="30" uuid="d8df2019-4bb5-4c3d-9341-84c491574825">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
