@@ -10,10 +10,11 @@ import com.maan.eway.res.calc.Cover;
 
 public class CoverFromAzentoResponse implements Function<Map<String, Object>,Cover> {
 	private String coverageType;
-	
-	public CoverFromAzentoResponse(String coverageType) {
+	private String exchangeRateStr; 
+	public CoverFromAzentoResponse(String coverageType,String exchangeRateStr) {
 		super();
 		this.coverageType = coverageType;
+		this.exchangeRateStr=exchangeRateStr;
 	}
 
 	@Override
@@ -22,7 +23,7 @@ public class CoverFromAzentoResponse implements Function<Map<String, Object>,Cov
 			
 			 
 			  Cover c = Cover.builder()						 
-					.calcType("A")
+					.calcType(t.get("chargeRatePer")==null?"A":"100".equals(t.get("chargeRatePer").toString())?"P":"A")
 					.coverId(t.get("coverageCode")==null?"":t.get("coverageCode").toString())
 					.coverDesc(t.get("coverageName")==null?"":t.get("coverageName").toString())
 					.coverName(t.get("coverageName")==null?"":t.get("coverageName").toString())
@@ -39,7 +40,7 @@ public class CoverFromAzentoResponse implements Function<Map<String, Object>,Cov
 					.dependentCoveryn("N")
 					.dependentCoverId("")
 					.coverageType(coverageType)
-					.isselected(!"B".equals(coverageType)?"N":"Y")
+					.isselected(!"B".equals(coverageType)?t.get("addCoverYN")==null?"N":t.get("addCoverYN").toString():"Y")
 					.isReferral("N")
 					.referalDescription("")
 					.coverBasedOn("sumInsured")
@@ -65,6 +66,7 @@ public class CoverFromAzentoResponse implements Function<Map<String, Object>,Cov
 					.subCoverNameLocal("")
 					.minrate(t.get("minRate")==null?0D:Double.parseDouble(t.get("minRate").toString()))
 					.minimumRateYn("N")
+					.exchangeRate(t.get("")==null?BigDecimal.ZERO:new BigDecimal(t.get("").toString()))
 					.premiumAfterDiscount(t.get("coveragePremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("coveragePremium").toString()))
 					.premiumAfterDiscountLC(t.get("coveragePremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("coveragePremium").toString()))
 					.premiumBeforeDiscount(t.get("coveragePremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("coveragePremium").toString()))
@@ -73,6 +75,7 @@ public class CoverFromAzentoResponse implements Function<Map<String, Object>,Cov
 					.premiumExcluedTaxLC(t.get("coveragePremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("coveragePremium").toString()))
 					.premiumIncludedTax(t.get("coveragePremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("coveragePremium").toString()))
 					.premiumIncludedTaxLC(t.get("coveragePremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("coveragePremium").toString()))
+					.exchangeRate(new BigDecimal(exchangeRateStr))
 					.build();
 			
 			return c; 

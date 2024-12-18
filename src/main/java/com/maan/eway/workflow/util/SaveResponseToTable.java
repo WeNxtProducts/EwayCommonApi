@@ -1,15 +1,20 @@
 package com.maan.eway.workflow.util;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.res.calc.Cover;
+import com.maan.eway.res.calc.Tax;
 import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 import com.maan.eway.workflow.dto.WorkEngine;
@@ -49,6 +54,9 @@ public class SaveResponseToTable {
 			}
 			
 			Map<String, Object> object6 =null;
+			Map<String, Object> premiumResponseArr =null;
+			List<Map<String, Object>> charges=null;
+			String exchangeRateStr="1";
 			try {
 
 				Map<String, Object> object1 = (Map<String, Object>) response.get("data");
@@ -57,7 +65,15 @@ public class SaveResponseToTable {
 				Map<String, Object> object3 = (Map<String, Object>) quoteInfo.get("riskInfo");
 				Map<String, Object> object4 = (Map<String, Object>) object3.get("riskDetails");
 				List<Map<String, Object>> object5 = (List<Map<String, Object>>) object4.get("riskDetailsArray");
+				
+				
 				object6=(Map<String, Object>) object5.get(0).get("coverages");
+				premiumResponseArr=(Map<String, Object>) object5.get(0).get("premiumResponseArr");
+				
+				Map<String, Object> riskPrimaryInfo = (Map<String, Object>) object5.get(0).get("riskPrimaryInfo");
+				exchangeRateStr = riskPrimaryInfo.get("riskCurrencyRate")==null?"1":riskPrimaryInfo.get("riskCurrencyRate").toString(); 
+				
+				charges=(List<Map<String, Object>>) quoteInfo.get("charges");
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -66,7 +82,7 @@ public class SaveResponseToTable {
 			if(object6!=null && object6.get("mandatoryCoveragesArray")!=null) {
 				List<Map<String, Object>> mandatory=(List<Map<String, Object>>) object6.get("mandatoryCoveragesArray");
 				if(mandatory.size()>0) {
-					CoverFromAzentoResponse c=new CoverFromAzentoResponse("B");
+					CoverFromAzentoResponse c=new CoverFromAzentoResponse("B",exchangeRateStr);
 					List<Cover> mainCover = mandatory.stream().map(c).collect(Collectors.toList());
 					retc.addAll(mainCover);
 				}
@@ -74,7 +90,7 @@ public class SaveResponseToTable {
 			if(object6!=null && object6.get("selectedOptionalCoveragesArray")!=null) {
 				List<Map<String, Object>> optional=(List<Map<String, Object>>) object6.get("selectedOptionalCoveragesArray");
 				if(optional.size()>0) {
-					CoverFromAzentoResponse c=new CoverFromAzentoResponse("O");
+					CoverFromAzentoResponse c=new CoverFromAzentoResponse("O",exchangeRateStr);
 					List<Cover> optinalC = optional.stream().map(c).collect(Collectors.toList());
 					retc.addAll(optinalC);
 				}
@@ -102,6 +118,75 @@ public class SaveResponseToTable {
 			resp.setUwList(null);
 			resp.setReferals(masterreferral);
 			fservice.saveFactorRateRequestDetails(resp);
+			
+			
+			Optional<Cover> first = retc.stream().filter(i -> "B".equals(i.getCoverageType()) ).findFirst();
+			Cover overall = first.get();
+			if(premiumResponseArr!=null) {
+				overall.setCoverName("Over all Premium");
+				overall.setCoverDesc("Over all Premium");
+				overall.setPremiumAfterDiscount(premiumResponseArr.get("policyPremium")==null?BigDecimal.ZERO:new BigDecimal(premiumResponseArr.get("policyPremium").toString()));
+				overall.setPremiumAfterDiscountLC(premiumResponseArr.get("policyPremium")==null?BigDecimal.ZERO:new BigDecimal(premiumResponseArr.get("policyPremium").toString()));
+				overall.setPremiumBeforeDiscount(premiumResponseArr.get("policyPremium")==null?BigDecimal.ZERO:new BigDecimal(premiumResponseArr.get("policyPremium").toString()));
+				overall.setPremiumBeforeDiscountLC(premiumResponseArr.get("policyPremium")==null?BigDecimal.ZERO:new BigDecimal(premiumResponseArr.get("policyPremium").toString()));
+				overall.setPremiumExcluedTax(premiumResponseArr.get("policyPremium")==null?BigDecimal.ZERO:new BigDecimal(premiumResponseArr.get("policyPremium").toString()));
+				overall.setPremiumExcluedTaxLC(premiumResponseArr.get("policyPremium")==null?BigDecimal.ZERO:new BigDecimal(premiumResponseArr.get("policyPremium").toString()));
+				overall.setPremiumIncludedTax(premiumResponseArr.get("policyPremiumIncVat")==null?BigDecimal.ZERO:new BigDecimal(premiumResponseArr.get("policyPremiumIncVat").toString()));
+				overall.setPremiumIncludedTaxLC(premiumResponseArr.get("policyPremiumIncVat")==null?BigDecimal.ZERO:new BigDecimal(premiumResponseArr.get("policyPremiumIncVat").toString()));
+				List<Tax> taxes=new ArrayList<Tax>();
+				int taxid=1;
+				for(Map<String, Object> t:charges) {
+					Tax d=Tax.builder()
+						 	.isTaxExempted("N")
+						 	.taxAmount(t.get("chargeAmount")==null?BigDecimal.ZERO:new BigDecimal(t.get("chargeAmount").toString()))
+						 	.taxDesc(t.get("chargeDesciption")==null?"":t.get("chargeDesciption").toString())
+						 	.taxExemptCode(null)
+						 	.taxExemptType(null)
+						 	.endtTypeId(null)					
+						 	.taxId(String.valueOf(taxid++))
+						 	.taxRate(t.get("chargeRate")==null?0D:Double.parseDouble(t.get("chargeRate").toString()))
+						 	.calcType(t.get("chargeRatePer")==null?"A":"100".equals(t.get("chargeRatePer").toString())?"P":"A")
+							.regulatoryCode(t.get("chargeCode")==null?"":t.get("chargeCode").toString())
+							.endtTypeCount(BigDecimal.ZERO)
+							.dependentYn("N")
+							.taxExemptedAllowed(t.get("taxExemptAllowYn")==null?"Y":t.get("taxExemptAllowYn").toString())
+							.minimumTaxAmountLc(t.get("chargeAmount")==null?BigDecimal.ZERO:new BigDecimal(t.get("chargeAmount").toString()))
+							.minimumTaxAmount(t.get("chargeAmount")==null?BigDecimal.ZERO:new BigDecimal(t.get("chargeAmount").toString()))
+							.taxAmountLc(BigDecimal.ZERO)
+							.taxFor("")
+							.extend_Cust_tax("")
+						 	.build();
+					taxes.add(d); 
+				}
+				Double totaltax = taxes.stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+				String pattern = "#####0.000";
+				DecimalFormat dcf = new DecimalFormat(pattern);
+				
+				overall.setPremiumIncludedTax(new BigDecimal(dcf.format(overall.getPremiumExcluedTax().add(new BigDecimal(totaltax)))));
+				overall.setPremiumIncludedTaxLC(new BigDecimal(dcf.format(overall.getPremiumIncludedTax().multiply(overall.getExchangeRate()))));
+				 
+				overall.setTaxes(taxes);
+				List<Cover> newOveral=new ArrayList<Cover>();
+				newOveral.add(overall);
+				
+				resp.setCoverList(newOveral);
+				resp.setResponse("Saved Successfully");
+				resp.setRequestReferenceNo(engine.getRequestReferenceNo());
+				// response.setCustomerReferenceNo(req.getCustomerReferenceNo());
+				resp.setVehicleId("99999");
+				resp.setVdRefNo(engine.getVdRefNo());
+				resp.setCdRefNo(engine.getCdRefNo());
+				resp.setInsuranceId(engine.getCompanyId());
+				resp.setSectionId("99999");
+				resp.setCreatedBy(engine.getCreatedBy());
+				resp.setProductId(engine.getProductId());
+				resp.setLocationId(engine.getLocationId());
+				resp.setMsrefno(engine.getMsrefno());
+				resp.setUpdateas(null);
+				resp.setUwList(null);
+				resp.setReferals(masterreferral);
+				fservice.saveFactorRateRequestDetails(resp);
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

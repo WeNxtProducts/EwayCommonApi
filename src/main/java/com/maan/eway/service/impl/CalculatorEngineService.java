@@ -122,6 +122,8 @@ import com.maan.eway.service.impl.referal.ReferalServiceImpl;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.JoinCriteria;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
+import com.maan.eway.workflow.dto.WorkEngine;
+import com.maan.eway.workflow.service.JsonMapperFromDB;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -251,6 +253,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 	private final List<String> ENDT_TAX_LIST = Arrays.asList("EC", "ER");
 	@Autowired
 	private PolicyCoverDataEndtRepository policyCoverEndtRepo;
+	
+	@Autowired
+	private JsonMapperFromDB jsonMapper;
  
 	public List<Tuple> LoadCover(CalcEngine engine) {
 		try {
@@ -435,6 +440,39 @@ public class CalculatorEngineService implements CalculatorEngine {
 		return null;
 		}
 	public synchronized EserviceMotorDetailsSaveRes calculator(CalcEngine engine, String token) {
+		
+		if("100027".equals(engine.getInsuranceId())) {
+			/*{
+			    "CompanyId": "100027",
+			    "ProductId": "5",
+			    "QuoteNo": "",
+			    "RequestReferenceNo": "SAN-MOT-06935",
+			    "Integ_Type": "QUOT_INTEG",
+			    "SectionId": "102",	
+				"MSRefNo": "229447",
+				"VehicleId": "1",
+				"CdRefNo": "229445",
+				"DdRefNo": "228847",
+				"VdRefNo": "229446",
+				"LocationId": "1",
+				"CreatedBy": "francisbroker"
+			}*/
+			WorkEngine work=new WorkEngine();
+			work.setCompanyId(engine.getInsuranceId());
+			work.setProductId(engine.getProductId());
+			work.setQuoteNo("");
+			work.setRequestReferenceNo(engine.getRequestReferenceNo() );
+			work.setIntegType("QUOT_INTEG");
+			work.setSectionId(engine.getSectionId());
+			work.setMsrefno(engine.getMsrefno());
+			work.setVdRefNo(engine.getVdRefNo());
+			work.setCdRefNo(engine.getCdRefNo());
+			work.setVdRefNo(engine.getVdRefNo());
+			work.setLocationId(engine.getLocationId());
+			work.setCreatedBy(engine.getCreatedBy());
+			jsonMapper.createQuotation(work);
+		}
+		
 		// Referal Checking.
 		BigDecimal endtCount = BigDecimal.ZERO;
 		List<UWReferrals> referr = referal.underwriterReferral(engine);
