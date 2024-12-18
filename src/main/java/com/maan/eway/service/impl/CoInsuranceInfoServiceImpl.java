@@ -140,57 +140,54 @@ public CommonRes getAllByQuoteNo(String QUOTENO) {
     return response;
 }
 
- @Override
-
- public List<Error> validatecoinsurancedetails(CoInsuranceDetails req) {
-     List<ValidationError> errors = new ArrayList<>();
-     CoInsuranceDetails entity = new CoInsuranceDetails();
-     CoInsuranceInfoReq ra=new CoInsuranceInfoReq();
-     List<Error> error = null;
-	try {
+public List<Error> validatecoinsurancedetails(CoInsuranceDetails req) {
+    List<Error> errors = new ArrayList<>();
+    List<CoInsuranceInfoReq> historyInfo = req.getCoinsreq();
+    try {
+        int row_no = 1; 
         
-         if (ra.getSno() == 0) {
-             errors.add(new ValidationError("Please Enter SNo"));
+       
+        if (req.getCoinsreq() == null || req.getCoinsreq().isEmpty()) {
+            errors.add(new Error("00", "CoInsurerList", "Please provide at least one CoInsurer"));
+            return errors;
+        }
+        
+        for (CoInsuranceInfoReq ra :historyInfo) {
+          
+            if (ra.getSno() == 0) {
+            	errors.add(new Error("01","SNo","Please Enter SNo"));
+            }
+            if (ra.getInsurancecompanyid() == 0) {
+            	 errors.add(new Error("02","InsuranceCompanyID","Please Enter Insurance Company ID"));
          }
+           
+           if (StringUtils.isBlank(ra.getInsurancecompanyname())) {
+        	   errors.add(new Error("03","Insurance Company Name","Please Enter Insurance Company Name"));
+            }
 
-         if (ra.getInsurancecompanyid() == 0) {
-             errors.add(new ValidationError("Please Enter Insurance Company ID"));
-         }
+          
+            if (ra.getSharedpercentage() == null || ra.getSharedpercentage().compareTo(BigDecimal.valueOf(100)) != 0) {
+              	 errors.add(new Error("04","Shared Percentage","Shared Percentage must be exactly 100"));
+            }
 
-         if (StringUtils.isBlank(ra.getInsurancecompanyname())) {
-             errors.add(new ValidationError("Please Enter Insurance Company Name"));
-         }
+          
+            if (StringUtils.isBlank(ra.getLeaderparticipant())) {
+            	 errors.add(new Error("05","Leader Participant","Please Enter Leader Participant"));
+            }
 
-         if (ra.getSharedpercentage() == null || ra.getSharedpercentage().compareTo(BigDecimal.ZERO) == 0) {
-             errors.add(new ValidationError("Please Enter Shared Percentage"));
-         }
+          
+        
 
-         if (StringUtils.isBlank(ra.getLeaderparticipant())) {
-             errors.add(new ValidationError("Please Enter Leader Participant"));
-         }
+           
+            row_no++;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        log.info("Exception occurred: " + e.getMessage());
+        errors.add(new Error("99", "General", "An error occurred during validation"));
+    }
 
-         // Assuming 'entity' needs to be populated with some fields as well
-         if (entity.getProductid() == 0) {
-             errors.add(new ValidationError("Please Enter Product ID"));
-         }
-
-         if (StringUtils.isBlank(entity.getRequestreferenceno())) {
-             errors.add(new ValidationError("Please Enter Request Reference No"));
-         }
-
-     } catch (Exception e) {
-         e.printStackTrace();
-         log.info("Exception occurred: " + e.getMessage());
-     
-         errors.add(new ValidationError("An unexpected error occurred: " + e.getMessage()));
-         return error;
-     }
-		
-	return error;
- }
-
-
-
-
+    return errors;
+}
 
 }

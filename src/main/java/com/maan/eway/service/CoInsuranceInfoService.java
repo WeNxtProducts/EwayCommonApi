@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.InsertAdditionalInfoReq;
 import com.maan.eway.req.CoInsuranceDetails;
 import com.maan.eway.req.CoInsuranceInfoReq;
+import com.maan.eway.res.SuccessRes;
 
 public interface CoInsuranceInfoService  {
 	
@@ -19,6 +21,8 @@ public interface CoInsuranceInfoService  {
 
 	CommonRes CoInsuranceInfodelete(String QUOTENO);
     CommonRes getAllByQuoteNo(String QUOTENO);
+
+
 
 
 

@@ -39,14 +39,14 @@ public class CoInsuranceInfoController  {
 	public ResponseEntity<CommonRes> CoInsuarancesave(@RequestBody CoInsuranceDetails req) {
 	    CommonRes data = new CommonRes();
 	    
-	    List<Error> validations = null;
+//	    List<Error> validations = null;
 	    List<Error> validation = service.validatecoinsurancedetails(req);
 	    
-	   
+	  
 	    if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
 			data.setIsError(true);
-			data.setErrorMessage(validations);
+			data.setErrorMessage(validation);
 			data.setMessage("Failed");
 			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 			}
