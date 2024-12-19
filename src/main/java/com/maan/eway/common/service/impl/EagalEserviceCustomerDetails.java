@@ -127,7 +127,12 @@ public class EagalEserviceCustomerDetails {
 			}
 			if (StringUtils.isBlank(req.getMobileNo1())) {
 				errorList.add("1026");
-			} else if (req.getMobileNo1().length() > 10||req.getMobileNo1().length() < 8) {
+			}
+			else if(req.getMobileNo1()!=null &&!req.getMobileNo1().startsWith("5")  )
+			{
+				errorList.add("10027");	
+			}
+			else if (req.getMobileNo1().length() > 10||req.getMobileNo1().length() < 8) {
 				errorList.add("1027");
 			} else if (!req.getMobileNo1().matches("[0-9]+") ) {
 				errorList.add("1028");
