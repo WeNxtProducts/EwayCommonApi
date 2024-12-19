@@ -173,4 +173,10 @@ public class EservieMotorDetailsViewRes {
 	 
 	 @JsonProperty("OriginalRiskId")
 	 private String originalRiskId;
+	 
+	 @JsonProperty("BuildingUsageDesc")
+	 private String buildingUsageDesc;
+	 
+	 @JsonProperty("ContentDesc")
+	 private String contentDesc;
 }

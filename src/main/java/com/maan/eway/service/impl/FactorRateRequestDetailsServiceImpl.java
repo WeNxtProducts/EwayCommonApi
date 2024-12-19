@@ -1251,7 +1251,11 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				
 				Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 				List<Cover> coverListRes = 	getCoversList(groupByCover);
-				coverListRes.forEach(cov ->  cov.setSectionName(res.getSectionName())) ;
+				coverListRes.forEach(cov -> {
+					cov.setSectionName(res.getSectionName());
+					cov.setContentDesc(StringUtils.isBlank(res.getContentDesc())?null:res.getContentDesc());
+					cov.setBuildingUsageDesc(StringUtils.isBlank(res.getBuildingUsageDesc())?null:res.getBuildingUsageDesc());
+				});
 				
 				// Set Master Referals
 				List<MasterReferralDetails> filterMasterReferals = findMasterRefrals.stream().filter( o -> o.getRiskId().equals(Integer.valueOf(res.getVehicleId())) &&
@@ -1783,15 +1787,26 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setActualPremiumLc(buildData.getActualPremiumLc()==null?"0":buildData.getActualPremiumLc().toPlainString());
 						res.setHavepromocode(buildData.getHavepromocode());
 						res.setPromocode(buildData.getPromocode());
-						if (StringUtils.isNotBlank(buildData.getBuildingUsageDesc()))
-							res.setSectionName(
-									filterData.get(0).getSectionName() + "~" + buildData.getBuildingUsageDesc());
-						else if (StringUtils.isNotBlank(buildData.getContentDesc()))
-							res.setSectionName(
-									filterData.get(0).getSectionName() + "~" + buildData.getContentDesc());
-						else {
-							res.setSectionName(filterData.get(0).getSectionName());
+//						if (StringUtils.isNotBlank(buildData.getBuildingUsageDesc()))
+//							res.setSectionName(
+//									filterData.get(0).getSectionName() + "~" + buildData.getBuildingUsageDesc());
+//						else if (StringUtils.isNotBlank(buildData.getContentDesc()))
+//							res.setSectionName(
+//									filterData.get(0).getSectionName() + "~" + buildData.getContentDesc());
+//						else {
+						
+						if (StringUtils.isNotBlank(buildData.getBuildingUsageDesc())) {
+							res.setBuildingUsageDesc( buildData.getBuildingUsageDesc());
+						}else {
+							res.setBuildingUsageDesc("");
 						}
+						if (StringUtils.isNotBlank(buildData.getContentDesc())) {
+							res.setContentDesc( buildData.getContentDesc());
+						}else {
+							res.setContentDesc("");
+						}
+						res.setSectionName(filterData.get(0).getSectionName());
+						
 						res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
 						res.setEffectiveDate(buildData.getEndorsementEffdate()==null?null:buildData.getEndorsementEffdate() );
 						res.setCommissionPercentage(buildData.getCommissionPercentage()==null?"" :buildData.getCommissionPercentage().toPlainString());
