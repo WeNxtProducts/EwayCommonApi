@@ -7,7 +7,6 @@ package com.maan.eway.service.impl;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -829,17 +828,17 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			orderList.add(cb.asc(c.get("productName")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -894,9 +893,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			orderList.add(cb.asc(c.get("currencyName")));
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
 			Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a18 = cb.equal(c.get("status"),ocpm1.get("status") );
@@ -905,9 +904,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			effectiveDate.where(a11,a12,a18,a22);
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CurrencyMaster> ocpm2 = effectiveDate2.from(CurrencyMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
 			Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a19 = cb.equal(c.get("status"),ocpm2.get("status") );
@@ -1457,18 +1456,18 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 			effectiveDate.where(a1,a2,a5,a6);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<BankMaster> ocpm2 = effectiveDate2.from(BankMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(c.get("bankCode"),ocpm2.get("bankCode"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -1784,7 +1783,15 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setActualPremiumLc(buildData.getActualPremiumLc()==null?"0":buildData.getActualPremiumLc().toPlainString());
 						res.setHavepromocode(buildData.getHavepromocode());
 						res.setPromocode(buildData.getPromocode());
-						res.setSectionName( filterData.get(0).getSectionName() );
+						if (StringUtils.isNotBlank(buildData.getBuildingUsageDesc()))
+							res.setSectionName(
+									filterData.get(0).getSectionName() + "~" + buildData.getBuildingUsageDesc());
+						else if (StringUtils.isNotBlank(buildData.getContentDesc()))
+							res.setSectionName(
+									filterData.get(0).getSectionName() + "~" + buildData.getContentDesc());
+						else {
+							res.setSectionName(filterData.get(0).getSectionName());
+						}
 						res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
 						res.setEffectiveDate(buildData.getEndorsementEffdate()==null?null:buildData.getEndorsementEffdate() );
 						res.setCommissionPercentage(buildData.getCommissionPercentage()==null?"" :buildData.getCommissionPercentage().toPlainString());
@@ -1802,6 +1809,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						}
 						res.setLocationId(buildData.getLocationId()==null?"" :buildData.getLocationId().toString());
 						res.setLocationName(LocationName);
+						
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(buildData, buildRes);
@@ -2800,9 +2808,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			orderList.add(cb.asc(c.get("sectionName")));
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
@@ -2810,9 +2818,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			effectiveDate.where(a1, a2, a3, a4);
 
 			// Effective Date End
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ProductSectionMaster> ocpm2 = effectiveDate2.from(ProductSectionMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
 			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
