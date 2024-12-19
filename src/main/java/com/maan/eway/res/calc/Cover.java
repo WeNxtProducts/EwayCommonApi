@@ -219,8 +219,6 @@ public class Cover implements Serializable {
 	@JsonProperty("ActualRate")
 	public Double actualrate;
 
-	@JsonProperty("BuildingUsageDesc")
-	private String buildingUsageDesc;
 
 	@JsonProperty("ContentDesc")
 	private String contentDesc;

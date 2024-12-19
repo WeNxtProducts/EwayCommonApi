@@ -1254,7 +1254,6 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				coverListRes.forEach(cov -> {
 					cov.setSectionName(res.getSectionName());
 					cov.setContentDesc(StringUtils.isBlank(res.getContentDesc())?null:res.getContentDesc());
-					cov.setBuildingUsageDesc(StringUtils.isBlank(res.getBuildingUsageDesc())?null:res.getBuildingUsageDesc());
 				});
 				
 				// Set Master Referals
@@ -1796,11 +1795,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 //						else {
 						
 						if (StringUtils.isNotBlank(buildData.getBuildingUsageDesc())) {
-							res.setBuildingUsageDesc( buildData.getBuildingUsageDesc());
-						}else {
-							res.setBuildingUsageDesc("");
-						}
-						if (StringUtils.isNotBlank(buildData.getContentDesc())) {
+							res.setContentDesc( buildData.getBuildingUsageDesc());
+						}else if (StringUtils.isNotBlank(buildData.getContentDesc())) {
 							res.setContentDesc( buildData.getContentDesc());
 						}else {
 							res.setContentDesc("");
