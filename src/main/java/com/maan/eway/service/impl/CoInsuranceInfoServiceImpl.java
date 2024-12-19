@@ -42,6 +42,7 @@ public   class CoInsuranceInfoServiceImpl  implements CoInsuranceInfoService  {
 	    CommonRes response = new CommonRes();
 	    
 	    try {
+	    	System.out.println("CoInsurance Save for Quote No: "+req.getQuoteno());
 	         GetdataReq.deleteByQuoteno(req.getQuoteno()); 
 	        
 	         
@@ -167,7 +168,7 @@ public List<Error> validatecoinsurancedetails(CoInsuranceDetails req) {
 
           
             if (ra.getSharedpercentage() == null || ra.getSharedpercentage().compareTo(BigDecimal.valueOf(100)) != 0) {
-              	 errors.add(new Error("04","Shared Percentage","Shared Percentage must be exactly 100"));
+              	 errors.add(new Error("04","Shared Percentage","Please Enter Shared Percentage"));
             }
 
           
