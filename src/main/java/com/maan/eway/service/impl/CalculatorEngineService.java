@@ -470,6 +470,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			work.setVdRefNo(engine.getVdRefNo());
 			work.setLocationId(engine.getLocationId());
 			work.setCreatedBy(engine.getCreatedBy());
+			work.setVehicleId(engine.getVehicleId());
 			jsonMapper.createQuotation(work);
 			return null;
 		}else {
