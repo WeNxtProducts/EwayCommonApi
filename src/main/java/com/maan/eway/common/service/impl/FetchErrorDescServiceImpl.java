@@ -55,6 +55,10 @@ public class FetchErrorDescServiceImpl {
 	private List<ErrorGroupRes> errorGroupRes = new ArrayList<ErrorGroupRes>();
 	
 	List<ErrorGroupRes> errorDescriptionList = new ArrayList<ErrorGroupRes>();
+	public static String getStringAfterHyphen(String str) { 
+		int hyphenIndex = str.indexOf('-'); if (hyphenIndex != -1 && hyphenIndex < str.length() - 1) { return str.substring(hyphenIndex + 1).trim(); } 
+		return ""; // Return empty string if hyphen is not found or is at the end 
+		}
 	
 	public List<Error> getErrorDesc(List<String> errorCodes , CommonErrorModuleReq req ) {
 		List<Error> errors = new ArrayList<Error>();
@@ -97,10 +101,15 @@ public class FetchErrorDescServiceImpl {
 					errors.add(error1);
 					
 					
-				} else {
+				} else if(!errorCode.contains("DynamicErrorDesc")) {
 					errors.add(new Error(err ,"" ,"No Error Description Available"));
 				}
-				
+				if(errorCode.contains("DynamicErrorDesc"))
+				{
+					String substringAfterHyphen = getStringAfterHyphen(errorCode);
+					errors.add(new Error("1108" ,"DocumentUpload" ,"Please Upload "+substringAfterHyphen));
+
+				}
 			}
 			
 			

@@ -518,11 +518,12 @@ public class PaymentServiceImpl implements PaymentService {
 						
 						if( ! list1.contains(coverDoc.getDocumentId()))	{
 							if(coverDoc.getSectionId()==99999)
-								error.add("1108");
+								error.add("DynamicErrorDesc"+"-"+coverDoc.getDocumentName());
 //								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
 					}}else {
 						if(coverDoc.getSectionId()==99999) {
-								error.add("1108");
+							error.add("DynamicErrorDesc"+"-"+coverDoc.getDocumentName());
+
 //								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
 						}
 						
