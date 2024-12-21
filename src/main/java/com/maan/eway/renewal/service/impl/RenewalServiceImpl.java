@@ -314,7 +314,7 @@ public class RenewalServiceImpl implements RenewalService{
 					c.get("email1").alias("emailId"), c.get("idType").alias("identityType"),c.get("idNumber").alias("identityNumber"),
 					c.get("preferredNotification").alias("preferedNotification"), c.get("isTaxExempted").alias("taxExcemption"),
 					c.get("street").alias("street"),c.get("nationality").alias("country"),c.get("regionCode").alias("region"),
-					c.get("stateCode").alias("district"),
+					c.get("stateCode").alias("district"),c.get("policyHolderType").alias("policyHolderType"),c.get("policyHolderTypeid").alias("policyHolderTypeid"),
 					
 					// Vehicle Info c.get("stateCode").alias("pobox"),
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productCode"),m.get("sectionId").alias("sectionCode"),
@@ -755,7 +755,7 @@ public class RenewalServiceImpl implements RenewalService{
 					if(!CollectionUtils.isEmpty(mddList)) {
 							for (RenewVehicleDetails mdata : mddList) {
 								savedata=dozerMapper.map(mdata, EserviceMotorDetails.class);
-						
+								savedata.setOldPolicyNumber(mdata.getOldPolicyNumber());
 								savedata.setEntryDate(new Date());
 								savedata.setCreatedBy(req.getLoginId());
 								savedata.setUpdatedBy(req.getLoginId());
@@ -883,6 +883,7 @@ public class RenewalServiceImpl implements RenewalService{
 					
 					EserviceCustomerDetails customer=new EserviceCustomerDetails();
 					customer.setCustomerReferenceNo(custRefNo);
+					customer.setPolicyHolderType(data.getPolicyHolderType());
 					customer.setClientName(data.getCustomerName());
 					customer.setTitle(data.getTitle());
 					customer.setGender(data.getGender());
@@ -900,9 +901,10 @@ public class RenewalServiceImpl implements RenewalService{
 					customer.setStateCode(Integer.parseInt(data.getDistrict()));
 					customer.setPinCode(data.getPobox());
 					customer.setAge(9);
-					customer.setPolicyHolderTypeid("1");
+					customer.setPolicyHolderTypeid(data.getPolicyHolderTypeid());
 					customer.setCompanyId(data.getCompanyId());
 					customer.setProductId(Integer.parseInt(data.getProductCode()));
+					customer.setStatus("Y");
 					customerRepo.saveAndFlush(customer);
 					
 					//Driver Save
@@ -929,7 +931,12 @@ public class RenewalServiceImpl implements RenewalService{
 							driverRepo.saveAndFlush(savedriver);
 						}
 					}
-					
+					 RenewQuotePolicy rdata=data;
+	    			 rdata.setCurrentStageCode("R");
+	    			 rdata.setCurrentStatus("RENEW-SUCCESS");
+	    			 rdata.setCurrentStatusCode("RS");
+	    			 rdata.setNewRequestRefNo(refNo);
+	    			 renewQuotePolicyRepo.saveAndFlush(rdata);
 				}
 				
 				
@@ -997,8 +1004,9 @@ public class RenewalServiceImpl implements RenewalService{
 					r.get("oldstartDate").alias("inceptionDate"),
 					r.get("oldendDate").alias("expiryDate"),
 					r.get("newpolicyNumber").alias("newpolicyNumber"),
-					r.get("currentStatus").alias("currentStatus")
-
+					r.get("currentStatus").alias("currentStatus"),
+					r.get("newRequestRefNo").alias("newRequestRefNo")
+					
 					);
 
 			// Order By
@@ -1077,7 +1085,8 @@ public class RenewalServiceImpl implements RenewalService{
 					r.get("oldstartDate").alias("inceptionDate"),
 					r.get("oldendDate").alias("expiryDate"),
 					r.get("newpolicyNumber").alias("newpolicyNumber"),
-					r.get("currentStatus").alias("currentStatus")
+					r.get("currentStatus").alias("currentStatus"),
+					r.get("newRequestRefNo").alias("newRequestRefNo")
 
 					);
 
@@ -1412,7 +1421,7 @@ public class RenewalServiceImpl implements RenewalService{
 
 	@Override
 	public CommonRes pullPremiarenewal() {
-		// TODO Auto-generated method stub
+		insertMotRenDetFromView();
 		return null;
 	}
 
@@ -1517,6 +1526,7 @@ public class RenewalServiceImpl implements RenewalService{
 		try {
 			String tranId=saveRenewPremiaPolicy();
 			List<RenewPremiaPolicy> rqplist=rppRepo.findByStatusAndTransactionId("RP",tranId);
+			InsertPremiaRenewal(rqplist,tranId);
 			log.info("getPolicyRequestList--> transactionId: " + tranId);
 			for (RenewPremiaPolicy rdata : rqplist) {
 				RenewDataRequest rdr = new RenewDataRequest();
@@ -1565,6 +1575,50 @@ public class RenewalServiceImpl implements RenewalService{
 			e.printStackTrace();
 		}
 		return tranId;
+	}
+	public void InsertPremiaRenewal(List<RenewPremiaPolicy> rqplist,String tranId) {
+		CommonRes res=new CommonRes();
+		List<RenewalPolicyDetailsRes>list=new ArrayList<>();
+		//List<RenewPremiaPolicy> rqplist=rppRepo.findByStatusAndTransactionId("RP",tranId);
+		if(!CollectionUtils.isEmpty(rqplist)) {
+			for (RenewPremiaPolicy rdata : rqplist) {
+				RenewalPolicyDetailsRes rd=new RenewalPolicyDetailsRes();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(rdata.getPolFmDt());
+				cal.set(Calendar.DATE, 1);
+				Date startDate = cal.getTime();
+				
+				Calendar cal1 = new GregorianCalendar();
+				cal1.setTime(rdata.getPolFmDt());
+				cal1.set(Calendar.DATE, 365);
+				Date endDate = cal1.getTime();
+				
+				RenewQuotePolicy data=new RenewQuotePolicy();
+				data.setCompanyId(rdata.getCompanyId());
+				data.setCustomerName(rdata.getCustomerName());
+				data.setEmailId(rdata.getInsuredEmailId() );
+				data.setMobileCode(rdata.getMobileCode());
+				data.setMobileNo(rdata.getInsuredMobile());
+				data.setTranId(tranId);
+				data.setRequestTime(new Date());
+				data.setResponseTime(new Date());
+				data.setStatus("Y");
+				data.setNewstartDate(startDate);
+				data.setNewendDate(endDate);
+				data.setCurrentStatus("RENEW_PENDING");
+				data.setCurrentStageCode("R");
+				data.setCurrentStatusCode("RP");
+				
+				renewQuotePolicyRepository.saveAndFlush(data);
+				rd.setOldendDate(endDate);
+				list.add(rd);
+			}
+			res.setMessage("Renewal Pull Success for "+tranId);
+			InsertRenewalNotification(list,tranId);
+			res.setCommonResponse(tranId);
+		}else {
+			res.setMessage("Renewal Pull failed for "+tranId);
+		}
 	}
 
 }

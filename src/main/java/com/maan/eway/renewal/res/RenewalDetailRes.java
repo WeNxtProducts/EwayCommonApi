@@ -32,6 +32,9 @@ public class RenewalDetailRes {
 	
 	@JsonProperty("CurrentStatus")
 	private String currentStatus;
+	
+	@JsonProperty("NewRequestRefNo")
+	private String newRequestRefNo;
 
 
 }

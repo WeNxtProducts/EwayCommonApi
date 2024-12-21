@@ -202,6 +202,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="LAST_NOTIFY_YN")
     private String    lastNotifyYN ;
 
+    @Column(name="POLICY_HOLDER_TYPE", length=2)
+    private String     policyHolderType ;
+
+    @Column(name="POLICY_HOLDER_TYPEID", nullable=false, length=100)
+    private String     policyHolderTypeid ;
+    
+    @Column(name="NEW_REQUEST_REF_NO")
+    private String    newRequestRefNo ;
     
 }
 

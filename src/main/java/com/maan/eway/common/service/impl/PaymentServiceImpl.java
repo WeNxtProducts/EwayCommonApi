@@ -78,6 +78,7 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataIndividuals;
 import com.maan.eway.bean.PolicyDrcrDetail;
 import com.maan.eway.bean.ProductEmployeeDetails;
+import com.maan.eway.bean.RenewQuotePolicy;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqPaymentid;
 import com.maan.eway.bean.TinyurlMaster;
@@ -151,6 +152,7 @@ import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PaymentRefnoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
+import com.maan.eway.repository.RenewQuotePolicyRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.repository.SeqPaymentidRepository;
@@ -229,6 +231,9 @@ public class PaymentServiceImpl implements PaymentService {
 	private ValuationServiceImpl  valuationServiceImpl ;
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private RenewQuotePolicyRepository renewQuotePolicyRepo;
 	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
@@ -2723,7 +2728,15 @@ public class PaymentServiceImpl implements PaymentService {
     				  dozerMapper.map(filterMotor.get(0) , updateEser);
     				  updateEserList.add(updateEser);
     			   }
-	    		 
+	    		 List<RenewQuotePolicy>rlist=renewQuotePolicyRepo.findByOldpolicyNo(o.getOldPolicyNumber());
+	    		 rlist.forEach(i -> {
+	    			 RenewQuotePolicy rdata=i;
+	    			 rdata.setNewpolicyNumber(policyNo);
+	    			 rdata.setCurrentStageCode("C");
+	    			 rdata.setCurrentStatus("CONVERT-SUCCESS");
+	    			 rdata.setCurrentStatusCode("CS");
+	    			 renewQuotePolicyRepo.saveAndFlush(rdata);
+	    			 }) ;   		 
 	    		  });	    		   
 	    		  eserMotRepo.saveAllAndFlush(updateEserList);
 	    		  

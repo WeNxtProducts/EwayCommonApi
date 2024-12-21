@@ -45,6 +45,8 @@ public class RenewalPolicyDetailsRes {
     private Integer    sectionCode ;
     private String    branchCode ;
     private String    branchName ;
+    private String    policyHolderType ;
+    private String    policyHolderTypeid ;
    
 }
 
