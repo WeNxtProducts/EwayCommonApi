@@ -112,6 +112,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="COLOR_DESC_LOCAL",  length=100)
     private String     colorDescLocal ;
+    
+    @Column(name="CORE_APP_CODE", length=50)
+    private String coreAppCode;
+	
 
 }
 

@@ -25,6 +25,10 @@ public class RenewPremiaPolicyRes {
 	@JsonProperty("PolprodCode")
 	private String polProdCode;
 	
+	
+	@JsonProperty("VehicleUsageLocal")
+	private String vehicleUsageLocal;
+	
 	@JsonProperty("ProdName")
 	private String prodName;
 	
@@ -103,6 +107,9 @@ public class RenewPremiaPolicyRes {
 	@JsonProperty("MakeId")
 	private String makeId;
 	
+	@JsonProperty("MakeIdLocal")
+	private String makeIdLocal;
+	
 	@JsonProperty("MakeIdName")
 	private String makeIdName;
 	
@@ -114,6 +121,9 @@ public class RenewPremiaPolicyRes {
 	
 	@JsonProperty("BodyType")
 	private String bodyType;
+	
+	@JsonProperty("BodyTypeLocal")
+	private String bodyTypeLocal;
 	
 	@JsonProperty("BodyTypeName")
 	private String bodyTypeName;
@@ -132,6 +142,9 @@ public class RenewPremiaPolicyRes {
 	
 	@JsonProperty("TypeOfCover")
 	private String typeOfCover;
+	
+	@JsonProperty("TypeOfCoverLocal")
+	private String typeOfCoverLocal;
 	
 	@JsonProperty("TypeOfCoverName")
 	private String typeOfCoverName;

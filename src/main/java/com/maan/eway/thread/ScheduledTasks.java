@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.maan.eway.renewal.service.RenewalService;
@@ -43,7 +42,7 @@ public class ScheduledTasks {
 					"|************|  RENEWAL QUOTE TO POLICY API THREAD is Switched OFF from DB  |*************|");
 		}
 	}
-
+	//@EventListener(ApplicationReadyEvent.class)
 	public void startPremiaRenewSchedular() {
 		log.info("The time is now {startPremiaRenewSchedular}", dateFormat.format(new Date()));
 
@@ -85,7 +84,7 @@ public class ScheduledTasks {
 					"|************|  RENEWAL QUOTE TO POLICY API THREAD is Switched OFF from DB  |*************|");
 		}
 	}
-	@EventListener(ApplicationReadyEvent.class)
+	//@EventListener(ApplicationReadyEvent.class)
 	public void startEmiNotificationSMSSchedular() {
 		log.info("The time is now {startEmiNotificationSMSSchedular}", dateFormat.format(new Date()));
 

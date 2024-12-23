@@ -12,27 +12,20 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
-import com.maan.eway.bean.BankMaster;
-
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.BankMasterId;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
 import com.maan.eway.bean.MotorVehicleUsageMasterId;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
  
 public interface MotorVehicleUsageMasterRepository  extends JpaRepository<MotorVehicleUsageMaster,MotorVehicleUsageMasterId > , JpaSpecificationExecutor<MotorVehicleUsageMaster> {
 
 	//List<MotorVehicleUsageMaster> findBycompanyIdAndvehicleUsageIdOrderByAmendIdDesc(String companyid,Integer usageid);
 	List<MotorVehicleUsageMaster> findByCompanyIdAndVehicleUsageIdOrderByAmendIdDesc(String companyId, Integer vehicleUsageId);
+
+	List<MotorVehicleUsageMaster> findByCompanyIdAndCoreAppCodeOrderByAmendIdDesc(String companyId, String polProdCode);
 	
 
 }

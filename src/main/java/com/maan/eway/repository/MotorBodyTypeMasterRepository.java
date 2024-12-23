@@ -13,5 +13,8 @@ import com.maan.eway.bean.MotorBodyTypeMasterId;
 
 public interface MotorBodyTypeMasterRepository extends JpaRepository<MotorBodyTypeMaster, MotorBodyTypeMasterId> , JpaSpecificationExecutor<MotorBodyTypeMaster>{
 
+	List<MotorBodyTypeMaster> findByCoreAppCodeAndBranchCodeAndCompanyIdOrderByAmendIdDesc(String bodyType,
+			String string, String companyId);
+
 
 }

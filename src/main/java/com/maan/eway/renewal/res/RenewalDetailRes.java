@@ -35,6 +35,9 @@ public class RenewalDetailRes {
 	
 	@JsonProperty("NewRequestRefNo")
 	private String newRequestRefNo;
+	
+	@JsonProperty("RegistrationNo")
+	private String registrationNo;
 
 
 }

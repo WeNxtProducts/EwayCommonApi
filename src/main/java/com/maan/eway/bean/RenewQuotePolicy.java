@@ -174,7 +174,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="LOGIN_ID")
     private String    loginId ;
     
-    @Column(name="AAPLICATION_ID")
+    @Column(name="APPLICATION_ID")
     private String    applicationId ;
     
     @Column(name="COMPANY_ID")
@@ -205,11 +205,21 @@ private static final long serialVersionUID = 1L;
     @Column(name="POLICY_HOLDER_TYPE", length=2)
     private String     policyHolderType ;
 
-    @Column(name="POLICY_HOLDER_TYPEID", nullable=false, length=100)
+    @Column(name="POLICY_HOLDER_TYPEID", length=100)
     private String     policyHolderTypeid ;
     
     @Column(name="NEW_REQUEST_REF_NO")
     private String    newRequestRefNo ;
+    
+    @Column(name="REGISTRATION_NUMBER")
+    private String    registrationNumber ;
+    
+    @Column(name="CHASSIS_NUMBER")
+    private String    chassisNumber ;
+    
+    @Column(name="ENGINE_NUMBER")
+    private String    engineNumber ;
+    
     
 }
 

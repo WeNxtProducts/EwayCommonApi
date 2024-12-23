@@ -2504,6 +2504,12 @@ public class PaymentServiceImpl implements PaymentService {
 				} else {
 					data.setOriginalPolicyNo(policyNo);
 				}
+				 List<EserviceMotorDetails> eserMotorsList =  eserMotRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+				 if(!CollectionUtils.isEmpty(eserMotorsList)) {
+					 data.setRenewalOldPolicy(eserMotorsList.get(0).getOldPolicyNumber());
+					 data.setRenewalStatus("R");
+				}
+				 
 				homerepo.saveAndFlush(data);
 				// Update ProductWise
 				CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());

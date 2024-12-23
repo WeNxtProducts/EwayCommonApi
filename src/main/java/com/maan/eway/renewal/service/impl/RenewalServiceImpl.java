@@ -32,9 +32,13 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
+import com.maan.eway.bean.MotorMakeMaster;
+import com.maan.eway.bean.MotorVehicleUsageMaster;
 import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.RenewDriverDetails;
 import com.maan.eway.bean.RenewPremiaPolicy;
 import com.maan.eway.bean.RenewPremiaPolicyRaw;
@@ -69,8 +73,12 @@ import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
+import com.maan.eway.repository.MotorBodyTypeMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
+import com.maan.eway.repository.MotorMakeMasterRepository;
+import com.maan.eway.repository.MotorVehicleUsageMasterRepository;
+import com.maan.eway.repository.PolicyTypeMasterRepository;
 import com.maan.eway.repository.RenewDriverDetailsRepository;
 import com.maan.eway.repository.RenewPremiaPolicyRawRepository;
 import com.maan.eway.repository.RenewPremiaPolicyRepository;
@@ -157,6 +165,18 @@ public class RenewalServiceImpl implements RenewalService{
 	
 	@Autowired
 	private RenewPremiaPolicyRepository rppRepo;
+	
+	@Autowired
+	private MotorBodyTypeMasterRepository mbtRepo;
+	
+	@Autowired
+	private MotorVehicleUsageMasterRepository mvuRepo;
+	
+	@Autowired
+	private PolicyTypeMasterRepository ptrepo;
+	
+	@Autowired
+	private MotorMakeMasterRepository  mmrepo;
 	
 	private Logger log=LogManager.getLogger(RenewalServiceImpl.class);
 	@Value(value = "${spring.jpa.database}")
@@ -1007,8 +1027,8 @@ public class RenewalServiceImpl implements RenewalService{
 					r.get("oldendDate").alias("expiryDate"),
 					r.get("newpolicyNumber").alias("newpolicyNumber"),
 					r.get("currentStatus").alias("currentStatus"),
-					r.get("newRequestRefNo").alias("newRequestRefNo")
-					
+					r.get("newRequestRefNo").alias("newRequestRefNo"),
+					r.get("registrationNumber").alias("registrationNo")
 					);
 
 			// Order By
@@ -1088,7 +1108,8 @@ public class RenewalServiceImpl implements RenewalService{
 					r.get("oldendDate").alias("expiryDate"),
 					r.get("newpolicyNumber").alias("newpolicyNumber"),
 					r.get("currentStatus").alias("currentStatus"),
-					r.get("newRequestRefNo").alias("newRequestRefNo")
+					r.get("newRequestRefNo").alias("newRequestRefNo"),
+					r.get("registrationNumber").alias("registrationNo")
 
 					);
 
@@ -1163,7 +1184,8 @@ public class RenewalServiceImpl implements RenewalService{
 						r.get("oldstartDate").alias("inceptionDate"),
 						r.get("oldendDate").alias("expiryDate"),
 						r.get("newpolicyNumber").alias("newpolicyNumber"),
-						r.get("currentStatus").alias("currentStatus")
+						r.get("currentStatus").alias("currentStatus"),
+						r.get("registrationNumber").alias("registrationNo")
 
 						);
 
@@ -1528,7 +1550,7 @@ public class RenewalServiceImpl implements RenewalService{
 		try {
 			String tranId=saveRenewPremiaPolicy();
 			List<RenewPremiaPolicy> rqplist=rppRepo.findByStatusAndTransactionId("RP",tranId);
-			InsertPremiaRenewal(rqplist,tranId);
+			InsertPremiaRenewal(rqplist,tranId); 
 			log.info("getPolicyRequestList--> transactionId: " + tranId);
 			for (RenewPremiaPolicy rdata : rqplist) {
 				RenewDataRequest rdr = new RenewDataRequest();
@@ -1554,7 +1576,7 @@ public class RenewalServiceImpl implements RenewalService{
 
 	private String saveRenewPremiaPolicy() {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		String tranId="";
+		String tranId="10001";
 		try {
 		List<RenewPremiaPolicyRaw> findAll = rqprRepo.findAll();
 		if(!CollectionUtils.isEmpty(findAll)) {
@@ -1596,20 +1618,32 @@ public class RenewalServiceImpl implements RenewalService{
 				Date endDate = cal1.getTime();
 				
 				RenewQuotePolicy data=new RenewQuotePolicy();
+				data.setServiceType("Premia");
 				data.setCompanyId(rdata.getCompanyId());
 				data.setCustomerName(rdata.getCustomerName());
 				data.setEmailId(rdata.getInsuredEmailId() );
 				data.setMobileCode(rdata.getMobileCode());
 				data.setMobileNo(rdata.getInsuredMobile());
+				data.setRegistrationNumber(rdata.getPlateNumber());
+				data.setChassisNumber(rdata.getChassNo());
+				data.setEngineNumber(rdata.getEngineNumber());
+				data.setOldpolicyNo(rdata.getPolNo());
 				data.setTranId(tranId);
 				data.setRequestTime(new Date());
 				data.setResponseTime(new Date());
 				data.setStatus("Y");
+				data.setOldstartDate(rdata.getPolFmDt());
+				data.setOldendDate(rdata.getPolExpDt() );
 				data.setNewstartDate(startDate);
 				data.setNewendDate(endDate);
-				data.setCurrentStatus("RENEW_PENDING");
 				data.setCurrentStageCode("R");
-				data.setCurrentStatusCode("RP");
+   			 	data.setCurrentStatus("RENEW-SUCCESS");
+   			 	data.setCurrentStatusCode("RS");
+				
+				data.setLoginId("kenyabroker1");
+				data.setApplicationId("1"); 
+				data.setBranchCode("60");
+				data.setProductCode("5");
 				
 				renewQuotePolicyRepository.saveAndFlush(data);
 				rd.setOldendDate(endDate);
@@ -1632,22 +1666,48 @@ public class RenewalServiceImpl implements RenewalService{
 		try {
 			if(req.getSearchType().equalsIgnoreCase("REGNO")) {
 				data = rppRepo.findAllByPlateNumber(req.getPlateNumber());
-				
-				response = data.stream().map(list -> dozerMapper.map(list, RenewPremiaPolicyRes.class)).collect(Collectors.toList());
-				
-				return response;
 			}
 			else if(req.getSearchType().equalsIgnoreCase("MOBILENUMBER")) {
 				data = rppRepo.findAllByInsuredMobile(req.getInsuredMobile());
-				response = data.stream().map(list -> dozerMapper.map(list, RenewPremiaPolicyRes.class)).collect(Collectors.toList());
-				
-				return response;
+			}
+			if(!CollectionUtils.isEmpty(data)) {
+				for (RenewPremiaPolicy rdata : data) {
+					RenewPremiaPolicyRes rppr=new RenewPremiaPolicyRes();
+					rppr=dozerMapper.map(rdata,RenewPremiaPolicyRes.class);
+					if(StringUtils.isNotBlank(rppr.getBodyType())) {
+						List<MotorBodyTypeMaster> bodylist= mbtRepo.findByCoreAppCodeAndBranchCodeAndCompanyIdOrderByAmendIdDesc(rppr.getBodyType() , "99999" , rppr.getCompanyId());
+						if(!CollectionUtils.isEmpty(bodylist)) {
+							rppr.setBodyTypeLocal(bodylist.get(0).getBodyId()==null?"":bodylist.get(0).getBodyId().toString());
+						}
+					}
+					if(StringUtils.isNotBlank(rppr.getPolProdCode()) ) {
+						List<MotorVehicleUsageMaster> usageList=mvuRepo.findByCompanyIdAndCoreAppCodeOrderByAmendIdDesc(rppr.getCompanyId(), rppr.getPolProdCode());
+						if(!CollectionUtils.isEmpty(usageList)) {
+							rppr.setVehicleUsageLocal(usageList.get(0).getVehicleUsageId()==null?"":usageList.get(0).getVehicleUsageId().toString());
+						}
+					}
+					if(StringUtils.isNotBlank(rppr.getTypeOfCover()) ) {
+						List<PolicyTypeMaster> polTypeList=ptrepo.findByCompanyIdAndCoreAppCodeOrderByAmendIdDesc(rppr.getCompanyId(), rppr.getTypeOfCover());
+						if(!CollectionUtils.isEmpty(polTypeList)) {
+							rppr.setTypeOfCoverLocal(polTypeList.get(0).getPolicyTypeId()==null?"":polTypeList.get(0).getPolicyTypeId().toString());
+						}
+					}
+					
+					if(StringUtils.isNotBlank(rppr.getMakeId()) ) {
+						List<MotorMakeMaster>makeList=mmrepo.findByCompanyIdAndCoreAppCodeOrderByAmendIdDesc(rppr.getCompanyId(), rppr.getMakeId());
+						if(!CollectionUtils.isEmpty(makeList)) {
+							rppr.setMakeIdLocal(makeList.get(0).getMakeId()==null?"":makeList.get(0).getMakeId().toString());
+						}
+					}
+					
+					response.add(rppr);
+				}
 			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return response;
 	}
 
 }

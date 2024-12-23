@@ -71,5 +71,7 @@ public class PolicyTypeMaster {
     @Column(name="UPDATED_BY", length=20)
     private String     updatedBy ;
 	
+    @Column(name="CORE_APP_CODE", length=50)
+    private String coreAppCode;
 	
 }
