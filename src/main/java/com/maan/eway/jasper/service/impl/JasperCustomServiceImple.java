@@ -3466,6 +3466,8 @@ public class JasperCustomServiceImple {
 							o.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(sectionId))
 									.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+							o.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 							addOnDetails.add(o);
 						}
 					}else if("40".equalsIgnoreCase(sectionId)) { // building
@@ -3480,6 +3482,8 @@ public class JasperCustomServiceImple {
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(sectionId))
 									.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+							lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 							return lmap;
 						}).collect(Collectors.toList());
 						buildingDetails.addAll(locationList);
@@ -3493,6 +3497,8 @@ public class JasperCustomServiceImple {
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(sectionId))
 									.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+							lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 							return lmap;
 						}).collect(Collectors.toList());
 						interruptionDetails.addAll(locationList);
@@ -3506,6 +3512,8 @@ public class JasperCustomServiceImple {
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(sectionId))
 									.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+							lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 							return lmap;
 						}).collect(Collectors.toList());
 						burglaryDetails.addAll(locationList);
@@ -3525,6 +3533,8 @@ public class JasperCustomServiceImple {
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(sectionId))
 									.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+							lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 							return lmap;
 						}).collect(Collectors.toList());
 						moneyDetails.addAll(locationList);
@@ -3537,6 +3547,8 @@ public class JasperCustomServiceImple {
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(sectionId))
 									.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+							lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 							return lmap;
 						}).collect(Collectors.toList());
 						officeContDetails.addAll(locationList);
@@ -3550,6 +3562,8 @@ public class JasperCustomServiceImple {
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(sectionId))
 									.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+							lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 							return lmap;
 						}).collect(Collectors.toList());
 						contentDetails.addAll(locationList);
