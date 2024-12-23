@@ -3351,7 +3351,7 @@ public class JasperCustomServiceImple {
 							        fMap.put("CoverDesc", sectionDesc);
 							        double totPremium = coverData.stream()
 							            .filter(f -> f.getTaxId() == 0 && f.getDiscLoadId() == 0 
-							                    && f.getSectionId() != Integer.parseInt(sectionIdStr))
+							                    && f.getSectionId() == Integer.parseInt(sectionIdStr))
 							            .mapToDouble(f -> f.getPremiumExcludedTaxFc().doubleValue())
 							            .sum();
 							        fMap.put("TotPremium", totPremium);
