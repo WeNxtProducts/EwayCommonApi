@@ -1522,7 +1522,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				refinedBuilding.setFurnitureLossPercent(refinedBuilding.getFurnitureSi()!=null ? refinedBuilding.getFurnitureLossPercent() : null );
 				refinedBuilding.setGoodsLossPercent(refinedBuilding.getGoodsSi()!=null ? refinedBuilding.getGoodsLossPercent() : null );
 				refinedBuilding.setStockLossPercent(refinedBuilding.getStockInTradeSi()!=null ? refinedBuilding.getStockLossPercent() : null );;
-				
+				refinedBuilding.setSumInsured(eserBuild.getSumInsured()!=null?eserBuild.getSumInsured():null);
 				buildRepo.saveAndFlush(refinedBuilding);
 				
 			} else {
