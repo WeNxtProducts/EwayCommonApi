@@ -3336,7 +3336,30 @@ public class JasperCustomServiceImple {
 						Double taxAmount = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T") && f.getSectionId()!=99999)
 								.map(i -> i.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 						
-						List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999)
+						List<Map<String, Object>> sectionPremium = Slist.stream()
+							    .map(m -> {
+							        Map<String, Object> u = new HashMap<>();
+							        u.put("sectionId", m.get("sectionId").toString());
+							        u.put("sectionDesc", m.get("sectionDesc").toString());
+							        return u;
+							    }).distinct()
+							    .map(l -> {
+							        Map<String, Object> fMap = new HashMap<>();
+							        String sectionIdStr = l.get("sectionId")== null?"":l.get("sectionId").toString();
+							        String sectionDesc = l.get("sectionDesc")== null?"":l.get("sectionDesc").toString();
+							        fMap.put("SectionId", Integer.parseInt(sectionIdStr));
+							        fMap.put("CoverDesc", sectionDesc);
+							        double totPremium = coverData.stream()
+							            .filter(f -> f.getTaxId() == 0 && f.getDiscLoadId() == 0 
+							                    && f.getSectionId() != Integer.parseInt(sectionIdStr))
+							            .mapToDouble(f -> f.getPremiumExcludedTaxFc().doubleValue())
+							            .sum();
+							        fMap.put("TotPremium", totPremium);
+							        return fMap;
+							    }).sorted(Comparator.comparing(p -> (Integer) p.get("SectionId")))
+							    .collect(Collectors.toList());
+						
+			/*			List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999)
 								.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverDesc(),Collectors.reducing(
 									BigDecimal.ZERO, PolicyCoverData::getPremiumExcludedTaxLc, BigDecimal::add))))
 								.entrySet().stream()
@@ -3353,7 +3376,7 @@ public class JasperCustomServiceImple {
 												return secMap;
 											});
 								}).sorted(Comparator.comparing(p -> (String) p.get("CoverDesc")))
-								.collect(Collectors.toList());
+								.collect(Collectors.toList());*/
 						sectionPremium.forEach(k -> {
 							TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
 									.amount(new BigDecimal(Double.valueOf(k.get("TotPremium").toString())).toString())
