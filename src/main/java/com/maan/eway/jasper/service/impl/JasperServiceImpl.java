@@ -250,50 +250,64 @@ public class JasperServiceImpl implements JasperService {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvImagepath", Imagepath);
 					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
-					Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
-					String jsonString = gson.toJson(EwaySchedule);
 					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+(StringUtils.isBlank(homeData.getPolicyNo())?homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "")
 							:homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", ""));
-					if("100004".equalsIgnoreCase(homeData.getCompanyId())) {
+				if(homeData.getProductId() == 19) {
+					Map<String,Object> CorporateSchedule = jasperCustomeImple.getCorporatePlusSchedule(homeData.getQuoteNo());
+					String jsonString = gson.toJson(CorporateSchedule );
 						String obj[] =new String[1];
-						obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
+						obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CorporatePlusCoverageDetails.jrxml";
 						for(String s :obj) {
 							String jrxml_path=s.replace(".jasper", ".jrxml");
-							JasperDesign design = JRXmlLoader.load(new File(jrxml_path));
-							JRDesignSection designSection = (JRDesignSection) design.getDetailSection();
-							designSection.removeBand(0);
-			                JasperCompileManager.compileReportToFile(design, config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jasper");
+							String path = JasperCompileManager.compileReportToFile(jrxml_path);
+							System.out.println("Jasper compileToReport path" +path);
 						}
-						input2.put("attachMents", EwaySchedule.get("attachMents"));
-						input2.put("policyNo", EwaySchedule.get("policyNo"));
-						res = getCommonJasperPdfFileByJson("/report/jasper/MadisonSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- MadisonSchedule.json");
+						res = getCommonJasperPdfFileByJson("/report/jasper/CorporatePlus.jrxml", jasperSaveLocation, jsonString, input2, "- CorporatePlus.json");
 					}else {
-						if("100046".equalsIgnoreCase(homeData.getCompanyId())) {
-							String obj[] =new String[1];
-							obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/Sub_Main_Report.jrxml";
-							//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
-							/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
-							obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
-							for(String s :obj) {
-								String jrxml_path=s.replace(".jasper", ".jrxml");
-								String path = JasperCompileManager.compileReportToFile(jrxml_path);
-								System.out.println("Jasper compileToReport path" +path);
-							}
-							res = getCommonJasperPdfFileByJson("/report/jasper/Main_Report.jrxml", jasperSaveLocation, jsonString, input2, "- Main_Report.json");
-						}else {
+						Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
+						String jsonString = gson.toJson(EwaySchedule);
+						if("100004".equalsIgnoreCase(homeData.getCompanyId())) {
 							String obj[] =new String[1];
 							obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
-							//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
-							/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
-							obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
 							for(String s :obj) {
 								String jrxml_path=s.replace(".jasper", ".jrxml");
-								String path = JasperCompileManager.compileReportToFile(jrxml_path);
-								System.out.println("Jasper compileToReport path" +path);
+								JasperDesign design = JRXmlLoader.load(new File(jrxml_path));
+								JRDesignSection designSection = (JRDesignSection) design.getDetailSection();
+								designSection.removeBand(0);
+				                JasperCompileManager.compileReportToFile(design, config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jasper");
 							}
-							res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
+							input2.put("attachMents", EwaySchedule.get("attachMents"));
+							input2.put("policyNo", EwaySchedule.get("policyNo"));
+							res = getCommonJasperPdfFileByJson("/report/jasper/MadisonSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- MadisonSchedule.json");
+						}else {
+							if("100046".equalsIgnoreCase(homeData.getCompanyId())) {
+								String obj[] =new String[1];
+								obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/Sub_Main_Report.jrxml";
+								//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
+								/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
+								obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
+								for(String s :obj) {
+									String jrxml_path=s.replace(".jasper", ".jrxml");
+									String path = JasperCompileManager.compileReportToFile(jrxml_path);
+									System.out.println("Jasper compileToReport path" +path);
+								}
+								res = getCommonJasperPdfFileByJson("/report/jasper/Main_Report.jrxml", jasperSaveLocation, jsonString, input2, "- Main_Report.json");
+							}else {
+								String obj[] =new String[1];
+								obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
+								//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
+								/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
+								obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
+								for(String s :obj) {
+									String jrxml_path=s.replace(".jasper", ".jrxml");
+									String path = JasperCompileManager.compileReportToFile(jrxml_path);
+									System.out.println("Jasper compileToReport path" +path);
+								}
+								res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
+							}
 						}
 					}
+					
 				}
 			}
 		} catch (Exception e) {
