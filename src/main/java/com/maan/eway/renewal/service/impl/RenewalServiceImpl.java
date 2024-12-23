@@ -52,8 +52,10 @@ import com.maan.eway.renewal.req.PullrenewalReq;
 import com.maan.eway.renewal.req.RenewDataRequest;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
 import com.maan.eway.renewal.req.RenewalPendingRequest;
+import com.maan.eway.renewal.req.RenewalSearchReq;
 import com.maan.eway.renewal.req.RenewalTransDetailReq;
 import com.maan.eway.renewal.req.RenewalTransactionReq;
+import com.maan.eway.renewal.res.RenewPremiaPolicyRes;
 import com.maan.eway.renewal.res.RenewQuotePolicyResponse;
 import com.maan.eway.renewal.res.RenewalDetailRes;
 import com.maan.eway.renewal.res.RenewalPendingResponse;
@@ -1619,6 +1621,33 @@ public class RenewalServiceImpl implements RenewalService{
 		}else {
 			res.setMessage("Renewal Pull failed for "+tranId);
 		}
+	}
+
+	@Override
+	public List<RenewPremiaPolicyRes> searchRenewPremiaPolicy(RenewalSearchReq req) {
+	
+		List<RenewPremiaPolicyRes> response = new ArrayList<RenewPremiaPolicyRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		List<RenewPremiaPolicy> data = new ArrayList<RenewPremiaPolicy>();
+		try {
+			if(req.getSearchType().equalsIgnoreCase("REGNO")) {
+				data = rppRepo.findAllByPlateNumber(req.getPlateNumber());
+				
+				response = data.stream().map(list -> dozerMapper.map(list, RenewPremiaPolicyRes.class)).collect(Collectors.toList());
+				
+				return response;
+			}
+			else if(req.getSearchType().equalsIgnoreCase("MOBILENUMBER")) {
+				data = rppRepo.findAllByInsuredMobile(req.getInsuredMobile());
+				response = data.stream().map(list -> dozerMapper.map(list, RenewPremiaPolicyRes.class)).collect(Collectors.toList());
+				
+				return response;
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

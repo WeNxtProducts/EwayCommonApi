@@ -14,6 +14,10 @@ public interface RenewPremiaPolicyRepository  extends JpaRepository<RenewPremiaP
 
 	List<RenewPremiaPolicy> findByStatusAndTransactionId(String string, String tranId);
 
+	List<RenewPremiaPolicy> findAllByPlateNumber(String plateNumber);
+
+	List<RenewPremiaPolicy> findAllByInsuredMobile(String insuredMobile);
+
 
 
 	

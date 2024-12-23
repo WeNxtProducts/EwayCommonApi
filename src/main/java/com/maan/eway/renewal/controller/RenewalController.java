@@ -1,5 +1,8 @@
 package com.maan.eway.renewal.controller;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +15,10 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.renewal.req.PullrenewalReq;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
 import com.maan.eway.renewal.req.RenewalPendingRequest;
+import com.maan.eway.renewal.req.RenewalSearchReq;
 import com.maan.eway.renewal.req.RenewalTransDetailReq;
 import com.maan.eway.renewal.req.RenewalTransactionReq;
+import com.maan.eway.renewal.res.RenewPremiaPolicyRes;
 import com.maan.eway.renewal.service.RenewalService;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 
@@ -123,6 +128,26 @@ public class RenewalController {
 	 	if (data != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/search/policydetails")
+	public ResponseEntity<CommonRes> searchPolicyDetails(@RequestBody RenewalSearchReq req){
+		
+		CommonRes data = new CommonRes();
+		
+		List<RenewPremiaPolicyRes> res = renewalservice.searchRenewPremiaPolicy(req);
+		
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.EMPTY_LIST);
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
