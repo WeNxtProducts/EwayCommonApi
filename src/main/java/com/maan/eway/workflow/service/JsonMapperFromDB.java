@@ -18,8 +18,10 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.FieldQueryTablequery;
 import com.maan.eway.bean.FlowFieldDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
 import com.maan.eway.workflow.dto.JsonField;
@@ -56,6 +58,9 @@ public class JsonMapperFromDB {
 	
 	@Autowired
 	private SaveResponseToTable saveResponse;
+	@Autowired
+	private PersonalInfoRepository personalInfoRepo;
+	
 	public Map<String,Object> createRequest(WorkEngine engine) {
 		try {
 			String search="companyId:"+engine.getCompanyId()+";productId:"+engine.getProductId()+";status:{Y,R};integType:"+engine.getIntegType()+";";
@@ -172,6 +177,14 @@ public class JsonMapperFromDB {
 						hm.setOriginalPolicyNo(data.get("policyNumber").toString());
 						//hm.setCoreSgsId(data.get("policyId").toString());
 						homePositionRepo.save(hm);
+						Map<String, Object> customerDetails = (Map<String, Object>) data.get("customerDetails");
+						String customerId = customerDetails.get("customerId").toString();
+						/*String updCustomer="UPDATE personal_info SET customer_code='"+customerId+"' WHERE customer_id='"+hm.getCustomerId()+"'";
+						template.update(updCustomer);
+						 */
+						PersonalInfo customer = personalInfoRepo.findByCustomerId(hm.getCustomerId());
+						customer.setCustomerCode(customerId);
+						personalInfoRepo.save(customer);
 					}
 
 				}catch (Exception e) {
