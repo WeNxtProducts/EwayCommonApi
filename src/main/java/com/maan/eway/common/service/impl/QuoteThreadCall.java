@@ -1413,7 +1413,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			dozerMapper.map(eserBuild,bulildDetails);
 			bulildDetails.setQuoteNo(request.getQuoteNo());
 			bulildDetails.setUpdatedDate(new Date());
-		
+			bulildDetails.setIndemityPeriod(eserBuild.getIndemityPeriod());
+			bulildDetails.setIndemityPeriodDesc(eserBuild.getIndemityPeriodDesc());
 			BigDecimal endtPremium = null;
 			EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes(); 
 			if(eserBuild.getEndorsementType()!=null) {
