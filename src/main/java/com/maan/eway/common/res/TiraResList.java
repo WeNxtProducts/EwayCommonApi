@@ -41,7 +41,7 @@ public class TiraResList {
 	@JsonProperty("StatusDesc")
 	private String statusDesc;
 
-	@JsonFormat( pattern = "dd/MM/yyyy")
+	@JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 
