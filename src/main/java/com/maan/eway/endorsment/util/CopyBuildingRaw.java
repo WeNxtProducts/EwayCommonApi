@@ -409,23 +409,23 @@ public class CopyBuildingRaw {
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
 				
-				Subquery<Long> endtPre = query.subquery(Long.class);
+				Subquery<BigDecimal> endtPre = query.subquery(BigDecimal.class);
 				Root<HomePositionMaster> h = endtPre.from(HomePositionMaster.class);
 				endtPre.select(cb.sum(h.get("endtPremium")) ) ;
 				Predicate pm1 = cb.equal(h.get("companyId"), m.get("companyId"));
-				Predicate pm2 = cb.equal(h.get("productId"), m.get("productId"));
+				Predicate pm2 = cb.equal(h.get("productId"), m.get("productId").as(Integer.class));
 				Predicate pm3   = cb.like(h.get("policyNo"), m.get("policyNo"));
 				endtPre.where(pm1,pm2,pm3);
 		
 				// Over All Premium Fc
-				Subquery<Long> overAllPremiumFc = query.subquery(Long.class);
+				Subquery<BigDecimal> overAllPremiumFc = query.subquery(BigDecimal.class);
 				Root<HomePositionMaster> ocpm1 = overAllPremiumFc.from(HomePositionMaster.class);
 				overAllPremiumFc.select(cb.sum(ocpm1.get("overallPremiumFc")));
 				Predicate a1 = cb.equal(m.get("quoteNo"),ocpm1.get("quoteNo") );
 				overAllPremiumFc.where(a1);
 				
 				// Over All Premium Lc
-				Subquery<Long> overAllPremiumLc = query.subquery(Long.class);
+				Subquery<BigDecimal> overAllPremiumLc = query.subquery(BigDecimal.class);
 				Root<HomePositionMaster> ocpm2 = overAllPremiumLc.from(HomePositionMaster.class);
 				overAllPremiumLc.select(cb.sum(ocpm2.get("overallPremiumLc")));
 				Predicate a2 = cb.equal(m.get("quoteNo"),ocpm2.get("quoteNo") );
@@ -435,7 +435,7 @@ public class CopyBuildingRaw {
 				Root<HomePositionMaster> h2 = debitNoteNo.from(HomePositionMaster.class);
 				debitNoteNo.select(cb.max(h2.get("debitNoteNo"))) ;
 				Predicate pm4 = cb.equal(h2.get("companyId"), m.get("companyId"));
-				Predicate pm5 = cb.equal(h2.get("productId"), m.get("productId"));
+				Predicate pm5 = cb.equal(h2.get("productId"), m.get("productId").as(Integer.class));
 				Predicate pm6   = cb.equal(h2.get("policyNo"), m.get("policyNo"));
 				debitNoteNo.where(pm4,pm5,pm6);
 				
@@ -443,7 +443,7 @@ public class CopyBuildingRaw {
 				Root<HomePositionMaster> h3 = creditNo.from(HomePositionMaster.class);
 				creditNo.select(cb.max(h3.get("creditNo"))) ;
 				Predicate pm7 = cb.equal(h3.get("companyId"), m.get("companyId"));
-				Predicate pm8 = cb.equal(h3.get("productId"), m.get("productId"));
+				Predicate pm8 = cb.equal(h3.get("productId"), m.get("productId").as(Integer.class));
 				Predicate pm9   = cb.equal(h3.get("policyNo"), m.get("policyNo"));
 				creditNo.where(pm7,pm8,pm9);
 				
@@ -451,7 +451,7 @@ public class CopyBuildingRaw {
 				Root<HomePositionMaster> h4 = endtPreTax.from(HomePositionMaster.class);
 				endtPreTax.select(cb.sum(h4.get("endtPremiumTax") ) ) ;
 				Predicate pm10 = cb.equal(h4.get("companyId"), m.get("companyId"));
-				Predicate pm11 = cb.equal(h4.get("productId"), m.get("productId"));
+				Predicate pm11 = cb.equal(h4.get("productId"), m.get("productId").as(Integer.class));
 				Predicate pm12   = cb.equal(h4.get("policyNo"), m.get("policyNo"));
 				endtPreTax.where(pm10,pm11,pm12);
 		
@@ -494,15 +494,15 @@ public class CopyBuildingRaw {
 				// Where
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
-				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
+				Predicate n3 = cb.equal(m.get("productId"), request.getProductId().toPlainString());
 			//	 Predicate n4 = cb.notEqual(m.get("status"),"D");
 				//Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D"));  
 				// m.get("status").in("E","P"));
 				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),cb.like(m.get("policyNo"), request.getPolicyNo()));
 				//Predicate n6 = cb.equal(h.get("quoteNo"), m.get("quoteNo"));
-				Predicate n6 = cb.equal(m.get("sectionId"),"0");
+//				Predicate n6 = cb.equal(m.get("sectionId"),"0");
 
-				query.where(n1, n2, n3, n5,n6)
+				query.where(n1, n2, n3, n5)
 						.groupBy(/*c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate")*/m.get("policyNo"))
