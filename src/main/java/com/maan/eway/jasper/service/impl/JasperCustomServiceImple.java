@@ -3543,6 +3543,7 @@ public class JasperCustomServiceImple {
 							LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 							lmap.put("locationName", k.getLocationName());
 							lmap.put("sumInsured", k.getSumInsured());
+							lmap.put("contentDesc", k.getContentDesc());
 							lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
 									&& f.getSectionId()==Integer.parseInt(sectionId))
