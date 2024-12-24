@@ -119,7 +119,7 @@ public class RatingCalculatorController {
 	}
     
     @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@PostMapping("calc/call")
+	@PostMapping("/calc/call")
 	@ApiOperation("This Method is to get by id")
 	public List<EserviceMotorDetailsSaveRes> getcalc(@RequestBody CalcEngine request,@RequestHeader("Authorization") String tokens) {
 		List<EserviceMotorDetailsSaveRes> response = service.getCalc(request,tokens.replaceAll("Bearer ", "").split(",")[0]); 
