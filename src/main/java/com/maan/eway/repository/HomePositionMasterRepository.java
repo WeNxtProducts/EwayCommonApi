@@ -25,7 +25,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.maan.eway.bean.HomePositionMasterId;
-import com.maan.eway.policycheck.PolicyCheckRes;
+
 
 /**
  * <h2>HomePositionMasterRepository</h2>
