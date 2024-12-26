@@ -54,6 +54,8 @@ import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SessionMaster;
@@ -69,6 +71,7 @@ import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
+import com.maan.eway.common.req.PortfolioSearchReq;
 import com.maan.eway.common.req.RegSearchReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
@@ -103,6 +106,7 @@ import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioAdminGridRes;
 import com.maan.eway.common.res.PortfolioAdminPendingRes;
 import com.maan.eway.common.res.PortfolioBrokerListRes;
+import com.maan.eway.common.res.PortfolioByRegNoRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
@@ -135,6 +139,7 @@ import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.SessionMasterRepository;
@@ -210,6 +215,9 @@ public class GridServiceImpl implements GridService {
 	
 	@Autowired
 	private PaymentInfoRepository paymentinforepo;
+	
+	@Autowired
+	private MotorDataDetailsRepository motDataRepo;
 	
 	@Autowired
 	private UWReferralDetailsRepository uwReferalDetailsRepo;
@@ -2655,6 +2663,7 @@ public class GridServiceImpl implements GridService {
 	public List<PortFolioAdminTupleRes> getPortFolioDashBoard(PortFolioDashBoardReq req) {
 		List<PortFolioAdminTupleRes> list = new ArrayList<PortFolioAdminTupleRes>();
 		try {
+			
 			Calendar cal = new GregorianCalendar();
 
 			Date startDate = req.getStartDate();
@@ -2670,85 +2679,85 @@ public class GridServiceImpl implements GridService {
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PortFolioAdminTupleRes> query = cb.createQuery(PortFolioAdminTupleRes.class);
+											
+				// Find All
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				Root<LoginMaster> l = query.from(LoginMaster.class);
+				Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 
-			// Find All
-			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
-			Root<LoginMaster> l = query.from(LoginMaster.class);
-			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+				// Select
+				query.multiselect(cb.count(h).alias("count"), cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
+						cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"), h.get("productId").alias("productId"),
+						h.get("productName").alias("productName"), l.get("agencyCode").alias("agencyCode"),
+						u.get("userName").alias("brokerName"), l.get("userType").alias("userType"),
+						/*l.get("subUserType").alias("subUserType"),*/l.get("oaCode").alias("oaCode"),
+						cb.max(h.get("customerCode")).alias("customerCode"),cb.max(h.get("customerName")).alias("customerName"),
+						h.get("sourceType").alias("sourceType"),cb.max(h.get("bdmCode")).alias("bdmCode"));
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(h.get("productName")));
 
-			// Select
-			query.multiselect(cb.count(h).alias("count"), cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
-					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"), h.get("productId").alias("productId"),
-					h.get("productName").alias("productName"), l.get("agencyCode").alias("agencyCode"),
-					u.get("userName").alias("brokerName"), l.get("userType").alias("userType"),
-					/*l.get("subUserType").alias("subUserType"),*/l.get("oaCode").alias("oaCode"),
-					cb.max(h.get("customerCode")).alias("customerCode"),cb.max(h.get("customerName")).alias("customerName"),
-					h.get("sourceType").alias("sourceType"),cb.max(h.get("bdmCode")).alias("bdmCode"));
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(h.get("productName")));
+				// Broker condition
+				Subquery<String> loginId = query.subquery(String.class);
+				Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
+				loginId.select(ocpm1.get("loginId"));
+				Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
+				Predicate a2 = cb.equal(ocpm1.get("loginId"), h.get("loginId"));
+				Predicate a3 = cb.equal(ocpm1.get("oaCode").as(String.class), l.get("agencyCode"));
+				loginId.where(a1, a2, a3);
 
-			// Broker condition
-			Subquery<String> loginId = query.subquery(String.class);
-			Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
-			loginId.select(ocpm1.get("loginId"));
-			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
-			Predicate a2 = cb.equal(ocpm1.get("loginId"), h.get("loginId"));
-			Predicate a3 = cb.equal(ocpm1.get("oaCode").as(String.class), l.get("agencyCode"));
-			loginId.where(a1, a2, a3);
+				
 
-			
+				// Where
+				List<Predicate> predicate = new ArrayList<Predicate>();
+				predicate.add(cb.equal(h.get("loginId"), loginId));
+				
+//				predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
+//				predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+				predicate.add(cb.greaterThanOrEqualTo(h.get("entryDate"), startDate));
+				predicate.add(cb.lessThanOrEqualTo(h.get("entryDate"), endDate));
+				predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+				predicate.add(cb.equal(l.get("userType"), "Broker"));
+//				Expression<String> e0 = l.get("subUserType");
+//				predicate.add(e0.in("broker","direct"));
+//				predicate.add(cb.equal(l.get("subUserType"), "Broker"));
+				predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
+				predicate.add(cb.equal(l.get("companyId"), h.get("companyId")));
+				if (StringUtils.isNotBlank(req.getLoginId())) {
+					predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
+				}
 
-			// Where
-			List<Predicate> predicate = new ArrayList<Predicate>();
-			predicate.add(cb.equal(h.get("loginId"), loginId));
-			
-//			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
-//			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
-			predicate.add(cb.greaterThanOrEqualTo(h.get("entryDate"), startDate));
-			predicate.add(cb.lessThanOrEqualTo(h.get("entryDate"), endDate));
-			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
-			predicate.add(cb.equal(l.get("userType"), "Broker"));
-//			Expression<String> e0 = l.get("subUserType");
-//			predicate.add(e0.in("broker","direct"));
-//			predicate.add(cb.equal(l.get("subUserType"), "Broker"));
-			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
-			predicate.add(cb.equal(l.get("companyId"), h.get("companyId")));
-			if (StringUtils.isNotBlank(req.getLoginId())) {
-				predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
-			}
+				// Business Type Condition
+				String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
 
-			// Business Type Condition
-			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+				if ("N".equalsIgnoreCase(businessType)) {
+					predicate.add(cb.equal(h.get("status"), "P"));
+					Predicate n1 = cb.isNull(h.get("endtStatus"));
+					Predicate n2 = cb.equal(h.get("endtStatus"), "");
+					predicate.add(cb.or(n1, n2));
 
-			if ("N".equalsIgnoreCase(businessType)) {
-				predicate.add(cb.equal(h.get("status"), "P"));
-				Predicate n1 = cb.isNull(h.get("endtStatus"));
-				Predicate n2 = cb.equal(h.get("endtStatus"), "");
-				predicate.add(cb.or(n1, n2));
+				} else if ("E".equalsIgnoreCase(businessType)) {
+					predicate.add(cb.equal(h.get("status"), "P"));
+					predicate.add(cb.equal(h.get("endtStatus"), "C"));
+					predicate.add(cb.notEqual(h.get("endtTypeId"), "842"));
 
-			} else if ("E".equalsIgnoreCase(businessType)) {
-				predicate.add(cb.equal(h.get("status"), "P"));
-				predicate.add(cb.equal(h.get("endtStatus"), "C"));
-				predicate.add(cb.notEqual(h.get("endtTypeId"), "842"));
+				} else if ("C".equalsIgnoreCase(businessType)) {
+					predicate.add(cb.equal(h.get("status"), "P"));
+					predicate.add(cb.equal(h.get("endtStatus"), "C"));
+					predicate.add(cb.equal(h.get("endtTypeId"), "842"));
+				}
 
-			} else if ("C".equalsIgnoreCase(businessType)) {
-				predicate.add(cb.equal(h.get("status"), "P"));
-				predicate.add(cb.equal(h.get("endtStatus"), "C"));
-				predicate.add(cb.equal(h.get("endtTypeId"), "842"));
-			}
+				// Product & Branch Condition
+				if (StringUtils.isNotBlank(req.getProductId()))
+					predicate.add(cb.equal(h.get("productId"), req.getProductId()));
+				if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
+					predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
 
-			// Product & Branch Condition
-			if (StringUtils.isNotBlank(req.getProductId()))
-				predicate.add(cb.equal(h.get("productId"), req.getProductId()));
-			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
-				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
-
-			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId"), h.get("productName"),
-					l.get("agencyCode"), u.get("userName"), l.get("userType"),//, l.get("subUserType"),
-					l.get("oaCode"),h.get("sourceType"))
-					.orderBy(orderList);
-
+				query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId"), h.get("productName"),
+						l.get("agencyCode"), u.get("userName"), l.get("userType"),//, l.get("subUserType"),
+						l.get("oaCode"),h.get("sourceType"))
+						.orderBy(orderList);
+									
 			// Get Result
 			TypedQuery<PortFolioAdminTupleRes> result = em.createQuery(query);
 			list = result.getResultList();
@@ -7591,6 +7600,106 @@ public class GridServiceImpl implements GridService {
 		return list;
 	}
 
+	@Override
+	public List<PortfolioByRegNoRes> getAllPorfolioByRegNo(PortfolioSearchReq req) {
+		List<PortfolioByRegNoRes> resList = new ArrayList<PortfolioByRegNoRes>();
+		List<HomePositionMaster> list = new ArrayList<HomePositionMaster>();
+		List<MotorDataDetails> motList = new ArrayList<MotorDataDetails>();
+		try {
+		if(req.getSearchBy().equalsIgnoreCase("REGISTRATION_NUMBER")){
+			List<MotorDataDetails> motDataList = motDataRepo.findByRegistrationNumber(req.getRegistrationNumber());
+			
+			List<String> quoteList = motDataList.stream().map(quote -> quote.getQuoteNo()).collect(Collectors.toList());	
+			//String quoteNo = motDataList.getQuoteNo();
+				
+				list = homeRepo.findAllByQuoteNoIn(quoteList);
+				
+				list.stream().filter(st -> st.getStatus().equalsIgnoreCase("P")).collect(Collectors.toList());			
+
+		}else if(req.getSearchBy().equalsIgnoreCase("POLICY_NO")) {
+			
+			List<HomePositionMaster> policyList = homeRepo.findAllByPolicyNo(req.getPolicyNo());
+			
+			List<String> quoteList = policyList.stream().map(quote -> quote.getQuoteNo()).collect(Collectors.toList());
+			
+			list = homeRepo.findAllByQuoteNoIn(quoteList);
+			
+			list.stream().filter(st -> st.getStatus().equalsIgnoreCase("P")).collect(Collectors.toList());
+			
+		}
+			for(HomePositionMaster data : list) {
+				PortfolioByRegNoRes res = new PortfolioByRegNoRes();
+				res.setAdminLoginId(data.getAdminLoginId()==null?"":data.getAdminLoginId());
+				res.setAdminRemarks(data.getAdminRemarks()==null?"":data.getAdminRemarks());
+				res.setApplicationId(data.getApplicationId()==null?"":data.getApplicationId());
+				res.setBranchCode(data.getBranchCode()==null?"":data.getBranchCode());
+				res.setBranchName(data.getBranchName()==null?"":data.getBranchName());
+				res.setBrokerBranchCode(data.getBrokerBranchCode()==null?"":data.getBrokerBranchCode());
+				res.setBrokerBranchName(data.getBrokerBranchName()==null?"":data.getBrokerBranchName());
+				res.setBrokerCode(data.getBrokerCode()==null?"":data.getBrokerCode());
+				res.setBrokerName(data.getCustomerName()==null?"":data.getCustomerName());	
+				res.setLoginId(data.getLoginId()==null?"":data.getLoginId());
+				res.setCreditNo(data.getCreditNo()==null?"":data.getCreditNo());
+				res.setCurrency(data.getCurrency()==null?"":data.getCurrency());
+				res.setCustomerName(data.getCustomerName()==null?"":data.getCustomerName());
+				res.setDebitNoteNo(data.getDebitNoteNo()==null?"":data.getDebitNoteNo());
+				res.setEndorsementRemarks(data.getEndorsementRemarks()==null?"":data.getEndorsementRemarks());
+				res.setEndtStatus(data.getEndtStatus()==null?"":data.getEndtStatus());
+				res.setExchangeRate(data.getExchangeRate()==null?null:data.getExchangeRate());
+				res.setOriginalPolicyNo(data.getOriginalPolicyNo()==null?"":data.getOriginalPolicyNo());
+				res.setOverallPremiumLc(data.getOverallPremiumLc()==null?null:data.getOverallPremiumLc());
+				res.setOverallPremiumFc(data.getOverallPremiumFc()==null?null:data.getOverallPremiumFc());
+				res.setExpiryDate(data.getExpiryDate()==null?null:data.getExpiryDate());
+				res.setPolicyNo(data.getPolicyNo()==null?"":data.getPolicyNo());
+				res.setQuoteCreatedDate(data.getQuoteCreatedDate()==null?null:data.getQuoteCreatedDate());
+				res.setProductId(data.getProductId()==null?null:data.getProductId());	
+				res.setProductName(data.getProductName()==null?"":data.getProductName());
+				res.setQuoteNo(data.getQuoteNo()==null?"":data.getQuoteNo());
+				res.setRemarks(data.getRemarks()==null?"":data.getRemarks());
+				res.setReferalRemarks(data.getReferalRemarks()==null?"":data.getReferalRemarks());	
+				res.setRequestReferenceNo(data.getRequestReferenceNo()==null?"":data.getRequestReferenceNo());	
+				res.setStatus(data.getStatus()==null?"":data.getStatus());		
+				res.setSubUserType(data.getSubUserType()==null?"":data.getStatus());		
+			    res.setUserType(data.getUserType()==null?"":data.getUserType())	;
+			    res.setEntryDate(data.getEntryDate()==null?null:data.getEntryDate());
+			    
+			    String statusDesc = StringUtils.isBlank(data.getStatus()) ? ""
+						: "Y".equalsIgnoreCase(data.getStatus()) ? "Existing Quote"
+								: "R".equalsIgnoreCase(data.getStatus()) ? "Quote Rejected"
+										: "N".equalsIgnoreCase(data.getStatus()) ? "Quote Deactivated"
+												: "D".equalsIgnoreCase(data.getStatus()) ? "Quote Deleted"
+														: "RP".equalsIgnoreCase(data.getStatus()) ? "Refferral Pending"
+																: "RA".equalsIgnoreCase(data.getStatus())
+																		? "Refferral Approved"
+																		: "RR".equalsIgnoreCase(data.getStatus())
+																				? "Refferral Rejected"
+																				: "RA".equalsIgnoreCase(
+																						data.getStatus())
+																								? "Refferral Request"
+																								: "P".equalsIgnoreCase(
+																										data.getStatus())
+																												? "Policy Converted"
+																												: "E".equalsIgnoreCase(
+																														data.getStatus())
+																																? "Endorsement"
+																																: "";
+
+				String endtStatusDesc = StringUtils.isBlank(data.getEndtStatus()) ? ""
+						: "P".equalsIgnoreCase(data.getEndtStatus()) ? "Pending"
+								: "C".equalsIgnoreCase(data.getEndtStatus()) ? "Completed" : "";
+				
+				res.setStatusDesc(statusDesc);
+				res.setEndStatusDesc(endtStatusDesc);
+				
+				resList.add(res);
+			    
+			}	
+		}
+			catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return resList;
+	}
 
 	}
 

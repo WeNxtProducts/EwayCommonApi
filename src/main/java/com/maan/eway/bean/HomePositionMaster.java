@@ -703,6 +703,9 @@ private String coreQuoteNo;
  
 @Column(name="CORE_SGS_ID")
 private String coreSgsId;
+
+@Column(name="REFERAL_REMAKS", length=500)
+private String referalRemarks;
  
 }
 

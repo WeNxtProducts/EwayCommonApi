@@ -37,5 +37,5 @@ public class PortFolioGridReq {
 	   private String     limit;
 	   
 	   @JsonProperty("Offset")
-	   private String     offset;
+	   private String     offset;	   
 }

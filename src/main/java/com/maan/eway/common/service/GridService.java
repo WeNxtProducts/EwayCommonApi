@@ -14,6 +14,7 @@ import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
+import com.maan.eway.common.req.PortfolioSearchReq;
 import com.maan.eway.common.req.RegSearchReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
@@ -31,6 +32,7 @@ import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
 import com.maan.eway.common.res.GetallReferralDetailsCommonRes;
 import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
+import com.maan.eway.common.res.PortfolioByRegNoRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.RegNumberRes;
@@ -161,5 +163,7 @@ public interface GridService {
 	GetallExistingRejectedLapsedRes getallRejectedQuoteSQ(ExistingQuoteReq req);
 
 	ViewLoginDetailsRes viewLoginDetails(ExistingQuoteReq req);
+
+	List<PortfolioByRegNoRes> getAllPorfolioByRegNo(PortfolioSearchReq req);
 
 }

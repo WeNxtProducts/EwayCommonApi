@@ -72,4 +72,6 @@ public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDeta
 	@Query(value = "SELECT NUM_TO_WORDS_CONVERT(?1) FROM DUAL",nativeQuery = true)
 	String getAmountByWords(Double amtInWordValue);
 
+	List<MotorDataDetails> findByRegistrationNumber(String registrationNumber);
+
 }

@@ -25,6 +25,7 @@ import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
+import com.maan.eway.common.req.PortfolioSearchReq;
 import com.maan.eway.common.req.RegSearchReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
@@ -43,6 +44,7 @@ import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
 import com.maan.eway.common.res.GetallReferralDetailsCommonRes;
 import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
+import com.maan.eway.common.res.PortfolioByRegNoRes;
 import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.RegNumberRes;
 import com.maan.eway.common.res.RevertGridRes;
@@ -529,6 +531,28 @@ public class GridController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/admin/portfoliogridbyregno")
+	public ResponseEntity<CommonRes> getAllPorfolioByRegNo(@RequestBody PortfolioSearchReq req){
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<PortfolioByRegNoRes> res = entityService.getAllPorfolioByRegNo(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.EMPTY_LIST);
+		data.setMessage("Success");
+		if(res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		}
+		else{
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	
+	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 	@PostMapping("/admin/portfoliob2cgrid")
 	public ResponseEntity<CommonRes> getAllPolicyB2cGrid(@RequestBody PortFolioGridReq req) {
