@@ -172,7 +172,7 @@ public List<Error> validatecoinsurancedetails(CoInsuranceDetails req) {
             }else if(ra.getLeaderparticipant().equalsIgnoreCase("L") && ra.getSharedpercentage().compareTo(BigDecimal.valueOf(100)) != 0) {
             	errors.add(new Error("04","Shared Percentage","Shared Percentage allowed only 100 percentage"));
             }
-            else if(ra.getLeaderparticipant().equalsIgnoreCase("P") && ra.getSharedpercentage().compareTo(BigDecimal.valueOf(100))>0) {
+            else if(ra.getLeaderparticipant().equalsIgnoreCase("P") && ra.getSharedpercentage().compareTo(BigDecimal.valueOf(100))>=0) {
             	errors.add(new Error("04","Shared Percentage","Shared Percentage allowed only less than 100 percentage"));
             }
          
