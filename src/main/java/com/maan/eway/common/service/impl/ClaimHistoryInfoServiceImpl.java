@@ -157,9 +157,9 @@ public class ClaimHistoryInfoServiceImpl implements ClaimHistoryInfoService{
 				response.setCommonResponse(getClaim);
 			}
 			else {
-				response.setMessage("Failed");
-				response.setIsError(true);
-				response.setErrorMessage(List.of(new Error("404","Status","Claim History Info Not Found")));
+				response.setMessage("Success");
+				response.setIsError(false);
+				response.setErrorMessage(List.of());
 			}
 			return response;
 		} catch (Exception e) {
