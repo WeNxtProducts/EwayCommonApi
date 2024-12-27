@@ -232,6 +232,42 @@ private static final long serialVersionUID = 1L;
     @Column(name = "ENTRY_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date entryDate;
+    
+    @Column(name = "DRIVER_NAME", length = 500)
+    private String driverName;
+    
+    @Column(name = "DRIVER_LICENSE", length = 100)
+    private String driverLicense;
+    
+    @Column(name = "DRIVER_DOB")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date driverDob;
+    
+    @Column(name = "DRIVER_AGE", length = 100)
+    private String driverAge;
+    
+    @Column(name = "DRIVER_GENDER", length = 100)
+    private String driverGender;
+    
+    @Column(name = "DRIVER_NATIONALITY", length = 100)
+    private String driverNationality;
+    
+    @Column(name = "DRIVER_LIC_ISSUE_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date driverLicIssueDate;
+    
+    @Column(name = "DRIVER_LIC_EXPIRE_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date driverLicExpireDate;
+    
+    @Column(name = "DRIVER_LIC_TYPE", length = 100)
+    private String driverLicType;
+    
+    @Column(name = "DRIVER_ISSUED_AT", length = 100)
+    private String driverIssuedAt;
+    
+    @Column(name = "CLAIM_EXP", length = 100)
+    private String claimExp;
 
     
 }

@@ -1576,7 +1576,7 @@ public class RenewalServiceImpl implements RenewalService{
 
 	private String saveRenewPremiaPolicy() {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		String tranId="10001";
+		String tranId="";
 		try {
 		List<RenewPremiaPolicyRaw> findAll = rqprRepo.findAll();
 		if(!CollectionUtils.isEmpty(findAll)) {
@@ -1619,6 +1619,7 @@ public class RenewalServiceImpl implements RenewalService{
 				
 				RenewQuotePolicy data=new RenewQuotePolicy();
 				data.setServiceType("Premia");
+				data.setOldrequestreferenceNo("99999");
 				data.setCompanyId(rdata.getCompanyId());
 				data.setCustomerName(rdata.getCustomerName());
 				data.setEmailId(rdata.getInsuredEmailId() );

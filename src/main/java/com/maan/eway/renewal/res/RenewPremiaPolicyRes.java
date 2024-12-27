@@ -5,6 +5,9 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.Data;
 
 @Data
@@ -208,6 +211,39 @@ public class RenewPremiaPolicyRes {
 	
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("DriverName")
+    private String driverName;
+    
+	@JsonProperty("DriverLicense")
+    private String driverLicense;
+    
+	@JsonProperty("DriverDob")
+    private Date driverDob;
+    
+	@JsonProperty("DriverAge")
+    private String driverAge;
+    
+	@JsonProperty("DriverGender")
+    private String driverGender;
+    
+	@JsonProperty("DriverNationality")
+    private String driverNationality;
+    
+	@JsonProperty("DriverLicIssueDate")
+    private Date driverLicIssueDate;
+    
+	@JsonProperty("DriverLicExpireDate")
+    private Date driverLicExpireDate;
+    
+	@JsonProperty("DriverLicType")
+    private String driverLicType;
+    
+	@JsonProperty("DriverIssuedAt")
+    private String driverIssuedAt;
+    
+	@JsonProperty("ClaimExp")
+    private String claimExp;
 	
 	
 	
