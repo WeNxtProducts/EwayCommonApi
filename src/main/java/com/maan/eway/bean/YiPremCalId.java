@@ -35,5 +35,6 @@ public class YiPremCalId implements Serializable {
     
     private String     riskId ;
     
+    private String sectionId;
      
 }
