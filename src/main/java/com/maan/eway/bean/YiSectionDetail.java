@@ -57,6 +57,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name = "RISK_ID", nullable = false)
     private String riskId;
+    
+    @Id
+    @Column(name = "SECTION_ID", nullable = false)
+    private String sectionId;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="SERVICE_ID", length=100)

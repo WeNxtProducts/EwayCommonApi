@@ -32,6 +32,7 @@ public class YiSectionDetailId implements Serializable {
     private String     requestreferenceno ;
 
     private String riskId;
+    private String sectionId;
     
      
 }
