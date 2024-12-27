@@ -61,6 +61,10 @@ private Double cvrId;
 @Id
 @Column(name = "RISK_ID", nullable = false)
 private Integer riskId;
+@Id
+@Column(name = "SECTION_ID", nullable = false)
+private String sectionId;
+
 
 // --- ENTITY DATA FIELDS
 @Column(name = "SERVICE_ID", length = 100)
