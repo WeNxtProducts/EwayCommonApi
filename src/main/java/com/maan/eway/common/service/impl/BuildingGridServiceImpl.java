@@ -1373,14 +1373,14 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					cb.max(c.get("buildingBuildYear")).alias("buildingBuildYear"),
 					cb.max(c.get("buildingAge")).alias("buildingAge"),
 					cb.max(c.get("buildingAreaSqm")).alias("buildingAreaSqm"),
-					cb.max(c.get("buildingSuminsured")).alias("buildingSuminsured"),
-					cb.max(c.get("allriskSuminsured")).alias("allriskSuminsured"), 
+					//cb.max(c.get("buildingSuminsured")).alias("buildingSuminsured"),
+					//cb.max(c.get("allriskSuminsured")).alias("allriskSuminsured"), 
 					//cb.max(c.get("paDeathSuminsured")).alias("paDeathSuminsured"),
 					//cb.max(c.get("paPermanentdisablementSuminsured")).alias("paPermanentdisablementSuminsured"),
 					//cb.max(c.get("paTotaldisabilitySumInsured")).alias("paTotaldisabilitySumInsured"), 
 					//cb.max(c.get("PaMedicalSuminsured")).alias("PaMedicalSuminsured"),
 					//cb.max(c.get("personalIntSuminsured")).alias("personalIntSuminsured"),
-					cb.max(c.get("contentSuminsured")).alias("contentSuminsured"), 
+					//cb.max(c.get("contentSuminsured")).alias("contentSuminsured"), 
 					//cb.max(c.get("workmenCompSuminsured")).alias("workmenCompSuminsured"),
 					cb.max(c.get("entryDate")).alias("entryDate"),
 					cb.max(c.get("createdBy")).alias("createdBy"),
@@ -1431,7 +1431,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 					cb.max(c.get("bdmCode")).alias("bdmCode"),
 					cb.max(c.get("manualReferalYn")).alias("manualReferalYn"),
-					cb.max(c.get("elecEquipSuminsured")).alias("elecEquipSuminsured"),
+					//cb.max(c.get("elecEquipSuminsured")).alias("elecEquipSuminsured"),
 					//cb.max(c.get("moneySinglecarrySuminsured")).alias("moneySinglecarrySuminsured"),
 					//cb.max(c.get("moneyAnnualcarrySuminsured")).alias("moneyAnnualcarrySuminsured"),
 					////cb.max(c.get("moneyInsafeSuminsured")).alias("moneyInsafeSuminsured"),
@@ -1440,8 +1440,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					//cb.max(c.get("tpliabilityAnyoccuSuminsured")).alias("tpliabilityAnyoccuSuminsured"),
 					//cb.max(c.get("empliabilityAnnualSuminsured")).alias("empliabilityAnnualSuminsured"),
 					//cb.max(c.get("empliabilityExcessSuminsured")).alias("empliabilityExcessSuminsured"),
-					cb.max(c.get("goodsSinglecarrySuminsured")).alias("goodsSinglecarrySuminsured"),
-					cb.max(c.get("goodsTurnoverSuminsured")).alias("goodsTurnoverSuminsured"), 
+					//cb.max(c.get("goodsSinglecarrySuminsured")).alias("goodsSinglecarrySuminsured"),
+					//cb.max(c.get("goodsTurnoverSuminsured")).alias("goodsTurnoverSuminsured"), 
 					cb.max(c.get("industryId")).alias("industryId"),
 					cb.max(c.get("industryDesc")).alias("industryDesc"),
 					cb.max(c.get("endorsementType")).alias("endorsementType"),
@@ -1456,7 +1456,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					cb.max(c.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
 					cb.max(c.get("endtCount")).alias("endtCount"),
 					cb.max(c.get("endtStatus")).alias("endtStatus"),
-					cb.max(c.get("isFinaceYn")).alias("isFinaceYn"),
+					//cb.max(c.get("isFinaceYn")).alias("isFinaceYn"),
 					cb.max(c.get("endtCategDesc")).alias("endtCategDesc"),
 					cb.max(c.get("endtPremium")).alias("endtPremium"),
 					//cb.max(c.get("liabilityOccupationId")).alias("liabilityOccupationId"), 
@@ -1474,11 +1474,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 					cb.max(c.get("ceilingType")).alias("ceilingType"),
 					cb.max(c.get("ceilingTypeDesc")).alias("ceilingTypeDesc"),
-					cb.max(c.get("stockInTradeSi")).alias("stockInTradeSi"),
-					cb.max(c.get("goodsSi")).alias("goodsSi"),
-					cb.max(c.get("furnitureSi")).alias("furnitureSi"),
-					cb.max(c.get("applianceSi")).alias("applianceSi"),
-					cb.max(c.get("cashValueablesSi")).alias("cashValueablesSi"),
+					//cb.max(c.get("stockInTradeSi")).alias("stockInTradeSi"),
+					//cb.max(c.get("goodsSi")).alias("goodsSi"),
+					//cb.max(c.get("furnitureSi")).alias("furnitureSi"),
+					//cb.max(c.get("applianceSi")).alias("applianceSi"),
+					//cb.max(c.get("cashValueablesSi")).alias("cashValueablesSi"),
 					cb.max(c.get("stockLossPercent")).alias("stockLossPercent"),
 					cb.max(c.get("goodsLossPercent")).alias("goodsLossPercent"),
 
@@ -1491,7 +1491,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					cb.max(c.get("districtCode")).alias("districtCode"),
 					cb.max(c.get("districtDesc")).alias("districtDesc"),
 					cb.max(c.get("occupiedYear")).alias("occupiedYear"),
-					cb.max(c.get("showWindow")).alias("showWindow"),
+					cb.max(c.get("showWindows")).alias("showWindow"),
 
 					cb.max(c.get("frontDoors")).alias("frontDoors"),
 					cb.max(c.get("backDoors")).alias("backDoors"),
@@ -1516,18 +1516,18 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					//cb.max(c.get("moneyOutSafeBusiness")).alias("moneyOutSafeBusiness"),
 					//cb.max(c.get("moneyInPremises")).alias("moneyInPremises"),
 					//cb.max(c.get("moneyInLocker")).alias("moneyInLocker"),
-					cb.max(c.get("machineEquipSi")).alias("machineEquipSi"),
-					cb.max(c.get("plateGlassSi")).alias("plateGlassSi"),
+					//cb.max(c.get("machineEquipSi")).alias("machineEquipSi"),
+					//cb.max(c.get("plateGlassSi")).alias("plateGlassSi"),
 					cb.max(c.get("firstLossPercentId")).alias("firstLossPercentId"),
 					cb.max(c.get("firstLossPercent")).alias("firstLossPercent"),
 					//cb.max(c.get("accDamageSi")).alias("accDamageSi"),
 					//cb.max(c.get("burglarySi")).alias("burglarySi"),
-					cb.max(c.get("powerPlantSi")).alias("powerPlantSi"),
-					cb.max(c.get("elecMachinesSi")).alias("elecMachinesSi"),
-					cb.max(c.get("equipmentSi")).alias("equipmentSi"),
-					cb.max(c.get("generalMachineSi")).alias("generalMachineSi"),
-					cb.max(c.get("manuUnitsSi")).alias("manuUnitsSi"),
-					cb.max(c.get("boilerPlantsSi")).alias("boilerPlantsSi"),
+					//cb.max(c.get("powerPlantSi")).alias("powerPlantSi"),
+					//cb.max(c.get("elecMachinesSi")).alias("elecMachinesSi"),
+					//cb.max(c.get("equipmentSi")).alias("equipmentSi"),
+					//cb.max(c.get("generalMachineSi")).alias("generalMachineSi"),
+					//cb.max(c.get("manuUnitsSi")).alias("manuUnitsSi"),
+					//cb.max(c.get("boilerPlantsSi")).alias("boilerPlantsSi"),
 					cb.max(c.get("tiraCoverNoteNo")).alias("tiraCoverNoteNo"),
 					cb.max(c.get("indemityPeriod")).alias("indemityPeriod"),
 					cb.max(c.get("indemityPeriodDesc")).alias("indemityPeriodDesc"),
@@ -2186,7 +2186,7 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 		Integer preEndtId=null;
 		long pendingcount = 0;
 		if (count > 0) {
-			List<EserviceBuildingDetails> motors = repo.findByOriginalPolicyNoAndRiskIdAndSectionId(req.getPolicyNo(), 1,"0");
+			List<EserviceBuildingDetails> motors = repo.findTopByOriginalPolicyNoAndRiskIdOrderBySectionId(req.getPolicyNo(), 1);
 			pendingcount = motors.stream().filter(m -> m.getEndtStatus().equals("P")).count();
 			if (pendingcount > 0) {
 				 List<EserviceBuildingDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
@@ -2198,7 +2198,7 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 			}
 		}
 		if (count > 0) {
-			List<EserviceBuildingDetails> motors = repo.findByOriginalPolicyNoAndRiskIdAndSectionId(req.getPolicyNo(), 1 , "0");
+			List<EserviceBuildingDetails> motors = repo.findTopByOriginalPolicyNoAndRiskIdOrderBySectionId(req.getPolicyNo(), 1 );
 			// Compare
 			motors.sort(new Comparator<EserviceBuildingDetails>() {
 				@Override

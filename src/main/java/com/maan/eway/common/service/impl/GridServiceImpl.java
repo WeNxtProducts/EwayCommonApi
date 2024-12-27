@@ -1836,7 +1836,7 @@ public class GridServiceImpl implements GridService {
 								data.get("endtPrevQuoteNo") == null ? null : data.get("endtPrevQuoteNo").toString());
 						res.setEndtCount(data.get("endtCount") == null ? null : data.get("endtCount").toString());
 						res.setEndtStatus(data.get("endtStatus") == null ? null : data.get("endtStatus").toString());
-						res.setIsFinaceYn(data.get("isFinaceYn") == null ? null : data.get("isFinaceYn").toString());
+						//res.setIsFinaceYn(data.get("isFinaceYn") == null ? null : data.get("isFinaceYn").toString());
 						res.setEndtCategDesc(
 								data.get("endtCategDesc") == null ? null : data.get("endtCategDesc").toString());
 						res.setSectionName(data.get("sectionDesc") == null ? null : data.get("sectionDesc").toString());
@@ -1930,7 +1930,7 @@ public class GridServiceImpl implements GridService {
 								data.get("endtPrevQuoteNo") == null ? null : data.get("endtPrevQuoteNo").toString());
 						res.setEndtCount(data.get("endtCount") == null ? null : data.get("endtCount").toString());
 						res.setEndtStatus(data.get("endtStatus") == null ? null : data.get("endtStatus").toString());
-						res.setIsFinaceYn(data.get("isFinaceYn") == null ? null : data.get("isFinaceYn").toString());
+						//res.setIsFinaceYn(data.get("isFinaceYn") == null ? null : data.get("isFinaceYn").toString());
 						res.setEndtCategDesc(
 								data.get("endtCategDesc") == null ? null : data.get("endtCategDesc").toString());
 						res.setSectionName(data.get("sectionName") == null ? null : data.get("sectionName").toString());
