@@ -1793,71 +1793,22 @@ public class RenewalServiceImpl implements RenewalService{
 	public CommonRes getRenewalStatusDetailList(RenewalStatusDetailReq req) {
 		CommonRes data = new CommonRes();
 		try {
-			RenewalPendingResponse res = new RenewalPendingResponse();
-			List<RenewalDetailRes> renewal = getStatusDetailList(req);
-			res.setRenewalDetailRes(renewal);
-			if(renewal != null ) {
-				int count = renewal.size();
-				res.setTotalCount(count);
-			}
+			List<RenewQuotePolicyResponse> res = new ArrayList<RenewQuotePolicyResponse>();
+			
+			List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCompanyIdAndBranchCodeAndCurrentStatusCode(req.getTranId(),req.getInsuranceId(),req.getBranchCode(),req.getStatusCode());
+			
+			res = mapRenewQuotePolicyResponse(list);
+
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
 			data.setMessage("Success");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return data;
 	}
 
-	private List<RenewalDetailRes> getStatusDetailList(RenewalStatusDetailReq req) {
-		 List<RenewalDetailRes> res = new ArrayList<RenewalDetailRes>();
-			
-			try {
-		        
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<RenewalDetailRes> query = cb.createQuery(RenewalDetailRes.class);
-
-				// Find All
-				Root<RenewQuotePolicy> r = query.from(RenewQuotePolicy.class);
-							
-				// Select
-				query.multiselect(
-						r.get("oldpolicyNo").alias("oldpolicyNo"),
-						r.get("oldquoteNo").alias("oldquoteNo"),
-						r.get("customerName").alias("customerName"),
-						r.get("oldstartDate").alias("inceptionDate"),
-						r.get("oldendDate").alias("expiryDate"),
-						r.get("newpolicyNumber").alias("newpolicyNumber"),
-						r.get("currentStatus").alias("currentStatus"),
-						r.get("registrationNumber").alias("registrationNo")
-
-						);
-
-				// Order By
-				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(r.get("newendDate")));
-				
-				List<Predicate>	predicate=new ArrayList<Predicate>();
-				predicate.add(cb.equal(r.get("companyId"), req.getInsuranceId()));	
-				predicate.add(cb.equal(r.get("tranId"), req.getTranId()));
-				predicate.add(cb.equal(r.get("currentStatusCode"), req.getStatusCode()));
-				
-				predicate.add(cb.equal(r.get("branchCode"), req.getBranchCode()));
-					
-		
-				query.where(predicate.toArray(new Predicate[0])).orderBy(orderList);
-				
-
-				// Get Result
-				TypedQuery<RenewalDetailRes> result = em.createQuery(query);
-				res = result.getResultList();
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			return res;
-	}
 
 }
