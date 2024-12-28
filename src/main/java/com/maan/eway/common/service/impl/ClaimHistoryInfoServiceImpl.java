@@ -157,9 +157,17 @@ public class ClaimHistoryInfoServiceImpl implements ClaimHistoryInfoService{
 				response.setCommonResponse(getClaim);
 			}
 			else {
+				ClaimHistoryInfoRes getClaim = new ClaimHistoryInfoRes();
+				getClaim.setCompanyId(req.getCompanyId());
+				getClaim.setProductId(req.getProductId());
+				getClaim.setQuoteNo(req.getQuoteNo());
+				getClaim.setRequestReferenceNo(req.getRequestReferenceNo());
+				getClaim.setClaimHistoryInfo(List.of());
+				
+				
 				response.setMessage("Success");
 				response.setIsError(false);
-				response.setErrorMessage(List.of());
+				response.setCommonResponse(getClaim);
 			}
 			return response;
 		} catch (Exception e) {
