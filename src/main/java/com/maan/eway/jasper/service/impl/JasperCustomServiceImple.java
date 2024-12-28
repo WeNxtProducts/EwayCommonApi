@@ -3359,6 +3359,18 @@ public class JasperCustomServiceImple {
 							    }).sorted(Comparator.comparing(p -> (Integer) p.get("SectionId")))
 							    .collect(Collectors.toList());
 						
+						double addonPremium = sectionPremium.stream().filter(f -> Arrays.asList(217,218).contains(f.get("SectionId")))
+								.map(m -> new BigDecimal(m.get("TotPremium").toString())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+								
+						long count_1 = sectionPremium.stream().anyMatch(f -> f.get("SectionId").toString().equalsIgnoreCase("217"))?1:0;
+						if(count_1>0)
+							sectionPremium.removeIf(r -> r.get("SectionId").toString().equalsIgnoreCase("218"));
+						
+						long count_2 = sectionPremium.stream().anyMatch(f -> f.get("SectionId").toString().equalsIgnoreCase("218"))?1:0;
+						if(count_2>0)
+							sectionPremium.removeIf(r -> r.get("SectionId").toString().equalsIgnoreCase("217"));
+						
+						
 			/*			List<Map<String,Object>> sectionPremium = coverData.stream().filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()!=99999)
 								.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverDesc(),Collectors.reducing(
 									BigDecimal.ZERO, PolicyCoverData::getPremiumExcludedTaxLc, BigDecimal::add))))
@@ -3379,8 +3391,13 @@ public class JasperCustomServiceImple {
 								.collect(Collectors.toList());*/
 						sectionPremium.forEach(k -> {
 							TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
-									.amount(new BigDecimal(Double.valueOf(k.get("TotPremium").toString())).toString())
-									.narration(k.get("CoverDesc")==null?"":k.get("CoverDesc").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+									.amount(Arrays.asList(217,218).contains(k.get("SectionId"))?
+										new BigDecimal(addonPremium).toString():
+											new BigDecimal(Double.valueOf(k.get("TotPremium").toString())).toString())
+									.narration(
+											Arrays.asList(217,218).contains(k.get("SectionId"))?
+											"Add On Covers":
+											k.get("CoverDesc")==null?"":k.get("CoverDesc").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
 								.build();
 								premiumDetailsRes.add(u);
 						});
@@ -3428,9 +3445,9 @@ public class JasperCustomServiceImple {
 			
 			List<Object> locationIds = Slist.stream().map(k -> k.get("locationId")).distinct().collect(Collectors.toList());
 			List<Map<String,Object>> coverageList = new ArrayList<Map<String,Object>>();
+			List<Map<String,Object>> addOnDetails = new ArrayList<>();
 			for(int i=0;i<sectionIds.size();i++) {
 				Map<String,Object> coverMap = new HashMap<String,Object>();
-				List<Map<String,Object>> addOnDetails = new ArrayList<>();
 				List<Map<String,Object>> buildingDetails = new ArrayList<>();
 				List<Map<String,Object>> interruptionDetails = new ArrayList<>();
 				List<Map<String,Object>> burglaryDetails = new ArrayList<>();
@@ -3446,7 +3463,7 @@ public class JasperCustomServiceImple {
 					String locationName = Slist.stream().filter(f -> f.get("locationId").equals(Integer.parseInt(locationId))).map(r -> r.get("locationName").toString()).findFirst().get();
 					/*String productType = Slist.stream().filter(f -> f.get("locationId").equals(Integer.parseInt(locationId))
 							&& f.get("sectionId").equals(sectionId)).map(t -> t.get("productType")).map(Object::toString).findFirst().orElse("");*/
-					List<BuildingRiskDetails> buildingRiskData = buildingRiskDetailsRepo.findByRequestReferenceNoAndSectionIdAndLocationId(map.get("requestReferenceNo").toString(),sectionId,Integer.parseInt(locationId));
+					List<BuildingRiskDetails> buildingRiskData = buildingRiskDetailsRepo.findByQuoteNoAndSectionIdAndLocationId(map.get("quoteNo").toString(),sectionId,Integer.parseInt(locationId));
 					if(Arrays.asList("217","218").contains(sectionId)) {
 						List<Integer> coverids = coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==Integer.parseInt(sectionId))
 								.map(m -> m.getCoverageType().equalsIgnoreCase("L")?m.getDiscLoadId():m.getCoverId()).distinct()
@@ -3464,7 +3481,7 @@ public class JasperCustomServiceImple {
 									.map(m -> m.getSumInsured()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 							o.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 							o.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
-									&& f.getSectionId()==Integer.parseInt(sectionId))
+									&& Arrays.asList(217,218).contains(f.getSectionId()))
 									.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 							o.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
 									.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
@@ -3477,6 +3494,7 @@ public class JasperCustomServiceImple {
 							lmap.put("assetType", k.getBuildingUsageDesc());
 							lmap.put("wallType", k.getWallTypeDesc());
 							lmap.put("roofType", k.getRoofTypeDesc());
+							lmap.put("descriptionOfRisk", k.getDescriptionOfRisk());
 							lmap.put("sumInsured", k.getSumInsured());
 							lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
@@ -3507,6 +3525,7 @@ public class JasperCustomServiceImple {
 							LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 							lmap.put("locationName", k.getLocationName());
 							lmap.put("firstlosspercent", k.getFirstLossPercent());
+							lmap.put("descriptionOfRisk", k.getDescriptionOfRisk());
 							lmap.put("sumInsured", k.getSumInsured());
 							lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
 							lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
@@ -3687,7 +3706,10 @@ public class JasperCustomServiceImple {
 					    .filter(e -> Arrays.asList(108, 109, 114, 115, 33, 111).contains(Integer.parseInt(e.get("sectionId").toString())))
 					    .map(e -> "BUSINESS INTERRUPTION (" + CDEntry.getKey().toString() + ")".toUpperCase()+ " " +(map.get("policyNo") == null ? "QUOTE SCHEDULE" : "POLICY SCHEDULE"))
 					    .findFirst()
-					    .orElse(CDEntry.getKey().toString().toUpperCase() + " " + (map.get("policyNo") == null ? "QUOTE SCHEDULE" : "POLICY SCHEDULE")));
+					    .orElseGet(() -> CDEntry.getValue().stream()
+					    .filter(e -> Arrays.asList(217,218).contains(Integer.parseInt(e.get("sectionId").toString())))
+					    .map(e -> "ADD ON COVERS"+" " +(map.get("policyNo") == null ? "QUOTE SCHEDULE" : "POLICY SCHEDULE"))
+					    .findFirst().orElse(CDEntry.getKey().toString().toUpperCase() + " " + (map.get("policyNo") == null ? "QUOTE SCHEDULE" : "POLICY SCHEDULE"))));
 				coverMap.put("coverValue", CDEntry.getValue());
 				coverMap.put("quoteNo", map.get("quoteNo")==null?"":map.get("quoteNo").toString());
 				coverMap.put("policyNo", map.get("policyNo")==null?"":map.get("policyNo").toString());
@@ -3697,6 +3719,16 @@ public class JasperCustomServiceImple {
 				coverMap.put("expiryDate", map.get("expiryDate")==null?"":map.get("expiryDate").toString());
 				coverageDetails.add(coverMap);
 			}
+			
+			long count_1 = coverageDetails.stream().anyMatch(f -> f.get("coverId").toString().equalsIgnoreCase("217"))?1:0;
+			if(count_1>0)
+				coverageDetails.removeIf(r -> r.get("coverId").toString().equalsIgnoreCase("218"));
+			
+			long count_2 = coverageDetails.stream().anyMatch(f -> f.get("coverId").toString().equalsIgnoreCase("218"))?1:0;
+			if(count_2>0)
+				coverageDetails.removeIf(r -> r.get("coverId").toString().equalsIgnoreCase("217"));
+				
+			
 			
 			List<EserviceBuildingDetails> buildingDtl = eserviceBuildingDetailsRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(QuoteNo, "Y");
 			String buildingOwnerYn = buildingDtl.isEmpty()?"":buildingDtl.get(0).getBuildingOwnerYn()==null?"":buildingDtl.get(0).getBuildingOwnerYn();

@@ -61,6 +61,7 @@
 		</field>
 		<field name="sumInsured" class="java.math.BigDecimal"/>
 		<field name="tiraCoverNo" class="java.lang.String"/>
+		<field name="descriptionOfRisk" class="java.lang.String"/>
 		<variable name="tot_sumInsured" class="java.math.BigDecimal" calculation="Sum">
 			<variableExpression><![CDATA[$F{sumInsured}]]></variableExpression>
 		</variable>
@@ -140,6 +141,7 @@
 		</field>
 		<field name="sumInsured" class="java.math.BigDecimal"/>
 		<field name="tiraCoverNo" class="java.lang.String"/>
+		<field name="descriptionOfRisk" class="java.lang.String"/>
 		<variable name="tot_sumInsured" class="java.math.BigDecimal" calculation="Sum">
 			<variableExpression><![CDATA[$F{sumInsured}]]></variableExpression>
 		</variable>
@@ -193,6 +195,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
 			<fieldDescription><![CDATA[premium]]></fieldDescription>
 		</field>
+		<field name="tiraCoverNo" class="java.lang.String"/>
 		<variable name="tot_sumInsured" class="java.math.BigDecimal">
 			<variableExpression><![CDATA[$F{moneymajorloss}.add($F{moneycollector}).add($F{moneysafelimit}).add($F{moneyoutofsafe}).add($F{moneydirectorresidence}).add($F{strongroomsi}).add($F{moneyannualestimatelc})]]></variableExpression>
 		</variable>
@@ -575,14 +578,14 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80" uuid="9a17c431-1cc0-410d-9c5c-b0d92d7caa0f">
+					<jr:column width="70" uuid="9a17c431-1cc0-410d-9c5c-b0d92d7caa0f">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:columnHeader height="20" rowSpan="1">
 							<box>
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField>
-								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="80" height="20" uuid="fe4e1144-3935-4633-b915-c1d643e9fac3"/>
+								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="70" height="20" uuid="fe4e1144-3935-4633-b915-c1d643e9fac3"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9" isBold="true"/>
@@ -595,7 +598,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="80" height="20" uuid="8af749de-1fec-4bfb-bf7c-a34a2a295fd2"/>
+								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="70" height="20" uuid="8af749de-1fec-4bfb-bf7c-a34a2a295fd2"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9"/>
@@ -604,19 +607,19 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80" uuid="c3b74bdb-e0c9-4d42-9510-276e5a825df6">
+					<jr:column width="90" uuid="c3b74bdb-e0c9-4d42-9510-276e5a825df6">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
 						<jr:columnHeader height="20" rowSpan="1">
 							<box>
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField>
-								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="80" height="20" uuid="36d5e5ca-2b2c-4de1-933c-dcaae346119b"/>
+								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="90" height="20" uuid="36d5e5ca-2b2c-4de1-933c-dcaae346119b"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA["TiraCoverNo"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Description of risk"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell height="20">
@@ -625,12 +628,12 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="80" height="20" uuid="f932a4e2-55b5-45aa-bf87-4d396d75eb4f"/>
+								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="90" height="20" uuid="f932a4e2-55b5-45aa-bf87-4d396d75eb4f"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{tiraCoverNo}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{descriptionOfRisk}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1026,7 +1029,7 @@
 		<band height="15">
 			<printWhenExpression><![CDATA[$F{coverId}==52]]></printWhenExpression>
 			<componentElement>
-				<reportElement x="20" y="0" width="480" height="15" uuid="10114ad8-c8af-4eb2-9424-fa8876f3b6ee">
+				<reportElement x="20" y="0" width="495" height="15" uuid="10114ad8-c8af-4eb2-9424-fa8876f3b6ee">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -1067,14 +1070,14 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="120" uuid="421b9aa4-81e7-481f-ac2e-edd7f07e1f56">
+					<jr:column width="90" uuid="421b9aa4-81e7-481f-ac2e-edd7f07e1f56">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
 						<jr:columnHeader height="20" rowSpan="1">
 							<box>
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="120" height="20" uuid="0cf24184-faea-4480-8978-3ba937f03349"/>
+								<reportElement x="0" y="0" width="90" height="20" uuid="0cf24184-faea-4480-8978-3ba937f03349"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9" isBold="true"/>
@@ -1087,7 +1090,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="120" height="20" uuid="009a1949-7b14-460a-9c88-104cf6447c44"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="20" uuid="009a1949-7b14-460a-9c88-104cf6447c44"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9"/>
@@ -1096,7 +1099,7 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="110" uuid="66718e5a-7b02-40d1-8d03-4f74b054fa30">
+					<jr:column width="90" uuid="66718e5a-7b02-40d1-8d03-4f74b054fa30">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:tableFooter height="30" rowSpan="1"/>
 						<jr:columnHeader height="20" rowSpan="1">
@@ -1105,7 +1108,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="110" height="20" uuid="8291384f-db0a-4374-be78-1ca487c20630"/>
+								<reportElement x="0" y="0" width="90" height="20" uuid="8291384f-db0a-4374-be78-1ca487c20630"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9" isBold="true"/>
@@ -1118,7 +1121,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="20" uuid="96cb233d-9789-4502-af22-be8b5ff3dc65"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="20" uuid="96cb233d-9789-4502-af22-be8b5ff3dc65"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9"/>
@@ -1127,15 +1130,46 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="110" uuid="b4d99992-aac2-4b3e-91f4-a8eeb714a073">
+					<jr:column width="100" uuid="0be7b18e-0d3e-42b7-8d02-a00b187878c3">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:tableFooter height="30" rowSpan="1"/>
+						<jr:columnHeader height="20" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textField>
+								<reportElement x="0" y="0" width="100" height="20" uuid="f7419ec5-a429-47e0-b7cf-6bc0c01ac613"/>
+								<box leftPadding="2"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Description Of Items"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell height="20">
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="100" height="20" uuid="280c8425-e7a9-4719-97c5-243bbf7813a9"/>
+								<box leftPadding="2" rightPadding="0"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{descriptionOfRisk}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="b4d99992-aac2-4b3e-91f4-a8eeb714a073">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:tableFooter height="30" rowSpan="1">
 							<box>
 								<pen lineWidth="0.0"/>
 								<topPen lineWidth="1.5"/>
 							</box>
 							<textField textAdjust="StretchHeight">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="15" uuid="c8841709-8d39-47b7-b1a1-f80b2b472f29"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="15" uuid="c8841709-8d39-47b7-b1a1-f80b2b472f29"/>
 								<box leftPadding="0" rightPadding="2">
 									<bottomPen lineWidth="0.0"/>
 								</box>
@@ -1145,7 +1179,7 @@
 								<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
 							</textField>
 							<textField textAdjust="StretchHeight">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="110" height="15" uuid="a7427f87-5fa6-4703-b4d2-336fe85898d2"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="90" height="15" uuid="a7427f87-5fa6-4703-b4d2-336fe85898d2"/>
 								<box leftPadding="0" rightPadding="2">
 									<topPen lineWidth="0.0"/>
 								</box>
@@ -1164,7 +1198,7 @@
 								<rightPen lineWidth="1.5"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="110" height="20" uuid="d1b309a5-2c08-468c-b594-7ce3b183d15e"/>
+								<reportElement x="0" y="0" width="90" height="20" uuid="d1b309a5-2c08-468c-b594-7ce3b183d15e"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9" isBold="true"/>
@@ -1181,7 +1215,7 @@
 								<rightPen lineWidth="1.5"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="20" uuid="77d9c41d-d7df-46e3-99c7-2c5170d2ab27"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="20" uuid="77d9c41d-d7df-46e3-99c7-2c5170d2ab27"/>
 								<box leftPadding="0" rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9"/>
@@ -1190,14 +1224,14 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="110" uuid="03c82a84-cdb8-4346-857c-209e7226c48b">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+					<jr:column width="95" uuid="03c82a84-cdb8-4346-857c-209e7226c48b">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
 						<jr:tableFooter height="30" rowSpan="1">
 							<box>
 								<pen lineWidth="0.0"/>
 							</box>
 							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="15" uuid="ca44c65b-c3be-494d-96b7-3fde6b8a0d8f"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="95" height="15" uuid="ca44c65b-c3be-494d-96b7-3fde6b8a0d8f"/>
 								<box rightPadding="2">
 									<pen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
 									<topPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
@@ -1211,7 +1245,7 @@
 								<textFieldExpression><![CDATA[$V{tot_sumInsured}]]></textFieldExpression>
 							</textField>
 							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="110" height="15" uuid="64f8ffe8-fc9a-4eb8-b9a9-fe5fe0e817fe"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="95" height="15" uuid="64f8ffe8-fc9a-4eb8-b9a9-fe5fe0e817fe"/>
 								<box rightPadding="2">
 									<pen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
 									<topPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
@@ -1230,7 +1264,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="110" height="20" uuid="c1a07adc-c3d5-453c-86b4-2224a6a6b404"/>
+								<reportElement x="0" y="0" width="95" height="20" uuid="c1a07adc-c3d5-453c-86b4-2224a6a6b404"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9" isBold="true"/>
@@ -1243,7 +1277,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField textAdjust="StretchHeight" pattern="#,##0.00">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="20" uuid="8a7ca44c-0000-4e31-9be8-6717878f45f2"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="95" height="20" uuid="8a7ca44c-0000-4e31-9be8-6717878f45f2"/>
 								<box leftPadding="0" rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9"/>
@@ -2196,129 +2230,158 @@
 			</componentElement>
 		</band>
 		<band height="190">
-			<printWhenExpression><![CDATA[$F{coverId}==421]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{coverId}==42]]></printWhenExpression>
 			<componentElement>
-				<reportElement x="20" y="0" width="455" height="190" uuid="64cdf3f5-d327-4d34-b5ed-5c6fc98c27e7">
+				<reportElement x="20" y="0" width="495" height="190" uuid="64cdf3f5-d327-4d34-b5ed-5c6fc98c27e7">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Horizontal">
 					<datasetRun subDataset="moneyDetails" uuid="fcaeffee-9539-4d53-8036-db855092de0a">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.moneyDetails")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:listContents height="190" width="455">
-						<textField>
-							<reportElement x="160" y="20" width="295" height="20" uuid="ca760061-aaa6-41b1-99dd-5ef4a4e03b92"/>
+					<jr:listContents height="190" width="495">
+						<textField isBlankWhenNull="true">
+							<reportElement x="395" y="20" width="100" height="20" uuid="ca760061-aaa6-41b1-99dd-5ef4a4e03b92"/>
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement verticalAlignment="Middle">
 								<font size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneymajorloss}]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="0" y="20" width="160" height="20" uuid="5f9370a7-ec7d-4ad6-8078-65fd51e4d989"/>
-							<box leftPadding="2"/>
+							<reportElement stretchType="RelativeToBandHeight" x="130" y="20" width="160" height="20" uuid="5f9370a7-ec7d-4ad6-8078-65fd51e4d989"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
-								<font fontName="SansSerif" size="9" isBold="true"/>
+								<font fontName="SansSerif" size="9" isBold="false"/>
 							</textElement>
 							<textFieldExpression><![CDATA["Cash in transit limit"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="0" y="40" width="160" height="20" uuid="2bad49f2-ad5a-4d95-a448-96c0dfd5de4a"/>
-							<box leftPadding="2"/>
+							<reportElement stretchType="RelativeToBandHeight" x="130" y="40" width="160" height="20" uuid="2bad49f2-ad5a-4d95-a448-96c0dfd5de4a"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
-								<font fontName="SansSerif" size="9" isBold="true"/>
+								<font fontName="SansSerif" size="9" isBold="false"/>
 							</textElement>
 							<textFieldExpression><![CDATA["Custody of collectors"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="160" y="40" width="295" height="20" uuid="3e2609b8-2ed6-4b36-b3ee-d20bff8b4d61"/>
-							<box leftPadding="2" rightPadding="0"/>
+							<reportElement stretchType="RelativeToBandHeight" x="395" y="40" width="100" height="20" uuid="3e2609b8-2ed6-4b36-b3ee-d20bff8b4d61"/>
+							<box leftPadding="2" rightPadding="0">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneycollector}]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="0" y="60" width="160" height="20" uuid="9e2ca7c2-c058-4890-9109-06a0f46322e7"/>
-							<box leftPadding="2"/>
+							<reportElement stretchType="RelativeToBandHeight" x="130" y="60" width="160" height="20" uuid="9e2ca7c2-c058-4890-9109-06a0f46322e7"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
-								<font fontName="SansSerif" size="9" isBold="true"/>
+								<font fontName="SansSerif" size="9" isBold="false"/>
 							</textElement>
 							<textFieldExpression><![CDATA["Safe during working hours"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="160" y="60" width="295" height="20" uuid="7820ee74-bebe-4273-8a79-2632e5d89b8e"/>
-							<box leftPadding="2" rightPadding="0"/>
+							<reportElement stretchType="RelativeToBandHeight" x="395" y="60" width="100" height="20" uuid="7820ee74-bebe-4273-8a79-2632e5d89b8e"/>
+							<box leftPadding="2" rightPadding="0">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneysafelimit}]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="0" y="80" width="160" height="20" uuid="00ecd50d-3267-408a-bdfc-c88bfc166989"/>
-							<box leftPadding="2"/>
+							<reportElement stretchType="RelativeToBandHeight" x="130" y="80" width="160" height="20" uuid="00ecd50d-3267-408a-bdfc-c88bfc166989"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
-								<font fontName="SansSerif" size="9" isBold="true"/>
+								<font fontName="SansSerif" size="9" isBold="false"/>
 							</textElement>
 							<textFieldExpression><![CDATA["Safe outside working hours"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="160" y="80" width="295" height="20" uuid="fed8ecc5-ffdb-4965-829b-09dbc7c537a2"/>
-							<box leftPadding="2" rightPadding="0"/>
+							<reportElement stretchType="RelativeToBandHeight" x="395" y="80" width="100" height="20" uuid="fed8ecc5-ffdb-4965-829b-09dbc7c537a2"/>
+							<box leftPadding="2" rightPadding="0">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneyoutofsafe}]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="0" y="100" width="160" height="20" uuid="8c429d53-ca98-4753-814e-b802af033d51"/>
-							<box leftPadding="2"/>
+							<reportElement stretchType="RelativeToBandHeight" x="130" y="100" width="160" height="20" uuid="8c429d53-ca98-4753-814e-b802af033d51"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
-								<font fontName="SansSerif" size="9" isBold="true"/>
+								<font fontName="SansSerif" size="9" isBold="false"/>
 							</textElement>
 							<textFieldExpression><![CDATA["Residence of director or partner"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="160" y="100" width="295" height="20" uuid="881523b5-6bc5-4a44-9bf5-d930c06be063"/>
-							<box leftPadding="2" rightPadding="0"/>
+							<reportElement stretchType="RelativeToBandHeight" x="395" y="100" width="100" height="20" uuid="881523b5-6bc5-4a44-9bf5-d930c06be063"/>
+							<box leftPadding="2" rightPadding="0">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneydirectorresidence}]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="0" y="120" width="160" height="20" uuid="c0a4cb2c-6f72-48b0-8a4e-91095b63a10e"/>
-							<box leftPadding="2"/>
+							<reportElement stretchType="RelativeToBandHeight" x="130" y="120" width="160" height="20" uuid="c0a4cb2c-6f72-48b0-8a4e-91095b63a10e"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
-								<font fontName="SansSerif" size="9" isBold="true"/>
+								<font fontName="SansSerif" size="9" isBold="false"/>
 							</textElement>
 							<textFieldExpression><![CDATA["Money In Safe"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="160" y="120" width="295" height="20" uuid="e585fda9-de14-4983-b332-4372d2e4a2af"/>
-							<box leftPadding="2" rightPadding="0"/>
+							<reportElement stretchType="RelativeToBandHeight" x="395" y="120" width="100" height="20" uuid="e585fda9-de14-4983-b332-4372d2e4a2af"/>
+							<box leftPadding="2" rightPadding="0">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{strongroomsi}]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="0" y="140" width="160" height="20" uuid="8c455f70-1b36-4695-9eef-b59988251ebf"/>
-							<box leftPadding="2"/>
+							<reportElement stretchType="RelativeToBandHeight" x="130" y="140" width="160" height="20" uuid="8c455f70-1b36-4695-9eef-b59988251ebf"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
-								<font fontName="SansSerif" size="9" isBold="true"/>
+								<font fontName="SansSerif" size="9" isBold="false"/>
 							</textElement>
 							<textFieldExpression><![CDATA["Estimated Annual Cash Carryings"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="160" y="140" width="295" height="20" uuid="61994193-894a-4d18-80f4-1b89a1b82682"/>
-							<box leftPadding="2" rightPadding="0"/>
+							<reportElement stretchType="RelativeToBandHeight" x="395" y="140" width="100" height="20" uuid="61994193-894a-4d18-80f4-1b89a1b82682"/>
+							<box leftPadding="2" rightPadding="0">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
 							<textElement textAlignment="Left" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneyannualestimatelc}]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="0" y="160" width="160" height="15" uuid="30ea1f2d-e6a8-4334-bc0b-2fa0c2a1429f"/>
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="160" width="105" height="15" uuid="30ea1f2d-e6a8-4334-bc0b-2fa0c2a1429f"/>
 							<box leftPadding="0" rightPadding="2">
 								<bottomPen lineWidth="0.0"/>
 							</box>
@@ -2328,7 +2391,7 @@
 							<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="160" y="160" width="214" height="15" uuid="72522bc7-e734-4a10-8237-5efd01b5dbe5"/>
+							<reportElement stretchType="RelativeToBandHeight" x="395" y="160" width="100" height="15" uuid="72522bc7-e734-4a10-8237-5efd01b5dbe5"/>
 							<box leftPadding="2" rightPadding="0">
 								<pen lineWidth="1.5" lineStyle="Double"/>
 								<topPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
@@ -2342,7 +2405,7 @@
 							<textFieldExpression><![CDATA[$V{tot_sumInsured}]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="1" y="175" width="159" height="15" uuid="96432e3c-3f57-429b-ac62-4d788e23b880"/>
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="175" width="105" height="15" uuid="96432e3c-3f57-429b-ac62-4d788e23b880"/>
 							<box leftPadding="0" rightPadding="2">
 								<topPen lineWidth="0.0"/>
 							</box>
@@ -2352,7 +2415,7 @@
 							<textFieldExpression><![CDATA["Total Premium"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="160" y="175" width="214" height="15" uuid="daf35683-8131-42fe-9dcb-80320e0fe51e"/>
+							<reportElement stretchType="RelativeToBandHeight" x="395" y="175" width="100" height="15" uuid="daf35683-8131-42fe-9dcb-80320e0fe51e"/>
 							<box leftPadding="2" rightPadding="0">
 								<pen lineWidth="1.5" lineStyle="Double"/>
 								<topPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
@@ -2366,19 +2429,264 @@
 							<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-							<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="160" height="20" uuid="1bfca9f8-a9b6-4427-b44a-bc2b45e699bb"/>
-							<box leftPadding="2"/>
-							<textElement textAlignment="Left" verticalAlignment="Middle">
+							<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="40" height="20" uuid="b2e3e1ce-9ebd-4c2d-9cbe-afe299f63098"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA["Sno"]]></textFieldExpression>
+						</textField>
+						<textField isBlankWhenNull="true">
+							<reportElement x="0" y="20" width="40" height="20" uuid="f7f0ff04-f222-422c-ac22-31f604eaa82f"/>
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA["1"]]></textFieldExpression>
+						</textField>
+						<textField isBlankWhenNull="true">
+							<reportElement x="0" y="40" width="40" height="20" uuid="86c4daa1-b63d-40d2-b0d4-426df748189c"/>
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA["2"]]></textFieldExpression>
+						</textField>
+						<textField isBlankWhenNull="true">
+							<reportElement x="0" y="60" width="40" height="20" uuid="c4f2518e-6a14-4246-9f58-8feb7d1c9b58"/>
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA["3"]]></textFieldExpression>
+						</textField>
+						<textField isBlankWhenNull="true">
+							<reportElement x="0" y="80" width="40" height="20" uuid="73b0157f-9ce5-45b0-bf8a-147cc9daacbd"/>
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA["4"]]></textFieldExpression>
+						</textField>
+						<textField isBlankWhenNull="true">
+							<reportElement x="0" y="100" width="40" height="20" uuid="c31c2808-2da8-49d8-a937-fb6228aa0087"/>
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA["5"]]></textFieldExpression>
+						</textField>
+						<textField isBlankWhenNull="true">
+							<reportElement x="0" y="120" width="40" height="20" uuid="56e4147a-7b07-4b0c-9bd2-17cfd36c9739"/>
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA["6"]]></textFieldExpression>
+						</textField>
+						<textField isBlankWhenNull="true">
+							<reportElement x="0" y="140" width="40" height="20" uuid="11e5ebc6-06b4-42f5-b30d-a81cb81ba40d"/>
+							<box>
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA["7"]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="40" y="0" width="90" height="20" uuid="19f0a0dc-4606-4676-b7f2-2296ca304db2"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9" isBold="true"/>
 							</textElement>
 							<textFieldExpression><![CDATA["Location Name"]]></textFieldExpression>
 						</textField>
-						<textField>
-							<reportElement x="160" y="0" width="295" height="20" uuid="0c0a0b2e-a022-4a41-8ed2-c3454801ab54"/>
-							<textElement verticalAlignment="Middle">
-								<font size="9"/>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="40" y="20" width="90" height="20" uuid="cd086b4d-4b60-4f9a-9899-9eed8fbbe0b9"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="40" y="40" width="90" height="20" uuid="7626ada0-ab85-4ff7-b445-70564d7d5f7d"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="40" y="60" width="90" height="20" uuid="ba2851b8-8bb2-405c-aa3a-18544dc8157c"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="40" y="80" width="90" height="20" uuid="b335277a-81d1-4ad4-8b65-ffa7832b1aa4"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="40" y="100" width="90" height="20" uuid="05e96d05-e77c-460c-9714-be74b24bb512"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="40" y="120" width="90" height="20" uuid="0b886bde-a639-4999-9b62-824b4071307c"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="40" y="140" width="90" height="20" uuid="106fdc41-06ad-4e19-8bf4-f9088dacc200"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="130" y="0" width="160" height="20" uuid="a2f213e6-9d2e-41c1-9d96-8998db500090"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="0" width="105" height="20" uuid="9fa0b1b3-c53e-45ef-8071-ba9175de483b"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA["TiraCoverNo"]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="395" y="0" width="100" height="20" uuid="22931703-2488-415c-8877-9506e30f2a65"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="20" width="105" height="20" uuid="29d465cc-b940-4163-8539-dbfe24c8f37b"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tiraCoverNo}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="40" width="105" height="20" uuid="8518fecc-71c2-4811-9a00-1d59e70316fd"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tiraCoverNo}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="60" width="105" height="20" uuid="67ddc077-149d-4580-b05f-de7624fe1cca"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tiraCoverNo}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="80" width="105" height="20" uuid="1c8a8a83-e72f-4c01-aeb5-2bde88e2ff60"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tiraCoverNo}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="100" width="105" height="20" uuid="c9f8c820-ca55-439a-83b2-9d092e9c3fcc"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tiraCoverNo}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="120" width="105" height="20" uuid="8d3dae1a-5347-4fcb-bd14-28543855e53a"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tiraCoverNo}]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="290" y="140" width="105" height="20" uuid="775ed753-3d51-465c-a6fb-58c08f052468"/>
+							<box leftPadding="2">
+								<pen lineWidth="1.5" lineColor="#808080"/>
+							</box>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="SansSerif" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tiraCoverNo}]]></textFieldExpression>
 						</textField>
 					</jr:listContents>
 				</jr:list>
