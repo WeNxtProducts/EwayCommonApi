@@ -2616,7 +2616,7 @@
 							<textElement textAlignment="Center" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9" isBold="true"/>
 							</textElement>
-							<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
+							<textFieldExpression><![CDATA["Sum Insured ("+$F{currency}+")"]]></textFieldExpression>
 						</textField>
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 							<reportElement stretchType="RelativeToBandHeight" x="290" y="20" width="105" height="20" uuid="29d465cc-b940-4163-8539-dbfe24c8f37b"/>

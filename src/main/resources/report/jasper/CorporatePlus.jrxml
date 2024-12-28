@@ -222,9 +222,9 @@
 	</field>
 	<variable name="NonMotorTotPremium" class="java.math.BigDecimal"/>
 	<background>
-		<band height="800">
+		<band height="802">
 			<frame>
-				<reportElement x="0" y="50" width="555" height="750" uuid="20af8b71-3c3e-4acf-8638-8e3f14cfa7dc">
+				<reportElement x="0" y="50" width="555" height="752" uuid="20af8b71-3c3e-4acf-8638-8e3f14cfa7dc">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
