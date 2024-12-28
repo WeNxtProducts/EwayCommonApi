@@ -13,6 +13,9 @@ public class RenewalTransactionDetailsRes {
 	@JsonProperty("TranId")
     private String tranId;
 	
+	@JsonProperty("NotificationId")
+    private String notificationId;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @JsonProperty("RequestTime")
     private Date requestTime;

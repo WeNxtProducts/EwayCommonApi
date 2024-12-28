@@ -43,6 +43,7 @@ import com.maan.eway.bean.RenewDriverDetails;
 import com.maan.eway.bean.RenewPremiaPolicy;
 import com.maan.eway.bean.RenewPremiaPolicyRaw;
 import com.maan.eway.bean.RenewQuotePolicy;
+import com.maan.eway.bean.RenewStatusMaster;
 import com.maan.eway.bean.RenewVehicleDetails;
 import com.maan.eway.bean.RenewalNotificationMaster;
 import com.maan.eway.bean.RenewalTransactionDetails;
@@ -57,6 +58,7 @@ import com.maan.eway.renewal.req.RenewDataRequest;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
 import com.maan.eway.renewal.req.RenewalPendingRequest;
 import com.maan.eway.renewal.req.RenewalSearchReq;
+import com.maan.eway.renewal.req.RenewalStatusDetailReq;
 import com.maan.eway.renewal.req.RenewalTransDetailReq;
 import com.maan.eway.renewal.req.RenewalTransactionReq;
 import com.maan.eway.renewal.res.RenewPremiaPolicyRes;
@@ -64,6 +66,7 @@ import com.maan.eway.renewal.res.RenewQuotePolicyResponse;
 import com.maan.eway.renewal.res.RenewalDetailRes;
 import com.maan.eway.renewal.res.RenewalPendingResponse;
 import com.maan.eway.renewal.res.RenewalPolicyDetailsRes;
+import com.maan.eway.renewal.res.RenewalStatusListRes;
 import com.maan.eway.renewal.res.RenewalTransactionDetailsRes;
 import com.maan.eway.renewal.service.RenewalService;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -1289,12 +1292,31 @@ public class RenewalServiceImpl implements RenewalService{
 	                cb.equal(totalCountSubqueryRoot.get("tranId"), root.get("tranId"))
 	            );
 	        
+	        Subquery<String> notifyId = cq.subquery(String.class);
+	        Root<RenewalNotificationMaster> rnm = notifyId.from(RenewalNotificationMaster.class);
+	        
+	        Subquery<Long> amendSubquery = cq.subquery(Long.class);
+	        Root<RenewalNotificationMaster> rnm1 = amendSubquery.from(RenewalNotificationMaster.class);
+	        amendSubquery.select(cb.max(rnm1.get("notificationId")))
+	            .where(cb.equal(rnm1.get("tranId"), rnm.get("tranId")));
+
+	        
+	        
+	        notifyId.select(rnm.get("notificationId").as(String.class))
+	            .where(
+	                cb.equal(rnm.get("tranId"), root.get("tranId")),
+	                		cb.equal(rnm.get("notificationId"), amendSubquery)
+	            );
+	        
+	        
+	        
 			// Define predicates for the query
 			//Predicate tranIdPredicate = cb.equal(renewalTransactionDetailsRoot.get("tranId"), req.getTranId());
 
 			// Select fields and subqueries in multiselect
 			cq.multiselect(
 					root.get("tranId").alias("tranId"),
+					notifyId.alias("notificationId"),
 					root.get("requestTime").alias("requestTime"),
 					root.get("responseTime").alias("responseTime"),
 					totalCountSubquery.alias("totalCount"),
@@ -1709,6 +1731,133 @@ public class RenewalServiceImpl implements RenewalService{
 			e.printStackTrace();
 		}
 		return response;
+	}
+
+	@Override
+	public CommonRes getRenewalStatusList(RenewalTransDetailReq req) {
+		CommonRes data=new CommonRes();
+		List<RenewalStatusListRes> res = new ArrayList<RenewalStatusListRes>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RenewalStatusListRes> cq = cb.createQuery(RenewalStatusListRes.class);
+
+			Root<RenewQuotePolicy> root = cq.from(RenewQuotePolicy.class);
+
+			Subquery<String> statusDesc = cq.subquery(String.class);
+			Root<RenewStatusMaster> statusRoot = statusDesc.from(RenewStatusMaster.class);
+			statusDesc.select(statusRoot.get("statusDesc"))
+			 	.where(
+				        cb.equal(statusRoot.get("currentStatusCode"), root.get("currentStatusCode")),
+				        cb.equal(statusRoot.get("status"), "Y")
+				    );
+
+			Subquery<Integer> displayOrderSubquery = cq.subquery(Integer.class);
+			Root<RenewStatusMaster> displayOrderRoot = displayOrderSubquery.from(RenewStatusMaster.class);
+			displayOrderSubquery.select(displayOrderRoot.get("displayOrder"))
+			    .where(
+			        cb.equal(displayOrderRoot.get("currentStatusCode"), root.get("currentStatusCode")),
+			        cb.equal(displayOrderRoot.get("status"), "Y")
+			    );
+		
+	        
+			
+			cq.multiselect(
+					root.get("currentStatusCode").alias("statusCode"),
+					statusDesc.alias("statusDescription"),
+				    cb.count(root).as(String.class).alias("count"),
+				    displayOrderSubquery.as(String.class).alias("displayOrder")
+				    );
+
+			// Apply the predicates
+			cq.where( cb.equal(root.get("tranId"), req.getTranId()),cb.equal(root.get("branchCode"), req.getBranchCode()));
+			
+			// Apply the order by clause
+			cq.groupBy(root.get("currentStatusCode"));
+	        cq.orderBy(cb.asc(displayOrderSubquery));
+	        
+			// Execute the query
+			res =  em.createQuery(cq).getResultList();
+			
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+        return data;
+	}
+
+	@Override
+	public CommonRes getRenewalStatusDetailList(RenewalStatusDetailReq req) {
+		CommonRes data = new CommonRes();
+		try {
+			RenewalPendingResponse res = new RenewalPendingResponse();
+			List<RenewalDetailRes> renewal = getStatusDetailList(req);
+			res.setRenewalDetailRes(renewal);
+			if(renewal != null ) {
+				int count = renewal.size();
+				res.setTotalCount(count);
+			}
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	private List<RenewalDetailRes> getStatusDetailList(RenewalStatusDetailReq req) {
+		 List<RenewalDetailRes> res = new ArrayList<RenewalDetailRes>();
+			
+			try {
+		        
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<RenewalDetailRes> query = cb.createQuery(RenewalDetailRes.class);
+
+				// Find All
+				Root<RenewQuotePolicy> r = query.from(RenewQuotePolicy.class);
+							
+				// Select
+				query.multiselect(
+						r.get("oldpolicyNo").alias("oldpolicyNo"),
+						r.get("oldquoteNo").alias("oldquoteNo"),
+						r.get("customerName").alias("customerName"),
+						r.get("oldstartDate").alias("inceptionDate"),
+						r.get("oldendDate").alias("expiryDate"),
+						r.get("newpolicyNumber").alias("newpolicyNumber"),
+						r.get("currentStatus").alias("currentStatus"),
+						r.get("registrationNumber").alias("registrationNo")
+
+						);
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(r.get("newendDate")));
+				
+				List<Predicate>	predicate=new ArrayList<Predicate>();
+				predicate.add(cb.equal(r.get("companyId"), req.getInsuranceId()));	
+				predicate.add(cb.equal(r.get("tranId"), req.getTranId()));
+				predicate.add(cb.equal(r.get("currentStatusCode"), req.getStatusCode()));
+				
+				predicate.add(cb.equal(r.get("branchCode"), req.getBranchCode()));
+					
+		
+				query.where(predicate.toArray(new Predicate[0])).orderBy(orderList);
+				
+
+				// Get Result
+				TypedQuery<RenewalDetailRes> result = em.createQuery(query);
+				res = result.getResultList();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return res;
 	}
 
 }

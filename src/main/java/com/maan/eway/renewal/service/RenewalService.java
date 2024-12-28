@@ -8,6 +8,7 @@ import com.maan.eway.renewal.req.RenewDataRequest;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
 import com.maan.eway.renewal.req.RenewalPendingRequest;
 import com.maan.eway.renewal.req.RenewalSearchReq;
+import com.maan.eway.renewal.req.RenewalStatusDetailReq;
 import com.maan.eway.renewal.req.RenewalTransDetailReq;
 import com.maan.eway.renewal.req.RenewalTransactionReq;
 import com.maan.eway.renewal.res.RenewPremiaPolicyRes;
@@ -53,5 +54,9 @@ public interface RenewalService {
 	List<RenewDataRequest> getPolicyRequestList();
 
 	List<RenewPremiaPolicyRes> searchRenewPremiaPolicy(RenewalSearchReq req);
+
+	CommonRes getRenewalStatusList(RenewalTransDetailReq request);
+
+	CommonRes getRenewalStatusDetailList(RenewalStatusDetailReq request);
 
 }

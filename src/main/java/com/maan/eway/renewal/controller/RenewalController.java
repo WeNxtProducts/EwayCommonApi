@@ -16,6 +16,7 @@ import com.maan.eway.renewal.req.PullrenewalReq;
 import com.maan.eway.renewal.req.RenewalCopyQuoteReq;
 import com.maan.eway.renewal.req.RenewalPendingRequest;
 import com.maan.eway.renewal.req.RenewalSearchReq;
+import com.maan.eway.renewal.req.RenewalStatusDetailReq;
 import com.maan.eway.renewal.req.RenewalTransDetailReq;
 import com.maan.eway.renewal.req.RenewalTransactionReq;
 import com.maan.eway.renewal.res.RenewPremiaPolicyRes;
@@ -151,5 +152,22 @@ public class RenewalController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PostMapping("/StatusList")
+	public ResponseEntity<CommonRes> getRenewalStatusList(@RequestBody RenewalTransDetailReq request) {
+	 	CommonRes data = renewalservice.getRenewalStatusList(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	@PostMapping("/StatusDetaillist")
+	public ResponseEntity<CommonRes> getRenewalStatusDetailList(@RequestBody RenewalStatusDetailReq request) {
+	 	CommonRes data = renewalservice.getRenewalStatusDetailList(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }
