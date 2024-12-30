@@ -43,4 +43,8 @@ public interface LoginUserInfoRepository  extends JpaRepository<LoginUserInfo,Lo
 
 	int countByCompanyNameAndIdTypeAndIdNumber(String companyName, String idType, String idNumber);
 
+
+
+	List<LoginUserInfo> findByCoreAppBrokerCode(String sourceCode);
+
 }

@@ -143,4 +143,7 @@ public class RenewQuotePolicyResponse {
 
     @JsonProperty("Remarks")
     private String remarks;
+    
+    @JsonProperty("RegistrationNo")
+	private String registrationNo;
 }

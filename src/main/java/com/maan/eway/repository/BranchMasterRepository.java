@@ -57,6 +57,8 @@ public interface BranchMasterRepository  extends JpaRepository<BranchMaster,Bran
    	List<Map<String,Object>> getPremiumReportDetailsCount(String productId,String branchCode,String startDate,String endDate,String loginId,String userType,String code);
 
 	List<BranchMaster> findByCompanyId(String string);
+
+	List<BranchMaster> findByCoreAppCodeAndCompanyId(String divisionCode, String companyId);
    	  
 	
 	

@@ -27,9 +27,6 @@ public class RenewalTransactionDetailsRes {
 	@JsonProperty("TotalCount")
     private String totalCount;
 	
-	@JsonProperty("SuccessCount")
-    private String successCount;
-	
 	@JsonProperty("ConvertedCount")
     private String convertedCount;
 	

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.ValuationIntegration;
 import com.maan.eway.integration.req.ValuationDetailsReq;
 import com.maan.eway.integration.req.ValuationListReq;
@@ -18,6 +19,7 @@ import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.res.ValuationListRes;
 import com.maan.eway.integration.service.ValuationService;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.MotorDataDetailsRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -33,7 +35,7 @@ public class ValuationServiceImpl implements ValuationService {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
-	private EServiceMotorDetailsRepository repo;
+	private MotorDataDetailsRepository repo;
 	@Autowired
 	private SolvitValuation solvit;
 	@Override
@@ -41,7 +43,7 @@ public class ValuationServiceImpl implements ValuationService {
 		PremiaResponse resp=new PremiaResponse();
 		String valCompanyId="";
 		try {
-			List<EserviceMotorDetails>list=repo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			List<MotorDataDetails>list=repo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			valCompanyId=list.get(0).getValCompanyId();
 			if(!CollectionUtils.isEmpty(list)) {
 			if("1".equals(valCompanyId))

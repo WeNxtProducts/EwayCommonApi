@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
@@ -69,6 +70,7 @@ import com.maan.eway.renewal.res.RenewalPolicyDetailsRes;
 import com.maan.eway.renewal.res.RenewalStatusListRes;
 import com.maan.eway.renewal.res.RenewalTransactionDetailsRes;
 import com.maan.eway.renewal.service.RenewalService;
+import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
@@ -180,6 +182,9 @@ public class RenewalServiceImpl implements RenewalService{
 	
 	@Autowired
 	private MotorMakeMasterRepository  mmrepo;
+	
+	@Autowired
+	private BranchMasterRepository branchRepo;
 	
 	private Logger log=LogManager.getLogger(RenewalServiceImpl.class);
 	@Value(value = "${spring.jpa.database}")
@@ -1249,17 +1254,7 @@ public class RenewalServiceImpl implements RenewalService{
 			// Root for RenewalTransactionDetails table
 			Root<RenewalTransactionDetails> root = cq.from(RenewalTransactionDetails.class);
 
-			// Subquery for success count
-			Subquery<String> successCountSubquery = cq.subquery(String.class);
-			Root<RenewQuotePolicy> successSubqueryRoot = successCountSubquery.from(RenewQuotePolicy.class);
-			successCountSubquery.select(cb.count(successSubqueryRoot).as(String.class))
-			    .where(
-			        cb.equal(successSubqueryRoot.get("tranId"), root.get("tranId")),
-			        cb.equal(successSubqueryRoot.get("currentStatusCode"), "RS"),
-			        cb.equal(successSubqueryRoot.get("companyId"), req.getInsuranceId()),
-			        cb.equal(successSubqueryRoot.get("branchCode"), req.getBranchCode())
-			        
-			    );
+			
 
 			// Subquery for Converted count
 			Subquery<String> convertedCountSubquery = cq.subquery(String.class);
@@ -1278,7 +1273,7 @@ public class RenewalServiceImpl implements RenewalService{
 			pendingCountSubquery.select(cb.count(pendingSubqueryRoot).as(String.class))
 			    .where(
 			        cb.equal(pendingSubqueryRoot.get("tranId"), root.get("tranId")),
-			        cb.notEqual(pendingSubqueryRoot.get("currentStatusCode"), "RS"),
+			        //cb.notEqual(pendingSubqueryRoot.get("currentStatusCode"), "RS"),
 			        cb.notEqual(pendingSubqueryRoot.get("currentStatusCode"), "CS"),
 			        cb.equal(pendingSubqueryRoot.get("companyId"), req.getInsuranceId()),
 			        cb.equal(pendingSubqueryRoot.get("branchCode"), req.getBranchCode())
@@ -1289,7 +1284,8 @@ public class RenewalServiceImpl implements RenewalService{
 	        Root<RenewQuotePolicy> totalCountSubqueryRoot = totalCountSubquery.from(RenewQuotePolicy.class);
 	        totalCountSubquery.select(cb.count(totalCountSubqueryRoot).as(String.class))
 	            .where(
-	                cb.equal(totalCountSubqueryRoot.get("tranId"), root.get("tranId"))
+	                cb.equal(totalCountSubqueryRoot.get("tranId"), root.get("tranId")),
+	                cb.equal(totalCountSubqueryRoot.get("branchCode"), req.getBranchCode())
 	            );
 	        
 	        Subquery<String> notifyId = cq.subquery(String.class);
@@ -1320,7 +1316,7 @@ public class RenewalServiceImpl implements RenewalService{
 					root.get("requestTime").alias("requestTime"),
 					root.get("responseTime").alias("responseTime"),
 					totalCountSubquery.alias("totalCount"),
-					successCountSubquery.alias("successCount"),
+					//successCountSubquery.alias("successCount"),
 					convertedCountSubquery.alias("convertedCount"),
 					pendingCountSubquery.alias("pendingCount")
 			);
@@ -1434,8 +1430,8 @@ public class RenewalServiceImpl implements RenewalService{
 		        response.setBranchName(policy.getBranchName());
 		        response.setViewedDate(policy.getViewDate());
 		        response.setRemarks(policy.getRemarks());
-
-			    responseList.add(response);
+		        response.setRegistrationNo(policy.getRegistrationNumber());	
+		        responseList.add(response);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1448,7 +1444,7 @@ public class RenewalServiceImpl implements RenewalService{
 	    CommonRes data = new CommonRes();
 	    try {
 	        // Fetch the list of RenewQuotePolicy where status is neither "RS" nor "CS" (Pending)
-	        List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCompanyIdAndBranchCodeAndCurrentStatusCodeNotIn(req.getTranId(),req.getInsuranceId(),req.getBranchCode(),Arrays.asList("RS", "CS"));
+	        List<RenewQuotePolicy> list = renewQuotePolicyRepo.findByTranIdAndCompanyIdAndBranchCodeAndCurrentStatusCodeNotIn(req.getTranId(),req.getInsuranceId(),req.getBranchCode(),Arrays.asList("CS"));
 	        // Map the entities to response objects
 	        List<RenewQuotePolicyResponse> res = mapRenewQuotePolicyResponse(list);
 
@@ -1615,6 +1611,7 @@ public class RenewalServiceImpl implements RenewalService{
 				rpp.setCompanyId(req.getInsuranceId());
 				rpp.setEntryDate(new Date());		
 				rppRepo.saveAndFlush(rpp);
+				rqprRepo.delete(data);
 			} 
 		}
 		}catch (Exception e) {
@@ -1663,9 +1660,17 @@ public class RenewalServiceImpl implements RenewalService{
    			 	data.setCurrentStatus("RENEW-SUCCESS");
    			 	data.setCurrentStatusCode("RS");
 				
-				data.setLoginId("kenyabroker1");
+   			 	List<LoginUserInfo> loginUserData = loginUserRepo.findByCoreAppBrokerCode(rdata.getSourceCode());
+   			 	if(!CollectionUtils.isEmpty(loginUserData) ) {
+   			 	data.setLoginId(loginUserData.get(0).getLoginId());
+   			 	}
+   			 	List<BranchMaster> branch=branchRepo.findByCoreAppCodeAndCompanyId(rdata.getDivisionCode(),rdata.getCompanyId());
+   			 	if(!CollectionUtils.isEmpty(branch) ) {
+   			 	data.setBranchCode(branch.get(0).getBranchCode());
+   			 	data.setBranchName(branch.get(0).getBranchName());
+   			 	}
+   			 
 				data.setApplicationId("1"); 
-				data.setBranchCode("60");
 				data.setProductCode("5");
 				
 				renewQuotePolicyRepository.saveAndFlush(data);
