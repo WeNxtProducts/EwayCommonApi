@@ -266,9 +266,9 @@ public Integer getMasterTableCount(String companyId, String branchCode , String 
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<PaymentMaster> ocpm1 = effectiveDate.from(PaymentMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"),b.get("paymentMasterId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
@@ -634,9 +634,9 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		orderList.add(cb.asc(c.get("paymentMasterId")));
 		
 		// Effective Date Start Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<PaymentMaster> ocpm1 = effectiveDate.from(PaymentMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(c.get("paymentMasterId"),ocpm1.get("paymentMasterId"));
 		Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 		Predicate a3 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -648,9 +648,9 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a15);
 		
 		// Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<PaymentMaster> ocpm2 = effectiveDate2.from(PaymentMaster.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		Predicate a8 = cb.equal(c.get("paymentMasterId"),ocpm2.get("paymentMasterId"));
 		Predicate a9 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 		Predicate a10 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
@@ -794,16 +794,16 @@ public synchronized List<ListItemValue> getPaymentItems(String insuranceId , Str
 		
 		
 		// Effective Date Start Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		effectiveDate.where(a1,a2);
 		// Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		effectiveDate2.where(a3,a4);

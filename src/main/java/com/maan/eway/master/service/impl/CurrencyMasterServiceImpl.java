@@ -324,9 +324,9 @@ public CurrencyMaster getCurrencyShortCodeRes(String currencyShortCode, String c
 		Root<CurrencyMaster> s = query.from(CurrencyMaster.class);
 		
 		// State Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate c1 = cb.equal(ocpm1.get("currencyId"), s.get("currencyId"));
 		Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
 		Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -371,9 +371,9 @@ public CurrencyMaster getCurrencyNameRes(String currencyName, String companyId) 
 		Root<CurrencyMaster> s = query.from(CurrencyMaster.class);
 		
 		// State Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate c1 = cb.equal(ocpm1.get("currencyId"), s.get("currencyId"));
 		Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
 		Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -423,9 +423,9 @@ public Long getMasterTableCount() {
 		query.multiselect(cb.count(b));
 
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("currencyId"), b.get("currencyId"));
 		effectiveDate.where(a1);
 
@@ -609,9 +609,9 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		Subquery<Long> exchangeRate = query.subquery(Long.class);
 		Root<ExchangeMaster> ex = exchangeRate.from(ExchangeMaster.class);
 		// Exchange Effective Date Start Max Filter
-		Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate3 = query.subquery(Date.class);
 		Root<ExchangeMaster> ocpm3 = effectiveDate3.from(ExchangeMaster.class);
-		effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
+		effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ex.get("exchangeId"),ocpm3.get("exchangeId"));
 		Predicate a2 = cb.equal(ex.get("currencyId"),ocpm3.get("currencyId"));
 		Predicate a15 = cb.equal(ex.get("companyId"),ocpm3.get("companyId"));
@@ -619,9 +619,9 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		effectiveDate3.where(a1,a2,a3,a15);
 		
 		// Exhange Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate4 = query.subquery(Date.class);
 		Root<ExchangeMaster> ocpm4 = effectiveDate4.from(ExchangeMaster.class);
-		effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd")));
+		effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd").as(Date.class)));
 		Predicate a4 = cb.equal(ex.get("exchangeId"),ocpm4.get("exchangeId"));
 		Predicate a5 = cb.equal(ex.get("currencyId"),ocpm4.get("currencyId"));
 		Predicate a16 = cb.equal(ex.get("companyId"),ocpm4.get("companyId"));
@@ -653,9 +653,9 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		orderList.add(cb.asc(c.get("currencyName")));
 		
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		jakarta.persistence.criteria.Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
 		jakarta.persistence.criteria.Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		jakarta.persistence.criteria.Predicate a18 = cb.equal(c.get("status"),ocpm1.get("status") );
@@ -664,9 +664,9 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		effectiveDate.where(a11,a12,a18,a22);
 		
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<CurrencyMaster> ocpm2 = effectiveDate2.from(CurrencyMaster.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		jakarta.persistence.criteria.Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
 		jakarta.persistence.criteria.Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		jakarta.persistence.criteria.Predicate a19 = cb.equal(c.get("status"),ocpm2.get("status") );
@@ -880,9 +880,9 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		Subquery<Long> exchangeRate = query.subquery(Long.class);
 		Root<ExchangeMaster> ex = exchangeRate.from(ExchangeMaster.class);
 		// Exchange Effective Date Start Max Filter
-		Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate3 = query.subquery(Date.class);
 		Root<ExchangeMaster> ocpm3 = effectiveDate3.from(ExchangeMaster.class);
-		effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
+		effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ex.get("exchangeId"),ocpm3.get("exchangeId"));
 		Predicate a2 = cb.equal(ex.get("currencyId"),ocpm3.get("currencyId"));
 		Predicate a15 = cb.equal(ex.get("companyId"),ocpm3.get("companyId"));
@@ -890,9 +890,9 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		effectiveDate3.where(a1,a2,a3,a15);
 		
 		// Exhange Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate4 = query.subquery(Date.class);
 		Root<ExchangeMaster> ocpm4 = effectiveDate4.from(ExchangeMaster.class);
-		effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd")));
+		effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd").as(Date.class)));
 		Predicate a4 = cb.equal(ex.get("exchangeId"),ocpm4.get("exchangeId"));
 		Predicate a5 = cb.equal(ex.get("currencyId"),ocpm4.get("currencyId"));
 		Predicate a16 = cb.equal(ex.get("companyId"),ocpm4.get("companyId"));
@@ -925,9 +925,9 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		orderList.add(cb.asc(c.get("companyId")));
 		
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		jakarta.persistence.criteria.Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
 		jakarta.persistence.criteria.Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		jakarta.persistence.criteria.Predicate a18 = cb.equal(c.get("status"),ocpm1.get("status") );
@@ -936,9 +936,9 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		effectiveDate.where(a11,a12,a18,a22);
 		
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<CurrencyMaster> ocpm2 = effectiveDate2.from(CurrencyMaster.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		jakarta.persistence.criteria.Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
 		jakarta.persistence.criteria.Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		jakarta.persistence.criteria.Predicate a19 = cb.equal(c.get("status"),ocpm2.get("status") );
@@ -1020,17 +1020,17 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);

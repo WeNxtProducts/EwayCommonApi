@@ -212,9 +212,9 @@ try {
 	orderList.add(cb.asc(c.get("branchCode")));
 	
 	// Effective Date Start Max Filter
-	Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+	Subquery<Date> effectiveDate = query.subquery(Date.class);
 	Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
-	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 	Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
 	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 	Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -224,9 +224,9 @@ try {
 	//Predicate a21=cb.or(a9,a10);
 	effectiveDate.where(a1,a2,a5,a6,a9);
 	// Effective Date End Max Filter
-	Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+	Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 	Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
-	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 	Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
 	Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 	Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -331,9 +331,9 @@ public List<IndustryDropDownRes> getOccupationDetails(OccupationDropDownReq req)
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.asc(c.get("branchCode")));
 		
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -342,9 +342,9 @@ public List<IndustryDropDownRes> getOccupationDetails(OccupationDropDownReq req)
 		Predicate a10 = cb.equal(c.get("categoryId"),ocpm1.get("categoryId"));
 		effectiveDate.where(a1,a2,a5,a6,a9,a10);
 		// Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -577,9 +577,9 @@ public SuccessRes insertOccupation(OccupationMasterSaveReq req) {
 			query.select(b);
 
 			//Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -861,14 +861,14 @@ try {
 	// Effective Date Start Max Filter
 	Subquery<Long> effectiveDate = query.subquery(Long.class);
 	Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
-	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 	Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
 	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 	effectiveDate.where(a1,a2);
 	// Effective Date End Max Filter
 	Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 	Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
-	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 	Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
 	Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 	effectiveDate2.where(a3,a4);
@@ -992,16 +992,16 @@ public List<DropDownRes> getAcExecutivesDropdown(AcExecutiveDropDownReq req) {
 		orderList.add(cb.desc(c.get("effectiveDateStart")));
 		
 		// Effective Date Start Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<AcExecutiveMaster> ocpm1 = effectiveDate.from(AcExecutiveMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(c.get("acExecutiveId"),ocpm1.get("acExecutiveId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		effectiveDate.where(a1,a2);
 		// Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<AcExecutiveMaster> ocpm2 = effectiveDate2.from(AcExecutiveMaster.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		Predicate a3 = cb.equal(c.get("acExecutiveId"),ocpm2.get("acExecutiveId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		effectiveDate2.where(a3,a4);

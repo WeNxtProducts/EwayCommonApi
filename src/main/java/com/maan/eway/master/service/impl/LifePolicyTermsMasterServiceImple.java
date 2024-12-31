@@ -390,9 +390,9 @@ public class LifePolicyTermsMasterServiceImple implements LifePolicyTermsMasterS
 			query.select(c);
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<LifePolicytermsMaster> ocpm1 = effectiveDate.from(LifePolicytermsMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 =  cb.equal(ocpm1.get("policyTerms"), c.get("policyTerms"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -400,9 +400,9 @@ public class LifePolicyTermsMasterServiceImple implements LifePolicyTermsMasterS
 			Predicate a10 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			effectiveDate.where(a1,a2,a5,a6,a10);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<LifePolicytermsMaster> ocpm2 = effectiveDate2.from(LifePolicytermsMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(ocpm2.get("policyTerms"), c.get("policyTerms"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));

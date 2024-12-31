@@ -1,6 +1,6 @@
 package com.maan.eway.master.service.impl;
 
-import java.sql.Timestamp;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -226,7 +226,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 //				// Effective Date Max Filter
 //				Subquery<Long> effectiveDate = query.subquery(Long.class);
 //				Root<MotorMakeMaster> ocpm1 = effectiveDate.from(MotorMakeMaster.class);
-//				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+//				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 //				Predicate a1 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
 //				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 //				
@@ -329,9 +329,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<MotorMakeMaster> ocpm1 = effectiveDate.from(MotorMakeMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -591,9 +591,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				
 				
 				// Effective Date Start Max Filter
-				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate = query.subquery(Date.class);
 				Root<MotorMakeModelMaster> ocpm1 = effectiveDate.from(MotorMakeModelMaster.class);
-				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 				Predicate a1 = cb.equal(c.get("makeId"),ocpm1.get("makeId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -602,9 +602,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				Predicate a11 = cb.equal(c.get("modelId"),ocpm1.get("modelId"));
 				effectiveDate.where(a1,a2,a5,a6,a9,a11);
 				// Effective Date End Max Filter
-				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 				Root<MotorMakeModelMaster> ocpm2 = effectiveDate2.from(MotorMakeModelMaster.class);
-				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 				Predicate a3 = cb.equal(c.get("makeId"),ocpm2.get("makeId"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 				Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -618,18 +618,18 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				Subquery<Long> makeId = query.subquery(Long.class);
 				Root<MotorMakeMaster> m = makeId.from(MotorMakeMaster.class);
 				
-				Subquery<Timestamp> effectiveDate3 = makeId.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate3 = makeId.subquery(Date.class);
 				Root<MotorMakeMaster> ocpm3 = effectiveDate3.from(MotorMakeMaster.class);
-				effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
+				effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart").as(Date.class)));
 				Predicate a13 = cb.equal(m.get("makeId"),ocpm3.get("makeId"));
 				Predicate a14 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
 				Predicate a15 = cb.equal(m.get("companyId"),ocpm3.get("companyId"));
 				Predicate a16 = cb.equal(m.get("branchCode"),ocpm3.get("branchCode"));
 				effectiveDate3.where(a13,a14,a15,a16);
 				// Effective Date End Max Filter
-				Subquery<Timestamp> effectiveDate4 = makeId.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate4 = makeId.subquery(Date.class);
 				Root<MotorMakeMaster> ocpm4 = effectiveDate4.from(MotorMakeMaster.class);
-				effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd")));
+				effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd").as(Date.class)));
 				Predicate a17 = cb.equal(m.get("makeId"),ocpm4.get("makeId"));
 				Predicate a18 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
 				Predicate a19 = cb.equal(m.get("companyId"),ocpm4.get("companyId"));
@@ -696,18 +696,18 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				
 				
 				// Effective Date Start Max Filter
-				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate = query.subquery(Date.class);
 				Root<MotorMakeMaster> ocpm1 = effectiveDate.from(MotorMakeMaster.class);
-				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 				Predicate a1 = cb.equal(c.get("makeId"),ocpm1.get("makeId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 				Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 				effectiveDate.where(a1,a2,a5,a6);
 				// Effective Date End Max Filter
-				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 				Root<MotorMakeMaster> ocpm2 = effectiveDate2.from(MotorMakeMaster.class);
-				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 				Predicate a3 = cb.equal(c.get("makeId"),ocpm2.get("makeId"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 				Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));

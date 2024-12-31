@@ -2545,7 +2545,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()));
 			
 			for (CoverIdReq2 covReq :    req.getCoverIdList()  ) {
-			
+				System.out.println("CoverId : "+covReq.getCoverId());
+				System.out.println("SubCoverId : "+covReq.getSubCoverId());
+				
 				if(StringUtils.isBlank(covReq.getSubCoverYn()) || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
 					List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
 					
@@ -2639,8 +2641,14 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						}
 					}
 				} else {
+					System.out.println("CoverId : "+covReq.getCoverId());
+					System.out.println("SubCoverId : "+covReq.getSubCoverId());
+					
 					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
+					System.out.println("CoverId : "+filterSubCover.get(0).getCoverId());
+					System.out.println("SubCoverId : "+filterSubCover.get(0).getSubCoverId());
 					if(filterSubCover.size()>0 ) {
+						
 						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
 						updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
 				//		updateSubCover.setActualRate(updateSubCover.getRate());

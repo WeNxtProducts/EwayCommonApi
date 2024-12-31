@@ -350,9 +350,9 @@ public Integer getMasterTableCount(String companyId,  String productId, String s
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<ExclusionMaster> ocpm1 = effectiveDate.from(ExclusionMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("exclusionId"),b.get("exclusionId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
@@ -704,9 +704,9 @@ try {
 	orderList.add(cb.asc(c.get("exclusionDescription")));
 	
 	// Effective Date Start Max Filter
-	Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+	Subquery<Date> effectiveDate = query.subquery(Date.class);
 	Root<ExclusionMaster> ocpm1 = effectiveDate.from(ExclusionMaster.class);
-	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 	Predicate a1 = cb.equal(c.get("exclusionId"),ocpm1.get("exclusionId"));
 	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 	Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -716,9 +716,9 @@ try {
 
 	effectiveDate.where(a1,a2,a5,a6,a9,a10);
 	// Effective Date End Max Filter
-	Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+	Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 	Root<ExclusionMaster> ocpm2 = effectiveDate2.from(ExclusionMaster.class);
-	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 	Predicate a3 = cb.equal(c.get("exclusionId"),ocpm2.get("exclusionId"));
 	Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 	Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -991,9 +991,9 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		query.select(b);
 
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<ExclusionMaster> ocpm1 = effectiveDate.from(ExclusionMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 		Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
@@ -1003,9 +1003,9 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		effectiveDate.where(a1,a2,a3,a4,a5,a11);
 
 		// Effective Date End
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<ExclusionMaster> ocpm2 = effectiveDate2.from(ExclusionMaster.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 		Predicate a7 = cb.equal(ocpm2.get("productId"), b.get("productId"));
 		Predicate a8 = cb.equal(ocpm2.get("sectionId"), b.get("sectionId"));
@@ -1021,9 +1021,9 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		// Company Product Effective Date Max Filter
 		Subquery<Long> clause = query.subquery(Long.class);
 		Root<ExclusionMaster> cs = clause.from(ExclusionMaster.class);
-		Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate3 = query.subquery(Date.class);
 		Root<ExclusionMaster> ocpm3 = effectiveDate3.from(ExclusionMaster.class);
-		effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
+		effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart").as(Date.class)));
 		Predicate eff1 = cb.equal(ocpm3.get("companyId"), cs.get("companyId"));
 		Predicate eff2 = cb.equal(ocpm3.get("productId"), cs.get("productId"));
 		Predicate eff3 = cb.equal(ocpm3.get("sectionId"), cs.get("sectionId"));
@@ -1031,9 +1031,9 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		Predicate eff5 = cb.equal(ocpm3.get("exclusionId"), cs.get("exclusionId"));
 		effectiveDate3.where(eff1,eff2,eff3,eff4);
 		
-		Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate4 = query.subquery(Date.class);
 		Root<ExclusionMaster> ocpm4 = effectiveDate4.from(ExclusionMaster.class);
-		effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd")));
+		effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd").as(Date.class)));
 		Predicate eff6 = cb.equal(ocpm4.get("companyId"), cs.get("companyId"));
 		Predicate eff7 = cb.equal(ocpm4.get("productId"), cs.get("productId"));
 		Predicate eff8 = cb.equal(ocpm4.get("sectionId"), cs.get("sectionId"));

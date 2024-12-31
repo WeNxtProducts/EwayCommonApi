@@ -161,18 +161,18 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 			effectiveDate.where(a1,a2,a3);
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId") );
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
@@ -271,9 +271,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			query.select(b);
 
 			//Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<EndtTypeMaster> ocpm1 = effectiveDate.from(EndtTypeMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a2 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.equal(b.get("productId"),ocpm1.get("productId"));
@@ -281,9 +281,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			effectiveDate.where(a1,a2,a3,a4);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<EndtTypeMaster> ocpm2 = effectiveDate2.from(EndtTypeMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a6 = cb.equal(b.get("endtTypeId"),ocpm2.get("endtTypeId"));
 			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a8 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
@@ -334,9 +334,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
@@ -525,18 +525,18 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 			effectiveDate.where(a1,a2,a3);
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId") );
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
@@ -714,12 +714,12 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Root<ProductMaster> pm  = query.from(ProductMaster.class);
 			
 			// Select Company Name SubQuery for Effective Date Max Filter 
-			Subquery<Timestamp> insEff = query.subquery(Timestamp.class);
+			Subquery<Date> insEff = query.subquery(Date.class);
 			Root<InsuranceCompanyMaster> i = insEff.from(InsuranceCompanyMaster.class);
 			Subquery<Long> company = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
 			
-			insEff.select( cb.greatest(i.get("effectiveDateStart")) );
+			insEff.select( cb.greatest(i.get("effectiveDateStart").as(Date.class)) );
 			Predicate i1 = cb.equal(ins.get("companyId"), i.get("companyId"));
 			Predicate i2 = cb.lessThanOrEqualTo(i.get("effectiveDateStart") , today);
 			insEff.where(i1,i2);
@@ -735,9 +735,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 					company.alias("companyName"));
 
 			// Product Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), pm.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), pm.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
@@ -814,17 +814,17 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Root<CompanyProductMaster> cm = productIds.from(CompanyProductMaster.class);
 			
 			
-			Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate3 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm4 = effectiveDate3.from(CompanyProductMaster.class);
-			effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart")));
+			effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart").as(Date.class)));
 			Predicate a9 = cb.equal(cm.get("productId"),ocpm4.get("productId") );
 			Predicate a10 = cb.equal(cm.get("companyId"),ocpm4.get("companyId") );
 			Predicate a11 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
 			effectiveDate3.where(a9,a10,a11);
 			
-			Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate4 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm5 = effectiveDate4.from(CompanyProductMaster.class);
-			effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+			effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
 			Predicate a12 = cb.equal(cm.get("productId"),ocpm5.get("productId") );
 			Predicate a13 = cb.equal(cm.get("companyId"),ocpm5.get("companyId") );
 			Predicate a14 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -884,9 +884,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			// Company Effective Date Max Filter
 			Subquery<Long> company = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart").as(Date.class)));
 			Predicate ceff1 = cb.equal(ocpm2.get("companyId"), ins.get("companyId"));
 			Predicate ceff2 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
 			effectiveDate2.where(ceff1,ceff2);
@@ -899,12 +899,12 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			
 			// Select Product Name SubQuery for Effective Date Max Filter 
-			Subquery<Timestamp> pmEff = query.subquery(Timestamp.class);
+			Subquery<Date> pmEff = query.subquery(Date.class);
 			Root<ProductMaster> pm = pmEff.from(ProductMaster.class);
 			Subquery<Long> product = query.subquery(Long.class);
 			Root<ProductMaster> p = product.from(ProductMaster.class);
 			
-			pmEff.select( cb.greatest(pm.get("effectiveDateStart")) );
+			pmEff.select( cb.greatest(pm.get("effectiveDateStart").as(Date.class)) );
 			Predicate i2 = cb.equal(p.get("productId"), pm.get("productId"));
 			Predicate i3 = cb.lessThanOrEqualTo(pm.get("effectiveDateStart") , today);
 			pmEff.where(i2,i3);
@@ -922,9 +922,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 					,lm.get("effectiveDateStart").alias("effectiveDateStart") ,lm.get("effectiveDateEnd").alias("effectiveDateEnd"));
 
 			// Product Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("loginId"), lm.get("loginId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), lm.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), lm.get("companyId"));
@@ -937,18 +937,18 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Subquery<Long> productids = query.subquery(Long.class);
 			Root<CompanyProductMaster> pids = productids.from(CompanyProductMaster.class);
 
-			Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate3 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm3 = effectiveDate3.from(CompanyProductMaster.class);
-			effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
+			effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart").as(Date.class)));
 			Predicate ceff5 = cb.equal(ocpm3.get("companyId"), pids.get("companyId"));
 			Predicate ceff6 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
 			Predicate ceff7 = cb.equal(ocpm3.get("status"),"Y");			
 			Predicate ceff8 = cb.equal(ocpm3.get("productId"),pids.get("productId"));			
 			effectiveDate3.where(ceff5,ceff6,ceff7,ceff8);
 			
-			Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate4 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm4 = effectiveDate4.from(CompanyProductMaster.class);
-			effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd")));
+			effectiveDate4.select(cb.greatest(ocpm4.get("effectiveDateEnd").as(Date.class)));
 			Predicate ceff9 = cb.equal(ocpm4.get("companyId"), pids.get("companyId"));
 			Predicate ceff10 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
 			Predicate ceff11 = cb.equal(ocpm4.get("status"),"Y");			
@@ -1309,9 +1309,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
@@ -1358,9 +1358,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
@@ -1407,9 +1407,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("id"),b.get("id"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
@@ -1694,18 +1694,18 @@ List<Error> errorList = new ArrayList<Error>();
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
 			effectiveDate.where(a1,a2,a3);
 	
 			// Effective Date End
-			Subquery<Timestamp> effectiveDate5 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate5 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm5 = effectiveDate5.from(CompanyProductMaster.class);
-			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
 			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -1718,9 +1718,9 @@ List<Error> errorList = new ArrayList<Error>();
 			// Company Product Effective Date Max Filter
 			Subquery<Long> product = query.subquery(Long.class);
 			Root<LoginProductMaster> ps = product.from(LoginProductMaster.class);
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart").as(Date.class)));
 			Predicate eff1 = cb.equal(ocpm2.get("productId"), ps.get("productId"));
 			Predicate eff2 = cb.equal(ocpm2.get("companyId"), ps.get("companyId"));
 			Predicate eff3 = cb.equal(ocpm2.get("loginId"), ps.get("loginId"));
@@ -1792,9 +1792,9 @@ List<Error> errorList = new ArrayList<Error>();
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
@@ -1891,9 +1891,9 @@ List<Error> errorList = new ArrayList<Error>();
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -1901,9 +1901,9 @@ List<Error> errorList = new ArrayList<Error>();
 			effectiveDate.where(a1,a2,a3,a4);
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a5 = cb.equal(c.get("productId"),ocpm2.get("productId") );
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
 			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -1915,17 +1915,17 @@ List<Error> errorList = new ArrayList<Error>();
 			Root<CompanyProductMaster> cm = productIds.from(CompanyProductMaster.class);
 			
 			
-			Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate3 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm4 = effectiveDate3.from(CompanyProductMaster.class);
-			effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart")));
+			effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart").as(Date.class)));
 			Predicate a9 = cb.equal(cm.get("productId"),ocpm4.get("productId") );
 			Predicate a10 = cb.equal(cm.get("companyId"),ocpm4.get("companyId") );
 			Predicate a11 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
 			effectiveDate3.where(a9,a10,a11);
 			
-			Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate4 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm5 = effectiveDate4.from(CompanyProductMaster.class);
-			effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+			effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
 			Predicate a12 = cb.equal(cm.get("productId"),ocpm5.get("productId") );
 			Predicate a13 = cb.equal(cm.get("companyId"),ocpm5.get("companyId") );
 			Predicate a14 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -2003,9 +2003,9 @@ List<Error> errorList = new ArrayList<Error>();
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
@@ -2013,9 +2013,9 @@ List<Error> errorList = new ArrayList<Error>();
 			effectiveDate.where(a1,a2,a3,a7);
 	
 			// Effective Date End
-			Subquery<Timestamp> effectiveDate5 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate5 = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm5 = effectiveDate5.from(LoginProductMaster.class);
-			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
 			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -2121,9 +2121,9 @@ List<Error> errorList = new ArrayList<Error>();
 			orderList2.add(cb2.asc(c2.get("productName")));
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate4 = query2.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate4 = query2.subquery(Date.class);
 			Root<LoginProductMaster> ocpm4 = effectiveDate4.from(LoginProductMaster.class);
-			effectiveDate4.select(cb2.greatest(ocpm4.get("effectiveDateStart")));
+			effectiveDate4.select(cb2.greatest(ocpm4.get("effectiveDateStart").as(Date.class)));
 			Predicate a11 = cb2.equal(c2.get("productId"),ocpm4.get("productId") );
 			Predicate a12 = cb2.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
 			Predicate a13 = cb2.equal(c2.get("companyId"),ocpm4.get("companyId") );
@@ -2132,9 +2132,9 @@ List<Error> errorList = new ArrayList<Error>();
 			effectiveDate4.where(a11,a12,a13,a14);
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate5 = query2.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate5 = query2.subquery(Date.class);
 			Root<LoginProductMaster> ocpm5 = effectiveDate5.from(LoginProductMaster.class);
-			effectiveDate5.select(cb2.greatest(ocpm5.get("effectiveDateEnd")));
+			effectiveDate5.select(cb2.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
 			Predicate a15 = cb2.equal(c2.get("productId"),ocpm5.get("productId") );
 			Predicate a16 = cb2.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
 			Predicate a17 = cb2.equal(c2.get("companyId"),ocpm5.get("companyId") );
@@ -2201,18 +2201,18 @@ List<Error> errorList = new ArrayList<Error>();
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 			effectiveDate.where(a1,a2,a3);
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId") );
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
@@ -2354,9 +2354,9 @@ List<Error> errorList = new ArrayList<Error>();
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 
@@ -2385,7 +2385,7 @@ List<Error> errorList = new ArrayList<Error>();
 //			query2.select(b2);
 //
 //			// Effective Date Max Filter
-//			Subquery<Timestamp> effectiveDate2 = query2.subquery(Timestamp.class);
+//			Subquery<Date> effectiveDate2 = query2.subquery(Date.class);
 //			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
 //			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
 //			Predicate a11 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
@@ -2516,9 +2516,9 @@ List<Error> errorList = new ArrayList<Error>();
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 					
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
@@ -2549,7 +2549,7 @@ List<Error> errorList = new ArrayList<Error>();
 //			query2.select(b2);
 //
 //			// Effective Date Max Filter
-//			Subquery<Timestamp> effectiveDate2 = query2.subquery(Timestamp.class);
+//			Subquery<Date> effectiveDate2 = query2.subquery(Date.class);
 //			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
 //			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
 //			Predicate a11 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
@@ -3145,9 +3145,9 @@ List<Error> errorList = new ArrayList<Error>();
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
@@ -3155,9 +3155,9 @@ List<Error> errorList = new ArrayList<Error>();
 			effectiveDate.where(a1,a2,a3,a7);
 	
 			// Effective Date End
-			Subquery<Timestamp> effectiveDate5 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate5 = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm5 = effectiveDate5.from(BrokerCommissionDetails.class);
-			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
 			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -3220,17 +3220,17 @@ List<Error> errorList = new ArrayList<Error>();
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -3282,17 +3282,17 @@ List<Error> errorList = new ArrayList<Error>();
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -3344,17 +3344,17 @@ List<Error> errorList = new ArrayList<Error>();
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -3781,9 +3781,9 @@ List<Error> errorList = new ArrayList<Error>();
 	
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp>effectiveDateStart = query.subquery(Timestamp.class);
+			Subquery<Date>effectiveDateStart = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDateStart.from(BrokerCommissionDetails.class);
-			effectiveDateStart.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDateStart.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a5 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
@@ -3793,9 +3793,9 @@ List<Error> errorList = new ArrayList<Error>();
 			effectiveDateStart.where( a2,a3,a5,a6,a7,a8);
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp>effectiveDateEnd = query.subquery(Timestamp.class);
+			Subquery<Date>effectiveDateEnd = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm2 = effectiveDateEnd.from(BrokerCommissionDetails.class);
-			effectiveDateEnd.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDateEnd.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate aa2 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate aa3 = cb.equal(ocpm2.get("productId"), b.get("productId"));
 			Predicate aa5 = cb.equal(ocpm2.get("loginId"), b.get("loginId"));
@@ -3892,9 +3892,9 @@ List<Error> errorList = new ArrayList<Error>();
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
@@ -3902,9 +3902,9 @@ List<Error> errorList = new ArrayList<Error>();
 			effectiveDate.where(a1,a2,a3,a7);
 	
 			// Effective Date End
-			Subquery<Timestamp> effectiveDate5 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate5 = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm5 = effectiveDate5.from(BrokerCommissionDetails.class);
-			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
 			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -3960,9 +3960,9 @@ List<Error> errorList = new ArrayList<Error>();
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
@@ -3970,9 +3970,9 @@ List<Error> errorList = new ArrayList<Error>();
 			effectiveDate.where(a1,a2,a3,a7);
 	
 			// Effective Date End
-			Subquery<Timestamp> effectiveDate5 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate5 = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm5 = effectiveDate5.from(BrokerCommissionDetails.class);
-			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
 			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -4017,9 +4017,9 @@ List<Error> errorList = new ArrayList<Error>();
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));

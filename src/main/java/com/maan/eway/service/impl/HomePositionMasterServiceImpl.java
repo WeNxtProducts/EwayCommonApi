@@ -66,12 +66,12 @@ public class HomePositionMasterServiceImpl implements HomePositionMasterService 
 			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 			
 			// Select Product Name SubQuery for Effective Date Max Filter 
-			Subquery<Timestamp> pmEff = query.subquery(Timestamp.class);
+			Subquery<Date> pmEff = query.subquery(Date.class);
 			Root<ProductMaster> pm = pmEff.from(ProductMaster.class);
 			Subquery<Long> product = query.subquery(Long.class);
 			Root<ProductMaster> p = product.from(ProductMaster.class);
 			
-			pmEff.select( cb.greatest(pm.get("effectiveDateStart")) );
+			pmEff.select( cb.greatest(pm.get("effectiveDateStart").as(Date.class)) );
 			Predicate p1 = cb.equal(p.get("companyId"), pm.get("companyId"));
 			Predicate p2 = cb.equal(p.get("productId"), pm.get("productId"));
 			Predicate p3 = cb.lessThanOrEqualTo(pm.get("effectiveDateStart") , today);

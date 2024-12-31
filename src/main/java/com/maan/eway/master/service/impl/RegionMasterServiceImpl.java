@@ -335,9 +335,9 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
 			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
 			effectiveDate.where(a1,a2);
@@ -372,9 +372,9 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
 			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
 			effectiveDate.where(a1,a2);
@@ -565,9 +565,9 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 			orderList.add(cb.asc(c.get("regionName")));
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("regionCode"), ocpm1.get("regionCode"));
 			jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
@@ -575,9 +575,9 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 			effectiveDate.where(a1, a2, a3);
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<RegionMaster> ocpm2 = effectiveDate2.from(RegionMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			jakarta.persistence.criteria.Predicate a4 = cb.equal(c.get("regionCode"), ocpm2.get("regionCode"));
 			jakarta.persistence.criteria.Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			jakarta.persistence.criteria.Predicate a6 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));

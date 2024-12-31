@@ -69,12 +69,12 @@ public List<CustomerDetailsSearchRes> searchCustDetails(CustomerDetailsSearchReq
 		Root<CustomerDetails> c = query.from(CustomerDetails.class);
 		
 		// Select Company Name SubQuery for Effective Date Max Filter 
-		Subquery<Timestamp> insEff = query.subquery(Timestamp.class);
+		Subquery<Date> insEff = query.subquery(Date.class);
 		Root<InsuranceCompanyMaster> i = insEff.from(InsuranceCompanyMaster.class);
 		Subquery<Long> company = query.subquery(Long.class);
 		Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
 		
-		insEff.select( cb.greatest(i.get("effectiveDateStart")) );
+		insEff.select( cb.greatest(i.get("effectiveDateStart").as(Date.class)) );
 		Predicate i1 = cb.equal(ins.get("companyId"), i.get("companyId"));
 		Predicate i2 = cb.lessThanOrEqualTo(i.get("effectiveDateStart") , today);
 		insEff.where(i1,i2);
@@ -86,12 +86,12 @@ public List<CustomerDetailsSearchRes> searchCustDetails(CustomerDetailsSearchReq
 		company.where(ins1,ins2,ins3);
 		
 		// Select Branch Name SubQuery for Effective Date Max Filter 
-		Subquery<Timestamp> bmEff = query.subquery(Timestamp.class);
+		Subquery<Date> bmEff = query.subquery(Date.class);
 		Root<BranchMaster> b = bmEff.from(BranchMaster.class);
 		Subquery<Long> branch = query.subquery(Long.class);
 		Root<BranchMaster> bm = branch.from(BranchMaster.class);
 		
-		bmEff.select( cb.greatest(b.get("effectiveDateStart")) );
+		bmEff.select( cb.greatest(b.get("effectiveDateStart").as(Date.class)) );
 		Predicate b1 = cb.equal(bm.get("branchCode"), b.get("branchCode"));
 		Predicate b2 = cb.lessThanOrEqualTo(b.get("effectiveDateStart") , today);
 		bmEff.where(b1,b2);

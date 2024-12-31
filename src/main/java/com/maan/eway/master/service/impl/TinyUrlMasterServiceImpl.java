@@ -401,9 +401,9 @@ public Integer getMasterTableCount(String companyId , String branchCode, String 
 		query.select(b);
 
 		//Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<TinyurlMaster> ocpm1 = effectiveDate.from(TinyurlMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -813,9 +813,9 @@ public List<DropDownRes> getTinyUrlDropdown(TinyUrlDropdownReq req) {
 		orderList.add(cb.asc(c.get("branchCode")));
 		
 		// Effective Date Start Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<TinyurlMaster> ocpm1 = effectiveDate.from(TinyurlMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(c.get("sno"),ocpm1.get("sno"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -824,9 +824,9 @@ public List<DropDownRes> getTinyUrlDropdown(TinyUrlDropdownReq req) {
 
 		effectiveDate.where(a1,a2,a5,a6,a9);
 		// Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<TinyurlMaster> ocpm2 = effectiveDate2.from(TinyurlMaster.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		Predicate a3 = cb.equal(c.get("sno"),ocpm2.get("sno"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));

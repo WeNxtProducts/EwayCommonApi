@@ -243,9 +243,9 @@ public class ValuationCompanyMasterServiceImpl implements ValuationCompanyMaster
 			query.select(b);
 			
 			//Effective Date Maximum Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ValuationCompanyMaster> ocpm1 = effectiveDate.from(ValuationCompanyMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			//Predicate a1 = cb.equal(ocpm1.get("valCompanyCode"), b.get("valCompanyCode"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
@@ -540,9 +540,9 @@ public class ValuationCompanyMasterServiceImpl implements ValuationCompanyMaster
 			orderList.add(cb.asc(b.get("valCompanyCode")));
 			
 			//Effective Date start max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ValuationCompanyMaster> ocpm1 = effectiveDate.from(ValuationCompanyMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(b.get("valCompanyCode"), ocpm1.get("valCompanyCode"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -551,9 +551,9 @@ public class ValuationCompanyMasterServiceImpl implements ValuationCompanyMaster
 			effectiveDate.where(a1,a2,a3,a4);
 			
 			//Effective Date end max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ValuationCompanyMaster> ocpm2 = effectiveDate2.from(ValuationCompanyMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate c1 = cb.equal(b.get("valCompanyCode"), ocpm2.get("valCompanyCode"));
 			Predicate c2 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate c3 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));

@@ -452,9 +452,9 @@ public class BasicLoginValidationService {
 			Root<CountryMaster> c = query.from(CountryMaster.class);
 			
 			// Country Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate c1 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
 			Predicate c2 = cb.equal(ocpm1.get("status"),c.get("status"));
 			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -495,9 +495,9 @@ public class BasicLoginValidationService {
 			Root<StateMaster> s = query.from(StateMaster.class);
 			
 			// State Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate c1 = cb.equal(ocpm1.get("countryId"), s.get("countryId"));
 			Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
 			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -540,9 +540,9 @@ public class BasicLoginValidationService {
 			Root<CityMaster> c = query.from(CityMaster.class);
 			
 			// City Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate c1 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
 			Predicate c2 = cb.equal(ocpm1.get("status"),c.get("status"));
 			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);

@@ -2,7 +2,7 @@ package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
 
-import java.sql.Timestamp;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -1325,16 +1325,16 @@ public class DropDownServiceImpl implements DropDownService {
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3, a4);
@@ -1393,16 +1393,16 @@ public class DropDownServiceImpl implements DropDownService {
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3, a4);
@@ -1460,9 +1460,9 @@ public class DropDownServiceImpl implements DropDownService {
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
@@ -1470,9 +1470,9 @@ public class DropDownServiceImpl implements DropDownService {
 			effectiveDate.where(a1, a2, b1, b2);
 
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
@@ -1540,9 +1540,9 @@ public class DropDownServiceImpl implements DropDownService {
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
@@ -1550,9 +1550,9 @@ public class DropDownServiceImpl implements DropDownService {
 			effectiveDate.where(a1, a2, b1, b2);
 
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
@@ -1616,9 +1616,9 @@ public class DropDownServiceImpl implements DropDownService {
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<PlanTypeMaster> ocpm1 = effectiveDate.from(PlanTypeMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("planTypeId"), ocpm1.get("planTypeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -1628,9 +1628,9 @@ public class DropDownServiceImpl implements DropDownService {
 			effectiveDate.where(a1, a2, a3, a4, a5, a6);
 
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<PlanTypeMaster> ocpm2 = effectiveDate2.from(PlanTypeMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a7 = cb.equal(c.get("planTypeId"), ocpm2.get("planTypeId"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
@@ -2311,9 +2311,9 @@ public class DropDownServiceImpl implements DropDownService {
 			orderList.add(cb.asc(c.get("productId")));
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -2322,9 +2322,9 @@ public class DropDownServiceImpl implements DropDownService {
 			effectiveDate.where(a1, a2, a3, a4, a9);
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<BrokerCommissionDetails> ocpm2 = effectiveDate2.from(BrokerCommissionDetails.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a5 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a6 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -3990,10 +3990,10 @@ public class DropDownServiceImpl implements DropDownService {
 	 * ArrayList<Order>(); orderList.add(cb.asc(c.get("branchCode")));
 	 * 
 	 * 
-	 * // Effective Date Start Max Filter Subquery<Timestamp> effectiveDate =
+	 * // Effective Date Start Max Filter Subquery<Date> effectiveDate =
 	 * query.subquery(Timestamp.class); Root<ListItemValue> ocpm1 =
 	 * effectiveDate.from(ListItemValue.class);
-	 * effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart"))); Predicate
+	 * effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class))); Predicate
 	 * a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId")); Predicate a2 =
 	 * cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today); Predicate b1=
 	 * cb.equal(c.get("branchCode"),ocpm1.get("branchCode")); Predicate b2 =
@@ -4004,7 +4004,7 @@ public class DropDownServiceImpl implements DropDownService {
 	 * // Effective Date End Max Filter Subquery<Timestamp> effectiveDate2 =
 	 * query.subquery(Timestamp.class); Root<ListItemValue> ocpm2 =
 	 * effectiveDate2.from(ListItemValue.class);
-	 * effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd"))); Predicate
+	 * effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class))); Predicate
 	 * a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId")); Predicate a4 =
 	 * cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd); Predicate
 	 * b3= cb.equal(c.get("companyId"),ocpm2.get("companyId")); Predicate b4=

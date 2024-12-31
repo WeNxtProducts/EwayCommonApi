@@ -1,6 +1,5 @@
 package com.maan.eway.integration.service.impl;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,6 +147,11 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 			
 			if(StringUtils.isNotBlank(masterdata.getQueryKey())) {
 				String query=oracle.getQuery(masterdata.getQueryKey());
+				System.out.println("Premia Id :"+masterdata.getPremiaId());
+				System.out.println("Premia Table Name :"+masterdata.getPremiaTableName());
+				System.out.println("**********************************************************");
+				System.out.println("Oracle Main Quey :"+query);
+				System.out.println("**********************************************************");
 				List<String> asList = fromQuerytoList(query);
 				Map<String, String> maps = fromListToMaps(asList);
 				
@@ -156,6 +160,7 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 				
 				if(configData!=null && !configData.isEmpty()) {
 					for (PremiaConfigDataMaster data : configData) {
+						
 						if(!"Y".equals(data.getDefaultYn())) {
 							Map<String, String> filterdmap=maps.entrySet().stream().filter(m-> data.getInputColumn().equals(m.getKey()) ).collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));  
 							// Map<String, String> filered = filterdmap.get(0);
@@ -185,7 +190,10 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 				log.info("framedselecquery with Select :: "+query);
 				/*maps.get(0);
 				***********/
+				System.out.println("**********************************************************");
+				System.out.println("Select Qury with case condition");
 				listFromQuery = oracle.getListFromQueryWithoutKey(query, params);
+				System.out.println("**********************************************************");
 //				if(listFromQuery!=null && listFromQuery.size()>0) {
 //					 qdata = listFromQuery.get(0);
 //				}
@@ -193,12 +201,14 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 			Boolean result= delete(quoteNo,masterdata.getPremiaTableName());
 			
 			for (Map<String, Object> qdata  : listFromQuery ) {
+				System.out.println("Framing Insert Query");
 				if(configData!=null && !configData.isEmpty() && qdata!=null) {
 					Map<String,String> jmap=new HashMap<String,String>();
 					List<String> colums=new ArrayList<String>();
 					List<String> values=new ArrayList<String>();
 					
 					for (PremiaConfigDataMaster data : configData) {
+						
 						String value="";
 						if("Y".equals(data.getDefaultYn())) {
 							value= StringUtils.isBlank(data.getDefaultValue())?"":data.getDefaultValue();
@@ -227,6 +237,10 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 							Object aliazval=qdata.get(data.getInputColumn())==null?"":qdata.get(data.getInputColumn());
 							
 							value=String.valueOf(aliazval);
+//							System.out.println("Data Values :"+value);
+							
+							value=(("String".equals(data.getDataTypeDesc())|| "Date".equals(data.getDataTypeDesc()) )?value.replace("'", ""):value );
+//							System.out.println("Data Values :"+value);
 							if("Date".equals(data.getDataTypeDesc())) { 
 							//	String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
 								String dateformatt=  StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase() : "yyyy-MM-dd hh:mm:ss" ;
@@ -237,23 +251,33 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 
 							}
 							
-							value=(("String".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(aliazval)+"'":value);
+
+//							value=(("String".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(aliazval)+"'":value);
 							value=(("Number".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(aliazval)+"'":value);
 
+							value=(("String".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(value)+"'":value);
+							
 						}
+						
 						jmap.put(data.getColumnName(), value);
+//						System.out.println("Column Id :"+data.getColumnId());
 						colums.add(data.getColumnName());
+//						System.out.println("Column Name :"+data.getColumnName());
 						values.add(value);
+//						System.out.println("Data Values :"+value);
 					}
 					
 					if(result=true) {
 					if(!jmap.isEmpty()) {
 						//Madison
 //						Boolean result1=deleteTable(quoteNo,masterdata.getPremiaTableName(),jmap);
+						System.out.println("***************************************************************");
+						System.out.println("MySQL Inset Query");
 						String insertQuery="INSERT INTO "+masterdata.getPremiaTableName()+" ("+StringUtils.join(colums,",")
 						+") VALUES ("+StringUtils.join(values,",")+")";
 						log.info("Insert Query::"+insertQuery);
 						oracle.insert(insertQuery);
+						System.out.println("****************************************************************");
 					}
 					}
 					
@@ -697,9 +721,9 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<PremiaConfigMaster> ocpm1 = effectiveDate.from(PremiaConfigMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("premiaId"),ocpm1.get("premiaId"));
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.equal(c.get("productId"),ocpm1.get("productId"));
@@ -707,9 +731,9 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			effectiveDate.where(a1,a2,a3,a4);
 			
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<PremiaConfigMaster> ocpm2 = effectiveDate2.from(PremiaConfigMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a5 = cb.equal(c.get("premiaId"),ocpm2.get("premiaId"));
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a7 = cb.equal(c.get("productId"),ocpm2.get("productId"));
@@ -773,7 +797,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<PremiaConfigDataMaster> ocpm1 = effectiveDate.from(PremiaConfigDataMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("premiaId"),ocpm1.get("premiaId"));
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.equal(c.get("productId"),ocpm1.get("productId"));
@@ -783,7 +807,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<PremiaConfigDataMaster> ocpm2 = effectiveDate2.from(PremiaConfigDataMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a5 = cb.equal(c.get("premiaId"),ocpm2.get("premiaId"));
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a7 = cb.equal(c.get("productId"),ocpm2.get("productId"));
@@ -861,17 +885,17 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			orderList.add(cb.asc(c.get("productName")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);

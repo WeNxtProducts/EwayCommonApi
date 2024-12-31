@@ -1,6 +1,5 @@
 package com.maan.eway.admin.service.impl;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -252,9 +251,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			Root<BranchMaster> b = query.from(BranchMaster.class);
 
 			// Branch Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2);
@@ -410,12 +409,12 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 //			region.where(r1, r2);
 
 			// Select Company Name SubQuery for Effective Date Max Filter
-			Subquery<Timestamp> insEff = query.subquery(Timestamp.class);
+			Subquery<Date> insEff = query.subquery(Date.class);
 			Root<InsuranceCompanyMaster> i = insEff.from(InsuranceCompanyMaster.class);
 			Subquery<Long> company = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
 
-			insEff.select(cb.greatest(i.get("effectiveDateStart")));
+			insEff.select(cb.greatest(i.get("effectiveDateStart").as(Date.class)));
 			Predicate i1 = cb.equal(ins.get("companyId"), i.get("companyId"));
 			Predicate i2 = cb.lessThanOrEqualTo(i.get("effectiveDateStart"), today);
 			insEff.where(i1, i2);
@@ -431,9 +430,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 					b.get("companyId").alias("companyId"), company.alias("companyName"));
 
 			// Branch Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2);
@@ -634,9 +633,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			// Company Effective Date Max Filter
 			Subquery<Long> company = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart").as(Date.class)));
 			Predicate ceff1 = cb.equal(ocpm2.get("companyId"), ins.get("companyId"));
 			Predicate ceff2 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
 			effectiveDate2.where(ceff1,ceff2);
@@ -650,9 +649,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			// Company Currency Effective Date Max Filter
 			Subquery<Long> currency = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> currencyId = currency.from(InsuranceCompanyMaster.class);
-			Subquery<Timestamp> effectiveDate6 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate6 = query.subquery(Date.class);
 			Root<InsuranceCompanyMaster> ocpm6 = effectiveDate6.from(InsuranceCompanyMaster.class);
-			effectiveDate6.select(cb.greatest(ocpm6.get("effectiveDateStart")));
+			effectiveDate6.select(cb.greatest(ocpm6.get("effectiveDateStart").as(Date.class)));
 			Predicate iceff3 = cb.equal(ocpm6.get("companyId"), currencyId.get("companyId"));
 			Predicate iceff4 = cb.lessThanOrEqualTo(ocpm6.get("effectiveDateStart"), today);
 			effectiveDate6.where(iceff3,iceff4);
@@ -673,9 +672,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 					currency.alias("currencyId") );
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate eff1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 		//	Predicate eff2 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
 			Predicate eff3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));

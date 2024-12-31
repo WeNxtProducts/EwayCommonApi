@@ -1,6 +1,5 @@
 package com.maan.eway.master.service.impl;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -315,9 +314,9 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<EndtDependantFieldMaster> ocpm1 = effectiveDate.from(EndtDependantFieldMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("dependantFieldId"),b.get("dependantFieldId"));
@@ -401,7 +400,7 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<EndtDependantFieldMaster> ocpm1 = effectiveDate.from(EndtDependantFieldMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(b.get("dependantFieldId"),ocpm1.get("dependantFieldId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
@@ -411,7 +410,7 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<EndtDependantFieldMaster> ocpm2 = effectiveDate2.from(EndtDependantFieldMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a5 = cb.equal(b.get("dependantFieldId"),ocpm2.get("dependantFieldId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
@@ -739,9 +738,9 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			orderList.add(cb.asc(b.get("dependantFieldName")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<EndtDependantFieldMaster> ocpm1 = effectiveDate.from(EndtDependantFieldMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(b.get("dependantFieldId"),ocpm1.get("dependantFieldId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -749,9 +748,9 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 
 			effectiveDate.where(a1,a2,a3,a4);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<EndtDependantFieldMaster> ocpm2 = effectiveDate2.from(EndtDependantFieldMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a7 = cb.equal(b.get("dependantFieldId"),ocpm2.get("dependantFieldId"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));

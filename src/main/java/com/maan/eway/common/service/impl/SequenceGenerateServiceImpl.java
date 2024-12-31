@@ -173,9 +173,9 @@ public class SequenceGenerateServiceImpl implements SequenceGenerateService {
 			orderList.add(cb.asc(c.get("productId")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductSequenceMaster> ocpm1 = effectiveDate.from(ProductSequenceMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("sequenceId"), ocpm1.get("sequenceId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -184,9 +184,9 @@ public class SequenceGenerateServiceImpl implements SequenceGenerateService {
 			effectiveDate.where(a1, a2,a3,a4,a6);
 			
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ProductSequenceMaster> ocpm2 = effectiveDate2.from(ProductSequenceMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a7 = cb.equal(c.get("sequenceId"), ocpm2.get("sequenceId"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
@@ -246,9 +246,9 @@ public class SequenceGenerateServiceImpl implements SequenceGenerateService {
 			orderList.add(cb.asc(c.get("queryId")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductSequenceCondition> ocpm1 = effectiveDate.from(ProductSequenceCondition.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("sequenceId"), ocpm1.get("sequenceId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -258,9 +258,9 @@ public class SequenceGenerateServiceImpl implements SequenceGenerateService {
 			effectiveDate.where(a1, a2,a3,a4,a6 , a13);
 			
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ProductSequenceCondition> ocpm2 = effectiveDate2.from(ProductSequenceCondition.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a7 = cb.equal(c.get("sequenceId"), ocpm2.get("sequenceId"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
