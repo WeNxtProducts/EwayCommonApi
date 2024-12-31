@@ -3133,7 +3133,7 @@ public class GridServiceImpl implements GridService {
 //			Predicate a6 = e2.in(oaCode);
 //			loginId.where(a6);
 			// Broker condition
-			Subquery<Long> oaCode = query.subquery(Long.class);
+			Subquery<String> oaCode = query.subquery(String.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
 			oaCode.select(ocpm1.get("loginId"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
