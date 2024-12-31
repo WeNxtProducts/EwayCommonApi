@@ -129,4 +129,7 @@ public class YiCoverDetailReq {
 
 	@JsonProperty("CvrEndNoIdx")
 	private String     cvrEndNoIdx ;
+	
+	@JsonProperty("SectionId")
+	private String     sectionId ;
 }

@@ -254,7 +254,6 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 
 //							value=(("String".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(aliazval)+"'":value);
 							value=(("Number".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(aliazval)+"'":value);
-
 							value=(("String".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(value)+"'":value);
 							
 						}
@@ -749,9 +748,9 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			Predicate n7 = cb.equal(c.get("productId"), "99999");
 			Predicate n8 = cb.or(n5,n7);
 			//In 
-			Expression<String>e0= c.get("premiaId");
-			Predicate n6 = e0.in(premiaIds);
-			query.where(n1,n2,n3,n4,n8,n6).orderBy(orderList);
+//			Expression<String>e0= c.get("premiaId");
+//			Predicate n6 = e0.in(premiaIds);
+			query.where(n1,n2,n3,n4,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
