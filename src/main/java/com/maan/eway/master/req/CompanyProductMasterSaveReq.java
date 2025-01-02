@@ -79,4 +79,10 @@ public class CompanyProductMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("CoInsurance_YN")
+	private String coInsuranceYn;
+
+	@JsonProperty("ClaimExperience_YN")
+	private String claimExperienceYn;
+	
 }

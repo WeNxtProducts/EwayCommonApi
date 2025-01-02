@@ -172,6 +172,13 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRODUCT_NAME_LOCAL")
     private String     productNameLocal ;
+    
+    @Column(name="CO_INSURANCE_YN", length=100)
+    private String    coInsuranceYn;
+    
+    @Column(name="CLAIM_EXPERIENCE_YN", length=100)
+    private String    claimExperienceYn;
+   
 }
 
 

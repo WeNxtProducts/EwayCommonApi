@@ -41,10 +41,10 @@ public class ClaimHistoryInfoServiceImpl implements ClaimHistoryInfoService{
 		if(StringUtils.isBlank(req.getRequestReferenceNo())) {
 			errorList.add(new Error("03","RequestReferenceNo","Request Reference No. Should Not Be Blank"));
 		}
-		if(StringUtils.isBlank(req.getQuoteNo())) {
-			errorList.add(new Error("04","QuoteNo","Quote No. Should Not Be Blank"));
-		}
-		
+//		if(StringUtils.isBlank(req.getQuoteNo())) {
+//			errorList.add(new Error("04","QuoteNo","Quote No. Should Not Be Blank"));
+//		}
+//		
 		List<ClaimHistoryInfoDetailsReq> historyInfo = req.getClaimHistoryInfo();
 		if(historyInfo == null || historyInfo.isEmpty()) {
 			errorList.add(new Error("05","ClaimHistoryInfo","Claim History Info Should Not Be Null Or Empty"));

@@ -34,4 +34,10 @@ public class ProductDropDownRes {
 	@JsonProperty("ProductNameLocal")
 	private String newProductNameLocal;
 	
+	@JsonProperty("CoInsurance_YN")
+	private String coInsuranceYn;
+
+	@JsonProperty("ClaimExperience_YN")
+	private String claimExperienceYn;
+	
 }

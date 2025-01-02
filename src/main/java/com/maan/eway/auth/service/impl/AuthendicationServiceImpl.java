@@ -437,6 +437,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				res.setPackageYn(product.get(0).getPackageYn());
 				res.setDisplayOrder(product.get(0).getDisplayOrder()==null?999:product.get(0).getDisplayOrder());
 				res.setNewProductNameLocal((product != null && product.size() > 0 ) ? product.get(0).getProductNameLocal() : "");
+				res.setClaimExperienceYn(product.get(0).getClaimExperienceYn());
+				res.setCoInsuranceYn(product.get(0).getCoInsuranceYn());
+				
 				resList.add(res);
 			}
 			resList.sort( Comparator.comparing(ProductDropDownRes :: getDisplayOrder) );

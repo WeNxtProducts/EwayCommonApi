@@ -27,7 +27,7 @@ public class ClaimHistoryInfo {
 	@Column(name = "PRODUCT_ID")
 	private Integer productId;
 
-	@Id
+	
 	@Column(name = "QUOTE_NO")
 	private String quoteNo;
 	
