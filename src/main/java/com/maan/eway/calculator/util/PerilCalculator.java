@@ -187,7 +187,7 @@ public class PerilCalculator {
 				minRateLoadingResult.put("DriverAgeXGender", queriesResult.get("DriverAgeXGender"));
 				minRateLoadingResult.put("VehicleAge", queriesResult.get("VehicleAge"));
 				minRateLoadingResult.put("LicenseDuration", queriesResult.get("LicenseDuration"));
-				
+				minRateLoadingResult.put("NoClaims0to1", queriesResult.get("NoClaims0to1"));
 				
 					
 				List<EwayFactorDetails> data = crservice.saveFactorDetails(queriesResult,engine,result,vehicles,customers,t,minRateLoadingResult);

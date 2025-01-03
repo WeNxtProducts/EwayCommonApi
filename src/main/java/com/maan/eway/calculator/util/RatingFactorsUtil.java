@@ -873,7 +873,7 @@ public class RatingFactorsUtil {
 			int count= fdRepo.deleteByRequestReferenceNoAndVehicleId(engine.getRequestReferenceNo(),Integer.parseInt(engine.getVehicleId()));
 			List<EwayFactorDetails> fds=new ArrayList<EwayFactorDetails>();
 			int sno=2;
-			String pattern =  "#####0.####" ;
+			String pattern =  "#####0.#####" ;
 			DecimalFormat decimalFormat = new DecimalFormat(pattern);
 			List<Double> minPremiumRates=new ArrayList<Double>();
 			for(Entry<String, List<Tuple>> entrySet :minRateLoadingResult.entrySet()) {
