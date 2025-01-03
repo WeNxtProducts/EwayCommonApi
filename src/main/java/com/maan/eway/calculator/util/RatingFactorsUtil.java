@@ -1063,7 +1063,7 @@ public class RatingFactorsUtil {
 			 t.setCalcType("P");
 			 t.setRegulatoryCode("NA");
 			 /// Referal
-			 t.setIsReferral((riskPremiumAmt<1)?"Y":"N");
+			 t.setIsReferral((premium<1)?"Y":"N");
 			 if("Y".equals(t.getIsReferral())){
 				 t.setReferalDescription(t.getCoverDesc() +" Referral" );
 				
@@ -1291,9 +1291,11 @@ public class RatingFactorsUtil {
 			if(result.size()>0) {
 				for (RatingInfo r : rateInfos) {
 					if(!"Y".equals(r.getFactorRangeYn())) {
-						Optional<Tuple> findFirst = result.stream().filter(i -> i.get(r.getDiscretCol()).equals(r.getInputColumValue())
-								).findFirst();
-						if(findFirst.isEmpty())
+						/*Optional<Tuple> findFirst = result.stream().filter(i -> i.get(r.getDiscretCol()).equals(r.getInputColumValue())
+								).findFirst();*/
+						result = result.stream().filter(i -> i.get(r.getDiscretCol()).equals(r.getInputColumValue())).collect(Collectors.toList());
+						
+						if(result.isEmpty())
 							condtions.add(r.getDiscretCol()+":99999");
 						else
 							condtions.add(r.getDiscretCol()+":"+r.getInputColumValue());
