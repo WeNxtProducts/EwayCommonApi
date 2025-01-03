@@ -179,10 +179,10 @@ public class JasperController {
 		return jasper.PdfJsonResponse(req);
 	}
 	
-	@GetMapping("/getReportByRequestRefNo")
-	public ResponseEntity<?> GetReportByRequestRefNo(@RequestParam(value = "requestRefNo",required = true) String requestRefNo){
+	@GetMapping("/getKenyaMOTbyRefNo")
+	public ResponseEntity<?> GetKenyaMOTbyRefNo(@RequestParam(value = "requestRefNo",required = true) String requestRefNo){
 		CommonRes data = new CommonRes();
-		JasperDocumentRes res = jasper.GetReportByRequestRefNo(requestRefNo);
+		JasperDocumentRes res = jasper.GetKenyaMOTbyRefNo(requestRefNo);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

@@ -2899,11 +2899,12 @@ public class JasperCustomServiceImple {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Map<String, Object> GetReportByRequestRefNo(String requestRefNo) {
+	public Map<String, Object> GetKenyaMotorScheduleByRequestRefNo(String requestRefNo) {
 		log.info("Enter Into GetReportByRequestRefNoImple \n Argument ==> "+requestRefNo);
 		Map<String,Object> result = new HashMap<String,Object>();
 		List<Map<String,Object>> vehicleList = new ArrayList<Map<String,Object>>();
 		List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
+		List<Map<String,Object>> excessConDetails = new ArrayList<Map<String,Object>>();
 		Double OverAllPremium=0.0;
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2984,11 +2985,15 @@ public class JasperCustomServiceImple {
 
 			List<FactorRateRequestDetails> coverData = factorRateRequestDetailsRepo.findByRequestReferenceNo(map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString());
 			if(coverData!=null && !coverData.isEmpty()) {
-				Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T"))
+				Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getSectionId()!=99999
+						&& (f.getCoverageType().equals("T") && (f.getIsSelected().equalsIgnoreCase("Y")?"Y":"N").equalsIgnoreCase("Y")
+								|| (f.getIsSelected().equalsIgnoreCase("D"))))
 						.map(m -> m.getTaxRate()).map(BigDecimal::doubleValue)
-						.findAny().orElse(0.0);
+						.findFirst().orElse(0.0);
 				
-				Double taxAmount = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T") && f.getSectionId()!=99999)
+				Double taxAmount = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getSectionId()!=99999
+						&& (f.getCoverageType().equals("T") && (f.getIsSelected().equalsIgnoreCase("Y")?"Y":"N").equalsIgnoreCase("Y")
+								|| (f.getIsSelected().equalsIgnoreCase("D"))))
 						.map(i -> i.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 				
 				
@@ -2996,7 +3001,7 @@ public class JasperCustomServiceImple {
 						&& (f.getCoverageType().equals("O") && (f.getIsSelected().equalsIgnoreCase("Y")?"Y":"N").equalsIgnoreCase("Y") 
 						|| !f.getCoverageType().equalsIgnoreCase("O")))
 						.collect(Collectors.groupingBy(a -> a.getSectionId(),Collectors.groupingBy(b -> b.getCoverDesc(),Collectors.reducing(
-							BigDecimal.ZERO, FactorRateRequestDetails::getPremiumIncludedTaxLc, BigDecimal::add))))
+							BigDecimal.ZERO, FactorRateRequestDetails::getPremiumIncludedTaxFc, BigDecimal::add))))
 						.entrySet().stream()
 						.flatMap((Map.Entry<Integer,Map<String,BigDecimal>> s ) -> {
 							Integer sectionId = s.getKey();
@@ -3007,6 +3012,9 @@ public class JasperCustomServiceImple {
 										Map<String,Object> secMap = new HashMap<String,Object>();
 										secMap.put("SectionId", sectionId);
 										secMap.put("CoverDesc", coverDesc);
+										secMap.put("SumInsured", coverData.stream()
+												.filter(f ->f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getSectionId()==sectionId)
+												.map(m -> m.getSumInsured()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 										secMap.put("TotPremium", totPremium);
 										return secMap;
 									});
@@ -3016,18 +3024,27 @@ public class JasperCustomServiceImple {
 					TaxInvoicePremiumDetails u = TaxInvoicePremiumDetails.builder()
 							.amount(new BigDecimal(Double.valueOf(k.get("TotPremium").toString())).toString())
 							.narration(k.get("CoverDesc")==null?"":k.get("CoverDesc").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", ""))
+							.sumInsured(new BigDecimal(Double.valueOf(k.get("SumInsured").toString())).toString())
 						.build();
 						premiumDetailsRes.add(u);
 				});
-				TaxInvoicePremiumDetails h = TaxInvoicePremiumDetails.builder()
-						.amount(new BigDecimal(Double.valueOf(taxAmount.toString())).toString())
-						.narration("Vat Output (Premium) - "+taxRate+"%")
-					.build();
-					premiumDetailsRes.add(h);
 					
-					OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+					result.put("taxRate", new BigDecimal(Double.valueOf(taxRate.toString())).toString());
+					result.put("taxAmount", new BigDecimal(Double.valueOf(taxAmount.toString())).toString());
+					OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue))+taxAmount;
 			}
-		
+			
+			List<FactorRateRequestDetails> excessCon = coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getCoverageType().equalsIgnoreCase("B")).collect(Collectors.toList());
+			if(!excessCon.isEmpty()) {
+				excessCon.forEach(k -> {
+					Map<String,Object> excessMap = new HashMap<String,Object>();
+					excessMap.put("excessPercent", k.getExcessPercent());
+					excessMap.put("excessAmount", k.getExcessAmount());
+					excessMap.put("excessDesc", k.getExcessDesc());
+					excessMap.put("currency", k.getCurrency());
+					excessConDetails.add(excessMap);
+				});
+			}
 			
 			result.put("userName", map.get("userName")==null?"":map.get("userName").toString());
 			result.put("requestReferenceNo", map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString());
@@ -3045,8 +3062,9 @@ public class JasperCustomServiceImple {
 			result.put("companyLogo", map.get("companyLogo")==null?"":map.get("companyLogo").toString());
 			result.put("brokerLogo", map.get("brokerLogo")==null?"":map.get("brokerLogo").toString());
 			result.put("vehicleDetails", vehicleList);
-			result.put("PremiumDetails", premiumDetailsRes);
-			result.put("PremiumTotal", OverAllPremium);
+			result.put("premiumDetails", premiumDetailsRes);
+			result.put("excessConDetails", excessConDetails);
+			result.put("premiumTotal", OverAllPremium);
 			
 		}catch(Exception e) {
 			e.printStackTrace();

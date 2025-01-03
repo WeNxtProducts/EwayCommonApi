@@ -36,7 +36,7 @@ public interface JasperService {
 
 	public CommonRes PdfJsonResponse(PdfJsonReq req);
 
-	public JasperDocumentRes GetReportByRequestRefNo(String requestRefNo);
+	public JasperDocumentRes GetKenyaMOTbyRefNo(String requestRefNo);
 
 	public List<ApiDocListRes> getApiDocList(String quoteNo);
 

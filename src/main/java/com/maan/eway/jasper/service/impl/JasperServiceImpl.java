@@ -1026,11 +1026,11 @@ public class JasperServiceImpl implements JasperService {
 	}
 
 	@Override
-	public JasperDocumentRes GetReportByRequestRefNo(String requestRefNo) {
+	public JasperDocumentRes GetKenyaMOTbyRefNo(String requestRefNo) {
 		log.info("Enter Into GetReportByRequestRefNo \n Argument ==> "+ requestRefNo);
 		JasperDocumentRes res = new JasperDocumentRes();
 		try {
-			Map<String,Object> resMap = jasperCustomeImple.GetReportByRequestRefNo(requestRefNo);
+			Map<String,Object> resMap = jasperCustomeImple.GetKenyaMotorScheduleByRequestRefNo(requestRefNo);
 			if(resMap!=null) {
 				Map<String,Object> map = new HashMap<String,Object>();
 				log.info("OS Using ==> "+System.getProperty("os.name").toLowerCase());
@@ -1041,7 +1041,7 @@ public class JasperServiceImpl implements JasperService {
 				}
 				String jsonString = gson.toJson(resMap);
 				String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+requestRefNo.replaceAll("[\\/:*?\"<>|]*", "");
-				res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, map, "- BrokerQuotation.json");
+				res = getCommonJasperPdfFileByJson("/report/jasper/KenyaMotorSchedule.jrxml", jasperSaveLocation, jsonString, map, "- BrokerQuotation.json");
 				return res;
 			}
 		}catch(Exception e) {
