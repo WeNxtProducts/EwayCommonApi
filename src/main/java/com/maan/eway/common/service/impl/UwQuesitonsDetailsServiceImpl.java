@@ -378,19 +378,22 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 
 				uwArchRepo.deleteByRequestReferenceNo(refNo);
 			}
-			if ( oldDatas.size() > 0 ) {
+			if ( oldDatas.size() > 0 && oldDatas.get(0)!=null  ) {
+				
 				entryDate = oldDatas.get(0).getEntryDate() !=null ? oldDatas.get(0).getEntryDate() : new Date()  ;
+				oldDatas.forEach( o -> {
+					UwQuestionsDetailsArch arch = new UwQuestionsDetailsArch();
+					dozerMapper.map(o, arch);
+					arch.setArchId(o.getVehicleId());
+					saveArchs.add(arch);
+					uwRepo.deleteAll(oldDatas);	
+
+						
+				});
 			}
 			
-			oldDatas.forEach( o -> {
-				UwQuestionsDetailsArch arch = new UwQuestionsDetailsArch();
-				dozerMapper.map(o, arch);
-				arch.setArchId(o.getVehicleId());
-				saveArchs.add(arch);
-					
-			});
+			
 			uwArchRepo.saveAllAndFlush(saveArchs);
-			uwRepo.deleteAll(oldDatas);	
 			
 			// Save for new Records 
 			List<UwQuestionsDetails> saveList = new ArrayList<UwQuestionsDetails>();
@@ -406,6 +409,8 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 				//saveData.setQuestfionCategory(data.getQuestionCategory());
 				saveData.setQuestionCategory(data.getQuestionCategory());
 				saveData.setQuestionCategoryDesc(data.getQuestionCategoryDesc());
+				saveData.setSectionId(data.getSectionId());
+
 				if((StringUtils.isNotBlank(data.getStatus())) && (data.getStatus().equalsIgnoreCase("R")) ){
 					saveData.setIsReferral("Y");
 				}
@@ -420,8 +425,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 					saveData.setVdRefNo(loadingdetails.getVdRefNo());
 					saveData.setCdRefno(loadingdetails.getCdRefno());
 					saveData.setMsRefno(loadingdetails.getMsRefno());
-					saveData.setSectionId(loadingdetails.getSectionId());
-					saveData.setLoading(loadingdetails.getLoading());
+					saveData.setLoading(loadingdetails.getLoading()!=null?loadingdetails.getLoading(): new BigDecimal(0));
 				}
 				saveList.add(saveData);
 			
@@ -640,9 +644,10 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 						
 						BigDecimal uwloading = req.stream().filter(a->a.getSectionId().equals(buildings.getSectionId())).map(a -> {
 					        try {
-					            return a.getLoadingPercent();
+					        	return a.getLoadingPercent() != null ? a.getLoadingPercent() : BigDecimal.ZERO;
 					        } catch (Exception e) {
-					            return BigDecimal.ZERO;  // Handle exception and default to 0
+					        	System.err.println("Exception occurred while getting loading percent: " + e.getMessage());
+					        	return BigDecimal.ZERO;  // Handle exception and default to 0
 					        }
 					    }).reduce(BigDecimal.ZERO, BigDecimal::add);
 						log.info("UwLoading is  --->" +uwloading);
@@ -655,6 +660,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 						data.setSectionId(buildings.getSectionId());
 						data.setLoading(uwloading);
 						data.setLocationId(buildings.getLocationId().toString());
+						data.setCompanyId(buildings.getCompanyId());
 						assetData .setUwLoading(uwloading);
 						
 						msAssetRepo.saveAndFlush(assetData);
