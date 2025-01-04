@@ -45,6 +45,7 @@
 			<fieldDescription><![CDATA[excessDesc]]></fieldDescription>
 		</field>
 	</subDataset>
+	<parameter name="pvImagepath" class="java.lang.String"/>
 	<queryString language="JSON">
 		<![CDATA[]]>
 	</queryString>
@@ -236,7 +237,7 @@
 				<box>
 					<leftPen lineWidth="0.0"/>
 				</box>
-				<imageExpression><![CDATA["D:/Bhuvanesh/Images/FirstAssurance.PNG"]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}+"FirstAssurance.PNG"]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="360" y="60" width="195" height="15" uuid="bbe753a0-d2ab-4ba9-b737-ca1f78f92566">
