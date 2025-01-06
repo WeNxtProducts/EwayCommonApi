@@ -20,6 +20,9 @@ public class TaxInvoicePremiumDetails {
 	@JsonProperty("SumInsured")
 	private String sumInsured;
 	
+	@JsonProperty("Rate")
+	private String rate;
+	
 	@JsonProperty("Status")
 	private String status;
 	
