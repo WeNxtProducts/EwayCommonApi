@@ -877,9 +877,10 @@ public class RatingFactorsUtil {
 			DecimalFormat decimalFormat = new DecimalFormat(pattern);
 			List<Double> minPremiumRates=new ArrayList<Double>();
 			for(Entry<String, List<Tuple>> entrySet :minRateLoadingResult.entrySet()) {
-				String key=entrySet.getKey();
+						
 				List<Tuple> value = entrySet.getValue();
 				Double rate=value.isEmpty()?0D:(value.get(0).get("minPremium")==null?0D:Double.valueOf(decimalFormat.format( Double.parseDouble(value.get(0).get("minPremium").toString()))));
+				System.out.println(entrySet.getKey()+"--"+rate);
 				minPremiumRates.add(rate);
 			}
 				
@@ -933,11 +934,11 @@ public class RatingFactorsUtil {
 					.coverName(t.getCoverName())
 					.createdBy(engine.getCreatedBy())
 					.entryDate(new Date())
-					.fire(fds.stream().mapToDouble(EwayFactorDetails::getFire).reduce((a,b)->a*b).getAsDouble())
-					.thirdParty(fds.stream().mapToDouble(EwayFactorDetails::getThirdParty).reduce((a,b)->a*b).getAsDouble())
-					.theft(fds.stream().mapToDouble(EwayFactorDetails::getTheft).reduce((a,b)->a*b).getAsDouble())
-					.windscreen(fds.stream().mapToDouble(EwayFactorDetails::getWindscreen).reduce((a,b)->a*b).getAsDouble())
-					.ownDamage(fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble())
+					.fire(Double.valueOf(decimalFormat.format( fds.stream().mapToDouble(EwayFactorDetails::getFire).reduce((a,b)->a*b).getAsDouble())))
+					.thirdParty(Double.valueOf(decimalFormat.format(fds.stream().mapToDouble(EwayFactorDetails::getThirdParty).reduce((a,b)->a*b).getAsDouble())))
+					.theft(Double.valueOf(decimalFormat.format(fds.stream().mapToDouble(EwayFactorDetails::getTheft).reduce((a,b)->a*b).getAsDouble())))
+					.windscreen(Double.valueOf(decimalFormat.format(fds.stream().mapToDouble(EwayFactorDetails::getWindscreen).reduce((a,b)->a*b).getAsDouble())))
+					.ownDamage(Double.valueOf(decimalFormat.format(fds.stream().mapToDouble(EwayFactorDetails::getOwnDamage).reduce((a,b)->a*b).getAsDouble())))
 					.msRefno(engine.getMsrefno())
 					.productId(Integer.parseInt(engine.getProductId()))
 					.requestReferenceNo(engine.getRequestReferenceNo())
@@ -962,11 +963,11 @@ public class RatingFactorsUtil {
 					.coverName(t.getCoverName())
 					.createdBy(engine.getCreatedBy())
 					.entryDate(new Date())
-					.fire((Double) (fd.getFire()/(sumInsured.doubleValue()>0?sumInsured:1D)))
-					.thirdParty((Double) (fd.getThirdParty()/(sumInsured.doubleValue()>0?sumInsured:1D)))
-					.theft((Double) (fd.getTheft()/(sumInsured.doubleValue()>0?sumInsured:1D)))
-					.windscreen((Double) (fd.getWindscreen()/(sumInsured.doubleValue()>0?sumInsured:1D)))
-					.ownDamage((Double) (fd.getOwnDamage()/(sumInsured.doubleValue()>0?sumInsured:1D)))
+					.fire(Double.valueOf(decimalFormat.format( (fd.getFire()/(sumInsured.doubleValue()>0?sumInsured:1D)))))
+					.thirdParty(Double.valueOf(decimalFormat.format((fd.getThirdParty()/(sumInsured.doubleValue()>0?sumInsured:1D)))))
+					.theft(Double.valueOf(decimalFormat.format( (fd.getTheft()/(sumInsured.doubleValue()>0?sumInsured:1D)))))
+					.windscreen(Double.valueOf(decimalFormat.format( (fd.getWindscreen()/(sumInsured.doubleValue()>0?sumInsured:1D)))))
+					.ownDamage(Double.valueOf(decimalFormat.format( (fd.getOwnDamage()/(sumInsured.doubleValue()>0?sumInsured:1D)))))
 					.msRefno(engine.getMsrefno())
 					.productId(Integer.parseInt(engine.getProductId()))
 					.requestReferenceNo(engine.getRequestReferenceNo())
@@ -1100,17 +1101,17 @@ public class RatingFactorsUtil {
 				step 9 :multiply step 8 * step 7
 				step 10 : step 6 and step 9
 			 */
-			
+
 			List<BigDecimal> ownDamages=new ArrayList<BigDecimal>();
 			List<BigDecimal> windscreens=new ArrayList<BigDecimal>();
 			List<BigDecimal> thefts=new ArrayList<BigDecimal>();
 			List<BigDecimal> thirdPartys=new ArrayList<BigDecimal>();
 			List<BigDecimal> fires=new ArrayList<BigDecimal>();
-			
+
 			for (Tuple tuple : result) {
 				String upperSi=tuple.get("param2").toString();
 				String lowerSi=tuple.get("param1").toString();
-				
+
 				BigDecimal subtract = new BigDecimal(upperSi).subtract(new BigDecimal(lowerSi));
 				/*
 				 * 	.fire(value.get(0).get("param19")==null?0D:Double.parseDouble(value.get(0).get("param19").toString()))
@@ -1129,24 +1130,24 @@ public class RatingFactorsUtil {
 				thefts.add(theft);
 				thirdPartys.add(thirdParty);
 				fires.add(fire);
-				
+
 			}
 			BigDecimal sumOwnDamage = ownDamages.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
 			BigDecimal sumwindscreen = windscreens.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
 			BigDecimal sumtheft = thefts.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
 			BigDecimal sumthirdParty = thirdPartys.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
 			BigDecimal sumfire = fires.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
-			
+
 			BigDecimal sumInsured=new BigDecimal(vehicles.get(0).get("sumInsured").toString());
 			BigDecimal lowerSI=new BigDecimal(value.get(0).get("param1").toString());
 			BigDecimal subtract = sumInsured.subtract(lowerSI,MathContext.DECIMAL32);
-			
+
 			BigDecimal ownDamage = new BigDecimal(value.get(0).get("param16").toString()).multiply(subtract,MathContext.DECIMAL32);
 			BigDecimal windscreen = new BigDecimal(value.get(0).get("param17").toString()).multiply(subtract,MathContext.DECIMAL32);
 			BigDecimal theft = new BigDecimal(value.get(0).get("param18").toString()).multiply(subtract,MathContext.DECIMAL32);
 			BigDecimal thirdParty = new BigDecimal(value.get(0).get("param20").toString()).multiply(subtract,MathContext.DECIMAL32);
 			BigDecimal fire = new BigDecimal(value.get(0).get("param19").toString()).multiply(subtract,MathContext.DECIMAL32);
-			
+
 			sumOwnDamage=sumOwnDamage.add(ownDamage);
 			sumwindscreen=sumwindscreen.add(windscreen);
 			sumtheft=sumtheft.add(theft);
@@ -1293,12 +1294,15 @@ public class RatingFactorsUtil {
 					if(!"Y".equals(r.getFactorRangeYn())) {
 						/*Optional<Tuple> findFirst = result.stream().filter(i -> i.get(r.getDiscretCol()).equals(r.getInputColumValue())
 								).findFirst();*/
-						result = result.stream().filter(i -> i.get(r.getDiscretCol()).equals(r.getInputColumValue())).collect(Collectors.toList());
 						
-						if(result.isEmpty())
+						List<Tuple> collect = result.stream().filter(i -> i.get(r.getDiscretCol()).equals(r.getInputColumValue())).collect(Collectors.toList());
+						
+						if(collect.isEmpty())
 							condtions.add(r.getDiscretCol()+":99999");
-						else
+						else {
 							condtions.add(r.getDiscretCol()+":"+r.getInputColumValue());
+							result=collect;
+						}
 					}
 				}
 				

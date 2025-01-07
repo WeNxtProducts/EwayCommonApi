@@ -185,6 +185,8 @@ public class JsonMapperFromDB {
 						PersonalInfo customer = personalInfoRepo.findByCustomerId(hm.getCustomerId());
 						customer.setCustomerCode(customerId);
 						personalInfoRepo.save(customer);
+						String updDatequery="UPDATE eservice_customer_details SET customer_code='"+customerId+"' WHERE customer_reference_no='"+customer.getCustomerReferenceNo()+"'";
+						template.update(updDatequery);
 					}
 
 				}catch (Exception e) {
