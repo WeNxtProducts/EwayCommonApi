@@ -21,5 +21,7 @@ public class LovDropDownReq {
 	@JsonProperty("ManufactureAge")
 	private String manufactureAge;
 	
+	@JsonProperty("SectionId")
+	private String sectionId;
 
 }

@@ -268,4 +268,6 @@ public interface DropDownService {
 
 	CertificateTypeRes getcertificateNo(CertificateDetailsReq req);
 
+	List<DropDownRes> VehicleAgeReferral(LovDropDownReq req);
+
 }
