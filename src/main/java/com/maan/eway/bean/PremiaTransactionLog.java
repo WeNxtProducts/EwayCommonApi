@@ -68,4 +68,8 @@ public class PremiaTransactionLog {
 
     @Column(nullable = false)
     private String QuoteNo;
+
+    @Lob
+    private String generateReq;
+    
 }

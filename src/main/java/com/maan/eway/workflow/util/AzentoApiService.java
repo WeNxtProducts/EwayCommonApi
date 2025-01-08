@@ -120,6 +120,7 @@ public class AzentoApiService {
 			log.setEntryDate(new Date());
 			log.setQuoteNo(StringUtils.isBlank(engine.getQuoteNo())?engine.getRequestReferenceNo():engine.getQuoteNo());
 			log.setRequestTime(LocalDateTime.now());
+			log.setGenerateReq(engine.toString());
 			try {
 				 Gson gson = new GsonBuilder() .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter()) .create();
 				 
