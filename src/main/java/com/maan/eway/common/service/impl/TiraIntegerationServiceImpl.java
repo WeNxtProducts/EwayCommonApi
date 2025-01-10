@@ -243,7 +243,7 @@ public class TiraIntegerationServiceImpl {
 		 	Object PremiaRes = null;
 		try {
 			// Frame Tira Req
-
+			System.out.println("Calling : /push/integration/quote");
 			RestTemplate temp = new RestTemplate();
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(MediaType.APPLICATION_JSON);

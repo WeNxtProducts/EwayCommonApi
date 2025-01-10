@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -24,6 +25,7 @@ import com.maan.eway.bean.CreditLimitDetail;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotCommDiscountDetail;
 import com.maan.eway.bean.MotDriverDetail;
+import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PgithPolRiskAddlInfo;
 import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.PremiaConfigMaster;
@@ -39,6 +41,7 @@ import com.maan.eway.bean.YiVatDetail;
 import com.maan.eway.integration.req.PremiaListRequest;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.ValuationReq;
+import com.maan.eway.integration.res.IntegrationSaveRes;
 import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.service.FrameReqService;
 import com.maan.eway.integration.service.IntegrationService;
@@ -46,6 +49,7 @@ import com.maan.eway.repository.CreditLimitDetailRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotDriverDetailRepository;
 import com.maan.eway.repository.MotcommDiscountDetailRepository;
+import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PgitPolRiskAddlInfoRepository;
 import com.maan.eway.repository.PremiaConfigDataMasterRepository;
 import com.maan.eway.repository.PremiaConfigMasterRepository;
@@ -82,6 +86,8 @@ private PremiaConfigMasterRepository pcmasterrepo;
 private IntegrationService intSer;
 @Autowired
 private HomePositionMasterRepository homeRepo;
+@Autowired
+private MotorDriverDetailsRepository motDriDetails;
 
 @Autowired
 private YiCoverDetailRepository yiCoverDetailRepo;
@@ -150,7 +156,8 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 				System.out.println("Premia Id :"+masterdata.getPremiaId());
 				System.out.println("Premia Table Name :"+masterdata.getPremiaTableName());
 				System.out.println("**********************************************************");
-				System.out.println("Oracle Main Quey :"+query);
+				System.out.println("QueryKey : " +masterdata.getQueryKey());
+				System.out.println("Oracle Main Quey : "+query);
 				System.out.println("**********************************************************");
 				List<String> asList = fromQuerytoList(query);
 				Map<String, String> maps = fromListToMaps(asList);
@@ -282,24 +289,23 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 					
 				}
 			}
-			// Framing External Api
-			String policyNo = "";
-			String reqRefNo = "";
-			String companyId="";
-			String productId="";
-			HomePositionMaster home = homeRepo.findByQuoteNo(quoteNo);
-			if (home != null) {
-				policyNo = home.getPolicyNo();
-				reqRefNo = home.getRequestReferenceNo();
-				companyId= home.getCompanyId();
-				productId= home.getProductId().toString();
-			}
-			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId);
-		
-			if ("100002".equalsIgnoreCase(companyId)) {
-				ewayMotorPremiaPush(policyNo, reqRefNo, configMas);
-
-			}
+//			// Framing External Api
+//			String policyNo = "";
+//			String reqRefNo = "";
+//			String companyId="";
+//			String productId="";
+//			HomePositionMaster home = homeRepo.findByQuoteNo(quoteNo);
+//			if (home != null) {
+//				policyNo = home.getPolicyNo();
+//				reqRefNo = home.getRequestReferenceNo();
+//				companyId= home.getCompanyId();
+//				productId= home.getProductId().toString();
+//			}
+//			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId);
+//		
+////			if ("100002".equalsIgnoreCase(companyId)) {
+//				ewayMotorPremiaPush(policyNo, reqRefNo, configMas);
+////			}
 		}
 		
 		return true;
@@ -310,134 +316,314 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 	return false;
 }
 
-private void updateIntegrationStatus(String quoteNo, HomePositionMaster home) {
-	boolean status=false,status1=false,status2=false,status3=false,status4=false,status5=false,status6=false,status7=false,status8=false,status9=false;
+private String updateIntegrationStatus(String quoteNo, HomePositionMaster home,String reqRefNo) {
+	boolean status=false,status1=false,status2=false,status3=false,status4=false,status5=false,status6=false,status7=false,status8=false,status9=false,status10=false;
 	String policyNo=home.getPolicyNo();
+	String result="";
 	try {
+		List<String> errorList=new  ArrayList<>();
 		List<YiPolicyDetail> list=yiPolicyReo.findByQuotationPolicyNo(policyNo);
 		if(list.size()>0 && list!=null) {
 			status=true;
+			System.out.println("Saved in My sql YiPolicyDetail");
+		}else {
+			status = false;
+			errorList.add("YiPolicyDetail");
+			System.out.println("Not Saved in My sql YiPolicyDetail");
 		}
 	
 		List<YiSectionDetail> list1=yisecRepo.findByQuotationPolicyNo(policyNo);
 		if(list1.size()>0 && list1!=null) {
 			status1=true;
+			System.out.println("Saved in My sql YiSectionDetail");
+		}else {
+			status1 = false;
+			errorList.add("YiSectionDetail");
+			System.out.println("Not Saved in My sql YiSectionDetail");
 		}
 	
 		List<PgithPolRiskAddlInfo> list2=pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
 		if(list2.size()>0 && list2!=null) {
 			status2=true;
+			System.out.println("Saved in My sql PgithPolRiskAddlInfo");
+		}else{
+			status2 = false;
+			errorList.add("PgithPolRiskAddlInfo");
+			System.out.println("Not Saved in My sql PgithPolRiskAddlInfo");
 		}
-	
-		List<MotDriverDetail> list3=motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
-		if(list3.size()>0 && list3!=null) {
-			status3=true;
+		
+		
+		List<MotDriverDetail> list3 = motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
+		if (list3.size() > 0 && list3 != null) {
+			status3 = true;
+		} else {
+			List<MotorDriverDetails> motDriverData = motDriDetails.findByQuoteNo(quoteNo);
+			if (motDriverData.isEmpty()) {
+				status3 = true;
+				System.out.println("Saved in My sql MotDriverDetail");
+			}else {
+				status3 = false;
+				errorList.add("MotDriverDetail");
+				System.out.println("Not Saved in My sql MotDriverDetail");
+			}
 		}
 		List<YiCoverDetail> list4=yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
 		if(list4.size()>0 && list4!=null) {
 			status4=true;
+			System.out.println("Saved in My sql YiCoverDetail");
+		}else{
+			status4 = false;
+			errorList.add("YiCoverDetail");
+			System.out.println("Not Saved in My sql YiCoverDetail");
 		}
 
 		List<MotCommDiscountDetail> list5=motComRepo.findByQuotationPolicyNo(policyNo);
 		if(list5.size()>0 && list5!=null) {
 			status5=true;
+			System.out.println("Saved in My sql MotCommDiscountDetail");
 		}
+		else {
+			status5=true;
+		}
+
 	
 		List<YiChargeDetail> list6=yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
 		if(list6.size()>0 && list6!=null) {
 			status6=true;
+			System.out.println("Saved in My sql YiChargeDetail");
+		}else{
+			status6 = false;
+			errorList.add("YiChargeDetail");
+			System.out.println("Not Saved in My sql YiChargeDetail");
 		}
 	
 		List<YiVatDetail> list7=yivatRepo.findByQuotationPolicyNo(policyNo);
 		if(list7.size()>0 && list7!=null) {
 			status7=true;
+			System.out.println("Saved in My sql YiVatDetail");
+		}else{
+			status7 = false;
+			errorList.add("YiVatDetail");
+			System.out.println("Not Saved in My sql YiVatDetail");
 		}
 		List<YiPremCal> list8=yipremRepo.findByQuotationPolicyNo(policyNo);
 		if(list8.size()>0 && list8!=null) {
 			status8=true;
+			System.out.println("Saved in My sql YiPremCal");
+		}else{
+			status8 = false;
+			errorList.add("YiPremCal");
+			System.out.println("Not Saved in My sql YiPremCal");
 		}
 	
 		List<YiPolicyApproval> list9=yipolicyRepo.findByQuotationPolicyNo(policyNo);
 		if(list9.size()>0 && list9!=null) {
 			status9=true;
+			System.out.println("Saved in My sql YiPolicyApproval");
+		}else{
+			status9 = false;
+			errorList.add("YiPolicyApproval");
+			System.out.println("Not Saved in My sql YiPolicyApproval");
 		}
-		if(status && status1 && status2 && status3 && status4 && status5 && status6 && status7 && status8 && status9) {
-			home.setCoreIntgStatus("S");
+		List<CreditLimitDetail> list10=creditRepo.findByRequestreferenceno(reqRefNo);
+		if(list10.size()>0 && list10!=null) {
+			status10=true;
+			System.out.println("Saved in My sql CreditLimitDetail");
+		}else{
+			status10 = false;
+			errorList.add("YiPolicyApproval");
+			System.out.println("Not Saved in My sql CreditLimitDetail");
+		}
+		if(status && status1 && status2 && status3 && status4 && status5 && status6 && status7 && status8 && status9 && status10) {
+			home.setCoreIntgStatus("Data Successfully saved in  My Sql");
+			home.setIntegrationStatus("S");
+			home.setIntegrationError("");
+			result="S";
 		}else {
-			home.setCoreIntgStatus("F");
+			home.setCoreIntgStatus("Data Failed to saved in  My Sql");
+			home.setIntegrationStatus("F");
+			home.setIntegrationError("Data Failed to saved in  My Sql"+errorList);
+			result="F";
 		}
-		
+		homeRepo.save(home);
+		return result;
 	}catch (Exception e) {
 		e.printStackTrace();
 		home.setCoreIntgStatus("F");
 	}
 	homeRepo.saveAndFlush(home);
+	return result;
 }
 
-public void ewayMotorPremiaPush(String policyNo,String reqRefNo,PremiaConfigMaster configMas) {
+public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,PremiaConfigMaster configMas,
+		HomePositionMaster home) {
+	IntegrationSaveRes res1 = new IntegrationSaveRes();
+	boolean check=false;
 	try {
 		System.out.println("*********EXTERNAL API CALL STARTS*********");
 		System.out.println("*********PolicyNo " + policyNo);
-
+		
 		if (configMas.getPremiaId() == 1) {
 			System.out.println("*********1.YiPolicyDetail: ");
 			Object list = frameReqService.pushYiPolicyDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
+				
 		} else if (configMas.getPremiaId() == 2) {
 			System.out.println("*********2.YiSectionDetail:");
 			Object list = frameReqService.pushYiSectionDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		} else if (configMas.getPremiaId() == 3) {
 			System.out.println("*********3.PgitPolRiskAddlInfo:");
 			Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		} else if (configMas.getPremiaId() == 4) {
 			System.out.println("*********4.MotDriverDetail: ");
 			Object list = frameReqService.pushMotDriverDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		} else if (configMas.getPremiaId() == 5) {
 			System.out.println("*********5.YiCoverDetail: ");
 			Object list = frameReqService.pushYiCoverDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		} else if (configMas.getPremiaId() == 6) {
 			System.out.println("*********6.MotCommDiscountDetail:");
 			Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		} else if (configMas.getPremiaId() == 7) {
 			System.out.println("*********7.YiChargeDetail: ");
 			Object list = frameReqService.pushYiChargeDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		} else if (configMas.getPremiaId() == 8) {
 			System.out.println("*********8.YiVatDetail:");
 			Object list = frameReqService.pushYiVatDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		} else if (configMas.getPremiaId() == 9) {
 			System.out.println("*********9.YiPremCal:");
 			Object list = frameReqService.pushYiPremCal(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		} else if (configMas.getPremiaId() == 10) {
 			System.out.println("*********10.YiPolicyApproval:");
 			Object list = frameReqService.pushYiPolicyApproval(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		} else if (configMas.getPremiaId() == 11) {
 			System.out.println("*********11.CreditLimitDetail:");
 			Object list = frameReqService.pushCreditLimitDetail(reqRefNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+			res1 = (IntegrationSaveRes)list;
+			res1.getResponse();
+			res1.getErrorMessage();
+			if("Success".equalsIgnoreCase(res1.getResponse())){
+				check=true;
+			}else {
+				check=false;
+			}
 		}
-
+		if(check=true) {
+			home.setCoreIntgStatus("Data Inserted saved in  Oracle DB");
+			home.setIntegrationStatus("S");
+			home.setIntegrationError("");
+			homeRepo.save(home);
+		}else {
+			home.setCoreIntgStatus("Data Failed saved in  Oracle DB");
+			home.setIntegrationStatus("F");
+			home.setIntegrationError(res1.getErrorMessage());
+			homeRepo.save(home);
+		}	
+		System.out.println("Response from oracle "+json.toJson(res1));
+		
+		return res1;
 	}catch (Exception e) {
 		e.printStackTrace();
+		return res1;
 	}
 }
 public void madisonMotorPremiaPush(String policyNo,String reqRefNo) {
@@ -648,25 +834,102 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			reqRefNo = home.getRequestReferenceNo();
 			companyId= home.getCompanyId();
 			productId= home.getProductId().toString();
-		}
+			}
 		CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId);
 	
 		 List<PremiaConfigMaster> configMasterList =   getPremiaConfigMaster(home.getCompanyId() , home.getProductId() , request.getPremiaIds() );
 		
 		List<String> param=new ArrayList<String>();
 		param.add(quoteNo);
-		 
+		List<String> successList=new  ArrayList<>();
+		List<String> failureList=new  ArrayList<>();
 		for (PremiaConfigMaster configMas :  configMasterList ) {
 			boolean push = push(configMas , param,quoteNo);
 			if(push ==true  ) {
 				response.setResponse("Success");	
-				
+				successList.add(configMas.getPremiaTableName());
 			} else {
 				response.setResponse("Failed");
 			} 
 			
 		}
-		updateIntegrationStatus(quoteNo,home);
+		// Status of My Sql Data
+		String mySqlTable=updateIntegrationStatus(quoteNo,home,reqRefNo);
+		if(mySqlTable.equalsIgnoreCase("S")) {
+			response.setResponse("Success");	
+		} else {
+			response.setResponse("Failed");
+		}
+		// Framing External Api
+		List<String> successOracleList=new  ArrayList<>();
+		List<String> failureOracleList=new  ArrayList<>();
+		System.out.println("Response from mySqlTable :"+mySqlTable);
+		if(mySqlTable.equalsIgnoreCase("S")) {
+			
+			for (PremiaConfigMaster configMas :  configMasterList ) {
+				IntegrationSaveRes oraclpush =ewayMotorPremiaPush(policyNo, reqRefNo, configMas,home);
+				System.out.println("Response after oracle push "+oraclpush);
+				if("Connection refused".equalsIgnoreCase(oraclpush.getResponse())) {
+					response.setResponse("Failed");
+					home.setCoreIntgStatus("Data Failed saved in  Oracle DB Connection refused");
+					home.setIntegrationStatus("F");
+					home.setIntegrationError(oraclpush.getErrorMessage());
+					homeRepo.save(home);
+					break;
+				}
+				else if("Success".equalsIgnoreCase(oraclpush.getResponse() ) ) {
+					response.setResponse("Success");	
+					successOracleList.add(configMas.getPremiaTableName());
+					home.setCoreIntgStatus("Data saved in  Oracle DB");
+					home.setIntegrationStatus("S");
+					home.setIntegrationError("");
+					homeRepo.save(home);
+					
+				} else {
+					response.setResponse("Failed");
+					if(configMas.getPremiaId()==1||configMas.getPremiaId()==2
+							||configMas.getPremiaId()==3||configMas.getPremiaId()==5
+							||configMas.getPremiaId()==7||configMas.getPremiaId()==8
+							||configMas.getPremiaId()==9||configMas.getPremiaId()==10
+							||configMas.getPremiaId()==11) {
+						failureOracleList.add(configMas.getPremiaTableName());
+						home.setCoreIntgStatus("Data Failed saved in  Oracle DB");
+						home.setIntegrationStatus("F");
+						home.setIntegrationError(oraclpush.getErrorMessage());
+						homeRepo.save(home);
+						
+					}
+				}
+			}
+			System.out.println("Not Saved in Oracle "+failureOracleList);
+		}
+		// Premia Posting Calling procedural call
+		if (failureOracleList.isEmpty()) {
+			System.out.println("*********Premia Integration External Api Call:");
+			System.out.println("Policy No :" +policyNo+" Company Id :"+companyId);
+			IntegrationSaveRes list = frameReqService.premiaExternalCall(policyNo,companyId);
+			System.out.println("List " + json.toJson(list));
+			if (list.getResponse().equalsIgnoreCase("Failed")) {
+				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ? "Data not Integrated"
+						: list.getPWsResponseType());
+				home.setIntegrationStatus("F");
+				home.setIntegrationError(
+						StringUtils.isBlank(list.getPWsError()) ? list.getErrorMessage() : list.getPWsError());
+				homeRepo.save(home);
+				response.setResponse("Failed");
+			} else {
+				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ?"Data Integrated"
+						: list.getPWsResponseType());
+				home.setIntegrationStatus("S");
+				home.setIntegrationError(StringUtils.isBlank(list.getPWsError()) ? "" : list.getPWsError());
+				homeRepo.save(home);
+				response.setResponse("Success");
+			}
+
+			System.out.println("List " + json.toJson(list));
+			System.out.println("_____________________________________________ ");
+
+		}
 		if ("100004".equalsIgnoreCase(companyId)) {
 			 SeqPiftTranId entity=new SeqPiftTranId();
 			 List<SeqPiftTranId> data=seqPiftTranIdRepo.findAllByOrderByTranIdDesc();

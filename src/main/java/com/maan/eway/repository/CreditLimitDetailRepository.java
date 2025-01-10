@@ -11,4 +11,6 @@ public interface CreditLimitDetailRepository extends JpaRepository<CreditLimitDe
 
 	List<com.maan.eway.bean.CreditLimitDetail> findByRequestreferenceno(String reqRefNo);
 
+	List<CreditLimitDetail> findByCustomerCode(String customerId);
+
 }

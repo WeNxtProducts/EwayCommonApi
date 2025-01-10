@@ -996,8 +996,12 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 	@JsonProperty("PolDsCode")
 	private String polDsCode;
 	
-
-	@JsonProperty( "PraiEndNoIdx")
+	@JsonProperty("PraiSysId")
+	private String     praiSysId ;
+	
+	@JsonProperty("PraiEndNoIdx")
     private String praiEndNoIdx;
+	
+	
 	
 }

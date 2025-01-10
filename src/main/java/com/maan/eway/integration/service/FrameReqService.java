@@ -1,5 +1,7 @@
 package com.maan.eway.integration.service;
 
+import com.maan.eway.integration.res.IntegrationSaveRes;
+
 public interface FrameReqService {
 
 	//Tanzania
@@ -29,5 +31,7 @@ public interface FrameReqService {
 	//Madison
 
 	Object pushPtIntgFlexTran(String policyNo);
+
+	IntegrationSaveRes premiaExternalCall(String policyNo,String companyId);
 
 }
