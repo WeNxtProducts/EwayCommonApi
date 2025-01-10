@@ -184,7 +184,7 @@ public class TiraIntegerationServiceImpl {
 						System.out.println("Premia Integration FINALY... Quote No ---> " + tiraReq.getQuoteNo() + " . Time : " + sdf.format(new Date()) );
 			            service2.shutdown();
 			            try {
-			                if (!service2.awaitTermination(15, TimeUnit.SECONDS)) {
+			                if (!service2.awaitTermination(30, TimeUnit.SECONDS)) {
 			                    service2.shutdownNow();
 			                }
 			            } catch (InterruptedException ex) {
