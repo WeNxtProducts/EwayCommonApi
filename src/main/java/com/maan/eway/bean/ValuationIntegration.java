@@ -98,7 +98,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="VEHICLE_REG_NO", length=100)
     private String     vehicleRegNo ;
-
+    
+    @Column(name="SUM_INSURED")
+    private Double     sumInsured ;
+    
     @Column(name="TYPE")
     private String     type ;
 
@@ -124,6 +127,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS")
     private String     status ;
     
+    @Column(name="BRANCH_CODE")
+    private String     branchCode ;
+    
     @Column(name="CREATE_REQUEST")
     private String     createRequest ;
     
@@ -148,6 +154,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="GET_STATUS_RESPONSE")
     private String     statusresponse ;
     
+    @Column(name="EXCEPTION_SUMINSURED")
+    private Double     exceptionSumInsured ;
+    
+    @Column(name="EXCEPTION_STATUS")
+    private String     exceptionStatus ;
+    
+    @Column(name="EXCEPTION_REMARKS")
+    private String     exceptionRemarks ;
     
     
 }

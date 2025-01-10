@@ -23,6 +23,9 @@ public class ScheduledTasks {
 	private NotificationSchedular notificationSchedular;
 	@Autowired
 	private EmiNotificationSchedular eminotificationSchedular;
+	
+	@Autowired
+	private ValuationSchedular valuationSchedular;
 
 	private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -93,6 +96,17 @@ public class ScheduledTasks {
 		} else {
 			System.out.println(
 					"|************|  RENEWAL QUOTE TO POLICY API THREAD is Switched OFF from DB  |*************|");
+		}
+	}
+	//@EventListener(ApplicationReadyEvent.class)
+	public void startValuationSchedular() {
+		log.info("The time is now {startValuationSchedular}", dateFormat.format(new Date()));
+
+		if (service.getDbStatus()) {
+			valuationSchedular.Valuationschedule();
+		} else {
+			System.out.println(
+					"|************| ValuationSchedular API THREAD is Switched OFF from DB  |*************|");
 		}
 	}
 

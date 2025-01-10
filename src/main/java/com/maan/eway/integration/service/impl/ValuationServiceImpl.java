@@ -8,7 +8,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.ValuationIntegration;
 import com.maan.eway.integration.req.ValuationDetailsReq;
@@ -18,8 +17,8 @@ import com.maan.eway.integration.req.ValuationStatusReq;
 import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.res.ValuationListRes;
 import com.maan.eway.integration.service.ValuationService;
-import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.ValuationIntegrationRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -38,6 +37,8 @@ public class ValuationServiceImpl implements ValuationService {
 	private MotorDataDetailsRepository repo;
 	@Autowired
 	private SolvitValuation solvit;
+	@Autowired
+	private ValuationIntegrationRepository valuationIntegrationRepository;
 	@Override
 	public PremiaResponse pushValuation(ValuationReq req) {
 		PremiaResponse resp=new PremiaResponse();
@@ -104,7 +105,8 @@ public class ValuationServiceImpl implements ValuationService {
 				a.get("email").alias("email"),a.get("customerMobile").alias("customerMobile"),a.get("policyNo").alias("policyNo"),
 				a.get("createRequest").alias("createRequest"),a.get("createResponse").alias("createResponse"),a.get("idrequest").alias("idrequest"),
 				a.get("idresponse").alias("statusrequest"),a.get("statusrequest").alias("statusresponse"),a.get("statusresponse").alias("idresponse"),
-				a.get("recordId").alias("recordId"),a.get("status").alias("status"),a.get("valCompanyId").alias("valCompanyId"));
+				a.get("recordId").alias("recordId"),a.get("status").alias("status"),a.get("valCompanyId").alias("valCompanyId"),
+				a.get("exceptionSumInsured").as(String.class).alias("exceptionSumInusred"),a.get("exceptionStatus").alias("exceptionStatus"),a.get("exceptionRemarks").alias("exceptionRemarks"));
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -132,6 +134,23 @@ public class ValuationServiceImpl implements ValuationService {
 		list = result.getResultList();
 		}catch (Exception e) {
 			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@Override
+	public List<ValuationStatusReq> getValuationStatusPendingList() {
+		List<ValuationStatusReq>list=new ArrayList<>();
+		List<ValuationIntegration>vlist=valuationIntegrationRepository.findByStatusOrderByQuoteNo("Pending");
+		if(!CollectionUtils.isEmpty(vlist)) {
+			for (ValuationIntegration data : vlist) {
+				ValuationStatusReq vs=new ValuationStatusReq();
+				vs.setBranchCode(data.getBranchCode());
+				vs.setCompanyId(data.getCompanyId());
+				vs.setValCompanyId(data.getValCompanyId());
+				vs.setVehicleRegNo(data.getVehicleRegNo());
+				list.add(vs);
+			}
 		}
 		return list;
 	}

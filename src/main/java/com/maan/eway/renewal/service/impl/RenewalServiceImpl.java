@@ -1640,7 +1640,7 @@ public class RenewalServiceImpl implements RenewalService{
 				data.setServiceType("Premia");
 				data.setOldrequestreferenceNo("99999");
 				data.setCompanyId(rdata.getCompanyId());
-				data.setCustomerName(rdata.getCustomerName());
+				data.setCustomerName(rdata.getPolAssrName());
 				data.setEmailId(rdata.getInsuredEmailId() );
 				data.setMobileCode(rdata.getMobileCode());
 				data.setMobileNo(rdata.getInsuredMobile());

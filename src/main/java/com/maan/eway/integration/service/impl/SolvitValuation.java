@@ -29,6 +29,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PersonalInfo;
@@ -62,6 +65,7 @@ public class SolvitValuation  {
 	@Autowired
 	private ValuationIntegrationRepository valuationIntegrationRepository;
 	
+	private ObjectMapper objectMapper = new ObjectMapper();
 	public PremiaResponse pushValuation(ValuationReq req) {
 		PremiaResponse resp=new PremiaResponse();
 		try {
@@ -159,7 +163,7 @@ public class SolvitValuation  {
 		// Select
 		query.multiselect(a.get("quoteNo").alias("quoteNo"),a.get("companyId").alias("companyId"),a.get("productId").alias("productId"),
 				a.get("vehicleId").alias("vehicleId"),a.get("registrationNumber").alias("vehicleRegNo"),b.get("clientName").alias("firstName"),
-				b.get("email1").alias("email"),b.get("mobileNo1").alias("customerMobile"),c.get("policyNo").alias("policyNo"));
+				b.get("email1").alias("email"),b.get("mobileNo1").alias("customerMobile"),c.get("policyNo").alias("policyNo"),c.get("branchCode").alias("branchCode"),a.get("sumInsured").alias("sumInsured"));
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -244,6 +248,14 @@ public class SolvitValuation  {
 							vdata.setStatus(status);
 							valuationIntegrationRepository.saveAndFlush(vdata);
 							resp.setResponse(status);
+							if("Completed".equalsIgnoreCase(status)) {
+								ValuationDetailsReq dreq=new ValuationDetailsReq();
+								dreq.setBranchCode(req.getBranchCode());
+								dreq.setCompanyId(req.getCompanyId());
+								dreq.setRecordId(vdata.getRecordId());
+								dreq.setValCompanyId(req.getValCompanyId());
+								getDetails(dreq);
+							}
 						}
 					}
 				}
@@ -279,7 +291,7 @@ public class SolvitValuation  {
 							System.out.println(entityReq.getBody());
 							response = restTemplate.exchange(list.get(0).getGetDetailApi(),  HttpMethod.POST,entityReq,Map.class);
 							System.out.println(response.getBody());
-							res=response.getBody().toString();
+							res=new Gson().toJson(response.getBody());
 						}catch (Exception e) {
 							e.printStackTrace();
 							res=e.getLocalizedMessage();
@@ -288,6 +300,14 @@ public class SolvitValuation  {
 						if(response.getBody()!=null) {
 							vdata.setIdrequest(request.toString());
 							vdata.setIdresponse(res);
+							Map<String,Object> map = objectMapper.readValue(res, new TypeReference<Map<String,Object>>(){});
+							String valsuminsured=map.get("force_sales_value")==null?"":map.get("force_sales_value").toString();
+							double diffsuminsured=vdata.getSumInsured()-Double.parseDouble(valsuminsured.replaceAll(",", "")) ;
+							vdata.setExceptionSumInsured(Double.parseDouble(valsuminsured));
+							if(Math.abs(diffsuminsured)>1000) {
+								vdata.setExceptionStatus("E");
+								vdata.setExceptionRemarks("SumInsured Difference is High");
+							}
 							valuationIntegrationRepository.saveAndFlush(vdata);
 							resp.setResponse(res);
 						}

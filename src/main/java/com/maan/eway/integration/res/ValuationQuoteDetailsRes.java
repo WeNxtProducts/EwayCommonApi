@@ -33,6 +33,13 @@ public class ValuationQuoteDetailsRes {
 	    
 		@JsonProperty("PolicyNo")
 	    private String     policyNo ;
+		
+		@JsonProperty("BranchCode")
+	    private String     branchCode ;
+		
+		@JsonProperty("SumInsured")
+	    private Double     sumInsured ;
 
+		
 
 }

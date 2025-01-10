@@ -55,5 +55,14 @@ public class ValuationListRes {
 	@JsonProperty("Statusresponse")
 	private String statusresponse;
 	
+	@JsonProperty("ExceptionStatus")
+	private String exceptionStatus;
+	
+	@JsonProperty("ExceptionSumInusred")
+	private String exceptionSumInusred;
+	
+	@JsonProperty("ExceptionRemarks")
+	private String exceptionRemarks;
+	
 	
 }

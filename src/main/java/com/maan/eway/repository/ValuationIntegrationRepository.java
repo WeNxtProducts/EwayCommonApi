@@ -37,5 +37,8 @@ public interface ValuationIntegrationRepository  extends JpaRepository<Valuation
 
 	List<ValuationIntegration> findByRecordIdOrderByVehicleId(String recordId);
 
+	List<ValuationIntegration> findByStatusOrderByQuoteNo(String string);
+
+
 
 }

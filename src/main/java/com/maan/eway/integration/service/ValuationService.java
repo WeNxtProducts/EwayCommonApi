@@ -19,6 +19,8 @@ public interface ValuationService {
 
 	List<ValuationListRes> getValuationList(ValuationListReq req);
 
+	List<ValuationStatusReq> getValuationStatusPendingList();
+
 	
 
 	
