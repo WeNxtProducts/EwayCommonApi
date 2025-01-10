@@ -621,16 +621,8 @@
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="30">
-			<textField>
-				<reportElement x="0" y="10" width="280" height="20" uuid="23bcb1dc-22c8-4fcf-82e8-3451f3899482">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Add On Covers"]]></textFieldExpression>
-			</textField>
+		<band height="10">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 		</band>
 		<band height="25">
 			<componentElement>
@@ -646,91 +638,109 @@
 					<datasetRun subDataset="BaseCoverPremiumDetails" uuid="929ffb43-897e-4179-a0e7-886f030f51bc">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("addonPremiumDetails")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="140" uuid="7f6bb4cc-e79a-4be4-abf8-f2abbe057a26">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:detailCell height="15">
+					<jr:columnGroup width="555" uuid="505f43a0-15eb-44b0-b7b1-b9174cd496c8">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Columns [4]"/>
+						<jr:tableHeader height="20" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
-								<pen lineWidth="0.5"/>
-								<topPen lineWidth="0.5"/>
-								<leftPen lineWidth="0.5"/>
-								<bottomPen lineWidth="0.5"/>
-								<rightPen lineWidth="0.5"/>
+								<pen lineWidth="0.0"/>
 							</box>
-							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="140" height="15" backcolor="#FFFFFF" uuid="02b6d29a-484d-40cb-9005-b7c0222ac68c"/>
-								<box leftPadding="2">
-									<topPen lineWidth="0.5"/>
-									<bottomPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Left" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
+							<textField>
+								<reportElement x="0" y="0" width="555" height="20" uuid="50d25268-cfe2-4c53-b4fc-c61c267a4694">
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial" size="10" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{narration}]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Add On Covers"]]></textFieldExpression>
 							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="140" uuid="8adce1ea-d582-493c-88f8-d898068cfb0f">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:detailCell height="15">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
-							<textField pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="140" height="15" uuid="2bb30e88-e758-4440-813e-6e9825310820"/>
-								<box leftPadding="0" rightPadding="2"/>
-								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
-								</textElement>
-								<textFieldExpression><![CDATA[""]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="140" uuid="d9f4d244-42f5-47f6-8da6-8f6f36b84279">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:detailCell height="15">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
-							<textField pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="140" height="15" uuid="8ec5b9ea-bce3-4b8e-91a9-a5c72f11bc2f"/>
-								<box leftPadding="0" rightPadding="2"/>
-								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{rate}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="135" uuid="b37d7207-3e9b-47f9-a07a-7c7c0ed66f6b">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
-						<jr:detailCell height="15">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<box rightPadding="0">
-								<pen lineWidth="0.5"/>
-								<topPen lineWidth="0.5"/>
-								<leftPen lineWidth="0.5"/>
-								<bottomPen lineWidth="0.5"/>
-								<rightPen lineWidth="0.5"/>
-							</box>
-							<textField isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="135" height="15" backcolor="#FFFFFF" uuid="b3ba6ac7-3a2c-4a17-8354-a29225c75a9f"/>
-								<box leftPadding="0" rightPadding="2">
+						</jr:tableHeader>
+						<jr:column width="140" uuid="7f6bb4cc-e79a-4be4-abf8-f2abbe057a26">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+							<jr:detailCell height="15">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+								<box>
+									<pen lineWidth="0.5"/>
 									<topPen lineWidth="0.5"/>
 									<leftPen lineWidth="0.5"/>
 									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
 								</box>
-								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
-								</textElement>
-								<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{amount})]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
+								<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+									<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="140" height="15" backcolor="#FFFFFF" uuid="02b6d29a-484d-40cb-9005-b7c0222ac68c"/>
+									<box leftPadding="2">
+										<topPen lineWidth="0.5"/>
+										<bottomPen lineWidth="0.5"/>
+										<rightPen lineWidth="0.5"/>
+									</box>
+									<textElement textAlignment="Left" verticalAlignment="Middle">
+										<font fontName="Arial" size="8" isBold="false"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$F{narration}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="140" uuid="8adce1ea-d582-493c-88f8-d898068cfb0f">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+							<jr:detailCell height="15">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+								<box>
+									<pen lineWidth="0.5"/>
+								</box>
+								<textField pattern="#,##0.00" isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="140" height="15" uuid="2bb30e88-e758-4440-813e-6e9825310820"/>
+									<box leftPadding="0" rightPadding="2"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font fontName="Arial" size="8" isBold="false"/>
+									</textElement>
+									<textFieldExpression><![CDATA[""]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="140" uuid="d9f4d244-42f5-47f6-8da6-8f6f36b84279">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+							<jr:detailCell height="15">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+								<box>
+									<pen lineWidth="0.5"/>
+								</box>
+								<textField pattern="#,##0.00" isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="140" height="15" uuid="8ec5b9ea-bce3-4b8e-91a9-a5c72f11bc2f"/>
+									<box leftPadding="0" rightPadding="2"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font fontName="Arial" size="8" isBold="false"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$F{rate}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="135" uuid="b37d7207-3e9b-47f9-a07a-7c7c0ed66f6b">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+							<jr:detailCell height="15">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								<box rightPadding="0">
+									<pen lineWidth="0.5"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textField isBlankWhenNull="true">
+									<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="135" height="15" backcolor="#FFFFFF" uuid="b3ba6ac7-3a2c-4a17-8354-a29225c75a9f"/>
+									<box leftPadding="0" rightPadding="2">
+										<topPen lineWidth="0.5"/>
+										<leftPen lineWidth="0.5"/>
+										<bottomPen lineWidth="0.5"/>
+									</box>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font fontName="Arial" size="8" isBold="false"/>
+									</textElement>
+									<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{amount})]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:columnGroup>
 				</jr:table>
 			</componentElement>
 		</band>

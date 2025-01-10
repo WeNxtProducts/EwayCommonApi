@@ -2999,7 +2999,8 @@ public class JasperCustomServiceImple {
 					int s = Integer.parseInt(sectionIds.get(x).toString());
 					System.out.println(new Gson().toJson(coverData.stream().filter(f -> f.getSectionId()==s)
 							.collect(Collectors.toList())));
-					List<Integer> coverids = coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s && f.getIsSelected().equalsIgnoreCase("D"))
+					List<Integer> coverids = coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
+							&& f.getIsSelected().equalsIgnoreCase("D") || f.getFreeCoverLimit().compareTo(BigDecimal.ZERO) > 0)
 							.map(m -> m.getSubCoverYn().equalsIgnoreCase("Y")?m.getSubCoverId():m.getCoverId()).distinct()
 							.collect(Collectors.toList());
 					for(int j=0;j<coverids.size();j++) {
@@ -3009,9 +3010,13 @@ public class JasperCustomServiceImple {
 						o.put("CoverDesc", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
 								.map(m -> m.getSubCoverYn().equalsIgnoreCase("Y")?(m.getSubCoverName()+" "+m.getCoverName()):m.getCoverName()).findFirst().orElse("N/A"));
-						o.put("SumInsured", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
+						o.put("SumInsured", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T"))
+								&& f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
-								.map(m -> m.getSumInsured()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+								.map(m -> (m.getFreeCoverLimit().compareTo(BigDecimal.ZERO) > 0)
+									    ? m.getFreeCoverLimit().add(m.getSumInsured())
+									    : m.getSumInsured())
+								.collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 						o.put("Rate", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
 								.map(m -> m.getRate()).findFirst().orElse(BigDecimal.ZERO));
@@ -3038,7 +3043,8 @@ public class JasperCustomServiceImple {
 				List<Map<String,Object>> sectionPremium_1 = new ArrayList<Map<String,Object>>();
 				for(int x=0;x<sectionIds_1.size();x++) {
 					int s = Integer.parseInt(sectionIds_1.get(x).toString());
-					List<Integer> coverids_1 = coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s && (!f.getIsSelected().equalsIgnoreCase("D")))
+					List<Integer> coverids_1 = coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T"))
+							&& f.getSectionId()==s && (!f.getIsSelected().equalsIgnoreCase("D")) && (f.getFreeCoverLimit().compareTo(BigDecimal.ZERO) == 0))
 							.map(m -> m.getSubCoverYn().equalsIgnoreCase("Y")?m.getSubCoverId():m.getCoverId()).distinct()
 							.collect(Collectors.toList());
 					for(int j=0;j<coverids_1.size();j++) {
@@ -3048,16 +3054,19 @@ public class JasperCustomServiceImple {
 						o.put("CoverDesc", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
 								.map(m -> m.getSubCoverYn().equalsIgnoreCase("Y")?(m.getSubCoverName()+" "+m.getCoverName()):m.getCoverName()).findFirst().orElse("N/A"));
-						o.put("SumInsured", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
+						o.put("SumInsured", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T"))
+								&& f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
-								.map(m -> m.getSumInsured()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+								.map(m -> (m.getFreeCoverLimit().compareTo(BigDecimal.ZERO) > 0)
+									    ? m.getFreeCoverLimit().add(m.getSumInsured())
+									    : m.getSumInsured())
+								.collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 						o.put("Rate", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
 								.map(m -> m.getRate()).findFirst().orElse(BigDecimal.ZERO));
 						o.put("TotPremium", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
 								.map(m -> m.getPremiumExcludedTaxFc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
-						if(Double.parseDouble(o.get("TotPremium").toString())!=0.0)
 						sectionPremium_1.add(o);
 					}
 				}

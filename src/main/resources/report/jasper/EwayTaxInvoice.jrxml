@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayTaxInvoice" pageWidth="595" pageHeight="725" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="68d69835-f309-4f87-b998-2c406bffddf7">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayTaxInvoice"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="taxInvoice.xml"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -741,7 +741,7 @@
 		</band>
 		<band height="35">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<printWhenExpression><![CDATA[Arrays.asList("5","46").contains( $F{productId} )]]></printWhenExpression>
+			<printWhenExpression><![CDATA[("5".equalsIgnoreCase($F{productId}) || "46".equalsIgnoreCase($F{productId})) && (!"100019".equalsIgnoreCase($F{companyId}))]]></printWhenExpression>
 			<textField>
 				<reportElement x="443" y="0" width="45" height="15" uuid="692cb576-a2d3-44ef-a329-505814aecab1">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -868,7 +868,7 @@
 			</componentElement>
 		</band>
 		<band height="30">
-			<printWhenExpression><![CDATA[!Arrays.asList("5","46").contains( $F{productId} )]]></printWhenExpression>
+			<printWhenExpression><![CDATA[(! Arrays.asList("5","46").contains($F{productId}) || "100019".equalsIgnoreCase($F{companyId}))]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="15" y="15" width="518" height="15" uuid="e33b05b3-709f-4d57-9394-8313efc6f001">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -950,7 +950,7 @@
 			</textField>
 		</band>
 		<band height="30">
-			<printWhenExpression><![CDATA[!Arrays.asList("5","46").contains( $F{productId} )]]></printWhenExpression>
+			<printWhenExpression><![CDATA[(! Arrays.asList("5","46").contains($F{productId}) && "100019".equalsIgnoreCase($F{companyId}))]]></printWhenExpression>
 			<textField>
 				<reportElement x="310" y="0" width="129" height="15" uuid="4a1b94a0-c612-4996-9a9a-d185461fbf96">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1077,7 +1077,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["For TRA Tax purpose"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["For Tax purpose"]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="15" y="16" width="165" height="1" uuid="cff00e0d-abc2-4eb8-91e7-448a4490cbc3">
@@ -1291,7 +1291,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Tshs Account No :"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Account No "+"("+$F{currency}+")"+":"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="15" y="78" width="100" height="15" uuid="c891e32e-04f4-41c4-a8b3-411df32d4eae">
@@ -1345,7 +1345,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA["and USD Account No :"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["and Account No (USD) :"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="290" y="63" width="250" height="15" uuid="6b8ac791-24b7-492d-a2fb-898c85098260"/>
