@@ -5,6 +5,7 @@
 */
 package com.maan.eway.integration.service.impl;
 
+import java.net.ConnectException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -24,8 +26,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
 
 import com.maan.eway.integration.req.InsertCreditLimitDetailReq;
 import com.maan.eway.integration.req.InsertYiPolicyApprovalReq;
@@ -54,6 +56,7 @@ import com.maan.eway.integration.req.InsertYiVatDetailReq;
 import com.maan.eway.integration.req.MotDriverDetailReq;
 import com.maan.eway.integration.req.MotcommDiscountDetailReq;
 import com.maan.eway.integration.req.PgitPolRiskAddlInfoReq;
+import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.PtIntgFlexTranReq;
 import com.maan.eway.integration.req.YiChargeDetailReq;
 import com.maan.eway.integration.req.YiCoverDetailReq;
@@ -90,25 +93,25 @@ public class FrameReqServiceImpl implements FrameReqService {
 	private YiPolicyDetailRepository yiPolicyReo;
 	@Autowired
 	private CreditLimitDetailRepository creditRepo;
-	
+
 	@Autowired
 	private YiPolicyApprovalRepository yipolicyRepo;
-	
+
 	@Autowired
 	private YiPremCalRepository yipremRepo;
-	
+
 	@Autowired
 	private YiSectionDetailRepository yisecRepo;
-	
+
 	@Autowired
 	private YiVatDetailRepository yivatRepo;
-	
+
 	@Autowired
 	private PtintgFlexTransRepository ptintgFlexTransRepo;
 
 	@Value(value = "${BasicAuthPass}")
 	private String BasicAuthPass;
-	
+
 	@Value(value = "${BasicAuthName}")
 	private String BasicAuthName;
 
@@ -129,7 +132,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	@Value(value = "${YiPolicyDetail}")
 	private String YiPolicyDetailCall;
-	
+
 	@Value(value = "${CreditLimitDetail}")
 	private String CreditLimitDetailCall;
 
@@ -144,86 +147,106 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	@Value(value = "${YiVatDetail}")
 	private String YiVatDetailCall;
-	
+
 	@Value(value = "${PtIntgFlexTran}")
 	private String PtIntgFlexTranCall;
-	
-	
+
+	@Value(value = "${PremiaIntegrationExtCall}")
+	private String PremiaIntegrationExtCall;
+
 	SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-dd-MM");
 	private Logger log = LogManager.getLogger(FrameReqServiceImpl.class);
 	ModelMapper dozerMapper = new ModelMapper();
-	//*****************************************Push**********************************************************************
+
+	// *****************************************Push**********************************************************************
 	@Override
 	public Object pushMotCommDiscountDetail(String policyNo) {
-
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = MotCommDiscountDetailCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-        List<MotcommDiscountDetailReq> reqlist = new ArrayList<MotcommDiscountDetailReq>();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+		List<MotcommDiscountDetailReq> reqlist = new ArrayList<MotcommDiscountDetailReq>();
 		List<MotCommDiscountDetail> list = motComRepo.findByQuotationPolicyNo(policyNo);
-		MotCommDiscountDetail saveData=new MotCommDiscountDetail();
+		MotCommDiscountDetail saveData = new MotCommDiscountDetail();
 		if (list != null && list.size() > 0) {
-			for(MotCommDiscountDetail  reqData:list) {
+			for (MotCommDiscountDetail reqData : list) {
 				MotcommDiscountDetailReq req = new MotcommDiscountDetailReq();
 				req = dozerMapper.map(reqData, MotcommDiscountDetailReq.class);
 				reqlist.add(req);
 			}
 		}
+		try {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
-		HttpEntity<List<MotcommDiscountDetailReq>> entityReq = new HttpEntity<List<MotcommDiscountDetailReq>>(reqlist, headers);
+		headers.set("Authorization", authHeader);
+		HttpEntity<List<MotcommDiscountDetailReq>> entityReq = new HttpEntity<List<MotcommDiscountDetailReq>>(reqlist,
+				headers);
 
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
+		
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(MotCommDiscountDetail data1:list) {
-				saveData=dozerMapper.map(data1, MotCommDiscountDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
-				saveData.setCommercialDiscount(data1.getCommercialDiscount()==null?"0":data1.getCommercialDiscount().toString());
+		
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (MotCommDiscountDetail data1 : list) {
+					saveData = dozerMapper.map(data1, MotCommDiscountDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
+					saveData.setCommercialDiscount(
+							data1.getCommercialDiscount() == null ? "0" : data1.getCommercialDiscount().toString());
 //				list.add(saveData);
-			}
-			motComRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(MotCommDiscountDetail data1:list) {
-				saveData=dozerMapper.map(data1, MotCommDiscountDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
-				saveData.setCommercialDiscount(data1.getCommercialDiscount()==null?"0":data1.getCommercialDiscount().toString());
+				}
+				motComRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (MotCommDiscountDetail data1 : list) {
+						saveData = dozerMapper.map(data1, MotCommDiscountDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
+						saveData.setCommercialDiscount(
+								data1.getCommercialDiscount() == null ? "0" : data1.getCommercialDiscount().toString());
 //				list.add(saveData);
+					}
+					motComRepo.saveAndFlush(saveData);
+				}
 			}
-			motComRepo.saveAndFlush(saveData);
-		}
-		}
-		} catch (Exception e) {
+		} catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
+		}  
+		catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
-			return null;
+			res1.setErrorMessage(e.getMessage());
+			return res1;
 		}
-		return response;
+		return res1;
 	}
+
 	@Override
 	public Object pushMotDriverDetail(String policyNo) {
 		String url = MotDriverDetailCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-        List<MotDriverDetailReq> reqlist = new ArrayList<MotDriverDetailReq>();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+		List<MotDriverDetailReq> reqlist = new ArrayList<MotDriverDetailReq>();
 		List<MotDriverDetail> list = motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
 		MotDriverDetail saveData = new MotDriverDetail();
 		if (list != null && list.size() > 0) {
-			
-			for(MotDriverDetail data:list) {
+
+			for (MotDriverDetail data : list) {
 				MotDriverDetailReq req1 = new MotDriverDetailReq();
 				req1 = dozerMapper.map(data, MotDriverDetailReq.class);
 				reqlist.add(req1);
@@ -233,51 +256,52 @@ public class FrameReqServiceImpl implements FrameReqService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
+		headers.set("Authorization", authHeader);
 		HttpEntity<List<MotDriverDetailReq>> entityReq = new HttpEntity<List<MotDriverDetailReq>>(reqlist, headers);
 
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
 		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(MotDriverDetail data1:list) {
-				saveData=dozerMapper.map(data1, MotDriverDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (MotDriverDetail data1 : list) {
+					saveData = dozerMapper.map(data1, MotDriverDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
 //				list.add(saveData);
-			}
-			motDrivDetailsRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(MotDriverDetail data1:list) {
-				saveData=dozerMapper.map(data1, MotDriverDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
+				}
+				motDrivDetailsRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (MotDriverDetail data1 : list) {
+						saveData = dozerMapper.map(data1, MotDriverDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
 //				list.add(saveData);
+					}
+					motDrivDetailsRepo.saveAndFlush(saveData);
+				}
 			}
-			motDrivDetailsRepo.saveAndFlush(saveData);
-		}
-		}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
 			return null;
 		}
-		return response;
+		return res1;
 	}
 
 	@Override
 	public Object pushYiCoverDetail(String policyNo) {
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = YiCoverdetailCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-        List<YiCoverDetailReq> reqlist = new ArrayList<YiCoverDetailReq>();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+		List<YiCoverDetailReq> reqlist = new ArrayList<YiCoverDetailReq>();
 		List<YiCoverDetail> list = yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
-		YiCoverDetail saveData=new YiCoverDetail();
+		YiCoverDetail saveData = new YiCoverDetail();
 		if (list != null && list.size() > 0) {
 			for (YiCoverDetail data : list) {
 				YiCoverDetailReq req1 = new YiCoverDetailReq();
@@ -285,54 +309,69 @@ public class FrameReqServiceImpl implements FrameReqService {
 				reqlist.add(req1);
 			}
 		}
+		try {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
+		headers.set("Authorization", authHeader);
 		HttpEntity<List<YiCoverDetailReq>> entityReq = new HttpEntity<List<YiCoverDetailReq>>(reqlist, headers);
 
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
+		
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(YiCoverDetail data1:list) {
-				saveData=dozerMapper.map(data1, YiCoverDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
+		
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (YiCoverDetail data1 : list) {
+					saveData = dozerMapper.map(data1, YiCoverDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
 //				list.add(saveData);
-			}
-			yiCoverDetailRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(YiCoverDetail data1:list) {
-				saveData=dozerMapper.map(data1, YiCoverDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
+				}
+				yiCoverDetailRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (YiCoverDetail data1 : list) {
+						saveData = dozerMapper.map(data1, YiCoverDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
 //				list.add(saveData);
+					}
+					yiCoverDetailRepo.saveAndFlush(saveData);
+				}
 			}
-			yiCoverDetailRepo.saveAndFlush(saveData);
+		}catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
 		}
-		}
-		} catch (Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
-			return null;
+			res1.setErrorMessage(e.getMessage());
+			return res1;
 		}
-		return response;
+		return res1;
 	}
+
 	@Override
 	public Object pushYiChargeDetail(String policyNo) {
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = YiChargeDetailCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-        List<YiChargeDetailReq> reqlist = new ArrayList<YiChargeDetailReq>();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+		List<YiChargeDetailReq> reqlist = new ArrayList<YiChargeDetailReq>();
 		List<YiChargeDetail> list = yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
-		YiChargeDetail saveData=new YiChargeDetail();
+		YiChargeDetail saveData = new YiChargeDetail();
 		if (list != null && list.size() > 0) {
 			for (YiChargeDetail data : list) {
 				YiChargeDetailReq req1 = new YiChargeDetailReq();
@@ -340,55 +379,68 @@ public class FrameReqServiceImpl implements FrameReqService {
 				reqlist.add(req1);
 			}
 		}
+		try {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
+		headers.set("Authorization", authHeader);
 		HttpEntity<List<YiChargeDetailReq>> entityReq = new HttpEntity<List<YiChargeDetailReq>>(reqlist, headers);
 
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(YiChargeDetail data1:list) {
-				saveData=dozerMapper.map(data1, YiChargeDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
+		
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (YiChargeDetail data1 : list) {
+					saveData = dozerMapper.map(data1, YiChargeDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
 //				list.add(saveData);
-			}
-			yiChargeDetailRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(YiChargeDetail data1:list) {
-				saveData=dozerMapper.map(data1, YiChargeDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
+				}
+				yiChargeDetailRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (YiChargeDetail data1 : list) {
+						saveData = dozerMapper.map(data1, YiChargeDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
 //				list.add(saveData);
+					}
+					yiChargeDetailRepo.saveAndFlush(saveData);
+				}
 			}
-			yiChargeDetailRepo.saveAndFlush(saveData);
+		} catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
 		}
-		}
-		} catch (Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
-			return null;
+			res1.setErrorMessage(e.getMessage());
+			return res1;
 		}
-		return response;
+		return res1;
 	}
+
 	@Override
 	public Object pushYiPolicyDetail(String policyNo) {
-		
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = YiPolicyDetailCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-        List<YiPolicyDetailReq> reqlist = new ArrayList<YiPolicyDetailReq>();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+		List<YiPolicyDetailReq> reqlist = new ArrayList<YiPolicyDetailReq>();
 		List<YiPolicyDetail> list = yiPolicyReo.findByQuotationPolicyNo(policyNo);
-		YiPolicyDetail saveData=new YiPolicyDetail();
+		YiPolicyDetail saveData = new YiPolicyDetail();
 		if (list != null && list.size() > 0) {
 			YiPolicyDetailReq req1 = new YiPolicyDetailReq();
 			for (YiPolicyDetail data : list) {
@@ -396,406 +448,547 @@ public class FrameReqServiceImpl implements FrameReqService {
 				reqlist.add(req1);
 			}
 		}
+		try {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
+		headers.set("Authorization", authHeader);
 		HttpEntity<List<YiPolicyDetailReq>> entityReq = new HttpEntity<List<YiPolicyDetailReq>>(reqlist, headers);
 
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
+		
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("Success".equalsIgnoreCase(res1.getResponse())){
-			for(YiPolicyDetail data:list) {
-				saveData=dozerMapper.map(data, YiPolicyDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");			
-//				list.add(saveData);
-			}
-			yiPolicyReo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(YiPolicyDetail data:list) {
-				saveData=dozerMapper.map(data, YiPolicyDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
+		
+			if ("Success".equalsIgnoreCase(res1.getResponse())) {
+				for (YiPolicyDetail data : list) {
+					saveData = dozerMapper.map(data, YiPolicyDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
 //				list.add(saveData);
 				}
 				yiPolicyReo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (YiPolicyDetail data : list) {
+						saveData = dozerMapper.map(data, YiPolicyDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+					}
+					yiPolicyReo.saveAndFlush(saveData);
+				}
+			}
+		}catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
 		}
-		}
-		} catch (Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
-			return null;
+			res1.setErrorMessage(e.getMessage());
+			return res1;
 		}
-		return response;
+		return res1;
 	}
+
 	////////////////////////////////////////////////////////////////
 	@Override
 	public Object pushCreditLimitDetail(String reqRefNo) {
-		
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = CreditLimitDetailCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-        List<InsertCreditLimitDetailReq> reqList = new ArrayList<InsertCreditLimitDetailReq>();
-      
-		List<CreditLimitDetail> list =creditRepo.findByRequestreferenceno(reqRefNo); 
-		CreditLimitDetail saveData=new CreditLimitDetail();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+		List<InsertCreditLimitDetailReq> reqList = new ArrayList<InsertCreditLimitDetailReq>();
+
+		List<CreditLimitDetail> list = creditRepo.findByRequestreferenceno(reqRefNo);
+		CreditLimitDetail saveData = new CreditLimitDetail();
 		if (list != null && list.size() > 0) {
-			for(CreditLimitDetail data : list) {
-				  InsertCreditLimitDetailReq req1 = new InsertCreditLimitDetailReq();
-				  req1 = dozerMapper.map(data,  InsertCreditLimitDetailReq.class);
-				  reqList.add(req1);
-				  }
+			for (CreditLimitDetail data : list) {
+				InsertCreditLimitDetailReq req1 = new InsertCreditLimitDetailReq();
+				req1 = dozerMapper.map(data, InsertCreditLimitDetailReq.class);
+				reqList.add(req1);
+			}
 		}
+		try {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization",authHeader);
-		HttpEntity< List<InsertCreditLimitDetailReq>> entityReq = new HttpEntity< List<InsertCreditLimitDetailReq>>(reqList, headers);
+		headers.set("Authorization", authHeader);
+		HttpEntity<List<InsertCreditLimitDetailReq>> entityReq = new HttpEntity<List<InsertCreditLimitDetailReq>>(
+				reqList, headers);
 
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
+		
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(CreditLimitDetail data1:list) {
-				saveData=dozerMapper.map(data1, CreditLimitDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
-//				list.add(saveData);
-			}
-			creditRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(CreditLimitDetail data1:list) {
-				saveData=dozerMapper.map(data1, CreditLimitDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
-//				list.add(saveData);
-			}
-			creditRepo.saveAndFlush(saveData);
-		}
-		}
-			
 		
-		}catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		return response;
-		
-	}
-	@Override
-	public Object pushYiPolicyApproval(String policyNo) {
-		
-		String url = YiPolicyApprovalCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-       
-		List<YiPolicyApproval> list =yipolicyRepo.findByQuotationPolicyNo(policyNo);
-		YiPolicyApproval saveData=new YiPolicyApproval();
-		List<InsertYiPolicyApprovalReq> reqList = new ArrayList<InsertYiPolicyApprovalReq>();
-		if (list != null && list.size() > 0) {
-			
-			for(YiPolicyApproval data : list) {
-				 InsertYiPolicyApprovalReq req1 = new InsertYiPolicyApprovalReq();
-				  req1 = dozerMapper.map(data,   InsertYiPolicyApprovalReq.class);
-				  reqList.add(req1);
-				  }
-		}
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
-		HttpEntity<   List<InsertYiPolicyApprovalReq>> entityReq = new HttpEntity<   List<InsertYiPolicyApprovalReq>>(reqList, headers);
-
-		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
-		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
-		res1.setResponse(response.getBody().getCommonResponse().getResponse());
-		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(YiPolicyApproval data1:list) {
-				saveData=dozerMapper.map(data1, YiPolicyApproval.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (CreditLimitDetail data1 : list) {
+					saveData = dozerMapper.map(data1, CreditLimitDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
 //				list.add(saveData);
 				}
-			yipolicyRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(YiPolicyApproval data1:list) {
-				saveData=dozerMapper.map(data1, YiPolicyApproval.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
+				creditRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (CreditLimitDetail data1 : list) {
+						saveData = dozerMapper.map(data1, CreditLimitDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
 //				list.add(saveData);
+					}
+					creditRepo.saveAndFlush(saveData);
+				}
 			}
-		yipolicyRepo.saveAndFlush(saveData);
-		}
-		}
 
-	
-		}catch (Exception e) {
-			e.printStackTrace();
-			return null;
+		}catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
 		}
-		return response;
+		catch (Exception e) {
+			e.printStackTrace();
+			res1.setErrorMessage(e.getMessage());
+			return res1;
+		}
+		return res1;
+
 	}
+
+	@Override
+	public Object pushYiPolicyApproval(String policyNo) {
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
+		String url = YiPolicyApprovalCall;
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+
+		List<YiPolicyApproval> list = yipolicyRepo.findByQuotationPolicyNo(policyNo);
+		YiPolicyApproval saveData = new YiPolicyApproval();
+		List<InsertYiPolicyApprovalReq> reqList = new ArrayList<InsertYiPolicyApprovalReq>();
+		if (list != null && list.size() > 0) {
+
+			for (YiPolicyApproval data : list) {
+				InsertYiPolicyApprovalReq req1 = new InsertYiPolicyApprovalReq();
+				req1 = dozerMapper.map(data, InsertYiPolicyApprovalReq.class);
+				reqList.add(req1);
+			}
+		}
+		try {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization", authHeader);
+		HttpEntity<List<InsertYiPolicyApprovalReq>> entityReq = new HttpEntity<List<InsertYiPolicyApprovalReq>>(reqList,
+				headers);
+
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
+		System.out.println(response.getBody());
+		
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+	
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (YiPolicyApproval data1 : list) {
+					saveData = dozerMapper.map(data1, YiPolicyApproval.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
+//				list.add(saveData);
+				}
+				yipolicyRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (YiPolicyApproval data1 : list) {
+						saveData = dozerMapper.map(data1, YiPolicyApproval.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
+//				list.add(saveData);
+					}
+					yipolicyRepo.saveAndFlush(saveData);
+				}
+			}
+
+		}catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			res1.setErrorMessage(e.getMessage());
+			return res1;
+		}
+		return res1;
+	}
+
 	@Override
 	public Object pushYiPremCal(String policyNo) {
-		
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = YiPremCalCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-       
-		List<YiPremCal> list =yipremRepo.findByQuotationPolicyNo(policyNo);
-		YiPremCal saveData =new YiPremCal();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+
+		List<YiPremCal> list = yipremRepo.findByQuotationPolicyNo(policyNo);
+		YiPremCal saveData = new YiPremCal();
 		List<InsertYiPremCalReq> reqList = new ArrayList<InsertYiPremCalReq>();
 		if (list != null && list.size() > 0) {
-		
-			for(YiPremCal data : list) {
-				 InsertYiPremCalReq req1 = new   InsertYiPremCalReq();
-				 req1 = dozerMapper.map(data,     InsertYiPremCalReq.class);
-				  reqList.add(req1);
-				  }
+
+			for (YiPremCal data : list) {
+				InsertYiPremCalReq req1 = new InsertYiPremCalReq();
+				req1 = dozerMapper.map(data, InsertYiPremCalReq.class);
+				reqList.add(req1);
+			}
 		}
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
-		HttpEntity< List<InsertYiPremCalReq>> entityReq = new HttpEntity<List<InsertYiPremCalReq>>(reqList, headers);
-
+		headers.set("Authorization", authHeader);
+		HttpEntity<List<InsertYiPremCalReq>> entityReq = new HttpEntity<List<InsertYiPremCalReq>>(reqList, headers);
+		try {
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(YiPremCal data1:list) {
-				saveData=dozerMapper.map(data1, YiPremCal.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
+		
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (YiPremCal data1 : list) {
+					saveData = dozerMapper.map(data1, YiPremCal.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
 //				list.add(saveData);
-			}
-		yipremRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(YiPremCal data1:list) {
-				saveData=dozerMapper.map(data1, YiPremCal.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
+				}
+				yipremRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (YiPremCal data1 : list) {
+						saveData = dozerMapper.map(data1, YiPremCal.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
 //				list.add(saveData);
+					}
+					yipremRepo.saveAndFlush(saveData);
+				}
 			}
-		yipremRepo.saveAndFlush(saveData);
+		}catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } 
 		}
-		}
-		}catch (Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			res1.setErrorMessage(e.getMessage());
+			return res1;
 		}
-		return response;
+		return res1;
 	}
+
 	@Override
 	public Object pushYiVatDetail(String policyNo) {
-		
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = YiVatDetailCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-		List<YiVatDetail> list =yivatRepo.findByQuotationPolicyNo(policyNo);
-		YiVatDetail saveData=new YiVatDetail();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+		List<YiVatDetail> list = yivatRepo.findByQuotationPolicyNo(policyNo);
+		YiVatDetail saveData = new YiVatDetail();
 		List<InsertYiVatDetailReq> reqList = new ArrayList<InsertYiVatDetailReq>();
 		if (list != null && list.size() > 0) {
 
-			for(YiVatDetail data : list) {
-				InsertYiVatDetailReq req1 = new   InsertYiVatDetailReq();
-				 req1 = dozerMapper.map(data,  InsertYiVatDetailReq.class);
-				  reqList.add(req1);
-				  }
-			
+			for (YiVatDetail data : list) {
+				InsertYiVatDetailReq req1 = new InsertYiVatDetailReq();
+				req1 = dozerMapper.map(data, InsertYiVatDetailReq.class);
+				reqList.add(req1);
+			}
+
 		}
+		try {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
-		HttpEntity< List<InsertYiVatDetailReq>> entityReq = new HttpEntity<List<InsertYiVatDetailReq>>(reqList, headers);
+		headers.set("Authorization", authHeader);
+		HttpEntity<List<InsertYiVatDetailReq>> entityReq = new HttpEntity<List<InsertYiVatDetailReq>>(reqList, headers);
 
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
+		
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(YiVatDetail data1:list) {
-				saveData=dozerMapper.map(data1, YiVatDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (YiVatDetail data1 : list) {
+					saveData = dozerMapper.map(data1, YiVatDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
 //				list.add(saveData);
-			}
-		yivatRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(YiVatDetail data1:list) {
-				saveData=dozerMapper.map(data1, YiVatDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
+				}
+				yivatRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (YiVatDetail data1 : list) {
+						saveData = dozerMapper.map(data1, YiVatDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
 //				list.add(saveData);
+					}
+					yivatRepo.saveAndFlush(saveData);
+				}
 			}
-		yivatRepo.saveAndFlush(saveData);
-		}
-		}
-	
+
+		} catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } 
 		}catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			res1.setErrorMessage(e.getMessage());
+			return res1;
 		}
-		return response;
+		return res1;
 	}
+
 	@Override
 	public Object pushYiSectionDetail(String policyNo) {
-		
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = YiSectionDetailCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-      
-		List<YiSectionDetail> list =yisecRepo.findByQuotationPolicyNo(policyNo);
-		YiSectionDetail saveData=new YiSectionDetail();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+
+		List<YiSectionDetail> list = yisecRepo.findByQuotationPolicyNo(policyNo);
+		YiSectionDetail saveData = new YiSectionDetail();
 		List<InsertYiSectionDetailReq> reqList = new ArrayList<InsertYiSectionDetailReq>();
 		if (list != null && list.size() > 0) {
-		
-			for(YiSectionDetail data : list) {
-				  InsertYiSectionDetailReq req1 = new     InsertYiSectionDetailReq();
+
+			for (YiSectionDetail data : list) {
+				InsertYiSectionDetailReq req1 = new InsertYiSectionDetailReq();
 				req1 = dozerMapper.map(data, InsertYiSectionDetailReq.class);
-				  reqList.add(req1);
-				  }
+				reqList.add(req1);
+			}
 		}
+		try {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization",authHeader);
-		HttpEntity<List<InsertYiSectionDetailReq>> entityReq = new HttpEntity<List<InsertYiSectionDetailReq>>(reqList, headers);
+		headers.set("Authorization", authHeader);
+		HttpEntity<List<InsertYiSectionDetailReq>> entityReq = new HttpEntity<List<InsertYiSectionDetailReq>>(reqList,
+				headers);
 
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
+		
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(YiSectionDetail data1:list) {
-				saveData=dozerMapper.map(data1, YiSectionDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (YiSectionDetail data1 : list) {
+					saveData = dozerMapper.map(data1, YiSectionDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
 //				list.add(saveData);
-			}
-		yisecRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(YiSectionDetail data1:list) {
-				saveData=dozerMapper.map(data1, YiSectionDetail.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
+				}
+				yisecRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (YiSectionDetail data1 : list) {
+						saveData = dozerMapper.map(data1, YiSectionDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
 //				list.add(saveData);
+					}
+					yisecRepo.saveAndFlush(saveData);
+				}
 			}
-		yisecRepo.saveAndFlush(saveData);
+		} catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } 
+		}catch (Exception e) {
+			e.printStackTrace();
+			res1.setErrorMessage(e.getMessage());
+			return res1;
 		}
-		}
-	} catch (Exception e) {
-		e.printStackTrace();
-		return null;
+		return res1;
 	}
-	return response;
-	}
-	
+
 	@Override
 	public Object pushPgitPolRiskAddlInfo(String policyNo) {
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = PgitPolRiskAddlInfoCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-     
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+
 		List<PgithPolRiskAddlInfo> list = pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
-		PgithPolRiskAddlInfo saveData=new PgithPolRiskAddlInfo();
+		PgithPolRiskAddlInfo saveData = new PgithPolRiskAddlInfo();
 		List<PgitPolRiskAddlInfoReq> reqList = new ArrayList<PgitPolRiskAddlInfoReq>();
-		
+
 		if (list != null && list.size() > 0) {
-			
-			for(PgithPolRiskAddlInfo data : list) {
+
+			for (PgithPolRiskAddlInfo data : list) {
 				PgitPolRiskAddlInfoReq req1 = new PgitPolRiskAddlInfoReq();
-				   req1 = dozerMapper.map(data, PgitPolRiskAddlInfoReq.class);
-				   reqList.add(req1);
-				  }
+				req1 = dozerMapper.map(data, PgitPolRiskAddlInfoReq.class);
+				reqList.add(req1);
+			}
 		}
+		try {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
-		HttpEntity<List<PgitPolRiskAddlInfoReq>> entityReq = new HttpEntity<List<PgitPolRiskAddlInfoReq>>(reqList, headers);
-
+		headers.set("Authorization", authHeader);
+		HttpEntity<List<PgitPolRiskAddlInfoReq>> entityReq = new HttpEntity<List<PgitPolRiskAddlInfoReq>>(reqList,
+				headers);
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
+		
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
-		try {
-		if("success".equalsIgnoreCase(res1.getResponse())) {
-			for(PgithPolRiskAddlInfo data1:list) {
-				saveData=dozerMapper.map(data1, PgithPolRiskAddlInfo.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError("");
+		
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (PgithPolRiskAddlInfo data1 : list) {
+					saveData = dozerMapper.map(data1, PgithPolRiskAddlInfo.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
 //				list.add(saveData);
-			}
-			pgitPolRiskRepo.saveAndFlush(saveData);
-		}else {
-			if(list.size()>0 && list!=null) {
-			for(PgithPolRiskAddlInfo data1:list) {
-				saveData=dozerMapper.map(data1, PgithPolRiskAddlInfo.class);
-				saveData.setPWsResponseType(res1.getResponse());
-				saveData.setPWsError(res1.getErrorMessage());
+				}
+				pgitPolRiskRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (PgithPolRiskAddlInfo data1 : list) {
+						saveData = dozerMapper.map(data1, PgithPolRiskAddlInfo.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
 //				list.add(saveData);
+					}
+					pgitPolRiskRepo.saveAndFlush(saveData);
+				}
 			}
-			pgitPolRiskRepo.saveAndFlush(saveData);
-		}
-		}
 
-		} catch (Exception e) {
+		} catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			res1.setErrorMessage(e.getMessage());
+			return res1;
 		}
-		return response;
+		return res1;
 	}
+
+	/// Premia integration Api 9091
+	@Override
+	public IntegrationSaveRes premiaExternalCall(String policyNo,String companyId) {
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
+		String url="";
+		try {
+			url = PremiaIntegrationExtCall;
+			String auth = BasicAuthName + ":" + BasicAuthPass;
+			byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+			String authHeader = "Basic " + new String(encodedAuth);
+
+			PremiaRequest req = new PremiaRequest();
+			req.setPolicyNo(policyNo);
+			req.setCompanyId(companyId);
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("Authorization", authHeader);
+
+			HttpEntity<PremiaRequest> entityReq = new HttpEntity<PremiaRequest>(req, headers);
+
+			ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq,
+					PremiaCommonRes.class);
+			System.out.println(response.getBody());
+			res1.setResponse(response.getBody().getCommonResponse().getResponse().toString());
+			res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage().toString());
+			res1.setPWsResponseType(StringUtils.isBlank(response.getBody().getCommonResponse().getPWsResponseType())?"":response.getBody().getCommonResponse().getPWsResponseType());
+			res1.setPWsError(StringUtils.isBlank(response.getBody().getCommonResponse().getPWsError())?"":response.getBody().getCommonResponse().getPWsError());
+		}catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " +url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			res1.setResponse("Failed");
+			res1.setErrorMessage(e.getMessage());
+			return res1;
+		}
+		return res1;
+	}
+
 //Madison-------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	public Object pushPtIntgFlexTran(String policyNo) {
-		
+
 		String url = PtIntgFlexTranCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-        List<PtIntgFlexTranReq> reqlist = new ArrayList<PtIntgFlexTranReq>();
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+		List<PtIntgFlexTranReq> reqlist = new ArrayList<PtIntgFlexTranReq>();
 		List<PtIntgFlexTran> list = ptintgFlexTransRepo.findByPiftPolicyNo(policyNo);
-		PtIntgFlexTran saveData=new PtIntgFlexTran();
+		PtIntgFlexTran saveData = new PtIntgFlexTran();
 		if (list != null && list.size() > 0) {
 			PtIntgFlexTranReq req1 = new PtIntgFlexTranReq();
 			for (PtIntgFlexTran data : list) {
@@ -807,12 +1000,12 @@ public class FrameReqServiceImpl implements FrameReqService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
+		headers.set("Authorization", authHeader);
 		HttpEntity<List<PtIntgFlexTranReq>> entityReq = new HttpEntity<List<PtIntgFlexTranReq>>(reqlist, headers);
 
 		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
 		System.out.println(response.getBody());
-		IntegrationSaveRes res1= new IntegrationSaveRes();
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		res1.setResponse(response.getBody().getCommonResponse().getResponse());
 		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
 //		try {
@@ -839,7 +1032,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 //			return null;
 //		}
 		return response;
-	}	
-	
-	
+	}
+
 }

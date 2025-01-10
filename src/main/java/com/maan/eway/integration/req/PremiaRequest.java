@@ -29,4 +29,7 @@ public class PremiaRequest {
 	@JsonProperty("PremiaIds")
 	private List<String> premiaIds; 
 	
+	@JsonProperty("CompanyId")
+	private String companyId;
+	
 }

@@ -1,6 +1,5 @@
 package com.maan.eway.common.service.impl;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -139,7 +139,8 @@ public class TiraIntegerationServiceImpl {
 			}
 			
 			// Background Call
-			ExecutorService service2 = Executors.newFixedThreadPool(4);
+			ExecutorService service2 = Executors.newFixedThreadPool(1);
+			
 		    service2.submit(new Runnable() {
 		        public void run() {
 		        	try {
@@ -177,7 +178,21 @@ public class TiraIntegerationServiceImpl {
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					}finally {
+						 // Shutdown the ExecutorService
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+						System.out.println("Premia Integration FINALY... Quote No ---> " + tiraReq.getQuoteNo() + " . Time : " + sdf.format(new Date()) );
+			            service2.shutdown();
+			            try {
+			                if (!service2.awaitTermination(15, TimeUnit.SECONDS)) {
+			                    service2.shutdownNow();
+			                }
+			            } catch (InterruptedException ex) {
+			                service2.shutdownNow();
+			                Thread.currentThread().interrupt();
+			            }
 					} 
+		        	
 		        }
 		    });
 			
@@ -228,7 +243,7 @@ public class TiraIntegerationServiceImpl {
 		 	Object PremiaRes = null;
 		try {
 			// Frame Tira Req
-
+			System.out.println("Calling : /push/integration/quote");
 			RestTemplate temp = new RestTemplate();
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(MediaType.APPLICATION_JSON);

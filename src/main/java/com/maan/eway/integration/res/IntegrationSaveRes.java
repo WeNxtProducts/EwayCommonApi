@@ -15,4 +15,10 @@ public class IntegrationSaveRes {
 	@JsonProperty("ErrorMessage")
 	private String errorMessage;
 	
+	@JsonProperty("PWsResponsetype")
+	private String pWsResponseType;
+
+	@JsonProperty("PWsError")
+	private String pWsError;
+	
 }
