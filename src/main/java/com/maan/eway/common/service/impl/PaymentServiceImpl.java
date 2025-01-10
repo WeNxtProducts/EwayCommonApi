@@ -2281,7 +2281,7 @@ public class PaymentServiceImpl implements PaymentService {
 				if(emiDetails!=null) {
 				data.setEmiYn(req.getEmiYn());
 				data.setEmiPremium(req.getPremium());
-				data.setInstallmentPeriod(emiDetails.get(0).getInstallmentPeriod());
+				data.setInstallmentPeriod(emiDetails.get(0).getInstallmentTypeId());
 				data.setNoOfInstallment(emiDetails.get(0).getInstalment());
 				data.setEmiinstallYn(req.getEmiYn());
 				

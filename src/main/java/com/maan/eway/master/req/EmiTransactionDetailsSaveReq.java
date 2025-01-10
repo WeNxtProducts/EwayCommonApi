@@ -110,6 +110,8 @@ public class EmiTransactionDetailsSaveReq implements Serializable {
     @JsonProperty("EndtCommission")
     private String endtCommission ;
 	
-
+    @JsonProperty("InstallmentTypeId")
+    private String installmentTypeId;
+    
 	
 }

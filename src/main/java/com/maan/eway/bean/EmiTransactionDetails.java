@@ -189,6 +189,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENDT_COMMISSION")
     private BigDecimal endtCommission ;
 
+    @Column(name="INSTALLMENT_TYPE_ID", length=100)
+    private String installmentTypeId;
+    
+    @Column(name="INSTALLMENT_TYPE_DESC", length=100)
+    private String installmentTypeDesc;
+    
 }
 
 

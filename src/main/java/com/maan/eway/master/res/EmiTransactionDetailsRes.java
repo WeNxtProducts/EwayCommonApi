@@ -87,4 +87,12 @@ public class EmiTransactionDetailsRes implements Serializable {
 	@JsonProperty("CbcNo")
     private String     cbcNo ;
 	
+
+    @JsonProperty("InstallmentTypeId")
+    private String installmentTypeId;
+    
+
+    @JsonProperty("InstallmentTypeDesc")
+    private String installmentTypeDesc;
+	
 }
