@@ -765,8 +765,8 @@ public class JasperCustomServiceImple {
 					cb.equal(SubpsmRoot.get("status"), "Y"));
 			
 			cq2.multiselect(psmRoot.get("coreAppCode").alias("coreAppCode"))
-				.where(cb.equal(psmRoot.get("status"), "Y"),cb.equal(psmRoot.get("productId"), sddRoot1.get("productId")),
-						cb.equal(psmRoot.get("companyId"), sddRoot1.get("companyId")),cb.equal(psmRoot.get("sectionId"), sddRoot1.get("sectionId")),
+				.where(cb.equal(psmRoot.get("status"), "Y"),cb.equal(psmRoot.get("productId").as(String.class), sddRoot1.get("productId")),
+						cb.equal(psmRoot.get("companyId"), sddRoot1.get("companyId")),cb.equal(psmRoot.get("sectionId").as(String.class), sddRoot1.get("sectionId")),
 						cb.equal(sddRoot1.get("quoteNo"), map.get("quoteNo")),cb.equal(psmRoot.get("amendId"), SubSdAm)).distinct(true);
 			List<Tuple> riskCodeList = em.createQuery(cq2).getResultList();
 			riskCodeList.forEach(i -> {
