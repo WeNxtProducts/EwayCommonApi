@@ -442,7 +442,7 @@ private String updateIntegrationStatus(String quoteNo, HomePositionMaster home,S
 		}else {
 			home.setCoreIntgStatus("Data Failed to saved in  My Sql");
 			home.setIntegrationStatus("F");
-			home.setIntegrationError("Data Failed to saved in  My Sql"+errorList);
+			home.setIntegrationError("Data Failed to saved in  My Sql "+errorList);
 			result="F";
 		}
 		homeRepo.save(home);
@@ -904,12 +904,14 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			System.out.println("Not Saved in Oracle "+failureOracleList);
 		}
 		// Premia Posting Calling procedural call
-		if (failureOracleList.isEmpty()) {
+		if (failureOracleList.isEmpty() && failureOracleList.size()>0) {
+			if("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) {
 			System.out.println("*********Premia Integration External Api Call:");
 			System.out.println("Policy No :" +policyNo+" Company Id :"+companyId);
 			IntegrationSaveRes list = frameReqService.premiaExternalCall(policyNo,companyId);
 			System.out.println("List " + json.toJson(list));
 			if (list.getResponse().equalsIgnoreCase("Failed")) {
+				
 				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ? "Data not Integrated"
 						: list.getPWsResponseType());
 				home.setIntegrationStatus("F");
@@ -928,6 +930,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
+		}
 
 		}
 		if ("100004".equalsIgnoreCase(companyId)) {
