@@ -2398,7 +2398,7 @@ public class JasperCustomServiceImple {
 					for(int i =0;i<secEntry.getValue().size();i++) {
 						Tuple o = secEntry.getValue().get(i);
 						LinkedHashMap<String,Object> s = new LinkedHashMap<String,Object>();
-						s.put("covername", o.get("sectionDesc")==null?"":o.get("sectionDesc").toString());
+						s.put("covername", o.get("coverDesc")==null?"":o.get("coverDesc").toString());
 						s.put("annually", o.get("premiumExcludedTaxFc")==null?0.00:Double.parseDouble(o.get("premiumExcludedTaxFc").toString()));
 						s.put("monthly", o.get("premiumExcludedTaxFc")==null?0.00:Double.parseDouble(o.get("premiumExcludedTaxFc").toString())/12);
 						sec_list.add(s);
