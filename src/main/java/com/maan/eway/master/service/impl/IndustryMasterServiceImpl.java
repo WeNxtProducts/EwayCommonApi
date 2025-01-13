@@ -127,6 +127,8 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 			Predicate n7 = cb.or(n5,n6);
 			Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
+			Predicate n13 = cb.equal(c.get("branchCode"),"99999");
+			Predicate n14 = cb.or(n8,n13);
 			Predicate n9 = null ;
 			if(StringUtils.isNotBlank(req.getCategoryId()) ) {
 				n9 = cb.equal(c.get("categoryId"),req.getCategoryId());	
@@ -146,7 +148,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 				
 			}
 			else {
-			query.where(n12,n2,n3,n4,n7,n8,n9).orderBy(orderList);
+			query.where(n12,n2,n3,n4,n7,n14,n9).orderBy(orderList);
 			}
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
