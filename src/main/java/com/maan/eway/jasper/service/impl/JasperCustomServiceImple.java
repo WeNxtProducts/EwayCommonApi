@@ -1930,6 +1930,7 @@ public class JasperCustomServiceImple {
 				predicate.add(cb.equal(pcdRoot.get("discLoadId"), "0"));
 				predicate.add(cb.equal(pcdRoot.get("subCoverId"), "0"));
 				predicate.add(cb.equal(pcdRoot.get("locationId"), sddRoot.get("locationId")));
+				predicate.add(cb.equal(pcdRoot.get("vehicleId"), sddRoot.get("riskId")));
 				/*if(!eserviceCommonList.isEmpty()) {
 					Root<EserviceCommonDetails> ecdRoot = cq1.from(EserviceCommonDetails.class);
 					eserviceQuote = ecdRoot.get("occupationDesc").alias("occupationDesc");
