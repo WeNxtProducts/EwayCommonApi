@@ -3915,7 +3915,8 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
 						Predicate n5 = cb.equal(m.get("endtStatus"), "P");
 						Predicate n8 = cb.isNotNull(m.get("bdmCode"));
-						query.where(n1, n2, n3, n4, n5, n8);
+						Predicate n9 = cb.equal(m.get("branchCode"),req.getBranchCode());
+						query.where(n1, n2, n3, n4, n5, n8,n9);
 
 						TypedQuery<Tuple> typedQuery = em.createQuery(query);
 						list = typedQuery.getResultList();
@@ -3950,8 +3951,9 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
 						Predicate n5 = cb1.equal(m1.get("endtStatus"), "P");
 						Predicate n6 = cb1.isNull(m1.get("bdmCode"));
+						Predicate n9 = cb1.equal(m1.get("branchCode"),req.getBranchCode());
 						Predicate us1 = cb1.equal(us.get("loginId"), m1.get("loginId"));
-						query1.where(n1, n2, n3, n4, n5, n6,us1);
+						query1.where(n1, n2, n3, n4, n5, n6,us1,n9);
 
 						TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 						list1 = typedQuery1.getResultList();
