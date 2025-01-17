@@ -114,6 +114,7 @@ import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
@@ -2906,7 +2907,7 @@ public class JasperCustomServiceImple {
 		List<Map<String,Object>> vehicleList = new ArrayList<Map<String,Object>>();
 		List<TaxInvoicePremiumDetails> premiumDetailsRes = new ArrayList<>();
 		List<TaxInvoicePremiumDetails> premiumDetailsRes_1 = new ArrayList<>();
-		List<Map<String,Object>> excessConDetails = new ArrayList<Map<String,Object>>();
+		List<Map<String,Object>> taxDetails = new ArrayList<Map<String,Object>>();
 		Double OverAllPremium=0.0;
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2950,8 +2951,8 @@ public class JasperCustomServiceImple {
 			
 			cq.multiselect(luiRoot.get("userName").alias("userName"),emdRoot.get("requestReferenceNo").alias("requestReferenceNo"),emdRoot.get("companyId").alias("companyId"),
 					emdRoot.get("currency").alias("currency"),emdRoot.get("policyStartDate").alias("inceptionDate"),emdRoot.get("branchName").alias("branchName"),
-					emdRoot.get("policyEndDate").alias("expiryDate"),
-					cb.concat(ecdRoot.get("titleDesc"), cb.concat(".", ecdRoot.get("clientName"))).alias("customerName"),companyName.alias("companyName"),
+					emdRoot.get("policyEndDate").alias("expiryDate"),emdRoot.get("policyType").alias("policyType"),emdRoot.get("policyTypeDesc").alias("policyTypeDesc"),emdRoot.get("vehicleClass").alias("vehicleClass"),
+					(cb.selectCase().when(cb.isNull(ecdRoot.get("titleDesc")), ecdRoot.get("clientName")).otherwise(cb.concat(cb.concat(ecdRoot.get("titleDesc"),"."), ecdRoot.get("clientName")))) .alias("customerName"),companyName.alias("companyName"),
 					cb.concat(ecdRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(ecdRoot.get("pinCode"), ""),cb.concat(cb.selectCase().when(cb.isNull(ecdRoot.get("pinCode")), "").when(cb.equal(ecdRoot.get("pinCode"), ""), "")
 					.otherwise(",").as(String.class), cb.concat(ecdRoot.get("stateName"), cb.concat(",", cb.concat(ecdRoot.get("cityName"),cb.concat(",", countryName)))))))).alias("address"),
 					ecdRoot.get("vrTinNo").alias("vrTinNo"),ecdRoot.get("email1").alias("email1"),ecdRoot.get("mobileNo1").alias("mobileNo1"),imageURL.alias("companyLogo"),luiRoot.get("brokerLogo").alias("brokerLogo"))
@@ -2984,16 +2985,22 @@ public class JasperCustomServiceImple {
 				});
 			}
 			
-
-			List<FactorRateRequestDetails> coverData = factorRateRequestDetailsRepo.findByRequestReferenceNo(map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString());
+			String policyTypeDesc=map.get("policyTypeDesc")==null?"":map.get("policyTypeDesc").toString();
+			String referenceNo=map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString();
+			List<FactorRateRequestDetails> coverData = factorRateRequestDetailsRepo.findByRequestReferenceNo(referenceNo);
 			if(coverData!=null && !coverData.isEmpty()) {
+				
+				
 				Double taxRate = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T"))
 						.map(m -> m.getTaxRate()).map(BigDecimal::doubleValue)
 						.findAny().orElse(0.0);
 				
-				Double taxAmount = coverData.stream().filter(f -> f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T") && f.getSectionId()!=99999)
+				Double taxAmount = coverData.stream().filter(f -> (f.getIsSelected().equalsIgnoreCase("D") ||f.getIsSelected().equalsIgnoreCase("Y")) && f.getTaxId()!=0 && f.getCoverageType().equalsIgnoreCase("T") && f.getSectionId()!=99999)
 						.map(i -> i.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 				
+				Double overAllPremium = coverData.stream().filter(f -> (f.getIsSelected().equalsIgnoreCase("D") ||f.getIsSelected().equalsIgnoreCase("Y")) && f.getTaxId()==0 && f.getSectionId()!=99999)
+						.map(i -> i.getPremiumExcludedTaxFc()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+				OverAllPremium=overAllPremium+taxAmount;
 				List<Integer> sectionIds = coverData.stream().map(k -> k.getSectionId()).distinct().collect(Collectors.toList());
 				List<Map<String,Object>> sectionPremium = new ArrayList<Map<String,Object>>();
 				for(int x=0;x<sectionIds.size();x++) {
@@ -3010,7 +3017,7 @@ public class JasperCustomServiceImple {
 						o.put("SectionId", s);
 						o.put("CoverDesc", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T")) && f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
-								.map(m -> m.getSubCoverYn().equalsIgnoreCase("Y")?(m.getSubCoverName()+" "+m.getCoverName()):m.getCoverName()).findFirst().orElse("N/A"));
+								.map(m -> m.getSubCoverYn().equalsIgnoreCase("Y")?(m.getSubCoverName()+" "+m.getCoverName()):(m.getCoverageType().equalsIgnoreCase("B")?policyTypeDesc:m.getCoverName())).findFirst().orElse("N/A"));
 						o.put("SumInsured", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T"))
 								&& f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
@@ -3045,7 +3052,7 @@ public class JasperCustomServiceImple {
 				for(int x=0;x<sectionIds_1.size();x++) {
 					int s = Integer.parseInt(sectionIds_1.get(x).toString());
 					List<Integer> coverids_1 = coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T"))
-							&& f.getSectionId()==s && (!f.getIsSelected().equalsIgnoreCase("D")) && (f.getFreeCoverLimit().compareTo(BigDecimal.ZERO) == 0))
+							&& f.getSectionId()==s && (f.getIsSelected().equalsIgnoreCase("Y")) && (f.getFreeCoverLimit().compareTo(BigDecimal.ZERO) == 0))
 							.map(m -> m.getSubCoverYn().equalsIgnoreCase("Y")?m.getSubCoverId():m.getCoverId()).distinct()
 							.collect(Collectors.toList());
 					for(int j=0;j<coverids_1.size();j++) {
@@ -3087,6 +3094,20 @@ public class JasperCustomServiceImple {
 				result.put("taxRate", new BigDecimal(Double.valueOf(taxRate.toString())).toString());
 				result.put("taxAmount", new BigDecimal(Double.valueOf(taxAmount.toString())).toString());
 		}
+			
+			List<Tuple>taxlist=getTaxDetails(referenceNo);
+			if(!CollectionUtils.isEmpty(taxlist)) {
+				for (Tuple tuple : taxlist) {
+					Map<String,Object>tax=new HashMap<>();
+					tax.put("taxId", tuple.get("taxId")==null?"":tuple.get("taxId").toString());
+					tax.put("taxDesc", tuple.get("taxDesc")==null?"":tuple.get("taxDesc").toString());
+					tax.put("taxRate", tuple.get("taxRate")==null?"":tuple.get("taxRate").toString());
+					tax.put("taxAmount", tuple.get("taxAmount")==null?"":new DecimalFormat("##,##0.00").format(new BigDecimal(tuple.get("taxAmount").toString())));
+					taxDetails.add(tax);
+				}
+				
+			}
+			    
 			
 			
 //			if(coverData!=null && !coverData.isEmpty()) {
@@ -3133,7 +3154,7 @@ public class JasperCustomServiceImple {
 //					result.put("taxAmount", new BigDecimal(Double.valueOf(taxAmount.toString())).toString());
 //					OverAllPremium = premiumDetailsRes.stream().map(k -> new BigDecimal(k.getAmount())).collect(Collectors.summingDouble(BigDecimal::doubleValue))+taxAmount;
 //			}
-			
+			/*
 			List<FactorRateRequestDetails> excessCon = coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getCoverageType().equalsIgnoreCase("B")).collect(Collectors.toList());
 			if(!excessCon.isEmpty()) {
 				excessCon.forEach(k -> {
@@ -3144,8 +3165,17 @@ public class JasperCustomServiceImple {
 					excessMap.put("currency", k.getCurrency());
 					excessConDetails.add(excessMap);
 				});
+			}*/
+			String policyType=map.get("policyType")==null?"":map.get("policyType").toString();
+			String vehicelClass=map.get("vehicleClass")==null?"":map.get("vehicleClass").toString();
+			List<ListItemValue>exesslist=listItemValueRepo.findByItemTypeAndParam1AndParam2AndStatus("POLICY_VEHICLE_EXCESS",policyType,vehicelClass,"Y");
+			if(!CollectionUtils.isEmpty(exesslist)) {
+				result.put("excessDesc", exesslist.get(0).getItemValue());
 			}
-			
+			ListItemValue vehicle=listItemValueRepo.findByItemTypeAndItemCode("VEHICLE_CLASSES",vehicelClass);
+			if(vehicle!=null) {
+				result.put("vehicleClassDesc", vehicle.getItemValue());
+			}
 			result.put("userName", map.get("userName")==null?"":map.get("userName").toString());
 			result.put("requestReferenceNo", map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString());
 			result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
@@ -3164,13 +3194,32 @@ public class JasperCustomServiceImple {
 			result.put("vehicleDetails", vehicleList);
 			result.put("basePremiumDetails", premiumDetailsRes);
 			result.put("addonPremiumDetails", premiumDetailsRes_1);
-			result.put("excessConDetails", excessConDetails);
+			result.put("taxDetails", taxDetails);
 			result.put("premiumTotal", OverAllPremium);
 			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	private List<Tuple> getTaxDetails(String referenceNo) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+	    CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+
+	    Root<FactorRateRequestDetails> root = cq.from(FactorRateRequestDetails.class);
+
+	    Expression<Long> sumTaxAmount = cb.sum(root.get("taxAmount"));
+	    cq.multiselect(root.get("taxId").alias("taxId"), root.get("taxRate").alias("taxRate"), sumTaxAmount.alias("taxAmount"),root.get("taxDesc").alias("taxDesc") );
+
+	    cq.where(cb.equal(root.get("requestReferenceNo"), referenceNo),cb.notEqual(root.get("taxId"), 0),cb.equal(root.get("coverageType"), "T"),
+	    		cb.or(cb.equal(root.get("isSelected"), "D"),cb.equal(root.get("isSelected"), "Y")));
+
+	    cq.groupBy(root.get("taxId"), root.get("taxRate"),root.get("taxDesc"));
+
+	   List<Tuple>list=em.createQuery(cq).getResultList();
+		return list;
 	}
 
 	public List<Map<String,Object>> getEwayPremiumRegister(PremiumReportReq req){
