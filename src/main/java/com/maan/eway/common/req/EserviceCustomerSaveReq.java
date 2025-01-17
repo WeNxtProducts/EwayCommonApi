@@ -279,4 +279,7 @@ public class EserviceCustomerSaveReq {
 	@JsonFormat(pattern ="dd/MM/yyyy")
 	private Date expiryDate;
 	
+	@JsonProperty("KraPin")
+	private String kraPin;
+	
 }

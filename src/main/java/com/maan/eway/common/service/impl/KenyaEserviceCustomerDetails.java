@@ -652,7 +652,7 @@ public class KenyaEserviceCustomerDetails {
 			saveData.setMobileCodeDesc3Local(req.getMobileCode3());
 			saveData.setWhatsappCodeDescLocal(req.getWhatsappCode());
 			saveData.setIdTypeDescLocal(policyHolderTypeIdLocal);
-			
+			saveData.setKraPin(req.getKraPin());			
 			
 			// Kenya Rating Fields
 			saveData.setMaritalStatus(StringUtils.isBlank(req.getMaritalStatus()) ?"Single" : req.getMaritalStatus() );
@@ -975,7 +975,7 @@ public class KenyaEserviceCustomerDetails {
 				res.setRegionCode(cdate.getRegionCode()==null?"":cdate.getRegionCode());
 				res.setPolicyHolderTypeid(cdate.getPolicyHolderTypeid()==null?"":cdate.getPolicyHolderTypeid());
 				res.setVrTinNo(cdate.getVrTinNo()==null?"":cdate.getVrTinNo());
-			}
+				res.setKraPin(cdate.getKraPin()==null?"":cdate.getKraPin());			}
 			
 					
 		} catch (Exception e) {

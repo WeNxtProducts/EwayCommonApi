@@ -412,4 +412,7 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EXPIRY_DATE")
     private Date expiryDate;
+    
+    @Column(name = "KRA_PIN", length=100)
+    private String kraPin;
 }
