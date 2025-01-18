@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -137,7 +138,13 @@ public class TiraIntegerationServiceImpl {
 					log.info("Tira Framed Req --->"+tiraFramedReq);	
 				}
 			}
-			
+			List<String> stickerNoList=new ArrayList<>();
+			List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(tiraReq.getQuoteNo());
+			stickerNoList=risks.stream().map(SectionDataDetails::getStickerNumber).collect(Collectors.toList());
+//			for(SectionDataDetails risk:risks) {
+//				stickerNoList.add(risk.getStickerNumber());
+//			}
+			if(stickerNoList.size()>0 && stickerNoList.size()==data.getNoOfVehicles()) {
 			// Background Call
 			ExecutorService service2 = Executors.newFixedThreadPool(1);
 			
@@ -195,6 +202,7 @@ public class TiraIntegerationServiceImpl {
 		        	
 		        }
 		    });
+		}
 			
 			
 	//}
