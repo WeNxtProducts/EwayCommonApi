@@ -3,6 +3,7 @@ package com.maan.eway.notification.req;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 
@@ -35,6 +36,7 @@ public class Notification {
 	private String quoteNo      ;
 	@JsonProperty("Notifdescription")
 	private String     notifDescription ;
+	//@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	@JsonProperty("Notifcationdate")
 	private Date       notifcationDate ;	
 	@JsonProperty("Notifpriority")
