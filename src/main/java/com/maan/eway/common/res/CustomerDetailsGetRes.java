@@ -270,5 +270,8 @@ public class CustomerDetailsGetRes {
 		
 		@JsonProperty("KraPin")
 		private String kraPin;
+		
+		@JsonProperty("MaritalStatus")
+		private String maritalStatus;
 
 }

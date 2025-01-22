@@ -340,6 +340,9 @@ public class EagalEserviceCustomerDetails {
 				errorList.add("1079");
 			}
 			
+			if(StringUtils.isBlank(req.getMaritalStatus())) {
+				errorList.add("3313");
+			}
 			
 			List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 			if ((StringUtils.isNotBlank(req.getAddress1())) 
@@ -686,7 +689,7 @@ public class EagalEserviceCustomerDetails {
 			
 			
 			// Kenya Rating Fields
-			saveData.setMaritalStatus(StringUtils.isBlank(req.getMaritalStatus()) ?"Single" : req.getMaritalStatus() );
+
 			if (req.getLicenseIssuedDate()!=null ) {
 				saveData.setLicenseIssuedDate(req.getLicenseIssuedDate());
 				Date licenceIssued = req.getDobOrRegDate();
