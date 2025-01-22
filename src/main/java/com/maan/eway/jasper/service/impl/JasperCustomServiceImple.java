@@ -2987,7 +2987,8 @@ public class JasperCustomServiceImple {
 			
 			String policyTypeDesc=map.get("policyTypeDesc")==null?"":map.get("policyTypeDesc").toString();
 			String referenceNo=map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString();
-			List<FactorRateRequestDetails> coverData = factorRateRequestDetailsRepo.findByRequestReferenceNo(referenceNo);
+			//List<FactorRateRequestDetails> coverData = factorRateRequestDetailsRepo.findByRequestReferenceNo(referenceNo);
+			List<PolicyCoverData>coverData=coverDataRepository.findByRequestReferenceNo(referenceNo);
 			if(coverData!=null && !coverData.isEmpty()) {
 				
 				
@@ -3208,7 +3209,8 @@ public class JasperCustomServiceImple {
 
 	    CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 
-	    Root<FactorRateRequestDetails> root = cq.from(FactorRateRequestDetails.class);
+	    //Root<FactorRateRequestDetails> root = cq.from(FactorRateRequestDetails.class);
+	    Root<PolicyCoverData> root = cq.from(PolicyCoverData.class);
 
 	    Expression<Long> sumTaxAmount = cb.sum(root.get("taxAmount"));
 	    cq.multiselect(root.get("taxId").alias("taxId"), root.get("taxRate").alias("taxRate"), sumTaxAmount.alias("taxAmount"),root.get("taxDesc").alias("taxDesc") );

@@ -1327,7 +1327,7 @@ public class SearchServiceImpl implements SearchService {
 		SearchPaymentInfoRes paymentgetres = new SearchPaymentInfoRes();
 		List<SearchPaymentInfoRes> paylist = new ArrayList<SearchPaymentInfoRes>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
-
+		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		try {
 			List<PaymentInfo> paymentinfo = null;
 			List<PaymentDetail> pay = null;
@@ -1346,7 +1346,8 @@ public class SearchServiceImpl implements SearchService {
 					for (PaymentDetail pi : patmentDetails) {
 
 						paymentgetres = new DozerBeanMapper().map(pi, SearchPaymentInfoRes.class);
-						paymentgetres.setEntryDate(pi.getEntryDate());
+						paymentgetres.setEntryDate(formatter.format(pi.getEntryDate()));
+						paymentgetres.setUpdatedDate(formatter.format(pi.getUpdatedDate()));
 
 						paymentgetres.setInstallmentMonth(pi.getInstallmentMonth()==null?null:pi.getInstallmentMonth());
 						paymentgetres.setInstallmentPeriod(pi.getInstallmentPeriod()==null?null:pi.getInstallmentPeriod());

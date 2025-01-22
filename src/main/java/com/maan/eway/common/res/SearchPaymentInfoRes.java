@@ -33,13 +33,13 @@ public class SearchPaymentInfoRes {
 	@JsonProperty("MerchantReference")
 	private String merchantReference;
 
-	@JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
+	//@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	@JsonProperty("EntryDate")
-	private Date entryDate;
+	private String entryDate;
 
-	@JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
+	//@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	@JsonProperty("UpdatedDate")
-	private Date updatedDate;
+	private String updatedDate;
 
 	@JsonProperty("CreatedBy")
 	private String createdBy;
