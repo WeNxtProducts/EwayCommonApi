@@ -3022,7 +3022,7 @@ public class JasperCustomServiceImple {
 						o.put("SumInsured", coverData.stream().filter(f -> (!f.getCoverageType().equalsIgnoreCase("T"))
 								&& f.getSectionId()==s
 								&& (f.getSubCoverYn().equalsIgnoreCase("Y")?f.getSubCoverId():f.getCoverId())==c)
-								.map(m -> (m.getFreeCoverLimit().compareTo(BigDecimal.ZERO) > 0)
+								.map(m -> (m.getSumInsured().compareTo(BigDecimal.ZERO) > 0)
 									    ? m.getFreeCoverLimit().add(m.getSumInsured())
 									    : m.getSumInsured())
 								.collect(Collectors.summingDouble(BigDecimal::doubleValue)));

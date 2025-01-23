@@ -1254,32 +1254,60 @@ public class SearchServiceImpl implements SearchService {
 			if(req.getProductId().equalsIgnoreCase("5")){
 				MotorVehicleInfo vehInfo = motVehInfoRepo.findTop1ByResChassisNumberAndCompanyIdOrderByEntryDateDesc(chassisNo, req.getInsuranceId());
 				if(vehInfo!=null) {
-				SearchROPVehicleRes res =new SearchROPVehicleRes();
-				res.setResRegNumber(vehInfo.getResRegNumber());
-				res.setResChassisNumber(vehInfo.getResChassisNumber());
-				res.setResEngineNumber(vehInfo.getResEngineNumber());
-				res.setResMake(vehInfo.getResMake());
-				res.setResModel(vehInfo.getResModel());
-				res.setResColor(vehInfo.getResColor());
-				res.setResBodyType(vehInfo.getResBodyType());
-				res.setResYearOfManufacture(vehInfo.getResYearOfManufacture());
-				
-				res.setRiskId(data.getRiskId());
-				res.setEngineCapacity(vehInfo.getResEngineCapacity());
-				res.setFuelType(vehInfo.getResFuelUsed());
-				res.setGrossWeight(vehInfo.getResGrossWeight());
-				res.setMotorCategory(data.getMotorCategoryDesc()); 	
-				res.setMotorDesc(data.getSectionName());
-				res.setSeatingCapacity(vehInfo.getResSittingCapacity());
-				res.setTareWeight(vehInfo.getResTareWeight());
-				res.setVehicleUsage(vehInfo.getResMotorUsage());	
-				res.setPolicyType(data.getPolicyTypeDesc());
-				res.setSumInsured(data.getSumInsured());
-				res.setStickerNo(ss!=null && StringUtils.isBlank(ss.getStickerNumber())? "":ss.getStickerNumber());
-				res.setCovernoterefno(ss!=null && StringUtils.isBlank(ss.getCoverNoteReferenceNo()) ? "":ss.getCoverNoteReferenceNo());
-				res.setResponseStatusCode(ss!=null && StringUtils.isBlank(ss.getResponseStatusCode())? "":ss.getResponseStatusCode());
-				res.setResponseStatusDesc(ss!=null && StringUtils.isBlank(ss.getResponseStatusDesc())? "":ss.getResponseStatusDesc());
-				resList.add(res);
+					SearchROPVehicleRes res =new SearchROPVehicleRes();
+					res.setResRegNumber(vehInfo.getResRegNumber());
+					res.setResChassisNumber(vehInfo.getResChassisNumber());
+					res.setResEngineNumber(vehInfo.getResEngineNumber());
+					res.setResMake(vehInfo.getResMake());
+					res.setResModel(vehInfo.getResModel());
+					res.setResColor(vehInfo.getResColor());
+					res.setResBodyType(vehInfo.getResBodyType());
+					res.setResYearOfManufacture(vehInfo.getResYearOfManufacture());
+					
+					res.setRiskId(data.getRiskId());
+					res.setEngineCapacity(vehInfo.getResEngineCapacity());
+					res.setFuelType(vehInfo.getResFuelUsed());
+					res.setGrossWeight(vehInfo.getResGrossWeight());
+					res.setMotorCategory(data.getMotorCategoryDesc()); 	
+					res.setMotorDesc(data.getSectionName());
+					res.setSeatingCapacity(vehInfo.getResSittingCapacity());
+					res.setTareWeight(vehInfo.getResTareWeight());
+					res.setVehicleUsage(vehInfo.getResMotorUsage());	
+					res.setPolicyType(data.getPolicyTypeDesc());
+					res.setSumInsured(data.getSumInsured());
+					res.setStickerNo(ss!=null && StringUtils.isBlank(ss.getStickerNumber())? "":ss.getStickerNumber());
+					res.setCovernoterefno(ss!=null && StringUtils.isBlank(ss.getCoverNoteReferenceNo()) ? "":ss.getCoverNoteReferenceNo());
+					res.setResponseStatusCode(ss!=null && StringUtils.isBlank(ss.getResponseStatusCode())? "":ss.getResponseStatusCode());
+					res.setResponseStatusDesc(ss!=null && StringUtils.isBlank(ss.getResponseStatusDesc())? "":ss.getResponseStatusDesc());
+					resList.add(res);
+				}else {
+					SearchROPVehicleRes res =new SearchROPVehicleRes();
+					res.setResRegNumber(data.getRegistrationNumber());
+					res.setResChassisNumber(data.getChassisNumber());
+					res.setResEngineNumber(data.getEngineNumber());
+					res.setResMake(data.getVehicleMakeDesc());
+					res.setResModel(data.getVehcileModelDesc());
+					res.setResColor(data.getColorDesc());
+					res.setResBodyType(data.getTiraBodyType());
+					res.setResYearOfManufacture(data.getManufactureYear()==null?0:Integer.valueOf(data.getManufactureYear()));
+					
+					res.setRiskId(data.getRiskId());
+					res.setEngineCapacity(data.getCubicCapacity()==null?"0":data.getCubicCapacity().toString());
+					res.setFuelType(data.getFuelTypeDesc());
+					res.setGrossWeight(data.getGrossWeight()==null?0.0:Double.valueOf(data.getGrossWeight().toString()));
+					res.setMotorCategory(data.getMotorCategoryDesc()); 	
+					res.setMotorDesc(data.getSectionName());
+					res.setSeatingCapacity(data.getSeatingCapacity());
+					res.setTareWeight(data.getTareWeight()==null?0.0: Double.valueOf(data.getTareWeight().toString()));
+					res.setVehicleUsage(data.getMotorUsageDesc());	
+					res.setPolicyType(data.getPolicyTypeDesc());
+					res.setSumInsured(data.getSumInsured());
+					res.setStickerNo(ss!=null && StringUtils.isBlank(ss.getStickerNumber())? "":ss.getStickerNumber());
+					res.setCovernoterefno(ss!=null && StringUtils.isBlank(ss.getCoverNoteReferenceNo()) ? "":ss.getCoverNoteReferenceNo());
+					res.setResponseStatusCode(ss!=null && StringUtils.isBlank(ss.getResponseStatusCode())? "":ss.getResponseStatusCode());
+					res.setResponseStatusDesc(ss!=null && StringUtils.isBlank(ss.getResponseStatusDesc())? "":ss.getResponseStatusDesc());
+					
+					resList.add(res);
 				}
 			} else {
 				SearchROPVehicleRes res =new SearchROPVehicleRes();
