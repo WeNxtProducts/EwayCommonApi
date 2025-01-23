@@ -27,6 +27,7 @@ import com.maan.eway.master.req.CityMasterDropDownReq;
 import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
 import com.maan.eway.master.req.CityMasterSaveReq;
+import com.maan.eway.master.res.CityMasterDropDownRes;
 import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.service.CityMasterService;
 import com.maan.eway.res.DropDownRes;
@@ -223,4 +224,30 @@ public class CityMasterController {
 		}
 
 		}
+	@PostMapping("/dropdown/citybycountryandstate")
+	public ResponseEntity<CommonRes> selectCityDropdown(@RequestBody CityMasterDropDownReq req){
+		CommonRes response =  new CommonRes();
+		
+		//Validation of request parameter
+		List<Error> validation = cityService.validateCityDropdownRequest(req);
+		if(!validation.isEmpty()) {
+			response.setMessage("Failed");
+			response.setIsError(true);
+			response.setErrorMessage(validation);
+			return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+
+		//Exception occurred while retrieving city info
+		List<CityMasterDropDownRes> cityDropDown = cityService.getCityDropDown(req);
+		if(cityDropDown == null) {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+		//Successfully obtained city info
+		response.setMessage("Success");
+		response.setIsError(false);
+		response.setCommonResponse(cityDropDown);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
 }

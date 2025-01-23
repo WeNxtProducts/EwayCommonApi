@@ -7,6 +7,9 @@ package com.maan.eway.master.service.impl;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,6 +38,7 @@ import com.maan.eway.master.req.CityMasterDropDownReq;
 import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
 import com.maan.eway.master.req.CityMasterSaveReq;
+import com.maan.eway.master.res.CityMasterDropDownRes;
 import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.service.CityMasterService;
 import com.maan.eway.repository.CityMasterRepository;
@@ -71,7 +75,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 	Gson json = new Gson();
 
 	private Logger log = LogManager.getLogger(CityMasterServiceImpl.class);
-
+	
 //************************************************INSERT/UPDATE CITY DETAILS******************************************************\\
 	@Transactional
 	@Override
@@ -776,6 +780,94 @@ public class CityMasterServiceImpl implements CityMasterService {
 			return null;
 		}
 		return res;
+	}
+	
+	public List<Error> validateCityDropdownRequest(CityMasterDropDownReq req) {
+		List<Error> errors = new ArrayList<>();		
+		if(req.getCountryId() == null || req.getCountryId().isBlank()) {
+			errors.add(new Error("1", "CountryId", "CountryId should not be blank"));
+		}
+		if(req.getStateId() == null || req.getStateId().isBlank()) {
+			errors.add(new Error("2", "StateId", "StateId should not be blank"));
+		}		
+		return errors;
+	}
+	
+	
+	/**
+	 * Retrieves a list of city dropdown options based on the given country ID and state ID.
+	 * The method fetches all cities for the specified country and state, trims any extra spaces
+	 * from the city names, maps the results to {@link CityMasterDropDownRes} objects, and sorts them
+	 * by city ID.
+	 *
+	 * @param req the {@link CityMasterDropDownReq} object containing the country ID and state ID
+	 *            to filter cities by.
+	 * @return a sorted list of {@link CityMasterDropDownRes} objects representing the city dropdown options,
+	 *         or {@code null} if an exception occurs.
+	 */
+	public List<CityMasterDropDownRes> getCityDropDown(CityMasterDropDownReq req) {
+		try {
+			List<CityMaster> allCities = getAllCityByCountryAndState(req.getCountryId(), req.getStateId());
+			//Remove extra spaces
+			allCities.forEach(city -> city.setCityName(city.getCityName().trim()));
+			
+			return allCities.stream()
+					.sorted(Comparator.comparing(CityMaster ::getCityId))
+					.map(city -> new CityMasterDropDownRes(city.getCityId(), city.getCityName()))
+					.toList();
+			
+		} catch (Exception e) {
+			log.error("Exception occurred getting city list : {}", e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Retrieves a list of {@link CityMaster} entities filtered by the given country ID and state ID.
+	 * The method ensures that only the latest amendments (maximum `amendId`) of cities are fetched, status is "Y" (active)
+	 * and the cities are active on the current date, based on their effective start date and effective end date.
+	 *
+	 * @param countryId the ID of the country to filter cities by.
+	 * @param stateId   the ID of the state to filter cities by.
+	 * @return a list of {@link CityMaster} entities that match the filtering criteria.
+	 */
+	private List<CityMaster> getAllCityByCountryAndState(String countryId, String stateId){
+		// Initialize CriteriaBuilder and CriteriaQuery
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CityMaster> query = cb.createQuery(CityMaster.class);
+		Root<CityMaster> cityRoot = query.from(CityMaster.class);
+		
+		//Sub query to select max amendid
+		Subquery<Integer> subquery = query.subquery(Integer.class);
+		Root<CityMaster> subRoot = subquery.from(CityMaster.class);
+		
+		subquery.select(cb.max(subRoot.get("amendId")))
+				.where( cb.equal(subRoot.get("countryId"), countryId),
+						cb.equal(subRoot.get("stateId"), stateId),
+						cb.equal(subRoot.get("cityId"), cityRoot.get("cityId"))
+						);
+
+		//System Current DateTime to Java.util.date
+		LocalDateTime atNow = LocalDateTime.now();
+		Instant instant = atNow.atZone(ZoneId.systemDefault()).toInstant();
+		Date today = Date.from(instant);
+		
+		// Define filters (predicates)		
+		Predicate countryFilter = cb.equal(cityRoot.get("countryId"), countryId);
+		Predicate stateFilter = cb.equal(cityRoot.get("stateId"), stateId);
+		Predicate amendIdFilter = cb.equal(cityRoot.get("amendId"), subquery);
+		
+		Predicate statusFilter = cb.equal(cityRoot.get("status"), "Y"); 
+		Predicate startDateFilter = cb.lessThanOrEqualTo(cityRoot.get("effectiveDateStart"), today);
+		Predicate endDateFilter = cb.greaterThanOrEqualTo(cityRoot.get("effectiveDateEnd"), today);
+			    
+		// Combine all filters (predicates)
+		query.select(cityRoot)
+			.where(cb.and(countryFilter, stateFilter, amendIdFilter, statusFilter, startDateFilter, endDateFilter));
+
+		// Execute query and return the result list
+		return em.createQuery(query).getResultList();
 	}
 
 }
