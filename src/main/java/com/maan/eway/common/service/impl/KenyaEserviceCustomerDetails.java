@@ -339,7 +339,9 @@ public class KenyaEserviceCustomerDetails {
 				errorList.add("3314");
 			}
 			if(StringUtils.isNotBlank(req.getKraPin())) {
-				if(!req.getKraPin().matches("^[A-Z][0-9]{9}[A-Z]$")) {
+				if(!StringUtils.isAlphanumeric(req.getKraPin()) ) {
+					errorList.add("3312");
+				}else if(req.getKraPin().length()!=11) {
 					errorList.add("3312");
 				}
 				else {
