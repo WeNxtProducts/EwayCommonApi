@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.master.req.BankChangeStatusReq;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
@@ -87,8 +88,10 @@ public SuccessRes insertBank(BankMasterSaveReq req) {
 		Date entryDate = null;
 		String createdBy ="";
 		String bankCode = "";
+		req.setBranchCode(getBranchCodeOrDefault(req.getBranchCode(),req.getCompanyId()));
+		System.out.println(req.getBranchCode());
 		if(StringUtils.isBlank(req.getBankCode())) {
-			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode());
+//			String totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode());
 			bankCode = req.getBankShortName().toString();
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
@@ -167,11 +170,50 @@ public SuccessRes insertBank(BankMasterSaveReq req) {
 	}
 	return res;
 	}
+private String getBranchCodeOrDefault(String branchCode, String companyId) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<String> query = cb.createQuery(String.class);
+    Root<BranchMaster> root = query.from(BranchMaster.class);
+
+    // Create conditions: branchCode and companyId
+    Predicate n1 = cb.equal(root.get("companyId"), companyId);
+    Predicate n2 = cb.equal(root.get("branchCode"), branchCode);
+
+    // Select branchCode where companyId and branchCode match
+    query.select(root.get("branchCode"))
+         .where(cb.and(n1, n2));
+
+    // Fetch the result list and determine if a branch code exists
+    List<String> result = em.createQuery(query).setMaxResults(1).getResultList();
+
+    // Return the branch code if it exists; otherwise, return '99999'
+    return result.isEmpty() ? "99999" : result.get(0);
+}
+private boolean isAvailableBranchCode(String branchCode, String companyId) {
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+CriteriaQuery<String> query = cb.createQuery(String.class);
+Root<BranchMaster> root = query.from(BranchMaster.class);
+
+// Create conditions: branchCode and companyId
+Predicate n1 = cb.equal(root.get("companyId"), companyId);
+Predicate n2 = cb.equal(root.get("branchCode"), branchCode);
+
+// Select branchCode where companyId and branchCode match
+query.select(root.get("branchCode"))
+     .where(cb.and(n1, n2));
+
+// Fetch the result list and determine if a branch code exists
+List<String> result = em.createQuery(query).setMaxResults(1).getResultList();
+
+// Return the branch code if it exists; otherwise, return '99999'
+return result.isEmpty() ? false : true;
+}
+
 	
 
-public Integer getMasterTableCount(String companyId, String branchCode)	{
+public String getMasterTableCount(String companyId, String branchCode)	{
 
-	Integer data =0;
+	String data =null;
 	try {
 		List<BankMaster> list = new ArrayList<BankMaster>();
 		// Find Latest Record
@@ -209,7 +251,7 @@ public Integer getMasterTableCount(String companyId, String branchCode)	{
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
 		list = result.getResultList();
-		data = list.size() > 0 ? Integer.valueOf(list.get(0).getBankCode()) : 0 ;
+		data = list.size() > 0 ? (list.get(0).getBankCode()) : null ;
 	}
 	catch(Exception e) {
 		e.printStackTrace();
@@ -256,6 +298,8 @@ public List<String> validateBankDetails(BankMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getBranchCode())) {
 			//errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
 			errorList.add("1256");
+		}else if(!isAvailableBranchCode(req.getBranchCode(), req.getCompanyId()) && !req.getBranchCode().equals("99999")) {
+			errorList.add("2330");
 		}
 		if (StringUtils.isBlank(req.getBankShortName())) {
 			//errorList.add(new Error("03", "BankShortName", "Please Select BankShortName"));

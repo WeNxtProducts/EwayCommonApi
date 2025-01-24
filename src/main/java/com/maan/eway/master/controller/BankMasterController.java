@@ -121,7 +121,7 @@ public class BankMasterController {
 	}
 
 	// Get Active Bank Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER',ROLE_USER)")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getactivebank")
 	@ApiOperation("This method is get Active Bank Details")
 	public ResponseEntity<CommonRes> getActiveBankDetails(@RequestBody BankMasterGetAllReq req) {
