@@ -80,7 +80,6 @@ public interface EserviceCustomerDetailsRepository  extends JpaRepository<Eservi
 	List<EserviceCustomerDetails> findByCompanyIdAndIdNumberAndClientStatus(String companyId, String idNumber,
 			String string);
 
-
-	
+	List<EserviceCustomerDetails> findAllByKraPin(String kraPin);
 
 }

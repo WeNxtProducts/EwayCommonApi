@@ -141,10 +141,7 @@ public class KenyaEserviceCustomerDetails {
 			}
 			
 		/**
-		 * Validates the ID Number(Driving License, KRA PIN, National Id and Passport) based on the policy holder type id
-		 *			 
-		 * For policy holder type ID "6", the ID Number must match the KRA PIN format,
-		 *       which is exactly 11 alphanumeric characters (e.g., P051368240E or A005648200S)
+		 * Validates the ID Number(National Id, Driving License and Passport) based on the policy holder type id
 		 *
 		 * For policy holder type id "1", the ID Number must match National Id format, 
 		 *   	which is exactly 8 numeric digits, with no alphabets or special characters
@@ -154,19 +151,14 @@ public class KenyaEserviceCustomerDetails {
 			if (StringUtils.isBlank(req.getIdNumber())) {
 				errorList.add("1013");
 			}			
-			if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && req.getPolicyHolderTypeid().equals("6")) {							
-				if(! req.getIdNumber().matches("^[A-Z0-9]{11}$")) {
-					errorList.add("3312");
-				}
-			}
+
 			if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && req.getPolicyHolderTypeid().equals("1")) {
 				if(! req.getIdNumber().matches("^[0-9]{8}") || Long.valueOf(req.getIdNumber()) <= 0) {
 					errorList.add("3313");
 				}
 			}
 			
-			if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && 
-					!req.getPolicyHolderTypeid().equals("1") && !req.getPolicyHolderTypeid().equals("6")) {
+			if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && !req.getPolicyHolderTypeid().equals("1")) {
 				if (req.getIdNumber().length() > 100) {
 					errorList.add("1014");
 				} else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
@@ -332,6 +324,42 @@ public class KenyaEserviceCustomerDetails {
 				errorList.add("1078");
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add("1079");
+			}
+			
+			/**
+			 * Validates the KRA PIN from the request.
+			 * Validation includes:
+			 *   Checking if the KRA PIN is blank
+			 *	 Validates the format of the KRA PIN. It must be an alphanumeric string with exactly 11 characters. (e.g., P051368240E or A005648200S)
+			 *   Ensuring no duplicate KRA PIN exists if the customer reference number is blank. (for new customer save)
+			 *   Ensuring no duplicate KRA PIN exists, if the customer reference number is not blank. (existing customer update)
+			 *   
+			 */
+			if(StringUtils.isBlank(req.getKraPin())) {
+				errorList.add("3314");
+			}
+			if(StringUtils.isNotBlank(req.getKraPin())) {
+				if(!req.getKraPin().matches("^[A-Z][0-9]{9}[A-Z]$")) {
+					errorList.add("3312");
+				}
+				else {
+					if(StringUtils.isBlank(req.getCustomerReferenceNo())){
+						List<EserviceCustomerDetails> allByKraPin = repository.findAllByKraPin(req.getKraPin());
+						if(!allByKraPin.isEmpty()) {
+							errorList.add("3315");
+						}
+					}
+					
+					if(StringUtils.isNotBlank(req.getCustomerReferenceNo())) {
+						EserviceCustomerDetails customerDetails = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());
+						if(customerDetails.getKraPin() != null && !customerDetails.getKraPin().equals(req.getKraPin())) {
+							List<EserviceCustomerDetails> allByKraPin = repository.findAllByKraPin(req.getKraPin());
+							if(!allByKraPin.isEmpty()) {
+								errorList.add("3315");
+							}
+						}
+					}					
+				}
 			}
 			
 			
