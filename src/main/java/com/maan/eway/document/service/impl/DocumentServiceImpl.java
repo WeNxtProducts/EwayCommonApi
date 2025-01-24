@@ -1235,6 +1235,7 @@ public class DocumentServiceImpl implements DocumentService {
 				res.setCode(data.getDocumentId().toString());
 				res.setCodeDesc(data.getDocumentDesc());
 				res.setCodeDescLocal(data.getDocumentDescLocal());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 

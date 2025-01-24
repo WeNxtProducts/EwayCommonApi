@@ -17,5 +17,6 @@ public class DocTypeRes {
 	private String codeDesc;
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
-	
+	@JsonProperty("Status")
+	private String status;
 }
