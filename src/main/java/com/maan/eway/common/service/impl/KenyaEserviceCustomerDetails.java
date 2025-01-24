@@ -850,7 +850,8 @@ public class KenyaEserviceCustomerDetails {
 				savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
 				savePersonalInfo.setActivities(req.getActivities());
 				savePersonalInfo.setCustomerAsInsurer(req.getCustomerAsInsurer());	
-					
+				savePersonalInfo.setKraPin(req.getKraPin());
+				
 				personalInforepo.save(savePersonalInfo);
 			}
 			}else if(StringUtils.isNotBlank(req.getType())) {
