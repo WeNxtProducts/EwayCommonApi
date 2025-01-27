@@ -455,7 +455,7 @@ public class JasperCustomServiceImple {
 		Subquery<BigDecimal> sumInsured = cq.subquery(BigDecimal.class);
 		Root<PolicyCoverData> SubSi = sumInsured.from(PolicyCoverData.class);
 		sumInsured.select(cb.sum(SubSi.get("sumInsured"))).where(cb.equal(SubSi.get("quoteNo"), hpmRoot.get("quoteNo")),
-				cb.equal(SubSi.get("discLoadId"), "0"),cb.equal(SubSi.get("taxId"), "0"),cb.equal(SubSi.get("dependentCoverYn"), "N"));
+				cb.equal(SubSi.get("discLoadId"), "0"),cb.equal(SubSi.get("taxId"), "0"),cb.equal(SubSi.get("dependentCoverYn"), "N"),cb.equal(SubSi.get("coverageType"), "B"));
 		
 		/*Subquery<String> companyName = cq.subquery(String.class);
 		Root<InsuranceCompanyMaster> companyNameRoot = companyName.from(InsuranceCompanyMaster.class);

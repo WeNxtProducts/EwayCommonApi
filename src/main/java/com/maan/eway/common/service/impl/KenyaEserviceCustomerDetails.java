@@ -173,9 +173,9 @@ public class KenyaEserviceCustomerDetails {
 			}
 			if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
 				if(StringUtils.isBlank(req.getVrTinNo())) {
-					errorList.add("1051");
+					//errorList.add("1051");
 				}else if (req.getVrTinNo().length() > 20) {
-					errorList.add("1052");
+					//errorList.add("1052");
 				}
 				if(StringUtils.isBlank(req.getStreet()) ) {
 					errorList.add("3310");

@@ -409,6 +409,7 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["VRN"]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 			<textField>
 				<reportElement x="410" y="5" width="10" height="15" uuid="dd35cde8-b240-41c8-a1fb-adc7b0633d1b">
@@ -419,6 +420,7 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="420" y="5" width="86" height="15" uuid="e76b923c-af93-41d9-beaf-5322aa2a056e">
@@ -431,6 +433,7 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{vrnNumber}]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="15" y="5" width="95" height="15" uuid="ec12628f-a181-4a54-917b-831f61ac919e">
@@ -507,6 +510,7 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["TIN"]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 			<textField>
 				<reportElement x="410" y="0" width="10" height="15" uuid="3e9e6b86-b3f4-4233-bfbc-5808a6517c1e">
@@ -516,6 +520,7 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="420" y="0" width="86" height="15" uuid="e1ea7b76-6e06-480e-b2f3-881ba227c894">
@@ -527,6 +532,7 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tinNumber}]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -559,6 +565,7 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Intermediary Ref No"]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 			<textField>
 				<reportElement x="410" y="0" width="10" height="15" uuid="c08e2ed3-7700-430f-9622-4366edf576ab">
@@ -568,6 +575,7 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 			<textField>
 				<reportElement x="420" y="0" width="66" height="15" uuid="2fda3cf6-dfac-4934-a743-88c3425ae0b4"/>
@@ -576,6 +584,7 @@
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{intermediaryRefNo}]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 		</band>
 		<band height="1">
@@ -984,12 +993,14 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 			<textField>
 				<reportElement x="439" y="15" width="8" height="15" uuid="2f5415b0-df94-456c-a054-397d26ce2aea">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="447" y="15" width="86" height="15" uuid="36bf5a58-b8b4-4d64-815d-d9de543bc1c1"/>
@@ -1000,6 +1011,7 @@
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{vatAmount}]]></textFieldExpression>
+				<patternExpression><![CDATA[!"100020".equals($F{companyId})]]></patternExpression>
 			</textField>
 		</band>
 		<band height="59">

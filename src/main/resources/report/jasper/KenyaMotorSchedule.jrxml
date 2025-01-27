@@ -15,7 +15,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="narration"/>
 			<fieldDescription><![CDATA[narration]]></fieldDescription>
 		</field>
-		<field name="sumInsured" class="java.math.BigDecimal">
+		<field name="sumInsured" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
 			<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
 		</field>
@@ -268,7 +268,7 @@
 					<leftPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA["P.O BOX 30064-00100 "+$F{branchName}]]></textFieldExpression>
 			</textField>
@@ -280,7 +280,7 @@
 					<leftPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Phone number +254-20-2900000"]]></textFieldExpression>
 			</textField>
@@ -292,7 +292,7 @@
 					<leftPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Email: underwriting@firstassurance.co.ke"]]></textFieldExpression>
 			</textField>
@@ -326,7 +326,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["DATE"]]></textFieldExpression>
 			</textField>
@@ -347,7 +347,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Our Ref"]]></textFieldExpression>
 			</textField>
@@ -368,7 +368,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
 			</textField>
@@ -378,7 +378,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{requestReferenceNo}]]></textFieldExpression>
 			</textField>
@@ -388,7 +388,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
 			</textField>
@@ -398,7 +398,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{branchName}]]></textFieldExpression>
 			</textField>
@@ -408,7 +408,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Attn"]]></textFieldExpression>
 			</textField>
@@ -418,7 +418,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
@@ -439,7 +439,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Dear Sir/Madam"]]></textFieldExpression>
 			</textField>
@@ -449,7 +449,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["RE: INSURANCE QUOTATION"]]></textFieldExpression>
 			</textField>
@@ -469,7 +469,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Your quotation request referes:-"]]></textFieldExpression>
 			</textField>
@@ -488,7 +488,7 @@
 		</band>
 		<band height="15">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="140" height="15" uuid="59300632-5e31-44a7-a50d-184c2e9b749a">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="200" height="15" uuid="59300632-5e31-44a7-a50d-184c2e9b749a">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -496,12 +496,12 @@
 					<pen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["RISK COVER"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="140" y="0" width="140" height="15" uuid="2dce0223-dc02-4a0e-bbe4-5172157e3629">
+				<reportElement stretchType="RelativeToBandHeight" x="200" y="0" width="140" height="15" uuid="2dce0223-dc02-4a0e-bbe4-5172157e3629">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -509,7 +509,7 @@
 					<pen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["SI/Value"]]></textFieldExpression>
 			</textField>
@@ -522,12 +522,12 @@
 					<pen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" Premiums-Kes"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="280" y="0" width="140" height="15" uuid="3cbc71ef-fd20-47bf-96cb-61cfdb069fe8">
+				<reportElement stretchType="RelativeToBandHeight" x="340" y="0" width="80" height="15" uuid="3cbc71ef-fd20-47bf-96cb-61cfdb069fe8">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -535,7 +535,7 @@
 					<pen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Rate"]]></textFieldExpression>
 			</textField>
@@ -548,7 +548,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{vehicleClassDesc}]]></textFieldExpression>
 			</textField>
@@ -566,7 +566,7 @@
 					<datasetRun subDataset="BaseCoverPremiumDetails" uuid="ff32b78b-1305-4562-9275-29829fcc35ee">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("basePremiumDetails")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="140" uuid="116c8a89-842b-42f3-b190-61294d244f4c">
+					<jr:column width="200" uuid="116c8a89-842b-42f3-b190-61294d244f4c">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 						<jr:detailCell height="15">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -579,14 +579,14 @@
 								<rightPen lineWidth="0.5"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="140" height="15" backcolor="#FFFFFF" uuid="25e8394a-4276-4326-9b17-cf181c5e9ee7"/>
+								<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="200" height="15" backcolor="#FFFFFF" uuid="25e8394a-4276-4326-9b17-cf181c5e9ee7"/>
 								<box leftPadding="2">
 									<topPen lineWidth="0.5"/>
 									<bottomPen lineWidth="0.5"/>
 									<rightPen lineWidth="0.5"/>
 								</box>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
+									<font fontName="Arial" size="11" isBold="false"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{narration}]]></textFieldExpression>
 							</textField>
@@ -599,17 +599,17 @@
 							<box>
 								<pen lineWidth="0.5"/>
 							</box>
-							<textField pattern="#,##0.00" isBlankWhenNull="true">
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="140" height="15" uuid="eff5c84c-c33c-49a7-90f8-57f329804341"/>
 								<box leftPadding="0" rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
+									<font fontName="Arial" size="11" isBold="false"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{sumInsured}]]></textFieldExpression>
+								<textFieldExpression><![CDATA["0".equals($F{sumInsured})?"Free Cover":new DecimalFormat("#,##0.00").format(new BigDecimal($F{sumInsured}))]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="140" uuid="d98ccb7e-bcf3-42be-bc33-086e98a66021">
+					<jr:column width="80" uuid="d98ccb7e-bcf3-42be-bc33-086e98a66021">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:detailCell height="15">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -617,10 +617,10 @@
 								<pen lineWidth="0.5"/>
 							</box>
 							<textField pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="140" height="15" uuid="40cd26d3-b1d2-4086-a4e2-4f86c1499f77"/>
+								<reportElement x="0" y="0" width="80" height="15" uuid="40cd26d3-b1d2-4086-a4e2-4f86c1499f77"/>
 								<box leftPadding="0" rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
+									<font fontName="Arial" size="11" isBold="false"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{rate}]]></textFieldExpression>
 							</textField>
@@ -645,7 +645,7 @@
 									<bottomPen lineWidth="0.5"/>
 								</box>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
+									<font fontName="Arial" size="11" isBold="false"/>
 								</textElement>
 								<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{amount})]]></textFieldExpression>
 							</textField>
@@ -681,12 +681,12 @@
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
 								<textElement verticalAlignment="Middle">
-									<font fontName="Arial" size="10" isBold="true"/>
+									<font fontName="Arial" size="11" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[" Extensions"]]></textFieldExpression>
 							</textField>
 						</jr:tableHeader>
-						<jr:column width="140" uuid="7f6bb4cc-e79a-4be4-abf8-f2abbe057a26">
+						<jr:column width="200" uuid="7f6bb4cc-e79a-4be4-abf8-f2abbe057a26">
 							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 							<jr:detailCell height="15">
 								<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -699,14 +699,14 @@
 									<rightPen lineWidth="0.5"/>
 								</box>
 								<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-									<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="140" height="15" backcolor="#FFFFFF" uuid="02b6d29a-484d-40cb-9005-b7c0222ac68c"/>
+									<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="200" height="15" backcolor="#FFFFFF" uuid="02b6d29a-484d-40cb-9005-b7c0222ac68c"/>
 									<box leftPadding="2">
 										<topPen lineWidth="0.5"/>
 										<bottomPen lineWidth="0.5"/>
 										<rightPen lineWidth="0.5"/>
 									</box>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="Arial" size="8" isBold="false"/>
+										<font fontName="Arial" size="11" isBold="false"/>
 									</textElement>
 									<textFieldExpression><![CDATA[$F{narration}]]></textFieldExpression>
 								</textField>
@@ -729,7 +729,7 @@
 								</textField>
 							</jr:detailCell>
 						</jr:column>
-						<jr:column width="140" uuid="d9f4d244-42f5-47f6-8da6-8f6f36b84279">
+						<jr:column width="80" uuid="d9f4d244-42f5-47f6-8da6-8f6f36b84279">
 							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 							<jr:detailCell height="15">
 								<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -737,10 +737,10 @@
 									<pen lineWidth="0.5"/>
 								</box>
 								<textField pattern="#,##0.00" isBlankWhenNull="true">
-									<reportElement x="0" y="0" width="140" height="15" uuid="8ec5b9ea-bce3-4b8e-91a9-a5c72f11bc2f"/>
+									<reportElement x="0" y="0" width="80" height="15" uuid="8ec5b9ea-bce3-4b8e-91a9-a5c72f11bc2f"/>
 									<box leftPadding="0" rightPadding="2"/>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="Arial" size="8" isBold="false"/>
+										<font fontName="Arial" size="11" isBold="false"/>
 									</textElement>
 									<textFieldExpression><![CDATA[$F{rate}]]></textFieldExpression>
 								</textField>
@@ -765,7 +765,7 @@
 										<bottomPen lineWidth="0.5"/>
 									</box>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="Arial" size="8" isBold="false"/>
+										<font fontName="Arial" size="11" isBold="false"/>
 									</textElement>
 									<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{amount})]]></textFieldExpression>
 								</textField>
@@ -789,7 +789,7 @@
 					<datasetRun subDataset="TaxDetails" uuid="0a8f0256-04f6-4424-92b8-85f5099223a3">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("taxDetails")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="140" uuid="0350f1d1-f926-4d1a-ba80-72fd27f1471c">
+					<jr:column width="200" uuid="0350f1d1-f926-4d1a-ba80-72fd27f1471c">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 						<jr:detailCell height="15">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -802,7 +802,7 @@
 								<rightPen lineWidth="0.5"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="140" height="15" backcolor="#FFFFFF" uuid="b3997a36-4649-4d33-b3fe-caae71ca3a35"/>
+								<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="200" height="15" backcolor="#FFFFFF" uuid="b3997a36-4649-4d33-b3fe-caae71ca3a35"/>
 								<box leftPadding="2">
 									<topPen lineWidth="0.5"/>
 									<bottomPen lineWidth="0.5"/>
@@ -825,13 +825,13 @@
 								<reportElement x="0" y="0" width="140" height="15" uuid="edabe25a-1a5b-46ba-ba36-e6dda51fad0a"/>
 								<box leftPadding="0" rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
+									<font fontName="Arial" size="11" isBold="false"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{taxDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="140" uuid="5e4ad36e-b286-4a12-91c2-b4d5446520e9">
+					<jr:column width="80" uuid="5e4ad36e-b286-4a12-91c2-b4d5446520e9">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:detailCell height="15">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -839,10 +839,10 @@
 								<pen lineWidth="0.5"/>
 							</box>
 							<textField pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="140" height="15" uuid="7edadc5e-0c20-4589-a380-ed5cdaa33841"/>
+								<reportElement x="0" y="0" width="80" height="15" uuid="7edadc5e-0c20-4589-a380-ed5cdaa33841"/>
 								<box leftPadding="0" rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
+									<font fontName="Arial" size="11" isBold="false"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{taxRate}]]></textFieldExpression>
 							</textField>
@@ -867,7 +867,7 @@
 									<bottomPen lineWidth="0.5"/>
 								</box>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="false"/>
+									<font fontName="Arial" size="11" isBold="false"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{taxAmount}]]></textFieldExpression>
 							</textField>
@@ -886,17 +886,17 @@
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{premiumTotal})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="280" y="0" width="140" height="15" uuid="7e9255c2-b4b4-4cec-8bea-fdc963213b8e"/>
+				<reportElement x="340" y="0" width="80" height="15" uuid="7e9255c2-b4b4-4cec-8bea-fdc963213b8e"/>
 				<box leftPadding="0" rightPadding="2">
 					<pen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
 			</textField>
@@ -909,7 +909,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Excesses: -"]]></textFieldExpression>
 			</textField>
@@ -921,7 +921,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{excessDesc}]]></textFieldExpression>
 			</textField>
@@ -934,7 +934,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Limits of Liability"]]></textFieldExpression>
 			</textField>
@@ -947,7 +947,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Third party property damage -5,000,000 Third Party Persons Bodily Injury/Death -3,000,000 per any  person Third Party Persons Bodily Injury/Death -20,000,000 per event"]]></textFieldExpression>
 			</textField>
@@ -960,7 +960,7 @@
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Free Benefits:"]]></textFieldExpression>
 			</textField>
@@ -993,13 +993,13 @@
 		</band>
 		<band height="15">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="280" height="15" uuid="b1466de2-5885-4d9e-a67c-69b594d164e2">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="553" height="15" uuid="b1466de2-5885-4d9e-a67c-69b594d164e2">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["This quotation is valid for 30 days. We reserve the RIGHT to change or cancel the risk should there be any changes material facts"]]></textFieldExpression>
 			</textField>
