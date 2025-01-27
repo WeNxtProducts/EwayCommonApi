@@ -123,6 +123,7 @@ public class KenyaEserviceCustomerDetails {
 			if (StringUtils.isBlank(req.getMobileCode1())) {
 				errorList.add("1062");
 			}
+			
 			if (StringUtils.isBlank(req.getMobileNo1())) {
 				errorList.add("1026");
 			} else if (req.getMobileNo1().length() > 10||req.getMobileNo1().length() < 8) {
@@ -132,6 +133,27 @@ public class KenyaEserviceCustomerDetails {
 			} else if (req.getMobileNo1().matches("[0-9]+") && Double.valueOf(req.getMobileNo1()) <=0 ) {
 				errorList.add("1029");
 			}
+
+		/**
+		 * Checks the mobile number already exists for any customer, checks only for created by is not guest
+		 * If customer reference is blank: new customer save; otherwise: existing customer update.
+		 */
+			if(StringUtils.isNotBlank(req.getCreatedBy()) && ! req.getCreatedBy().equalsIgnoreCase("guest")) {
+				if(StringUtils.isBlank(req.getCustomerReferenceNo())) {
+					List<EserviceCustomerDetails> allByMobileNo1 = repository.findAllByMobileNo1(req.getMobileNo1());
+					if(!allByMobileNo1.isEmpty()) { errorList.add("3317");	}
+				}				
+				else {
+					EserviceCustomerDetails customer = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());					
+					if(customer != null && customer.getMobileNo1() != null 
+							&& !customer.getMobileNo1().equals(req.getMobileNo1())) {
+						
+						List<EserviceCustomerDetails> allByMobileNo1 = repository.findAllByMobileNo1(req.getMobileNo1());
+						if(!allByMobileNo1.isEmpty()) {	errorList.add("3317");	}
+					}
+				}
+			}
+			
 			//if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
 			if (StringUtils.isBlank(req.getIdType())) {
 				errorList.add("1011");
@@ -167,7 +189,27 @@ public class KenyaEserviceCustomerDetails {
 					errorList.add("1015");
 				}
 			}
-				
+			
+		/**
+		 * Checks the ID number already exists for any customer, checks only for created by is not guest
+		 * If customer reference is blank: new customer save; otherwise: existing customer update.
+		 */
+			if(StringUtils.isNotBlank(req.getCreatedBy()) && ! req.getCreatedBy().equalsIgnoreCase("guest")) {
+				if(StringUtils.isBlank(req.getCustomerReferenceNo())) {
+					List<EserviceCustomerDetails> allByIdNumber = repository.findAllByIdNumber(req.getIdNumber());
+					if(!allByIdNumber.isEmpty()) {	errorList.add("3318");	}
+				}				
+				else {
+					EserviceCustomerDetails customer = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());					
+					if(customer != null && customer.getIdNumber() != null 
+							&& !customer.getIdNumber().equals(req.getIdNumber())) {
+						
+						List<EserviceCustomerDetails> allByIdNumber = repository.findAllByIdNumber(req.getIdNumber());
+						if(!allByIdNumber.isEmpty()) {	errorList.add("3318");	}
+					}
+				}
+			}
+							
 			if (StringUtils.isBlank(req.getPreferredNotification())) {
 				errorList.add("1049");
 			}
