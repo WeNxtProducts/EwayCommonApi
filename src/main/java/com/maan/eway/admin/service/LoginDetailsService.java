@@ -12,6 +12,7 @@ import com.maan.eway.admin.req.BrokerActiveGridReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.BrokerDetailsGetReq;
 import com.maan.eway.admin.req.BrokerLoginGridReq;
+import com.maan.eway.admin.req.GetBrokerListDropDownReq;
 import com.maan.eway.admin.req.InsertUserLoginReq;
 import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
@@ -38,6 +39,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.res.BrokerDropDownRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>LoginMasterServiceimpl</h2>
@@ -76,6 +78,7 @@ MenuIdGetRes getmenuids(MenuIdGetReq req);
 List<BrokerDropDownRes> getBrokerIds();
 List<BrokerDropDownRes> getBrokerIdsByCompany(BrokerDropdownReq req);
 JasperDocumentRes getBrokerLogo(String loginId);
+List<DropDownRes> getBrokerList(GetBrokerListDropDownReq req);
 
 
 

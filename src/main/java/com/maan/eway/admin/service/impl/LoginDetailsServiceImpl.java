@@ -51,6 +51,7 @@ import com.maan.eway.admin.req.BrokerLoginGridReq;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.admin.req.CommonLoginInformationReq;
 import com.maan.eway.admin.req.CommonPersonalInforReq;
+import com.maan.eway.admin.req.GetBrokerListDropDownReq;
 import com.maan.eway.admin.req.InsertUserLoginReq;
 import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
@@ -67,6 +68,7 @@ import com.maan.eway.admin.res.BrokerDatailsGetRes;
 import com.maan.eway.admin.res.BrokerDepositCbcDetailsGetRes;
 import com.maan.eway.admin.res.BrokerLoginDetailsGetRes;
 import com.maan.eway.admin.res.BrokerPersonalDetailsGetRes;
+import com.maan.eway.admin.res.GetBrokerListDropDownRes;
 import com.maan.eway.admin.res.IssuerDatailsGetRes;
 import com.maan.eway.admin.res.IssuerLoginGetRes;
 import com.maan.eway.admin.res.IssuerPersonalInfoGetRes;
@@ -2056,6 +2058,83 @@ this.repository = repo;
 		return null;
 	}
 
+
+	@Override
+	public List<DropDownRes> getBrokerList(GetBrokerListDropDownReq req) {
+		
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<GetBrokerListDropDownRes> query = cb.createQuery(GetBrokerListDropDownRes.class);
+			List<GetBrokerListDropDownRes> list = new ArrayList<GetBrokerListDropDownRes>();
+			
+			// Find All
+			Root<LoginMaster> c = query.from(LoginMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			Root<LoginBranchMaster> l = query.from(LoginBranchMaster.class);
+			
+			// Select
+			query.multiselect(c.get("loginId").alias("loginId"),c.get("status").alias("status"),c.get("oaCode").alias("oaCode"),
+					c.get("agencyCode").alias("agencyCode"),u.get("userName").alias("userName"),u.get("customerCode").alias("customerCode") , 
+					u.get("customerName").alias("customerName")) ;
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("loginId")));
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("userType"), req.getUserType());
+			Predicate n3 = cb.equal(c.get("subUserType"), req.getSubUserType());
+			Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
+		/*	Predicate n5 = cb.or(
+				    cb.like(c.get("attachedBranches"), req.getBranchCode()), // Exact match
+				    cb.like(c.get("attachedBranches"), req.getBranchCode() + ",%"), // Starts with
+				    cb.like(c.get("attachedBranches"), "%," + req.getBranchCode() + ",%"), // In the middle
+				    cb.like(c.get("attachedBranches"), "%," + req.getBranchCode()) // Ends with
+				);*/
+			//Predicate n6 = cb.equal(c.get("agencyCode"), c.get("oaCode").toString());
+			//Predicate n7 = cb.in(c.get("attachedBranches")).value("99999");
+		//	Predicate n8 = cb.or(n5,n7);
+			Predicate n9 = cb.equal(u.get("loginId"), c.get("loginId"));
+			Predicate n10 = cb.equal(u.get("loginId"), l.get("loginId"));
+			Predicate n11 = cb.equal(l.get("branchCode"),req.getBranchCode());					
+			Predicate n12 = cb.equal(l.get("branchCode"),"99999");
+			Predicate n13 = cb.or(n11,n12);
+			//Predicate n10 = cb.equal(u.get("agencyCode"), u.get("oaCode"));
+			// n11 = cb.equal(u.get("agencyCode"), c.get("agencyCode"));
+			//Predicate n12 = cb.equal(u.get("oaCode"), c.get("oaCode").toString());
+			
+			
+			query.where(n1,n2,n3,n4,n9,n10,n13).orderBy(orderList);
+			
+			
+			// Get Result
+			TypedQuery<GetBrokerListDropDownRes> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			for (GetBrokerListDropDownRes data : list) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getLoginId());
+				res.setCodeDesc(data.getCustomerName());
+				res.setCodeDescLocal(data.getCustomerName());
+				res.setStatus(data.getStatus());
+				res.setOaCode(data.getOaCode());				
+				resList.add(res);			
+			}
+		
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return resList;
+	}
+
+
+
+	
 }
 
 

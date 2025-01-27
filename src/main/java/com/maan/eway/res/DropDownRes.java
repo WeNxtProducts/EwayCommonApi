@@ -36,4 +36,7 @@ public class DropDownRes {
 	
 	@JsonProperty("IsCommercial")
 	private String isCommercial;
+	
+	@JsonProperty("OaCode")
+	private Integer oaCode;
 }

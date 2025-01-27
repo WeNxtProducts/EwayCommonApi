@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ import com.maan.eway.admin.req.BrokerActiveGridReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.BrokerDetailsGetReq;
 import com.maan.eway.admin.req.BrokerLoginGridReq;
+import com.maan.eway.admin.req.GetBrokerListDropDownReq;
 import com.maan.eway.admin.req.InsertUserLoginReq;
 import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
@@ -56,11 +58,13 @@ import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.res.BrokerDropDownRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -594,6 +598,27 @@ public class LoginDetailsController {
 		}else {
 			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
 		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value="/dropdown/getbrokerlist",produces = "application/json")
+	@ApiOperation(value = "This method is get Broker List Drop Down")
+	public ResponseEntity<DropdownCommonRes> dropdownGetBrokerList(@RequestBody GetBrokerListDropDownReq req){
+		
+		DropdownCommonRes data = new DropdownCommonRes();
+		
+		List<DropDownRes> res = entityService.getBrokerList(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		
+		if (res != null) {
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 	
 }
