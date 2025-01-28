@@ -168,19 +168,37 @@ public class KenyaEserviceCustomerDetails {
 		 * For policy holder type id "1", the ID Number must match National Id format, 
 		 *   	which is exactly 8 numeric digits, with no alphabets or special characters
 		 *   
-		 * For other policy holder type id, the ID Number length less than 100 characters either number or alphanumeric   
+		 * For other policy holder type id, the ID Number length less than 100 characters either number or alphanumeric  
+		 * 
+		 * Checks the ID number already exists for any customer, checks only for created by is not guest
+		 * If customer reference is blank: new customer save; otherwise: existing customer update. 
 		 */
 			if (StringUtils.isBlank(req.getIdNumber())) {
 				errorList.add("1013");
 			}			
 
-			else if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && req.getPolicyHolderTypeid().equals("1")) {
+			if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && req.getPolicyHolderTypeid().equals("1")) {
 				if(! req.getIdNumber().matches("^[0-9]{8}") || Long.valueOf(req.getIdNumber()) <= 0) {
 					errorList.add("3313");
 				}
+				else if(StringUtils.isNotBlank(req.getCreatedBy()) && ! req.getCreatedBy().equalsIgnoreCase("guest")) {
+					if(StringUtils.isBlank(req.getCustomerReferenceNo())) {
+						List<EserviceCustomerDetails> allByIdNumber = repository.findAllByIdNumber(req.getIdNumber());
+						if(!allByIdNumber.isEmpty()) {	errorList.add("3318");	}
+					}				
+					else {
+						EserviceCustomerDetails customer = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());					
+						if(customer != null && customer.getIdNumber() != null 
+								&& !customer.getIdNumber().equals(req.getIdNumber())) {
+							
+							List<EserviceCustomerDetails> allByIdNumber = repository.findAllByIdNumber(req.getIdNumber());
+							if(!allByIdNumber.isEmpty()) {	errorList.add("3318");	}
+						}
+					}
+				}				
 			}
 			
-			else if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && !req.getPolicyHolderTypeid().equals("1")) {
+			if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && !req.getPolicyHolderTypeid().equals("1")) {
 				if (req.getIdNumber().length() > 100) {
 					errorList.add("1014");
 				} else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
@@ -188,27 +206,23 @@ public class KenyaEserviceCustomerDetails {
 				} else if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {	
 					errorList.add("1015");
 				}
-			}
-			
-		/**
-		 * Checks the ID number already exists for any customer, checks only for created by is not guest
-		 * If customer reference is blank: new customer save; otherwise: existing customer update.
-		 */
-			else if(StringUtils.isNotBlank(req.getCreatedBy()) && ! req.getCreatedBy().equalsIgnoreCase("guest")) {
-				if(StringUtils.isBlank(req.getCustomerReferenceNo())) {
-					List<EserviceCustomerDetails> allByIdNumber = repository.findAllByIdNumber(req.getIdNumber());
-					if(!allByIdNumber.isEmpty()) {	errorList.add("3318");	}
-				}				
-				else {
-					EserviceCustomerDetails customer = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());					
-					if(customer != null && customer.getIdNumber() != null 
-							&& !customer.getIdNumber().equals(req.getIdNumber())) {
-						
+				else if(StringUtils.isNotBlank(req.getCreatedBy()) && ! req.getCreatedBy().equalsIgnoreCase("guest")) {
+					if(StringUtils.isBlank(req.getCustomerReferenceNo())) {
 						List<EserviceCustomerDetails> allByIdNumber = repository.findAllByIdNumber(req.getIdNumber());
 						if(!allByIdNumber.isEmpty()) {	errorList.add("3318");	}
+					}				
+					else {
+						EserviceCustomerDetails customer = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());					
+						if(customer != null && customer.getIdNumber() != null 
+								&& !customer.getIdNumber().equals(req.getIdNumber())) {
+							
+							List<EserviceCustomerDetails> allByIdNumber = repository.findAllByIdNumber(req.getIdNumber());
+							if(!allByIdNumber.isEmpty()) {	errorList.add("3318");	}
+						}
 					}
 				}
 			}
+				
 							
 			if (StringUtils.isBlank(req.getPreferredNotification())) {
 				errorList.add("1049");
