@@ -44,7 +44,6 @@ import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ExclusionMaster;
-import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.FirstLossPayee;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -926,6 +925,8 @@ public class JasperCustomServiceImple {
 		attachmentAmd.select(cb.max(attachmentAmdRoot.get("amendId"))).where(cb.equal(attachmentAmdRoot.get("companyId"), attachmentRoot.get("companyId")));
 		attachment.select(attachmentRoot.get("remarks")).where(cb.equal(attachmentRoot.get("companyId"), hpmRoot.get("companyId")),
 				cb.equal(attachmentRoot.get("amendId"), attachmentAmd));
+		
+				
 				
 		cq.multiselect(cpmRoot.get("companyId").alias("companyId"),cpmRoot.get("effectiveDateStart").alias("effectiveDateStart"),cpmRoot.get("effectiveDateEnd").alias("effectiveDateEnd"),
 			hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
@@ -938,7 +939,9 @@ public class JasperCustomServiceImple {
 			.otherwise(hpmRoot.get("premiumFc")).alias("premium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("vatPremiumLc"))
 			.otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")), hpmRoot.get("overallPremiumLc"))
 			.otherwise(hpmRoot.get("overallPremiumFc")).alias("totalPremium"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(cpmRoot.get("currencyIds")),"LC").otherwise("FC").alias("vehiclePremiumDesc"),
-			hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("approvedBy").alias("approvedBy"),
+			hpmRoot.get("branchName").alias("branchName"),/*hpmRoot.get("approvedBy").alias("approvedBy"),*/
+			cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), hpmRoot.get("customerName"))
+			.when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("b2c","Direct")), "System").otherwise(luiRoot.get("userName")).alias("approvedBy"),
 			cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), hpmRoot.get("customerName"))
 			.otherwise(luiRoot.get("userName")).alias("userName"),MotorCount.alias("noOfVehicle"),companyName.alias("companyName"),
 			imageURL.alias("companylogo"),hpmRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),piRoot.get("customerId").alias("customerId"),
@@ -2414,6 +2417,18 @@ public class JasperCustomServiceImple {
 						&& f.getTaxId()!=0).map(u -> u.getTaxAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
 			}
 			
+			List<Map<String,Object>> companyDetails = insuranceComMasRepo.getCompanyDetailsById(map.get("companyId")==null?"":map.get("companyId").toString());
+			if(!companyDetails.isEmpty()) {
+				result.put("companyName", companyDetails.get(0).get("COMPANY_NAME")==null?"":companyDetails.get(0).get("COMPANY_NAME").toString());
+				result.put("companylogo", companyDetails.get(0).get("COMPANY_LOGO")==null?"":companyDetails.get(0).get("COMPANY_LOGO").toString());
+				result.put("companyWebsite", companyDetails.get(0).get("COMPANY_WEBSITE")==null?"":companyDetails.get(0).get("COMPANY_WEBSITE").toString());
+				result.put("companyMail", companyDetails.get(0).get("COMPANY_EMAIL")==null?"":companyDetails.get(0).get("COMPANY_EMAIL").toString());
+				result.put("companyPhone", companyDetails.get(0).get("COMPANY_PHONE")==null?"":companyDetails.get(0).get("COMPANY_PHONE").toString());
+				result.put("companyAddress", companyDetails.get(0).get("COMPANY_ADDRESS")==null?"":companyDetails.get(0).get("COMPANY_ADDRESS").toString());
+				result.put("companyPoBox", companyDetails.get(0).get("PO_BOX")==null?"":companyDetails.get(0).get("PO_BOX").toString());
+				result.put("companyVrnNumber", companyDetails.get(0).get("VRN_NUMBER")==null?"":companyDetails.get(0).get("VRN_NUMBER").toString());
+			}
+			
 			result.put("customerName", map.get("customerName")==null?"":map.get("customerName").toString());
 			result.put("email1", map.get("email1")==null?"":map.get("email1").toString());
 			result.put("branchCode", map.get("branchCode")==null?"":map.get("branchCode").toString());
@@ -2440,8 +2455,6 @@ public class JasperCustomServiceImple {
 			result.put("totalPremium", map.get("totalPremium")==null?"":new BigDecimal(Double.parseDouble(map.get("totalPremium").toString())).toString());
 			result.put("signature", map.get("signature")==null?"":map.get("signature").toString());
 			result.put("place", map.get("place")==null?"":map.get("place").toString());
-			result.put("companyName", map.get("companyName")==null?"":map.get("companyName").toString());
-			result.put("companylogo", map.get("companylogo")==null?"":map.get("companylogo").toString());
 			result.put("productId", map.get("productId")==null?"":map.get("productId").toString());
 			result.put("companyId", map.get("companyId")==null?"":map.get("companyId").toString());
 			result.put("taxName", map.get("companyId")==null?"":map.get("companyId").toString().equalsIgnoreCase("100004")?"Premium":"Vat");

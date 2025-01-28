@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Motor Private" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1f1ed881-bfa7-4566-9d9a-33bcfbf24536">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="motorprivate.xml"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<style name="Table_TH" mode="Transparent" backcolor="#F0F8FF">
 		<box>
@@ -847,8 +847,8 @@
 			</textField>
 		</band>
 		<band height="15">
-			<textField>
-				<reportElement mode="Opaque" x="0" y="0" width="240" height="15" backcolor="#B3B3B3" uuid="3b08251a-6160-4a1e-b106-7d9ed6cfb715">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="240" height="15" backcolor="#B3B3B3" uuid="3b08251a-6160-4a1e-b106-7d9ed6cfb715">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -862,8 +862,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="345" y="0" width="95" height="15" backcolor="#B3B3B3" uuid="43262ea0-eeeb-4a74-97c5-e6062581d9f2">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="345" y="0" width="95" height="15" backcolor="#B3B3B3" uuid="43262ea0-eeeb-4a74-97c5-e6062581d9f2">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -877,8 +877,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Currency"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="240" y="0" width="105" height="15" backcolor="#B3B3B3" uuid="1225c27b-a016-49d7-a3d8-7601952fab92">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="240" y="0" width="105" height="15" backcolor="#B3B3B3" uuid="1225c27b-a016-49d7-a3d8-7601952fab92">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -892,8 +892,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement mode="Opaque" x="440" y="0" width="115" height="15" backcolor="#B3B3B3" uuid="a47948a9-661f-4e2b-8069-08fbb8bbe6a5">
+			<textField textAdjust="StretchHeight" pattern="#,##0.00">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="440" y="0" width="115" height="15" backcolor="#B3B3B3" uuid="a47948a9-661f-4e2b-8069-08fbb8bbe6a5">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="0" rightPadding="2">
@@ -911,7 +911,7 @@
 		<band height="15">
 			<printWhenExpression><![CDATA[$F{policyNo} !=null && $F{policyNo}!=""]]></printWhenExpression>
 			<componentElement>
-				<reportElement x="240" y="0" width="315" height="15" uuid="ad58c5b0-0216-4156-bcc4-16a979ebde56">
+				<reportElement stretchType="RelativeToBandHeight" x="240" y="0" width="315" height="15" uuid="ad58c5b0-0216-4156-bcc4-16a979ebde56">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 3_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 3_CH"/>
@@ -927,7 +927,7 @@
 						<jr:detailCell style="Table 3_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<textField>
-								<reportElement mode="Opaque" x="0" y="0" width="105" height="15" backcolor="#B3B3B3" uuid="872c9d10-f654-459f-8efc-d2bc0d604ac2"/>
+								<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="105" height="15" backcolor="#B3B3B3" uuid="872c9d10-f654-459f-8efc-d2bc0d604ac2"/>
 								<box>
 									<topPen lineWidth="0.5"/>
 									<bottomPen lineWidth="0.5"/>
@@ -950,7 +950,7 @@
 								<rightPen lineWidth="0.0"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement mode="Opaque" x="0" y="0" width="95" height="15" backcolor="#B3B3B3" uuid="a51058f5-308f-4732-b19f-0aa6d61d5713"/>
+								<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="95" height="15" backcolor="#B3B3B3" uuid="a51058f5-308f-4732-b19f-0aa6d61d5713"/>
 								<box leftPadding="2">
 									<topPen lineWidth="0.5"/>
 									<bottomPen lineWidth="0.5"/>
@@ -972,7 +972,7 @@
 								<rightPen lineWidth="0.5"/>
 							</box>
 							<textField isBlankWhenNull="true">
-								<reportElement mode="Opaque" x="0" y="0" width="115" height="15" backcolor="#B3B3B3" uuid="79eed184-89ef-4dfa-9851-f72a2be5d13d"/>
+								<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="115" height="15" backcolor="#B3B3B3" uuid="79eed184-89ef-4dfa-9851-f72a2be5d13d"/>
 								<box leftPadding="0" rightPadding="2">
 									<topPen lineWidth="0.5"/>
 									<leftPen lineWidth="0.5"/>
@@ -987,8 +987,8 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
-			<textField>
-				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="240" height="15" backcolor="#B3B3B3" uuid="a04809bb-d39a-48a6-b4dc-fe56e77f8218">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="240" height="15" backcolor="#B3B3B3" uuid="a04809bb-d39a-48a6-b4dc-fe56e77f8218">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1004,8 +1004,8 @@
 		</band>
 		<band height="15">
 			<printWhenExpression><![CDATA[$F{policyNo} !=null && $F{policyNo}!=""]]></printWhenExpression>
-			<textField>
-				<reportElement mode="Opaque" x="0" y="0" width="240" height="15" backcolor="#B3B3B3" uuid="7a67793a-3b3e-46b1-ba19-6cb86cda053d">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="240" height="15" backcolor="#B3B3B3" uuid="7a67793a-3b3e-46b1-ba19-6cb86cda053d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1018,8 +1018,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="240" y="0" width="105" height="15" backcolor="#B3B3B3" uuid="b9d61a51-9228-4702-9690-0a84d9fc4bc6">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="240" y="0" width="105" height="15" backcolor="#B3B3B3" uuid="b9d61a51-9228-4702-9690-0a84d9fc4bc6">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -1034,8 +1034,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement mode="Opaque" x="440" y="0" width="115" height="15" backcolor="#B3B3B3" uuid="de5618a3-c4dd-4347-a7ae-7501088910ca">
+			<textField textAdjust="StretchHeight" pattern="#,##0.00">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="440" y="0" width="115" height="15" backcolor="#B3B3B3" uuid="de5618a3-c4dd-4347-a7ae-7501088910ca">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -1051,8 +1051,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalPremium}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="345" y="0" width="95" height="15" backcolor="#B3B3B3" uuid="2f26fd70-4817-4802-81e3-0d35fbeb550d">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="345" y="0" width="95" height="15" backcolor="#B3B3B3" uuid="2f26fd70-4817-4802-81e3-0d35fbeb550d">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -1070,8 +1070,8 @@
 		</band>
 		<band height="48">
 			<printWhenExpression><![CDATA[$F{policyNo}==null || $F{policyNo}==""]]></printWhenExpression>
-			<textField>
-				<reportElement mode="Opaque" x="345" y="32" width="95" height="16" backcolor="#B3B3B3" uuid="a5b2ef83-ec57-4f05-9d8d-9020edb10309"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="345" y="32" width="95" height="16" backcolor="#B3B3B3" uuid="a5b2ef83-ec57-4f05-9d8d-9020edb10309"/>
 				<box leftPadding="2" rightPadding="0">
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.0"/>
@@ -1083,8 +1083,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="345" y="16" width="45" height="16" backcolor="#B3B3B3" uuid="5d19cf2a-01c4-46be-9b9c-d8ca5ffd9518"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="345" y="16" width="45" height="16" backcolor="#B3B3B3" uuid="5d19cf2a-01c4-46be-9b9c-d8ca5ffd9518"/>
 				<box leftPadding="2" rightPadding="0">
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.0"/>
@@ -1096,8 +1096,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA["VAT"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="345" y="0" width="95" height="16" backcolor="#B3B3B3" uuid="533cb6eb-8316-4e41-a413-ea98ce9eba80"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="345" y="0" width="95" height="16" backcolor="#B3B3B3" uuid="533cb6eb-8316-4e41-a413-ea98ce9eba80"/>
 				<box leftPadding="2" rightPadding="0">
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.0"/>
@@ -1109,8 +1109,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Premium"]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement mode="Opaque" x="440" y="32" width="115" height="16" backcolor="#B3B3B3" uuid="5eb2de5b-1df1-492b-afa2-17e1651651ea"/>
+			<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="440" y="32" width="115" height="16" backcolor="#B3B3B3" uuid="5eb2de5b-1df1-492b-afa2-17e1651651ea"/>
 				<box leftPadding="0" rightPadding="2">
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.5"/>
@@ -1122,8 +1122,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{overAllPremium}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement mode="Opaque" x="440" y="0" width="115" height="16" backcolor="#B3B3B3" uuid="ff3330d9-5945-4e26-9a99-88ab236cfa17"/>
+			<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="440" y="0" width="115" height="16" backcolor="#B3B3B3" uuid="ff3330d9-5945-4e26-9a99-88ab236cfa17"/>
 				<box leftPadding="0" rightPadding="2">
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -1135,8 +1135,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement mode="Opaque" x="440" y="16" width="115" height="16" backcolor="#B3B3B3" uuid="c7def3bd-4cdb-4b14-95b5-8739727989f7"/>
+			<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="440" y="16" width="115" height="16" backcolor="#B3B3B3" uuid="c7def3bd-4cdb-4b14-95b5-8739727989f7"/>
 				<box leftPadding="0" rightPadding="2">
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -1148,8 +1148,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{vatPremium}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement mode="Opaque" x="390" y="16" width="50" height="16" backcolor="#B3B3B3" uuid="f9ec4dd7-cd62-4660-95f2-e44e4f7c561d"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="390" y="16" width="50" height="16" backcolor="#B3B3B3" uuid="f9ec4dd7-cd62-4660-95f2-e44e4f7c561d"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
@@ -1160,8 +1160,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA["("+$F{vatPercent}+"% )"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="240" y="0" width="105" height="16" backcolor="#B3B3B3" uuid="f851d4c3-c9b7-4290-b981-8dfa59173a43">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="240" y="0" width="105" height="16" backcolor="#B3B3B3" uuid="f851d4c3-c9b7-4290-b981-8dfa59173a43">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1175,8 +1175,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="0" y="0" width="240" height="16" backcolor="#B3B3B3" uuid="8b567f8b-775a-4df2-9eef-a8ca570cd998">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="240" height="16" backcolor="#B3B3B3" uuid="8b567f8b-775a-4df2-9eef-a8ca570cd998">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1190,8 +1190,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="16" width="240" height="16" backcolor="#B3B3B3" uuid="4a4f973e-4ba5-48db-a4e8-c686c98860dc">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="16" width="240" height="16" backcolor="#B3B3B3" uuid="4a4f973e-4ba5-48db-a4e8-c686c98860dc">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1204,8 +1204,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA["PREMIUM DETAILS "]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="0" y="32" width="240" height="16" backcolor="#B3B3B3" uuid="7cb8e324-6e11-4b1d-88ea-a7334507ee7d">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="32" width="240" height="16" backcolor="#B3B3B3" uuid="7cb8e324-6e11-4b1d-88ea-a7334507ee7d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1218,8 +1218,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="240" y="16" width="105" height="16" backcolor="#B3B3B3" uuid="2bc83e4c-61db-4265-8cfd-2adea3a21805">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="240" y="16" width="105" height="16" backcolor="#B3B3B3" uuid="2bc83e4c-61db-4265-8cfd-2adea3a21805">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1233,8 +1233,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="240" y="32" width="105" height="16" backcolor="#B3B3B3" uuid="376c01b8-c152-4dc3-887c-17e2c81b2a69">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="240" y="32" width="105" height="16" backcolor="#B3B3B3" uuid="376c01b8-c152-4dc3-887c-17e2c81b2a69">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -1639,7 +1639,8 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="40">
+		<band height="35">
+			<printWhenExpression><![CDATA[1==2]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="10" y="0" width="529" height="35" isRemoveLineWhenBlank="true" uuid="49cba749-92ee-469f-b0a2-96af8a0f9c7a">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -1788,8 +1789,9 @@
 				</jr:table>
 			</componentElement>
 			<textField>
-				<reportElement stretchType="RelativeToTallestObject" x="554" y="0" width="1" height="40" uuid="9cdc693d-a585-4951-8db7-23cdd63c59be">
+				<reportElement stretchType="RelativeToTallestObject" x="554" y="0" width="1" height="35" uuid="9cdc693d-a585-4951-8db7-23cdd63c59be">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
 					<rightPen lineWidth="0.5"/>
@@ -1797,7 +1799,7 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="1" height="40" uuid="4a397139-c539-4973-80fe-f452170e2f5d">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="1" height="35" uuid="4a397139-c539-4973-80fe-f452170e2f5d">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>

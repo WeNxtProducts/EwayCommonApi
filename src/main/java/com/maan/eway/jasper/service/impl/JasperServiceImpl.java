@@ -282,7 +282,7 @@ public class JasperServiceImpl implements JasperService {
 						}else {
 							if("100046".equalsIgnoreCase(homeData.getCompanyId())) {
 								String obj[] =new String[1];
-								obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/Sub_Main_Report.jrxml";
+								obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/Sub_Main_Report.jrxml";  // name changes as PhoenixSubSchedule
 								//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
 								/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
 								obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
@@ -291,7 +291,7 @@ public class JasperServiceImpl implements JasperService {
 									String path = JasperCompileManager.compileReportToFile(jrxml_path);
 									System.out.println("Jasper compileToReport path" +path);
 								}
-								res = getCommonJasperPdfFileByJson("/report/jasper/Main_Report.jrxml", jasperSaveLocation, jsonString, input2, "- Main_Report.json");
+								res = getCommonJasperPdfFileByJson("/report/jasper/Main_Report.jrxml", jasperSaveLocation, jsonString, input2, "- Main_Report.json"); // name changes as PhoenixSchedule
 							}else {
 								String obj[] =new String[1];
 								obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
