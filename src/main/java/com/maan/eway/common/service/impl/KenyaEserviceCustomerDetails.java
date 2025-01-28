@@ -138,7 +138,7 @@ public class KenyaEserviceCustomerDetails {
 		 * Checks the mobile number already exists for any customer, checks only for created by is not guest
 		 * If customer reference is blank: new customer save; otherwise: existing customer update.
 		 */
-			if(StringUtils.isNotBlank(req.getCreatedBy()) && ! req.getCreatedBy().equalsIgnoreCase("guest")) {
+			else if(StringUtils.isNotBlank(req.getCreatedBy()) && ! req.getCreatedBy().equalsIgnoreCase("guest")) {
 				if(StringUtils.isBlank(req.getCustomerReferenceNo())) {
 					List<EserviceCustomerDetails> allByMobileNo1 = repository.findAllByMobileNo1(req.getMobileNo1());
 					if(!allByMobileNo1.isEmpty()) { errorList.add("3317");	}
@@ -174,13 +174,13 @@ public class KenyaEserviceCustomerDetails {
 				errorList.add("1013");
 			}			
 
-			if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && req.getPolicyHolderTypeid().equals("1")) {
+			else if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && req.getPolicyHolderTypeid().equals("1")) {
 				if(! req.getIdNumber().matches("^[0-9]{8}") || Long.valueOf(req.getIdNumber()) <= 0) {
 					errorList.add("3313");
 				}
 			}
 			
-			if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && !req.getPolicyHolderTypeid().equals("1")) {
+			else if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && !req.getPolicyHolderTypeid().equals("1")) {
 				if (req.getIdNumber().length() > 100) {
 					errorList.add("1014");
 				} else if (req.getIdNumber().matches("[0-9]+") && Double.valueOf(req.getIdNumber()) <=0 ) {
@@ -194,7 +194,7 @@ public class KenyaEserviceCustomerDetails {
 		 * Checks the ID number already exists for any customer, checks only for created by is not guest
 		 * If customer reference is blank: new customer save; otherwise: existing customer update.
 		 */
-			if(StringUtils.isNotBlank(req.getCreatedBy()) && ! req.getCreatedBy().equalsIgnoreCase("guest")) {
+			else if(StringUtils.isNotBlank(req.getCreatedBy()) && ! req.getCreatedBy().equalsIgnoreCase("guest")) {
 				if(StringUtils.isBlank(req.getCustomerReferenceNo())) {
 					List<EserviceCustomerDetails> allByIdNumber = repository.findAllByIdNumber(req.getIdNumber());
 					if(!allByIdNumber.isEmpty()) {	errorList.add("3318");	}
