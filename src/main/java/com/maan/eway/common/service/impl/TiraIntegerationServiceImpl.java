@@ -106,25 +106,27 @@ public class TiraIntegerationServiceImpl {
 				
 				res.setResponse("Success");
 				
-			} else if( StringUtils.isBlank(data.getCoverNoteReferenceNo()) && data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()<50   ) {
+			} else if(  data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()<50   ) {
 				List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(tiraReq.getQuoteNo());
 				for(SectionDataDetails risk:risks) {
-					TiraFrameReqCall request=new TiraFrameReqCall();
-					request.setQuoteNo(risk.getQuoteNo());
-					request.setRiskId(risk.getRiskId()+"");
-					
-					Object tiraFramedReq = TiraReqFrame(request, token);
-					res.setResponse("Success");
-					// Tira Integ Push
-					if(tiraFramedReq!=null) {
-						JSONObject tiraIntegPushRes = TiraIntegPush(tiraFramedReq , token,url);
-						log.info("Tira Response --->"+tiraIntegPushRes);
-					}else {
-						res.setResponse("Failed");
-						log.info("Tira Framed Req --->"+tiraFramedReq);	
+					if(StringUtils.isBlank(risk.getCoverNoteReferenceNo())) {
+						TiraFrameReqCall request=new TiraFrameReqCall();
+						request.setQuoteNo(risk.getQuoteNo());
+						request.setRiskId(risk.getRiskId()+"");
+
+						Object tiraFramedReq = TiraReqFrame(request, token);
+						res.setResponse("Success");
+						// Tira Integ Push
+						if(tiraFramedReq!=null) {
+							JSONObject tiraIntegPushRes = TiraIntegPush(tiraFramedReq , token,url);
+							log.info("Tira Response --->"+tiraIntegPushRes);
+						}else {
+							res.setResponse("Failed");
+							log.info("Tira Framed Req --->"+tiraFramedReq);	
+						}
 					}
 				}
-			}else if( StringUtils.isBlank(data.getCoverNoteReferenceNo()) && data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()>49   ) {
+			}else if(  data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()>49   ) {
 				Object tiraFramedReq = TiraReqFrameFleet(tiraReq, token);
 				res.setResponse("Success");
 				// Tira Integ Push
