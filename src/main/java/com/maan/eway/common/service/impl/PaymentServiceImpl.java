@@ -2095,7 +2095,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setReqBillToForename(personaldata.getClientName());
 			
 			String personalInfoMobile=personaldata.getMobileCode1()+""+personaldata.getMobileNo1();
-			String requestMobile=req.getMobileCode1()+""+req.getMobileNo1();
+			String requestMobile=StringUtils.isNotBlank(req.getMobileNo1())? req.getMobileCode1()+""+req.getMobileNo1():"";
 			
 			paymentDetail.setReqBillToPhone(StringUtils.isBlank(requestMobile)?personalInfoMobile:requestMobile);
 			
@@ -2148,8 +2148,12 @@ public class PaymentServiceImpl implements PaymentService {
 				if(payment !=null && "SUCCESS".equalsIgnoreCase(payment.get("result").getAsString())) {
 					JsonArray asJsonArray = payment.get("data").getAsJsonArray();
 					JsonObject asJsonObject = asJsonArray.get(0).getAsJsonObject();	
-					String jsonStr = asJsonObject.get("payment_gateway_url").getAsString();					
+					String jsonStr = asJsonObject.get("payment_gateway_url").getAsString();		
+					try {
 					paymentDetail.setShorternUrl(new String(Base64.getDecoder().decode(jsonStr)));
+					}catch (Exception e) {
+						paymentDetail.setShorternUrl(new String(jsonStr));
+					}
 					res.setPaymentUrl(paymentDetail.getShorternUrl());
 				}else {
 					paymentStatus = "FAILED" ;

@@ -2,8 +2,6 @@ package com.maan.eway.payment.service.impl;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -21,24 +19,25 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -148,12 +147,166 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					return response;
 				}else if("ipayafrica".equals(vendor.getVendorName())) {
 					return ipayafrica(vendor,payment);
+				}else if("pesapal".equals(vendor.getVendorName())){
+					return pesapal(vendor,payment);
 				}else {
 					return selcomPayment(vendor,payment);
 				}
 				
 			}
 
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	private JsonObject pesapal(PaymentVendorMaster vendor, PaymentDetail payment) {
+		try {
+			String apiKey = null;
+			String apiSecret = null;
+			String authUrl = null;
+			String orderPath =null;
+			String paymentUrl=null;
+			String redirect_url=null;
+			String cancel_url=null;
+			String webHookUrl=null;
+			String signedFields="";
+			String remarks="";
+			if(vendor!=null) {
+				apiKey=vendor.getApiKey();
+				apiSecret=vendor.getApiSecretKey();
+				authUrl=vendor.getApiBaseUrl();
+				paymentUrl=vendor.getPaymentUrlLink();
+				//vendorCode=vendor.getVendorCode();
+				redirect_url=vendor.getReturnUrlLink();
+				cancel_url=vendor.getCancelUrlLink();
+				webHookUrl=vendor.getWebhookUrlLink();
+				redirect_url=redirect_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
+				cancel_url=cancel_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
+				signedFields=vendor.getSignedFields();
+				remarks=vendor.getRemarks();
+			}
+			
+			//Create Auth
+			String token="",notificationId="";
+			CloseableHttpClient httpClient = null;
+			try {
+				JsonObject request=new JsonObject();
+				request.addProperty("consumer_key",vendor.getApiKey().toString());
+				request.addProperty("consumer_secret", vendor.getApiSecretKey().toString());
+				
+				httpClient= HttpClientBuilder.create().build();
+				HttpPost postRequest = new HttpPost(authUrl);
+				postRequest.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+				StringEntity params = new StringEntity(request.toString());
+				postRequest.setEntity(params);
+	            HttpResponse hresp  = httpClient.execute(postRequest);
+
+	            org.apache.http.HttpEntity httpEntity = hresp.getEntity();
+	            String apiOutput = EntityUtils.toString(httpEntity);
+	            System.out.println("output"+ apiOutput);
+	            JsonObject tokResponse = new Gson().fromJson(apiOutput, JsonObject.class);
+	            token=tokResponse.get("token").getAsString();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}finally {
+				if(httpClient!=null) {
+					httpClient.close();
+				}
+			}
+			if(StringUtils.isNotBlank(token)) {
+				try {
+					JsonObject request=new JsonObject();
+					request.addProperty("url",webHookUrl);
+					request.addProperty("ipn_notification_type","POST");
+
+					httpClient= HttpClientBuilder.create().build();
+					HttpPost postRequest = new HttpPost(remarks);
+					postRequest.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+					postRequest.setHeader("Accept",MediaType.APPLICATION_JSON_VALUE);														
+					postRequest.setHeader("Authorization","Bearer "+ token);
+
+					StringEntity params = new StringEntity(request.toString());
+					postRequest.setEntity(params);
+					HttpResponse hresp  = httpClient.execute(postRequest);
+
+					org.apache.http.HttpEntity httpEntity = hresp.getEntity();
+					String apiOutput = EntityUtils.toString(httpEntity);
+					System.out.println("output"+ apiOutput);
+					JsonObject resp = new Gson().fromJson(apiOutput, JsonObject.class);
+					notificationId=resp.get("ipn_id").getAsString();
+				}catch (Exception e) {
+					e.printStackTrace();
+				}finally {
+					if(httpClient!=null) {
+						httpClient.close();
+					}
+				}
+
+
+
+				try {
+					JsonObject request=new JsonObject();
+					request.addProperty("id",payment.getMerchantReference());
+					request.addProperty("currency", payment.getCurrencyId());
+					List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+					if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
+						request.addProperty("amount",   payment.getPremiumLc().toPlainString());
+					else
+						request.addProperty("amount",   payment.getPremiumFc().toPlainString());
+
+
+					request.addProperty("description", payment.getQuoteNo()+" Payment Request");
+					request.addProperty("redirect_mode", "PARENT_WINDOW");
+					request.addProperty("callback_url", redirect_url);
+					request.addProperty("cancellation_url",cancel_url);
+					request.addProperty("notification_id", notificationId);
+					request.addProperty("branch", "");
+
+					JsonObject billingAddr=new JsonObject();
+					billingAddr.addProperty("phone_number", payment.getReqBillToPhone());
+					billingAddr.addProperty("email_address",payment.getReqBillToEmail());
+					billingAddr.addProperty("country_code", payment.getReqBillToCountry());
+					billingAddr.addProperty("first_name", payment.getReqBillToForename());
+					billingAddr.addProperty("middle_name", "");
+					billingAddr.addProperty("last_name", payment.getReqBillToSurname());				
+					billingAddr.addProperty("line_1", payment.getReqBillToAddressLine1());
+					billingAddr.addProperty("line_2", payment.getReqBillToAddressLine2());
+					billingAddr.addProperty("city", payment.getReqBillToAddressCity());
+					billingAddr.addProperty("state", payment.getReqBillToAddressState());
+					billingAddr.addProperty("postal_code", payment.getReqBillToAddrPostalCode());
+					billingAddr.addProperty("zip_code", payment.getReqBillToAddrPostalCode());
+					request.add("billing_address", billingAddr);
+
+					httpClient= HttpClientBuilder.create().build();
+					HttpPost postRequest = new HttpPost(paymentUrl);
+					postRequest.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+					postRequest.setHeader("Accept",MediaType.APPLICATION_JSON_VALUE);														
+					postRequest.setHeader("Authorization","Bearer "+ token);
+					System.out.println(payment.getMerchantReference()+"Payment Request "+ request.toString());
+					StringEntity params = new StringEntity(request.toString());
+					postRequest.setEntity(params);
+					HttpResponse hresp  = httpClient.execute(postRequest);
+
+					org.apache.http.HttpEntity httpEntity = hresp.getEntity();
+					String apiOutput = EntityUtils.toString(httpEntity);
+					System.out.println("output"+ apiOutput);
+					JsonObject resp = new Gson().fromJson(apiOutput, JsonObject.class);
+
+
+
+					resp.addProperty("result", "SUCCESS");
+
+					JsonObject innerResponse=new JsonObject();
+					innerResponse.addProperty("payment_gateway_url", resp.get("redirect_url").getAsString());
+					JsonArray asJsonArray =new JsonArray(1);
+					asJsonArray.add(innerResponse);
+					resp.add("data", asJsonArray);
+					return resp;
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

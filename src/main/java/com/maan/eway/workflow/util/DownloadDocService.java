@@ -74,8 +74,8 @@ public class DownloadDocService {
 			try {
 				
 				
-				//downloadReq.put("sgsId", d.getSgsId());
-				downloadReq.put("sgsId", "3875935");
+				downloadReq.put("sgsId", d.getSgsId());
+				//downloadReq.put("sgsId", "3875935");
 				
 				Map<String, Object> quote = azentoService.createQuote(download, downloadReq);
 				if(quote.get("File")!=null) {
