@@ -64,7 +64,11 @@ import com.maan.eway.common.req.CoverIdReq2;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.FactorRateDetailsList;
+import com.maan.eway.common.req.LocationDetailsReq;
+import com.maan.eway.common.req.SectionDetailsReq;
+import com.maan.eway.common.req.SubCoverReq2;
 import com.maan.eway.common.req.UpdateFactorRateReq;
+import com.maan.eway.common.req.UpdateFactorRateReq1;
 import com.maan.eway.common.req.ViewPolicyCalc;
 import com.maan.eway.common.res.EndtTypeMasterDto;
 import com.maan.eway.common.res.EserviceCommonGetRes;
@@ -2312,70 +2316,117 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 
 
 	@Override
-	public List<Error> validateFoctorPremiumDetails(UpdateFactorRateReq req) {
+	public List<Error> validateFoctorPremiumDetails(UpdateFactorRateReq1 req) {
 		List<Error> errors = new ArrayList<Error>();
 		try {
-			if ( req.getCoverIdList()==null  || req.getCoverIdList().size()<=0 ) {
-				errors.add(new Error("01","CoverList","Please Enter Cover List")) ;				
-			} else {
-				for (CoverIdReq2 cov : req.getCoverIdList() ) {
-					
-					if (cov.getCoverId()==null   ) {
-						errors.add(new Error("01","CoverIds","Please Enter Cover Id")) ;				
+			
+			if(req.getLocations()==null || req.getLocations().size()<=0)
+			{
+				errors.add(new Error("00","LocationDetails","Please Enter Location Details ")) ;		
+			}
+			else {
+				int i=0;
+				for(LocationDetailsReq locationdetail :req.getLocations())
+				{
+				i++;
+					if(locationdetail.getLocationId()==null || locationdetail.getLocationId().equalsIgnoreCase("0"))
+					{
+						errors.add(new Error("001","LocationId","Please Enter LocationId in row "+i)) ;				
+                    }
+					if(locationdetail.getSectiondetails()==null ||locationdetail.getSectiondetails().size()<=0)
+					{
+						errors.add(new Error("002","SectionDetails","Section List Can't empty or null")) ;		
 					}
-					if (StringUtils.isBlank(cov.getSubCoverYn())  ) {
-						errors.add(new Error("01","SubCoverYn","Please Select SubCover Yes/No")) ;				
-					} else if (! (cov.getSubCoverYn().equalsIgnoreCase("Y") || cov.getSubCoverYn().equalsIgnoreCase("N") ) ) {
-						errors.add(new Error("01","SubCoverYn","Please Select SubCover Yes/No")) ;
-					} else if( cov.getSubCoverYn().equalsIgnoreCase("Y") && cov.getSubCoverId() ==null ) {
-						errors.add(new Error("01","SubCoverYn","Please Enter SubCover Id")) ;
-					}
-					
-//					if (cov.getRate()=null   ) {
-//						errors.add(new Error("01","MinimumPremium","Please Enter MimimumPremium")) ;				
-//					} else if (! cov.getRate().matches("[0-9.]+")   ) {
-//						errors.add(new Error("01","MinimumPremium","Please Enter Valid MimimumPremium")) ;				
-//					} else if ( getRate().equalsIgnoreCase("0")   ) {
-//						errors.add(new Error("01","MinimumPremium","Please Enter Valid Number In MimimumPremium")) ;				
-//					}
-					
-					if (cov.getRate()==null  ) {
-						errors.add(new Error("01","Rate","Please Enter Rate")) ;				
-					} else if (! cov.getRate().matches("[0-9.]+")   ) {
-						errors.add(new Error("01","Rate","Please Enter Valid Rate")) ;				
-					} else if ( cov.getRate().equalsIgnoreCase("0") &&  cov.getCoverageType().equalsIgnoreCase("D")    ) {
-						errors.add(new Error("01","Rate","Please Enter Valid Number In Rate")) ;				
-					}
-					if( cov.getMinrate()>Double.parseDouble(cov.getRate())  && Double.parseDouble(cov.getRate())<cov.getActualrate() ) {
-						errors.add(new Error("01","Rate","Please Enter Rate between "+cov.getMinrate()+"& "+cov.getActualrate())) ;
-					}
-				
-					
-					if(StringUtils.isNotBlank(cov.getUserOpt())  && cov.getUserOpt().equalsIgnoreCase("Y")  ) {
-						if (StringUtils.isBlank(cov.getExcessAmount() ) ) {
-							errors.add(new Error("01"," Excess Amount","Please Enter Excess Amount")) ;				
-						} else if (! cov.getExcessAmount().matches("[0-9.]+")   ) {
-							errors.add(new Error("01"," Excess Amount","Please Enter Valid Excess Amount")) ;				
+					else {
+						for(SectionDetailsReq sectiondetails :locationdetail.getSectiondetails())
+						{
+							
+							if(sectiondetails.getSectionId()==null || sectiondetails.getSectionId().equalsIgnoreCase("0"))
+							{
+								errors.add(new Error("001","SectionId","Please Enter SectionId in row ")) ;				
+		                    }
+							else if(sectiondetails.getVehicleId()==null ||sectiondetails.getVehicleId().equals("0"))
+							{
+								errors.add(new Error("001","VehicleId","Please Enter VehicleId in row ")) ;				
+		                    }
+							if(sectiondetails.getCoverIdList()==null ||sectiondetails.getCoverIdList().size()<=0)
+							{
+								errors.add(new Error("003","CoverList","CoverList Can't be null or Empty ")) ;				
+		                    }
+							else {
+								
+								if ( sectiondetails.getCoverIdList()==null  || sectiondetails.getCoverIdList().size()<=0 ) {
+									errors.add(new Error("01","CoverList","Please Enter Cover List")) ;				
+								} else {
+									for (CoverIdReq2 cov : sectiondetails.getCoverIdList() ) {
+										
+										if (cov.getCoverId()==null   ) {
+											errors.add(new Error("01","CoverIds","Please Enter Cover Id")) ;				
+										}
+										if (StringUtils.isBlank(cov.getSubCoverYn())  ) {
+											errors.add(new Error("01","SubCoverYn","Please Select SubCover Yes/No")) ;				
+										} else if (! (cov.getSubCoverYn().equalsIgnoreCase("Y") || cov.getSubCoverYn().equalsIgnoreCase("N") ) ) {
+											errors.add(new Error("01","SubCoverYn","Please Select SubCover Yes/No")) ;
+										} else if( cov.getSubCoverYn().equalsIgnoreCase("Y") && cov.getSubCoverId() ==null ) {
+											errors.add(new Error("01","SubCoverYn","Please Enter SubCover Id")) ;
+										}
+										
+//										if (cov.getRate()=null   ) {
+//											errors.add(new Error("01","MinimumPremium","Please Enter MimimumPremium")) ;				
+//										} else if (! cov.getRate().matches("[0-9.]+")   ) {
+//											errors.add(new Error("01","MinimumPremium","Please Enter Valid MimimumPremium")) ;				
+//										} else if ( getRate().equalsIgnoreCase("0")   ) {
+//											errors.add(new Error("01","MinimumPremium","Please Enter Valid Number In MimimumPremium")) ;				
+//										}
+										
+										if (cov.getRate()==null  ) {
+											errors.add(new Error("01","Rate","Please Enter Rate")) ;				
+										} else if (! cov.getRate().matches("[0-9.]+")   ) {
+											errors.add(new Error("01","Rate","Please Enter Valid Rate")) ;				
+										} else if ( cov.getRate().equalsIgnoreCase("0") &&  cov.getCoverageType().equalsIgnoreCase("D")    ) {
+											errors.add(new Error("01","Rate","Please Enter Valid Number In Rate")) ;				
+										}
+										if( cov.getMinrate()>Double.parseDouble(cov.getRate())  && Double.parseDouble(cov.getRate())<cov.getActualrate() ) {
+											errors.add(new Error("01","Rate","Please Enter Rate between "+cov.getMinrate()+"& "+cov.getActualrate())) ;
+										}
+									
+										
+										if(StringUtils.isNotBlank(cov.getUserOpt())  && cov.getUserOpt().equalsIgnoreCase("Y")  ) {
+											if (StringUtils.isBlank(cov.getExcessAmount() ) ) {
+												errors.add(new Error("01"," Excess Amount","Please Enter Excess Amount")) ;				
+											} else if (! cov.getExcessAmount().matches("[0-9.]+")   ) {
+												errors.add(new Error("01"," Excess Amount","Please Enter Valid Excess Amount")) ;				
+											}
+											
+											if (StringUtils.isBlank(cov.getExcessPercent() ) ) {
+												errors.add(new Error("01"," Excess Percent","Please Enter Excess Percent")) ;				
+											} else if (! cov.getExcessPercent().matches("[0-9.]+")   ) {
+												errors.add(new Error("01"," Excess Percent","Please Enter Valid Excess Percent")) ;				
+											} else if (Double.valueOf(cov.getExcessPercent())> 100 ) {
+												errors.add(new Error("01"," Excess Percent","Excess Percent More Then 100 Percent Not Allowed")) ;				
+											}
+											
+											
+											if (StringUtils.isBlank(cov.getExcessDesc() ) ) {
+												errors.add(new Error("01"," Excess Desc","Please Enter  Excess Description")) ;				
+											} else if ( cov.getExcessDesc().length() > 500  ) {
+												errors.add(new Error("01"," Excess Desc"," Excess Description Must Be Under 500 Charaters Only Allowed")) ;				
+											}
+										}
+										
+									}
+								}	
+								
+								
+								
+								
+								
+							}
 						}
-						
-						if (StringUtils.isBlank(cov.getExcessPercent() ) ) {
-							errors.add(new Error("01"," Excess Percent","Please Enter Excess Percent")) ;				
-						} else if (! cov.getExcessPercent().matches("[0-9.]+")   ) {
-							errors.add(new Error("01"," Excess Percent","Please Enter Valid Excess Percent")) ;				
-						} else if (Double.valueOf(cov.getExcessPercent())> 100 ) {
-							errors.add(new Error("01"," Excess Percent","Excess Percent More Then 100 Percent Not Allowed")) ;				
-						}
-						
-						
-						if (StringUtils.isBlank(cov.getExcessDesc() ) ) {
-							errors.add(new Error("01"," Excess Desc","Please Enter  Excess Description")) ;				
-						} else if ( cov.getExcessDesc().length() > 500  ) {
-							errors.add(new Error("01"," Excess Desc"," Excess Description Must Be Under 500 Charaters Only Allowed")) ;				
-						}
 					}
-					
 				}
 			}
+
 			
 		} catch(Exception e){
 			e.printStackTrace();
@@ -2389,7 +2440,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 	private PolicyCoverDataRepository coverDataRepo;
 	
 	@Override
-	public synchronized UpdateCoverRes updateFactorRatePremiumDetails(UpdateFactorRateReq req) {
+	public synchronized UpdateCoverRes updateFactorRatePremiumDetails(UpdateFactorRateReq1 req) {
 		UpdateCoverRes res = new UpdateCoverRes();
 		try {
 			String agencyCode = "";
@@ -2405,342 +2456,355 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			String companyId =req.getCompanyId();
 			Integer productId =Integer.valueOf(req.getProductId());
 			String requestRef =req.getRequestReferenceNo();
-			Integer sectionId =Integer.valueOf(req.getSectionId());
-			Integer vehicleId =req.getVehicleId();
-			Integer LocationId=Integer.valueOf(req.getLocationId());
-			List<CoverIdReq2> coverList =req.getCoverIdList().isEmpty() || req.getCoverIdList().size()==0 ?Collections.emptyList():req.getCoverIdList();
-			if(!coverList.isEmpty()) {
-				List<Integer> selectedCoverId =coverList.stream()
-						.map(c ->c.getCoverId())
-						.collect(Collectors.toList());
-				
-//				repository.deleteByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndCoverIdNotIn(
-//						companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId, selectedCoverId);
-				List<FactorRateRequestDetails> unOptCovs = 	repository.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndLocationIdAndCoverIdNotIn(
-															companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId,  LocationId,selectedCoverId );
-				unOptCovs.forEach( o -> o.setUserOpt("N"));
-				repository.saveAllAndFlush(unOptCovs);
-				
-			}
-			//sectionids
-			List<Integer> sectionid = req.getCoverIdList().stream().map(CoverIdReq2::getSectionId).filter(Objects::nonNull).map(Integer::valueOf).collect(Collectors.toList());
-			// delete unselected cover block end
-			
-			/*
-			 * List<FactorRateRequestDetails> findCovers = repository.
-			 * findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdOrderByCoverIdAsc
-			 * (req.getRequestReferenceNo() , req.getVehicleId() , req.getCompanyId() ,
-			 * Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())
-			 * ,LocationId ) ;
-			 */
-			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdInAndLocationIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
-					req.getCompanyId() , Integer.valueOf(req.getProductId()) , sectionid ,LocationId ) ;	
-		
-			List<ProductSectionMaster> sectionList = getProductSectionDropdown(req.getCompanyId(), req.getProductId(), req.getSectionId() ) ;
-			String productType  =sectionList.size()> 0 ? sectionList.get(0).getMotorYn() :  "M" ; 
-			
-			if(    productType.equalsIgnoreCase("M") ){
-				EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndRiskIdAndLocationId(req.getRequestReferenceNo() , req.getVehicleId() 
-						,Integer.valueOf(req.getLocationId())	) ;
-				agencyCode = findMot.getAgencyCode();
-				branchCode = findMot.getBranchCode();
-				currencyId = findMot.getCurrency();
-				endtTypdId= findMot.getEndorsementType()!=null?findMot.getEndorsementType().toString():"";
-				endtCount=findMot.getEndtCount();
-				endtPrevQuoteNo=findMot.getEndtPrevQuoteNo();
-				originalPolicyNo=findMot.getOriginalPolicyNo();
-				if(findMot.getEndorsementType() == null ) {
-					engine.setEffectiveDate(findMot.getPolicyStartDate());
-					engine.setPolicyEndDate(findMot.getPolicyEndDate());
-				}else if(findMot.getEndorsementType() !=null) {
-					engine.setEffectiveDate(findMot.getEndorsementEffdate());
-					engine.setPolicyEndDate(findMot.getPolicyEndDate());
-				}
-				
-				// Update Commission
-				findMot.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findMot.getCommissionPercentage() );
-				findMot.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findMot.getVatCommission() );;
-				eserMotorRepo.save(findMot);
-				
-			} else if(   productType.equalsIgnoreCase("H") &&  req.getProductId().equalsIgnoreCase(travelProductId)) {
-				EserviceTravelDetails  findTra = eserTraRepo.findByRequestReferenceNoAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() ,
-						req.getCompanyId() , 	 req.getProductId(),req.getSectionId()  ) ;
-				agencyCode = findTra.getBrokerCode();
-				branchCode = findTra.getBranchCode();
-				currencyId = findTra.getCurrency();
-				endtTypdId= findTra.getEndorsementType()!=null?findTra.getEndorsementType().toString():"";
-				endtCount=findTra.getEndtCount();
-				endtPrevQuoteNo=findTra.getEndtPrevQuoteNo();
-				originalPolicyNo=findTra.getOriginalPolicyNo();
-			//	EserviceTravelGroupDetails  findGroup = eserGroupRepo.findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,Integer.valueOf(req.getGroupId()) ,
-			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
-				// Update Commission
-				findTra.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findTra.getCommissionPercentage() );
-				findTra.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findTra.getVatCommission() );
-				eserTraRepo.save(findTra);
-			} else if(    productType.equalsIgnoreCase("A") ) {
-				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(req.getRequestReferenceNo() , 1 , req.getSectionId(),LocationId);
-			    if(req.getProductId().equals("6"))
-			    {
-			    	 findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()), req.getSectionId());
-						
-			    }
-				agencyCode = findBuild.getBrokerCode();
-				branchCode = findBuild.getBranchCode();
-				currencyId = findBuild.getCurrency();
-				endtTypdId= findBuild.getEndorsementType()!=null?findBuild.getEndorsementType().toString():"";
-				endtCount=findBuild.getEndtCount();
-				endtPrevQuoteNo=findBuild.getEndtPrevQuoteNo();
-				originalPolicyNo=findBuild.getOriginalPolicyNo();
-				// Update Commission
-				findBuild.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findBuild.getCommissionPercentage() );
-				findBuild.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findBuild.getVatCommission() );
-				eserBuildRepo.save(findBuild);
-			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
-			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
-			} else  {
-				EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(req.getRequestReferenceNo() , req.getVehicleId() ,req.getSectionId(),Integer.valueOf(req.getLocationId()) ) ;
-				agencyCode = findCommon.getBrokerCode();
-				branchCode = findCommon.getBranchCode();
-				currencyId = findCommon.getCurrency();
-				endtTypdId= findCommon.getEndorsementType()!=null?findCommon.getEndorsementType().toString():"";
-				endtCount=findCommon.getEndtCount();
-				endtPrevQuoteNo=findCommon.getEndtPrevQuoteNo();
-				originalPolicyNo=findCommon.getOriginalPolicyNo();
-				// Update Commission
-				findCommon.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findCommon.getCommissionPercentage() );
-				findCommon.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findCommon.getVatCommission() );
-				eserCommonRepo.save(findCommon);
-			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
-			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
-			}
-			
-			String decimalDigits = currencyDecimalFormat(req.getCompanyId() , currencyId ).toString();
-			String stringFormat = "%0"+decimalDigits+"d" ;
-			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
-			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
-			DecimalFormat df = new DecimalFormat(pattern);
-			List<FactorRateRequestDetails>  updateCoverList = new ArrayList<FactorRateRequestDetails>(); 
-
-			
-			
-			engine.setAgencyCode(agencyCode);
-			engine.setBranchCode(branchCode);
-			engine.setCdRefNo(findCovers.get(0).getCdRefno());
-			engine.setVdRefNo(findCovers.get(0).getVdRefno());
-			engine.setInsuranceId(findCovers.get(0).getCompanyId());
-			engine.setMsrefno(findCovers.get(0).getMsRefno());
-			engine.setProductId(findCovers.get(0).getProductId().toString());
-			engine.setRequestReferenceNo(findCovers.get(0).getRequestReferenceNo());
-			engine.setSectionId(findCovers.get(0).getSectionId().toString());
-			engine.setVehicleId(findCovers.get(0).getVehicleId()+"");
-			engine.setCreatedBy(findCovers.get(0).getCreatedBy());
-			engine.setMsVehicleDetails(null);
-			engine.setEffectiveDate(findCovers.get(0).getCoverPeriodFrom());
-			engine.setPolicyEndDate(findCovers.get(0).getCoverPeriodTo());
-			engine.setLocationId(req.getLocationId());
-			
-			List<PolicyCoverDataEndt> oldPolicyData = policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
-					Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
-					Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()));
-			
-			for (CoverIdReq2 covReq :    req.getCoverIdList()  ) {
-				System.out.println("CoverId : "+covReq.getCoverId());
-				System.out.println("SubCoverId : "+covReq.getSubCoverId());
-				
-				if(StringUtils.isBlank(covReq.getSubCoverYn()) || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
-					List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+			List<FactorRateRequestDetails> findCovers = null;
+			for(LocationDetailsReq loctondetails :req.getLocations())
+			{
+				for(SectionDetailsReq sectiondetails :loctondetails.getSectiondetails())
+				{
 					
-					if(filterCover.size()>0 ) {
-						FactorRateRequestDetails  updateCover = filterCover.get(0);
-						updateCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
-				//		updateCover.setActualRate(updateCover.getRate());
-						updateCover.setRate(new BigDecimal(covReq.getRate()));
-						updateCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
-						updateCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
-						updateCover.setExcessDesc(covReq.getExcessDesc());
-						updateCover.setUserOpt("Y");
-						updateCoverList.add(updateCover);
+					Integer sectionId =Integer.valueOf(sectiondetails.getSectionId());
+					Integer vehicleId =sectiondetails.getVehicleId();
+					Integer LocationId=Integer.valueOf(loctondetails.getLocationId());
+					List<CoverIdReq2> coverList =sectiondetails.getCoverIdList().isEmpty() || sectiondetails.getCoverIdList().size()==0 ?Collections.emptyList():sectiondetails.getCoverIdList();
+					if(!coverList.isEmpty()) {
+						List<Integer> selectedCoverId =coverList.stream()
+								.map(c ->c.getCoverId())
+								.collect(Collectors.toList());
 						
-						//repository.save(updateCover);
+//						repository.deleteByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndCoverIdNotIn(
+//								companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId, selectedCoverId);
+						List<FactorRateRequestDetails> unOptCovs = 	repository.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndLocationIdAndCoverIdNotIn(
+																	companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId,  LocationId,selectedCoverId );
+						unOptCovs.forEach( o -> o.setUserOpt("N"));
+						repository.saveAllAndFlush(unOptCovs);
 						
-						// Loadings
-						if( covReq.getLoadings()!=null && covReq.getLoadings().size() > 0 ) {
-							for ( Loading lod : covReq.getLoadings() ) {
-								List<FactorRateRequestDetails> filterLoading = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(lod.getLoadingId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
-								if(filterLoading.size()>0 ) {
-									FactorRateRequestDetails  updateLod = filterLoading.get(0);
-									updateLod.setRate(lod.getLoadingCalcType().equalsIgnoreCase("P") ? new BigDecimal(lod.getLoadingRate()) :lod.getLoadingAmount() );
-									updateLod.setCalcType(StringUtils.isBlank(lod.getLoadingCalcType()) ? "A" :lod.getLoadingCalcType());
-									updateLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
-									updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
-									updateLod.setPremiumAfterDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateLod.setPremiumBeforeDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateLod.setPremiumExcludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateLod.setPremiumIncludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateCoverList.add(updateLod);
-								}
-							}
-						}
-						
-						// Discounts
-						if( covReq.getDiscounts()!=null && covReq.getDiscounts().size() > 0 ) {
-							for ( Discount disc : covReq.getDiscounts() ) {
-								List<FactorRateRequestDetails> filterDiscount = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(disc.getDiscountId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
-								if(filterDiscount.size()>0 ) {
-									FactorRateRequestDetails  updateDisc = filterDiscount.get(0);
-									updateDisc.setRate( disc.getDiscountAmount()==null ? BigDecimal.ZERO :disc.getDiscountAmount() );
-									updateDisc.setCalcType(StringUtils.isBlank(disc.getDiscountCalcType()) ? "A" :disc.getDiscountCalcType());
-									updateDisc.setMinimumPremium(disc.getDiscountAmount()==null?null: new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
-									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
-									updateDisc.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateDisc.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateDisc.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateDisc.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateCoverList.add(updateDisc);
-								}
-							}
-						}
-						
-						// Endt
-						if( covReq.getEndorsements()!=null && covReq.getEndorsements().size() > 0 ) {
-						
-							for ( Endorsement endt : covReq.getEndorsements() ) {
-								List<FactorRateRequestDetails> filterEndt = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(endt.getEndorsementId())) && 
-										o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
-								if(filterEndt.size()>0 ) {
-									FactorRateRequestDetails  updateEndt = filterEndt.get(0);
-									updateEndt.setRate( new BigDecimal(endt.getEndorsementRate()) );
-									List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> i.getCoverId()== covReq.getCoverId()).collect(Collectors.toList()) ;
-									BigDecimal totalSumInsured=coverData.stream().map(x -> x.getSumInsured()).reduce(BigDecimal.ZERO,BigDecimal::add);
-									updateEndt.setSumInsuredLc(totalSumInsured);
-									
-									coverData.sort(new Comparator<PolicyCoverDataEndt>() {
-
-										@Override
-										public int compare(PolicyCoverDataEndt o1, PolicyCoverDataEndt o2) {
-											// TODO Auto-generated method stub
-											return (o1.getEndtCount().compareTo(o2.getEndtCount()));
-										}
-									}.reversed());
-									
-									updateEndt.setPremiumAfterDiscountFc(coverData.get(0).getPremiumAfterDiscountFc());
-									updateEndt.setPremiumAfterDiscountLc(coverData.get(0).getPremiumAfterDiscountLc());
-									updateEndt.setPremiumBeforeDiscountFc(coverData.get(0).getPremiumBeforeDiscountFc());
-									updateEndt.setPremiumBeforeDiscountLc(coverData.get(0).getPremiumBeforeDiscountLc());
-									updateEndt.setPremiumExcludedTaxFc(coverData.get(0).getPremiumExcludedTaxFc());
-									updateEndt.setPremiumExcludedTaxLc(coverData.get(0).getPremiumExcludedTaxLc());
-									updateEndt.setPremiumIncludedTaxFc(coverData.get(0).getPremiumIncludedTaxFc());
-									updateEndt.setPremiumIncludedTaxLc(coverData.get(0).getPremiumIncludedTaxLc()); 
-									
-									updateCoverList.add(updateEndt);
-								}
-							}
-						}
 					}
-				} else {
-					System.out.println("CoverId : "+covReq.getCoverId());
-					System.out.println("SubCoverId : "+covReq.getSubCoverId());
+					//sectionids
+					List<Integer> sectionid = sectiondetails.getCoverIdList().stream().map(CoverIdReq2::getSectionId).filter(Objects::nonNull).map(Integer::valueOf).collect(Collectors.toList());
+					// delete unselected cover block end
 					
-					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
-					System.out.println("CoverId : "+filterSubCover.get(0).getCoverId());
-					System.out.println("SubCoverId : "+filterSubCover.get(0).getSubCoverId());
-					if(filterSubCover.size()>0 ) {
-						
-						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
-						updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
-				//		updateSubCover.setActualRate(updateSubCover.getRate());
-						updateSubCover.setRate(new BigDecimal(covReq.getRate()));
-//						updateSubCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
-						updateSubCover.setExcessAmount(covReq.getExcessAmount()==null ?BigDecimal.ZERO:new BigDecimal(covReq.getExcessAmount()));
-						updateSubCover.setExcessPercent(covReq.getExcessPercent()==null?BigDecimal.ZERO:new BigDecimal(covReq.getExcessPercent()));
-						updateSubCover.setExcessDesc(covReq.getExcessDesc());
-						updateSubCover.setUserOpt("Y");
-						repository.save(updateSubCover);
-						
-						// Loadings
-						if( covReq.getLoadings()!=null && covReq.getLoadings().size() > 0 ) {
-							for ( Loading lod : covReq.getLoadings() ) {
-								List<FactorRateRequestDetails> filterLoading = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())  && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(Integer.valueOf( lod.getLoadingId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
-								if(filterLoading.size()>0 ) {
-									FactorRateRequestDetails  updateLod = filterLoading.get(0);
-									updateLod.setRate(lod.getLoadingCalcType().equalsIgnoreCase("P") ? new BigDecimal(lod.getLoadingRate()) :lod.getLoadingAmount() );
-									updateLod.setCalcType(lod.getLoadingCalcType() );
-									updateLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
-									updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
-									updateLod.setPremiumAfterDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateLod.setPremiumBeforeDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateLod.setPremiumExcludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateLod.setPremiumIncludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
-									updateCoverList.add(updateLod);
-								}
-							}
+					/*
+					 * List<FactorRateRequestDetails> findCovers = repository.
+					 * findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdOrderByCoverIdAsc
+					 * (req.getRequestReferenceNo() , req.getVehicleId() , req.getCompanyId() ,
+					 * Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())
+					 * ,LocationId ) ;
+					 */
+					findCovers= repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdInAndLocationIdOrderByCoverIdAsc(req.getRequestReferenceNo() , sectiondetails.getVehicleId() ,
+							req.getCompanyId() , Integer.valueOf(req.getProductId()) , sectionid ,LocationId ) ;	
+				
+					List<ProductSectionMaster> sectionList = getProductSectionDropdown(req.getCompanyId(), req.getProductId(), sectiondetails.getSectionId() ) ;
+					String productType  =sectionList.size()> 0 ? sectionList.get(0).getMotorYn() :  "M" ; 
+					
+					if(    productType.equalsIgnoreCase("M") ){
+						EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndRiskIdAndLocationId(req.getRequestReferenceNo() , sectiondetails.getVehicleId() 
+								,Integer.valueOf(loctondetails.getLocationId())	) ;
+						agencyCode = findMot.getAgencyCode();
+						branchCode = findMot.getBranchCode();
+						currencyId = findMot.getCurrency();
+						endtTypdId= findMot.getEndorsementType()!=null?findMot.getEndorsementType().toString():"";
+						endtCount=findMot.getEndtCount();
+						endtPrevQuoteNo=findMot.getEndtPrevQuoteNo();
+						originalPolicyNo=findMot.getOriginalPolicyNo();
+						if(findMot.getEndorsementType() == null ) {
+							engine.setEffectiveDate(findMot.getPolicyStartDate());
+							engine.setPolicyEndDate(findMot.getPolicyEndDate());
+						}else if(findMot.getEndorsementType() !=null) {
+							engine.setEffectiveDate(findMot.getEndorsementEffdate());
+							engine.setPolicyEndDate(findMot.getPolicyEndDate());
 						}
 						
-						// Discounts
-						if( covReq.getDiscounts()!=null && covReq.getDiscounts().size() > 0 ) {
-							for ( Discount disc : covReq.getDiscounts() ) {
-								List<FactorRateRequestDetails> filterDiscount = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())  && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))  && o.getDiscLoadId().equals(Integer.valueOf(disc.getDiscountId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
-								if(filterDiscount.size()>0 ) {
-									FactorRateRequestDetails  updateDisc = filterDiscount.get(0);
-									updateDisc.setRate( disc.getDiscountAmount()==null ? BigDecimal.ZERO :disc.getDiscountAmount() );
-									updateDisc.setCalcType(StringUtils.isBlank(disc.getDiscountCalcType()) ? "A" :disc.getDiscountCalcType());
-									updateDisc.setMinimumPremium(disc.getDiscountAmount()==null?null: new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
-									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
-									updateDisc.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateDisc.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateDisc.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateDisc.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-									updateCoverList.add(updateDisc);
-								}
-							}
-						}
-					}
-					
-					// Endt
-					if( covReq.getEndorsements()!=null && covReq.getEndorsements().size() > 0 ) {
-						for ( Endorsement endt : covReq.getEndorsements() ) {
-							List<FactorRateRequestDetails> filterEndt = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())
-									&&  o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(Integer.valueOf(endt.getEndorsementId())) && 
-									o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
-							if(filterEndt.size()>0 ) {
-								FactorRateRequestDetails  updateEndt = filterEndt.get(0);
-								updateEndt.setRate( new BigDecimal(endt.getEndorsementRate()) );
-								List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> (i.getCoverId()== covReq.getCoverId()
-											&& Integer.parseInt(covReq.getSubCoverId())==i.getSubCoverId()
-										)
-										)
-										.collect(Collectors.toList()) ;
-								coverData.sort(new Comparator<PolicyCoverDataEndt>() {
-
-									@Override
-									public int compare(PolicyCoverDataEndt o1, PolicyCoverDataEndt o2) {
-										// TODO Auto-generated method stub
-										return (o1.getEndtCount().compareTo(o2.getEndtCount()));
-									}
-								}.reversed());
+						// Update Commission
+						findMot.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findMot.getCommissionPercentage() );
+						findMot.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findMot.getVatCommission() );;
+						eserMotorRepo.save(findMot);
+						
+					} else if(   productType.equalsIgnoreCase("H") &&  req.getProductId().equalsIgnoreCase(travelProductId)) {
+						EserviceTravelDetails  findTra = eserTraRepo.findByRequestReferenceNoAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() ,
+								req.getCompanyId() , 	 req.getProductId(),sectiondetails.getSectionId()  ) ;
+						agencyCode = findTra.getBrokerCode();
+						branchCode = findTra.getBranchCode();
+						currencyId = findTra.getCurrency();
+						endtTypdId= findTra.getEndorsementType()!=null?findTra.getEndorsementType().toString():"";
+						endtCount=findTra.getEndtCount();
+						endtPrevQuoteNo=findTra.getEndtPrevQuoteNo();
+						originalPolicyNo=findTra.getOriginalPolicyNo();
+					//	EserviceTravelGroupDetails  findGroup = eserGroupRepo.findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,Integer.valueOf(req.getGroupId()) ,
+					//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
+						// Update Commission
+						findTra.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findTra.getCommissionPercentage() );
+						findTra.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findTra.getVatCommission() );
+						eserTraRepo.save(findTra);
+					} else if(    productType.equalsIgnoreCase("A") ) {
+						EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(req.getRequestReferenceNo() , 1 , sectiondetails.getSectionId(),LocationId);
+					    if(req.getProductId().equals("6"))
+					    {
+					    	 findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() ,Integer.valueOf(sectiondetails.getVehicleId()), sectiondetails.getSectionId());
 								
-								updateEndt.setPremiumAfterDiscountFc(coverData.get(0).getPremiumAfterDiscountFc());
-								updateEndt.setPremiumAfterDiscountLc(coverData.get(0).getPremiumAfterDiscountLc());
-								updateEndt.setPremiumBeforeDiscountFc(coverData.get(0).getPremiumBeforeDiscountFc());
-								updateEndt.setPremiumBeforeDiscountLc(coverData.get(0).getPremiumBeforeDiscountLc());
-								updateEndt.setPremiumExcludedTaxFc(coverData.get(0).getPremiumExcludedTaxFc());
-								updateEndt.setPremiumExcludedTaxLc(coverData.get(0).getPremiumExcludedTaxLc());
-								updateEndt.setPremiumIncludedTaxFc(coverData.get(0).getPremiumIncludedTaxFc());
-								updateEndt.setPremiumIncludedTaxLc(coverData.get(0).getPremiumIncludedTaxLc());
-								updateCoverList.add(updateEndt);
-							}
-						}
+					    }
+						agencyCode = findBuild.getBrokerCode();
+						branchCode = findBuild.getBranchCode();
+						currencyId = findBuild.getCurrency();
+						endtTypdId= findBuild.getEndorsementType()!=null?findBuild.getEndorsementType().toString():"";
+						endtCount=findBuild.getEndtCount();
+						endtPrevQuoteNo=findBuild.getEndtPrevQuoteNo();
+						originalPolicyNo=findBuild.getOriginalPolicyNo();
+						// Update Commission
+						findBuild.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findBuild.getCommissionPercentage() );
+						findBuild.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findBuild.getVatCommission() );
+						eserBuildRepo.save(findBuild);
+					//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
+					//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
+					} else  {
+						EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(req.getRequestReferenceNo() , sectiondetails.getVehicleId() ,sectiondetails.getSectionId(),Integer.valueOf(loctondetails.getLocationId()) ) ;
+						agencyCode = findCommon.getBrokerCode();
+						branchCode = findCommon.getBranchCode();
+						currencyId = findCommon.getCurrency();
+						endtTypdId= findCommon.getEndorsementType()!=null?findCommon.getEndorsementType().toString():"";
+						endtCount=findCommon.getEndtCount();
+						endtPrevQuoteNo=findCommon.getEndtPrevQuoteNo();
+						originalPolicyNo=findCommon.getOriginalPolicyNo();
+						// Update Commission
+						findCommon.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findCommon.getCommissionPercentage() );
+						findCommon.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findCommon.getVatCommission() );
+						eserCommonRepo.save(findCommon);
+					//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
+					//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 					}
 					
+					String decimalDigits = currencyDecimalFormat(req.getCompanyId() , currencyId ).toString();
+					String stringFormat = "%0"+decimalDigits+"d" ;
+					String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+					String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+					DecimalFormat df = new DecimalFormat(pattern);
+					List<FactorRateRequestDetails>  updateCoverList = new ArrayList<FactorRateRequestDetails>(); 
+
+					
+					
+					engine.setAgencyCode(agencyCode);
+					engine.setBranchCode(branchCode);
+					engine.setCdRefNo(findCovers.get(0).getCdRefno());
+					engine.setVdRefNo(findCovers.get(0).getVdRefno());
+					engine.setInsuranceId(findCovers.get(0).getCompanyId());
+					engine.setMsrefno(findCovers.get(0).getMsRefno());
+					engine.setProductId(findCovers.get(0).getProductId().toString());
+					engine.setRequestReferenceNo(findCovers.get(0).getRequestReferenceNo());
+					engine.setSectionId(findCovers.get(0).getSectionId().toString());
+					engine.setVehicleId(findCovers.get(0).getVehicleId()+"");
+					engine.setCreatedBy(findCovers.get(0).getCreatedBy());
+					engine.setMsVehicleDetails(null);
+					engine.setEffectiveDate(findCovers.get(0).getCoverPeriodFrom());
+					engine.setPolicyEndDate(findCovers.get(0).getCoverPeriodTo());
+					engine.setLocationId(loctondetails.getLocationId());
+					
+					List<PolicyCoverDataEndt> oldPolicyData = policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
+							Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
+							Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()));
+					
+					for (CoverIdReq2 covReq :    sectiondetails.getCoverIdList()  ) {
+						System.out.println("CoverId : "+covReq.getCoverId());
+						System.out.println("SubCoverId : "+covReq.getSubCoverId());
+						
+						if(StringUtils.isBlank(covReq.getSubCoverYn()) || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+							List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+							
+							if(filterCover.size()>0 ) {
+								FactorRateRequestDetails  updateCover = filterCover.get(0);
+								updateCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
+						//		updateCover.setActualRate(updateCover.getRate());
+								updateCover.setRate(new BigDecimal(covReq.getRate()));
+								updateCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
+								updateCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
+								updateCover.setExcessDesc(covReq.getExcessDesc());
+								updateCover.setUserOpt("Y");
+								updateCoverList.add(updateCover);
+								
+								repository.save(updateCover);
+								
+								// Loadings
+								if( covReq.getLoadings()!=null && covReq.getLoadings().size() > 0 ) {
+									for ( Loading lod : covReq.getLoadings() ) {
+										List<FactorRateRequestDetails> filterLoading = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(lod.getLoadingId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+										if(filterLoading.size()>0 ) {
+											FactorRateRequestDetails  updateLod = filterLoading.get(0);
+											updateLod.setRate(lod.getLoadingCalcType().equalsIgnoreCase("P") ? new BigDecimal(lod.getLoadingRate()) :lod.getLoadingAmount() );
+											updateLod.setCalcType(StringUtils.isBlank(lod.getLoadingCalcType()) ? "A" :lod.getLoadingCalcType());
+											updateLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
+											updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
+											updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
+											updateLod.setPremiumAfterDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+											updateLod.setPremiumBeforeDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+											updateLod.setPremiumExcludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+											updateLod.setPremiumIncludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+											updateCoverList.add(updateLod);
+										}
+									}
+								}
+								
+								// Discounts
+								if( covReq.getDiscounts()!=null && covReq.getDiscounts().size() > 0 ) {
+									for ( Discount disc : covReq.getDiscounts() ) {
+										List<FactorRateRequestDetails> filterDiscount = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(disc.getDiscountId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+										if(filterDiscount.size()>0 ) {
+											FactorRateRequestDetails  updateDisc = filterDiscount.get(0);
+											updateDisc.setRate( disc.getDiscountAmount()==null ? BigDecimal.ZERO :disc.getDiscountAmount() );
+											updateDisc.setCalcType(StringUtils.isBlank(disc.getDiscountCalcType()) ? "A" :disc.getDiscountCalcType());
+											updateDisc.setMinimumPremium(disc.getDiscountAmount()==null?null: new BigDecimal(df.format(disc.getDiscountAmount())));
+											updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
+											updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
+											updateDisc.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+											updateDisc.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+											updateDisc.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+											updateDisc.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+											updateCoverList.add(updateDisc);
+										}
+									}
+								}
+								
+								// Endt
+								if( covReq.getEndorsements()!=null && covReq.getEndorsements().size() > 0 ) {
+								
+									for ( Endorsement endt : covReq.getEndorsements() ) {
+										List<FactorRateRequestDetails> filterEndt = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(endt.getEndorsementId())) && 
+												o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
+										if(filterEndt.size()>0 ) {
+											FactorRateRequestDetails  updateEndt = filterEndt.get(0);
+											updateEndt.setRate( new BigDecimal(endt.getEndorsementRate()) );
+											List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> i.getCoverId()== covReq.getCoverId()).collect(Collectors.toList()) ;
+											BigDecimal totalSumInsured=coverData.stream().map(x -> x.getSumInsured()).reduce(BigDecimal.ZERO,BigDecimal::add);
+											updateEndt.setSumInsuredLc(totalSumInsured);
+											
+											coverData.sort(new Comparator<PolicyCoverDataEndt>() {
+
+												@Override
+												public int compare(PolicyCoverDataEndt o1, PolicyCoverDataEndt o2) {
+													// TODO Auto-generated method stub
+													return (o1.getEndtCount().compareTo(o2.getEndtCount()));
+												}
+											}.reversed());
+											
+											updateEndt.setPremiumAfterDiscountFc(coverData.get(0).getPremiumAfterDiscountFc());
+											updateEndt.setPremiumAfterDiscountLc(coverData.get(0).getPremiumAfterDiscountLc());
+											updateEndt.setPremiumBeforeDiscountFc(coverData.get(0).getPremiumBeforeDiscountFc());
+											updateEndt.setPremiumBeforeDiscountLc(coverData.get(0).getPremiumBeforeDiscountLc());
+											updateEndt.setPremiumExcludedTaxFc(coverData.get(0).getPremiumExcludedTaxFc());
+											updateEndt.setPremiumExcludedTaxLc(coverData.get(0).getPremiumExcludedTaxLc());
+											updateEndt.setPremiumIncludedTaxFc(coverData.get(0).getPremiumIncludedTaxFc());
+											updateEndt.setPremiumIncludedTaxLc(coverData.get(0).getPremiumIncludedTaxLc()); 
+											
+											updateCoverList.add(updateEndt);
+										}
+									}
+								}
+							}
+						}else if(StringUtils.isBlank(covReq.getSubCoverYn()) || covReq.getSubCoverYn().equalsIgnoreCase("Y") ){
+                          
+                              for(SubCoverReq2  subcoverList: covReq.getSubCoversList())
+                              {
+                            	  System.out.println("CoverId : "+subcoverList.getCoverId());
+      							System.out.println("SubCoverId : "+subcoverList.getSubCoverId());  
+      							List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(subcoverList.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(subcoverList.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
+    							System.out.println("CoverId : "+filterSubCover.get(0).getCoverId());
+    							System.out.println("SubCoverId : "+filterSubCover.get(0).getSubCoverId());
+    							if(filterSubCover.size()>0 ) {
+    								
+    								FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
+    								updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
+    						//		updateSubCover.setActualRate(updateSubCover.getRate());
+    								updateSubCover.setRate(new BigDecimal(covReq.getRate()));
+//    								updateSubCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
+    								updateSubCover.setExcessAmount(covReq.getExcessAmount()==null ?BigDecimal.ZERO:new BigDecimal(covReq.getExcessAmount()));
+    								updateSubCover.setExcessPercent(covReq.getExcessPercent()==null?BigDecimal.ZERO:new BigDecimal(covReq.getExcessPercent()));
+    								updateSubCover.setExcessDesc(covReq.getExcessDesc());
+    								updateSubCover.setUserOpt(subcoverList.getUserOpt());
+    								repository.save(updateSubCover);
+    								
+    								// Loadings
+    								if( covReq.getLoadings()!=null && covReq.getLoadings().size() > 0 ) {
+    									for ( Loading lod : covReq.getLoadings() ) {
+    										List<FactorRateRequestDetails> filterLoading = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())  && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(Integer.valueOf( lod.getLoadingId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+    										if(filterLoading.size()>0 ) {
+    											FactorRateRequestDetails  updateLod = filterLoading.get(0);
+    											updateLod.setRate(lod.getLoadingCalcType().equalsIgnoreCase("P") ? new BigDecimal(lod.getLoadingRate()) :lod.getLoadingAmount() );
+    											updateLod.setCalcType(lod.getLoadingCalcType() );
+    											updateLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
+    											updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
+    											updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
+    											updateLod.setPremiumAfterDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+    											updateLod.setPremiumBeforeDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+    											updateLod.setPremiumExcludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+    											updateLod.setPremiumIncludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+    											updateCoverList.add(updateLod);
+    										}
+    									}
+    								}
+    								
+    								// Discounts
+    								if( covReq.getDiscounts()!=null && covReq.getDiscounts().size() > 0 ) {
+    									for ( Discount disc : covReq.getDiscounts() ) {
+    										List<FactorRateRequestDetails> filterDiscount = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())  && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))  && o.getDiscLoadId().equals(Integer.valueOf(disc.getDiscountId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+    										if(filterDiscount.size()>0 ) {
+    											FactorRateRequestDetails  updateDisc = filterDiscount.get(0);
+    											updateDisc.setRate( disc.getDiscountAmount()==null ? BigDecimal.ZERO :disc.getDiscountAmount() );
+    											updateDisc.setCalcType(StringUtils.isBlank(disc.getDiscountCalcType()) ? "A" :disc.getDiscountCalcType());
+    											updateDisc.setMinimumPremium(disc.getDiscountAmount()==null?null: new BigDecimal(df.format(disc.getDiscountAmount())));
+    											updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
+    											updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
+    											updateDisc.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+    											updateDisc.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+    											updateDisc.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+    											updateDisc.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+    											updateCoverList.add(updateDisc);
+    										}
+    									}
+    								}
+    							}
+    							//end
+    							if( covReq.getEndorsements()!=null && covReq.getEndorsements().size() > 0 ) {
+    								for ( Endorsement endt : covReq.getEndorsements() ) {
+    									List<FactorRateRequestDetails> filterEndt = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())
+    											&&  o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(Integer.valueOf(endt.getEndorsementId())) && 
+    											o.getTaxId().equals(0) && o.getCoverageType().equalsIgnoreCase("E") ).collect(Collectors.toList()); 
+    									if(filterEndt.size()>0 ) {
+    										FactorRateRequestDetails  updateEndt = filterEndt.get(0);
+    										updateEndt.setRate( new BigDecimal(endt.getEndorsementRate()) );
+    										List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> (i.getCoverId()== covReq.getCoverId()
+    													&& Integer.parseInt(covReq.getSubCoverId())==i.getSubCoverId()
+    												)
+    												)
+    												.collect(Collectors.toList()) ;
+    										coverData.sort(new Comparator<PolicyCoverDataEndt>() {
+
+    											@Override
+    											public int compare(PolicyCoverDataEndt o1, PolicyCoverDataEndt o2) {
+    												// TODO Auto-generated method stub
+    												return (o1.getEndtCount().compareTo(o2.getEndtCount()));
+    											}
+    										}.reversed());
+    										
+    										updateEndt.setPremiumAfterDiscountFc(coverData.get(0).getPremiumAfterDiscountFc());
+    										updateEndt.setPremiumAfterDiscountLc(coverData.get(0).getPremiumAfterDiscountLc());
+    										updateEndt.setPremiumBeforeDiscountFc(coverData.get(0).getPremiumBeforeDiscountFc());
+    										updateEndt.setPremiumBeforeDiscountLc(coverData.get(0).getPremiumBeforeDiscountLc());
+    										updateEndt.setPremiumExcludedTaxFc(coverData.get(0).getPremiumExcludedTaxFc());
+    										updateEndt.setPremiumExcludedTaxLc(coverData.get(0).getPremiumExcludedTaxLc());
+    										updateEndt.setPremiumIncludedTaxFc(coverData.get(0).getPremiumIncludedTaxFc());
+    										updateEndt.setPremiumIncludedTaxLc(coverData.get(0).getPremiumIncludedTaxLc());
+    										updateCoverList.add(updateEndt);
+    									}
+    								}
+    							}
+    							
+                              }
+						}
+						
+						
+						
+					}
 				}
-				
 			}
-			
+
+		
 			Gson json = new Gson();
 			log.info( "Referral Calc Request --> " +  json.toJson(engine) );
 			

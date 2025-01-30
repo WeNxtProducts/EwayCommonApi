@@ -23,6 +23,7 @@ import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.FactorRateDetailsList;
 import com.maan.eway.common.req.UpdateFactorRateReq;
+import com.maan.eway.common.req.UpdateFactorRateReq1;
 import com.maan.eway.common.req.ViewPolicyCalc;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.UpdateCoverRes;
@@ -84,7 +85,7 @@ public class FactorRateRequestDetailsController {
     }
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/updatefactorrate")
-	public ResponseEntity<CommonRes> updateFactorRatePremiumDetails(@RequestBody  UpdateFactorRateReq req) {
+	public ResponseEntity<CommonRes> updateFactorRatePremiumDetails(@RequestBody  UpdateFactorRateReq1 req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
