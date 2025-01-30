@@ -875,6 +875,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 					home.setIntegrationStatus("F");
 					home.setIntegrationError(oraclpush.getErrorMessage());
 					homeRepo.save(home);
+					System.out.println("-----Connection refused to save in oracle");
 					break;
 				}
 				else if("Success".equalsIgnoreCase(oraclpush.getResponse() ) ) {
@@ -884,6 +885,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 					home.setIntegrationStatus("S");
 					home.setIntegrationError("");
 					homeRepo.save(home);
+					System.out.println("--------Saved in Oracle");
 					
 				} else {
 					response.setResponse("Failed");
@@ -897,14 +899,15 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 						home.setIntegrationStatus("F");
 						home.setIntegrationError(oraclpush.getErrorMessage());
 						homeRepo.save(home);
+						System.out.println("-------Not Saved in Oracle "+failureOracleList);
 						
 					}
 				}
 			}
-			System.out.println("Not Saved in Oracle "+failureOracleList);
+			
 		}
 		// Premia Posting Calling procedural call
-		if (failureOracleList.isEmpty() && failureOracleList.size()>0) {
+		if (failureOracleList.isEmpty()) {
 			if("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) {
 			System.out.println("*********Premia Integration External Api Call:");
 			System.out.println("Policy No :" +policyNo+" Company Id :"+companyId);
