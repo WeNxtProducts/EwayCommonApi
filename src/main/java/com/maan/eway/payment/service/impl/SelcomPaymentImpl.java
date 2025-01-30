@@ -1,6 +1,8 @@
 package com.maan.eway.payment.service.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -19,7 +21,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
@@ -34,10 +35,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -299,6 +298,8 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 
 					JsonObject innerResponse=new JsonObject();
 					innerResponse.addProperty("payment_gateway_url", resp.get("redirect_url").getAsString());
+					payment.setResSignature(resp.get("order_tracking_id").getAsString());	
+					paymentDetailRepo.save(payment);
 					JsonArray asJsonArray =new JsonArray(1);
 					asJsonArray.add(innerResponse);
 					resp.add("data", asJsonArray);
@@ -547,7 +548,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 
 					if("lipila".equals(vendor.getVendorName())) {
 						responses=lipilaOrderStatus(payment,vendor);
-					}else {
+					}else if("pesapal".equals(vendor.getVendorName())) {
+						responses=pesapalOrderStatus(payment,vendor);
+					} else {
 						responses=selcomOrderStatus(payment,vendor);
 					}
 
@@ -616,6 +619,122 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 
+	private JsonObject pesapalOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
+		CloseableHttpClient httpClient = null;
+		String token="",notificationId="";
+		
+		try {
+			JsonObject request=new JsonObject();
+			request.addProperty("consumer_key",vendor.getApiKey().toString());
+			request.addProperty("consumer_secret", vendor.getApiSecretKey().toString());
+			
+			httpClient= HttpClientBuilder.create().build();
+			HttpPost postRequest = new HttpPost(vendor.getApiBaseUrl());
+			postRequest.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+			StringEntity params = new StringEntity(request.toString());
+			postRequest.setEntity(params);
+            HttpResponse hresp  = httpClient.execute(postRequest);
+
+            org.apache.http.HttpEntity httpEntity = hresp.getEntity();
+            String apiOutput = EntityUtils.toString(httpEntity);
+            System.out.println("output"+ apiOutput);
+            JsonObject tokResponse = new Gson().fromJson(apiOutput, JsonObject.class);
+            token=tokResponse.get("token").getAsString();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if(httpClient!=null) {
+				try {
+					httpClient.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		try {
+			httpClient= HttpClientBuilder.create().build();
+			
+			String url=vendor.getCheckStatusUrl()+payment.getResSignature();
+			
+			HttpGet request = new HttpGet(url);
+            System.out.println(url);
+	        request.addHeader("Authorization", "Bearer "+token);
+	        request.setHeader("Content-Type","application/json");
+	        request.setHeader("Accept","application/json");
+	            HttpResponse hresp  = httpClient.execute(request);
+
+	            org.apache.http.HttpEntity httpEntity = hresp.getEntity();
+	            String apiOutput = EntityUtils.toString(httpEntity);
+	            System.out.println("output"+ apiOutput.toString());
+
+	            JsonObject fromJson = new Gson().fromJson(apiOutput, JsonObject.class);
+	            
+	            if( fromJson!=null ) {
+					
+	            	
+					if(fromJson.get("status_code") !=null && "1".equals(fromJson.get("status_code").getAsString()) ) {
+						String amountStr=fromJson.get("amount").getAsString();
+						BigDecimal OurPremium=BigDecimal.ZERO;
+						List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+						if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId())) {
+							OurPremium = payment.getPremiumLc();
+						}else {
+							OurPremium = payment.getPremiumFc();
+						}
+							
+						if(OurPremium.setScale(0, RoundingMode.UP).compareTo(new BigDecimal(amountStr))>=0) {
+
+							payment.setPaymentStatus("ACCEPTED");
+							payment.setAuthTransRefNo(fromJson.get("confirmation_code").getAsString());
+							payment.setChannel(fromJson.get("confirmation_code").getAsString());
+							payment.setReference(fromJson.get("confirmation_code").getAsString());
+							payment.setMsisdn(fromJson.get("confirmation_code").getAsString());
+							payment.setAccountNumber(fromJson.get("payment_account").getAsString());
+							payment.setAuthAmount(fromJson.get("amount").getAsString());
+							payment.setAuthResponse(fromJson.get("payment_status_description").getAsString());
+							payment.setAuthTime(fromJson.get("created_date").getAsString());
+							payment.setResponseTime(new Date());
+							payment.setResponseMessage(fromJson.get("description").getAsString());
+
+						}else {
+							payment.setPaymentStatus("FAILED");
+							payment.setAuthResponse(fromJson.get("payment_status_description") !=null?fromJson.get("payment_status_description").getAsString():"");
+							payment.setResponseMessage("Premium Amount is Mismatch ,Customer Paid Only "+amountStr);
+							payment.setResponseTime(new Date());
+							payment.setAuthAmount(fromJson.get("amount")!=null? fromJson.get("amount").getAsString():"0");
+						}
+						///isPaymentdone=true;
+					}else if(fromJson.get("status_code") !=null &&  "0".equals(fromJson.get("status_code").getAsString()))
+						payment.setPaymentStatus("PENDING");
+					else if(fromJson.get("status_code") !=null &&  "3".equals(fromJson.get("status_code").getAsString()))
+						payment.setPaymentStatus("PENDING");
+					else
+						payment.setPaymentStatus("FAILED");
+
+					payment.setAuthResponse(fromJson.get("payment_status_description") !=null?fromJson.get("payment_status_description").getAsString():"");
+					payment.setResponseMessage(fromJson.get("description")!=null?fromJson.get("description").getAsString():"");
+					payment.setResponseTime(new Date());
+					payment.setAuthAmount(fromJson.get("amount")!=null? fromJson.get("amount").getAsString():"0");
+					
+					paymentDetailRepo.save(payment);
+				}
+		
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+        	if(httpClient!=null)
+				try {
+					httpClient.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		} 
+	return null;
+		
+	}
 	private JsonObject lipilaOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
 		  CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 		try {
