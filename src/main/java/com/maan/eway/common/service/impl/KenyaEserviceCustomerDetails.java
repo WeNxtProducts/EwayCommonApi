@@ -400,6 +400,9 @@ public class KenyaEserviceCustomerDetails {
 				}else if(req.getKraPin().length()!=11) {
 					errorList.add("3312");
 				}
+				else if(!req.getKraPin().matches("^[A-Z][0-9]{9}[A-Z]$")) {
+					errorList.add("3319");
+				}
 				else {
 					if(StringUtils.isBlank(req.getCustomerReferenceNo())){
 						List<EserviceCustomerDetails> allByKraPin = repository.findAllByKraPin(req.getKraPin());
