@@ -143,9 +143,7 @@ public class TiraIntegerationServiceImpl {
 			List<String> stickerNoList=new ArrayList<>();
 			List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(tiraReq.getQuoteNo());
 			stickerNoList=risks.stream().map(SectionDataDetails::getStickerNumber).collect(Collectors.toList());
-//			for(SectionDataDetails risk:risks) {
-//				stickerNoList.add(risk.getStickerNumber());
-//			}
+//			
 			if(stickerNoList.size()>0 && stickerNoList.size()==data.getNoOfVehicles()) {
 			// Background Call
 			ExecutorService service2 = Executors.newFixedThreadPool(1);
@@ -204,7 +202,10 @@ public class TiraIntegerationServiceImpl {
 		        	
 		        }
 		    });
+		}else {
+			System.out.println("*****STICKER NUMBER DOES NOT EXIST FOR THIS QUOTE NO : "+data.getQuoteNo()+"STICKER NUMBER LIST "+stickerNoList);
 		}
+			
 			
 			
 	//}

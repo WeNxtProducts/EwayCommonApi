@@ -30,6 +30,7 @@ import com.maan.eway.bean.PgithPolRiskAddlInfo;
 import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.PremiaConfigMaster;
 import com.maan.eway.bean.PtIntgFlexTran;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqPiftTranId;
 import com.maan.eway.bean.YiChargeDetail;
 import com.maan.eway.bean.YiCoverDetail;
@@ -54,6 +55,7 @@ import com.maan.eway.repository.PgitPolRiskAddlInfoRepository;
 import com.maan.eway.repository.PremiaConfigDataMasterRepository;
 import com.maan.eway.repository.PremiaConfigMasterRepository;
 import com.maan.eway.repository.PtintgFlexTransRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqPiftTranIdRepository;
 import com.maan.eway.repository.YiChargeDetailRepository;
 import com.maan.eway.repository.YiCoverDetailRepository;
@@ -77,7 +79,8 @@ import jakarta.persistence.criteria.Subquery;
 @Service
 public class IntegrationServiceImpl implements IntegrationService {
 
-	
+@Autowired
+private SectionDataDetailsRepository sectionDataRepo;	
 @Autowired
 private PremiaConfigDataMasterRepository pcdatarepo;
 @Autowired
@@ -842,7 +845,12 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		List<String> param=new ArrayList<String>();
 		param.add(quoteNo);
 		List<String> successList=new  ArrayList<>();
-		List<String> failureList=new  ArrayList<>();
+		List<String> stickerNoList=new ArrayList<>();
+		List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(request.getQuoteNo());
+		stickerNoList=risks.stream().map(SectionDataDetails::getStickerNumber).collect(Collectors.toList());
+		if(("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) && 
+				stickerNoList.size()>0 && stickerNoList.size()==home.getNoOfVehicles()) {
+		
 		for (PremiaConfigMaster configMas :  configMasterList ) {
 			boolean push = push(configMas , param,quoteNo);
 			if(push ==true  ) {
@@ -852,6 +860,19 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				response.setResponse("Failed");
 			} 
 			
+		}
+			
+		}else if(! "100002".equalsIgnoreCase(companyId) || !"100019".equalsIgnoreCase(companyId))  {
+			for (PremiaConfigMaster configMas :  configMasterList ) {
+				boolean push = push(configMas , param,quoteNo);
+				if(push ==true  ) {
+					response.setResponse("Success");	
+					successList.add(configMas.getPremiaTableName());
+				} else {
+					response.setResponse("Failed");
+				} 
+				
+			}
 		}
 		// Status of My Sql Data
 		String mySqlTable=updateIntegrationStatus(quoteNo,home,reqRefNo);
@@ -870,12 +891,14 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				IntegrationSaveRes oraclpush =ewayMotorPremiaPush(policyNo, reqRefNo, configMas,home);
 				System.out.println("Response after oracle push "+oraclpush);
 				if("Connection refused".equalsIgnoreCase(oraclpush.getResponse())) {
-					response.setResponse("Failed");
+					
 					home.setCoreIntgStatus("Data Failed saved in  Oracle DB Connection refused");
 					home.setIntegrationStatus("F");
 					home.setIntegrationError(oraclpush.getErrorMessage());
 					homeRepo.save(home);
 					System.out.println("-----Connection refused to save in oracle");
+					response.setResponse("Data Failed saved in  Oracle DB Connection refused");
+					failureOracleList.add("Data Failed saved in  Oracle DB Connection refused");
 					break;
 				}
 				else if("Success".equalsIgnoreCase(oraclpush.getResponse() ) ) {
@@ -888,7 +911,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 					System.out.println("--------Saved in Oracle");
 					
 				} else {
-					response.setResponse("Failed");
+					response.setResponse("Data Failed saved in  Oracle DB");
 					if(configMas.getPremiaId()==1||configMas.getPremiaId()==2
 							||configMas.getPremiaId()==3||configMas.getPremiaId()==5
 							||configMas.getPremiaId()==7||configMas.getPremiaId()==8
@@ -909,7 +932,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		// Premia Posting Calling procedural call
 		if (failureOracleList.isEmpty()) {
 			if("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) {
-			System.out.println("*********Premia Integration External Api Call:");
+			System.out.println("*********Premia Integration Wecore Api Call:");
 			System.out.println("Policy No :" +policyNo+" Company Id :"+companyId);
 			IntegrationSaveRes list = frameReqService.premiaExternalCall(policyNo,companyId);
 			System.out.println("List " + json.toJson(list));
