@@ -2316,7 +2316,7 @@ public class PaymentServiceImpl implements PaymentService {
 						if(filterCredit!=null && !filterCredit.isEmpty()){
 							creditNo =filterCredit.get(0).getDocNo();
 						}
-						
+
 						res.setPolicyNo(policyNo);
 						res.setDebitNoteNo(debitNo);
 						res.setCreditNoteNo(creditNo);
@@ -2324,35 +2324,40 @@ public class PaymentServiceImpl implements PaymentService {
 					}else {
 						res.setResponse("CRDR Premium does not calculated or something went wrong");
 					}
-				
-			}
+
+				}
 			}else {
-			
-			if(paymentStatus.equalsIgnoreCase("ACCEPTED")&& paymentInfo.getEmiYn().equalsIgnoreCase("N")) {
-				//List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
-				 List<PolicyDrcrDetail> policyDetails =  generatePolicyNew(paymentInfo,req,paymentDetail,token);
-				 if(!CollectionUtils.isEmpty(policyDetails)) {
-					String policyNo = policyDetails.get(0).getPolicyNo();
-					List<PolicyDrcrDetail> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
-					List<PolicyDrcrDetail> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
-					// Debit
-					String debitNo = filterDebit.size() > 0 ? filterDebit.get(0).getDocNo() : "";
-					// Credit
-					String creditNo ="";
-					if(filterCredit!=null && !filterCredit.isEmpty()){
-						creditNo =filterCredit.get(0).getDocNo();
-					}
-					
-					res.setPolicyNo(policyNo);
-					res.setDebitNoteNo(debitNo);
-					res.setCreditNoteNo(creditNo);
-					res.setResponse("Policy Converted");
-				 }else {
-					res.setResponse("CRDR Premium does not calculated or something went wrong");
+
+				if(paymentStatus.equalsIgnoreCase("ACCEPTED")&& paymentInfo.getEmiYn().equalsIgnoreCase("N")) {
+					//List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
+					if( "100028".equals(data.getCompanyId())) {
+						Map<String, Object> azentoApiIntegration = AzentoApiIntegration(paymentInfo,req,paymentDetail,token);
+						if( azentoApiIntegration.get("Error")!=null)
+							res.setResponse(azentoApiIntegration.get("Error").toString());
+					}else {
+						List<PolicyDrcrDetail> policyDetails =  generatePolicyNew(paymentInfo,req,paymentDetail,token);
+						if(!CollectionUtils.isEmpty(policyDetails)) {
+							String policyNo = policyDetails.get(0).getPolicyNo();
+							List<PolicyDrcrDetail> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+							List<PolicyDrcrDetail> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
+							// Debit
+							String debitNo = filterDebit.size() > 0 ? filterDebit.get(0).getDocNo() : "";
+							// Credit
+							String creditNo ="";
+							if(filterCredit!=null && !filterCredit.isEmpty()){
+								creditNo =filterCredit.get(0).getDocNo();
+							}
+
+							res.setPolicyNo(policyNo);
+							res.setDebitNoteNo(debitNo);
+							res.setCreditNoteNo(creditNo);
+							res.setResponse("Policy Converted");
+						}else {
+							res.setResponse("CRDR Premium does not calculated or something went wrong");
+						}
+					}	
 				}
 
-			}
-			
 			}
 			res.setPaymentId(paymentDetail.getPaymentId().toString());
 			res.setQuoteNo(req.getQuoteNo());
@@ -2407,7 +2412,47 @@ public class PaymentServiceImpl implements PaymentService {
 		return  generatePolicyNew(paymentInfo,req,paymentDetail,token);
 		 
 	}
+	private Map<String, Object> AzentoApiIntegration (PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail, String token) {
+		HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
+		Map<String, Object> isError=new HashMap<String, Object>();
+		
+		if( "100028".equals(data.getCompanyId())) {
+			WorkEngine e=new WorkEngine();
+			e.setCompanyId(data.getCompanyId());
+			e.setProductId(data.getProductId().toString());
+			e.setQuoteNo(data.getQuoteNo());
+			e.setRequestReferenceNo(data.getRequestReferenceNo());
+			e.setIntegType("POL_INTEG");
+			List<Map<String, Object>> quotation = jsonMapper.createQuotation(e);
 
+
+			Map<String, Object> response = (Map<String, Object>)  quotation.get(0).get("Response");
+			String isErrorResponse = response.get("Error")!=null?response.get("Error").toString():"";
+			if(StringUtils.isNotBlank(isErrorResponse))
+					isError.put("Error", isErrorResponse);
+			
+			Boolean hasError=(Boolean) response.get("hasError");
+			if(!hasError) {
+				Map<String, Object> dataq = (Map<String, Object>) response.get("data");	
+				String	policyNo=(String) dataq.get("policyNumber");					
+				e.setIntegType("GENDOC_INTEG");
+				e.setPolicyNo(policyNo);
+				quotation = jsonMapper.createQuotation(e);					
+				
+				data.setPolicyNo(policyNo);
+				homerepo.saveAndFlush(data);
+				// Update ProductWise
+				CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
+				String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn(),data.getCommissionPercentage()); 
+				
+			}else {
+				Map<String, Object> datas=(Map<String, Object>) response.get("data");
+	   			List<Map<String, Object>> errorlist=((List<Map<String, Object>>)datas.get("errorDetailsList"));	   			
+	   			isError.put("Error", errorlist.get(0).get("errorDescription").toString());
+			}			
+		}
+		return isError;
+	}
 	public List<PolicyDrcrDetail>  generatePolicyNew(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail, String token) {
 		List<PolicyDrcrDetail> policydrcr  = new ArrayList<PolicyDrcrDetail>();
 		try {
@@ -2415,26 +2460,8 @@ public class PaymentServiceImpl implements PaymentService {
 			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
 			//String paymentMode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_MODE",req.getPaymentType());
 			
-			String policyNo ="";				
-			if( "100028".equals(data.getCompanyId())) {
-					WorkEngine e=new WorkEngine();
-					e.setCompanyId(data.getCompanyId());
-					e.setProductId(data.getProductId().toString());
-					e.setQuoteNo(data.getQuoteNo());
-					e.setRequestReferenceNo(data.getRequestReferenceNo());
-					e.setIntegType("POL_INTEG");
-					List<Map<String, Object>> quotation = jsonMapper.createQuotation(e);					
-					Map<String, Object> response = (Map<String, Object>)  quotation.get(0).get("Response");
-					Boolean hasError=(Boolean) response.get("hasError");
-					if(!hasError) {
-						Map<String, Object> dataq = (Map<String, Object>) response.get("data");	
-						policyNo=(String) dataq.get("policyNumber");					
-						e.setIntegType("GENDOC_INTEG");
-						e.setPolicyNo(policyNo);
-						quotation = jsonMapper.createQuotation(e);					
-						 
-					}			
-			}else {					
+				String policyNo ="";				
+								
 				List<DebitAndCredit> policyDetails = new ArrayList<DebitAndCredit>();
 				CalcCommission  policyReq = new CalcCommission();
 				policyReq.setAgencyCode("");
@@ -2446,7 +2473,7 @@ public class PaymentServiceImpl implements PaymentService {
 				policyReq.setQuoteno(req.getQuoteNo());
 				policyReq.setSectionId(""); 
 				policyNo = calcService.getPolicyNo(policyReq);
-			}
+			
 	
 			if(StringUtils.isNotBlank(policyNo)) {
 
