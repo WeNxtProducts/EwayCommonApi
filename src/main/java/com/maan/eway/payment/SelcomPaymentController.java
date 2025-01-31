@@ -2,6 +2,7 @@ package com.maan.eway.payment;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,9 @@ public class SelcomPaymentController {
 				
 			}
 		};*/
+		if(jsObject.get("OrderMerchantReference")!=null && StringUtils.isNotBlank(jsObject.get("OrderMerchantReference").toString()) )
+			jsObject.put("order_id", jsObject.get("OrderMerchantReference"));
+		
 		service.methodWebhook(jsObject);
 		jsObject.put("AcknowledegeStatus", true);
 		return new ResponseEntity<Map<String,Object>>(jsObject, HttpStatus.CREATED);	
