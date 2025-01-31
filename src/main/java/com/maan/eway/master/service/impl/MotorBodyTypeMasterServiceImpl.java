@@ -861,7 +861,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			query.select(c);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("branchCode")));
+			orderList.add(cb.asc(c.get("bodyNameEn")));
 
 			// Effective Date Start Max Filter
 			Subquery<Date> effectiveDate = query.subquery(Date.class);
@@ -918,9 +918,9 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 				
 				totalList.add(res);
 			}
-			
+			resList.addAll(totalList);
 			// Induvidual 
-			List<String> induvidualIds = new ArrayList<String>();  
+	/*		List<String> induvidualIds = new ArrayList<String>();  
 			induvidualIds.add("1");
 			induvidualIds.add("2");
 			induvidualIds.add("3");
@@ -934,7 +934,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			List<DropDownRes> commercialList = totalList.stream().filter( o -> ! induvidualIds.contains(o.getCode())  ).collect(Collectors.toList());
 			commercialList.sort(Comparator.comparing( DropDownRes :: getCodeDesc));
 			resList.addAll(commercialList);
-			
+		*/	
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
