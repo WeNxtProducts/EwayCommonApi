@@ -340,7 +340,8 @@ public class EagalEserviceCustomerDetails {
 				errorList.add("1079");
 			}
 			
-			if(StringUtils.isBlank(req.getMaritalStatus())) {
+			//Check Marital Status only for Individual Customer (IdType =1)
+			if("1".equals(req.getIdType()) && StringUtils.isBlank(req.getMaritalStatus())) {
 				errorList.add("3313");
 			}
 			
