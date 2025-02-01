@@ -2616,6 +2616,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 								updateCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
 								updateCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
 								updateCover.setExcessDesc(covReq.getExcessDesc());
+								updateCover.setCoverageLimit(  covReq.getCoverageLimit()!=null?new BigDecimal(covReq.getCoverageLimit()) :new BigDecimal(0)); 
 								updateCover.setUserOpt("Y");
 								updateCoverList.add(updateCover);
 								
@@ -2709,13 +2710,13 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
     							if(filterSubCover.size()>0 ) {
     								
     								FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
-    								updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
+    								updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(subcoverList.getMinimumPremium()))));
     						//		updateSubCover.setActualRate(updateSubCover.getRate());
-    								updateSubCover.setRate(new BigDecimal(covReq.getRate()));
+    								updateSubCover.setRate(new BigDecimal(subcoverList.getRate()));
 //    								updateSubCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
-    								updateSubCover.setExcessAmount(covReq.getExcessAmount()==null ?BigDecimal.ZERO:new BigDecimal(covReq.getExcessAmount()));
-    								updateSubCover.setExcessPercent(covReq.getExcessPercent()==null?BigDecimal.ZERO:new BigDecimal(covReq.getExcessPercent()));
-    								updateSubCover.setExcessDesc(covReq.getExcessDesc());
+    								updateSubCover.setExcessAmount(subcoverList.getExcessAmount()==null ?BigDecimal.ZERO:new BigDecimal(subcoverList.getExcessAmount()));
+    								updateSubCover.setExcessPercent(subcoverList.getExcessPercent()==null?BigDecimal.ZERO:new BigDecimal(subcoverList.getExcessPercent()));
+    								updateSubCover.setExcessDesc(subcoverList.getExcessDesc());
     								updateSubCover.setUserOpt(subcoverList.getUserOpt());
     								repository.save(updateSubCover);
     								

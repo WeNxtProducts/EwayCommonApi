@@ -74,5 +74,11 @@ public class CoverIdReq2 {
 	
 	@JsonProperty("SubCovers")
 	private List<SubCoverReq2> subCoversList;
+	
+	
+	@JsonProperty("CoverageLimit")
+	private String  coverageLimit;
+
+	
 
 }
