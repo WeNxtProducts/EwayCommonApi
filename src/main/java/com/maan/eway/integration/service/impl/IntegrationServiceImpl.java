@@ -7,8 +7,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -845,24 +848,30 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		List<String> param=new ArrayList<String>();
 		param.add(quoteNo);
 		List<String> successList=new  ArrayList<>();
-		List<String> stickerNoList=new ArrayList<>();
+		Set<String> stickerNoList = new HashSet<>();
+		List<String> successOracleList=new  ArrayList<>();
+		List<String> failureOracleList=new  ArrayList<>();
 		List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(request.getQuoteNo());
-		stickerNoList=risks.stream().map(SectionDataDetails::getStickerNumber).collect(Collectors.toList());
-		if(("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) && 
-				stickerNoList.size()>0 && stickerNoList.size()==home.getNoOfVehicles()) {
-		
-		for (PremiaConfigMaster configMas :  configMasterList ) {
-			boolean push = push(configMas , param,quoteNo);
-			if(push ==true  ) {
-				response.setResponse("Success");	
-				successList.add(configMas.getPremiaTableName());
-			} else {
-				response.setResponse("Failed");
-			} 
-			
+		if (risks != null) {
+			stickerNoList = risks.stream()
+		                        .map(SectionDataDetails::getStickerNumber)
+		                        .filter(Objects::nonNull) 
+		                        .collect(Collectors.toSet());
 		}
-			
-		}else if(! "100002".equalsIgnoreCase(companyId) || !"100019".equalsIgnoreCase(companyId))  {
+		if (("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) &&
+				(!stickerNoList.isEmpty() && stickerNoList.size() == home.getNoOfVehicles())) {
+				for (PremiaConfigMaster configMas : configMasterList) {
+					boolean push = push(configMas, param, quoteNo);
+					if (push == true) {
+						response.setResponse("Success");
+						successList.add(configMas.getPremiaTableName());
+					} else {
+						response.setResponse("Failed");
+					}
+
+				}
+				
+		}else if((!"100002".equalsIgnoreCase(companyId)) && (!"100019".equalsIgnoreCase(companyId)))  {
 			for (PremiaConfigMaster configMas :  configMasterList ) {
 				boolean push = push(configMas , param,quoteNo);
 				if(push ==true  ) {
@@ -873,17 +882,33 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				} 
 				
 			}
+		}else {
+			response.setResponse("Premia Failed Sticker Number is Null");
+			System.out.println("Premia Failed Sticker Number is Null");
+			failureOracleList.add("Premia Failed Sticker Number is Null");
 		}
 		// Status of My Sql Data
-		String mySqlTable=updateIntegrationStatus(quoteNo,home,reqRefNo);
-		if(mySqlTable.equalsIgnoreCase("S")) {
-			response.setResponse("Success");	
-		} else {
-			response.setResponse("Failed");
+		String mySqlTable ="F";
+		if (("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId))) {
+
+			if ((!stickerNoList.isEmpty() && stickerNoList.size() == home.getNoOfVehicles())) {
+				mySqlTable = updateIntegrationStatus(quoteNo, home, reqRefNo);
+				if (mySqlTable.equalsIgnoreCase("S")) {
+					response.setResponse("Success");
+				} else {
+					response.setResponse("Failed to Save in My Sql");
+				}
+			}
+		}else if(! "100002".equalsIgnoreCase(companyId) && !"100019".equalsIgnoreCase(companyId))  {
+			mySqlTable = updateIntegrationStatus(quoteNo, home, reqRefNo);
+			if (mySqlTable.equalsIgnoreCase("S")) {
+				response.setResponse("Success");
+			} else {
+				response.setResponse("Failed to Save in My Sql");
+			}
 		}
 		// Framing External Api
-		List<String> successOracleList=new  ArrayList<>();
-		List<String> failureOracleList=new  ArrayList<>();
+		
 		System.out.println("Response from mySqlTable :"+mySqlTable);
 		if(mySqlTable.equalsIgnoreCase("S")) {
 			
@@ -897,6 +922,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 					home.setIntegrationError(oraclpush.getErrorMessage());
 					homeRepo.save(home);
 					System.out.println("-----Connection refused to save in oracle");
+					System.out.println("Data Failed saved in  Oracle DB Connection refused");
 					response.setResponse("Data Failed saved in  Oracle DB Connection refused");
 					failureOracleList.add("Data Failed saved in  Oracle DB Connection refused");
 					break;

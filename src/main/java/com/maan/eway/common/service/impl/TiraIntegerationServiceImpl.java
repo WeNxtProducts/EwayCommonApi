@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -140,70 +143,96 @@ public class TiraIntegerationServiceImpl {
 					log.info("Tira Framed Req --->"+tiraFramedReq);	
 				}
 			}
-			List<String> stickerNoList=new ArrayList<>();
+			Set<String> stickerNoList = new HashSet<>();
 			List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(tiraReq.getQuoteNo());
-			stickerNoList=risks.stream().map(SectionDataDetails::getStickerNumber).collect(Collectors.toList());
-//			
-			if(stickerNoList.size()>0 && stickerNoList.size()==data.getNoOfVehicles()) {
-			// Background Call
-			ExecutorService service2 = Executors.newFixedThreadPool(1);
-			
-		    service2.submit(new Runnable() {
-		        public void run() {
-		        	try {
-		        		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-		    			System.out.println("Premia Integration Started... Quote No ---> " + tiraReq.getQuoteNo() + " . Time : " + sdf.format(new Date()) );
-		        		
-		        		 // Call Integeration 
-		        		if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
-		    				PremiaRequest premiaReq = new PremiaRequest();
-		    				  premiaReq.setQuoteNo(tiraReq.getQuoteNo()); List<String> premiaIds = new
-		    				  ArrayList<String>(); premiaIds.add( "1" ); premiaIds.add( "2" );
-		    				  premiaIds.add( "3" ); premiaIds.add( "4" ); premiaIds.add( "5" );
-		    				  premiaIds.add( "6" ); premiaIds.add( "7" ); premiaIds.add( "8" );
-		    				 premiaIds.add( "9" ); premiaIds.add( "10" ); premiaIds.add( "11" );
-		    				 premiaIds.add( "12" );
-		    				  premiaReq.setPremiaIds(premiaIds);
-		    				  
-		    				// service.pushPremiaIntegration(premiaReq);
-		    				  pushPremiaIntegration(premiaReq , token);
-		    			}else {
-		    				PremiaRequest premiaReq = new PremiaRequest();
-		    				  premiaReq.setQuoteNo(tiraReq.getQuoteNo()); List<String> premiaIds = new
-		    				  ArrayList<String>(); premiaIds.add( "1" ); premiaIds.add( "2" );
-		    				  premiaIds.add( "3" );premiaIds.add( "4" ); premiaIds.add( "5" );
-		    				  premiaIds.add( "6" ); premiaIds.add( "7" ); premiaIds.add( "8" );
-		    				 premiaIds.add( "9" ); premiaIds.add( "10" ); premiaIds.add( "11" );
-		    				 premiaIds.add( "12" );
-		    				  premiaReq.setPremiaIds(premiaIds);
-		    				  
-		    				// service.pushPremiaIntegration(premiaReq);
-		    				  pushPremiaIntegration(premiaReq , token);
-		    			}
-		        		System.out.println("Premia Integration Ended... Quote No ---> " + tiraReq.getQuoteNo() + " . Time : " + sdf.format(new Date()) );
-					
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}finally {
-						 // Shutdown the ExecutorService
-						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-						System.out.println("Premia Integration FINALY... Quote No ---> " + tiraReq.getQuoteNo() + " . Time : " + sdf.format(new Date()) );
-			            service2.shutdown();
-			            try {
-			                if (!service2.awaitTermination(30, TimeUnit.SECONDS)) {
-			                    service2.shutdownNow();
-			                }
-			            } catch (InterruptedException ex) {
-			                service2.shutdownNow();
-			                Thread.currentThread().interrupt();
-			            }
-					} 
-		        	
-		        }
-		    });
-		}else {
-			System.out.println("*****STICKER NUMBER DOES NOT EXIST FOR THIS QUOTE NO : "+data.getQuoteNo()+"STICKER NUMBER LIST "+stickerNoList);
+			if (risks != null) {
+				stickerNoList = risks.stream()
+			                        .map(SectionDataDetails::getStickerNumber)
+			                        .filter(Objects::nonNull) 
+			                        .collect(Collectors.toSet());
+			}
+			if (!stickerNoList.isEmpty()) {
+				if (stickerNoList.size() > 0 && stickerNoList.size() == data.getNoOfVehicles()) {
+					// Background Call
+					ExecutorService service2 = Executors.newFixedThreadPool(1);
+
+					service2.submit(new Runnable() {
+						public void run() {
+							try {
+								SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+								System.out.println("Premia Integration Started... Quote No ---> " + tiraReq.getQuoteNo()
+										+ " . Time : " + sdf.format(new Date()));
+
+								// Call Integeration
+								if (product.getMotorYn().equalsIgnoreCase("M")) {
+									PremiaRequest premiaReq = new PremiaRequest();
+									premiaReq.setQuoteNo(tiraReq.getQuoteNo());
+									List<String> premiaIds = new ArrayList<String>();
+									premiaIds.add("1");
+									premiaIds.add("2");
+									premiaIds.add("3");
+									premiaIds.add("4");
+									premiaIds.add("5");
+									premiaIds.add("6");
+									premiaIds.add("7");
+									premiaIds.add("8");
+									premiaIds.add("9");
+									premiaIds.add("10");
+									premiaIds.add("11");
+									premiaIds.add("12");
+									premiaReq.setPremiaIds(premiaIds);
+
+									// service.pushPremiaIntegration(premiaReq);
+									pushPremiaIntegration(premiaReq, token);
+								} else {
+									PremiaRequest premiaReq = new PremiaRequest();
+									premiaReq.setQuoteNo(tiraReq.getQuoteNo());
+									List<String> premiaIds = new ArrayList<String>();
+									premiaIds.add("1");
+									premiaIds.add("2");
+									premiaIds.add("3");
+									premiaIds.add("4");
+									premiaIds.add("5");
+									premiaIds.add("6");
+									premiaIds.add("7");
+									premiaIds.add("8");
+									premiaIds.add("9");
+									premiaIds.add("10");
+									premiaIds.add("11");
+									premiaIds.add("12");
+									premiaReq.setPremiaIds(premiaIds);
+
+									// service.pushPremiaIntegration(premiaReq);
+									pushPremiaIntegration(premiaReq, token);
+								}
+								System.out.println("Premia Integration Ended... Quote No ---> " + tiraReq.getQuoteNo()
+										+ " . Time : " + sdf.format(new Date()));
+
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} finally {
+								// Shutdown the ExecutorService
+								SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+								System.out.println("Premia Integration FINALY... Quote No ---> " + tiraReq.getQuoteNo()
+										+ " . Time : " + sdf.format(new Date()));
+								service2.shutdown();
+								try {
+									if (!service2.awaitTermination(30, TimeUnit.SECONDS)) {
+										service2.shutdownNow();
+									}
+								} catch (InterruptedException ex) {
+									service2.shutdownNow();
+									Thread.currentThread().interrupt();
+								}
+							}
+
+						}
+					});
+				}
+			} else {
+			System.out.println("*****STICKER NUMBER DOES NOT EXIST FOR THIS QUOTE NO : " + data.getQuoteNo()
+					+ "STICKER NUMBER LIST " + stickerNoList);
 		}
 			
 			
