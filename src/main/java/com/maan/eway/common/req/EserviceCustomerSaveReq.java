@@ -282,4 +282,14 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("KraPin")
 	private String kraPin;
 	
+	@JsonProperty("VipFlag")
+	private String vipFlag;
+	
+	@JsonProperty("PhoneNoCode")
+	private String phoneNoCode;
+	
+	@JsonProperty("RiskAssessmentDate") 
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	private Date riskAssessmentDate;
+	
 }
