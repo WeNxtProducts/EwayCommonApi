@@ -273,5 +273,16 @@ public class CustomerDetailsGetRes {
 		
 		@JsonProperty("MaritalStatus")
 		private String maritalStatus;
+		
+		@JsonProperty("VipFlag")
+		private String vipFlag;
+		
+		@JsonProperty("PhoneNoCode")
+		private String phoneNoCode;
+		
+		@JsonProperty("RiskAssessmentDate") 
+		@JsonFormat(pattern = "dd/MM/yyyy")
+		private Date riskAssessmentDate;
+		
 
 }

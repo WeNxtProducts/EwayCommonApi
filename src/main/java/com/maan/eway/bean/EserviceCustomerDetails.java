@@ -415,4 +415,17 @@ private static final long serialVersionUID = 1L;
     
     @Column(name = "KRA_PIN", length=100)
     private String kraPin;
+    
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="RISK_ASSESSMENT_DATE")
+    private Date  riskAssessmentDate ;
+
+    
+    @Column(name="VIPFLAG", length=20)
+    private String     vipFlag ;
+    
+    @Column(name="PHONENO_CODE", length=20)
+    private String     phoneNoCode ;
+
 }

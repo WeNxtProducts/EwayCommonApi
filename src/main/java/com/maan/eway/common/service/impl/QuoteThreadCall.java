@@ -747,6 +747,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			personalInfo.setCustomerId(request.getCustomerId());
 			personalInfo.setEntryDate(new Date());
 			personalInfo.setCreatedBy(request.getCreatedBy());
+			personalInfo.setVipFlag(custData.getVipFlag());
+			personalInfo.setRiskAssessmentDate(custData.getRiskAssessmentDate());
+			personalInfo.setPhoneNoCode(custData.getPhoneNoCode());
 			perInfoRepo.save(personalInfo);
 			
 			log.error("Save Personal Info is ---> " + json.toJson(personalInfo));

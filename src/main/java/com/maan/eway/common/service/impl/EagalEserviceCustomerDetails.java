@@ -340,6 +340,15 @@ public class EagalEserviceCustomerDetails {
 				errorList.add("3313");
 			}
 			
+			if(req.getRiskAssessmentDate()==null || req.getRiskAssessmentDate().equals(""))
+			{
+				errorList.add("3314");
+			}
+			if(req.getPhoneNoCode()==null )
+			{
+				errorList.add("3315");
+			}
+			
 			List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 			if ((StringUtils.isNotBlank(req.getAddress1())) 
 				//	&& (StringUtils.isNotBlank(req.getAddress2()))
@@ -697,7 +706,9 @@ public class EagalEserviceCustomerDetails {
 				saveData.setLicenseIssuedDate(new Date());
 				saveData.setLicenseDuration(20);
 			}
-			
+			saveData.setVipFlag(req.getVipFlag());
+			saveData.setPhoneNoCode(req.getPhoneNoCode());
+			saveData.setRiskAssessmentDate(req.getRiskAssessmentDate());
 
 			repository.save(saveData);
 
@@ -827,7 +838,10 @@ public class EagalEserviceCustomerDetails {
 				savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
 				savePersonalInfo.setActivities(req.getActivities());
 				savePersonalInfo.setCustomerAsInsurer(req.getCustomerAsInsurer());	
-					
+				savePersonalInfo.setVipFlag(req.getVipFlag());
+				savePersonalInfo.setPhoneNoCode(req.getPhoneNoCode());
+				savePersonalInfo.setRiskAssessmentDate(req.getRiskAssessmentDate());
+	
 				personalInforepo.save(savePersonalInfo);
 			}
 			}else if(StringUtils.isNotBlank(req.getType())) {
@@ -949,7 +963,9 @@ public class EagalEserviceCustomerDetails {
 					savePersonalInfo.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
 					savePersonalInfo.setActivities(req.getActivities());
 					savePersonalInfo.setCustomerAsInsurer(req.getCustomerAsInsurer());	
-
+					savePersonalInfo.setVipFlag(req.getVipFlag());
+					savePersonalInfo.setPhoneNoCode(req.getPhoneNoCode());
+					savePersonalInfo.setRiskAssessmentDate(req.getRiskAssessmentDate());
 					personalInforepo.save(savePersonalInfo);
 				}
 			}
@@ -1005,6 +1021,9 @@ public class EagalEserviceCustomerDetails {
 				res.setRegionCode(cdate.getRegionCode()==null?"":cdate.getRegionCode());
 				res.setPolicyHolderTypeid(cdate.getPolicyHolderTypeid()==null?"":cdate.getPolicyHolderTypeid());
 				res.setVrTinNo(cdate.getVrTinNo()==null?"":cdate.getVrTinNo());
+				res.setVipFlag(cdate.getVipFlag()==null?"":cdate.getVipFlag());
+				res.setRiskAssessmentDate(cdate.getRiskAssessmentDate());
+				res.setPhoneNoCode(cdate.getPhoneNoCode()==null?"":cdate.getPhoneNoCode());
 			}
 			
 					
