@@ -35,6 +35,8 @@ import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.RegionMasterRepository;
 import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.workflow.dto.WorkEngine;
+import com.maan.eway.workflow.service.JsonMapperFromDB;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -75,6 +77,9 @@ public class EagalEserviceCustomerDetails {
 	
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private JsonMapperFromDB jsonMapper;
 	
 	public List<String> validateCustomerDetails(EserviceCustomerSaveReq req) {
 	List<String> errorList = new ArrayList<String>();
@@ -698,6 +703,19 @@ public class EagalEserviceCustomerDetails {
 				saveData.setLicenseDuration(20);
 			}
 			
+			if("100028".equals(req.getCompanyId())) {
+				WorkEngine e=new WorkEngine();
+				e.setCompanyId(req.getCompanyId());
+				e.setProductId(req.getProductId().toString());
+				e.setQuoteNo("");
+				e.setRequestReferenceNo(custRefNo);
+				e.setIntegType("CUST_CREATE");
+				List<Map<String, Object>> quotation = jsonMapper.createQuotation(e);
+				Map<String, Object> response = (Map<String, Object>)  quotation.get(0).get("Response");
+				Map<String, Object> dataq = (Map<String, Object>) response.get("data");	
+				String	customerId=(String) dataq.get("customerId"); 
+				saveData.setPolCustCode(customerId);
+			}
 
 			repository.save(saveData);
 
@@ -953,6 +971,8 @@ public class EagalEserviceCustomerDetails {
 					personalInforepo.save(savePersonalInfo);
 				}
 			}
+			
+			
 			// Response
 
 		} catch (Exception e) {

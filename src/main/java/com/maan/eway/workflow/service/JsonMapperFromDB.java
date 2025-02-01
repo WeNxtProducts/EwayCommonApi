@@ -141,6 +141,7 @@ public class JsonMapperFromDB {
 						
 			  List<Map<String, Object>> resultList = template.queryForList(sql);			  
 			  hashMap.put(id.toPlainString(), resultList);
+			  System.out.println(id.toPlainString()+"-->"+sql);
 			}
 			return hashMap;
 		}catch (Exception e) {
