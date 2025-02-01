@@ -167,7 +167,7 @@ public class JsonMapperFromDB {
 					
 					Map<String, Object> data = (Map<String, Object>) response.get("data");					
 					HomePositionMaster hm = homePositionRepo.findByQuoteNo(engine.getQuoteNo());
-					if(hm!=null && data!=null && !data.isEmpty()) {
+					if(hm!=null && data!=null && !data.isEmpty() && !(Boolean) data.get("hasError")) {
 						hm.setIntegrationError((Boolean) data.get("hasError")?"Y":"N");
 						hm.setIntegrationStatus((Boolean) data.get("hasError")?"F":"S");
 						hm.setPolicyNo(data.get("policyNumber").toString());

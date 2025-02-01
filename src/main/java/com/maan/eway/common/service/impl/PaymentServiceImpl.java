@@ -2448,7 +2448,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}else {
 				Map<String, Object> datas=(Map<String, Object>) response.get("data");
 	   			List<Map<String, Object>> errorlist=((List<Map<String, Object>>)datas.get("errorDetailsList"));	   			
-	   			isError.put("Error", errorlist.get(0).get("errorDescription").toString());
+	   			isError.put("Error",errorlist.get(0).get("errorDescription")!=null? errorlist.get(0).get("errorDescription").toString():"Some Error Core Api");
 			}			
 		}
 		return isError;

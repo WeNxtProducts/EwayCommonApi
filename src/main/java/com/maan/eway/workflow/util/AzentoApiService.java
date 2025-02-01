@@ -143,6 +143,7 @@ public class AzentoApiService {
 			while(StringUtils.isBlank(token) && loop<maxLoop) {
 				token = getAzentoToken(engine);
 				loop++;
+				if(loop>2) this.azentoToken="";
 			}
 			
 			log.setEntryDate(new Date());
@@ -209,7 +210,7 @@ public class AzentoApiService {
 			   		if((Boolean) response.getBody().get("hasError")) {
 			   			Map<String, Object> data=(Map<String, Object>) response.getBody().get("data");
 			   			List<Map<String, Object>> errorlist=((List<Map<String, Object>>)data.get("errorDetailsList"));
-			   			log.setErrorMessage(errorlist.get(0).get("errorDescription").toString());
+			   			log.setErrorMessage(errorlist.get(0).get("errorDescription")!=null?errorlist.get(0).get("errorDescription").toString():"Some Error from Core API");
 			   		}else {
 			   			log.setErrorMessage("Success");
 			   		} 
