@@ -720,11 +720,17 @@ public class EagalEserviceCustomerDetails {
 				e.setQuoteNo("");
 				e.setRequestReferenceNo(custRefNo);
 				e.setIntegType("CUST_CREATE");
-				List<Map<String, Object>> quotation = jsonMapper.createQuotation(e);
-				Map<String, Object> response = (Map<String, Object>)  quotation.get(0).get("Response");
-				Map<String, Object> dataq = (Map<String, Object>) response.get("data");	
-				String	customerId=(String) dataq.get("customerId"); 
-				saveData.setPolCustCode(customerId);
+				try {
+					List<Map<String, Object>> quotation = jsonMapper.createQuotation(e);
+					Map<String, Object> response = (Map<String, Object>)  quotation.get(0).get("Response");
+					Map<String, Object> dataq = (Map<String, Object>) response.get("data");	
+					String	customerId=(String) dataq.get("customerId"); 
+					saveData.setPolCustCode(customerId);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+					saveData.setPolCustCode("Exception");
+				}
 			}
 			saveData.setVipFlag(req.getVipFlag());
 			saveData.setPhoneNoCode(req.getPhoneNoCode());
