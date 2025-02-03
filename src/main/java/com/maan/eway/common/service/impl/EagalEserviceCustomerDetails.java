@@ -554,6 +554,7 @@ public class EagalEserviceCustomerDetails {
 			
 			saveData.setTitle(req.getTitle());
 			saveData.setFirstName(req.getClientName());
+			saveData.setLastName(StringUtils.isBlank(req.getLastName())?null:req.getLastName());
 			saveData.setBusinessType(req.getBusinessType());
 			saveData.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
 			saveData.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
