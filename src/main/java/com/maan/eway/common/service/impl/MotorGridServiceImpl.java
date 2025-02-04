@@ -6187,8 +6187,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 			Predicate n12 = cb.equal(m.get("savedFrom"),  "SQ" );
-			Predicate n13 = m.get("quoteNo").isNull();
-			query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10,n12,n13).orderBy(orderList);	
+			//Predicate n13 = m.get("quoteNo").isNull(); ( this line command due to grid issue in b2c 
+			query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10,n12).orderBy(orderList);	
 		
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
