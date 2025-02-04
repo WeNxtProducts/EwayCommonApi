@@ -1053,6 +1053,7 @@ public class EagalEserviceCustomerDetails {
 				res.setVipFlag(cdate.getVipFlag()==null?"":cdate.getVipFlag());
 				res.setRiskAssessmentDate(cdate.getRiskAssessmentDate());
 				res.setPhoneNoCode(cdate.getPhoneNoCode()==null?"":cdate.getPhoneNoCode());
+				res.setMaritalStatus(cdate.getMaritalStatus()==null?"":cdate.getMaritalStatus());
 			}
 			
 					
