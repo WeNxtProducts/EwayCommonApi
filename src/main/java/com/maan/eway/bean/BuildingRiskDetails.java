@@ -77,7 +77,7 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SECTION_ID", length=100)
     private String  sectionId;
-    
+    @Id
     @Column(name="LOCATION_ID", nullable=false)
     private Integer    locationId ;
 

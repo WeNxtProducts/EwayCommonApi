@@ -149,12 +149,12 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		try {
 
 			if(StringUtils.isBlank(req.getEndtTypeId())) {
-			if (StringUtils.isBlank(req.getPremiumWithTax())) {
-				errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
-			} 
+//			if (StringUtils.isBlank(req.getPremiumWithTax())) {
+//				errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
+//			} 
 			
-			if (StringUtils.isBlank(req.getInstallmentTypeId())) {
-				errorList.add(new Error("02", "NoOfMonth", "Please Select Installment Type"));
+			if (StringUtils.isBlank(req.getInstallmentPeriod())) {
+				errorList.add(new Error("02", "NoOfMonth", "Please Enter NoOfMonth"));
 			}
 			}
 
@@ -164,12 +164,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			else {
 			List<EmiTransactionDetails> quoteNo = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
 					req.getCompanyId(), req.getProductId());
-			if(quoteNo!=null) {
 			quoteNo = quoteNo.stream().filter(o -> o.getPaymentStatus().equals("Accept")).collect(Collectors.toList());
 			if (quoteNo.size() > 0 && StringUtils.isNotBlank(req.getQuoteNo())) {
 				// if (quoteNo.get(0).getPaymentStatus().equalsIgnoreCase("Accept")) {
 				errorList.add(new Error("08", "QuoteNo", "This QuoteNo  Already Running"));
-			}
 			}
 		}
 		
@@ -199,7 +197,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			} else if (req.getCreatedBy().length() > 100) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
-			
 //			if (StringUtils.isBlank(req.getPaymentDetails())) {
 //				errorList.add(new Error("08", "PaymentDetails", "Please Enter PaymentDetails "));
 //			}
@@ -221,7 +218,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 		try {
 			BigDecimal adv=new BigDecimal(0);
-			Integer noOfMonth=0;
+			//Status N if User not wish to EMI then delete entry from EmiTransactionDetails table
 		if("N".equalsIgnoreCase(req.getStatus())) {
 			List<EmiTransactionDetails> list = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
 					req.getCompanyId(), req.getProductId());
@@ -241,12 +238,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			Integer i = 0;
 			Double temp = 0d, premiumWithTax, interestPercent, advancePercent, interestAmount, totalLoanAmount,
 					advanceAmount, balanceAmount = null, installment = 0d;
-			
-			if (req.getInstallmentTypeId() != null) {
-				noOfMonth = Integer.valueOf(req.getInstallmentTypeId());
-			} else if (req.getInstallmentPeriod() != null) {
-				noOfMonth = Integer.valueOf(req.getInstallmentPeriod().toString());
-			}
+
+			Integer noOfMonth = Integer.valueOf(req.getInstallmentPeriod().toString());
 
 			// Finding Old Record
 			List<EmiTransactionDetails> list = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
@@ -260,34 +253,27 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	
 			//Getting Record from Emi Master
 			List<EmiMaster> emiMasterData = getEmiMasterDataByInsPeriod(req.getCompanyId(), req.getProductId(),
-					req.getPolicyType(),	noOfMonth.toString());
+					req.getPolicyType(),	req.getInstallmentPeriod());
 			interestPercent = Double.valueOf(emiMasterData.get(0).getInterestPercent().toString());
 			advancePercent = Double.valueOf(emiMasterData.get(0).getAdvancePercent().toString());
-			premiumWithTax = Double.valueOf(req.getPremiumWithTax());
-
-            if(req.getInstallmentTypeId()!=null) {
-            	noOfMonth=Integer.valueOf(req.getInstallmentTypeId());
-            	premiumWithTax = Double.valueOf(req.getPremiumWithTax());				
-            	advanceAmount=insertEmiTransactionDetailsByInstalId(req, interestPercent, advancePercent, premiumWithTax,noOfMonth );
-            	adv=new BigDecimal(advanceAmount);
-            }else if(noOfMonth!=null) { 
-            	
+			HomePositionMaster homeData=homerepo.findByQuoteNo(quoteNo);
 			// Calculation
-			for (i = 0; i <= noOfMonth; i++) {
+			for (i = 1; i <= noOfMonth; i++) {
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.MONTH, i);
 				Date dueDate = cal.getTime();
 
-				premiumWithTax = Double.valueOf(req.getPremiumWithTax());
+//				premiumWithTax = Double.valueOf(req.getPremiumWithTax());
+				premiumWithTax = Double.valueOf(homeData.getOverallPremiumLc().toString());
 				interestAmount = premiumWithTax * interestPercent / 100;
 				interestAmount=interestAmount/12;
 				interestAmount=interestAmount*noOfMonth;
 				totalLoanAmount = premiumWithTax + interestAmount;
 				advanceAmount = totalLoanAmount * advancePercent / 100;
 				adv=new BigDecimal(advanceAmount);
-				if (i == 0) {
+				if (i == 1) {
 					balanceAmount = totalLoanAmount - advanceAmount;
-					installment = balanceAmount / noOfMonth;
+					installment = balanceAmount / (noOfMonth-1);
 				} else {
 					temp = balanceAmount;
 					temp -= installment;
@@ -299,7 +285,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				saveData.setInterest(interestPercent);
 				saveData.setAdvance(advancePercent.toString());
 				saveData.setInterestAmount((Double.valueOf(Math.round(interestAmount))));
-				if (i == 0) {
+				if (i == 1) {
 					saveData.setDueAmount((Double.valueOf(Math.round(advanceAmount))));
 					insDesc="Advance Amount";
 					//saveData.setPaymentDate(entryDate);
@@ -329,8 +315,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			
 				
 				repo.saveAndFlush(saveData);
-			 }
-            }
+			}
 			res.setSuccessId(quoteNo);
 			res.setResponse("Saved Successful");
 		}
@@ -338,21 +323,21 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			//Update Home Position Master
 			if("Y".equalsIgnoreCase(req.getStatus())) {
 				HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
-				homeData.setInstallmentPeriod(noOfMonth.toString());
+				homeData.setInstallmentPeriod(req.getInstallmentPeriod());
 				homeData.setEmiYn("Y");
-				homeData.setNoOfInstallment("0");
+				homeData.setNoOfInstallment("1");
 				homeData.setEmiPremium(adv);
 				homerepo.save(homeData);
 				if (product.getMotorYn().equalsIgnoreCase("M")) {
-					EserviceMotorDetails motor= saveMotor("Y",adv,req.getQuoteNo(),noOfMonth.toString(),"0");	
+					EserviceMotorDetails motor= saveMotor("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"1");	
 				}else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-					EserviceTravelDetails travel= saveTravel("Y",adv,req.getQuoteNo(),noOfMonth.toString(),"0");	
+					EserviceTravelDetails travel= saveTravel("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"1");	
 				}else if (product.getMotorYn().equalsIgnoreCase("A")) {
-					EserviceBuildingDetails motor= saveBuilding("Y",adv,req.getQuoteNo(),noOfMonth.toString(),"0");	
+					EserviceBuildingDetails motor= saveBuilding("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"1");	
 				}else if (product.getMotorYn().equalsIgnoreCase("L")) {
-					EserviceLifeDetails motor= saveLife("Y",adv,req.getQuoteNo(),noOfMonth.toString(),"0");	
+					EserviceLifeDetails motor= saveLife("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"1");	
 				}else {
-					EserviceCommonDetails motor= saveCommon("Y",adv,req.getQuoteNo(),noOfMonth.toString(),"0");	
+					EserviceCommonDetails motor= saveCommon("Y",adv,req.getQuoteNo(),req.getInstallmentPeriod(),"1");	
 				}
 				
 			}else {
@@ -379,118 +364,14 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
-			return null;
+			res.setSuccessId(null);
+			res.setResponse("error occured");
+			return res;
 		}
 
 		return res;
 	}
-	private Double insertEmiTransactionDetailsByInstalId(EmiTransactionDetailsSaveReq req,Double interestPercent,Double advancePercent, 
-			Double premiumWithTax, Integer instalId) {
-		EmiTransactionDetails saveData = new EmiTransactionDetails();
-		Double adv=0d;
-		String quoteNo = req.getQuoteNo();
-		String insDesc = "";
-		Date entryDate = new Date();
-		String createdBy = req.getCreatedBy();
-		Double balanceAmount=null, temp=0d, installment=0d;
-		Integer ins=instalId;
-		Integer ins2=instalId;
-		Integer i=0; 
-		double totalLoanAmount=premiumWithTax+premiumWithTax*interestPercent/100;
-		double interestAmount = premiumWithTax*interestPercent/100;
-		double advanceAmount = totalLoanAmount * advancePercent / 100;
-		adv=advanceAmount;
-		Integer set_installment=0;
-		Calendar cal = Calendar.getInstance();
-		Date dueDate = cal.getTime();
-           for(i=0; i<ins; i++) {
-				if(i==0 && advanceAmount>0.0) {
-					cal.add(Calendar.MONTH, i);
-					dueDate = cal.getTime();
-					advanceAmount = premiumWithTax * advancePercent / 100;
-					adv=advanceAmount;
-					totalLoanAmount=(premiumWithTax-advanceAmount);
-					totalLoanAmount=totalLoanAmount+totalLoanAmount*interestPercent/100;
-					balanceAmount = totalLoanAmount;
-					installment = balanceAmount / instalId;
-					set_installment=0;
-                   ins+=1;
-				}
-
-				else if (i == 0) {
-					cal.add(Calendar.MONTH, i);
-					dueDate = cal.getTime();
-					balanceAmount = totalLoanAmount - advanceAmount;
-					installment = balanceAmount / instalId;
-					set_installment=1;
-				} else {
-			        // Increment calendar based on the installment period
-			        switch (instalId) {
-			            case 12:
-			                cal.add(Calendar.MONTH, 1); // Increment by 1 month
-			                break;
-			            case 6:
-			                cal.add(Calendar.MONTH, 2); // Increment by 2 months
-			                break;
-			            case 4:
-			                cal.add(Calendar.MONTH, 3); // Increment by 3 months
-			                break;
-			            case 2:
-			                cal.add(Calendar.MONTH, 6); // Increment by 6 months
-			                break;
-	                    default:
-	                        break;
-	            }System.out.println("premiumWithTax "+premiumWithTax+" advanceAmount"+advanceAmount+" installment "+installment+" totalLoanAmount"+totalLoanAmount+"");
-			        dueDate = cal.getTime();
-					temp = balanceAmount;
-					temp -= installment;
-					balanceAmount = temp;
-				}
-				// Save
-				saveData.setPremiumWithTax(premiumWithTax);
-				saveData.setInstallmentPeriod(instalId.toString());
-				saveData.setInterest(interestPercent);
-				saveData.setAdvance(advancePercent.toString());
-				saveData.setInterestAmount((Double.valueOf(Math.round(interestAmount))));
-				if (i == 0) {
-					saveData.setDueAmount((Double.valueOf(Math.round(advanceAmount))));
-					insDesc="Advance Amount";
-					//saveData.setPaymentDate(entryDate);
-					saveData.setStatus(req.getStatus());
-					saveData.setPaymentDetails(req.getPaymentDetails());
-				} else {
-					saveData.setDueAmount((Double.valueOf(Math.round(installment))));
-					insDesc="Installment Amount";
-					saveData.setStatus("Y");
-					saveData.setPaymentDetails(null);
-				}
-				saveData.setPaymentDate(null);
-				saveData.setPaymentStatus("Pending");
-				saveData.setQuoteNo(quoteNo);
-				saveData.setProductId(req.getProductId());
-				saveData.setCompanyId(req.getCompanyId());
-				saveData.setBalanceAmount(Double.valueOf(Math.round(balanceAmount)));
-				saveData.setTotalLoanAmount(Double.valueOf(Math.round(totalLoanAmount)));
-				saveData.setInstallmentDesc(insDesc);
-				saveData.setInstalment(set_installment.toString());
-				saveData.setEntryDate(entryDate);
-				saveData.setCreatedBy(req.getCreatedBy());
-				saveData.setUpdatedDate(new Date());
-				saveData.setUpdatedBy(createdBy);
-				saveData.setDueDate(dueDate);
-				saveData.setRemarks(req.getRemarks());
-				List<ListItemValue> installmentList=getInstallmentTypeDesc(req.getCompanyId() , "99999",  "INSTALLMENT_TYPE",req.getInstallmentTypeId());
-				String installmentDesc=installmentList.get(0).getItemValue();
-				saveData.setInstallmentTypeId(req.getInstallmentTypeId());
-				saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc)? "" : installmentDesc);
-				set_installment++;
-				
-				repo.saveAndFlush(saveData);  
-
-           }
-           return adv;
-	}
-
+	
 	public EserviceMotorDetails saveMotor(String status,BigDecimal adv,String quoteNo,String installmentPeriod,String noOFIns) {
 		EserviceMotorDetails save=new EserviceMotorDetails();
 		DozerBeanMapper dozermapper = new DozerBeanMapper ();
@@ -754,8 +635,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			Predicate n7 = cb.equal(b.get("policyType"),  policyType);
 //			Predicate n11 = cb.equal(b.get("policyType"),  "99999");
 //			Predicate n12 = cb.or(n7,  n11);
-//			Predicate n9 = cb.equal(b.get("installmentPeriod"), insPeriod);
-			Predicate n9 = cb.equal(b.get("installmentTypeId"), insPeriod);
+			Predicate n9 = cb.equal(b.get("installmentPeriod"), insPeriod);
 			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n13 = cb.equal(b.get("status"), "Y");
 			query.where(n1, n5, n6, n7,n9,n10,n13).orderBy(orderList);
@@ -786,8 +666,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			int row=0;
 			for(EmiTransactionDetailsUpdateReq req:reqList) {
 				row=row+1;
-			if (StringUtils.isBlank(req.getInstallmentTypeId())) {
-				errorList.add(new Error("02", "InstallmentPeriod", "Please Select Installment type"+row));
+			if (StringUtils.isBlank(req.getInstallmentPeriod())) {
+				errorList.add(new Error("02", "InstallmentPeriod", "Please Enter InstallmentPeriod"+row));
 			}
 			if (StringUtils.isBlank(req.getNoOfInstallment())) {
 				errorList.add(new Error("02", "No Of Installment", "Please Enter No Of Installment"+row));
@@ -930,15 +810,15 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			homerepo.save(homeData);
 			CompanyProductMaster product = getCompanyProductMasterDropdown(companyId,productId);
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				EserviceMotorDetails motor= saveMotor("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentTypeId(),list2.get(0).getInstalment());	
+				EserviceMotorDetails motor= saveMotor("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
 			}else if (product.getMotorYn().equalsIgnoreCase("H")&& productId.equalsIgnoreCase(travelProductId)) {
-				EserviceTravelDetails travel= saveTravel("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentTypeId(),list2.get(0).getInstalment());	
+				EserviceTravelDetails travel= saveTravel("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
 			}else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				EserviceBuildingDetails motor= saveBuilding("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentTypeId(),list2.get(0).getInstalment());	
+				EserviceBuildingDetails motor= saveBuilding("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
 			}else if (product.getMotorYn().equalsIgnoreCase("L")) {
-				EserviceLifeDetails motor= saveLife("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentTypeId(),list2.get(0).getInstalment());	
+				EserviceLifeDetails motor= saveLife("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
 			}else {
-				EserviceCommonDetails motor= saveCommon("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentTypeId(),list2.get(0).getInstalment());	
+				EserviceCommonDetails motor= saveCommon("Y",adv,list.get(0).getQuoteNo(),list.get(0).getInstallmentPeriod(),list2.get(0).getInstalment());	
 			}
 
 		} catch (Exception e) {
@@ -1068,8 +948,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			String insDesc = "";
 			Double temp = 0d, premiumWithTax, interestPercent, advancePercent, interestAmount, totalLoanAmount,
 					advanceAmount, balanceAmount = null, installment = 0d,exchangeDate=0d,curPremium=0d;
+//			HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
 			premiumWithTax = Double.valueOf(req.getPremiumWithTax());
-			if(!req.getCurrency().equalsIgnoreCase("TZS")) {
+//			premiumWithTax = Double.valueOf(homeData.getOverallPremiumLc().toString());
+			if(!req.getCurrency().equalsIgnoreCase("KES")) {
 				List<ExchangeMaster> exchangeData=exchangeMasterRepo.findByCurrencyIdAndCompanyIdOrderByAmendIdDesc(req.getCurrency(),req.getCompanyId());				if(exchangeData.size()>0) 
 					exchangeDate= exchangeData.get(0).getExchangeRate();
 					
@@ -1086,15 +968,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 					Integer noOfMonth = Integer.valueOf(data.getInstallmentPeriod().toString());
 					interestPercent = Double.valueOf(data.getInterestPercent().toString());
 					advancePercent = Double.valueOf(data.getAdvancePercent().toString());
-					
-					System.out.println(data.getInstallmentTypeId());
-					if(data.getInstallmentTypeId()!=null) {
-						Integer instalId=Integer.parseInt(data.getInstallmentTypeId());	
-						List<EmiDisplayRes> result=viewEmiInstallmentDetailsByInstalId(req,interestPercent,advancePercent,premiumWithTax,instalId,res,data);
-					          resList.add(result.get(0)); System.out.println(result);
-					}else {
 					// Calculation
-					for (i = 0; i <= noOfMonth; i++) {
+					for (i = 1; i <= noOfMonth; i++) {
 						// Response
 						
 						interestAmount = premiumWithTax * interestPercent / 100;
@@ -1102,9 +977,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 						interestAmount=interestAmount*noOfMonth;
 						totalLoanAmount = premiumWithTax + interestAmount;
 						advanceAmount = totalLoanAmount * advancePercent / 100;
-						if (i == 0) {
+						if (i == 1) {
 							balanceAmount = totalLoanAmount - advanceAmount;
-							installment = balanceAmount / noOfMonth;
+							installment = balanceAmount / (noOfMonth-1);
 							insDesc="Advance Amount";
 						} else {
 							temp = balanceAmount;
@@ -1132,12 +1007,12 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 						res.setCompanyEmiInfo(compInfoRes);
 
 						List<EmiDisplayListRes> emiPremiumResList = new ArrayList<EmiDisplayListRes>();
-						for (i = 0; i <= noOfMonth; i++) {
+						for (i = 1; i <= noOfMonth; i++) {
 							EmiDisplayListRes emiPremiumRes = new EmiDisplayListRes();
 							Calendar cal = Calendar.getInstance();
 							cal.add(Calendar.MONTH, i);
 							Date dueDate = cal.getTime();
-							if (i == 0) {
+							if (i == 1) {
 								insDesc="Advance Amount";
 								emiPremiumRes.setInstallment(Long.valueOf(Math.round(advanceAmount)).toString());
 							} else {
@@ -1156,7 +1031,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 					}
 
 					resList.add(res);
-				  }
 				}
 
 			}else if(list.size() == 0){
@@ -1174,122 +1048,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 		return resList;
 	}
-	public List<EmiDisplayRes> viewEmiInstallmentDetailsByInstalId(EmiInstallmentDetailsReq req, Double interestPercent, Double advancePercent,Double premiumWithTax, 
-			Integer instalId,EmiDisplayRes res,EmiMaster data) {
-		List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
-		Double balanceAmount=null, temp=0d, installment=0d;
-		Integer ins=instalId;
-		Integer ins2=instalId;
-		Integer i=0; String insDesc = "";
-		double totalLoanAmount=premiumWithTax+premiumWithTax*interestPercent/100;
-		double interestAmount = premiumWithTax*interestPercent/100;
-		double advanceAmount = totalLoanAmount * advancePercent / 100;
-		// Calculation
-		for (i = 0; i < ins; i++) {
-			
-			if (i == 0 && advanceAmount>0.0) {
-				advanceAmount = premiumWithTax * advancePercent / 100;
-				totalLoanAmount=(premiumWithTax-advanceAmount);
-				totalLoanAmount=totalLoanAmount+totalLoanAmount*interestPercent/100;
-				balanceAmount = totalLoanAmount;
-				installment = balanceAmount / instalId;
-				insDesc="Advance Amount";
-				ins+=1;
-			} else if(i==0) {
-				balanceAmount = totalLoanAmount - advanceAmount;
-				installment = balanceAmount / instalId;
-				insDesc="Installment Amount";
-			}else {
-				temp = balanceAmount;
-				temp -= installment;
-				balanceAmount = temp;
-				insDesc="Installment Amount";
-			}System.out.println("adv "+advanceAmount+" int "+interestPercent+" tla "+totalLoanAmount+" premium "+premiumWithTax);
-			EmiInfoListRes emiInfoListRes = new EmiInfoListRes();
-			emiInfoListRes.setPremiumWithTax(Long.valueOf(Math.round(premiumWithTax)).toString());
-			emiInfoListRes.setNoOfMonth(instalId.toString());
-			emiInfoListRes.setInterestAmount(Long.valueOf(Math.round(interestAmount)).toString());
-		//	emiInfoListRes.setAdvanceAmount(df.format(advanceAmount));
-			emiInfoListRes.setAdvanceAmount(Long.valueOf(Math.round(advanceAmount)).toString());
-			emiInfoListRes.setBalanceAmount(Long.valueOf(Math.round(balanceAmount)).toString());
-			emiInfoListRes.setTotalLoanAmount(Long.valueOf(Math.round(totalLoanAmount)).toString());
-		//	emiInfoListRes.setInstallment((df.format(installment)));
-			emiInfoListRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-			emiInfoListRes.setInstallmentTypeId(instalId.toString());
-			emiInfoListRes.setInstallmentTypeDesc(data.getInstallmentTypeDesc());	
-			
-			res.setEmiInfoRes(emiInfoListRes);
-
-			EmiCompanyInfoListRes compInfoRes = new EmiCompanyInfoListRes();
-			compInfoRes.setPremiumStart(data.getPremiumStart().toString());
-			compInfoRes.setPremiumEnd(data.getPremiumEnd().toString());
-			compInfoRes.setInterest(interestPercent.toString());
-			compInfoRes.setAdvance(advancePercent.toString());
-			res.setCompanyEmiInfo(compInfoRes);
-
-			List<EmiDisplayListRes> emiPremiumResList = new ArrayList<EmiDisplayListRes>();
-			Calendar cal = Calendar.getInstance();
-			Date dueDate = cal.getTime();
-			for (i = 0; i < ins2; i++) {
-				EmiDisplayListRes emiPremiumRes = new EmiDisplayListRes();
-								Integer inc=i;
-				if(i==0 && advanceAmount>0.0) {
-					cal.add(Calendar.MONTH, i);
-					dueDate = cal.getTime();
-					insDesc="Advance Amount";
-					emiPremiumRes.setInstallment(Long.valueOf(Math.round(advanceAmount)).toString());
-                    ins2+=1;
-				}
-
-				else if (i == 0) {
-					cal.add(Calendar.MONTH, i);
-					dueDate = cal.getTime();
-					insDesc="Installment Amount";
-					emiPremiumRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-					inc=inc+1;
-					emiPremiumRes.setNoOfInstallment(inc.toString());
-				} else {
-			        // Increment calendar based on the installment period
-			        switch (instalId) {
-			            case 12:
-			                cal.add(Calendar.MONTH, 1); // Increment by 1 month
-			                break;
-			            case 6:
-			                cal.add(Calendar.MONTH, 2); // Increment by 2 months
-			                break;
-			            case 4:
-			                cal.add(Calendar.MONTH, 3); // Increment by 3 months
-			                break;
-			            case 2:
-			                cal.add(Calendar.MONTH, 6); // Increment by 6 months
-			                break;
-	                    default:
-	                        break;
-	            }
-			        dueDate = cal.getTime();
-			        insDesc="Installment Amount";
-					emiPremiumRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-					inc=advanceAmount>0.0?inc:(inc+1);
-					emiPremiumRes.setNoOfInstallment(inc.toString());
-				}
-
-				emiPremiumRes.setNoOfInstallment(i.toString());
-				emiPremiumRes.setDueDate(dueDate);
-				emiPremiumRes.setInstallmentDesc(insDesc);
-				emiPremiumResList.add(emiPremiumRes);
-
-			}
-			res.setEmiPremium(emiPremiumResList);
-			res.setEmiYn("Y");
-			res.setEmiYnDesc("Emi Data");
-		}
-
-		 resList.add(res);
-		 return resList;
-	}
-
-
-	
 	public List<EmiMaster> getEmiMasterData( String companyId, String productId,String policyType,Double amt) {
 		List<EmiMaster> list = new ArrayList<EmiMaster>();
 		

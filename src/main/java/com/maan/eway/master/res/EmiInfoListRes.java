@@ -6,7 +6,6 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
@@ -37,12 +36,8 @@ public class EmiInfoListRes implements Serializable {
 	private String totalLoanAmount;
 	
 
-	@JsonProperty("InstallmentTypeId")
-    private String installmentTypeId;
-    
-	@JsonProperty("InstallmentTypeDesc")
-    private String installmentTypeDesc;
 
+	
 
 	
 }

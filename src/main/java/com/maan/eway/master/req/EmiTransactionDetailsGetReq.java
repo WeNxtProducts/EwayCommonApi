@@ -23,10 +23,7 @@ public class EmiTransactionDetailsGetReq implements Serializable {
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
-
-//    @JsonProperty("InstallmentTypeId")
-//    private String installmentTypeId;
-//	
+	
 //	@JsonProperty("PolicyType")
 //	private String policyType;
 
