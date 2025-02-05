@@ -1837,7 +1837,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			 List<BranchMaster> branchCode=ratingutil.collectBranchMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getBranchCode());
 			 
 			 //Not endt
-			if (StringUtils.isBlank(endttypeid)&& ( emiYn.equalsIgnoreCase("N") || instalment.equalsIgnoreCase("0"))) {			 
+			if (StringUtils.isBlank(endttypeid)&& ( emiYn.equalsIgnoreCase("N") || instalment.equalsIgnoreCase("1"))) {			 
 				List<SectionDataDetails> sections = sectionRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
 		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),sections.get(0).getSectionId());
 		 
