@@ -782,7 +782,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="Country_Registration_Date")
     private Date       countryRegistrationDate ;
     
-    
+    @Column(name="ABOUT_VEHICLE", length=100)
+    private String   aboutvehicle ; 
 }
 
 

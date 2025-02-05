@@ -856,7 +856,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorData.setCdRefno(eserMotors.getCdRefno()==null?null : eserMotors.getCdRefno().toString());
 			motorData.setVdRefno(eserMotors.getVdRefNo()==null?null : eserMotors.getVdRefNo().toString());
 			motorData.setMsRefno(eserMotors.getMsRefno()==null?null : eserMotors.getMsRefno().toString());
-			
+			motorData.setAboutvehicle(eserMotors.getAboutvehicle());
 			// Map
 			ObjectMapper m = new ObjectMapper();
 			Map<String,String> motorKeyValue = m.convertValue(motorData , Map.class);
