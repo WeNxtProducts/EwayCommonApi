@@ -750,6 +750,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			personalInfo.setVipFlag(custData.getVipFlag());
 			personalInfo.setRiskAssessmentDate(custData.getRiskAssessmentDate());
 			personalInfo.setPhoneNoCode(custData.getPhoneNoCode());
+			personalInfo.setFather_name(custData.getFather_name());		
+			personalInfo.setMother_name(custData.getMother_name());	
+
 			perInfoRepo.save(personalInfo);
 			
 			log.error("Save Personal Info is ---> " + json.toJson(personalInfo));

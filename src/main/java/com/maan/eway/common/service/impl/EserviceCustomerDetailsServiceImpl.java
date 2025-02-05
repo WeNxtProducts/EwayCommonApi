@@ -189,6 +189,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Autowired
 	private PhoenixEserviceCustomerDetails phoenixEcustdetails;
 	
+	@Autowired
+	private PhoenixMozambiqueEserviceCustomerDetails mozambiqueEcustdetails;
+	
 	
 	
 	
@@ -234,6 +237,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			errorList=burkinoEcustdetails.validateCustomerDetails(req);
 		}else if("100046".equalsIgnoreCase(req.getCompanyId()))	{
 			errorList=phoenixEcustdetails.validateCustomerDetails(req);
+		}else if("100048".equalsIgnoreCase(req.getCompanyId()))	{
+			errorList=mozambiqueEcustdetails.validateCustomerDetails(req);
 		}else {
 			errorList=tanzaniaEcustdetails.validateCustomerDetails(req);
 		}
@@ -1740,6 +1745,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			res=burkinoEcustdetails.saveCustomerDetails(req);
 		}else if("100046".equalsIgnoreCase(req.getCompanyId()))	{
 			res=phoenixEcustdetails.saveCustomerDetails(req);
+		}else if("100048".equalsIgnoreCase(req.getCompanyId()))	{
+			res=mozambiqueEcustdetails.saveCustomerDetails(req);
 		}else {
 			res=tanzaniaEcustdetails.saveCustomerDetails(req);
 		}

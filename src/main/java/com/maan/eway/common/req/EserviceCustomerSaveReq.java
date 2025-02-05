@@ -282,6 +282,7 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("KraPin")
 	private String kraPin;
 	
+
 	@JsonProperty("VipFlag")
 	private String vipFlag;
 	
@@ -291,5 +292,13 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("RiskAssessmentDate") 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private Date riskAssessmentDate;
+
+	@JsonProperty("FatherName")
+	private String father_name;
+	    
+	@JsonProperty("MotherName")
+	private String mother_name;
+	
+
 	
 }
