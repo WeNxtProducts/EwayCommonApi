@@ -989,6 +989,9 @@ public class PhoenixMozambiqueEserviceCustomerDetails {
 				res.setRegionCode(cdate.getRegionCode()==null?"":cdate.getRegionCode());
 				res.setPolicyHolderTypeid(cdate.getPolicyHolderTypeid()==null?"":cdate.getPolicyHolderTypeid());
 				res.setVrTinNo(cdate.getVrTinNo()==null?"":cdate.getVrTinNo());
+				
+				res.setFather_name(cdate.getFather_name()==null?"":cdate.getFather_name());
+				res.setMother_name(cdate.getFather_name()==null?"":cdate.getMother_name());
 			}
 			
 					

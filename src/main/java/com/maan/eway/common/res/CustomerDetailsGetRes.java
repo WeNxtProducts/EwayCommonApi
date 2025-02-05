@@ -284,5 +284,11 @@ public class CustomerDetailsGetRes {
 		@JsonFormat(pattern = "dd/MM/yyyy")
 		private Date riskAssessmentDate;
 		
+		@JsonProperty("FatherName")
+		private String father_name;
+		    
+		@JsonProperty("MotherName")
+		private String mother_name;
+		
 
 }
