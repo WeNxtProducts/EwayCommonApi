@@ -314,13 +314,34 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 		        predicates.add(cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo")));
 		    }
 
-		    query.where(cb.and(predicates.toArray(new Predicate[0])))
-		        .groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), cus.get("mobileNo1"), 
-		            c.get("companyId"), c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), 
-		            c.get("quoteNo"), c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"), 
-		            c.get("rejectReason"))
-		        .orderBy(orderList);
+			/*
+			 * query.where(cb.and(predicates.toArray(new Predicate[0])))
+			 * .groupBy(c.get("customerReferenceNo"), c.get("idNumber"),
+			 * cus.get("clientName"), cus.get("mobileNo1"), c.get("companyId"),
+			 * c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"),
+			 * c.get("quoteNo"), c.get("customerId"), c.get("policyStartDate"),
+			 * c.get("policyEndDate"), c.get("rejectReason")) .orderBy(orderList);
+			 */
 
+		    
+		    query.where(cb.and(predicates.toArray(new Predicate[0])))
+		    .groupBy(
+		        cus.get("customerReferenceNo"),
+		        cus.get("clientName"),
+		        cus.get("mobileNo1"),
+		        c.get("customerReferenceNo"), 
+		        c.get("idNumber"), 
+		        c.get("companyId"), 
+		        c.get("productId"), 
+		        c.get("branchCode"), 
+		        c.get("requestReferenceNo"), 
+		        c.get("quoteNo"), 
+		        c.get("customerId"), 
+		        c.get("policyStartDate"), 
+		        c.get("policyEndDate"), 
+		        c.get("rejectReason")
+		    )
+		    .orderBy(orderList);
 		    // Get Result
 		    TypedQuery<Tuple> result = em.createQuery(query);
 		    customerDetailsList = result.getResultList();
