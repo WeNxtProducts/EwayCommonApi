@@ -226,153 +226,113 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 		return searchQuote;
 	}
 
-	public List<Tuple> adminsearch(SearchReq req,String searchKey, String searchValue, String companyId, String loginId,
-			String userType, List<String> branches) {
-		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+
+	public List<Tuple> adminsearch(SearchReq req, String searchKey, String searchValue, String companyId, String loginId, String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try {
+		    CriteriaBuilder cb = em.getCriteriaBuilder();
+		    CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+		    Root<EserviceMotorDetails> c = query.from(EserviceMotorDetails.class);
+		    Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 
-			Root<EserviceMotorDetails> c = query.from(EserviceMotorDetails.class);
-			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
-			
-			query.multiselect(/*c.alias("c"),*/
-					cus.get("customerReferenceNo").alias("customerReferenceNo"),
-					cus.get("clientName").alias("clientName"),
-					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"),
-					cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),
-					cb.selectCase().when(cb.max(c.get("quoteNo")).isNotNull(), cb.max(c.get("quoteNo")))
-							.otherwise(cb.max(c.get("quoteNo"))).alias("quoteNo"),
-					cb.max(c.get("policyNo")).alias("policyNo"),
-					cb.max(c.get("branchCode")).alias("branchCode"),
-					cb.max(c.get("status")).alias("status"),
-					cb.max(c.get("loginId")).alias("loginId"),
-					cb.max(c.get("policyTypeDesc")).alias("policyTypeDesc"),
-					cb.max(c.get("vehicleTypeDesc")).alias("vehicleTypeDesc"), 
-					cb.max(c.get("policyStartDate")).alias("policyStartDate"),
-					cb.max(c.get("policyEndDate")).alias("policyEndDate"),
-					cb.max(c.get("entryDate")).alias("entryDate"),
-					cb.max(c.get("overallPremiumLc")).alias("overallPremiumLc"),
-					cb.max(c.get("currency")).alias("currency"),
-					cb.max(c.get("exchangeRate")).alias("exchangeRate"),
-					cb.max(c.get("gpsTrackingInstalled")).alias("gpsTrackingInstalled"),
-					cb.max(c.get("windScreenCoverRequired")).alias("windScreenCoverRequired"),
-					cb.max(c.get("productName")).alias("productName"),
-					cb.max(c.get("emiYn")).alias("emiYn"),
-					cb.max(c.get("installmentPeriod")).alias("installmentPeriod"),
-					cb.max(c.get("noOfInstallment")).alias("noOfInstallment"),
-					cb.max(c.get("emiPremium")).alias("emiPremium")
-//					cb.max(c.get("rejectReason")).alias("rejectReason"),)
-//                  cb.max(c.get("riskId")).alias("riskId"),
-//					cb.max(c.get("insuranceType")).alias("insuranceType")
-					);
+		    query.multiselect(
+		        cus.get("customerReferenceNo").alias("customerReferenceNo"),
+		        cus.get("clientName").alias("clientName"),
+		        cus.get("mobileNo1").alias("mobileNumber"),
+		        cb.count(c).alias("idsCount"),
+		        cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),
+		        cb.selectCase().when(cb.max(c.get("quoteNo")).isNotNull(), cb.max(c.get("quoteNo")))
+		            .otherwise(cb.max(c.get("quoteNo"))).alias("quoteNo"),
+		        cb.max(c.get("policyNo")).alias("policyNo"),
+		        cb.max(c.get("branchCode")).alias("branchCode"),
+		        cb.max(c.get("status")).alias("status"),
+		        cb.max(c.get("loginId")).alias("loginId"),
+		        cb.max(c.get("policyTypeDesc")).alias("policyTypeDesc"),
+		        cb.max(c.get("vehicleTypeDesc")).alias("vehicleTypeDesc"),
+		        cb.max(c.get("policyStartDate")).alias("policyStartDate"),
+		        cb.max(c.get("policyEndDate")).alias("policyEndDate"),
+		        cb.max(c.get("entryDate")).alias("entryDate"),
+		        cb.max(c.get("overallPremiumLc")).alias("overallPremiumLc"),
+		        cb.max(c.get("currency")).alias("currency"),
+		        cb.max(c.get("exchangeRate")).alias("exchangeRate"),
+		        cb.max(c.get("gpsTrackingInstalled")).alias("gpsTrackingInstalled"),
+		        cb.max(c.get("windScreenCoverRequired")).alias("windScreenCoverRequired"),
+		        cb.max(c.get("productName")).alias("productName"),
+		        cb.max(c.get("emiYn")).alias("emiYn"),
+		        cb.max(c.get("installmentPeriod")).alias("installmentPeriod"),
+		        cb.max(c.get("noOfInstallment")).alias("noOfInstallment"),
+		        cb.max(c.get("emiPremium")).alias("emiPremium")
+		    );
 
+		    // Order By
+		    List<Order> orderList = new ArrayList<>();
+		    orderList.add(cb.asc(c.get("customerReferenceNo")));
 
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("customerReferenceNo")));
+		    List<Predicate> predicates = new ArrayList<>();
 
-			Predicate n1 = null;
-			Predicate n3 = null;
-			Predicate n4 = null;
-			Predicate n5 = null;
-	
-
-			// Where
-			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
-				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
-			} else if (searchKey.equalsIgnoreCase("MobileNumber")) {
-				n1 = cb.equal(cus.get("mobileNo1"), searchValue);
-			} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
-				n1 = cb.equal(c.get("quoteNo"), searchValue);
-			} else if (searchKey.equalsIgnoreCase("PolicyNumber")) {
-				n1 = cb.equal(cb.lower(c.get("policyNo")), searchValue);
-			} else if (searchKey.equalsIgnoreCase("ChassisNumber")) {
-				n1 = cb.equal(cb.lower(c.get("chassisNumber")), searchValue);	
-			} else if (searchKey.equalsIgnoreCase("MotorCategory")) {
-				n1 = cb.equal(cb.lower(c.get("motorCategory")), searchValue);	
-			} else if (searchKey.equalsIgnoreCase("VehicleType")) {
-				n1 = cb.equal(cb.lower(c.get("vehicleType")), searchValue);	
-			} else if (searchKey.equalsIgnoreCase("CustomerCode")) {
-				n1 = cb.equal(cb.lower(c.get("customerCode")), searchValue);	
-			}  else if (searchKey.equalsIgnoreCase("VehicleMake")) {
-				n1 = cb.equal(cb.lower(c.get("vehicleMake")), searchValue);	
-			}  else if (searchKey.equalsIgnoreCase("VehicleModel")) {
-				n1 = cb.equal(cb.lower(c.get("vehcileModel")), searchValue);	
-			}  else if (searchKey.equalsIgnoreCase("CustomerName")) {
-				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
-				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+		    // Where
+		    if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+		        predicates.add(cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("MobileNumber")) {
+		        predicates.add(cb.equal(cus.get("mobileNo1"), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
+		        predicates.add(cb.equal(c.get("quoteNo"), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("PolicyNumber")) {
+		        predicates.add(cb.equal(cb.lower(c.get("policyNo")), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("ChassisNumber")) {
+		        predicates.add(cb.equal(cb.lower(c.get("chassisNumber")), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("MotorCategory")) {
+		        predicates.add(cb.equal(cb.lower(c.get("motorCategory")), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("VehicleType")) {
+		        predicates.add(cb.equal(cb.lower(c.get("vehicleType")), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("CustomerCode")) {
+		        predicates.add(cb.equal(cb.lower(c.get("customerCode")), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("VehicleMake")) {
+		        predicates.add(cb.equal(cb.lower(c.get("vehicleMake")), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("VehicleModel")) {
+		        predicates.add(cb.equal(cb.lower(c.get("vehcileModel")), searchValue));
+		    } else if (searchKey.equalsIgnoreCase("CustomerName")) {
+		      //  predicates.add(cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%"));
+		        predicates.add(cb.like(cus.get("clientName"), "%" + searchValue + "%"));
 		    }
 
-			Predicate n2 = cb.equal(c.get("companyId"), companyId);
+		    Predicate n2 = cb.equal(c.get("companyId"), companyId);
+		    predicates.add(n2);
 
-			if ("issuer".equalsIgnoreCase(userType)) {
-//				n3 = cb.equal(c.get("applicationId"), req.getApplicationId());
-				Expression<String> e0 = c.get("branchCode");
-				n4 = e0.in(branches);
-			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
-				n3 = cb.equal(c.get("loginId"), loginId);
-				Expression<String> e0 = c.get("brokerBranchCode");
-				n4 = e0.in(branches);
-			}
-			if (searchKey.equalsIgnoreCase("CustomerName")) {
-				if ("issuer".equalsIgnoreCase(userType)) {
+		    if ("issuer".equalsIgnoreCase(userType)) {
+		        Expression<String> e0 = c.get("branchCode");
+		        predicates.add(e0.in(branches));
+		    } else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+		        predicates.add(cb.equal(c.get("loginId"), loginId));
+		        Expression<String> e0 = c.get("brokerBranchCode");
+		        predicates.add(e0.in(branches));
+		    }
 
-					Expression<String> e0 = cus.get("branchCode");
-					n4 = e0.in(branches);
-				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+		    if (searchKey.equalsIgnoreCase("CustomerName")) {
+		        predicates.add(cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo")));
+		    }
 
-					Expression<String> e0 = cus.get("brokerBranchCode");
-					n4 = e0.in(branches);
-				}
-			}
-			n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
-		//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
-			 if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
-			query.where(n1,n2,n3,n4,n5)
-			.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
-					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-					c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-					c.get("rejectReason"))
-			.orderBy(orderList);
-			 }else {
-				 query.where(n1,n2,n4,n5)
-					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
-							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-							c.get("rejectReason"))
-					.orderBy(orderList);
-			 }
-			if (searchKey.equalsIgnoreCase("CustomerName")) {
-				query.where(n1, n2,n4,n5)
-				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
-						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-						c.get("rejectReason"))
-				.orderBy(orderList);
-			}
-//			if (searchKey.equalsIgnoreCase("MobileNumber")) {
-//				query.where(n1,n2,n3,n4)
-//				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
-//						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-//						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-//						c.get("rejectReason"))
-//				.orderBy(orderList);
-//			}
+		    query.where(cb.and(predicates.toArray(new Predicate[0])))
+		        .groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), cus.get("mobileNo1"), 
+		            c.get("companyId"), c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), 
+		            c.get("quoteNo"), c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"), 
+		            c.get("rejectReason"))
+		        .orderBy(orderList);
 
-			// Get Result
-			TypedQuery<Tuple> result = em.createQuery(query);
-			customerDetailsList = result.getResultList();
-			customerDetailsList = customerDetailsList.stream().filter(o -> !o.get("idsCount").equals(0L))
-					.collect(Collectors.toList());
+		    // Get Result
+		    TypedQuery<Tuple> result = em.createQuery(query);
+		    customerDetailsList = result.getResultList();
+		    customerDetailsList = customerDetailsList.stream().filter(o -> !o.get("idsCount").equals(0L))
+		            .collect(Collectors.toList());
 		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is --->" + e.getMessage());
-			return null;
+		    e.printStackTrace();
+		    log.info("Exception is --->" + e.getMessage());
+		    return null;
 		}
 		return customerDetailsList;
+
 	}
 
 
