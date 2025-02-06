@@ -20,6 +20,9 @@ public class RejectCriteriaRes {
 	    private String   customerReferenceNo ;
 	    private String idNumber;
 		private String clientName;
+		private String middleName;
+		private String lastName;
+		private String titleDesc;
 
 		// Vehicle Info
 		private String     companyId ;

@@ -20,6 +20,9 @@ public class PortfolioGridCriteriaRes {
 	private String customerReferenceNo;
 	private String idNumber;
 	private String clientName;
+	private String middleName;
+	private String lastName;
+	private String titleDesc;
 	private String mobileNo1;
 	private String taxExemptedId;
 	private String isTaxExempted;

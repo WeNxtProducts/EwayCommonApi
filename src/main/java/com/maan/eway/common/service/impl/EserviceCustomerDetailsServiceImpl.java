@@ -2955,7 +2955,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());
 				res.setIsTaxExempted(data.getIsTaxExempted()==null?"":data.getIsTaxExempted());	
 				res.setKraPin(data.getKraPin()==null?"":data.getKraPin());
-				
+				res.setFirstName(data.getFirstName()==null?"":data.getFirstName());	
+				res.setMiddleName(data.getMiddleName()==null?"":data.getMiddleName());
+				res.setLastName(data.getLastName()==null?"":data.getLastName());
+				res.setTitleDesc(data.getTitleDesc()==null?"":data.getTitleDesc());			
+				res.setTitle(data.getTitle()==null?"":data.getTitle());	
 				resList.add(res);
 			}
 
@@ -3164,7 +3168,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setActivities(data.getActivities());
 				res.setAddress2(data.getAddress2()==null?"":data.getAddress2());	
 				res.setCustomerAsInsurer(data.getCustomerAsInsurer()==null?"":data.getCustomerAsInsurer());		
-				res.setIsTaxExempted(data.getIsTaxExempted()==null?"":data.getIsTaxExempted());	
+				res.setIsTaxExempted(data.getIsTaxExempted()==null?"":data.getIsTaxExempted());
+				res.setFirstName(data.getFirstName()==null?"":data.getFirstName());
+				res.setMiddleName(data.getMiddleName()==null?"":data.getMiddleName());
+				res.setLastName(data.getLastName()==null?"":data.getLastName());
+				res.setTitle(data.getTitle()==null?"":data.getTitle());	
+				res.setTitleDesc(data.getTitleDesc()==null?"":data.getTitleDesc());			
 				resList.add(res);
 			}
 

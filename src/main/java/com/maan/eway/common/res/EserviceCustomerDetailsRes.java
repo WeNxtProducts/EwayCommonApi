@@ -28,7 +28,15 @@ public class EserviceCustomerDetailsRes {
     @JsonProperty("ClientName")
 	private String clientName;
 
-	
+    @JsonProperty("MiddleName")
+    private String middleName;
+    
+    @JsonProperty("LastName")
+    private String lastName;
+    
+    @JsonProperty("Title")
+    private String titleDesc;
+    
 	@JsonProperty("IdNumber")
 	private String idNumber;
 

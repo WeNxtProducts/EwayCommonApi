@@ -383,7 +383,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
-					c.get("clientName").alias("clientName"),
+					c.get("clientName").alias("clientName"),c.get("titleDesc").alias("titleDesc"),
+					c.get("middleName").alias("middleName"),c.get("lastName").alias("lastName"),										
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
 					 m.get("productName").alias("productName"),
@@ -573,7 +574,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
-					c.get("clientName").alias("clientName"),
+					c.get("clientName").alias("clientName"),c.get("titleDesc").alias("titleDesc"),
+					c.get("middleName").alias("middleName"),c.get("lastName").alias("lastName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
 					 m.get("productName").alias("productName"),
@@ -767,6 +769,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					c.get("customerReferenceNo").alias("customerReferenceNo"), 
 					c.get("idNumber").alias("idNumber"),
 					c.get("clientName").alias("clientName"),
+					c.get("titleDesc").alias("titleDesc"),
+					c.get("middleName").alias("middleName"),
+					c.get("lastName").alias("lastName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"),
 					m.get("productId").alias("productId"),
@@ -879,7 +884,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			query.multiselect(
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
-					c.get("clientName").alias("clientName"),
+					c.get("clientName").alias("clientName"),c.get("titleDesc").alias("titleDesc"),
+					c.get("middleName").alias("middleName"),c.get("lastName").alias("lastName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
@@ -966,6 +972,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				res.setAdminRemarks(r.get("adminRemarks")==null ? "" : (String) r.get("adminRemarks"));
 				res.setBranchCode(r.get("branchCode")==null ? "" : (String) r.get("branchCode"));
 				res.setClientName(r.get("clientName")==null ? "" : (String) r.get("clientName"));
+				res.setTitleDesc(r.get("titleDesc")==null ? "" : (String) r.get("titleDesc"));
+				res.setMiddleName(r.get("middleName")==null ? "" : (String) r.get("middleName"));
+				res.setLastName(r.get("lastName")==null ? "" : (String) r.get("lastName"));				
 				res.setCompanyId(r.get("companyId")==null ? "" : (String) r.get("companyId"));
 				res.setCustomerId(r.get("customerId")==null ? "" : (String) r.get("customerId"));
 				res.setCustomerReferenceNo(r.get("customerReferenceNo")==null ? "" : (String) r.get("customerReferenceNo"));
@@ -3356,6 +3365,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						c.get("customerReferenceNo").alias("customerReferenceNo"),
 						c.get("idNumber").alias("idNumber"),
 						c.get("clientName").alias("clientName"),
+						c.get("middleName").alias("middleName"),
+						c.get("lastName").alias("lastName"),
+						c.get("titleDesc").alias("titleDesc"),
 						c.get("mobileNo1").alias("mobileNo1"),
 						c.get("isTaxExempted").alias("isTaxExempted"),
 						c.get("taxExemptedId").alias("taxExemptedId"),
@@ -3564,6 +3576,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"), 
 						cb.max(c.get("idNumber")).alias("idNumber"),
 						cb.max(c.get("clientName")).alias("clientName"),
+						cb.max(c.get("middleName")).alias("middleName"),
+						cb.max(c.get("lastName")).alias("lastName"),
+						cb.max(c.get("titleDesc")).alias("titleDesc"),
 						
 						cb.max(c.get("mobileNo1")).alias("mobileNo1"),
 						cb.max(c.get("isTaxExempted")).alias("isTaxExempted"),
@@ -3769,6 +3784,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						c.get("customerReferenceNo").alias("customerReferenceNo"),
 						c.get("idNumber").alias("idNumber"),
 						c.get("clientName").alias("clientName"),
+						c.get("middleName").alias("middleName"),
+						c.get("lastName").alias("lastName"),
+						c.get("titleDesc").alias("titleDesc"),
 						c.get("mobileNo1").alias("mobileNo1"),
 						c.get("isTaxExempted").alias("isTaxExempted"),
 						c.get("taxExemptedId").alias("taxExemptedId"),

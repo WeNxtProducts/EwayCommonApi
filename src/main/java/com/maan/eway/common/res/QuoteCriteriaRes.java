@@ -21,6 +21,9 @@ public class QuoteCriteriaRes {
     private String   customerReferenceNo ;
     private String idNumber;
 	private String clientName;
+	private String titleDesc;
+	private String middleName;
+	private String lastName;
 
 	// Vehicle Info
 	private String     companyId ;
