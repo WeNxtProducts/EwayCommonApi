@@ -34,4 +34,6 @@ public interface FrameReqService {
 
 	IntegrationSaveRes premiaExternalCall(String policyNo,String companyId);
 
+	IntegrationSaveRes updatePremiaExternalCallStatus(String policyNo, String companyId);
+
 }

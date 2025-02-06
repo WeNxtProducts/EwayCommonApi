@@ -962,22 +962,24 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			System.out.println("Policy No :" +policyNo+" Company Id :"+companyId);
 			IntegrationSaveRes list = frameReqService.premiaExternalCall(policyNo,companyId);
 			System.out.println("List " + json.toJson(list));
+			IntegrationSaveRes status = frameReqService.updatePremiaExternalCallStatus(policyNo,companyId);
 			if (list.getResponse().equalsIgnoreCase("Failed")) {
 				
-				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ? "Data not Integrated"
-						: list.getPWsResponseType());
+				home.setCoreIntgStatus(StringUtils.isBlank(status.getPWsResponseType()) ? "Data not Integrated"
+						: status.getPWsResponseType());
 				home.setIntegrationStatus("F");
 				home.setIntegrationError(
-						StringUtils.isBlank(list.getPWsError()) ? list.getErrorMessage() : list.getPWsError());
+						StringUtils.isBlank(status.getPWsError()) ? list.getErrorMessage() : status.getPWsError());
 				homeRepo.save(home);
 				response.setResponse("Failed");
 			} else {
-				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ?"Data Integrated"
-						: list.getPWsResponseType());
+				home.setCoreIntgStatus(StringUtils.isBlank(status.getPWsResponseType()) ?"Data Integrated"
+						: status.getPWsResponseType());
 				home.setIntegrationStatus("S");
-				home.setIntegrationError(StringUtils.isBlank(list.getPWsError()) ? "" : list.getPWsError());
+				home.setIntegrationError(StringUtils.isBlank(status.getPWsError()) ? "" : list.getPWsError());
 				homeRepo.save(home);
-				response.setResponse("Success");
+				response.setResponse(StringUtils.isBlank(status.getPWsResponseType()) ?"Data Integrated"
+						: status.getPWsResponseType());
 			}
 
 			System.out.println("List " + json.toJson(list));

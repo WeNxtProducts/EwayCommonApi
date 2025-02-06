@@ -153,6 +153,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	@Value(value = "${PremiaIntegrationExtCall}")
 	private String PremiaIntegrationExtCall;
+	
+	@Value(value = "${UpdateStatusPremiaIntegrationExtCall}")
+	private String UpdateStatusPremiaIntegrationExtCall;
 
 	SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-dd-MM");
@@ -970,6 +973,57 @@ public class FrameReqServiceImpl implements FrameReqService {
 		    }
 		}
 		catch (Exception e) {
+			e.printStackTrace();
+			res1.setResponse("Failed");
+			res1.setErrorMessage(e.getMessage());
+			return res1;
+		}
+		return res1;
+	}
+
+	/// Update responsePremia integration Api 9091
+	@Override
+	public IntegrationSaveRes updatePremiaExternalCallStatus(String policyNo, String companyId) {
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
+		String url = "";
+		try {
+			url = UpdateStatusPremiaIntegrationExtCall;
+			String auth = BasicAuthName + ":" + BasicAuthPass;
+			byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+			String authHeader = "Basic " + new String(encodedAuth);
+
+			PremiaRequest req = new PremiaRequest();
+			req.setPolicyNo(policyNo);
+			req.setCompanyId(companyId);
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("Authorization", authHeader);
+
+			HttpEntity<PremiaRequest> entityReq = new HttpEntity<PremiaRequest>(req, headers);
+
+			ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq,
+					PremiaCommonRes.class);
+			System.out.println(response.getBody());
+			res1.setResponse(response.getBody().getCommonResponse().getResponse().toString());
+			res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage().toString());
+			res1.setPWsResponseType(
+					StringUtils.isBlank(response.getBody().getCommonResponse().getPWsResponseType()) ? ""
+							: response.getBody().getCommonResponse().getPWsResponseType());
+			res1.setPWsError(StringUtils.isBlank(response.getBody().getCommonResponse().getPWsError()) ? ""
+					: response.getBody().getCommonResponse().getPWsError());
+		} catch (RestClientException e) {
+			if (e.getCause() instanceof ConnectException) {
+				System.out.println("Connection refused: Unable to connect to the server at " + url);
+				res1.setResponse("Connection refused");
+				res1.setErrorMessage(e.getMessage());
+			} else {
+				System.out.println("An error occurred while making the REST call: " + e.getMessage());
+				res1.setResponse("Connection refused");
+				res1.setErrorMessage(e.getMessage());
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 			res1.setResponse("Failed");
 			res1.setErrorMessage(e.getMessage());
