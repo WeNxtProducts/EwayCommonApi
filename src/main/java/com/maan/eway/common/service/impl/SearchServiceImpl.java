@@ -365,40 +365,41 @@ public class SearchServiceImpl implements SearchService {
 				res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 				res.setMobileNo1(data.get("mobileNumber").toString());
 				res.setBranchName(branchName);
-				res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
+				res.setLoginId(data.get("maxLoginId")==null?null:data.get("maxLoginId").toString());
+				
 				res.setEffectiveDate(effectiveDate);
-				res.setCurrency(data.get("currency").toString());
-				String entryDate = data.get("entryDate") == null ? null
-						: dateFormat.format(data.get("entryDate"));
+				res.setCurrency(data.get("maxCurrency")==null?null:data.get("maxCurrency").toString());
+				//res.setCurrency(data.get("currency").toString());
+				String entryDate = data.get("maxEntryDate") == null ? null: dateFormat.format(data.get("maxEntryDate"));
 				res.setEntryDate(entryDate);
-				res.setExchangeRate(data.get("exchangeRate")==null?null:data.get("exchangeRate").toString());
-				res.setGpsTrackingInstalled(data.get("gpsTrackingInstalled")==null?null:data.get("gpsTrackingInstalled").toString());
-				res.setOverallPremiumLc(data.get("overallPremiumLc")==null?null:data.get("overallPremiumLc").toString());
-				String policyStartDate = data.get("policyStartDate") == null ? null
-						: dateFormat.format(data.get("policyStartDate"));
+				res.setExchangeRate(data.get("maxExchangeRate")==null?null:data.get("maxExchangeRate").toString());
+				res.setGpsTrackingInstalled(data.get("maxGpsTracking")==null?null:data.get("maxGpsTracking").toString());
+				res.setOverallPremiumLc(data.get("maxOverallPremium")==null?null:data.get("maxOverallPremium").toString());
+				String policyStartDate = data.get("maxPolicyStartDate") == null ? null
+						: dateFormat.format(data.get("maxPolicyStartDate"));
 				res.setPolicyStartDate(policyStartDate);
-				String policyEndDate = data.get("policyEndDate") == null ? null
-						: dateFormat.format(data.get("policyEndDate"));
+				String policyEndDate = data.get("maxPolicyEndDate") == null ? null
+						: dateFormat.format(data.get("maxPolicyEndDate"));
 				res.setPolicyEndDate(policyEndDate);
-				res.setPolicyNo(data.get("policyNo") == null ? null :data.get("policyNo").toString());
-				res.setPolicyTypeDesc(data.get("policyTypeDesc") == null ? null :data.get("policyTypeDesc").toString());
-				res.setVehicleTypeDesc(data.get("vehicleTypeDesc") == null ? null :data.get("vehicleTypeDesc").toString());
-				res.setQuoteNo(data.get("quoteNo") == null ? null :data.get("quoteNo").toString());
-				res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
-				res.setStatus(data.get("status") == null ? null :data.get("status").toString());
-				res.setWindScreenCoverRequired(data.get("windScreenCoverRequired") == null ? null :data.get("windScreenCoverRequired").toString());
-				res.setProductName(data.get("productName")==null?null:data.get("productName").toString());	
-				res.setEmiYn(data.get("emiYn")==null?null:data.get("emiYn").toString());
-				res.setEmiPremium(data.get("emiPremium")==null?null:data.get("emiPremium").toString());
-				res.setInstallmentPeriod(data.get("installmentPeriod")==null?null:data.get("installmentPeriod").toString());
-				res.setNoOfInstallment(data.get("noOfInstallment")==null?null:data.get("noOfInstallment").toString());
+				res.setPolicyNo(data.get("maxPolicyNo") == null ? null :data.get("maxPolicyNo").toString());
+				res.setPolicyTypeDesc(data.get("maxPolicyType") == null ? null :data.get("maxPolicyType").toString());
+				res.setVehicleTypeDesc(data.get("maxVehicleType") == null ? null :data.get("maxVehicleType").toString());
+				res.setQuoteNo(data.get("maxQuoteNo") == null ? null :data.get("maxQuoteNo").toString());
+				res.setRequestReferenceNo(data.get("maxRequestReferenceNo") == null ? null :data.get("maxRequestReferenceNo").toString());
+				res.setStatus(data.get("maxStatus") == null ? null :data.get("maxStatus").toString());
+				res.setWindScreenCoverRequired(data.get("maxWindScreenCover") == null ? null :data.get("maxWindScreenCover").toString());
+				res.setProductName(data.get("maxProductName")==null?null:data.get("maxProductName").toString());	
+				res.setEmiYn(data.get("maxEmi")==null?null:data.get("maxEmi").toString());
+				res.setEmiPremium(data.get("maxEmiPremium")==null?null:data.get("maxEmiPremium").toString());
+				res.setInstallmentPeriod(data.get("maxInstallmentPeriod")==null?null:data.get("maxInstallmentPeriod").toString());
+				res.setNoOfInstallment(data.get("maxNoOfInstallments")==null?null:data.get("maxNoOfInstallments").toString());
 				// res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString());
 				}	
 				else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId)) {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 					res.setMobileNo1(data.get("mobileNumber").toString());
 					res.setBranchName(branchName);
-					res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
+					//res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
 					res.setEffectiveDate(effectiveDate);
 					res.setCurrency(data.get("currency").toString());
 					String entryDate = data.get("entryDate") == null ? null
@@ -428,7 +429,7 @@ public class SearchServiceImpl implements SearchService {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 					res.setMobileNo1(data.get("mobileNumber").toString());
 					res.setBranchName(branchName);
-					res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
+					//res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
 					res.setEffectiveDate(effectiveDate);
 					res.setCurrency(data.get("currency").toString());
 					String entryDate = data.get("entryDate") == null ? null
@@ -457,7 +458,7 @@ public class SearchServiceImpl implements SearchService {
 					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 					res.setMobileNo1(data.get("mobileNumber").toString());
 					res.setBranchName(branchName);
-					res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
+				//	res.setLoginId(data.get("loginId")==null?null:data.get("loginId").toString());
 					res.setEffectiveDate(effectiveDate);
 					res.setCurrency(data.get("currency").toString());
 					String entryDate = data.get("entryDate") == null ? null
