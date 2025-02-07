@@ -227,8 +227,8 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 	}
 
 
-	public List<Tuple> adminsearch(SearchReq req, String searchKey, String searchValue, String companyId, String loginId, String userType, List<String> branches)
-	{
+	public List<Tuple> adminsearch(SearchReq req,String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
 		List<Tuple> customerDetailsList = new ArrayList<>();
 		try {
 		    CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -267,8 +267,51 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 
 		    // Building predicates for the WHERE clause
 		    List<Predicate> predicates = new ArrayList<>();
-		    predicates.add(cb.like(cus.get("clientName"), "%" + searchValue + "%")); // Assuming you're searching for customer name
-
+		     if(searchKey.equals("CustomerName"))
+		     {
+		      predicates.add(cb.like(cus.get("clientName"), "%" + searchValue + "%")); 
+		     }
+		     else if(searchKey.equals("CustomerCode"))
+		     {
+			  predicates.add(cb.like(cus.get("customerCode"), "%" + searchValue + "%")); 
+             }
+		     else if(searchKey.equals("MobileNumber"))
+		     {
+			  predicates.add(cb.like(cus.get("mobileNo1"), "%" + searchValue + "%")); 
+             }
+		     else if(searchKey.equals("MobileNumber"))
+		     {
+			  predicates.add(cb.like(cus.get("mobileNo1"), "%" + searchValue + "%")); 
+             }
+		     else if(searchKey.equals("RequestReferenceNo"))
+		     {
+			  predicates.add(cb.like(c.get("requestReferenceNo"), "%" + searchValue + "%")); 
+             }
+		     else if(searchKey.equals("QuoteNumber"))
+		     {
+			  predicates.add(cb.like(c.get("quoteNo"), "%" + searchValue + "%")); 
+             }
+		     else if(searchKey.equals("ChassisNumber"))
+		     {
+			  predicates.add(cb.like(c.get("chassisNumber"), "%" + searchValue + "%")); 
+             }
+		     else if(searchKey.equals("PolicyNumber"))
+		     {
+			  predicates.add(cb.like(c.get("policyNo"), "%" + searchValue + "%")); 
+             }
+		     else if(searchKey.equals("MotorCategory"))
+		     {
+			  predicates.add(cb.like(c.get("motorCategory"), "%" + searchValue + "%")); 
+             }
+		     else if(searchKey.equals("VehicleType"))
+		     {
+			  predicates.add(cb.like(c.get("vehicleType"), "%" + searchValue + "%")); 
+             }
+		   
+		     else if(searchKey.equals("VehicleMake"))
+		     {
+			  predicates.add(cb.like(c.get("vehicleMakeDesc"), "%" + searchValue + "%")); 
+             }
 		    // Adding the other filters similar to how you had them
 		    predicates.add(cb.equal(c.get("companyId"), companyId));
 
