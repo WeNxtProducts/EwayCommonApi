@@ -2334,6 +2334,10 @@ public class PaymentServiceImpl implements PaymentService {
 						Map<String, Object> azentoApiIntegration = AzentoApiIntegration(paymentInfo,req,paymentDetail,token);
 						if( azentoApiIntegration.get("Error")!=null)
 							res.setResponse(azentoApiIntegration.get("Error").toString());
+						else {
+							res.setPolicyNo(azentoApiIntegration.get("PolicyNo").toString());
+							res.setResponse("Policy Converted");
+						}
 					}else {
 						List<PolicyDrcrDetail> policyDetails =  generatePolicyNew(paymentInfo,req,paymentDetail,token);
 						if(!CollectionUtils.isEmpty(policyDetails)) {
@@ -2438,7 +2442,7 @@ public class PaymentServiceImpl implements PaymentService {
 				e.setIntegType("GENDOC_INTEG");
 				e.setPolicyNo(policyNo);
 				quotation = jsonMapper.createQuotation(e);					
-				
+				isError.put("PolicyNo",policyNo);
 				data.setPolicyNo(policyNo);
 				homerepo.saveAndFlush(data);
 				// Update ProductWise
