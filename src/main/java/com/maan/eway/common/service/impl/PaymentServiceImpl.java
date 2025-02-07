@@ -1976,7 +1976,13 @@ public class PaymentServiceImpl implements PaymentService {
 			// Get Result
 			TypedQuery<LoginProductMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			data=list.size() > 0 ? Long.valueOf(list.get(0).getCreditYn()) : 0 ;
+//			data=list.size() > 0 ? Long.valueOf(list.get(0).getCreditYn()) : 0 ;
+			Long c=0l;
+			if(list.size() > 0) {
+			String credit=list.get(0).getCreditYn();
+			c=(StringUtils.isNotBlank(credit)&&credit.equalsIgnoreCase("N"))?0l:1l;
+			}
+			data=c ;
 
 		}catch(Exception e) {
 			log.error(e);
