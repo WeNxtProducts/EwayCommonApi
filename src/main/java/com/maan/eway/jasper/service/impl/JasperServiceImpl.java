@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import com.maan.eway.bean.ApiDocDownloadDetail;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.ReportJasperConfigMaster;
 import com.maan.eway.chartaccount.JpqlQueryServiceImpl;
 import com.maan.eway.common.res.CommonRes;
@@ -65,6 +65,8 @@ import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.repository.ApiDocDownloadDetailRepository;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.thread.GetFileFromPath;
 
 import jakarta.persistence.EntityManager;
@@ -107,6 +109,12 @@ public class JasperServiceImpl implements JasperService {
 	
 	@Autowired
 	private ApiDocDownloadDetailRepository apiDocDownloadDetailRepo;
+	
+	@Autowired
+	private InsuranceCompanyMasterRepository insuranceComMasRepo;
+	
+	@Autowired
+	private LoginMasterRepository loginMasterRepo;
 	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
@@ -606,7 +614,7 @@ public class JasperServiceImpl implements JasperService {
 		log.info("Enter into PremiumReport ==> "+gson.toJson(req));
 		CommonRes response = new CommonRes();
 		PremiumReportRes preRes = new PremiumReportRes();
-		String fileName="",prefix="";
+		String fileName="",prefix="",companylogo="";
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		Connection connection=null;
 		try {
@@ -614,7 +622,16 @@ public class JasperServiceImpl implements JasperService {
 			classpath = classpath.replaceAll("%20", " ");
 			classpath = classpath.substring(1, classpath.length());
 			
-			String imagepath = classpath + "report/images/"; //windows system path
+			LoginMaster loginData = loginMasterRepo.findByLoginId(req.getLoginId());
+			if(loginData!=null) {
+				String companycode = loginData.getCompanyId()==null?"":loginData.getCompanyId();
+				List<Map<String,Object>> companyDetails = insuranceComMasRepo.getCompanyDetailsById(companycode);
+				if(!companyDetails.isEmpty()) {
+					companylogo = companyDetails.get(0).get("COMPANY_LOGO")==null?"":companyDetails.get(0).get("COMPANY_LOGO").toString();
+				}
+			}
+			
+			String imagepath = classpath + "report/images/"+companylogo; //windows system path
 			
 			String jasperPath = policyReportPath+req.getLoginId()+System.currentTimeMillis()+("Y".equalsIgnoreCase(req.getExcelYn())?".xlsx":".pdf");
 			log.info("PremiumReport jasperPath ==> "+ jasperPath);
