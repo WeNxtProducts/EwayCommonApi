@@ -195,7 +195,7 @@ public class EagalEserviceCustomerDetails {
 					errorList.add("2348");
 				}
 				else if (!req.getIdNumber().matches("^[0-9A-Z]+$")) {
-					errorList.add("2212");
+					errorList.add("2349");
 				}
 			}
 			
