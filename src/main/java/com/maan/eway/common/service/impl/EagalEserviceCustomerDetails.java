@@ -140,7 +140,7 @@ public class EagalEserviceCustomerDetails {
 			else if(req.getMobileNo1().length() != 8) {
 				errorList.add("1027");
 			}
-			else if(req.getMobileNo1().startsWith("5")) {
+			else if(!req.getMobileNo1().startsWith("5")) {
 				errorList.add("10027");
 			}
 			else if(!req.getMobileNo1().matches("^5\\d{7}$")) {
