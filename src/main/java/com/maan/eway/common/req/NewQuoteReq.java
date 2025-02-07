@@ -16,6 +16,7 @@ public class NewQuoteReq {
 	private String requestReferenceNo ;
 	
 	@JsonProperty("Vehicles")
+	
 	private List<VehicleIdsReq> vehicleIdsList;
 	
 	@JsonProperty("CreatedBy")
