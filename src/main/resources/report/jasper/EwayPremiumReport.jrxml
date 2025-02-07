@@ -739,7 +739,7 @@ WHERE
 			</textField>
 			<image>
 				<reportElement x="0" y="0" width="243" height="53" uuid="49b0766a-733e-4613-91a4-e87839d883bc"/>
-				<imageExpression><![CDATA[$P{pvImagepath}+"Alliancelogo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{pvImagepath}]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="800" y="23" width="113" height="15" uuid="e0a8a79b-69ce-4eab-bfc9-9d14c20f387a">
