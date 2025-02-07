@@ -130,20 +130,28 @@ public class EagalEserviceCustomerDetails {
 			if (StringUtils.isBlank(req.getMobileCode1())) {
 				errorList.add("1062");
 			}
-			if (StringUtils.isBlank(req.getMobileNo1())) {
+		/**
+		 * Updated validation for mobile number
+		 * mobile number should not be blank, exactly 8 digits, contains only numbers, starts with 5, all zeros not accepted
+		 */
+			if(StringUtils.isBlank(req.getMobileNo1())) {
 				errorList.add("1026");
-			}
-			else if(req.getMobileNo1()!=null &&!req.getMobileNo1().startsWith("5")  )
-			{
-				errorList.add("10027");	
-			}
-			else if (req.getMobileNo1().length() > 10||req.getMobileNo1().length() < 8) {
+			}			
+			else if(req.getMobileNo1().length() != 8) {
 				errorList.add("1027");
-			} else if (!req.getMobileNo1().matches("[0-9]+") ) {
-				errorList.add("1028");
-			} else if (req.getMobileNo1().matches("[0-9]+") && Double.valueOf(req.getMobileNo1()) <=0 ) {
+			}
+			else if(req.getMobileNo1().startsWith("5")) {
+				errorList.add("10027");
+			}
+			else if(!req.getMobileNo1().matches("^5\\d{7}$")) {
+				errorList.add("1028");				
+			}
+			else if(Long.valueOf(req.getMobileNo1()).longValue() == 0L) {
 				errorList.add("1029");
 			}
+		
+			
+		
 			//if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
 			if (StringUtils.isBlank(req.getIdType())) {
 				errorList.add("1011");
@@ -186,15 +194,18 @@ public class EagalEserviceCustomerDetails {
 					errorList.add("3312");
 				}
 			}
-			//}
+		/**
+		 * Validation the National Identity Card (NIC) ID number   
+		 * IdNumber should not be blank, exactly 14 characters long, starts with alphabets
+		 */
 			if("NIC".equalsIgnoreCase(req.getIdType())) {
 				if(req.getIdNumber() == null || req.getIdNumber().isBlank()) {
-					errorList.add("1013");
+					errorList.add("2354");
 				}
-				else if (req.getIdNumber().length() < 14) {
+				else if (req.getIdNumber().length() != 14) {
 					errorList.add("2348");
 				}
-				else if (!req.getIdNumber().matches("^[0-9A-Z]+$")) {
+				else if (!req.getIdNumber().matches("^[A-Z][A-Z0-9]{13}+$")) {
 					errorList.add("2349");
 				}
 			}
@@ -366,6 +377,28 @@ public class EagalEserviceCustomerDetails {
 				errorList.add("3315");
 			}
 			
+		/**
+		 * Validation for phone number code and phone number (phone number is passed through mobile no.2 field)
+		 * Phone no code should not be blank
+		 * Phone no should not be blank, exactly 7 digits, contains only numbers, all zeros not accepted
+		 */
+			if(req.getPhoneNoCode() == null || req.getPhoneNoCode().isBlank()) {
+				errorList.add("3315");
+			}			
+			if(req.getMobileNo2() == null || req.getMobileNo2().isBlank()) {
+				errorList.add("2350");
+			}
+			else if(req.getMobileNo2().length() != 7) {
+					errorList.add("2351");
+			}
+			else if(!req.getMobileNo2().matches("^\\d{7}$")) {
+				errorList.add("2352");
+			}
+			else if (Long.valueOf(req.getMobileNo2()).longValue() == 0L){
+				errorList.add("2353");
+			}
+			
+						
 			List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 			if ((StringUtils.isNotBlank(req.getAddress1())) 
 				//	&& (StringUtils.isNotBlank(req.getAddress2()))
