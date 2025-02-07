@@ -187,6 +187,18 @@ public class EagalEserviceCustomerDetails {
 				}
 			}
 			//}
+			if("NIC".equalsIgnoreCase(req.getIdType())) {
+				if(req.getIdNumber() == null || req.getIdNumber().isBlank()) {
+					errorList.add("1013");
+				}
+				else if (req.getIdNumber().length() < 14) {
+					errorList.add("2348");
+				}
+				else if (!req.getIdNumber().matches("^[0-9A-Z]+$")) {
+					errorList.add("2212");
+				}
+			}
+			
 			if (StringUtils.isBlank(req.getPreferredNotification())) {
 				errorList.add("1049");
 			}
