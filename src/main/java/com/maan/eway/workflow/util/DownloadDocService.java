@@ -36,12 +36,12 @@ public class DownloadDocService {
 		try {
 			executorService=Executors.newFixedThreadPool(3);
 			
-			for (Map<String, Object> map : data) {
-				
+			for (int i=0;i<data.size();i++) {
+				final	Map<String, Object> map = new HashMap<String, Object>(data.get(i)) ;
 				executorService.submit(() -> {
 					handleObjectAsync(map,engine,downloadReq,download);
 				});
-			
+
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -52,7 +52,7 @@ public class DownloadDocService {
 	}
 
 	
-	public void handleObjectAsync(Map<String, Object> obj, WorkEngine engine, Map<String, Object> downloadReq, WorkEngine download) {
+	public synchronized void  handleObjectAsync(Map<String, Object> obj, WorkEngine engine, Map<String, Object> downloadReq, WorkEngine download) {
 		ApiDocDownloadDetail d=new ApiDocDownloadDetail();
 		d.setQuoteNo(StringUtils.isBlank(engine.getQuoteNo())?engine.getRequestReferenceNo():engine.getQuoteNo());
 		d.setEntryDate(new Date());
