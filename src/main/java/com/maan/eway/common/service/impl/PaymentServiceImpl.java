@@ -2343,6 +2343,7 @@ public class PaymentServiceImpl implements PaymentService {
 						else {
 							res.setPolicyNo(azentoApiIntegration.get("PolicyNo").toString());
 							res.setResponse("Policy Converted");
+							res.setDepositResponse("Y");
 						}
 					}else {
 						List<PolicyDrcrDetail> policyDetails =  generatePolicyNew(paymentInfo,req,paymentDetail,token);
