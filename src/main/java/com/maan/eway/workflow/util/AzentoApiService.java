@@ -26,6 +26,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -64,76 +65,11 @@ public class AzentoApiService {
 
 	@Autowired
 	private PremiaTransactionLogRepository transRepo;
-	 
-	private String getAzentoToken(WorkEngine engine) {
-		if(StringUtils.isNotBlank(azentoToken)) {
-			return azentoToken;
-		}else {
-			try {
-				String search4 = "companyId:" + engine.getCompanyId() + ";productId:" + engine.getProductId()+";status:{Y,R};apiType:AUTH";
-				SpecCriteria commonCriteria = crservice.createCriteria(ApiIntegMaster.class, search4, "productId");
-				List<Tuple> commonResult = crservice.getResult(commonCriteria, 0, 50);				
-				String url=commonResult.get(0).get("apiUrl").toString();
-				TrustManager[] trustAllCerts = new TrustManager[]{
-						new X509TrustManager() {
-							public java.security.cert.X509Certificate[] getAcceptedIssuers() {return null;}
-							public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType){}
-							public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType){}
-						}
-				};
-
-				SSLContext sc = SSLContext.getInstance("SSL");
-				sc.init(null, trustAllCerts, new java.security.SecureRandom());
-				HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-				HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-
-					@Override
-					public boolean verify(String hostname, SSLSession session) {
-						// TODO Auto-generated method stub
-						return true;
-					}
-				});
-
-				PremiaTransactionLog log=new PremiaTransactionLog();
-				try {
-					Gson gson = new GsonBuilder() .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter()) .create();
-
-					log.setEntryDate(new Date());
-					log.setQuoteNo(StringUtils.isBlank(engine.getQuoteNo())?engine.getRequestReferenceNo():engine.getQuoteNo());
-					log.setRequestTime(LocalDateTime.now());
-					log.setGenerateReq(engine.toString());
-					log.setEndpoint(url);
-
-					RestTemplate restTemplate = new RestTemplate();
-					HttpHeaders headers = new HttpHeaders();
-					headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-					headers.setContentType(MediaType.APPLICATION_JSON);
-					//headers.set("Authorization",authHeader);
-					Map<String,Object> req=new HashMap<String,Object>();
-					req.put("username", "azentio");
-					req.put("password", "azentio");
-					log.setRequest(gson.toJson(req));		
-					HttpEntity<Object> entityReq = new HttpEntity<Object>(req, headers);
-					ResponseEntity<Map> response = restTemplate.postForEntity(url, entityReq, Map.class);
-					log.setResponse(gson.toJson(response.getBody()));
-					log.setResponseTime(LocalDateTime.now());
-					log.setStatus(response.getBody()!=null ?"Y":"F");
-					azentoToken=(String)response.getBody().get("jwt");
-				}catch (Exception e) {
-					log.setResponseTime(LocalDateTime.now());
-					log.setStatus("F");
-					log.setErrorMessage(e.getLocalizedMessage());
-					e.printStackTrace();
-				}finally {
-					transRepo.save(log);
-				}
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-			return azentoToken;
-		}
-	}
-
+	@Autowired
+	private WorkFlowFactorUtil workflowUtil;
+	
+	//Catche
+	
 	public Map<String, Object> createQuote(WorkEngine engine, Map<String, Object> request) {
 		PremiaTransactionLog log=new PremiaTransactionLog();
 		Map<String, Object> isErrormap=new HashMap<String, Object>();
@@ -141,7 +77,7 @@ public class AzentoApiService {
 			String token = null;
 			int loop=0,maxLoop=5;
 			while(StringUtils.isBlank(token) && loop<maxLoop) {
-				token = getAzentoToken(engine);
+				token =workflowUtil.getAzentoToken(engine);
 				loop++;
 				if(loop>2) this.azentoToken="";
 			}

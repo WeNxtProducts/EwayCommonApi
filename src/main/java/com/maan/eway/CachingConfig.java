@@ -2,6 +2,7 @@
 package com.maan.eway;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.calc.RatingInfo;
+import com.maan.eway.workflow.dto.WorkEngine;
 @Configuration
 @EnableCaching
 public class CachingConfig   {
@@ -30,13 +32,13 @@ public class CachingConfig   {
 	    return new SpringCache2kCacheManager()
 	      .defaultSetup(b->b.entryCapacity(2000))
 	      .addCaches(
-	        b->b.name("RatingType").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("ProductType").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("loadTax").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
-	        b->b.name("loadProRata").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
-	        b->b.name("LoadConstant").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
-	        b->b.name("ProductToRawtable").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("EndtMasterData").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("RatingType").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(700L).permitNullValues(false),
+	        b->b.name("ProductType").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
+	        b->b.name("loadTax").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(500L).permitNullValues(true),
+	        b->b.name("loadProRata").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(500L).permitNullValues(true),
+	        b->b.name("LoadConstant").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(500L).permitNullValues(true),
+	        b->b.name("ProductToRawtable").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(500L).permitNullValues(false),
+	        b->b.name("EndtMasterData").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(500L).permitNullValues(false),
 	        b->b.name("getCachedRatingFields").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("loadfactorOnlyquery").expireAfterWrite(1, TimeUnit.SECONDS).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("countfactorOnlyquery").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
@@ -46,7 +48,12 @@ public class CachingConfig   {
 	        b->b.name("collectProductsFromLoginId").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(2L).permitNullValues(false),
 	        b->b.name("collectSectionMaster").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
 	        b->b.name("collectBranchMaster").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
-	        b->b.name("excludedTax").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true)
+	        b->b.name("excludedTax").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
+	        b->b.name("FlowFieldData").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(500L).permitNullValues(true),
+	        b->b.name("DistinctQueryId").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
+	        b->b.name("AzentoURL").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
+	        b->b.name("AzentoToken").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false)
+	        
 	        )
 	      
 	      ;
@@ -418,6 +425,68 @@ public class CachingConfig   {
 		    		};
 		    	}		            	 	
 	    	 	
+	    	 	@Bean
+		    	public KeyGenerator FlowFieldDataKeyGen() {
+		    		return new KeyGenerator() {
+		    			@Override
+		    			public Object generate(Object target, Method method, Object... params) {
+		    				WorkEngine e=(WorkEngine)params[0];
+		    				String string = new StringBuilder().append(e.getCompanyId())
+		    						.append(e.getProductId())
+		    						.append(e.getIntegType()) 
+		    						.append("FLOWFIELD")
+		    						.toString();
+		    				return string;
+		    			}
+
+		    		};
+		    	}
+	    	 	@Bean
+			    public KeyGenerator DistinctQueryIdKeyGen() {
+			    		return new KeyGenerator() {
+			    			@Override
+			    			public Object generate(Object target, Method method, Object... params) {
+			    				BigDecimal e=(BigDecimal)params[0];
+			    				String string = new StringBuilder().append(e.toPlainString()) 
+			    						.append("DYNQUERY")
+			    						.toString();
+			    				return string;
+			    			}
+
+			    		};
+			    	}
 	    	 	
+	    	 	
+	    	 	@Bean
+			    public KeyGenerator AzentoURLKeyGen() {
+			    		return new KeyGenerator() {
+			    			@Override
+			    			public Object generate(Object target, Method method, Object... params) {
+			    				WorkEngine e=(WorkEngine)params[0];
+			    				String string = new StringBuilder().append(e.getCompanyId())
+			    						.append(e.getProductId()) 
+			    						.append("AUTH")
+			    						.toString();
+			    				return string;
+			    			}
+
+			    		};
+			    	}
+	    	 	
+	    	 	@Bean
+			    public KeyGenerator AzentoTokenKeyGen() {
+			    		return new KeyGenerator() {
+			    			@Override
+			    			public Object generate(Object target, Method method, Object... params) {
+			    				WorkEngine e=(WorkEngine)params[0];
+			    				String string = new StringBuilder().append(e.getCompanyId())
+			    						.append(e.getProductId()) 
+			    						.append("TOKEN")
+			    						.toString();
+			    				return string;
+			    			}
+
+			    		};
+			    	}	    	 	
 
 }

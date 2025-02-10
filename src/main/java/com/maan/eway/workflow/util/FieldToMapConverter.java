@@ -93,7 +93,7 @@ public class FieldToMapConverter implements Function<JsonField,Map<String,Object
 			}else {
 				Map<String, Object> element=new HashMap<String, Object>(1);
 				
-				String value="";
+				Object value="";
 				if(dynamicQuery !=null && !dynamicQuery.isEmpty()) {
 					List<Map<String, Object>> list = dynamicQuery.get(t.getQueryId().toPlainString());
 					if(list!=null && !list.isEmpty()) {
@@ -101,8 +101,12 @@ public class FieldToMapConverter implements Function<JsonField,Map<String,Object
 
 
 						if("Y".equals(t.getDefaultYn())) {
-							value=t.getDefaultValue();
-						}else if("Date".equals(t.getDatatype())  ) {
+							value=t.getDefaultValue().toString();
+						}else if("Y".equals(t.getDefaultYn()) && "Boolean".equals(t.getDatatype())) {
+							value= Boolean.valueOf(t.getDefaultValue().toString());
+						}else if(!"Y".equals(t.getDefaultYn()) && "Boolean".equals(t.getDatatype())) {
+							value= Boolean.valueOf(map.get(t.getQueryAlias())==null?"":map.get(t.getQueryAlias()).toString());
+						} else   if("Date".equals(t.getDatatype())  ) {
 							value=map.get(t.getQueryAlias())==null?"":map.get(t.getQueryAlias()).toString();
 							/*if(!"".equals(value)) {
 							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");

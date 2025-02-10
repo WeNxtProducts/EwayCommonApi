@@ -32,6 +32,7 @@ import com.maan.eway.workflow.util.FieldFromTuple;
 import com.maan.eway.workflow.util.FieldToMapConverter;
 import com.maan.eway.workflow.util.JsonModules;
 import com.maan.eway.workflow.util.SaveResponseToTable;
+import com.maan.eway.workflow.util.WorkFlowFactorUtil;
 
 import jakarta.persistence.Tuple;
 
@@ -60,16 +61,12 @@ public class JsonMapperFromDB {
 	private SaveResponseToTable saveResponse;
 	@Autowired
 	private PersonalInfoRepository personalInfoRepo;
+	@Autowired
+	private WorkFlowFactorUtil workflowUtil;
 	
 	public Map<String,Object> createRequest(WorkEngine engine) {
 		try {
-			String search="companyId:"+engine.getCompanyId()+";productId:"+engine.getProductId()+";status:{Y,R};integType:"+engine.getIntegType()+";";
-			SpecCriteria criteria = crservice.createCriteria(FlowFieldDetails.class, search, "keyId");
-			List<Tuple> result = crservice.getResult(criteria, 0, 50);
-			FieldFromTuple t=new FieldFromTuple();
-			
-			List<JsonField> data = result.parallelStream().map(t).filter(d-> d!=null).collect(Collectors.toList());
-			
+			List<JsonField> data = workflowUtil.getFlowFieldData(engine);			
 			List<BigDecimal> distinctQueryid = data.stream().filter(tq -> tq.getQueryId()!=null && tq.getQueryId().compareTo(BigDecimal.ZERO)!=0)
 			.map(tx->tx.getQueryId()).distinct().collect(Collectors.toList());
 			Map<String, List<Map<String, Object>>> dynamicQuery=null;
@@ -127,14 +124,12 @@ public class JsonMapperFromDB {
 		try {
 			Map<String, List<Map<String, Object>>> hashMap=new HashMap<String, List<Map<String, Object>>>();
 			for(BigDecimal id:distinctQueryid) {
-				String search="queryId:"+id.toPlainString()+";";
-				SpecCriteria criteria = crservice.createCriteria(FieldQueryTablequery.class, search, "queryId");
-				List<Tuple> result = crservice.getResult(criteria, 0, 50);	
+				String sqlQuery=workflowUtil.getDistinctQueryId(id);
 				
 				List<String> collect = data.stream().filter(t-> t.getQueryId().compareTo(id)==0 && t.getQueryCol()!=null && !"".equals(t.getQueryCol()) )
 						.map(t-> t.getQueryCol()+" "+t.getQueryAlias()).collect(Collectors.toList());
 				
-				String sql="SELECT "+(collect.isEmpty()? "*": String.join(",",collect)) +" "+ result.get(0).get("sqlQuery").toString();
+				String sql="SELECT "+(collect.isEmpty()? "*": String.join(",",collect)) +" "+ sqlQuery;
 				sql=sql.replaceAll("\\{quoteno\\}","'"+ engine.getQuoteNo() +"'")
 						.replaceAll("\\{RequestReferenceNo\\}","'"+ engine.getRequestReferenceNo()+"'")
 						.replaceAll("\\{PolicyNo\\}","'"+ engine.getPolicyNo()+"'");				

@@ -345,7 +345,7 @@ public class PerilCalculator {
 				 t.setRate(premiumRate);
 				 t.setMinrate(premiumRate);
 				 t.setCalcType("P");
-				 t.setRegulatoryCode("NA");
+				 //t.setRegulatoryCode("NA");
 				 /// Referal
 				 t.setIsReferral((riskPremiumAmt<1)?"Y":"N");
 				 if("Y".equals(t.getIsReferral())){
