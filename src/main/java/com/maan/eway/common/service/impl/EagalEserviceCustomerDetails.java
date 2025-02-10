@@ -198,16 +198,13 @@ public class EagalEserviceCustomerDetails {
 		 * Validation the National Identity Card (NIC) ID number   
 		 * IdNumber should not be blank, exactly 14 characters long, starts with alphabets
 		 */
-			if("NIC".equalsIgnoreCase(req.getIdType())) {
-				if(req.getIdNumber() == null || req.getIdNumber().isBlank()) {
-					errorList.add("2354");
+			if("NIC".equalsIgnoreCase(req.getPolicyHolderTypeid()) && StringUtils.isNotBlank(req.getIdNumber())) {				
+				if (req.getIdNumber().length() != 14) {	
+					errorList.add("2348");	
 				}
-				else if (req.getIdNumber().length() != 14) {
-					errorList.add("2348");
-				}
-				else if (!req.getIdNumber().matches("^[A-Z][A-Z0-9]{13}+$")) {
-					errorList.add("2349");
-				}
+				else if (!req.getIdNumber().matches("^[A-Z][A-Z0-9]{13}+$")) {	
+					errorList.add("2349");	
+				}								
 			}
 			
 			if (StringUtils.isBlank(req.getPreferredNotification())) {
