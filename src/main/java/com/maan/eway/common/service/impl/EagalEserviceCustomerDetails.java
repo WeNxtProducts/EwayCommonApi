@@ -202,7 +202,7 @@ public class EagalEserviceCustomerDetails {
 				if (req.getIdNumber().length() != 14) {	
 					errorList.add("2348");	
 				}
-				else if (!req.getIdNumber().matches("^[A-Z][A-Z0-9]{13}+$")) {	
+				else if (!req.getIdNumber().matches("^[A-Za-z][A-Za-z0-9]{13}+$")) {	
 					errorList.add("2349");	
 				}								
 			}
