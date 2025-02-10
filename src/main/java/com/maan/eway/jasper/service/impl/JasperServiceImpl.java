@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -42,9 +43,11 @@ import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.ReportJasperConfigMaster;
 import com.maan.eway.chartaccount.JpqlQueryServiceImpl;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.jasper.req.GetApiDocReportReq;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
@@ -67,6 +70,7 @@ import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.thread.GetFileFromPath;
 
 import jakarta.persistence.EntityManager;
@@ -136,6 +140,9 @@ public class JasperServiceImpl implements JasperService {
 	private JpqlQueryServiceImpl jpqlQueryServiceImpl;
 	
 	@Autowired
+	private MotorDataDetailsRepository motorDataDetailsRepo;
+	
+	@Autowired
 	private Gson gson;
 
 	Logger log = LogManager.getLogger(JasperServiceImpl.class);
@@ -143,180 +150,198 @@ public class JasperServiceImpl implements JasperService {
 	@Override
 	public JasperDocumentRes policyform(JasperDocumentReq req) {
 		JasperDocumentRes res = new JasperDocumentRes();
+		List<Error> errors = new ArrayList<>();
 		try {
 			
 			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
 
-			Map<String, Object> input = new HashMap<String, Object>();
-			String filePath = null;String Imagepath;
-			log.info("OS Using ==> "+System.getProperty("os.name").toLowerCase());
-			if(System.getProperty("os.name").toLowerCase().contains("windows")) {
-				Imagepath = config.getImagePath().substring(1, config.getImagePath().length()-0);
-			}else {
-				Imagepath = config.getImagePath().replaceAll("\\\\", "/");
+			if(homeData!=null && Arrays.asList(5,46).contains(homeData.getProductId())) {
+				List<MotorDataDetails> m = motorDataDetailsRepo.findByQuoteNo(req.getQuoteNo());
+				IntStream.range(0,m.size()).forEach(i -> {
+					MotorDataDetails k = m.get(i);
+					String stickerNo = jasperCustomeImple.getStrickerNo(k.getQuoteNo(),k.getVehicleId());
+					if(StringUtils.isBlank(stickerNo) || stickerNo == null) {
+						//errors.add(new Error(String.valueOf(i), "StickerNumber", "Cannot generate report because the StickerNumber is missing for Quote No: " + k.getQuoteNo() + " and Vehicle ID: " + k.getVehicleId()));
+					}
+				});
 			}
 			
-
-			if (StringUtils.isNotBlank(homeData.getPolicyNo())) {
-				input.put("pvPolicyNo", homeData.getPolicyNo());
-				input.put("pvImagepath", Imagepath);
-				filePath = config.getPolicyPath() + "pdf";
-
-			} else {
-				input.put("QuoteNo", req.getQuoteNo());
-				input.put("pvImagepath", Imagepath);
-				filePath = config.getDraftPath() + "pdf";
-			}
-			
-			if (null != input && input.size() > 0) {
-				File theDir = new File(filePath);
-				if (!theDir.exists()) {
-					theDir.mkdirs();
-				}
-				if(StringUtils.isBlank(homeData.getPolicyNo()) &&  (Arrays.asList(5,46,63).contains(homeData.getProductId()))) {
-					if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getProductId() != 63 && !homeData.getCompanyId().equalsIgnoreCase("100028")) {
-						Map<String,Object> brokerQuotation = jasperCustomeImple.getMotorBrokerQuotation(homeData.getQuoteNo());
-						String jsonString = gson.toJson(brokerQuotation);
-						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-						res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, input, "- BrokerQuotation.json");
-					}else if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getProductId() == 63) {
-						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-						res = getJasperPdfFile("/report/jasper/HomePremierQuotation.jrxml", jasperSaveLocation, input);
-					}else if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getCompanyId().equalsIgnoreCase("100028")) {
-						List<MotorCoverNoteRes> brokerQuotation = jasperCustomeImple.getMotorCoverNote("",req.getVehicleId(),homeData.getQuoteNo());
-						String jsonString = gson.toJson(brokerQuotation);
-						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-						res = getCommonJasperPdfFileByJson("/report/jasper/EagleMotorSchedule.jrxml", jasperSaveLocation, jsonString, input, "- EagleBrokerQuotation.json");
-					}else {
-						String JasperName = "MotorPrivate";
-						if("100019".equalsIgnoreCase(homeData.getCompanyId())) {
-							JasperName = "UgandaMotorSchedule";
-						}
-						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo(),homeData.getQuoteNo(),req.getVehicleId());
-						String JsonString = gson.toJson(motPrivateRes);
-						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-						res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- "+JasperName+".json");
-					}
-				}else if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
-						Map<String, Object> input2 = new HashMap<String, Object>();
-						input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-						input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
-						String obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
-								String jrxml_path=obj.replace(".jasper", ".jrxml");
-								String path = JasperCompileManager.compileReportToFile(jrxml_path);
-								System.out.println("Jasper compileToReport path" +path);		
-						TravelReportRes travelRes = jasperCustomeImple.getTravelReport(homeData.getPolicyNo());
-						String jsonString = gson.toJson(travelRes);
-						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-						res = getCommonJasperPdfFileByJson("/report/jasper/EwayTravelReport.jrxml", jasperSaveLocation, jsonString, input2, "- TravelReport.json");
-				} else if (product.getMotorYn().equalsIgnoreCase("M") && !"46".equalsIgnoreCase(homeData.getProductId().toString())) {
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo()) && "E".equalsIgnoreCase(req.getEndorsementType())) {
-						Map<String,Object> MotorEndorsementScheduleRes = jasperCustomeImple.getMotorEndorsementSchedule(homeData.getPolicyNo());
-						String jsonString = gson.toJson(MotorEndorsementScheduleRes);
-						res = getCommonJasperPdfFileByJson("/report/jasper/MotorEndorsementSchedule.jrxml", jasperSaveLocation, jsonString, input, "- MotorEndorsementSchedule.json");
-					}else if("100004".equalsIgnoreCase(homeData.getCompanyId()) || (Arrays.asList("100046","100047",
-							"100048","100049","100050").contains(homeData.getCompanyId()) && "Y".equalsIgnoreCase(req.getCertificateYn()))){ // MADISON MOTOR
-						List<Map<String,Object>> MadisonMotorSchedule = jasperCustomeImple.getMadisonMotorSchedule(homeData.getPolicyNo());
-						String jsonString = gson.toJson(MadisonMotorSchedule);
-						res = getCommonJasperPdfFileByJson("/report/jasper/EwayMadisonMotorSchedule.jrxml", jasperSaveLocation, jsonString, input, "- EwayMadisonMotorSchedule.json");
-					}else {
-						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo(),"",req.getVehicleId());
-						String JsonString= gson.toJson(motPrivateRes);
-						String JasperName = "MotorPrivate";
-							if("100019".equalsIgnoreCase(homeData.getCompanyId())){		// UIA
-								if("Y".equalsIgnoreCase(req.getStrickerYn())) {
-									JsonString = gson.toJson(motPrivateRes.getVehicleDetails());
-									JasperName = "Schedule_UIA";
-								}else {
-									JsonString = gson.toJson(motPrivateRes);
-									if("1".equalsIgnoreCase(motPrivateRes.getVehicleDetails().get(0).getPolicyTypeId())) {
-										input.put("attachMents", motPrivateRes.getAttachmentList());
-										input.put("policyNo", motPrivateRes.getPolicyNo());
-									}
-									JasperName = "UgandaMotorSchedule";
-								}
-							}
-						res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- "+JasperName+".json");
-					}
-				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
-					Map<String,Object> input2 = new HashMap<>();
-					input2.put("pvImagepath", Imagepath);
-					Map<String,Object> cyberInsurance = jasperCustomeImple.getCyberInsurance(homeData.getPolicyNo());
-					String jsonString = gson.toJson(cyberInsurance);
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					res = getCommonJasperPdfFileByJson("/report/jasper/CyberInsurance.jrxml", jasperSaveLocation, jsonString, input2, "- CyberInsurance.json");
-				}else if(product.getMotorYn().equalsIgnoreCase("M") && "46".equalsIgnoreCase(homeData.getProductId().toString())){
-					Map<String,Object> map = new HashMap<String,Object>();
-					map.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					List<MotorCoverNoteRes> MotorCoverNote = jasperCustomeImple.getMotorCoverNote(homeData.getPolicyNo(),req.getVehicleId(),"");
-					String jsonString = gson.toJson(MotorCoverNote);
-					res = getCommonJasperPdfFileByJson("/report/jasper/EwayMotorCoverNote.jrxml",jasperSaveLocation,jsonString,map,"- MotorCoveNote.json");
+			if(errors==null || errors.isEmpty()) {
+				Map<String, Object> input = new HashMap<String, Object>();
+				String filePath = null;String Imagepath;
+				log.info("OS Using ==> "+System.getProperty("os.name").toLowerCase());
+				if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+					Imagepath = config.getImagePath().substring(1, config.getImagePath().length()-0);
 				}else {
-					Map<String, Object> input2 = new HashMap<String, Object>();
-					input2.put("pvImagepath", Imagepath);
-					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
-					String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+(StringUtils.isBlank(homeData.getPolicyNo())?homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "")
-							:homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", ""));
-				if(homeData.getProductId() == 19) {
-					Map<String,Object> CorporateSchedule = jasperCustomeImple.getCorporatePlusSchedule(homeData.getQuoteNo());
-					String jsonString = gson.toJson(CorporateSchedule );
-						String obj[] =new String[1];
-						obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CorporatePlusCoverageDetails.jrxml";
-						for(String s :obj) {
-							String jrxml_path=s.replace(".jasper", ".jrxml");
-							String path = JasperCompileManager.compileReportToFile(jrxml_path);
-							System.out.println("Jasper compileToReport path" +path);
+					Imagepath = config.getImagePath().replaceAll("\\\\", "/");
+				}
+				
+
+				if (StringUtils.isNotBlank(homeData.getPolicyNo())) {
+					input.put("pvPolicyNo", homeData.getPolicyNo());
+					input.put("pvImagepath", Imagepath);
+					filePath = config.getPolicyPath() + "pdf";
+
+				} else {
+					input.put("QuoteNo", req.getQuoteNo());
+					input.put("pvImagepath", Imagepath);
+					filePath = config.getDraftPath() + "pdf";
+				}
+				
+				if (null != input && input.size() > 0) {
+					File theDir = new File(filePath);
+					if (!theDir.exists()) {
+						theDir.mkdirs();
+					}
+					if(StringUtils.isBlank(homeData.getPolicyNo()) &&  (Arrays.asList(5,46,63).contains(homeData.getProductId()))) {
+						if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getProductId() != 63 && !homeData.getCompanyId().equalsIgnoreCase("100028")) {
+							Map<String,Object> brokerQuotation = jasperCustomeImple.getMotorBrokerQuotation(homeData.getQuoteNo());
+							String jsonString = gson.toJson(brokerQuotation);
+							String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+							res = getCommonJasperPdfFileByJson("/report/jasper/EwayBrokerQuotation.jrxml", jasperSaveLocation, jsonString, input, "- BrokerQuotation.json");
+						}else if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getProductId() == 63) {
+							String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+							res = getJasperPdfFile("/report/jasper/HomePremierQuotation.jrxml", jasperSaveLocation, input);
+						}else if("Y".equalsIgnoreCase(req.getBrokerQuoteYn()) && homeData.getCompanyId().equalsIgnoreCase("100028")) {
+							List<MotorCoverNoteRes> brokerQuotation = jasperCustomeImple.getMotorCoverNote("",req.getVehicleId(),homeData.getQuoteNo());
+							String jsonString = gson.toJson(brokerQuotation);
+							String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+							res = getCommonJasperPdfFileByJson("/report/jasper/EagleMotorSchedule.jrxml", jasperSaveLocation, jsonString, input, "- EagleBrokerQuotation.json");
+						}else {
+							String JasperName = "MotorPrivate";
+							if("100019".equalsIgnoreCase(homeData.getCompanyId())) {
+								JasperName = "UgandaMotorSchedule";
+							}
+							MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo(),homeData.getQuoteNo(),req.getVehicleId());
+							String JsonString = gson.toJson(motPrivateRes);
+							String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+							res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- "+JasperName+".json");
 						}
-						res = getCommonJasperPdfFileByJson("/report/jasper/CorporatePlus.jrxml", jasperSaveLocation, jsonString, input2, "- CorporatePlus.json");
+					}else if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
+							Map<String, Object> input2 = new HashMap<String, Object>();
+							input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+							input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
+							String obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
+									String jrxml_path=obj.replace(".jasper", ".jrxml");
+									String path = JasperCompileManager.compileReportToFile(jrxml_path);
+									System.out.println("Jasper compileToReport path" +path);		
+							TravelReportRes travelRes = jasperCustomeImple.getTravelReport(homeData.getPolicyNo());
+							String jsonString = gson.toJson(travelRes);
+							String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+							res = getCommonJasperPdfFileByJson("/report/jasper/EwayTravelReport.jrxml", jasperSaveLocation, jsonString, input2, "- TravelReport.json");
+					} else if (product.getMotorYn().equalsIgnoreCase("M") && !"46".equalsIgnoreCase(homeData.getProductId().toString())) {
+						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+						if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo()) && "E".equalsIgnoreCase(req.getEndorsementType())) {
+							Map<String,Object> MotorEndorsementScheduleRes = jasperCustomeImple.getMotorEndorsementSchedule(homeData.getPolicyNo());
+							String jsonString = gson.toJson(MotorEndorsementScheduleRes);
+							res = getCommonJasperPdfFileByJson("/report/jasper/MotorEndorsementSchedule.jrxml", jasperSaveLocation, jsonString, input, "- MotorEndorsementSchedule.json");
+						}else if("100004".equalsIgnoreCase(homeData.getCompanyId()) || (Arrays.asList("100046","100047",
+								"100048","100049","100050").contains(homeData.getCompanyId()) && "Y".equalsIgnoreCase(req.getCertificateYn()))){ // MADISON MOTOR
+							List<Map<String,Object>> MadisonMotorSchedule = jasperCustomeImple.getMadisonMotorSchedule(homeData.getPolicyNo());
+							String jsonString = gson.toJson(MadisonMotorSchedule);
+							res = getCommonJasperPdfFileByJson("/report/jasper/EwayMadisonMotorSchedule.jrxml", jasperSaveLocation, jsonString, input, "- EwayMadisonMotorSchedule.json");
+						}else {
+							MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo(),"",req.getVehicleId());
+							String JsonString= gson.toJson(motPrivateRes);
+							String JasperName = "MotorPrivate";
+								if("100019".equalsIgnoreCase(homeData.getCompanyId())){		// UIA
+									if("Y".equalsIgnoreCase(req.getStrickerYn())) {
+										JsonString = gson.toJson(motPrivateRes.getVehicleDetails());
+										JasperName = "Schedule_UIA";
+									}else {
+										JsonString = gson.toJson(motPrivateRes);
+										if("1".equalsIgnoreCase(motPrivateRes.getVehicleDetails().get(0).getPolicyTypeId())) {
+											input.put("attachMents", motPrivateRes.getAttachmentList());
+											input.put("policyNo", motPrivateRes.getPolicyNo());
+										}
+										JasperName = "UgandaMotorSchedule";
+									}
+								}
+							res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- "+JasperName+".json");
+						}
+					}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
+						Map<String,Object> input2 = new HashMap<>();
+						input2.put("pvImagepath", Imagepath);
+						Map<String,Object> cyberInsurance = jasperCustomeImple.getCyberInsurance(homeData.getPolicyNo());
+						String jsonString = gson.toJson(cyberInsurance);
+						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+						res = getCommonJasperPdfFileByJson("/report/jasper/CyberInsurance.jrxml", jasperSaveLocation, jsonString, input2, "- CyberInsurance.json");
+					}else if(product.getMotorYn().equalsIgnoreCase("M") && "46".equalsIgnoreCase(homeData.getProductId().toString())){
+						Map<String,Object> map = new HashMap<String,Object>();
+						map.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+						List<MotorCoverNoteRes> MotorCoverNote = jasperCustomeImple.getMotorCoverNote(homeData.getPolicyNo(),req.getVehicleId(),"");
+						String jsonString = gson.toJson(MotorCoverNote);
+						res = getCommonJasperPdfFileByJson("/report/jasper/EwayMotorCoverNote.jrxml",jasperSaveLocation,jsonString,map,"- MotorCoveNote.json");
 					}else {
-						Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
-						String jsonString = gson.toJson(EwaySchedule);
-						if("100004".equalsIgnoreCase(homeData.getCompanyId())) {
+						Map<String, Object> input2 = new HashMap<String, Object>();
+						input2.put("pvImagepath", Imagepath);
+						input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
+						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+(StringUtils.isBlank(homeData.getPolicyNo())?homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "")
+								:homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", ""));
+					if(homeData.getProductId() == 19) {
+						Map<String,Object> CorporateSchedule = jasperCustomeImple.getCorporatePlusSchedule(homeData.getQuoteNo());
+						String jsonString = gson.toJson(CorporateSchedule );
 							String obj[] =new String[1];
-							obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
+							obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CorporatePlusCoverageDetails.jrxml";
 							for(String s :obj) {
 								String jrxml_path=s.replace(".jasper", ".jrxml");
-								JasperDesign design = JRXmlLoader.load(new File(jrxml_path));
-								JRDesignSection designSection = (JRDesignSection) design.getDetailSection();
-								designSection.removeBand(0);
-				                JasperCompileManager.compileReportToFile(design, config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jasper");
+								String path = JasperCompileManager.compileReportToFile(jrxml_path);
+								System.out.println("Jasper compileToReport path" +path);
 							}
-							input2.put("attachMents", EwaySchedule.get("attachMents"));
-							input2.put("policyNo", EwaySchedule.get("policyNo"));
-							res = getCommonJasperPdfFileByJson("/report/jasper/MadisonSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- MadisonSchedule.json");
+							res = getCommonJasperPdfFileByJson("/report/jasper/CorporatePlus.jrxml", jasperSaveLocation, jsonString, input2, "- CorporatePlus.json");
 						}else {
-							if("100046".equalsIgnoreCase(homeData.getCompanyId())) {
-								String obj[] =new String[1];
-								obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/Sub_Main_Report.jrxml";  // name changes as PhoenixSubSchedule
-								//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
-								/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
-								obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
-								for(String s :obj) {
-									String jrxml_path=s.replace(".jasper", ".jrxml");
-									String path = JasperCompileManager.compileReportToFile(jrxml_path);
-									System.out.println("Jasper compileToReport path" +path);
-								}
-								res = getCommonJasperPdfFileByJson("/report/jasper/Main_Report.jrxml", jasperSaveLocation, jsonString, input2, "- Main_Report.json"); // name changes as PhoenixSchedule
-							}else {
+							Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
+							String jsonString = gson.toJson(EwaySchedule);
+							if("100004".equalsIgnoreCase(homeData.getCompanyId())) {
 								String obj[] =new String[1];
 								obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
-								//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
-								/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
-								obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
 								for(String s :obj) {
 									String jrxml_path=s.replace(".jasper", ".jrxml");
-									String path = JasperCompileManager.compileReportToFile(jrxml_path);
-									System.out.println("Jasper compileToReport path" +path);
+									JasperDesign design = JRXmlLoader.load(new File(jrxml_path));
+									JRDesignSection designSection = (JRDesignSection) design.getDetailSection();
+									designSection.removeBand(0);
+					                JasperCompileManager.compileReportToFile(design, config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jasper");
 								}
-								res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
+								input2.put("attachMents", EwaySchedule.get("attachMents"));
+								input2.put("policyNo", EwaySchedule.get("policyNo"));
+								res = getCommonJasperPdfFileByJson("/report/jasper/MadisonSchedule.jrxml", jasperSaveLocation, jsonString, input2, "- MadisonSchedule.json");
+							}else {
+								if("100046".equalsIgnoreCase(homeData.getCompanyId())) {
+									String obj[] =new String[1];
+									obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/Sub_Main_Report.jrxml";  // name changes as PhoenixSubSchedule
+									//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
+									/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
+									obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
+									for(String s :obj) {
+										String jrxml_path=s.replace(".jasper", ".jrxml");
+										String path = JasperCompileManager.compileReportToFile(jrxml_path);
+										System.out.println("Jasper compileToReport path" +path);
+									}
+									res = getCommonJasperPdfFileByJson("/report/jasper/Main_Report.jrxml", jasperSaveLocation, jsonString, input2, "- Main_Report.json"); // name changes as PhoenixSchedule
+								}else {
+									String obj[] =new String[1];
+									obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
+									//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
+									/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
+									obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
+									for(String s :obj) {
+										String jrxml_path=s.replace(".jasper", ".jrxml");
+										String path = JasperCompileManager.compileReportToFile(jrxml_path);
+										System.out.println("Jasper compileToReport path" +path);
+									}
+									res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
+								}
 							}
 						}
+						
 					}
-					
 				}
+			}else {
+				res.setErrorMessage(errors);
+				res.setPdfoutfile(null);
+				res.setPdfoutfilepath(null);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
