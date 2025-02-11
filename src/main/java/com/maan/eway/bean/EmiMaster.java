@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import jakarta.persistence.Table;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -109,6 +108,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate;
 
+
+    @Column(name="INSTALLMENT_TYPE_ID")
+    private String installmentTypeId;
+    
+    @Column(name="INSTALLMENT_TYPE_DESC")
+    private String installmentTypeDesc;
 }
 
 

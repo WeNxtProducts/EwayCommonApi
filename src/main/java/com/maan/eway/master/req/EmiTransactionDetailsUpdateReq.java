@@ -50,4 +50,10 @@ public class EmiTransactionDetailsUpdateReq implements Serializable {
 	//
 //	@JsonProperty("Status")
 //	private String status;
+	
+	@JsonProperty("InstallmentTypeId")
+	private String installmentTypeId;
+	    
+    @JsonProperty("InstallmentTypeDesc")
+    private String installmentTypeDesc;
 }

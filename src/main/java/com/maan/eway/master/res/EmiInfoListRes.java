@@ -35,7 +35,11 @@ public class EmiInfoListRes implements Serializable {
 	@JsonProperty("TotalLoanAmount")
 	private String totalLoanAmount;
 	
-
+	@JsonProperty("InstallmentTypeId")
+	private String installmentTypeId;
+	    
+    @JsonProperty("InstallmentTypeDesc")
+    private String installmentTypeDesc;
 
 	
 
