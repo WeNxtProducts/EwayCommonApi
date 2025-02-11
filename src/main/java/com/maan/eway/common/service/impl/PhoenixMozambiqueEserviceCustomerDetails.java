@@ -435,12 +435,12 @@ public class PhoenixMozambiqueEserviceCustomerDetails {
 			}
 
 		}
-		if(StringUtils.isBlank(req.getFather_name())) {
-			errorList.add("2331");
-		}
-        if(StringUtils.isBlank(req.getMother_name())) {
-        	errorList.add("2332");
-		}
+//		if(StringUtils.isBlank(req.getFather_name())) {
+//			errorList.add("2331");
+//		}
+//        if(StringUtils.isBlank(req.getMother_name())) {
+//        	errorList.add("2332");
+//		}
 		
 		
 		}catch (Exception e) {
