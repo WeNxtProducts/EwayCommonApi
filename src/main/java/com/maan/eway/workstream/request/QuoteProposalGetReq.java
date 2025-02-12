@@ -1,0 +1,31 @@
+/**
+ * @author : Ashok Kumar S 
+ * @since  : 23-12-2024
+ */
+package com.maan.eway.workstream.request;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+
+@NoArgsConstructor
+@Setter
+@Getter
+public class QuoteProposalGetReq {
+	
+	@JsonProperty("CompanyId")
+	private Integer companyId;
+	
+	@JsonProperty("ProductId")
+	private Integer productId;
+	
+	@JsonProperty("ProposalId")
+	@JsonFormat(shape = Shape.STRING)
+	private Long proposalId;
+
+}
