@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,8 @@ import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.workstream.entity.HierarchyManagement;
+import com.maan.eway.workstream.repository.HierarchyManagementRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -112,6 +115,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 	
 	@Autowired
 	private DepositcbcMasterRepository depositcbcRepo;
+	
+	@Autowired
+	private HierarchyManagementRepository hierarchyRepo;
 
 	Gson json = new Gson();
 
@@ -2154,8 +2160,10 @@ List<Error> errorList = new ArrayList<Error>();
 			// Get Result
 			TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);			
 			list2 =  result2.getResultList();  
-
-				List<IssuerProductListReq> productlist = req1.getIssuerProductReq();
+	
+ 
+		
+		List<IssuerProductListReq> productlist = req1.getIssuerProductReq();
 		for (LoginProductMaster data : list2 ) {
 
 		List<IssuerProductListReq> filterProduct = productlist.stream().filter( o ->  o.getProductId().equalsIgnoreCase(data.getProductId().toString())).collect(Collectors.toList());
@@ -2253,6 +2261,7 @@ List<Error> errorList = new ArrayList<Error>();
 				save.setSumInsuredEnd(new BigDecimal(req.getSuminsuredEnd()));
 				String financeId = data.getFinancialEndtIds() ;
 				String nonFinanceId = data.getNonFinancialEndtIds();
+				
 			
 				List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginIdAndCompanyIdAndProductIdOrderByAmendIdDesc(req1.getLoginId(),req1.getInsuranceId(),Integer.valueOf(data.getProductId()));
 				if(loginproduct.size()>0 && loginproduct!=null) {
@@ -2282,6 +2291,31 @@ List<Error> errorList = new ArrayList<Error>();
 				save.setEffectiveDateStart(effDate);
 				save.setEffectiveDateEnd(endDate);
 				save.setEntryDate(new Date());
+				
+				
+				//-- Begin Update Login Product Master with hierarchy, finalization, escalation
+				/**
+				 * Updates the hierarchy level, hierarchy value, and escalation capabilities
+				 * for each product in the login product list based on matching issuer product details.
+				 * The updated list is then saved to the repository.
+				 * @since 08-01-2025
+				 */
+				List<IssuerProductListReq> issuerProductList = req1.getIssuerProductReq();
+				Optional<IssuerProductListReq> optIssuerProduct = issuerProductList.stream().
+						filter(productList -> productList.getProductId()
+								.equalsIgnoreCase(String.valueOf(save.getProductId())))
+						.findFirst();
+			
+				if(optIssuerProduct.isPresent()) {
+					save.setHierarchyLevel(optIssuerProduct.get().getHierarchyLevel());
+					save.setHierarchyValue(optIssuerProduct.get().getHierarchyValue());
+					save.setCanEscalate(optIssuerProduct.get().getCanEscalate());
+					save.setCanFinalize(optIssuerProduct.get().getCanEscalate());
+					
+					save.setColumnName(optIssuerProduct.get().getColumnName());
+				}			
+				//-- End Update Login Product Master with hierarchy, finalization, escalation		
+
 
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
@@ -2290,8 +2324,7 @@ List<Error> errorList = new ArrayList<Error>();
 			
 			res.setResponse("Products Added Successfully");
 			}
-			
-			
+
 			
 			//change status "N"
 			List<IssuerProductListReq> prodlist = req1.getIssuerProductReq();
@@ -2686,9 +2719,29 @@ List<Error> errorList = new ArrayList<Error>();
 		        }
 	        }
 			}
-			
-			
-			
+		//-- Begin workflow YN for each issuer product
+			/**
+			 * Updates the workflow YN for each issuer product based on the presence of hierarchy management records.
+			 *
+			 * <p>For each issuer product in the result list, this method retrieves all hierarchy management
+			 * records associated with the company's ID and the product's ID. If no hierarchy management records are found,
+			 * the workflow status (`workflowYn`) is set to "N" (No workflow). Otherwise, it is set to "Y" (Workflow exists).</p>
+			 *
+			 * @param resList the list of {@code IssuerProductGetRes} objects to update
+			 * @since : 10-01-2025
+			 */
+
+			resList.forEach(issuerProduct -> {
+			    List<HierarchyManagement> allHierarchy = hierarchyRepo.findAllByCompanyIdAndProductId(
+			            Integer.valueOf(issuerProduct.getCompanyId()), Integer.valueOf(issuerProduct.getProductId()));
+
+			    if (allHierarchy == null || allHierarchy.isEmpty()) {
+			        issuerProduct.setWorkflowYn("N");
+			    } else {
+			        issuerProduct.setWorkflowYn("Y");
+			    }
+			});
+		//-- End workflow YN for each issuer product
 			
 		}
 		

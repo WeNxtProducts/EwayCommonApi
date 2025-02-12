@@ -183,5 +183,12 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 			String requestReferenceNo, Integer valueOf, String insuranceId, Integer valueOf2, Integer valueOf3,
 			Integer valueOf4);
 
-	
+	/**
+	 * Represents method Related To WorkflowTracking
+	 * 
+	 * <p>This method queries the database or data source to find all factor rate request details corresponding to
+	 * the provided request reference number.</p>
+	 * @since : 09-01-2025
+	 */
+	public List<FactorRateRequestDetails> findAllByRequestReferenceNo(String requestReferenceNo);
 }

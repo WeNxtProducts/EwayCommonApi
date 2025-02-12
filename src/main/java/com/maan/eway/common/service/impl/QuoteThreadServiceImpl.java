@@ -3,6 +3,8 @@ package com.maan.eway.common.service.impl;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +40,7 @@ import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceCustomerDetailsId;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
@@ -111,13 +116,17 @@ import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
-import com.maan.eway.repository.UWReferralHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.calcengine.ReferralApi;
 import com.maan.eway.res.ReferalResponse;
+import com.maan.eway.res.SectionDetails;
 import com.maan.eway.res.calc.AdminReferral;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.thread.MyTaskList;
+import com.maan.eway.workstream.request.QuoteProposalSaveReq;
+import com.maan.eway.workstream.service.QuoteProposalService;
+import com.maan.eway.workstream.serviceimpl.QuoteProposalServiceImpl;
+import com.maan.eway.workstream.serviceimpl.QuoteProposalServiceImpl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -283,6 +292,13 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private EServiceMotorDetailsRepository eserviceMotorDetailsRepo;
 	
+	@Autowired
+	private EServiceSectionDetailsRepository eserviceSectionRepo;
+	
+	@Lazy
+	@Autowired
+	private QuoteProposalServiceImpl quoteProposalService;
+	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
 		CommonRes commonRes = new CommonRes();
@@ -317,6 +333,60 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			 }
 			 // Notification Trigger
 			req.setReferralRemarks(((ReferalResponse) commonRes.getCommonResponse()).getReferalRemarks());
+	
+			
+		//-- Begin of New Quote Proposal	
+			/**
+			 * Processes the quote proposal request by setting up the proposal details 
+			 * and initiating the first workflow entry.			 * 
+			 * @param req The incoming request containing details for processing the quote proposal.
+			 * @since : 20-12-2024
+			 */
+			{
+			    // Fetch the EserviceSectionDetails based on the request reference number
+				List<EserviceSectionDetails> requestReferenceNo = eserSecRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				EserviceSectionDetails sectionDetails = requestReferenceNo.get(0);
+				
+				CommonRes frameQuoteReq = setQuoteThreadReq(req );
+	            if( frameQuoteReq.getErrorMessage() !=null && frameQuoteReq.getErrorMessage().size()>0 ) {
+	            	commonRes = frameQuoteReq ;
+	            	return commonRes ; 
+	            }
+	            
+	            // Extract details from the QuoteThreadReq
+	            request = (QuoteThreadReq) frameQuoteReq.getCommonResponse() ;
+	            LocalDate policyStartDate = request.getPolicyStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	            LocalDate policyEndDate = request.getPolicyEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	            
+	            // Prepare the QuoteProposalSaveReq object
+				QuoteProposalSaveReq proposal=new QuoteProposalSaveReq();
+				proposal.setCompanyId(Integer.valueOf(sectionDetails.getCompanyId()));
+				proposal.setProductId(Integer.valueOf(sectionDetails.getProductId()));
+				
+			    // Retrieve customer details using the composite key
+				EserviceCustomerDetailsId customerid = new EserviceCustomerDetailsId(
+						sectionDetails.getCustomerReferenceNo(), sectionDetails.getCompanyId(), 
+						Integer.valueOf(sectionDetails.getProductId()));
+				
+				Optional<EserviceCustomerDetails> optCustomer = eserCustRepo.findById(customerid);
+				if(optCustomer.isPresent()){
+					proposal.setClientName(optCustomer.get().getClientName());
+				}
+
+				// Set additional proposal details
+				proposal.setCustomerReferenceNo(sectionDetails.getCustomerReferenceNo());
+				proposal.setPolicyEndDate(policyEndDate);
+				proposal.setPolicyStartDate(policyStartDate);
+				//Quote no generated after referral approval process therefore quote no is null
+				proposal.setQuoteNo(null);
+				proposal.setRequestReferenceNo(sectionDetails.getRequestReferenceNo());
+				proposal.setSumInsured(request.getSumInsured());
+				proposal.setCreatedBy(req.getCreatedBy());
+				quoteProposalService.createQuoteProposalAndFirstWorkflowEntry(proposal);				
+			}
+		//-- End of New Quote Proposal		
+			
+			
 			// Background Call
 			NotificatinThread smwthread=new NotificatinThread(notiThreadService,req,"REFERRAL");
 			Thread th=new Thread(smwthread);
@@ -1773,6 +1843,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			String originalPolicyNo = "" ;
 			String isFinYn = "" ;
 			Integer locationId=1;
+			BigDecimal sumInsured=BigDecimal.ZERO;
+			
 			DecimalFormat df = new DecimalFormat("####");
 			// Find Old QuoteNo
 			 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
@@ -1807,6 +1879,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				originalPolicyNo = data.getOriginalPolicyNo();
 				isFinYn 	 = data.getIsFinaceYn()==null ? "N" :data.getIsFinaceYn() ;
 				locationId=data.getLocationId()==null?1:	data.getLocationId();	
+				sumInsured=data.getSumInsuredLc();
 			} else if( req.getMotorYn().equalsIgnoreCase("A")) {
 				List<EserviceBuildingDetails> datas =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
 				EserviceBuildingDetails data = datas.get(0);
@@ -1906,6 +1979,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             request.setCommissionModifyYn(req.getCommissionModifyYn());
             request.setCommissionPercent(req.getCommissionPercent());
             request.setIsFinYn(isFinYn);
+            request.setSumInsured(sumInsured);
             
             commonRes.setCommonResponse(request);
 			commonRes.setIsError(false);

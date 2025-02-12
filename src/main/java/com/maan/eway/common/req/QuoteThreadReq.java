@@ -96,5 +96,8 @@ public class QuoteThreadReq {
 	
 	@JsonProperty("IsFinYn")
 	private String isFinYn;
+	// newly added
+	@JsonProperty("SumInsured")
+	private BigDecimal sumInsured;
 	
 }

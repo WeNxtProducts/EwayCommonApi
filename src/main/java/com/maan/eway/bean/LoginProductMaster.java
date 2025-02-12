@@ -157,11 +157,28 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="COLUMN_NAME", length=100)
     private String    columnName;
-    
-    
+        
     @Column(name="CREDIT_YN", length=1)
     private String     creditYn ;
+    
+    
+    /**
+     * Represents Fields Related To WorkflowTracking
+     * @attributes: hierarchy_level, hierarchy_value, can_escalate, can_finalize 
+     * @since : 08-01-2025
+     */
+	@Column(name = "HIERARCHY_LEVEL")
+	private String hierarchyLevel;
+	
+	@Column(name = "HIERARCHY_VALUE")
+	private Integer hierarchyValue;
 
+	@Column(name = "CAN_Finalize")
+	private Boolean canFinalize;
+	
+	@Column(name = "CAN_ESCALATE")
+	private Boolean canEscalate;
+    
 }
 
 
