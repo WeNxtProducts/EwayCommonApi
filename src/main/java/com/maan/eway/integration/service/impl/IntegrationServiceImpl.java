@@ -1,6 +1,8 @@
 package com.maan.eway.integration.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -822,6 +824,9 @@ private Map<String,String> fromListToMaps(List<String> arrays){
 public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 	PremiaResponse response = new PremiaResponse();
 	try {
+		LocalDateTime currentDateTime = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String formattedDateTime = currentDateTime.format(formatter);
 		String quoteNo = "";
 		String policyNo = "";
 		String reqRefNo = "";
@@ -835,22 +840,26 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			home = homeRepo.findByQuoteNo(request.getQuoteNo());
 		}
 		if (home != null) {
-			policyNo=home.getPolicyNo();
+			policyNo = home.getPolicyNo();
 			quoteNo = home.getQuoteNo();
 			reqRefNo = home.getRequestReferenceNo();
-			companyId= home.getCompanyId();
-			productId= home.getProductId().toString();
-			}
-		CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId);
-	
-		 List<PremiaConfigMaster> configMasterList =   getPremiaConfigMaster(home.getCompanyId() , home.getProductId() , request.getPremiaIds() );
-		
-		List<String> param=new ArrayList<String>();
+			companyId = home.getCompanyId();
+			productId = home.getProductId().toString();
+		}
+		CompanyProductMaster product = getCompanyProductMasterDropdown(companyId, productId);
+
+		List<PremiaConfigMaster> configMasterList = getPremiaConfigMaster(home.getCompanyId(), home.getProductId(),
+				request.getPremiaIds());
+
+		List<String> param = new ArrayList<String>();
 		param.add(quoteNo);
-		List<String> successList=new  ArrayList<>();
+		List<String> successList = new ArrayList<>();
 		Set<String> stickerNoList = new HashSet<>();
 		List<String> successOracleList=new  ArrayList<>();
 		List<String> failureOracleList=new  ArrayList<>();
+		
+		//Insert Data MySql
+		System.out.println("*********Inserting Data In MySql Started "+quoteNo+" "+formattedDateTime );
 		List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(request.getQuoteNo());
 		if (risks != null) {
 			stickerNoList = risks.stream()
@@ -858,10 +867,12 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		                        .filter(Objects::nonNull) 
 		                        .collect(Collectors.toSet());
 		}
-		if (("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) &&
-				(!stickerNoList.isEmpty() && stickerNoList.size() == home.getNoOfVehicles())) {
+		
+		//TIRA233
+		if ("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)){
+			if ((!stickerNoList.isEmpty() && stickerNoList.size() == home.getNoOfVehicles())) {
 				for (PremiaConfigMaster configMas : configMasterList) {
-					boolean push = push(configMas, param, quoteNo);
+					boolean push = push(configMas, param, quoteNo); 
 					if (push == true) {
 						response.setResponse("Success");
 						successList.add(configMas.getPremiaTableName());
@@ -870,6 +881,43 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 					}
 
 				}
+			} 
+//			else if (!stickerNoList.isEmpty() && (stickerNoList.size() != home.getNoOfVehicles())) {
+//				List<SectionDataDetails> risks1 = risks.stream()
+//						.filter(risk -> (!risk.getResponseStatusCode().equalsIgnoreCase("TIRA233"))
+//								&& risk.getStickerNumber() == null)
+//						.collect(Collectors.toList());
+//				if (risks1.isEmpty()) {
+//
+//					for (PremiaConfigMaster configMas : configMasterList) {
+//						boolean push = push(configMas, param, quoteNo);
+//						if (push == true) {
+//							response.setResponse("Success");
+//							successList.add(configMas.getPremiaTableName());
+//						} else {
+//							response.setResponse("Failed");
+//						}
+//
+//					}
+//				}else {
+//					response.setResponse("Premia Failed Sticker Number is Null");
+//					System.out.println("Premia Failed Sticker Number is Null");
+//					failureOracleList.add("Premia Failed Sticker Number is Null");
+//					home.setCoreIntgStatus("Premia Failed Sticker Number is Null");
+//					home.setIntegrationStatus("F");
+//					home.setIntegrationError("Premia Failed Sticker Number is Null");
+//					homeRepo.save(home);
+//				}
+//			}
+			else {
+				response.setResponse("Premia Failed Sticker Number is Null");
+				System.out.println("Premia Failed Sticker Number is Null");
+				failureOracleList.add("Premia Failed Sticker Number is Null");
+				home.setCoreIntgStatus("Premia Failed Sticker Number is Null");
+				home.setIntegrationStatus("F");
+				home.setIntegrationError("Premia Failed Sticker Number is Null");
+				homeRepo.save(home);
+			}
 				
 		}else if((!"100002".equalsIgnoreCase(companyId)) && (!"100019".equalsIgnoreCase(companyId)))  {
 			for (PremiaConfigMaster configMas :  configMasterList ) {
@@ -886,7 +934,12 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			response.setResponse("Premia Failed Sticker Number is Null");
 			System.out.println("Premia Failed Sticker Number is Null");
 			failureOracleList.add("Premia Failed Sticker Number is Null");
+			home.setCoreIntgStatus("Premia Failed Sticker Number is Null");
+			home.setIntegrationStatus("F");
+			home.setIntegrationError("Premia Failed Sticker Number is Null");
+			homeRepo.save(home);
 		}
+		
 		// Status of My Sql Data
 		String mySqlTable ="F";
 		if (("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId))) {
@@ -899,17 +952,52 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 					response.setResponse("Failed to Save in My Sql");
 				}
 			}
+//			else if (!stickerNoList.isEmpty() && (stickerNoList.size() != home.getNoOfVehicles())) {
+//				List<SectionDataDetails> risks1 = risks.stream()
+//						.filter(risk -> (!risk.getResponseStatusCode().equalsIgnoreCase("TIRA233"))
+//								&& risk.getStickerNumber() == null)
+//						.collect(Collectors.toList());
+//				if (risks1.isEmpty()) {
+//
+//					mySqlTable = updateIntegrationStatus(quoteNo, home, reqRefNo);
+//					if (mySqlTable.equalsIgnoreCase("S")) {
+//						response.setResponse("Success");
+//					} else {
+//						response.setResponse("Failed to Save in My Sql");
+//					}
+//				}else {
+//					response.setResponse("Premia Failed Sticker Number is Null");
+//					System.out.println("Premia Failed Sticker Number is Null");
+//					home.setCoreIntgStatus("Premia Failed Sticker Number is Null");
+//					home.setIntegrationStatus("F");
+//					home.setIntegrationError("Premia Failed Sticker Number is Null");
+//					homeRepo.save(home);
+//				}
+//			}
+			else {
+				response.setResponse("Premia Failed Sticker Number is Null");
+				System.out.println("Premia Failed Sticker Number is Null");
+				home.setCoreIntgStatus("Premia Failed Sticker Number is Null");
+				home.setIntegrationStatus("F");
+				home.setIntegrationError("Premia Failed Sticker Number is Null");
+				homeRepo.save(home);
+			}
+				
 		}else if(! "100002".equalsIgnoreCase(companyId) && !"100019".equalsIgnoreCase(companyId))  {
 			mySqlTable = updateIntegrationStatus(quoteNo, home, reqRefNo);
 			if (mySqlTable.equalsIgnoreCase("S")) {
 				response.setResponse("Success");
+				System.out.println("Success");
 			} else {
 				response.setResponse("Failed to Save in My Sql");
+				System.out.println("Failed to Save in My Sql");
 			}
 		}
+		System.out.println("*********MySql Block Ended "+quoteNo+" "+formattedDateTime );
 		// Framing External Api
 		
 		System.out.println("Response from mySqlTable :"+mySqlTable);
+		System.out.println("*********Oracle Block started "+quoteNo+" "+formattedDateTime );
 		if(mySqlTable.equalsIgnoreCase("S")) {
 			
 			for (PremiaConfigMaster configMas :  configMasterList ) {
@@ -955,37 +1043,39 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			}
 			
 		}
+		System.out.println("*********Oracle Block Ended "+quoteNo+" "+formattedDateTime );
 		// Premia Posting Calling procedural call
+		System.out.println("*********Procedure Block Started "+quoteNo+" "+formattedDateTime );
 		if (failureOracleList.isEmpty()) {
 			if("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) {
 			System.out.println("*********Premia Integration Wecore Api Call:");
 			System.out.println("Policy No :" +policyNo+" Company Id :"+companyId);
 			IntegrationSaveRes list = frameReqService.premiaExternalCall(policyNo,companyId);
 			System.out.println("List " + json.toJson(list));
-			IntegrationSaveRes status = frameReqService.updatePremiaExternalCallStatus(policyNo,companyId);
+//			IntegrationSaveRes status = frameReqService.updatePremiaExternalCallStatus(policyNo,companyId);
 			if (list.getResponse().equalsIgnoreCase("Failed")) {
 				
-				home.setCoreIntgStatus(StringUtils.isBlank(status.getPWsResponseType()) ? "Data not Integrated"
-						: status.getPWsResponseType());
+				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ? "Data not Integrated"
+						: list.getPWsResponseType());
 				home.setIntegrationStatus("F");
 				home.setIntegrationError(
-						StringUtils.isBlank(status.getPWsError()) ? list.getErrorMessage() : status.getPWsError());
+						StringUtils.isBlank(list.getPWsError()) ? list.getErrorMessage() : list.getPWsError());
 				homeRepo.save(home);
 				response.setResponse("Failed");
 			} else {
-				home.setCoreIntgStatus(StringUtils.isBlank(status.getPWsResponseType()) ?"Data Integrated"
-						: status.getPWsResponseType());
+				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ?"Data Integrated"
+						: list.getPWsResponseType());
 				home.setIntegrationStatus("S");
-				home.setIntegrationError(StringUtils.isBlank(status.getPWsError()) ? "" : list.getPWsError());
+				home.setIntegrationError(StringUtils.isBlank(list.getPWsError()) ? "" : list.getPWsError());
 				homeRepo.save(home);
-				response.setResponse(StringUtils.isBlank(status.getPWsResponseType()) ?"Data Integrated"
-						: status.getPWsResponseType());
+				response.setResponse(StringUtils.isBlank(list.getPWsResponseType()) ?"Data Integrated"
+						: list.getPWsResponseType());
 			}
 
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 		}
-
+		System.out.println("*********Procedure Block Ended "+quoteNo+" "+formattedDateTime );
 		}
 		if ("100004".equalsIgnoreCase(companyId)) {
 			 SeqPiftTranId entity=new SeqPiftTranId();

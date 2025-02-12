@@ -31,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.integration.req.InsertCreditLimitDetailReq;
 import com.maan.eway.integration.req.InsertYiPolicyApprovalReq;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.maan.eway.bean.CreditLimitDetail;
@@ -951,7 +952,10 @@ public class FrameReqServiceImpl implements FrameReqService {
 			headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("Authorization", authHeader);
-
+			System.out.println((new StringBuilder("url==>")).append(url).toString());
+            System.out.println((new StringBuilder("authHeader==>")).append(authHeader).toString());
+            System.out.println((new StringBuilder("Req==>")).append(req).toString());
+            System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(req)).toString());
 			HttpEntity<PremiaRequest> entityReq = new HttpEntity<PremiaRequest>(req, headers);
 
 			ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq,
@@ -1000,7 +1004,10 @@ public class FrameReqServiceImpl implements FrameReqService {
 			headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("Authorization", authHeader);
-
+			System.out.println((new StringBuilder("url==>")).append(url).toString());
+            System.out.println((new StringBuilder("authHeader==>")).append(authHeader).toString());
+            System.out.println((new StringBuilder("Req==>")).append(req).toString());
+            System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(req)).toString());
 			HttpEntity<PremiaRequest> entityReq = new HttpEntity<PremiaRequest>(req, headers);
 
 			ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq,
