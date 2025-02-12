@@ -23,5 +23,9 @@ public class LovDropDownReq {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("Usage")
+	private String usage;
+
 
 }
