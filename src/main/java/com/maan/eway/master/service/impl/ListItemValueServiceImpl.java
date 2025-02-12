@@ -946,7 +946,7 @@ this.repository = repo;
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n4 = cb.equal(b.get("branchCode"), StringUtils.isBlank(req.getBranchCode()) ?"99999" :req.getBranchCode() );
-			Predicate n8 = cb.equal(b.get("itemType"), req.getItemType());
+			Predicate n8 = cb.equal(cb.upper(b.get("itemType")), cb.upper(cb.literal(req.getItemType())));
 			/*
 			 * if(!StringUtils.isBlank(req.getTitletype())) { Predicate
 			 * n9=cb.equal(b.get("param1"),req.getTitletype());
