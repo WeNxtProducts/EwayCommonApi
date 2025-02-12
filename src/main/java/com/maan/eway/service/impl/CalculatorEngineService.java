@@ -441,22 +441,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 		}
 	public synchronized EserviceMotorDetailsSaveRes calculator(CalcEngine engine, String token) {
 		
-		if("100027".equals(engine.getInsuranceId())) {
-			/*{
-			    "CompanyId": "100027",
-			    "ProductId": "5",
-			    "QuoteNo": "",
-			    "RequestReferenceNo": "SAN-MOT-06935",
-			    "Integ_Type": "QUOT_INTEG",
-			    "SectionId": "102",	
-				"MSRefNo": "229447",
-				"VehicleId": "1",
-				"CdRefNo": "229445",
-				"DdRefNo": "228847",
-				"VdRefNo": "229446",
-				"LocationId": "1",
-				"CreatedBy": "francisbroker"
-			}*/
+		/*if("100027".equals(engine.getInsuranceId())) {
+			
 			WorkEngine work=new WorkEngine();
 			work.setCompanyId(engine.getInsuranceId());
 			work.setProductId(engine.getProductId());
@@ -473,7 +459,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 			work.setVehicleId(engine.getVehicleId());
 			jsonMapper.createQuotation(work);
 			return null;
-		}else {
+		}
+	else*/ {
 			// Referal Checking.
 			BigDecimal endtCount = BigDecimal.ZERO;
 			List<UWReferrals> referr = referal.underwriterReferral(engine);

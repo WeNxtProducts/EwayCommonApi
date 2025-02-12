@@ -143,6 +143,7 @@ public class TiraIntegerationServiceImpl {
 					log.info("Tira Framed Req --->"+tiraFramedReq);	
 				}
 			}
+			/*
 			Set<String> stickerNoList = new HashSet<>();
 			List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(tiraReq.getQuoteNo());
 			if (risks != null) {
@@ -232,8 +233,8 @@ public class TiraIntegerationServiceImpl {
 				}
 			} else {
 			System.out.println("*****STICKER NUMBER DOES NOT EXIST FOR THIS QUOTE NO : " + data.getQuoteNo()
-					+ "STICKER NUMBER LIST " + stickerNoList);
-		}
+					+ " STICKER NUMBER LIST " + stickerNoList);
+		}*/
 			
 			
 			

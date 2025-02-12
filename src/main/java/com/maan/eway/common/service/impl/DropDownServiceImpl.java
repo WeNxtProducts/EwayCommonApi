@@ -3495,6 +3495,10 @@ public class DropDownServiceImpl implements DropDownService {
 			// listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "VEHICLE_CLASSES";
 			List<ListItemValue> getList = getListItem(req, itemType, req.getInsuranceId());
+			if(StringUtils.isNotBlank(req.getUsage()))
+			{
+			getList = getList.stream().filter(a->a.getParam1().equals(req.getUsage())).collect(Collectors.toList());
+			}
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
