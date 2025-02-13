@@ -869,7 +869,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		}
 		
 		//TIRA233
-		if ("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)){
+		if ("100002".equalsIgnoreCase(companyId)){
 			if ((!stickerNoList.isEmpty() && stickerNoList.size() == home.getNoOfVehicles())) {
 				for (PremiaConfigMaster configMas : configMasterList) {
 					boolean push = push(configMas, param, quoteNo); 
@@ -919,7 +919,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				homeRepo.save(home);
 			}
 				
-		}else if((!"100002".equalsIgnoreCase(companyId)) && (!"100019".equalsIgnoreCase(companyId)))  {
+		}else if((!"100002".equalsIgnoreCase(companyId)))  {
 			for (PremiaConfigMaster configMas :  configMasterList ) {
 				boolean push = push(configMas , param,quoteNo);
 				if(push ==true  ) {
@@ -942,7 +942,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		
 		// Status of My Sql Data
 		String mySqlTable ="F";
-		if (("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId))) {
+		if (("100002".equalsIgnoreCase(companyId))) {
 
 			if ((!stickerNoList.isEmpty() && stickerNoList.size() == home.getNoOfVehicles())) {
 				mySqlTable = updateIntegrationStatus(quoteNo, home, reqRefNo);
@@ -983,7 +983,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				homeRepo.save(home);
 			}
 				
-		}else if(! "100002".equalsIgnoreCase(companyId) && !"100019".equalsIgnoreCase(companyId))  {
+		}else if(! "100002".equalsIgnoreCase(companyId))  {
 			mySqlTable = updateIntegrationStatus(quoteNo, home, reqRefNo);
 			if (mySqlTable.equalsIgnoreCase("S")) {
 				response.setResponse("Success");
