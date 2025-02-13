@@ -682,7 +682,9 @@ public class JasperServiceImpl implements JasperService {
 			if("Y".equalsIgnoreCase(req.getExcelYn())) {
 				fileName ="PremiumRegister";
 				prefix="data:application/vnd.ms-excel;base64,";
-				JasperDesign design = JRXmlLoader.load(is);
+				JasperReport jasperReport = JasperCompileManager.compileReport(is);
+				JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, jasperParameter, connection);
+				/*JasperDesign design = JRXmlLoader.load(is);
 				design.setPageFooter(null);
 				design.setLeftMargin(0);
 				JasperReport jasperReport = JasperCompileManager.compileReport(design);
@@ -690,11 +692,10 @@ public class JasperServiceImpl implements JasperService {
 				SimpleXlsReportConfiguration configuration = new SimpleXlsReportConfiguration();
 				configuration.setRemoveEmptySpaceBetweenRows(true);
 				configuration.setWhitePageBackground(false);
-				configuration.setDetectCellType(true);
+				configuration.setDetectCellType(true);*/
 				JRXlsExporter exporter = new JRXlsExporter();
 				exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 				exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(output));
-				exporter.setConfiguration(configuration);
 				try{
 					exporter.exportReport();
 				}catch(Exception e) {

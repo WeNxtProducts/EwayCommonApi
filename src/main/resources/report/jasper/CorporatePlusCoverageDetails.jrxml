@@ -2242,10 +2242,10 @@
 					<jr:listContents height="190" width="495">
 						<textField isBlankWhenNull="true">
 							<reportElement x="395" y="20" width="100" height="20" uuid="ca760061-aaa6-41b1-99dd-5ef4a4e03b92"/>
-							<box>
+							<box leftPadding="0" rightPadding="2">
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
-							<textElement verticalAlignment="Middle">
+							<textElement textAlignment="Right" verticalAlignment="Middle">
 								<font size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneymajorloss}]]></textFieldExpression>
@@ -2272,10 +2272,10 @@
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 							<reportElement stretchType="RelativeToBandHeight" x="395" y="40" width="100" height="20" uuid="3e2609b8-2ed6-4b36-b3ee-d20bff8b4d61"/>
-							<box leftPadding="2" rightPadding="0">
+							<box leftPadding="0" rightPadding="2">
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
-							<textElement textAlignment="Left" verticalAlignment="Middle">
+							<textElement textAlignment="Right" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneycollector}]]></textFieldExpression>
@@ -2292,10 +2292,10 @@
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 							<reportElement stretchType="RelativeToBandHeight" x="395" y="60" width="100" height="20" uuid="7820ee74-bebe-4273-8a79-2632e5d89b8e"/>
-							<box leftPadding="2" rightPadding="0">
+							<box leftPadding="0" rightPadding="2">
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
-							<textElement textAlignment="Left" verticalAlignment="Middle">
+							<textElement textAlignment="Right" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneysafelimit}]]></textFieldExpression>
@@ -2312,10 +2312,10 @@
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 							<reportElement stretchType="RelativeToBandHeight" x="395" y="80" width="100" height="20" uuid="fed8ecc5-ffdb-4965-829b-09dbc7c537a2"/>
-							<box leftPadding="2" rightPadding="0">
+							<box leftPadding="0" rightPadding="2">
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
-							<textElement textAlignment="Left" verticalAlignment="Middle">
+							<textElement textAlignment="Right" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneyoutofsafe}]]></textFieldExpression>
@@ -2332,10 +2332,10 @@
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 							<reportElement stretchType="RelativeToBandHeight" x="395" y="100" width="100" height="20" uuid="881523b5-6bc5-4a44-9bf5-d930c06be063"/>
-							<box leftPadding="2" rightPadding="0">
+							<box leftPadding="0" rightPadding="2">
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
-							<textElement textAlignment="Left" verticalAlignment="Middle">
+							<textElement textAlignment="Right" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneydirectorresidence}]]></textFieldExpression>
@@ -2352,10 +2352,10 @@
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 							<reportElement stretchType="RelativeToBandHeight" x="395" y="120" width="100" height="20" uuid="e585fda9-de14-4983-b332-4372d2e4a2af"/>
-							<box leftPadding="2" rightPadding="0">
+							<box leftPadding="0" rightPadding="2">
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
-							<textElement textAlignment="Left" verticalAlignment="Middle">
+							<textElement textAlignment="Right" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{strongroomsi}]]></textFieldExpression>
@@ -2372,10 +2372,10 @@
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 							<reportElement stretchType="RelativeToBandHeight" x="395" y="140" width="100" height="20" uuid="61994193-894a-4d18-80f4-1b89a1b82682"/>
-							<box leftPadding="2" rightPadding="0">
+							<box leftPadding="0" rightPadding="2">
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
-							<textElement textAlignment="Left" verticalAlignment="Middle">
+							<textElement textAlignment="Right" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{moneyannualestimatelc}]]></textFieldExpression>
@@ -2392,14 +2392,14 @@
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 							<reportElement stretchType="RelativeToBandHeight" x="395" y="160" width="100" height="15" uuid="72522bc7-e734-4a10-8237-5efd01b5dbe5"/>
-							<box leftPadding="2" rightPadding="0">
+							<box leftPadding="0" rightPadding="2">
 								<pen lineWidth="1.5" lineStyle="Double"/>
 								<topPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
 								<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#808080"/>
 								<bottomPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
 								<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#808080"/>
 							</box>
-							<textElement textAlignment="Left" verticalAlignment="Middle">
+							<textElement textAlignment="Right" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$V{tot_sumInsured}]]></textFieldExpression>
@@ -2416,14 +2416,14 @@
 						</textField>
 						<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
 							<reportElement stretchType="RelativeToBandHeight" x="395" y="175" width="100" height="15" uuid="daf35683-8131-42fe-9dcb-80320e0fe51e"/>
-							<box leftPadding="2" rightPadding="0">
+							<box leftPadding="0" rightPadding="2">
 								<pen lineWidth="1.5" lineStyle="Double"/>
 								<topPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
 								<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#808080"/>
 								<bottomPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
 								<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#808080"/>
 							</box>
-							<textElement textAlignment="Left" verticalAlignment="Middle">
+							<textElement textAlignment="Right" verticalAlignment="Middle">
 								<font fontName="SansSerif" size="9"/>
 							</textElement>
 							<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
@@ -2693,9 +2693,9 @@
 			</componentElement>
 		</band>
 		<band height="15">
-			<printWhenExpression><![CDATA[$F{coverId}==217 || $F{coverId}==218]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{coverId}==40]]></printWhenExpression>
 			<componentElement>
-				<reportElement x="20" y="0" width="480" height="15" uuid="ab2f8809-2d98-49a4-a723-16f531c6fbf0">
+				<reportElement x="20" y="0" width="495" height="15" uuid="ab2f8809-2d98-49a4-a723-16f531c6fbf0">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -2706,66 +2706,80 @@
 					<datasetRun subDataset="addOnDetails" uuid="be764c64-6733-4ceb-84f9-ba5e7920e902">
 						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.addOnDetails")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="30" uuid="26b7eb8a-39ef-463d-82a7-6fcd2bc2664c">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:columnHeader height="20" rowSpan="1">
-							<box>
-								<pen lineWidth="1.5" lineColor="#808080"/>
-							</box>
-							<textField>
-								<reportElement x="0" y="0" width="30" height="20" uuid="6f7a61d2-20cc-4e23-be6f-51a2226b6664"/>
-								<box leftPadding="2"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="SansSerif" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["S.No"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell height="20">
+					<jr:columnGroup width="140" uuid="151c780e-ae90-4c95-a52e-ac85d22c795d">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Columns [2]"/>
+						<jr:tableHeader height="20" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<box>
-								<pen lineWidth="1.5" lineColor="#808080"/>
-							</box>
-							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="30" height="20" uuid="db61aa00-9b1c-47dc-b9c0-6526fc193696"/>
-								<box leftPadding="2"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="9"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="110" uuid="dabbfe44-f0be-405b-a468-915d7cb7aff7">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:columnHeader height="20" rowSpan="1">
-							<box>
-								<pen lineWidth="1.5" lineColor="#808080"/>
-							</box>
 							<textField>
-								<reportElement x="0" y="0" width="110" height="20" uuid="ea997503-2569-4cba-ae8c-d66dc760579c"/>
+								<reportElement x="0" y="0" width="140" height="20" uuid="99f75b97-dabb-4c4a-9016-28197ba517ae"/>
 								<box leftPadding="2"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="SansSerif" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Location Name"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell height="20">
-							<box>
-								<pen lineWidth="1.5" lineColor="#808080"/>
-							</box>
-							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="20" uuid="95b2fdab-5510-429a-a832-a830c1fcff9e"/>
-								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
-									<font fontName="SansSerif" size="9"/>
+									<font fontName="SansSerif" size="10" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Add On Covers"]]></textFieldExpression>
 							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="110" uuid="619c200f-108e-4bc2-bcc2-c316eda49521">
+						</jr:tableHeader>
+						<jr:column width="30" uuid="26b7eb8a-39ef-463d-82a7-6fcd2bc2664c">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+							<jr:columnHeader height="20" rowSpan="1">
+								<box>
+									<pen lineWidth="1.5" lineColor="#808080"/>
+								</box>
+								<textField>
+									<reportElement x="0" y="0" width="30" height="20" uuid="6f7a61d2-20cc-4e23-be6f-51a2226b6664"/>
+									<box leftPadding="2"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle">
+										<font fontName="SansSerif" size="9" isBold="true"/>
+									</textElement>
+									<textFieldExpression><![CDATA["S.No"]]></textFieldExpression>
+								</textField>
+							</jr:columnHeader>
+							<jr:detailCell height="20">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								<box>
+									<pen lineWidth="1.5" lineColor="#808080"/>
+								</box>
+								<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+									<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="30" height="20" uuid="db61aa00-9b1c-47dc-b9c0-6526fc193696"/>
+									<box leftPadding="2"/>
+									<textElement verticalAlignment="Middle">
+										<font fontName="SansSerif" size="9"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="110" uuid="dabbfe44-f0be-405b-a468-915d7cb7aff7">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+							<jr:columnHeader height="20" rowSpan="1">
+								<box>
+									<pen lineWidth="1.5" lineColor="#808080"/>
+								</box>
+								<textField>
+									<reportElement x="0" y="0" width="110" height="20" uuid="ea997503-2569-4cba-ae8c-d66dc760579c"/>
+									<box leftPadding="2"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle">
+										<font fontName="SansSerif" size="9" isBold="true"/>
+									</textElement>
+									<textFieldExpression><![CDATA["Location Name"]]></textFieldExpression>
+								</textField>
+							</jr:columnHeader>
+							<jr:detailCell height="20">
+								<box>
+									<pen lineWidth="1.5" lineColor="#808080"/>
+								</box>
+								<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+									<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="20" uuid="95b2fdab-5510-429a-a832-a830c1fcff9e"/>
+									<box leftPadding="2" rightPadding="0"/>
+									<textElement textAlignment="Left" verticalAlignment="Middle">
+										<font fontName="SansSerif" size="9"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$F{locationName}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:columnGroup>
+					<jr:column width="150" uuid="619c200f-108e-4bc2-bcc2-c316eda49521">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:columnHeader height="20" rowSpan="1">
 							<box>
@@ -2776,7 +2790,7 @@
 								<rightPen lineWidth="1.5"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="110" height="20" uuid="5d024271-9f69-4ea9-a116-1756ec69c710"/>
+								<reportElement x="0" y="0" width="150" height="20" uuid="5d024271-9f69-4ea9-a116-1756ec69c710"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9" isBold="true"/>
@@ -2793,7 +2807,7 @@
 								<rightPen lineWidth="1.5"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="20" uuid="c86c0c05-b158-4336-8013-ed0c5df22573"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="150" height="20" uuid="c86c0c05-b158-4336-8013-ed0c5df22573"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9"/>
@@ -2802,11 +2816,21 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="120" uuid="5c2cc98f-dc00-4ef0-9e79-5c8bc4f2217d">
+					<jr:column width="100" uuid="5c2cc98f-dc00-4ef0-9e79-5c8bc4f2217d">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
 						<jr:tableFooter height="30" rowSpan="1">
 							<textField textAdjust="StretchHeight">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="120" height="15" uuid="2701dbc4-708d-4baa-8b5a-f2bd90a55da6"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="100" height="15" uuid="2701dbc4-708d-4baa-8b5a-f2bd90a55da6"/>
+								<box leftPadding="0" rightPadding="2">
+									<topPen lineWidth="0.0"/>
+								</box>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
+							</textField>
+							<textField textAdjust="StretchHeight">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="100" height="15" uuid="06cde87e-3a76-417d-b01e-ef97464d0026"/>
 								<box leftPadding="0" rightPadding="2">
 									<topPen lineWidth="0.0"/>
 								</box>
@@ -2815,16 +2839,6 @@
 								</textElement>
 								<textFieldExpression><![CDATA["Total Premium"]]></textFieldExpression>
 							</textField>
-							<textField textAdjust="StretchHeight">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="120" height="15" uuid="21079305-9b44-4e96-ac49-ffb0681c7d27"/>
-								<box leftPadding="0" rightPadding="2">
-									<bottomPen lineWidth="0.0"/>
-								</box>
-								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="SansSerif" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
-							</textField>
 						</jr:tableFooter>
 						<jr:columnHeader height="20" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -2832,7 +2846,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="120" height="20" uuid="aef77d4f-f96c-4dea-8d0c-e8836a54f2f7"/>
+								<reportElement x="0" y="0" width="100" height="20" uuid="aef77d4f-f96c-4dea-8d0c-e8836a54f2f7"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9" isBold="true"/>
@@ -2845,7 +2859,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="120" height="20" uuid="681bb156-7cdc-4d47-a03c-ef7c6e6cde31"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="100" height="20" uuid="681bb156-7cdc-4d47-a03c-ef7c6e6cde31"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9"/>
@@ -2854,14 +2868,14 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="110" uuid="11e55183-2c57-41ec-94c9-beae2e5dc8ee">
+					<jr:column width="105" uuid="11e55183-2c57-41ec-94c9-beae2e5dc8ee">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:tableFooter height="30" rowSpan="1">
 							<box>
 								<pen lineWidth="0.0"/>
 							</box>
 							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="15" uuid="3e986a56-aba3-4046-9d48-9ab5f094cdb9"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="105" height="15" uuid="3e986a56-aba3-4046-9d48-9ab5f094cdb9"/>
 								<box rightPadding="2">
 									<pen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
 									<topPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
@@ -2875,7 +2889,7 @@
 								<textFieldExpression><![CDATA[$V{tot_sumInsured}]]></textFieldExpression>
 							</textField>
 							<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="110" height="15" uuid="7ad6e030-dd7b-402d-9938-73457285fb9e"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="105" height="15" uuid="7ad6e030-dd7b-402d-9938-73457285fb9e"/>
 								<box rightPadding="2">
 									<pen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
 									<topPen lineWidth="1.5" lineStyle="Double" lineColor="#808080"/>
@@ -2894,7 +2908,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="110" height="20" uuid="f0f29598-c09b-4ee5-9a63-588f66b7fbaa"/>
+								<reportElement x="0" y="0" width="105" height="20" uuid="f0f29598-c09b-4ee5-9a63-588f66b7fbaa"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9" isBold="true"/>
@@ -2907,7 +2921,7 @@
 								<pen lineWidth="1.5" lineColor="#808080"/>
 							</box>
 							<textField textAdjust="StretchHeight" pattern="#,##0.00">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="110" height="20" uuid="d641c3d2-1ab1-4122-a52d-47f66ec35c20"/>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="105" height="20" uuid="d641c3d2-1ab1-4122-a52d-47f66ec35c20"/>
 								<box leftPadding="0" rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="SansSerif" size="9"/>
@@ -2937,8 +2951,8 @@
 			<componentElement>
 				<reportElement x="10" y="10" width="239" height="15" isRemoveLineWhenBlank="true" uuid="4ca97dc8-5289-48db-8679-63aef4174ada"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
-					<datasetRun subDataset="Conditions" uuid="6d33e164-9e93-4499-97e6-850bf4ca3ea5">
-						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.secondHalfconditions")]]></dataSourceExpression>
+					<datasetRun subDataset="Conditions" uuid="cef74881-94af-4324-8548-d67218d2db80">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.firstHalfconditions")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:listContents height="15" width="239">
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
@@ -2965,8 +2979,8 @@
 			<componentElement>
 				<reportElement x="260" y="10" width="240" height="15" uuid="89fa6845-bc4e-4405-ab45-a39886cdc971"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
-					<datasetRun subDataset="Conditions" uuid="0100deaa-0e6a-4394-a01d-12fde58715f3">
-						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.firstHalfconditions")]]></dataSourceExpression>
+					<datasetRun subDataset="Conditions" uuid="f7a3fe16-1a71-4134-b240-45a828d263e4">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("coverValue.secondHalfconditions")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:listContents height="15" width="240">
 						<textField textAdjust="StretchHeight" isBlankWhenNull="true">
