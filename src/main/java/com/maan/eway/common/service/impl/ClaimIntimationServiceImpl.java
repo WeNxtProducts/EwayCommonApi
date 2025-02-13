@@ -126,11 +126,11 @@ public class ClaimIntimationServiceImpl implements ClaimIntimationService{
 				 if (StringUtils.isBlank(req.getCurrentLocationOfVehicle())) {
 			            errorList.add("2338");
 			        }
-				 if (req.getEffectiveStartDate() == null) {
-			            errorList.add("2034");
-			        } else if (!req.getEffectiveStartDate().isEqual(LocalDate.now())) {
-			            errorList.add("2035");
-			        }
+//				 if (req.getEffectiveStartDate() == null) {
+//			            errorList.add("2034");
+//			        } else if (!req.getEffectiveStartDate().isEqual(LocalDate.now())) {
+//			            errorList.add("2035");
+//			        }
 				// Validate dateOfLoss - should be today or the previous day
 			        if (req.getDateOfLoss() == null) {
 			            errorList.add("2339");
@@ -171,6 +171,7 @@ public class ClaimIntimationServiceImpl implements ClaimIntimationService{
 		SuccessRes res = new SuccessRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 		try {
+			LocalDate effectiveStartDate = LocalDate.now();
 			LocalDate effectiveEndDate = LocalDate.of(2049, 12, 31);
 			ClaimIntimation saveData=new ClaimIntimation();
 			
@@ -195,8 +196,8 @@ public class ClaimIntimationServiceImpl implements ClaimIntimationService{
 			saveData.setReserveAmount(req.getReserveAmount());
 			saveData.setCurrentLocationOfVehicle(req.getCurrentLocationOfVehicle());
 			saveData.setStatus(req.getStatus());
-			saveData.setEffectiveStartDate(req.getEffectiveStartDate());
-			saveData.setEffectiveEndDate(req.getEffectiveEndDate());
+			saveData.setEffectiveStartDate(effectiveStartDate);
+			saveData.setEffectiveEndDate(effectiveEndDate);
 			saveData.setCreatedBy(req.getCreatedBy());
 			claimIntimationRepo.saveAndFlush(saveData);
 			

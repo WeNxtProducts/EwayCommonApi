@@ -32,14 +32,14 @@ public class ClaimIntimationReq {
 	    private String vehicleRegistrationNumber;
 
 	    @JsonProperty("DateOfLoss")
-	    @JsonFormat( pattern = "yyyy-MM-dd")
+	    @JsonFormat(pattern = "dd/MM/yyyy")
 	    private LocalDate dateOfLoss;
 
 	    @JsonProperty("PlaceOfLoss")
 	    private String placeOfLoss;
 
 	    @JsonProperty("DateOfNotification")
-	    @JsonFormat( pattern = "yyyy-MM-dd")
+	    @JsonFormat(pattern = "dd/MM/yyyy")
 	    private LocalDate dateOfNotification; // Also called Intimation date
 
 	    @JsonProperty("NatureOfDamage")
@@ -55,14 +55,7 @@ public class ClaimIntimationReq {
 	    @JsonProperty("Status")
 	    private String status;
 
-	    @JsonProperty("EffectiveStartDate")
-	    @JsonFormat( pattern = "yyyy-MM-dd")
-	    private LocalDate effectiveStartDate;
-
-	    @JsonProperty("EffectiveEndDate")
-	    @JsonFormat( pattern = "yyyy-MM-dd")
-	    private LocalDate effectiveEndDate;
-
+	
 	    @JsonProperty("CreatedBy")
 	    private String createdBy;
 
