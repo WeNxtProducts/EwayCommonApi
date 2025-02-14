@@ -69,7 +69,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="API_TYPE", nullable=false, length=20)
     private String     apiType ;
 
-    @Id
     @Column(name="STATUS", nullable=false, length=3)
     private String     status ;
 

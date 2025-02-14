@@ -39,7 +39,6 @@ public class ApiIntegMasterId implements Serializable {
     
     private String     apiType ;
     
-    private String     status ;
     
      
 }
