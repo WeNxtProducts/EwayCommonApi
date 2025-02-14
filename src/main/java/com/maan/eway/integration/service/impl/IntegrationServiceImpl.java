@@ -444,12 +444,12 @@ private String updateIntegrationStatus(String quoteNo, HomePositionMaster home,S
 		}
 		if(status && status1 && status2 && status3 && status4 && status5 && status6 && status7 && status8 && status9 && status10) {
 			home.setCoreIntgStatus("Data Successfully saved in  My Sql");
-			home.setIntegrationStatus("S");
+//			home.setIntegrationStatus("S");
 			home.setIntegrationError("");
 			result="S";
 		}else {
 			home.setCoreIntgStatus("Data Failed to saved in  My Sql");
-			home.setIntegrationStatus("F");
+//			home.setIntegrationStatus("F");
 			home.setIntegrationError("Data Failed to saved in  My Sql "+errorList);
 			result="F";
 		}
@@ -617,12 +617,12 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 		}
 		if(check=true) {
 			home.setCoreIntgStatus("Data Inserted saved in  Oracle DB");
-			home.setIntegrationStatus("S");
+//			home.setIntegrationStatus("S");
 			home.setIntegrationError("");
 			homeRepo.save(home);
 		}else {
 			home.setCoreIntgStatus("Data Failed saved in  Oracle DB");
-			home.setIntegrationStatus("F");
+//			home.setIntegrationStatus("F");
 			home.setIntegrationError(res1.getErrorMessage());
 			homeRepo.save(home);
 		}	
@@ -914,7 +914,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				System.out.println("Premia Failed Sticker Number is Null");
 				failureOracleList.add("Premia Failed Sticker Number is Null");
 				home.setCoreIntgStatus("Premia Failed Sticker Number is Null");
-				home.setIntegrationStatus("F");
+//				home.setIntegrationStatus("F");
 				home.setIntegrationError("Premia Failed Sticker Number is Null");
 				homeRepo.save(home);
 			}
@@ -935,7 +935,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			System.out.println("Premia Failed Sticker Number is Null");
 			failureOracleList.add("Premia Failed Sticker Number is Null");
 			home.setCoreIntgStatus("Premia Failed Sticker Number is Null");
-			home.setIntegrationStatus("F");
+//			home.setIntegrationStatus("F");
 			home.setIntegrationError("Premia Failed Sticker Number is Null");
 			homeRepo.save(home);
 		}
@@ -969,7 +969,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 //					response.setResponse("Premia Failed Sticker Number is Null");
 //					System.out.println("Premia Failed Sticker Number is Null");
 //					home.setCoreIntgStatus("Premia Failed Sticker Number is Null");
-//					home.setIntegrationStatus("F");
+//				//	home.setIntegrationStatus("F");
 //					home.setIntegrationError("Premia Failed Sticker Number is Null");
 //					homeRepo.save(home);
 //				}
@@ -978,7 +978,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				response.setResponse("Premia Failed Sticker Number is Null");
 				System.out.println("Premia Failed Sticker Number is Null");
 				home.setCoreIntgStatus("Premia Failed Sticker Number is Null");
-				home.setIntegrationStatus("F");
+//				home.setIntegrationStatus("F");
 				home.setIntegrationError("Premia Failed Sticker Number is Null");
 				homeRepo.save(home);
 			}
@@ -1006,7 +1006,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				if("Connection refused".equalsIgnoreCase(oraclpush.getResponse())) {
 					
 					home.setCoreIntgStatus("Data Failed saved in  Oracle DB Connection refused");
-					home.setIntegrationStatus("F");
+//					home.setIntegrationStatus("F");
 					home.setIntegrationError(oraclpush.getErrorMessage());
 					homeRepo.save(home);
 					System.out.println("-----Connection refused to save in oracle");
@@ -1019,7 +1019,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 					response.setResponse("Success");	
 					successOracleList.add(configMas.getPremiaTableName());
 					home.setCoreIntgStatus("Data saved in  Oracle DB");
-					home.setIntegrationStatus("S");
+//					home.setIntegrationStatus("S");
 					home.setIntegrationError("");
 					homeRepo.save(home);
 					System.out.println("--------Saved in Oracle");
@@ -1033,7 +1033,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 							||configMas.getPremiaId()==11) {
 						failureOracleList.add(configMas.getPremiaTableName());
 						home.setCoreIntgStatus("Data Failed saved in  Oracle DB");
-						home.setIntegrationStatus("F");
+//						home.setIntegrationStatus("F");
 						home.setIntegrationError(oraclpush.getErrorMessage());
 						homeRepo.save(home);
 						System.out.println("-------Not Saved in Oracle "+failureOracleList);
@@ -1057,7 +1057,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				
 				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ? "Data not Integrated"
 						: list.getPWsResponseType());
-				home.setIntegrationStatus("F");
+//				home.setIntegrationStatus("F");
 				home.setIntegrationError(
 						StringUtils.isBlank(list.getPWsError()) ? list.getErrorMessage() : list.getPWsError());
 				homeRepo.save(home);
@@ -1065,7 +1065,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			} else {
 				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ?"Data Integrated"
 						: list.getPWsResponseType());
-				home.setIntegrationStatus("S");
+//				home.setIntegrationStatus("S");
 				home.setIntegrationError(StringUtils.isBlank(list.getPWsError()) ? "" : list.getPWsError());
 				homeRepo.save(home);
 				response.setResponse(StringUtils.isBlank(list.getPWsResponseType()) ?"Data Integrated"
