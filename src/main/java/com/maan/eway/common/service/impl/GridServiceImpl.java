@@ -295,6 +295,7 @@ public class GridServiceImpl implements GridService {
 
 			if (!req.getProductId().equalsIgnoreCase(travelProductId)) {
 
+				if(extingQuoteList!=null) {
 				for (QuoteCriteriaRes data : extingQuoteList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					dozerMapper.map(data, res);
@@ -302,6 +303,7 @@ public class GridServiceImpl implements GridService {
 				}
 				resp.setCustomerDetailsRes(custRes);
 				resp.setTotalCount(cres.getTotalCount());
+			}
 			}
 
 		} catch (Exception e) {
