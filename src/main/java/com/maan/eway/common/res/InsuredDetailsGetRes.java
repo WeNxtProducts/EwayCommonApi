@@ -257,5 +257,8 @@ public class InsuredDetailsGetRes {
 	    
 		@JsonProperty("CustomerAsInsurer")
 		private String customerAsInsurer;
+		
+		@JsonProperty("Country")
+		private String     country ;
 
 }

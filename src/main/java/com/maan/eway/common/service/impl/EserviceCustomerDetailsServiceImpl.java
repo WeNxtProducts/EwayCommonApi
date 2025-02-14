@@ -2008,6 +2008,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" : stateCityNames.get(0).getStateName().toString());
 //			saveData.setCityName(req.getCityName());
 //			}
+			saveInsured.setCountry(req.getCountry());
 			insuredRepository.save(saveInsured);
 
 			//Personal Info Update
@@ -2815,7 +2816,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setAddress2(data.get(0).getAddress2()==null?"":data.get(0).getAddress2());	
 				res.setInsuredReferenceNo(data.get(0).getInsuredReferenceNo()==null?"":data.get(0).getInsuredReferenceNo());
 				res.setIsTaxExempted(data.get(0).getIsTaxExempted()==null?"":data.get(0).getIsTaxExempted());		
-				
+				res.setCountry(data.get(0).getCountry()==null?"":data.get(0).getCountry());
 			}
 			else
 			{
