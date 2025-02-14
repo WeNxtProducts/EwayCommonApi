@@ -2250,6 +2250,7 @@ public class PaymentServiceImpl implements PaymentService {
 						saveDate.setPaymentDetails(paymentMode);
 						saveDate.setPaymentDate(new Date());
 						saveDate.setPaymentId(req.getPaymentId());
+						saveDate.setMerchantReference(refno);
 						emiRepo.saveAndFlush(saveDate);
 					}
 					

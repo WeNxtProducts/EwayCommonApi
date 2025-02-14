@@ -129,6 +129,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="PAYMENT_ID", length=20)
     private String     paymentId ;
     
+    @Column(name="MERCHANT_REFERENCE", length=100)
+    private String     merchantReference ;
+    
     //Endt Fields
     @Column(name="ENDT_CATEG_DESC", length=100)
     private String     endtCategDesc ;

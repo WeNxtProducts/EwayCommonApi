@@ -867,7 +867,8 @@ public class KenyaEmiTransactionDetails {
 				res.setDueAmount((Double.valueOf(Math.round(data.getDueAmount()))).toString());
 				res.setBalanceAmount((Double.valueOf(Math.round(data.getBalanceAmount()))).toString());
 				res.setPaymentDetails(data.getPaymentDetails());
-				PaymentDetail paymentData=paymentdetailrepo.findByPaymentId(data.getPaymentId());
+//				PaymentDetail paymentData=paymentdetailrepo.findByPaymentId(data.getPaymentId());
+				PaymentDetail paymentData=paymentdetailrepo.findByMerchantReferenceAndPaymentStatus(data.getMerchantReference(),"ACCEPTED");
 				if(paymentData!=null) {
 				res.setMerchantReference(paymentData.getMerchantReference()==null?"":paymentData.getMerchantReference());
 				res.setBankName(paymentData.getBankName()==null?"":paymentData.getBankName());
