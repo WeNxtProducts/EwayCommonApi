@@ -3186,6 +3186,14 @@ public class JasperCustomServiceImple {
 			if(!CollectionUtils.isEmpty(exesslist)) {
 				result.put("excessDesc", exesslist.get(0).getItemValue());
 			}
+			List<ListItemValue>limit=listItemValueRepo.findByItemTypeAndParam1AndParam2AndStatus("POLICY_LIMIT_LIABILITY","99999","99999","Y");
+			if(!CollectionUtils.isEmpty(limit)) {
+				result.put("limitDesc", limit.get(0).getItemValue());
+			}
+			List<ListItemValue>benifitlist=listItemValueRepo.findByItemTypeAndParam1AndParam2AndStatus("POLICY_FREE_BENIFIT",policyType,"99999","Y");
+			if(!CollectionUtils.isEmpty(benifitlist)) {
+				result.put("benifitDesc", benifitlist.get(0).getItemValue());
+			}
 			ListItemValue vehicle=listItemValueRepo.findByItemTypeAndItemCode("VEHICLE_CLASSES",vehicelClass);
 			if(vehicle!=null) {
 				result.put("vehicleClassDesc", vehicle.getItemValue());

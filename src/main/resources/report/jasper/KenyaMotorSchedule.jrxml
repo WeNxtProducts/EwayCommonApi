@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="KenyaMotorSchedule" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="339340cc-a832-47c7-97fd-c7ffa6dae1b6">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="KenyaMotorSchedule" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="339340cc-a832-47c7-97fd-c7ffa6dae1b6">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Kenya"/>
 	<subDataset name="BaseCoverPremiumDetails" uuid="0492cfc9-c31f-4f77-80fa-23e8a6c2d744">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
@@ -234,6 +234,8 @@
 	<field name="taxAmount" class="java.math.BigDecimal"/>
 	<field name="excessDesc" class="java.lang.String"/>
 	<field name="vehicleClassDesc" class="java.lang.String"/>
+	<field name="benifitDesc" class="java.lang.String"/>
+	<field name="limitDesc" class="java.lang.String"/>
 	<background>
 		<band height="802" splitType="Stretch">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
@@ -605,7 +607,7 @@
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="11" isBold="false"/>
 								</textElement>
-								<textFieldExpression><![CDATA["0".equals($F{sumInsured})?"Free Cover":new DecimalFormat("#,##0.00").format(new BigDecimal($F{sumInsured}))]]></textFieldExpression>
+								<textFieldExpression><![CDATA["0".equals($F{sumInsured})?"Free Cover Up to 50,000.00":new DecimalFormat("#,##0.00").format(new BigDecimal($F{sumInsured}))]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -926,9 +928,9 @@
 				<textFieldExpression><![CDATA[$F{excessDesc}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="27">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="280" height="15" uuid="68b7c8d2-6eee-4745-832d-654a7bb33794">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="6" width="280" height="15" uuid="68b7c8d2-6eee-4745-832d-654a7bb33794">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -939,9 +941,9 @@
 				<textFieldExpression><![CDATA["Limits of Liability"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="53">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="280" height="15" uuid="58edb11f-0aff-41ab-97af-87ab9b61f794">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="552" height="53" uuid="58edb11f-0aff-41ab-97af-87ab9b61f794">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -949,12 +951,13 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Third party property damage -5,000,000 Third Party Persons Bodily Injury/Death -3,000,000 per any  person Third Party Persons Bodily Injury/Death -20,000,000 per event"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{limitDesc}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="27">
+			<printWhenExpression><![CDATA[$F{benifitDesc}!=null]]></printWhenExpression>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="280" height="15" uuid="961aff82-b27c-4acc-a16e-9753fac090a6">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="6" width="280" height="15" uuid="961aff82-b27c-4acc-a16e-9753fac090a6">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -965,17 +968,18 @@
 				<textFieldExpression><![CDATA["Free Benefits:"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="15">
+		<band height="53">
+			<printWhenExpression><![CDATA[$F{benifitDesc}!=null]]></printWhenExpression>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="280" height="15" uuid="78cbd3d0-b5ec-44fe-8854-2d2acb016b20">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="552" height="53" uuid="78cbd3d0-b5ec-44fe-8854-2d2acb016b20">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{benifitDesc}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
