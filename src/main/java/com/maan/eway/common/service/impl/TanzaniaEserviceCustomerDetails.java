@@ -504,8 +504,7 @@ public class TanzaniaEserviceCustomerDetails {
 			
 			saveData.setZone(StringUtils.isBlank(req.getZone())? 0:Integer.valueOf(req.getZone()));
 			
-			
-			
+						
 			saveData.setBrokerBranchCode(req.getBrokerBranchCode());
 			
 			saveData.setTitle(req.getTitle());
@@ -523,8 +522,7 @@ public class TanzaniaEserviceCustomerDetails {
 			saveData.setMobileNo2(req.getMobileNo2());
 			saveData.setMobileNo3(req.getMobileNo3());
 			saveData.setActivities(req.getActivities());
-			saveData.setIdType(req.getIdType());
-			saveData.setIdNumber(req.getIdNumber());
+						
 			saveData.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 			saveData.setPreferredNotification(req.getPreferredNotification());
 			saveData.setStatus(req.getStatus());
@@ -536,7 +534,6 @@ public class TanzaniaEserviceCustomerDetails {
 			saveData.setPinCode(req.getPinCode());
 			saveData.setRegionCode(req.getRegionCode());
 			
-			saveData.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
 			saveData.setVrTinNo(req.getVrTinNo());
 			//saveData.setVrnGst(req.getVrTinNo());
 			
@@ -625,6 +622,22 @@ public class TanzaniaEserviceCustomerDetails {
 				 occupationDesc = Optional.ofNullable(occupation).map(map -> map.get("occupationName")).orElse("");
 				 occupationDescLocal = Optional.ofNullable(occupation).map(map -> map.get("occupationNameLocal")).orElse("");
 			}
+			
+			/**
+			 * Solution:- The issue ID Type blank for some customer to push TIRA
+			 * ID Type  & Policy Holder ID Type both are same represent Individual / Corporate Customer
+			 * if ID Type is blank is take value from Policy Holder Type
+			 */
+			saveData.setPolicyHolderType(req.getPolicyHolderType());
+			saveData.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
+
+			String idType = StringUtils.isBlank(req.getIdType()) && 
+					StringUtils.isNotBlank(req.getPolicyHolderType()) 
+		                ? req.getPolicyHolderType() 
+		                : req.getIdType();
+			
+			saveData.setIdType(idType);			
+			saveData.setIdNumber(req.getIdNumber());
 			
 			//Desc
 			saveData.setTitleDesc(titleDesc);
