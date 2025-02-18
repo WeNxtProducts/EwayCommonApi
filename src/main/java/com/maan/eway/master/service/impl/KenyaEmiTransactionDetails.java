@@ -264,13 +264,13 @@ public class KenyaEmiTransactionDetails {
 //				premiumWithTax = Double.valueOf(req.getPremiumWithTax());
 				premiumWithTax = Double.valueOf(homeData.getOverallPremiumLc().toString());
 				interestAmount = premiumWithTax * interestPercent / 100;
-				interestAmount=interestAmount/12;
-				interestAmount=interestAmount*noOfMonth;
+				interestAmount=(Double.valueOf(Math.round(interestAmount)))/12;
+				interestAmount=(Double.valueOf(Math.round(interestAmount)))*noOfMonth;
 				totalLoanAmount = premiumWithTax + interestAmount;
 				advanceAmount = totalLoanAmount * advancePercent / 100;
-				adv=new BigDecimal(advanceAmount);
+				adv=new BigDecimal(Math.round(advanceAmount));
 				if (i == 1) {
-					balanceAmount = totalLoanAmount - advanceAmount;
+					balanceAmount = totalLoanAmount - (Double.valueOf(Math.round(advanceAmount)));
 					installment = balanceAmount / (noOfMonth-1);
 				} else {
 					temp = balanceAmount;
@@ -382,7 +382,7 @@ public class KenyaEmiTransactionDetails {
 					save=dozermapper.map(data, EserviceMotorDetails.class);
 					save.setEmiYn("Y");
 					save.setInstallmentPeriod(Integer.valueOf(installmentPeriod != null && !installmentPeriod.isEmpty()? installmentPeriod : "0" ));
-					save.setNoOfInstallment(Integer.valueOf(noOFIns != null && !noOFIns.isEmpty() ? noOFIns : "0"));
+					save.setNoOfInstallment(Integer.valueOf(noOFIns != null && !noOFIns.isEmpty() ? noOFIns : "1"));
 					save.setEmiPremium(adv);
 					motorRepo.save(save);
 				}
@@ -967,12 +967,12 @@ public class KenyaEmiTransactionDetails {
 						// Response
 						
 						interestAmount = premiumWithTax * interestPercent / 100;
-						interestAmount=interestAmount/12;
-						interestAmount=interestAmount*noOfMonth;
+						interestAmount=Double.valueOf(Math.round(interestAmount))/12;
+						interestAmount=Double.valueOf(Math.round(interestAmount))*noOfMonth;
 						totalLoanAmount = premiumWithTax + interestAmount;
 						advanceAmount = totalLoanAmount * advancePercent / 100;
 						if (i == 1) {
-							balanceAmount = totalLoanAmount - advanceAmount;
+							balanceAmount = totalLoanAmount - Double.valueOf(Math.round(advanceAmount));
 							installment = balanceAmount / (noOfMonth-1);
 							insDesc="Advance Amount";
 						} else {

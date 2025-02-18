@@ -46,6 +46,9 @@ public interface EmiTransactionDetailsRepository extends JpaRepository<EmiTransa
 
 	List<EmiTransactionDetails> findByQuoteNoAndSelectYnOrderByInstalmentDesc(String quoteNo, String string);
 
+	List<EmiTransactionDetails> findByQuoteNo(String quoteNo);
+
+
 
 
 

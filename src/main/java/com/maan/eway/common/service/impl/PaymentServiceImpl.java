@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -2227,6 +2228,45 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 
 		}
+			List<Integer> result =null;
+			if (req.getEmiYn().equalsIgnoreCase("Y")) {
+				List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNo(req.getQuoteNo());				
+				if (!emiDetails.isEmpty()) {
+					result = calculateInstallments(emiDetails, paymentInfo.getPremium());
+				}
+				if (!result.isEmpty()) { 
+					EmiTransactionDetails saveDate = new EmiTransactionDetails();
+					for (Integer d : result) {
+						List<EmiTransactionDetails> emiDetails1 = emiDetails.stream()
+								.filter(o -> d.equals(Integer.valueOf(o.getInstalment()))).collect(Collectors.toList());
+						for(EmiTransactionDetails data1:emiDetails1) {
+						saveDate = dozermapper.map(data1, EmiTransactionDetails.class);
+						if (paymentStatus.equalsIgnoreCase("ACCEPTED")) {
+							saveDate.setPaymentStatus("Paid");
+						}else {
+							saveDate.setPaymentStatus("Pending");
+						}
+						saveDate.setPaymentDetails(paymentMode);
+						saveDate.setPaymentDate(new Date());
+						saveDate.setPaymentId(req.getPaymentId());
+						saveDate.setMerchantReference(refno);
+						emiRepo.saveAndFlush(saveDate);
+					}
+					}
+
+					paymentInfo.setEmiYn(req.getEmiYn());
+					int period=Collections.max(result);
+					paymentInfo.setInstallmentMonth(String.valueOf(period));
+					
+					paymentDetail.setInstallmentMonth(String.valueOf(period));
+					
+					data.setEmiYn(req.getEmiYn());
+					data.setEmiPremium(req.getPremium());
+					data.setNoOfInstallment(String.valueOf(period));
+					data.setEmiinstallYn(req.getEmiYn());
+					
+				}
+			}
 
 			
 			paymentdetailrepo.saveAndFlush(paymentDetail);
@@ -2239,14 +2279,17 @@ public class PaymentServiceImpl implements PaymentService {
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
+						
 			// Update Emi Transaction Details
-			if (paymentInfo.getEmiYn().equalsIgnoreCase("Y")) {
+			/*if (paymentInfo.getEmiYn().equalsIgnoreCase("Y")) {
 					//EmiTransactionDetails emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo(), paymentInfo.getInstallmentMonth(), paymentInfo.getInstallmentPeriod());
-					List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndSelectYn(req.getQuoteNo(),"Y");
+//					List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndSelectYn(req.getQuoteNo(),"Y");
 					EmiTransactionDetails saveDate=new EmiTransactionDetails();
 					for(EmiTransactionDetails data1:emiDetails) {
 						saveDate=dozermapper.map(data1, EmiTransactionDetails.class);
-						saveDate.setPaymentStatus("Paid");
+						if(paymentStatus.equalsIgnoreCase("ACCEPTED")){
+							saveDate.setPaymentStatus("Paid");
+						}
 						saveDate.setPaymentDetails(paymentMode);
 						saveDate.setPaymentDate(new Date());
 						saveDate.setPaymentId(req.getPaymentId());
@@ -2255,7 +2298,7 @@ public class PaymentServiceImpl implements PaymentService {
 					}
 					
 				
-			}
+			}*/
 
 			// Update Payment Info
 			paymentInfo.setValidityDate(validateDate);
@@ -2263,29 +2306,29 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentInfo.setPaymentStatus(paymentStatus);
 			paymentInfo.setMerchantReference(refno);
 			paymentInfo.setPayments( StringUtils.isBlank(req.getPayments() ) ? "Charge" : req.getPayments()  ); 
-			if (req.getEmiYn().equalsIgnoreCase("Y" )) {
-				//EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,paymentInfo.getInstallmentMonth() , paymentInfo.getInstallmentPeriod());
-				List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(req.getQuoteNo(), "Paid");
-				if(emiDetails!=null) {
-					installment=emiDetails.get(0).getInstalment();
-					paymentInfo.setEmiYn(req.getEmiYn());
-					paymentInfo.setInstallmentMonth(emiDetails.get(0).getInstalment());
-				}
-			}
+//			if (req.getEmiYn().equalsIgnoreCase("Y" )) {
+//				//EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,paymentInfo.getInstallmentMonth() , paymentInfo.getInstallmentPeriod());
+//				List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(req.getQuoteNo(), "Paid");
+//				if(emiDetails!=null) {
+//					installment=emiDetails.get(0).getInstalment();
+//					paymentInfo.setEmiYn(req.getEmiYn());
+//					paymentInfo.setInstallmentMonth(emiDetails.get(0).getInstalment());
+//				}
+//			}
 			paymentinforepo.saveAndFlush(paymentInfo);
 			
-			if (req.getEmiYn().equalsIgnoreCase("Y" )) {
-				List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(req.getQuoteNo(), "Paid");
-				if(emiDetails!=null) {
-					installment=emiDetails.get(0).getInstalment();
-				
-					paymentDetail.setInstallmentMonth(emiDetails.get(0).getInstalment());
-				}
-				paymentdetailrepo.saveAndFlush(paymentDetail);
-			}
+//			if (req.getEmiYn().equalsIgnoreCase("Y" )) {
+//				List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(req.getQuoteNo(), "Paid");
+//				if(emiDetails!=null) {
+//					installment=emiDetails.get(0).getInstalment();
+//				
+//					paymentDetail.setInstallmentMonth(emiDetails.get(0).getInstalment());
+//				}
+//				paymentdetailrepo.saveAndFlush(paymentDetail);
+//			}
 			
 			
-			if (req.getEmiYn().equalsIgnoreCase("Y" )) {
+		/*	if (req.getEmiYn().equalsIgnoreCase("Y" )) {
 			//	EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,paymentInfo.getInstallmentMonth() , paymentInfo.getInstallmentPeriod());
 				List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateDesc(req.getQuoteNo(), "Paid");
 
@@ -2297,7 +2340,8 @@ public class PaymentServiceImpl implements PaymentService {
 				data.setEmiinstallYn(req.getEmiYn());
 				
 				}
-			}
+			}*/
+			
 			data.setPaymentMode(req.getPaymentType());
 			data.setPaymentType(paymentDetail.getPaymentTypedesc());
 			data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("Y") ? paymentInfo.getPaymentStatus() :"Pending");
@@ -2418,6 +2462,37 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 		return res;
 	}
+	
+	public List<Integer> calculateInstallments(List<EmiTransactionDetails> emiDetails, BigDecimal requestedAmount) {
+
+		String ins = emiDetails.get(0).getInstallmentPeriod();
+		BigDecimal totalLoanAmount = new BigDecimal(emiDetails.get(0).getTotalLoanAmount());
+		BigDecimal advanceAmount = new BigDecimal(emiDetails.get(0).getDueAmount());
+		BigDecimal remainingAmount = advanceAmount.subtract(requestedAmount);
+
+		List<Integer> numberOfInstallments = new ArrayList<>();
+		if (remainingAmount.compareTo(BigDecimal.ZERO) == 0) {
+			numberOfInstallments.add(1);
+			return numberOfInstallments; // Only the first installment (advance)
+		}
+
+		// Now check which installment month to be paid
+		else if (remainingAmount.compareTo(BigDecimal.ZERO) != 0) {
+//	        	BigDecimal a=emiDetails.stream().filter(o->"Paid".equalsIgnoreCase(o.getPaymentStatus()))
+//	        							.map(EmiTransactionDetails::getDueAmount)
+//	        							.reduce(BigDecimal.ZERO, BigDecimal::add); 
+			double totalDueAmountPaid = emiDetails.stream().filter(record -> "paid".equalsIgnoreCase(record.getPaymentStatus()))
+					.mapToDouble(EmiTransactionDetails::getDueAmount).sum();
+			BigDecimal paidAmount = new BigDecimal(totalDueAmountPaid).add(requestedAmount);
+			BigDecimal balanceAmount = totalLoanAmount.subtract(paidAmount);
+			numberOfInstallments= emiDetails.stream()
+					.filter(o -> new BigDecimal(o.getBalanceAmount()).compareTo(balanceAmount) == 0)
+					.map(o -> Integer.parseInt(o.getInstalment())).collect(Collectors.toList());
+			return numberOfInstallments;
+		}
+		return numberOfInstallments;
+	}
+	
 	
 	public List<PolicyDrcrDetail> generatePolicy(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail, String token) {
 		
@@ -2555,7 +2630,9 @@ public class PaymentServiceImpl implements PaymentService {
 				homerepo.saveAndFlush(data);
 				// Update ProductWise
 				CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
-				String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn(),data.getCommissionPercentage()); 
+				String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn(),data.getCommissionPercentage());
+				
+				updateEmiTransactionDetails(req.getQuoteNo());
 				return policydrcr;
 			}
 		}catch (Exception e) {
@@ -3031,6 +3108,11 @@ public class PaymentServiceImpl implements PaymentService {
 	    		 
 	    		  });	    		   
 	    	   sectionRepo.saveAllAndFlush(updateEserList);
+	    	   
+	    	   
+	    	   
+	    	   
+	    	   
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
@@ -3585,6 +3667,33 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 			return res;
 		}
-		
-		
-}
+
+		private void updateEmiTransactionDetails(String quoteNo) {
+			DozerBeanMapper dozermapper = new DozerBeanMapper();
+			List<PaymentDetail> paymentList = paymentdetailrepo.findByQuoteNoOrderByMerchantReferenceAsc(quoteNo);
+
+			for (PaymentDetail m : paymentList) {
+				List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNo(quoteNo);
+				if (!emiDetails.isEmpty()) {
+					String paymentStatus = m.getPaymentStatus();
+					Date responseTime =m.getResponseTime();
+					EmiTransactionDetails saveDate = new EmiTransactionDetails();
+					List<EmiTransactionDetails> emiDetails1 = emiDetails.stream()
+							.filter(o -> m.getMerchantReference().equalsIgnoreCase(o.getMerchantReference()))
+							.collect(Collectors.toList());
+					for (EmiTransactionDetails data1 : emiDetails1) {
+						saveDate = dozermapper.map(data1, EmiTransactionDetails.class);
+						if (paymentStatus.equalsIgnoreCase("ACCEPTED")) {
+							saveDate.setPaymentStatus("Paid");
+						} else {
+							saveDate.setPaymentStatus("Pending");
+						}
+						saveDate.setPaymentDate(responseTime);
+						emiRepo.saveAndFlush(saveDate);
+					}
+				}
+
+			}
+
+		}
+	}
