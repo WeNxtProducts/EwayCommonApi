@@ -37,6 +37,9 @@ public class ValuationQuoteDetailsRes {
 		@JsonProperty("BranchCode")
 	    private String     branchCode ;
 		
+		@JsonProperty("LoginId")
+	    private String     loginId ;
+		
 		@JsonProperty("SumInsured")
 	    private Double     sumInsured ;
 

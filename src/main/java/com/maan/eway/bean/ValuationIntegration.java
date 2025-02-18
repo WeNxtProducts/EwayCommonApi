@@ -163,6 +163,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="EXCEPTION_REMARKS")
     private String     exceptionRemarks ;
     
+    @Column(name="AUTHORIZATION_ID")
+    private String     authorizationId ;
+    
+    @Column(name="API_KEY")
+    private String     apiKey ;
+    
+    @Column(name="USER_NAME")
+    private String     userName ;
+    
     
 }
 

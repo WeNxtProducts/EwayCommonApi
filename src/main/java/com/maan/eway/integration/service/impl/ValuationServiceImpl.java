@@ -38,6 +38,8 @@ public class ValuationServiceImpl implements ValuationService {
 	@Autowired
 	private SolvitValuation solvit;
 	@Autowired
+	private RegentValuation regent;
+	@Autowired
 	private ValuationIntegrationRepository valuationIntegrationRepository;
 	@Override
 	public PremiaResponse pushValuation(ValuationReq req) {
@@ -50,7 +52,7 @@ public class ValuationServiceImpl implements ValuationService {
 			if("1".equals(valCompanyId))
 				resp=solvit.pushValuation(req);
 			else if("2".equals(valCompanyId))
-				resp=solvit.pushValuation(req);
+				resp=regent.pushValuation(req);
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -66,7 +68,7 @@ public class ValuationServiceImpl implements ValuationService {
 			if("1".equals(req.getValCompanyId()))
 				resp=solvit.getStatus(req);
 			else if("2".equals(req.getValCompanyId()))
-				resp=solvit.getStatus(req);
+				resp=regent.getStatus(req);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,7 +82,7 @@ public class ValuationServiceImpl implements ValuationService {
 			if("1".equals(req.getValCompanyId()))
 				resp=solvit.getDetails(req);
 			else if("2".equals(req.getValCompanyId()))
-				resp=solvit.getDetails(req);
+				resp=regent.getDetails(req);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

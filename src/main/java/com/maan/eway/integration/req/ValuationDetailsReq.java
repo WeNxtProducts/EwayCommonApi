@@ -10,6 +10,9 @@ public class ValuationDetailsReq {
 	@JsonProperty("RecordId")
 	private String recordId;
 	
+	@JsonProperty("VehicleRegNo")
+	private String vehicleRegNo;
+	
 	@JsonProperty("ValCompanyId")
 	private String valCompanyId;
 	
