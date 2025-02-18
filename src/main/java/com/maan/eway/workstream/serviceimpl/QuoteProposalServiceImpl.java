@@ -132,15 +132,18 @@ public class QuoteProposalServiceImpl implements QuoteProposalService {
 				req.getActionTaken().equals(ACTION_ESCALATED) )) {
 			errors.add(new Error("16", "ActionTaken", "This is not a valid Action"));
 		}
-		if(req.getTotalPremium() == null) {
-			errors.add(new Error("17", "LoginId", "LoginId Should Not Be Null"));
+		if(!req.getActionTaken().equals(ACTION_ASSIGNED)) {
+			if(req.getTotalPremium() == null) {
+				errors.add(new Error("17", "TotalPremium", "TotalPremium Should Not Be Null"));
+			}
+			if(req.getCommissionModifyYn() == null || req.getCommissionModifyYn().isBlank()) {
+				errors.add(new Error("18", "CommissionModifyYN", "CommissionModifyYN Should Not Be Blank"));
+			}
+			if(req.getCommissionPercent() == null) {
+				errors.add(new Error("19", "CommissionPercent", "CommissionPercent Should Not Be Null"));
+			}
 		}
-		if(req.getCommissionModifyYn() == null || req.getCommissionModifyYn().isBlank()) {
-			errors.add(new Error("18", "CommissionModifyYN", "CommissionModifyYN Should Not Be Blank"));
-		}
-		if(req.getCommissionPercent() == null) {
-			errors.add(new Error("19", "CommissionPercent", "CommissionPercent Should Not Be Null"));
-		}
+
 		return errors;		
 	}
 
