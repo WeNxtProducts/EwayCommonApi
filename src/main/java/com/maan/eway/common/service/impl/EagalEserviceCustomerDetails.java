@@ -773,6 +773,14 @@ public class EagalEserviceCustomerDetails {
 			}
 
 			
+			
+			saveData.setVipFlag(req.getVipFlag());
+			saveData.setPhoneNoCode(req.getPhoneNoCode());
+			saveData.setRiskAssessmentDate(req.getRiskAssessmentDate());
+
+			repository.save(saveData);
+			repository.flush();
+
 			if("100028".equals(req.getCompanyId())) {
 				WorkEngine e=new WorkEngine();
 				e.setCompanyId(req.getCompanyId());
@@ -786,17 +794,14 @@ public class EagalEserviceCustomerDetails {
 					Map<String, Object> dataq = (Map<String, Object>) response.get("data");	
 					String	customerId=(String) dataq.get("customerId"); 
 					saveData.setPolCustCode(customerId);
+					repository.save(saveData);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					//e1.printStackTrace();
 					saveData.setPolCustCode("Exception");
+					repository.save(saveData);
 				}
 			}
-			saveData.setVipFlag(req.getVipFlag());
-			saveData.setPhoneNoCode(req.getPhoneNoCode());
-			saveData.setRiskAssessmentDate(req.getRiskAssessmentDate());
-
-			repository.save(saveData);
 
 			//Personal Info Update
 			

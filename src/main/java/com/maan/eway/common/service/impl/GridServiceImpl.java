@@ -242,7 +242,7 @@ public class GridServiceImpl implements GridService {
 			today = cal.getTime();
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
-			cal.add(Calendar.DAY_OF_MONTH, -30);
+			cal.add(Calendar.DAY_OF_MONTH, -90);
 			Date before30 = cal.getTime();
 
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -6899,7 +6899,7 @@ public class GridServiceImpl implements GridService {
 			today = cal.getTime();
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
-			cal.add(Calendar.DAY_OF_MONTH, -30);
+			cal.add(Calendar.DAY_OF_MONTH, -90);
 			Date before30 = cal.getTime();
 
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());

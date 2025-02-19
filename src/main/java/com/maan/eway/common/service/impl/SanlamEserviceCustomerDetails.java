@@ -38,6 +38,8 @@ import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.RegionMasterRepository;
 import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.workflow.dto.WorkEngine;
+import com.maan.eway.workflow.service.JsonMapperFromDB;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -78,6 +80,9 @@ public class SanlamEserviceCustomerDetails {
 	
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private JsonMapperFromDB jsonMapper;
 	
 	public List<String> validateCustomerDetails(EserviceCustomerSaveReq req) {
 		List<String> errorList = new ArrayList<String>();
@@ -831,6 +836,29 @@ public class SanlamEserviceCustomerDetails {
 			saveData.setExpiryDate(req.getExpiryDate());
 			
 			repository.save(saveData);
+			repository.flush();
+			
+			if("100040".equals(req.getCompanyId())) {
+				WorkEngine e=new WorkEngine();
+				e.setCompanyId(req.getCompanyId());
+				e.setProductId(req.getProductId().toString());
+				e.setQuoteNo("");
+				e.setRequestReferenceNo(custRefNo);
+				e.setIntegType("CUST_CREATE");
+				try {
+					List<Map<String, Object>> quotation = jsonMapper.createQuotation(e);
+					Map<String, Object> response = (Map<String, Object>)  quotation.get(0).get("Response");
+					Map<String, Object> dataq = (Map<String, Object>) response.get("data");	
+					String	customerId=(String) dataq.get("customerId"); 
+					saveData.setPolCustCode(customerId);
+					repository.save(saveData);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+					saveData.setPolCustCode("Exception");
+					repository.save(saveData);
+				}
+			}
 
 			//Personal Info Update
 			

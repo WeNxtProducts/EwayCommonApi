@@ -38,6 +38,8 @@ import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.RegionMasterRepository;
 import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.workflow.dto.WorkEngine;
+import com.maan.eway.workflow.service.JsonMapperFromDB;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -75,6 +77,9 @@ public class AngolaEserviceCustomerDetails {
 	
 	@Autowired
 	private PersonalInfoRepository personalInforepo;
+	
+	@Autowired
+	private JsonMapperFromDB jsonMapper;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -828,8 +833,31 @@ public class AngolaEserviceCustomerDetails {
 			}
 			
 
-			repository.save(saveData);
 
+			repository.save(saveData);
+			repository.flush();
+			
+			if("100027".equals(req.getCompanyId())) {
+				WorkEngine e=new WorkEngine();
+				e.setCompanyId(req.getCompanyId());
+				e.setProductId(req.getProductId().toString());
+				e.setQuoteNo("");
+				e.setRequestReferenceNo(custRefNo);
+				e.setIntegType("CUST_CREATE");
+				try {
+					List<Map<String, Object>> quotation = jsonMapper.createQuotation(e);
+					Map<String, Object> response = (Map<String, Object>)  quotation.get(0).get("Response");
+					Map<String, Object> dataq = (Map<String, Object>) response.get("data");	
+					String	customerId=(String) dataq.get("customerId"); 
+					saveData.setPolCustCode(customerId);
+					repository.save(saveData);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+					saveData.setPolCustCode("Exception");
+					repository.save(saveData);
+				}
+			}
 			//Personal Info Update
 			
 			//Endorsement flow and B2C Flow
