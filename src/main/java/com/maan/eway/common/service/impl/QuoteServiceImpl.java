@@ -33,6 +33,7 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.DocumentTransactionDetails;
+import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -390,10 +391,7 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setEndtPremiumTax(homeData.getEndtPremiumTax()==null?BigDecimal.ZERO:homeData.getEndtPremiumTax());
 			quoteRes.setTotalEndtPremium(quoteRes.getEndtPremium().add(quoteRes.getEndtPremiumTax()));
 			// Emi Details 
-			quoteRes.setEmiYn(homeData.getEmiYn()==null?"N":homeData.getEmiYn());
-			quoteRes.setInstallmentPeriod(homeData.getInstallmentPeriod()==null?"":homeData.getInstallmentPeriod());
-			quoteRes.setInstallmentMonth(homeData.getNoOfInstallment()==null?"":homeData.getNoOfInstallment());
-			quoteRes.setDueAmount(homeData.getEmiPremium()==null?null:homeData.getEmiPremium().toString());
+			
 			quoteRes.setFinalizeYn(homeData.getFinalizeYn());
 			
 			//PaymentDetails
@@ -407,7 +405,10 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 				
 			}
-			
+//			quoteRes.setEmiYn(homeData.getEmiYn()==null?"N":homeData.getEmiYn());
+//			quoteRes.setInstallmentPeriod(homeData.getInstallmentPeriod()==null?"":homeData.getInstallmentPeriod());
+//			quoteRes.setInstallmentMonth(homeData.getNoOfInstallment()==null?"":homeData.getNoOfInstallment());
+//			quoteRes.setDueAmount(homeData.getEmiPremium()==null?null:homeData.getEmiPremium().toString());
 //			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductIdOrderByInstalmentAsc(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());
 //			if (emiDetails.size()>0 ) {
 //				List<EmiTransactionDetails> filterEmi =  emiDetails.stream().filter( o -> (!o.getPaymentStatus().equalsIgnoreCase("Paid")) &&  ( o.getInstalment().equalsIgnoreCase("0") || o.getInstalment()!=null ) ).collect(Collectors.toList());
@@ -419,13 +420,13 @@ public class QuoteServiceImpl implements QuoteService {
 //				}
 //			}
 			
-//			List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateAsc(homeData.getQuoteNo(), "Paid");
-//			if (emiDetails.size()>0 ) {
-//					quoteRes.setEmiYn("Y");
-//					quoteRes.setInstallmentPeriod(emiDetails.get(0).getInstallmentPeriod());
-//					quoteRes.setInstallmentMonth(emiDetails.get(0).getInstalment() );
-//					quoteRes.setDueAmount(emiDetails.get(0).getDueAmount()==null?"":new BigDecimal(emiDetails.get(0).getDueAmount()).toPlainString());
-//				}
+			List<EmiTransactionDetails> emiDetails = emiRepo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateAsc(homeData.getQuoteNo(), "Pending");
+			if (emiDetails.size()>0 ) {
+					quoteRes.setEmiYn("Y");
+					quoteRes.setInstallmentPeriod(emiDetails.get(0).getInstallmentPeriod());
+					quoteRes.setInstallmentMonth(emiDetails.get(0).getInstalment() );
+					quoteRes.setDueAmount(emiDetails.get(0).getDueAmount()==null?"":new BigDecimal(emiDetails.get(0).getDueAmount()).toPlainString());
+				}
 				
 			
 			// Customer Details

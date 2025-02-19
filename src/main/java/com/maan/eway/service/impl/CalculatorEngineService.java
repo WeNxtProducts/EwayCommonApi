@@ -30,6 +30,7 @@ import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.ChartOfAccount;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -90,6 +91,7 @@ import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
+import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
@@ -151,6 +153,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 	
 	@Autowired
 	private CoverDetailsRepository coverRepo ;
+	
+	@Autowired
+	private EmiTransactionDetailsRepository emiRepo;
 	/*
 	 * 
 	  @Autowired 
@@ -1820,16 +1825,27 @@ public class CalculatorEngineService implements CalculatorEngine {
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(v1.getQuoteDetails().getCompanyId() , v1.getQuoteDetails().getProductId().toString());
 			String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 			String emiYn=v1.getQuoteDetails().getEmiYn();
-			String instalment=v1.getQuoteDetails().getInstallmentMonth();
+//			String instalment=v1.getQuoteDetails().getInstallmentMonth();
+			String instalment="";
+			String noOFIns="";
 			 List<BranchMaster> branchCode=ratingutil.collectBranchMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getBranchCode());
+			 HomePositionMaster hpm = homeRepo.findByQuoteNo(request.getQuoteno())	 ; 
+			 if (emiYn.equalsIgnoreCase("Y" )) {
+					List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoOrderByInstalmentAsc(request.getQuoteno());
+					if(emiDetails!=null) {
+						noOFIns=emiDetails.get(0).getInstalment();
+					}
+					instalment=hpm.getNoOfInstallment();
+			}
+			 
 			 
 			 //Not endt
-			if (StringUtils.isBlank(endttypeid)&& ( emiYn.equalsIgnoreCase("N") || instalment.equalsIgnoreCase("1"))) {			 
+			if (StringUtils.isBlank(endttypeid)&& ( emiYn.equalsIgnoreCase("N") || instalment.equalsIgnoreCase(noOFIns))) {			 
 				List<SectionDataDetails> sections = sectionRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
 		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),sections.get(0).getSectionId());
 		 
 		 	List<MotorDataDetails> list = motorRepo.findByQuoteNo(request.getQuoteno());
-		 	HomePositionMaster hpm = homeRepo.findByQuoteNo(request.getQuoteno())	 ;	
+		 		
 		 	PersonalInfo pi = piRepo.findByCustomerId(hpm.getCustomerId()) 	;
 			String vehUsageCoreappcode = "";
 			
