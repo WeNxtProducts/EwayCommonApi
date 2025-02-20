@@ -1824,7 +1824,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			ViewQuoteRes v1 = quoteservice.viewQuoteDetails(q);
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(v1.getQuoteDetails().getCompanyId() , v1.getQuoteDetails().getProductId().toString());
 			String endttypeid = v1.getQuoteDetails().getEndtTypeId();
-			String emiYn=v1.getQuoteDetails().getEmiYn();
+			String emiYn=StringUtils.isBlank(v1.getQuoteDetails().getEmiYn())?"N":v1.getQuoteDetails().getEmiYn();
 //			String instalment=v1.getQuoteDetails().getInstallmentMonth();
 			String instalment="";
 			String noOFIns="";
