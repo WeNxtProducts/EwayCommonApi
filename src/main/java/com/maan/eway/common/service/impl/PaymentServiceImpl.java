@@ -941,7 +941,7 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentinfo.setCustomerCity(personaldata.getCityName());
 				paymentinfo.setCustomerName(personaldata.getClientName() );
 				paymentinfo.setEmailId(personaldata.getEmail1());
-				paymentinfo.setEmiYn(req.getEmiYn());
+				paymentinfo.setEmiYn(StringUtils.isBlank(req.getEmiYn())?"N": req.getEmiYn());
 				paymentinfo.setEntryDate(new Date());
 				paymentinfo.setLoginId(req.getCreatedBy()); 
 				paymentinfo.setMerchantReference("");
@@ -2229,7 +2229,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 		}
 			List<Integer> result =null;
-			if (req.getEmiYn().equalsIgnoreCase("Y")) {
+			if (paymentInfo.getEmiYn().equalsIgnoreCase("Y")) {
 				List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNo(req.getQuoteNo());				
 				if (!emiDetails.isEmpty()) {
 					result = calculateInstallments(emiDetails, paymentInfo.getPremium());
@@ -3671,7 +3671,7 @@ public class PaymentServiceImpl implements PaymentService {
 		private void updateEmiTransactionDetails(String quoteNo) {
 			DozerBeanMapper dozermapper = new DozerBeanMapper();
 			List<PaymentDetail> paymentList = paymentdetailrepo.findByQuoteNoOrderByMerchantReferenceAsc(quoteNo);
-
+			if((!paymentList.isEmpty()) && paymentList.get(0).getEmiYn().equalsIgnoreCase("Y")) {
 			for (PaymentDetail m : paymentList) {
 				List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNo(quoteNo);
 				if (!emiDetails.isEmpty()) {
@@ -3694,6 +3694,7 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 
 			}
+		}
 
 		}
 	}
