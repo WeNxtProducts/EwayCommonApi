@@ -685,7 +685,7 @@ public List<Error> validateMotorSchedule(JasperDocumentReq req) {
 	List<Error> errors = new ArrayList<>();
 	try {
 		HomePositionMaster hpmData = homeRepo.findByQuoteNo(req.getQuoteNo());
-		if(hpmData!=null && Arrays.asList(5,46).contains(hpmData.getProductId())) {
+		if(hpmData!=null && Arrays.asList(5,46).contains(hpmData.getProductId()) && hpmData.getCompanyId().equalsIgnoreCase("100002")) {
 			List<MotorDataDetails> m = motorDataDetailsRepo.findByQuoteNo(req.getQuoteNo());
 			IntStream.range(0,m.size()).forEach(i -> {
 				MotorDataDetails k = m.get(i);

@@ -156,13 +156,13 @@ public class JasperServiceImpl implements JasperService {
 			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
 
-			if(homeData!=null && Arrays.asList(5,46).contains(homeData.getProductId())) {
+			if(homeData!=null && Arrays.asList(5,46).contains(homeData.getProductId()) && homeData.getCompanyId().equalsIgnoreCase("100002")) {
 				List<MotorDataDetails> m = motorDataDetailsRepo.findByQuoteNo(req.getQuoteNo());
 				IntStream.range(0,m.size()).forEach(i -> {
 					MotorDataDetails k = m.get(i);
 					String stickerNo = jasperCustomeImple.getStrickerNo(k.getQuoteNo(),k.getVehicleId());
 					if(StringUtils.isBlank(stickerNo) || stickerNo == null) {
-						//errors.add(new Error(String.valueOf(i), "StickerNumber", "Cannot generate report because the StickerNumber is missing for Quote No: " + k.getQuoteNo() + " and Vehicle ID: " + k.getVehicleId()));
+						errors.add(new Error(String.valueOf(i), "StickerNumber", "Cannot generate report because the StickerNumber is missing for Quote No: " + k.getQuoteNo() + " and Vehicle ID: " + k.getVehicleId()));
 					}
 				});
 			}
@@ -257,6 +257,9 @@ public class JasperServiceImpl implements JasperService {
 										}
 										JasperName = "UgandaMotorSchedule";
 									}
+								}else {
+									input.put("attachMents", motPrivateRes.getAttachmentList());
+									input.put("policyNo", motPrivateRes.getPolicyNo());
 								}
 							res = getCommonJasperPdfFileByJson("/report/jasper/"+JasperName+".jrxml", jasperSaveLocation, JsonString, input, "- "+JasperName+".json");
 						}

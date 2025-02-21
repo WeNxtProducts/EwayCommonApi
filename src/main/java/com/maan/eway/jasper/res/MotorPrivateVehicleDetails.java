@@ -83,4 +83,7 @@ public class MotorPrivateVehicleDetails {
 	@JsonProperty("CompanyName")
 	private String companyName;
 	
+	@JsonProperty("TPPDIncreaseLimit")
+	private String tPPDIncreaseLimit;
+	
 }
