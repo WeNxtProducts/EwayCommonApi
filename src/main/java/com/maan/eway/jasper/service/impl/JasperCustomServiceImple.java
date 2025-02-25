@@ -3774,7 +3774,7 @@ public class JasperCustomServiceImple {
 							List<Map<String,Object>> locationList = buildingRiskData.stream().map(k ->{
 								LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
 								lmap.put("locationName", k.getLocationName());
-								lmap.put("firstlosspercent", k.getFirstLossPercent());
+								lmap.put("firstlosspercent", k.getFirstLossPercent()==null?"":k.getFirstLossPercent()+"%");
 								lmap.put("descriptionOfRisk", k.getDescriptionOfRisk());
 								lmap.put("sumInsured", k.getSumInsured());
 								lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
