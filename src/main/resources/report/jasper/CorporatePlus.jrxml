@@ -678,9 +678,10 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box rightPadding="2">
-					<topPen lineWidth="0.0"/>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="1.0" lineStyle="Double"/>
 					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Double"/>
 					<rightPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">

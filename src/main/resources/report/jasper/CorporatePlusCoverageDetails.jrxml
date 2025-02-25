@@ -132,7 +132,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="locationName"/>
 			<fieldDescription><![CDATA[locationName]]></fieldDescription>
 		</field>
-		<field name="firstlosspercent" class="java.lang.Integer">
+		<field name="firstlosspercent" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="firstlosspercent"/>
 			<fieldDescription><![CDATA[firstlosspercent]]></fieldDescription>
 		</field>
