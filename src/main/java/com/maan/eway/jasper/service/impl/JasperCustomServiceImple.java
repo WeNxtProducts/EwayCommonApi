@@ -3588,7 +3588,24 @@ public class JasperCustomServiceImple {
 								        	 fMap.put("TotPremium", totPremium);
 								        }
 							        return fMap;
-							    }).sorted(Comparator.comparing(p -> (String) p.get("CoverDesc")))
+							    }).sorted((p1, p2) -> {
+						            int sectionId1 = (Integer) p1.get("SectionId");
+						            int sectionId2 = (Integer) p2.get("SectionId");
+
+						            if (sectionId1 == 40) {
+						                return -1;
+						            }
+						            if (sectionId2 == 40) {
+						                return 1;
+						            }
+						            if (sectionId1 == 75) {
+						                return -1;
+						            }
+						            if (sectionId2 == 75) {
+						                return 1;
+						            }
+						            return Integer.compare(sectionId1, sectionId2);
+						        })
 							    .collect(Collectors.toList());
 						
 						double addonPremium = sectionPremium.stream().filter(f -> Arrays.asList(217,218).contains(f.get("SectionId")))
@@ -4059,7 +4076,24 @@ public class JasperCustomServiceImple {
 			result.put("premiumDetails", premiumDetailsRes);
 			result.put("firstLossPayeesList", firstLossPayeesList);
 			result.put("coverageDetails",  coverageDetails.stream()
-				    .sorted(Comparator.comparing(o -> (String) o.get("coverKey")))
+					.sorted((p1, p2) -> {
+			            int sectionId1 = Integer.parseInt(p1.get("coverId").toString());
+			            int sectionId2 = Integer.parseInt(p2.get("coverId").toString());
+
+			            if (sectionId1 == 40) {
+			                return -1;
+			            }
+			            if (sectionId2 == 40) {
+			                return 1;
+			            }
+			            if (sectionId1 == 75) {
+			                return -1;
+			            }
+			            if (sectionId2 == 75) {
+			                return 1;
+			            }
+			            return Integer.compare(sectionId1, sectionId2);
+			        })
 				    .collect(Collectors.toList()));
 			result.put("attachMents", attachments);
 			}

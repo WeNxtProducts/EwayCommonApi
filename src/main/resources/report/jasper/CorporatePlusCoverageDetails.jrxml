@@ -3057,7 +3057,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Warranties and conditions."]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Additional Conditions, Clauses, and Warranties."]]></textFieldExpression>
 			</textField>
 			<componentElement>
 				<reportElement x="10" y="10" width="239" height="15" isRemoveLineWhenBlank="true" uuid="4ca97dc8-5289-48db-8679-63aef4174ada"/>

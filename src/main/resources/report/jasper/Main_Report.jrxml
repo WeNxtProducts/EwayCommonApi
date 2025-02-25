@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Main_Report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1dc5efea-f3d4-48e9-9623-151913afeb82">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule.xml"/>
 	<subDataset name="Dataset1" uuid="ab7aa36b-3f50-425c-b76e-d6f0a2bf9f2a">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwaySchedule"/>
 		<queryString language="json">
@@ -593,7 +593,7 @@
 				</textField>
 			</frame>
 		</band>
-		<band height="125">
+		<band height="125" splitType="Prevent">
 			<frame>
 				<reportElement x="0" y="9" width="555" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="dabb156a-5705-4871-b79a-b86eb9c0b17a"/>
 				<textField>

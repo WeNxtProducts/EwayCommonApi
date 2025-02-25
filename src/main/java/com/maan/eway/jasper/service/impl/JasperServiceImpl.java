@@ -96,7 +96,6 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
 
 @SuppressWarnings("deprecation")
 @Service
@@ -221,7 +220,11 @@ public class JasperServiceImpl implements JasperService {
 					}else if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
 							Map<String, Object> input2 = new HashMap<String, Object>();
 							input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-							input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
+							if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+								input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
+							}else {
+								input2.put("pvSubReportPath","/"+config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
+							}
 							String obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
 									String jrxml_path=obj.replace(".jasper", ".jrxml");
 									String path = JasperCompileManager.compileReportToFile(jrxml_path);
@@ -280,7 +283,11 @@ public class JasperServiceImpl implements JasperService {
 					}else {
 						Map<String, Object> input2 = new HashMap<String, Object>();
 						input2.put("pvImagepath", Imagepath);
-						input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
+						if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+							input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
+						}else {
+							input2.put("pvSubReportPath","/"+config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
+						}
 						String jasperSaveLocation = policyReportPath.replaceAll("PolicyReport", "JsonFile")+(StringUtils.isBlank(homeData.getPolicyNo())?homeData.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "")
 								:homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", ""));
 					if(homeData.getProductId() == 19) {
@@ -319,7 +326,12 @@ public class JasperServiceImpl implements JasperService {
 									obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
 									for(String s :obj) {
 										String jrxml_path=s.replace(".jasper", ".jrxml");
-										String path = JasperCompileManager.compileReportToFile(jrxml_path);
+										String path;
+										if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+											path = JasperCompileManager.compileReportToFile(jrxml_path);
+										}else {
+											path = JasperCompileManager.compileReportToFile(jrxml_path);
+										}
 										System.out.println("Jasper compileToReport path" +path);
 									}
 									res = getCommonJasperPdfFileByJson("/report/jasper/Main_Report.jrxml", jasperSaveLocation, jsonString, input2, "- Main_Report.json"); // name changes as PhoenixSchedule
