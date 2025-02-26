@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class PreDefinedHierarchyRes {
+public class ListItemValueRes {
 	
 	@JsonProperty("ItemCode")
 	private String itemCode;

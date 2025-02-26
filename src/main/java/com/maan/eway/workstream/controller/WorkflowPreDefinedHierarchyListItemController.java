@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.workstream.request.PreDefinedHierarchyGetReq;
-import com.maan.eway.workstream.response.PreDefinedHierarchyRes;
+import com.maan.eway.workstream.response.ListItemValueRes;
 import com.maan.eway.workstream.serviceimpl.WorkflowPreDefinedHierarchyListItemServiceImpl;
 
 @RestController
@@ -54,7 +54,7 @@ public class WorkflowPreDefinedHierarchyListItemController {
 			return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);		
 		}
 		
-		List<PreDefinedHierarchyRes> hierarchy = preDefinedHierarchyService.getPreDefinedHierarchy(req);
+		List<ListItemValueRes> hierarchy = preDefinedHierarchyService.getPreDefinedHierarchy(req);
 		if(hierarchy == null) {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

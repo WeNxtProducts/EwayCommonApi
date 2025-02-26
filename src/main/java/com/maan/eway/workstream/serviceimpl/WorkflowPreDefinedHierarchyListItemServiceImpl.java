@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.error.Error;
 import com.maan.eway.workstream.request.PreDefinedHierarchyGetReq;
-import com.maan.eway.workstream.response.PreDefinedHierarchyRes;
+import com.maan.eway.workstream.response.ListItemValueRes;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -56,15 +56,15 @@ public class WorkflowPreDefinedHierarchyListItemServiceImpl {
 	/**
 	 * Retrieves a list of predefined hierarchy items based on the provided company ID and branch code.
 	 * It first fetches the items by calling the {@link #findingPreDefinedHierarchyByMaxAmendId(String, String)} 
-	 * method and then maps the result to a list of {@link PreDefinedHierarchyRes} objects.
+	 * method and then maps the result to a list of {@link ListItemValueRes} objects.
 	 *
 	 * <p>
-	 * This method handles the mapping of {@link ListItemValue} entities to {@link PreDefinedHierarchyRes} 
+	 * This method handles the mapping of {@link ListItemValue} entities to {@link ListItemValueRes} 
 	 * objects, using the provided request parameters (company ID and branch code).
 	 * </p>
 	 *
 	 * @param req the request object containing the company ID and branch code to filter the predefined hierarchy items.
-	 * @return a list of {@link PreDefinedHierarchyRes} objects corresponding to the predefined hierarchy items, 
+	 * @return a list of {@link ListItemValueRes} objects corresponding to the predefined hierarchy items, 
 	 *         or {@code null} if an error occurs during the process.
 	 * @throws Exception if an error occurs during the retrieval or mapping process.
 	 * 
@@ -72,21 +72,21 @@ public class WorkflowPreDefinedHierarchyListItemServiceImpl {
 	 * The following actions are performed by this method:
 	 * <ul>
 	 *   <li>Fetches the predefined items by calling {@link #findingPreDefinedHierarchyByMaxAmendId(String, String)}.</li>
-	 *   <li>Maps the retrieved {@link ListItemValue} entities to {@link PreDefinedHierarchyRes} objects.</li>
-	 *   <li>Returns the list of mapped {@link PreDefinedHierarchyRes} objects.</li>
+	 *   <li>Maps the retrieved {@link ListItemValue} entities to {@link ListItemValueRes} objects.</li>
+	 *   <li>Returns the list of mapped {@link ListItemValueRes} objects.</li>
 	 * </ul>
 	 * </p>
 	 * 
-	 * @see PreDefinedHierarchyRes
+	 * @see ListItemValueRes
 	 * @see ListItemValue
 	 */
-	public List<PreDefinedHierarchyRes> getPreDefinedHierarchy(PreDefinedHierarchyGetReq req) {
+	public List<ListItemValueRes> getPreDefinedHierarchy(PreDefinedHierarchyGetReq req) {
 		try {
 			List<ListItemValue> allPredefinedItems = findingPreDefinedHierarchyByMaxAmendId(
 					req.getCompanyId(), req.getBranchCode());
 			
 			return allPredefinedItems.stream()
-					.map(item -> mapper.map(item, PreDefinedHierarchyRes.class))
+					.map(item -> mapper.map(item, ListItemValueRes.class))
 					.toList();
 		} catch (Exception e) {
 			log.error("Exception : {}", e.getMessage(), e);
