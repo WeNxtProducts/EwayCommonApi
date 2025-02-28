@@ -274,7 +274,7 @@ public class KenyaEmiTransactionDetails {
 					installment = balanceAmount / (noOfMonth-1);
 				} else {
 					temp = balanceAmount;
-					temp -= installment;
+					temp -= (Double.valueOf(Math.round(installment)));
 					balanceAmount = temp;
 				}
 				// Save
@@ -977,7 +977,7 @@ public class KenyaEmiTransactionDetails {
 							insDesc="Advance Amount";
 						} else {
 							temp = balanceAmount;
-							temp -= installment;
+							temp -= (Double.valueOf(Math.round(installment)));
 							balanceAmount = temp;
 							insDesc="Installment Amount";
 						}

@@ -2264,6 +2264,7 @@ public class PaymentServiceImpl implements PaymentService {
 					data.setEmiPremium(req.getPremium());
 					data.setNoOfInstallment(String.valueOf(period));
 					data.setEmiinstallYn(req.getEmiYn());
+					System.out.println(req.getQuoteNo()+"Period :" +period);
 					
 				}
 			}
@@ -3687,6 +3688,9 @@ public class PaymentServiceImpl implements PaymentService {
 							saveDate.setPaymentStatus("Paid");
 						} else {
 							saveDate.setPaymentStatus("Pending");
+						}
+						if(responseTime==null) {
+							saveDate.setPaymentDate(m.getUpdatedDate());
 						}
 						saveDate.setPaymentDate(responseTime);
 						emiRepo.saveAndFlush(saveDate);
