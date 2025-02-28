@@ -378,7 +378,6 @@ public class QuoteProposalServiceImpl implements QuoteProposalService {
 					companyId, productId, loginId, action);
 			
 			 List<QuoteProposalRes> proposalList = quoteProposals.stream()
-					.sorted(Comparator.comparing(QuoteProposal :: getProposalId).reversed())
 					.map(pro -> mapper.map(pro, QuoteProposalRes.class))
 					.toList();	
 			

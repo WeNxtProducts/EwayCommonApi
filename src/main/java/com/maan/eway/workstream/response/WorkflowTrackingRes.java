@@ -76,8 +76,4 @@ public class WorkflowTrackingRes {
 	@JsonFormat(shape = Shape.STRING)
 	private Double commissionPercent;
 	
-	//Not in Workflow Tracking Entity
-	@JsonProperty("WorkflowOrder")
-	@JsonFormat(shape = Shape.STRING)
-	private Integer workflowOrder;
 }

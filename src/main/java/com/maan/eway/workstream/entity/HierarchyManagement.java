@@ -40,4 +40,10 @@ public class HierarchyManagement {
 	@Column(name = "HIERARCHY_LEVEL")
 	private String hierarchyLevel;
 	
+	@Column(name = "CAN_FINALIZE")
+	private Boolean canFinalize;
+	
+	@Column(name = "CAN_ESCALATE")
+	private Boolean canEscalate;
+	
 }

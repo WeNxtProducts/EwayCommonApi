@@ -250,14 +250,6 @@ public class WorkflowTrackingServiceImpl implements WorkflowTrackingService {
 						.map(wf -> mapper.map(wf, WorkflowTrackingRes.class))
 						.toList();
 			
-		
-			//Set Workflow Order
-			int order=1;
-			if(!workflowList.isEmpty()) {
-				for(WorkflowTrackingRes wf : workflowList) {
-					wf.setWorkflowOrder(order++);
-				}
-			}
 			//Filtering upto specific hierarchy value
 			int index = -1;
 			for(int i=0; i<workflowList.size(); i++) {
@@ -314,14 +306,7 @@ public class WorkflowTrackingServiceImpl implements WorkflowTrackingService {
 						.sorted(Comparator.comparing(WorkflowTracking::getWorkflowId))
 						.map(wf -> mapper.map(wf, WorkflowTrackingRes.class))
 						.toList();
-			
-			//Set Workflow Order
-			int order=1;
-			if(!workflowList.isEmpty()) {
-				for(WorkflowTrackingRes wf : workflowList) {
-					wf.setWorkflowOrder(order++);
-				}
-			}			
+					
 			return workflowList;
 		} catch (Exception e) {
 			log.error("Exception : {}", e.getMessage(), e);

@@ -2293,7 +2293,7 @@ List<Error> errorList = new ArrayList<Error>();
 				save.setEntryDate(new Date());
 				
 				
-				//-- Begin Update Login Product Master with hierarchy, finalization, escalation
+		//-- Begin Update Login Product Master with hierarchy, finalization, escalation
 				/**
 				 * Updates the hierarchy level, hierarchy value, and escalation capabilities
 				 * for each product in the login product list based on matching issuer product details.
@@ -2307,14 +2307,26 @@ List<Error> errorList = new ArrayList<Error>();
 						.findFirst();
 			
 				if(optIssuerProduct.isPresent()) {
-					save.setHierarchyLevel(optIssuerProduct.get().getHierarchyLevel());
-					save.setHierarchyValue(optIssuerProduct.get().getHierarchyValue());
-					save.setCanEscalate(optIssuerProduct.get().getCanEscalate());
-					save.setCanFinalize(optIssuerProduct.get().getCanEscalate());
+				    // Retrieve the hierarchy list based on company ID and product ID
+					List<HierarchyManagement> allHierarchy = hierarchyRepo.findAllByCompanyIdAndProductId(
+				            Integer.valueOf(save.getCompanyId()), Integer.valueOf(save.getProductId()));
+					
+					if(!allHierarchy.isEmpty()) {
+						Optional<HierarchyManagement> optHierarchy = allHierarchy.stream()
+							.filter(hier -> hier.getHierarchyValue().equals(req.getHierarchyValue()))
+							.findFirst();
+						
+						if(optHierarchy.isPresent()) {
+							save.setHierarchyLevel(optHierarchy.get().getHierarchyLevel());
+							save.setHierarchyValue(optHierarchy.get().getHierarchyValue());
+							save.setCanEscalate(optHierarchy.get().getCanEscalate());
+							save.setCanFinalize(optHierarchy.get().getCanFinalize());
+						}										
+					}
 					
 					save.setColumnName(optIssuerProduct.get().getColumnName());
 				}			
-				//-- End Update Login Product Master with hierarchy, finalization, escalation		
+		//-- End Update Login Product Master with hierarchy, finalization, escalation		
 
 
 				loginProductRepo.saveAndFlush(save);
