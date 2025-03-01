@@ -1837,7 +1837,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					}
 					instalment=hpm.getNoOfInstallment();
 			}
-			System.out.println(request.getQuoteno()+"EmiYN :"+emiYn+"\nNoOFIns from EmiTransactionDEtails :"+noOFIns+" \n Installment from HMP :"+instalment);			 
+			System.out.println(request.getQuoteno()+"EmiYN :"+emiYn+"\n NoOFIns from EmiTransactionDEtails :"+noOFIns+" \n Installment from HMP :"+instalment);			 
 			 //Not endt
 			if (StringUtils.isBlank(endttypeid)&& ( emiYn.equalsIgnoreCase("N") || instalment.equalsIgnoreCase(noOFIns))) {			 
 				List<SectionDataDetails> sections = sectionRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
