@@ -4,8 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.workstream.response.HierarchyRes;
 
 import lombok.Data;
 
@@ -82,5 +83,8 @@ public class IssuerProductGetRes {
 	@JsonProperty("CanEscalate")
 	@JsonFormat(shape = Shape.STRING)
 	private Boolean canEscalate;	
+	
+	@JsonProperty("AllAvailableHierarchy")
+	private List<HierarchyRes> allAvailableHierarchy;
 
 }

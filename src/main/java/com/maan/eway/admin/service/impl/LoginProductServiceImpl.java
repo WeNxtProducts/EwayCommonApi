@@ -72,6 +72,7 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.workstream.entity.HierarchyManagement;
 import com.maan.eway.workstream.repository.HierarchyManagementRepository;
+import com.maan.eway.workstream.response.HierarchyRes;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -2734,23 +2735,34 @@ List<Error> errorList = new ArrayList<Error>();
 		//-- Begin workflow YN for each issuer product
 			/**
 			 * Updates the workflow YN for each issuer product based on the presence of hierarchy management records.
-			 *
-			 * <p>For each issuer product in the result list, this method retrieves all hierarchy management
-			 * records associated with the company's ID and the product's ID. If no hierarchy management records are found,
-			 * the workflow status (`workflowYn`) is set to "N" (No workflow). Otherwise, it is set to "Y" (Workflow exists).</p>
+			 * <p>
+			 * Iterates over a list of issuer products and updates each product's workflow status 
+			 * and available hierarchy based on data retrieved from the repository.</p>
 			 *
 			 * @param resList the list of {@code IssuerProductGetRes} objects to update
 			 * @since : 10-01-2025
 			 */
 
 			resList.forEach(issuerProduct -> {
+			    // Retrieve hierarchy list for the given company and product
 			    List<HierarchyManagement> allHierarchy = hierarchyRepo.findAllByCompanyIdAndProductId(
 			            Integer.valueOf(issuerProduct.getCompanyId()), Integer.valueOf(issuerProduct.getProductId()));
 
+			    // If no hierarchy is found, set workflow flag to "N" and provide an empty hierarchy list
 			    if (allHierarchy == null || allHierarchy.isEmpty()) {
 			        issuerProduct.setWorkflowYn("N");
-			    } else {
+			        issuerProduct.setAllAvailableHierarchy(List.of());
+			    }
+
+			    // If hierarchy exists, set workflow flag to "Y" and map entities to response DTOs
+			    else {		       
 			        issuerProduct.setWorkflowYn("Y");
+			        issuerProduct.setAllAvailableHierarchy(
+			        		allHierarchy.stream()
+			        		.map(hi -> dozerMapper.map(hi, HierarchyRes.class))
+			        		.sorted(Comparator.comparing(HierarchyRes::getHierarchyValue))
+			        		.toList()
+			        	);
 			    }
 			});
 		//-- End workflow YN for each issuer product
