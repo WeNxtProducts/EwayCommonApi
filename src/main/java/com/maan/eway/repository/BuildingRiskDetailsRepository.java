@@ -77,5 +77,8 @@ public interface BuildingRiskDetailsRepository  extends JpaRepository<BuildingRi
 			String sectionId, Integer d, Integer riskId);
 
 
+	@Transactional
+	void deleteByRequestReferenceNoAndLocationIdAndRiskIdAndSectionIdAndCoverId(String request, Integer Locationid,
+			Integer riskid,String sectionid,Integer CoverId);
 
 }

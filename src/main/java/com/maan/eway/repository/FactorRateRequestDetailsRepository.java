@@ -182,6 +182,9 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 	void deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationId(
 			String requestReferenceNo, Integer valueOf, String insuranceId, Integer valueOf2, Integer valueOf3,
 			Integer valueOf4);
+	
+	
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndUserOpt(String requestReferenceNo, String useropt);
 
 	/**
 	 * Represents method Related To WorkflowTracking

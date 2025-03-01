@@ -1372,6 +1372,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdAndLocationIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getSectionId()),request.getLocationId());
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
 			List<FactorRateRequestDetails>  coverTaxes = new  ArrayList<FactorRateRequestDetails>();
+			//find non useropted cover:
+			List<FactorRateRequestDetails> coverdetails =facRateRepo.findByRequestReferenceNoAndUserOpt(request.getRequestReferenceNo() , "N");
 
 			for (VehicleIdsReq veh :  request.getVehicleIdsList() ) {
 				List<CoverIdsReq> coverReqList = veh.getCoverIdList().size() > 0 ? veh.getCoverIdList() : new ArrayList<CoverIdsReq>();
@@ -1407,9 +1409,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double taxPremium = coverTaxes.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
 			
 			
+			
 			// Find Building
 			List<EserviceBuildingDetails> eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndSectionId(request.getRequestReferenceNo() ,request.getSectionId());
-			for(EserviceBuildingDetails section:eserBuild1) { 
+			 for(EserviceBuildingDetails section:eserBuild1) { 
 				EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() ,section.getRiskId() ,request.getSectionId(),request.getLocationId());
 				EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() , section.getRiskId(),request.getSectionId(),request.getLocationId());
 				eserBuild.setQuoteNo(request.getQuoteNo());
@@ -1565,6 +1568,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    
 		}
 			
+			for(FactorRateRequestDetails data: coverdetails) {
+			buildRepo.deleteByRequestReferenceNoAndLocationIdAndRiskIdAndSectionIdAndCoverId(data.getRequestReferenceNo(),data.getLocationId(),data.getVehicleId(),String.valueOf(data.getSectionId()),data.getCoverId());
+			}
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
 			
