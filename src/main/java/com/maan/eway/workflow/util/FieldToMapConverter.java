@@ -1,5 +1,6 @@
 package com.maan.eway.workflow.util;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,7 +115,13 @@ public class FieldToMapConverter implements Function<JsonField,Map<String,Object
 							DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern(t.getPattern());
 							value = dateTime.format(outputFormatter);
 						}*/
-						}else
+						}else if("Integer".equals(t.getDatatype()) ){
+							try {
+								value=map.get(t.getQueryAlias())==null?BigDecimal.ZERO:new BigDecimal(map.get(t.getQueryAlias()).toString());
+							}catch (Exception e) {
+								value=BigDecimal.ZERO;	
+							}
+						}else 
 							value=map.get(t.getQueryAlias())==null?"":map.get(t.getQueryAlias()).toString();
 
 					}

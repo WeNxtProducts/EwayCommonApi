@@ -49,7 +49,7 @@ public class CachingConfig   {
 	        b->b.name("collectSectionMaster").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
 	        b->b.name("collectBranchMaster").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
 	        b->b.name("excludedTax").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
-	        b->b.name("FlowFieldData").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(500L).permitNullValues(true),
+	        b->b.name("FlowFieldData").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1500L).permitNullValues(true),
 	        b->b.name("DistinctQueryId").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
 	        b->b.name("AzentoURL").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
 	        b->b.name("AzentoToken").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false)

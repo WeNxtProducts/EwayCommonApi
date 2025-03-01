@@ -3,27 +3,35 @@ package com.maan.eway.workflow.util;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.PremiaApiDropdownMaster;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
+import com.maan.eway.repository.PremiaApiDropdownMasterRepository;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Tax;
 import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 import com.maan.eway.workflow.dto.WorkEngine;
 
+import jakarta.persistence.Tuple;
+
 @Service
 public class SaveResponseToTable {
 	@Autowired
 	private FactorRateRequestDetailsService fservice;
-
+	@Autowired
+	private PremiaApiDropdownMasterRepository dropDApi;
+	@Autowired
+	private WorkFlowFactorUtil workflow;
 	public void saveIntoFactorRequestTable(Map<String, Object> response, WorkEngine engine, Map<String, Object> request) {
 		try {
 			
@@ -96,6 +104,28 @@ public class SaveResponseToTable {
 				}
 			}
 			
+			if(!retc.isEmpty()) {
+				
+				List<Tuple> itemids = workflow.getPremiaApiDropdownMaster(engine.getCompanyId(), "SubCoverYN");
+				for(Tuple p:itemids) 
+				{
+					 String remarks = p.get("remarks").toString();
+					 List<String> item = Arrays.asList(remarks.split(","));
+					 List<Cover> collect = retc.stream()
+				        .filter(i -> item.stream()
+				                .anyMatch(j -> i.getCoverId().equals(j)))
+				        .collect(Collectors.toList());
+					 if(!collect.isEmpty()) {
+						 
+						 Cover base = collect.get(0);
+						 base.setIsSubCover("Y");
+						 collect.forEach(i-> i.setSubCoverId(base.getCoverId()));
+						 base.setSubcovers(collect);
+						 retc.removeAll(collect);
+						 retc.add(base);						 
+					 }
+				}
+			}
 			
 			
 			

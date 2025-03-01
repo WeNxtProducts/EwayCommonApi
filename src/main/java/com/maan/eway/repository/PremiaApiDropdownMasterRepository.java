@@ -1,5 +1,7 @@
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -13,5 +15,9 @@ public interface PremiaApiDropdownMasterRepository  extends JpaRepository<Premia
  
 	//EaglePremiaIntegration findBycompanyIdAnditemTypeAnditemId(Integer company,String itemtype,Integer itemid);
 	PremiaApiDropdownMaster findByCompanyIdAndItemTypeAndItemId(Integer companyId, String itemType, Integer itemId);
+
+	List<PremiaApiDropdownMaster> findByCompanyIdAndItemType(Integer companyId, String string);
+
+	List<PremiaApiDropdownMaster> findByCompanyIdAndItemTypeOrderByItemId(Integer companyId, String string);
 
 }

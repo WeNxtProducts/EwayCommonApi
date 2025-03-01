@@ -446,7 +446,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 		}
 	public synchronized EserviceMotorDetailsSaveRes calculator(CalcEngine engine, String token) {
 		
-		/*if("100027".equals(engine.getInsuranceId())) {
+		if("100027".equals(engine.getInsuranceId())) {
 			
 			WorkEngine work=new WorkEngine();
 			work.setCompanyId(engine.getInsuranceId());
@@ -465,7 +465,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			jsonMapper.createQuotation(work);
 			return null;
 		}
-	else*/ {
+	else {
 			// Referal Checking.
 			BigDecimal endtCount = BigDecimal.ZERO;
 			List<UWReferrals> referr = referal.underwriterReferral(engine);

@@ -25,7 +25,7 @@ public class JsonModules implements Consumer<JsonField> {
 				t.setChildField(child);
 			}*/
 			
-			if("Yes".equals(t.getIsHeader()) && t.getChildField()==null) {
+			if("Yes".equals(t.getIsHeader())/*&& t.getChildField()==null*/) {
 				List<JsonField> child=new ArrayList<JsonField>(0);
 				t.setChildField(child);
 			}

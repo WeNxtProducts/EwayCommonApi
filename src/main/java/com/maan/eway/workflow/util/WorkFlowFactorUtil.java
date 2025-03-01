@@ -3,7 +3,9 @@ package com.maan.eway.workflow.util;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,7 @@ import com.google.gson.GsonBuilder;
 import com.maan.eway.bean.ApiIntegMaster;
 import com.maan.eway.bean.FieldQueryTablequery;
 import com.maan.eway.bean.FlowFieldDetails;
+import com.maan.eway.bean.PremiaApiDropdownMaster;
 import com.maan.eway.bean.PremiaTransactionLog;
 import com.maan.eway.repository.PremiaTransactionLogRepository;
 import com.maan.eway.upgrade.criteria.CriteriaService;
@@ -155,6 +158,18 @@ public class WorkFlowFactorUtil {
 			e.printStackTrace();
 		}
 		return azentoToken;
+	}
+
+	public List<Tuple> getPremiaApiDropdownMaster(String companyId, String string) {
+		try {
+			String search4 = "companyId:" + companyId + ";itemType:"+string;
+			SpecCriteria commonCriteria = crservice.createCriteria(PremiaApiDropdownMaster.class, search4, "itemId");			
+			List<Tuple> commonResult = crservice.getResult(commonCriteria, 0, 50);				
+						return commonResult;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

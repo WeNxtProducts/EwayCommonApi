@@ -3,6 +3,7 @@ package com.maan.eway.workflow.service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,8 +67,8 @@ public class JsonMapperFromDB {
 	
 	public Map<String,Object> createRequest(WorkEngine engine) {
 		try {
-			List<JsonField> data = workflowUtil.getFlowFieldData(engine);			
-			List<BigDecimal> distinctQueryid = data.stream().filter(tq -> tq.getQueryId()!=null && tq.getQueryId().compareTo(BigDecimal.ZERO)!=0)
+			final List<JsonField> data = workflowUtil.getFlowFieldData(engine);  
+ 			List<BigDecimal> distinctQueryid = data.stream().filter(tq -> tq.getQueryId()!=null && tq.getQueryId().compareTo(BigDecimal.ZERO)!=0)
 			.map(tx->tx.getQueryId()).distinct().collect(Collectors.toList());
 			Map<String, List<Map<String, Object>>> dynamicQuery=null;
 			if( distinctQueryid !=null && !distinctQueryid.isEmpty()) {

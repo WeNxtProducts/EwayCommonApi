@@ -1,14 +1,12 @@
 package com.maan.eway.workflow.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.google.gson.JsonElement;
-import com.maan.eway.bean.FlowFieldDetails;
-
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +18,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class JsonField  {
+@Data
+public class JsonField implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private BigDecimal companyId ;
 
