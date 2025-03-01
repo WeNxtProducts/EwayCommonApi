@@ -184,7 +184,6 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 			Integer valueOf4);
 	
 	
-	List<FactorRateRequestDetails> findByRequestReferenceNoAndUserOpt(String requestReferenceNo, String useropt);
 
 	/**
 	 * Represents method Related To WorkflowTracking

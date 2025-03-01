@@ -1373,7 +1373,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
 			List<FactorRateRequestDetails>  coverTaxes = new  ArrayList<FactorRateRequestDetails>();
 			//find non useropted cover:
-			List<FactorRateRequestDetails> coverdetails =facRateRepo.findByRequestReferenceNoAndUserOpt(request.getRequestReferenceNo() , "N");
 
 			for (VehicleIdsReq veh :  request.getVehicleIdsList() ) {
 				List<CoverIdsReq> coverReqList = veh.getCoverIdList().size() > 0 ? veh.getCoverIdList() : new ArrayList<CoverIdsReq>();
@@ -1411,7 +1410,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// Find Building
-			List<EserviceBuildingDetails> eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndSectionId(request.getRequestReferenceNo() ,request.getSectionId());
+			//List<EserviceBuildingDetails> eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndSectionIdAnd(request.getRequestReferenceNo() ,request.getSectionId());
+			List<Integer> riskIDs = request.getVehicleIdsList().stream().map(a -> a.getVehicleId()) .collect(Collectors.toList());
+			List<Integer> Coverid=request.getVehicleIdsList().stream().flatMap(a->a.getCoverIdList().stream().map(x->x.getCoverId())).collect(Collectors.toList());
+			List<String> sectionid=request.getVehicleIdsList().stream().map(a->a.getSectionId()).collect(Collectors.toList());
+			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
+			List<EserviceBuildingDetails>     eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
+					request.getRequestReferenceNo(),locationid ,sectionid,riskIDs,Coverid);
+
+		 
+
+			
 			 for(EserviceBuildingDetails section:eserBuild1) { 
 				EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() ,section.getRiskId() ,request.getSectionId(),request.getLocationId());
 				EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() , section.getRiskId(),request.getSectionId(),request.getLocationId());
@@ -1568,9 +1577,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    
 		}
 			
-			for(FactorRateRequestDetails data: coverdetails) {
-			buildRepo.deleteByRequestReferenceNoAndLocationIdAndRiskIdAndSectionIdAndCoverId(data.getRequestReferenceNo(),data.getLocationId(),data.getVehicleId(),String.valueOf(data.getSectionId()),data.getCoverId());
-			}
+			
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
 			
