@@ -1764,9 +1764,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			EserviceInsuredDetails saveInsured = new EserviceInsuredDetails();
 			Date entryDate = null;	
 			String createdBy = "";
-			String custRefNo = "";
-			Integer productId;
-        if (StringUtils.isBlank(req.getCustomerReferenceNo())) {
+			String custRefNo = req.getCustomerReferenceNo();
+			String insRefNo = "";
+			Integer productId=0;
+        /*if (StringUtils.isBlank(req.getCustomerReferenceNo())) {
 				// Save
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
@@ -1792,8 +1793,42 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				productId=findData.getProductId();
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(custRefNo);
+			}*/
+			 if (!StringUtils.isBlank(req.getInsuredReferenceNo())) {
+				// Update
+				insRefNo = req.getInsuredReferenceNo();
+				EserviceInsuredDetails findData = insuredRepository.findByInsuredReferenceNo(req.getInsuredReferenceNo());
+				entryDate = findData.getEntryDate();
+				createdBy = findData.getCreatedBy();
+				productId=findData.getProductId();
 			}
-        
+			if (!StringUtils.isBlank(req.getCustomerReferenceNo())) {
+				List<EserviceInsuredDetails> data = insuredRepository.findAllByCustomerReferenceNo(req.getCustomerReferenceNo());
+				if(data!=null && !data.isEmpty()){
+				req.setInsuredReferenceNo(data.get(0).getInsuredReferenceNo());
+				insRefNo=data.get(0).getInsuredReferenceNo();
+				insuredRepository.deleteAll(data);
+				}
+			}
+        if (StringUtils.isBlank(req.getInsuredReferenceNo())) {
+			// Save
+			entryDate = new Date();
+			createdBy = req.getCreatedBy();
+			productId=Integer.valueOf(req.getProductId());
+
+ 			SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+ 		 	generateSeqReq.setInsuranceId(req.getCompanyId());  
+ 		 	generateSeqReq.setProductId(req.getProductId());
+ 		 	generateSeqReq.setType("10");
+ 		 	generateSeqReq.setTypeDesc("INSURED_REFERENCE_NO");
+ 		 	insRefNo =  genSeqNoService.generateSeqCall(generateSeqReq);
+			res.setResponse("Saved Successfully");
+			res.setSuccessId(insRefNo);
+		}else {
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(insRefNo);
+		} 
+    
         	// Dob Condition
 	        if(req.getDobOrRegDate() ==null  ) {
 				Date   dobOrReg = new Date() ;
@@ -1985,8 +2020,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveInsured.setIdTypeDescLocal(policyHolderTypeIdLocal);
 			saveInsured.setSocioProfessionalCategory(req.getSocioProfessionalCategory());
 			saveInsured.setActivities(req.getActivities());
-			saveInsured.setInsuredReferenceNo(req.getInsuredReferenceNo() );		
-			
+			saveInsured.setInsuredReferenceNo(insRefNo);		
+			saveInsured.setCustomerReferenceNo(custRefNo);		
 			
 			// Kenya Rating Fields
 			saveInsured.setMaritalStatus(StringUtils.isBlank(req.getMaritalStatus()) ?"Single" : req.getMaritalStatus() );
@@ -5079,4 +5114,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			return null;
 
 		}
+		
+		public void deleteAllByCustomerReferenceNo(String customerReferenceNo) {
+		    insuredRepository.deleteByCustomerReferenceNo(customerReferenceNo);
+		}
+
 	}

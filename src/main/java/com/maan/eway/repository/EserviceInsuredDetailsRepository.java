@@ -79,7 +79,9 @@ public interface EserviceInsuredDetailsRepository  extends JpaRepository<Eservic
 //	int countByCompanyIdAndCreatedByAndIdTypeAndIdNumber(String companyId, String createdBy, String idType,
 //			String idNumber);
 
-
-	
+	EserviceInsuredDetails findByInsuredReferenceNo(String insuredReferenceNo);
+	public void deleteByInsuredReferenceNo(String insuredReferenceNo);
+	public void deleteByCustomerReferenceNo(String customerReferenceNo);
+	List<EserviceInsuredDetails> findAllByCustomerReferenceNo(String customerReferenceNo);
 
 }

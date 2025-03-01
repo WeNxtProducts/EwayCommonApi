@@ -608,11 +608,11 @@ public class SanlamEserviceCustomerDetails {
 		SuccessRes res = new SuccessRes();
 		
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		String custRefNo = "";
 		try {
 			EserviceCustomerDetails saveData = new EserviceCustomerDetails();
 			Date entryDate = null;	
 			String createdBy = "";
-			String custRefNo = "";
 			Integer productId;
         if (StringUtils.isBlank(req.getCustomerReferenceNo())) {
 				// Save
@@ -834,9 +834,12 @@ public class SanlamEserviceCustomerDetails {
 				saveData.setLicenseDuration(20);
 			}
 			saveData.setExpiryDate(req.getExpiryDate());
-			
+			req.setCustomerReferenceNo(custRefNo);
+	        if("Y".equalsIgnoreCase(req.getCustomerAsInsurer())) {
+				eCustDetailsServiceImpl.saveInsuredDetails(req);
+			}
 			repository.save(saveData);
-			repository.flush();
+			repository.flush();			
 			
 			if("100040".equals(req.getCompanyId())) {
 				WorkEngine e=new WorkEngine();
@@ -860,6 +863,7 @@ public class SanlamEserviceCustomerDetails {
 				}
 			}
 
+		
 			//Personal Info Update
 			
 			//Endorsement flow and B2C Flow
@@ -1122,8 +1126,8 @@ public class SanlamEserviceCustomerDetails {
 			return null;
 		}
 		return res;
-	
 	}
+	
 	public CustomerDetailsGetRes getCustomerDetails(GetCustomerDetailsReq req) {
 		CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();

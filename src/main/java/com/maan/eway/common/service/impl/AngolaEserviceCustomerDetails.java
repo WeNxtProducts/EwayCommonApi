@@ -831,11 +831,12 @@ public class AngolaEserviceCustomerDetails {
 				saveData.setLicenseIssuedDate(new Date());
 				saveData.setLicenseDuration(20);
 			}
-			
-
-
+			req.setCustomerReferenceNo(custRefNo);
 			repository.save(saveData);
 			repository.flush();
+			if("Y".equalsIgnoreCase(req.getCustomerAsInsurer())) {
+				eCustDetailsServiceImpl.saveInsuredDetails(req);
+			}
 			
 			if("100027".equals(req.getCompanyId())) {
 				WorkEngine e=new WorkEngine();
