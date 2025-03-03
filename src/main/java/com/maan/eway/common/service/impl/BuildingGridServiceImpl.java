@@ -2185,8 +2185,12 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 		String newCustId = null;
 		Integer preEndtId=null;
 		long pendingcount = 0;
+		
+		
 		if (count > 0) {
-			List<EserviceBuildingDetails> motors = repo.findTopByOriginalPolicyNoAndRiskIdOrderBySectionId(req.getPolicyNo(), 1);
+			List<EserviceBuildingDetails> motors = repo.findTopByOriginalPolicyNoOrderBySectionId(req.getPolicyNo());
+//			EserviceBuildingDetails motors=buildingDetails.get(0);
+//			pendingcount = "P".equalsIgnoreCase(motors.getEndtStatus());
 			pendingcount = motors.stream().filter(m -> m.getEndtStatus().equals("P")).count();
 			if (pendingcount > 0) {
 				 List<EserviceBuildingDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
@@ -2198,7 +2202,7 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 			}
 		}
 		if (count > 0) {
-			List<EserviceBuildingDetails> motors = repo.findTopByOriginalPolicyNoAndRiskIdOrderBySectionId(req.getPolicyNo(), 1 );
+			List<EserviceBuildingDetails> motors = repo.findTopByOriginalPolicyNoOrderBySectionId(req.getPolicyNo() );
 			// Compare
 			motors.sort(new Comparator<EserviceBuildingDetails>() {
 				@Override
@@ -2251,8 +2255,19 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 
 //					List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
 //							branches);
-		List<EserviceBuildingDetails> motors = repo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+		List<EserviceBuildingDetails> ebuilding = repo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+		List<BuildingRiskDetails> buildingRisk = buildRiskRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+		
+		List<EserviceBuildingDetails> motors = ebuilding.stream()
+			    .filter(m -> buildingRisk.stream()
+			        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
+			                        && m.getQuoteNo().equals(risk.getQuoteNo())
+			                        && m.getLocationId().equals(risk.getLocationId())
+			                        && m.getSectionId().equals(risk.getSectionId())
+			        		))
+			    .collect(Collectors.toList());
 		++count;
+		
 		if (motors.size() > 0) {
 			for (EserviceBuildingDetails data : motors) {
 				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); 
@@ -2729,7 +2744,16 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 					
-					List<EserviceCommonDetails> commData = eserCommonRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+					List<EserviceCommonDetails> ecommDataList = eserCommonRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+					List<CommonDataDetails> commDataList = commonDataRepo.findByQuoteNoAndStatusNot(prevQuoteNo,"D");
+					List<EserviceCommonDetails> commData = ecommDataList.stream()
+						    .filter(m -> commDataList.stream()
+						        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
+						                        && m.getQuoteNo().equals(risk.getQuoteNo())
+						                        && m.getLocationId().equals(risk.getLocationId())
+						                        && m.getSectionId().equals(risk.getSectionId())
+						        		))
+						    .collect(Collectors.toList());
 					if (commData!=null && commData.size()>0 ) 
 						for(EserviceCommonDetails commData1:commData) {
 							savedata = dozerMapper.map(commData1, EserviceCommonDetails.class);

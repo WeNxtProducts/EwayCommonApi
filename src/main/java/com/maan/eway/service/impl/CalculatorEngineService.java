@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
@@ -4021,6 +4022,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					engine.setCoverModification("N");
 					engine.setVehicleId(data.getRiskId().toString());		
 					EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+					System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
 					resList.add(res);
 				}
 			}else {
@@ -4064,7 +4066,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 									engine.setEffectiveDate(bd.getPolicyStartDate());
 									engine.setPolicyEndDate(bd.getPolicyEndDate());
 									engine.setCoverModification("N");
-									engine.setVehicleId(bd.getRiskId().toString());		
+									engine.setVehicleId(bd.getRiskId().toString());	
+									System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
 									EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
 									resList.add(res);
 									}
@@ -4092,6 +4095,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							engine.setCoverModification("N");
 							engine.setVehicleId(cd.getRiskId().toString());		
 							EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+							System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
 							resList.add(res);
 						}
 					 }

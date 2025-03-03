@@ -2299,7 +2299,16 @@ public class CommonGridServiceImpl implements CommonGridService {
 				
 //				List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
 //						branches);
-				List<EserviceCommonDetails> motors=repo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+				List<EserviceCommonDetails> ecommDataList=repo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+				List<CommonDataDetails> commDataList = commonDataRepo.findByQuoteNoAndStatusNot(prevQuoteNo,"D");
+				List<EserviceCommonDetails> motors = ecommDataList.stream()
+					    .filter(m -> commDataList.stream()
+					        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
+					                        && m.getQuoteNo().equals(risk.getQuoteNo())
+					                        && m.getLocationId().equals(risk.getLocationId())
+					                        && m.getSectionId().equals(risk.getSectionId())
+					        		))
+					    .collect(Collectors.toList());
 				++count;
 				if (motors.size() > 0) {
 					for (EserviceCommonDetails data : motors) {
