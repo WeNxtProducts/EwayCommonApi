@@ -1,13 +1,20 @@
 package com.maan.eway.integration.service.impl;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.ValuationIntegration;
 import com.maan.eway.integration.req.ValuationDetailsReq;
@@ -17,9 +24,14 @@ import com.maan.eway.integration.req.ValuationStatusReq;
 import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.res.ValuationListRes;
 import com.maan.eway.integration.service.ValuationService;
+import com.maan.eway.notification.bean.NotifTransactionDetails;
+import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
+import com.maan.eway.notification.service.NotificationService;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.ValuationIntegrationRepository;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -41,6 +53,14 @@ public class ValuationServiceImpl implements ValuationService {
 	private RegentValuation regent;
 	@Autowired
 	private ValuationIntegrationRepository valuationIntegrationRepository;
+	@Autowired
+	private NotificationService notificationService;
+	@Autowired 
+	private NotifTransactionDetailsRepository notifTrans;
+	
+	@Autowired 
+	private InsuranceCompanyMasterRepository companyRepo;
+	
 	@Override
 	public PremiaResponse pushValuation(ValuationReq req) {
 		PremiaResponse resp=new PremiaResponse();
@@ -155,6 +175,63 @@ public class ValuationServiceImpl implements ValuationService {
 			}
 		}
 		return list;
+	}
+
+	public void sendSMSMail(ValuationIntegration vdata) {
+		boolean sms=true,mail=true;
+		try {
+			 String mobileNo=vdata.getCustomerMobile();
+			 String email=vdata.getEmail();
+			 if(StringUtils.isBlank(email)) {
+				 mail=false;
+			 }
+			 if(StringUtils.isBlank(mobileNo)) {
+				 sms=false;
+			 }
+			if(sms || mail) {
+				List<InsuranceCompanyMaster>cm= companyRepo.findTopByCompanyIdOrderByAmendIdDesc(vdata.getCompanyId());
+				if(!CollectionUtils.isEmpty(cm)) {
+				Calendar calend = Calendar.getInstance();
+				calend.setTime(new Date()); 
+				calend.add(Calendar.DATE, 1); 
+				NotifTransactionDetails nt = NotifTransactionDetails.builder()
+						.brokerCompanyName(vdata.getFirstName())
+						.brokerMailId(vdata.getEmail())					
+						.companyName("First Insurance")
+						.customerPhoneCode(Integer.parseInt("254"))
+						.customerPhoneNo(vdata.getCustomerMobile()==null?null:new BigDecimal(vdata.getCustomerMobile()))
+						.customerMailid(vdata.getEmail())					
+						.customerName(vdata.getFirstName())
+						.entryDate(new Date())
+						.notifcationPushDate(new Date())
+						.notifcationEndDate(calend.getTime())
+						.regNo(vdata.getVehicleRegNo())
+						//.notifDescription(tempPassword)
+						.notifNo(Instant.now().toEpochMilli())
+						//.notifNo(null)
+						.notifPriority(1)
+						.notifPushedStatus("P")
+						.notifTemplatename("VALUATION_NOTIFICATION")											
+						.productName("Common")					
+						//.tinyUrl(n.getTinyUrl())
+						.companyid(vdata.getCompanyId())
+						.productid(99999)
+						.companyLogo(cm.get(0).getCompanyLogo())
+						.companyAddress(cm.get(0).getCompanyAddress())											
+						.tinyUrlActive("N")
+						//.tinyGroupId(tinyGroupId)
+						.build();
+				NotifTransactionDetails sv = notifTrans.save(nt);
+				List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
+				text.add(sv);
+				notificationService.jobProcess(text);
+				}
+			}
+			 
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 }

@@ -57,7 +57,8 @@ import jakarta.persistence.criteria.Subquery;
 public class RegentValuation  {
 	@PersistenceContext
 	private EntityManager em;
-	
+	@Autowired
+	private ValuationServiceImpl valuationImpl;
 	@Autowired
 	private ValuationIntegrationRepository valuationIntegrationRepository;
 	
@@ -131,8 +132,9 @@ public class RegentValuation  {
 					vdata.setCreateResponse(res);
 					vdata.setRecordId(recordId);
 					valuationIntegrationRepository.saveAndFlush(vdata);
-					resp.setResponse("Valuation Request Created Successfully");;
-				};
+					resp.setResponse("Valuation Request Created Successfully");
+					valuationImpl.sendSMSMail(vdata);
+				}
 			}
 			
 		}

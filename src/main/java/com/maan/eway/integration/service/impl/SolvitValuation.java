@@ -27,6 +27,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -61,7 +62,8 @@ import jakarta.persistence.criteria.Subquery;
 public class SolvitValuation  {
 	@PersistenceContext
 	private EntityManager em;
-	
+	@Autowired
+	private ValuationServiceImpl valuationImpl;
 	@Autowired
 	private ValuationIntegrationRepository valuationIntegrationRepository;
 	
@@ -125,18 +127,26 @@ public class SolvitValuation  {
 					System.out.println(response.getBody());
 					res=response.getBody().toString();
 					recordId=response.getBody().getRequestId();
-				}catch (Exception e) {
+				}catch (HttpClientErrorException e) {
+		            	System.out.println("Resource is locked. Please try again later.");
+		            	 Map<String, String> headers = e.getResponseHeaders().toSingleValueMap();
+		                 System.out.println("Response Headers:");
+		                 for (Map.Entry<String, String> entry : headers.entrySet()) {
+		                     System.out.println(entry.getKey() + ": " + entry.getValue());
+		                 }
+		                 res=headers.get("Message");
+		        } catch (Exception e) {
 					e.printStackTrace();
 					res=e.getLocalizedMessage();
 					resp.setResponse("Valuation Request Not Created Successfully");
 				}
-				if(response.getBody()!=null) {
-					vdata.setCreateRequest(request.toString());
-					vdata.setCreateResponse(res);
-					vdata.setRecordId(recordId);
-					valuationIntegrationRepository.saveAndFlush(vdata);
-					resp.setResponse("Valuation Request Created Successfully");;
-				};
+				
+				vdata.setCreateRequest(request.toString());
+				vdata.setCreateResponse(res);
+				vdata.setRecordId(recordId);
+				valuationIntegrationRepository.saveAndFlush(vdata);
+				resp.setResponse("Valuation Request Created Successfully");
+				valuationImpl.sendSMSMail(vdata);
 			}
 			
 		}
@@ -147,6 +157,7 @@ public class SolvitValuation  {
 		
 		return resp;
 	}
+
 
 	private List<ValuationQuoteDetailsRes> getQuoteDetails(String quoteNo) {
 		List<ValuationQuoteDetailsRes>list=null;
@@ -237,28 +248,36 @@ public class SolvitValuation  {
 							response = restTemplate.exchange(list.get(0).getStatusApi(),  HttpMethod.POST,entityReq,new ParameterizedTypeReference<List<ValuationStatusDetailsRes>>() {});
 							System.out.println(response.getBody());
 							status=response.getBody().get(0).getStatus();
+						}catch (HttpClientErrorException e) {
+			            	System.out.println("Resource is locked. Please try again later.");
+			            	 Map<String, String> headers = e.getResponseHeaders().toSingleValueMap();
+			                 System.out.println("Response Headers:");
+			                 for (Map.Entry<String, String> entry : headers.entrySet()) {
+			                     System.out.println(entry.getKey() + ": " + entry.getValue());
+			                 }
+			                 res=headers.get("Message");
 						}catch (Exception e) {
 							e.printStackTrace();
 							res=e.getLocalizedMessage();
 							resp.setResponse("Failed");
 						}
-						if(response.getBody()!=null) {
-							vdata.setStatusrequest(request.toString());
-							vdata.setStatusresponse(res);
-							vdata.setStatus(status);
-							valuationIntegrationRepository.saveAndFlush(vdata);
-							resp.setResponse(status);
-							if("Completed".equalsIgnoreCase(status)) {
-								ValuationDetailsReq dreq=new ValuationDetailsReq();
-								dreq.setBranchCode(req.getBranchCode());
-								dreq.setCompanyId(req.getCompanyId());
-								dreq.setRecordId(vdata.getRecordId());
-								dreq.setValCompanyId(req.getValCompanyId());
-								getDetails(dreq);
-							}
+						
+						
+						vdata.setStatusrequest(request.toString());
+						vdata.setStatusresponse(res);
+						vdata.setStatus(status);
+						valuationIntegrationRepository.saveAndFlush(vdata);
+						resp.setResponse(status);
+						if("Completed".equalsIgnoreCase(status)) {
+							ValuationDetailsReq dreq=new ValuationDetailsReq();
+							dreq.setBranchCode(req.getBranchCode());
+							dreq.setCompanyId(req.getCompanyId());
+							dreq.setRecordId(vdata.getRecordId());
+							dreq.setValCompanyId(req.getValCompanyId());
+							getDetails(dreq);
 						}
 					}
-				}
+					}
 			}
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -292,14 +311,23 @@ public class SolvitValuation  {
 							response = restTemplate.exchange(list.get(0).getGetDetailApi(),  HttpMethod.POST,entityReq,Map.class);
 							System.out.println(response.getBody());
 							res=new Gson().toJson(response.getBody());
+						}catch (HttpClientErrorException e) {
+			            	System.out.println("Resource is locked. Please try again later.");
+			            	 Map<String, String> headers = e.getResponseHeaders().toSingleValueMap();
+			                 System.out.println("Response Headers:");
+			                 for (Map.Entry<String, String> entry : headers.entrySet()) {
+			                     System.out.println(entry.getKey() + ": " + entry.getValue());
+			                 }
+			                 res=headers.get("Message");
 						}catch (Exception e) {
 							e.printStackTrace();
 							res=e.getLocalizedMessage();
 							resp.setResponse("Failed");
 						}
-						if(response.getBody()!=null) {
+						
 							vdata.setIdrequest(request.toString());
 							vdata.setIdresponse(res);
+							if(response.getBody()!=null) {
 							Map<String,Object> map = objectMapper.readValue(res, new TypeReference<Map<String,Object>>(){});
 							String valsuminsured=map.get("force_sales_value")==null?"":map.get("force_sales_value").toString();
 							double diffsuminsured=vdata.getSumInsured()-Double.parseDouble(valsuminsured.replaceAll(",", "")) ;
@@ -308,9 +336,9 @@ public class SolvitValuation  {
 								vdata.setExceptionStatus("E");
 								vdata.setExceptionRemarks("SumInsured Difference is High");
 							}
+							}
 							valuationIntegrationRepository.saveAndFlush(vdata);
 							resp.setResponse(res);
-						}
 					}
 				}
 			}
