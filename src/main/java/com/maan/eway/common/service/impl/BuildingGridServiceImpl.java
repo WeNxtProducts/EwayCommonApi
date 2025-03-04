@@ -2270,78 +2270,93 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 		
 		if (motors.size() > 0) {
 			for (EserviceBuildingDetails data : motors) {
-				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); 
-						/*endtTypeRepo
-						.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-								req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-								Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
-				savedata = dozerMapper.map(data, EserviceBuildingDetails.class);
-				savedata.setEntryDate(new Date());
-				savedata.setCreatedBy(req.getLoginId());
-				savedata.setUpdatedBy(req.getLoginId());
-				savedata.setUpdatedDate(new Date());
-				savedata.setRequestReferenceNo(newRequestNo);
-				//savedata.setCustomerReferenceNo(newCustRefNo);
-				savedata.setCustomerReferenceNo(data.getCustomerReferenceNo());
-				savedata.setCustomerId(newCustId);
-				savedata.setOldReqRefNo(req.getRequestReferenceNo());
-//				if (req.getUserType().equalsIgnoreCase("Broker") || (req.getUserType().equalsIgnoreCase("User"))) {
-//					branchCode = req.getBranchCode();
-//					savedata.setApplicationId("1");
-//					savedata.setBrokerBranchCode(branchCode);
-//
-//				} else if ("issuer".equalsIgnoreCase(userType)) {
-//					savedata.setApplicationId(req.getLoginId());
-//					branchCode = req.getBranchCode();
-//					savedata.setBranchCode(branchCode);
-//				}
-				savedata.setBrokerBranchCode(data.getBrokerBranchCode());
-				
-				savedata.setActualPremiumFc(BigDecimal.ZERO);
-				savedata.setActualPremiumLc(BigDecimal.ZERO);
-				savedata.setOverallPremiumFc(BigDecimal.ZERO);
-				savedata.setOverallPremiumLc(BigDecimal.ZERO);
-				if (pendingcount == 0) {
-					savedata.setQuoteNo(quoteNo);
-				} else {
-					savedata.setQuoteNo(newQuoteNo);
-				}
-				savedata.setOriginalPolicyNo(req.getPolicyNo());
-				savedata.setEndorsementDate(new Date());
-				savedata.setEndorsementRemarks(req.getEndtRemarks());
-				savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
-				savedata.setEndtPrevPolicyNo(prevPolicyNo);
-				//savedata.setEndtPrevPolicyNo(req.getPolicyNo()+"-"+ count);
-				savedata.setEndtPrevQuoteNo(prevQuoteNo);
-				savedata.setEndtCount(new BigDecimal(count));
-				savedata.setEndtStatus("P");
-				savedata.setIsFinyn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
-				savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
-				savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
-				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
-				savedata.setStatus("E");
-				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
-				savedata.setApplicationId(req.getApplicationId());
-				if(req.getLoginId()==null || StringUtils.isBlank(req.getLoginId())) {
-					savedata.setLoginId(data.getLoginId());
-				}else {
-					savedata.setLoginId(req.getLoginId());
-				}
-				savedata.setSubUserType(req.getSubUserType());
-				
-				// Source Type Condtion
-				String sourceType = savedata.getSourceType() ;
-				if(StringUtils.isNotBlank(savedata.getApplicationId()) && ! "1".equalsIgnoreCase(savedata.getApplicationId()) ) {
-					List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(savedata.getCompanyId() , savedata.getBranchCode() ,"SOURCE_TYPE"); 
-					List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter( o -> "Y".equalsIgnoreCase(o.getStatus()) 
-							&& o.getItemValue().contains(sourceType) ).collect(Collectors.toList()); 							
-					savedata.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	savedata.getSourceType());			
-					savedata.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	savedata.getSourceTypeId());
-				}
-				repo.saveAndFlush(savedata);
-			}
+				BuildingRiskDetails matchingRisk = buildingRisk.stream()
+						.filter(risk -> risk.getRiskId().equals(data.getRiskId())
+								&& risk.getQuoteNo().equals(data.getQuoteNo())
+								&& risk.getLocationId().equals(data.getLocationId())
+								&& risk.getSectionId().equals(data.getSectionId()))
+						.findFirst().orElse(null);
 
+				if (matchingRisk != null) {
+
+					EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(), req.getProductId(),
+							req.getEndtTypeId());
+					/*
+					 * endtTypeRepo
+					 * .findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+					 * req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+					 * Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+					 */
+					savedata = dozerMapper.map(data, EserviceBuildingDetails.class);
+					savedata.setEntryDate(new Date());
+					savedata.setCreatedBy(req.getLoginId());
+					savedata.setUpdatedBy(req.getLoginId());
+					savedata.setUpdatedDate(new Date());
+					savedata.setRequestReferenceNo(newRequestNo);
+					savedata.setCustomerReferenceNo(data.getCustomerReferenceNo());
+					savedata.setCustomerId(newCustId);
+					savedata.setOldReqRefNo(req.getRequestReferenceNo());
+					savedata.setActualPremiumFc(BigDecimal.ZERO);
+					savedata.setActualPremiumLc(BigDecimal.ZERO);
+					savedata.setOverallPremiumFc(BigDecimal.ZERO);
+					savedata.setOverallPremiumLc(BigDecimal.ZERO);
+					if (pendingcount == 0) {
+						savedata.setQuoteNo(quoteNo);
+					} else {
+						savedata.setQuoteNo(newQuoteNo);
+					}
+					savedata.setOriginalPolicyNo(req.getPolicyNo());
+					savedata.setEndorsementDate(new Date());
+					savedata.setEndorsementRemarks(req.getEndtRemarks());
+					savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+					savedata.setEndtPrevPolicyNo(prevPolicyNo);
+					// savedata.setEndtPrevPolicyNo(req.getPolicyNo()+"-"+ count);
+					savedata.setEndtPrevQuoteNo(prevQuoteNo);
+					savedata.setEndtCount(new BigDecimal(count));
+					savedata.setEndtStatus("P");
+					savedata.setIsFinyn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+					savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+					savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+					savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+					savedata.setStatus("E");
+					savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+					savedata.setApplicationId(req.getApplicationId());
+					if (req.getLoginId() == null || StringUtils.isBlank(req.getLoginId())) {
+						savedata.setLoginId(data.getLoginId());
+					} else {
+						savedata.setLoginId(req.getLoginId());
+					}
+					savedata.setSubUserType(req.getSubUserType());
+
+					// Source Type Condtion
+					String sourceType = savedata.getSourceType();
+					if (StringUtils.isNotBlank(savedata.getApplicationId())
+							&& !"1".equalsIgnoreCase(savedata.getApplicationId())) {
+						List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(
+								savedata.getCompanyId(), savedata.getBranchCode(), "SOURCE_TYPE");
+						List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter(
+								o -> "Y".equalsIgnoreCase(o.getStatus()) && o.getItemValue().contains(sourceType))
+								.collect(Collectors.toList());
+						savedata.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()
+								: savedata.getSourceType());
+						savedata.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()
+								: savedata.getSourceTypeId());
+						savedata.setSumInsured(matchingRisk.getSumInsured()==null ? BigDecimal.ZERO : matchingRisk.getSumInsured() );
+						savedata.setSumInsuredLc(matchingRisk.getSumInsuredLc()==null ? BigDecimal.ZERO : matchingRisk.getSumInsuredLc() );
+//						savedata.setEmiPremium(BigDecimal.ONE);
+						savedata.setVatPremium(matchingRisk.getVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getVatPremium() );
+						savedata.setEndtPremium(matchingRisk.getEndtPremium()==null ? 0 : matchingRisk.getEndtPremium() );
+						savedata.setEndtVatPremium(matchingRisk.getEndtVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getEndtVatPremium() );
+						savedata.setActualPremiumFc(matchingRisk.getActualPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumFc() );
+						savedata.setActualPremiumLc(matchingRisk.getActualPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumLc() );
+						savedata.setOverallPremiumFc(matchingRisk.getOverallPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumFc() );
+						savedata.setOverallPremiumLc(matchingRisk.getOverallPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumLc() );
+						repo.saveAndFlush(savedata);
+				}
+			}
 		}
+
+	}
 		System.out.println("*************EserviceBuildingDetails************");
 		System.out.println("Old QUOTE NO:"+prevQuoteNo);
 		System.out.println("Old Customer Id:"+customerId);

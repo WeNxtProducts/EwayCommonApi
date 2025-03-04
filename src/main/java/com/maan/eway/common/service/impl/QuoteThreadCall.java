@@ -1417,9 +1417,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
 			List<EserviceBuildingDetails>     eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
 					request.getRequestReferenceNo(),locationid ,sectionid,riskIDs,Coverid);
-
-		 
-
+               if(eserBuild1.isEmpty()	)	
+            		   {eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdIn(
+					request.getRequestReferenceNo(),locationid ,sectionid,riskIDs);
+            		   }
 			
 			 for(EserviceBuildingDetails section:eserBuild1) { 
 				EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() ,section.getRiskId() ,request.getSectionId(),request.getLocationId());

@@ -25,6 +25,7 @@ import com.maan.eway.admin.res.GetBuildingAdminReferalPendingDetailsRes;
 import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaAdminRes;
 import com.maan.eway.bean.BuildingDetails;
+import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
@@ -2312,6 +2313,12 @@ public class CommonGridServiceImpl implements CommonGridService {
 				++count;
 				if (motors.size() > 0) {
 					for (EserviceCommonDetails data : motors) {
+						CommonDataDetails matchingRisk = commDataList.stream()
+								.filter(risk -> risk.getRiskId().equals(data.getRiskId())
+										&& risk.getQuoteNo().equals(data.getQuoteNo())
+										&& risk.getLocationId().equals(data.getLocationId())
+										&& risk.getSectionId().equals(data.getSectionId()))
+								.findFirst().orElse(null);
 						EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
 								//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 						savedata = dozerMapper.map(data, EserviceCommonDetails.class);
@@ -2320,20 +2327,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setUpdatedBy(req.getLoginId());
 						savedata.setUpdatedDate(new Date());
 						savedata.setRequestReferenceNo(newRequestNo);
-					//	savedata.setCustomerReferenceNo(newCustRefNo);
 						savedata.setCustomerReferenceNo(data.getCustomerReferenceNo());
 						savedata.setCustomerId(newCustId);
 						savedata.setOldReqRefNo(req.getRequestReferenceNo());
-//						if (req.getUserType().equalsIgnoreCase("Broker")|| (req.getUserType().equalsIgnoreCase("User"))) {
-//							branchCode = req.getBranchCode();
-//							savedata.setApplicationId("1");
-//							savedata.setBrokerBranchCode(branchCode);
-//
-//						} else if ("issuer".equalsIgnoreCase(userType)) {
-//							savedata.setApplicationId(req.getLoginId());
-//							branchCode = req.getBranchCode();
-//							savedata.setBranchCode(branchCode);
-//						}
 						savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 						savedata.setActualPremiumFc(BigDecimal.ZERO);
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
@@ -2375,6 +2371,16 @@ public class CommonGridServiceImpl implements CommonGridService {
 							savedata.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	savedata.getSourceType());			
 							savedata.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	savedata.getSourceTypeId());
 						}
+						savedata.setSumInsured(matchingRisk.getSumInsured()==null ? BigDecimal.ZERO : matchingRisk.getSumInsured() );
+						savedata.setSumInsuredLc(matchingRisk.getSumInsuredLc()==null ? BigDecimal.ZERO : matchingRisk.getSumInsuredLc() );
+//						savedata.setEmiPremium(BigDecimal.ONE);
+						savedata.setVatPremium(matchingRisk.getVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getVatPremium() );
+						savedata.setEndtPremium(matchingRisk.getEndtPremium()==null ? 0 : matchingRisk.getEndtPremium() );
+						savedata.setEndtVatPremium(matchingRisk.getEndtVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getEndtVatPremium() );
+						savedata.setActualPremiumFc(matchingRisk.getActualPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumFc() );
+						savedata.setActualPremiumLc(matchingRisk.getActualPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumLc() );
+						savedata.setOverallPremiumFc(matchingRisk.getOverallPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumFc() );
+						savedata.setOverallPremiumLc(matchingRisk.getOverallPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumLc() );
 						repo.saveAndFlush(savedata);
 					}
 		
