@@ -11,10 +11,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.PremiaApiDropdownMaster;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
+import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.PremiaApiDropdownMasterRepository;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Tax;
@@ -28,10 +30,13 @@ import jakarta.persistence.Tuple;
 public class SaveResponseToTable {
 	@Autowired
 	private FactorRateRequestDetailsService fservice;
-	@Autowired
-	private PremiaApiDropdownMasterRepository dropDApi;
+	
 	@Autowired
 	private WorkFlowFactorUtil workflow;
+
+	@Autowired
+	private JdbcTemplate template;
+	
 	public void saveIntoFactorRequestTable(Map<String, Object> response, WorkEngine engine, Map<String, Object> request) {
 		try {
 			
@@ -73,7 +78,12 @@ public class SaveResponseToTable {
 				Map<String, Object> object3 = (Map<String, Object>) quoteInfo.get("riskInfo");
 				Map<String, Object> object4 = (Map<String, Object>) object3.get("riskDetails");
 				List<Map<String, Object>> object5 = (List<Map<String, Object>>) object4.get("riskDetailsArray");
-				
+				try {
+					String updDatequery="UPDATE eservice_motor_details SET CORE_QUOTE_NO=? WHERE request_reference_no=?";
+					template.update(updDatequery,new Object[] {object1.get("quoteNo"),engine.getRequestReferenceNo()});
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 				
 				object6=(Map<String, Object>) object5.get(0).get("coverages");
 				premiumResponseArr=(Map<String, Object>) object5.get(0).get("premiumResponseArr");
@@ -216,6 +226,9 @@ public class SaveResponseToTable {
 				resp.setUwList(null);
 				resp.setReferals(masterreferral);
 				fservice.saveFactorRateRequestDetails(resp);
+				
+
+
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
