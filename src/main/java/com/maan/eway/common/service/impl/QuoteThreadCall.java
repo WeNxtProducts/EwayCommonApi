@@ -1433,6 +1433,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			bulildDetails.setUpdatedDate(new Date());
 			bulildDetails.setIndemityPeriod(eserBuild.getIndemityPeriod());
 			bulildDetails.setIndemityPeriodDesc(eserBuild.getIndemityPeriodDesc());
+			bulildDetails.setNoOfClaim(eserBuild.getNoOfClaim());
 			BigDecimal endtPremium = null;
 			EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes(); 
 			if(eserBuild.getEndorsementType()!=null) {
