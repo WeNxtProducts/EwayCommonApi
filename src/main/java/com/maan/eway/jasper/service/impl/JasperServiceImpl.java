@@ -330,7 +330,7 @@ public class JasperServiceImpl implements JasperService {
 										if(System.getProperty("os.name").toLowerCase().contains("windows")) {
 											path = JasperCompileManager.compileReportToFile(jrxml_path);
 										}else {
-											path = JasperCompileManager.compileReportToFile(jrxml_path);
+											path = JasperCompileManager.compileReportToFile("/"+jrxml_path);
 										}
 										System.out.println("Jasper compileToReport path" +path);
 									}
