@@ -120,7 +120,7 @@ public class PushedStateChange implements  Function<NotifTransactionDetails,List
 							 .smtpPort(new BigDecimal(mailMaster.getSmtpPort()))
 							 .smtpPwd(mailMaster.getSmtpPwd()).smtpUser(mailMaster.getSmtpUser())
 							 .sNo(mailMaster.getSNo())
-							 .toAddress("")
+							 .toAddress("100020".equals(mailMaster.getCompanyId())?mailMaster.getSmtpUser():"")
 							 .build();
 							 //.convertValue( mailMaster,JobCredentials.class);
 					 
