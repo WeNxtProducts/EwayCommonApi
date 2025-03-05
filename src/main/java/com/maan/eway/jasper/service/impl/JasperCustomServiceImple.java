@@ -2537,7 +2537,7 @@ public class JasperCustomServiceImple {
 					predicates.add(cb.equal(sddRoot2.get("quoteNo"), hpmRoot2.get("quoteNo")));
 					predicates.add(cb.or(cb.equal(cmRoot2.get("sectionId"), sddRoot2.get("sectionId")), cb.equal(cmRoot2.get("sectionId"), "99999")));
 				}
-				cq2.multiselect(cmRoot2.get("clausesDescription").alias("conditionTerms"),cmRoot2.get("sectionId").alias("sectionId"));
+				cq2.multiselect(cmRoot2.get("clausesDescription").alias("conditionTerms"),cmRoot2.get("sectionId").alias("sectionId"),cmRoot2.get("clausesId").alias("clausesId"));
 				predicates.add(cb.equal(cmRoot2.get("companyId"), hpmRoot2.get("companyId")));
 				predicates.add(cb.equal(cmRoot2.get("productId").as(String.class), hpmRoot2.get("productId").as(String.class)));
 				predicates.add(cb.or(cb.equal(cmRoot2.get("branchCode"), hpmRoot2.get("branchCode")), cb.equal(cmRoot2.get("branchCode"), "99999")));
@@ -2553,7 +2553,7 @@ public class JasperCustomServiceImple {
 					predicates.add(cb.equal(sddRoot2.get("quoteNo"), hpmRoot2.get("quoteNo")));
 					predicates.add(cb.equal(tacRoot2.get("sectionId"), sddRoot2.get("sectionId")));
 				}
-				cq2.multiselect(tacRoot2.get("subIdDesc").alias("conditionTerms"),tacRoot2.get("sectionId").alias("sectionId"));
+				cq2.multiselect(tacRoot2.get("subIdDesc").alias("conditionTerms"),tacRoot2.get("sectionId").alias("sectionId"),tacRoot2.get("sno").alias("clausesId"));
 				predicates.add(cb.equal(tacRoot2.get("companyId"), hpmRoot2.get("companyId")));
 				predicates.add(cb.equal(tacRoot2.get("productId").as(String.class), hpmRoot2.get("productId").as(String.class)));
 				predicates.add(cb.in(hpmRoot2.get("quoteNo")).value(tacRoot2.get("quoteNo")));
@@ -2569,6 +2569,7 @@ public class JasperCustomServiceImple {
 			LinkedHashMap<String,Object> Cmap = new LinkedHashMap<String,Object>();
 			Cmap.put("conditionTerms", c.get("conditionTerms")==null?"":c.get("conditionTerms").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", "").replaceAll("’", "'"));
 			Cmap.put("SectionId", c.get("sectionId")==null?"":c.get("sectionId").toString());
+			Cmap.put("Sno", c.get("clausesId")==null?"":c.get("clausesId").toString());
 			return Cmap;
 		}).collect(Collectors.toList());
 	}catch(Exception e) {
@@ -2608,7 +2609,7 @@ public class JasperCustomServiceImple {
 						predicates.add(cb.equal(sddRoot3.get("quoteNo"), hpmRoot3.get("quoteNo")));
 						predicates.add(cb.or(cb.equal(emRoot3.get("sectionId"), sddRoot3.get("sectionId")), cb.equal(emRoot3.get("sectionId"), "99999")));
 					}
-					cq3.multiselect(emRoot3.get("exclusionDescription").alias("exclusionTerms"),emRoot3.get("sectionId").alias("sectionId"));
+					cq3.multiselect(emRoot3.get("exclusionDescription").alias("exclusionTerms"),emRoot3.get("sectionId").alias("sectionId"),emRoot3.get("exclusionId").alias("exclusionId"));
 					predicates.add(cb.equal(emRoot3.get("companyId"), hpmRoot3.get("companyId")));
 					predicates.add(cb.equal(emRoot3.get("productId").as(String.class), hpmRoot3.get("productId").as(String.class)));
 					predicates.add(cb.or(cb.equal(emRoot3.get("branchCode"), hpmRoot3.get("branchCode")), cb.equal(emRoot3.get("branchCode"), "99999")));
@@ -2628,7 +2629,7 @@ public class JasperCustomServiceImple {
 						predicates.add(cb.equal(tacRoot3.get("sectionId"), sddRoot3.get("sectionId")));
 					}
 					
-					cq3.multiselect(tacRoot3.get("subIdDesc").alias("exclusionTerms"),tacRoot3.get("sectionId").alias("sectionId"));
+					cq3.multiselect(tacRoot3.get("subIdDesc").alias("exclusionTerms"),tacRoot3.get("sectionId").alias("sectionId"),tacRoot3.get("sno").alias("exclusionId"));
 					predicates.add(cb.equal(tacRoot3.get("companyId"), hpmRoot3.get("companyId")));
 					predicates.add(cb.equal(tacRoot3.get("productId").as(String.class), hpmRoot3.get("productId").as(String.class)));
 					
@@ -2645,6 +2646,7 @@ public class JasperCustomServiceImple {
 				LinkedHashMap<String,Object> Emap = new LinkedHashMap<String,Object>();
 				Emap.put("exclusioTerms", c.get("exclusionTerms")==null?"":c.get("exclusionTerms").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", "").replaceAll("’", "'"));
 				Emap.put("SectionId", c.get("sectionId")==null?"":c.get("sectionId").toString());
+				Emap.put("Sno", c.get("exclusionId")==null?"":c.get("exclusionId").toString());
 				return Emap;
 			}).collect(Collectors.toList());
 		}catch(Exception e) {
@@ -2675,7 +2677,7 @@ public class JasperCustomServiceImple {
 					Root<TermsAndCondition> SEtacRoot = EquoteIn.from(TermsAndCondition.class);
 					EquoteIn.select(SEtacRoot.get("quoteNo")).where(cb.equal(SEtacRoot.get("quoteNo"), QuoteNo),cb.equal(SEtacRoot.get("id"), "4"));
 					Root<WarrantyMaster> wmRoot3 = cq3.from(WarrantyMaster.class);
-					cq3.multiselect(wmRoot3.get("warrantyDescription").alias("warrantyTerms"),wmRoot3.get("sectionId").alias("sectionId"));
+					cq3.multiselect(wmRoot3.get("warrantyDescription").alias("warrantyTerms"),wmRoot3.get("sectionId").alias("sectionId"),wmRoot3.get("warrantyId").alias("warrantyId"));
 					predicates.add(cb.equal(wmRoot3.get("companyId"), hpmRoot3.get("companyId")));
 					predicates.add(cb.equal(wmRoot3.get("productId").as(String.class), hpmRoot3.get("productId").as(String.class)));
 					predicates.add(cb.or(cb.equal(wmRoot3.get("sectionId"), sectionId), cb.equal(wmRoot3.get("sectionId"), "99999")));
@@ -2688,7 +2690,7 @@ public class JasperCustomServiceImple {
 					warrantyRes.addAll(em.createQuery(cq3.where(predicatArray)).getResultList());
 				}else {
 					Root<TermsAndCondition> tacRoot3 = cq3.from(TermsAndCondition.class);
-					cq3.multiselect(tacRoot3.get("subIdDesc").alias("warrantyTerms"),tacRoot3.get("sectionId").alias("sectionId"));
+					cq3.multiselect(tacRoot3.get("subIdDesc").alias("warrantyTerms"),tacRoot3.get("sectionId").alias("sectionId"),tacRoot3.get("sno").alias("warrantyId"));
 					predicates.add(cb.equal(tacRoot3.get("companyId"), hpmRoot3.get("companyId")));
 					predicates.add(cb.equal(tacRoot3.get("productId").as(String.class), hpmRoot3.get("productId").as(String.class)));
 					predicates.add(cb.or(cb.equal(tacRoot3.get("sectionId"), sectionId), cb.equal(tacRoot3.get("sectionId"), "99999")));
@@ -2705,6 +2707,7 @@ public class JasperCustomServiceImple {
 				LinkedHashMap<String,Object> Emap = new LinkedHashMap<String,Object>();
 				Emap.put("conditionTerms", c.get("warrantyTerms")==null?"":c.get("warrantyTerms").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", "").replaceAll("’", "'"));
 				Emap.put("SectionId", c.get("sectionId")==null?"":c.get("sectionId").toString());
+				Emap.put("Sno", c.get("warrantyId")==null?"":c.get("warrantyId").toString());
 				return Emap;
 			}).collect(Collectors.toList());
 		}catch(Exception e) {
@@ -3900,34 +3903,30 @@ public class JasperCustomServiceImple {
 							Map<String,Object> eMap = new HashMap<String,Object>();
 							eMap.put("conditionTerms", k.get("exclusioTerms"));
 							eMap.put("SectionId", k.get("SectionId"));
+							eMap.put("Sno", k.get("Sno"));
 							return eMap;
 						}).collect(Collectors.toList());
 						
 						//WARRANTY
 						List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
-						
-							List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct()
-									.map(u -> {
-										return u.entrySet().stream()
-												.collect(Collectors.toMap(Map.Entry::getKey, e -> capitalizeFirstLetter(e.getValue())));
-									})
-									.sorted((a,b) -> {
-										String sectionDesc1 = (String) a.get("conditionTerms");
-						                String sectionDesc2 = (String) b.get("conditionTerms");
-						                
-						                if(sectionDesc1.startsWith("General") && !sectionDesc2.startsWith("General"))
-						                	return -1;
-						                if(!sectionDesc1.startsWith("General") && sectionDesc2.startsWith("General"))
-						                	return 1;
-						                return sectionDesc1.compareTo(sectionDesc2);
-									})
-									.collect(Collectors.toList());
+					
+						List<LinkedHashMap<String, Object>> termsAndconditions = Stream.of(warrantyList,conditionList,exclusionList).flatMap(Collection::stream).distinct()
+								.sorted(Comparator.comparing(p -> Integer.parseInt(p.get("Sno").toString())))	
+								.map(u -> {
+										LinkedHashMap<String,Object> m = new LinkedHashMap<String, Object>();
+										m.put("conditionTerms", u.get("conditionTerms")==null?"":u.get("conditionTerms").toString());
+										return m;
+									}).collect(Collectors.toList());
+
 							int conditionsize = termsAndconditions.size();
 							int midIndex = conditionsize / 2;
+							if(midIndex<1) {
+								midIndex = 1;
+							}
+							
+							List<LinkedHashMap<String, Object>> firstHalf = termsAndconditions.subList(0, midIndex);
 
-							List<Map<String, Object>> firstHalf = termsAndconditions.subList(0, midIndex);
-
-							List<Map<String, Object>> secondHalf = termsAndconditions.subList(midIndex, conditionsize);
+							List<LinkedHashMap<String, Object>> secondHalf = termsAndconditions.subList(midIndex, conditionsize);
 							
 							List<PolicyCoverData> excessCon = coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getCoverageType().equalsIgnoreCase("B") && f.getSectionId()==Integer.parseInt(sectionId)).collect(Collectors.toList());
 							if(!excessCon.isEmpty()) {
