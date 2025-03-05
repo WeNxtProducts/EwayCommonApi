@@ -239,6 +239,9 @@ package com.maan.eway.master.service.impl;
 				if (req.getInstallmentTypeId() != null) {
 					instalId = Integer.valueOf(req.getInstallmentTypeId());
 				}
+				if (req.getInstallmentPeriod() != null) {
+					noOfMonth = Integer.valueOf(req.getInstallmentPeriod());
+				}
 				
 
 				// Finding Old Record
@@ -253,7 +256,7 @@ package com.maan.eway.master.service.impl;
 		
 				//Getting Record from Emi Master
 				List<EmiMaster> emiMasterData = getEmiMasterDataByInsPeriod(req.getCompanyId(), req.getProductId(),
-						req.getPolicyType(),	instalId.toString()); System.out.println(emiMasterData);
+						req.getPolicyType(),noOfMonth.toString()); System.out.println(emiMasterData);
 				interestPercent = Double.valueOf(emiMasterData.get(0).getInterestPercent().toString());
 				advancePercent = Double.valueOf(emiMasterData.get(0).getAdvancePercent().toString());
                 HomePositionMaster homeData=homerepo.findByQuoteNo(quoteNo);
@@ -753,8 +756,8 @@ package com.maan.eway.master.service.impl;
 				Predicate n7 = cb.equal(b.get("policyType"),  policyType);
 //				Predicate n11 = cb.equal(b.get("policyType"),  "99999");
 //				Predicate n12 = cb.or(n7,  n11);
-//				Predicate n9 = cb.equal(b.get("installmentPeriod"), insPeriod);
-				Predicate n9 = cb.equal(b.get("installmentTypeId"), insPeriod);
+				Predicate n9 = cb.equal(b.get("installmentPeriod"), insPeriod);
+//				Predicate n9 = cb.equal(b.get("installmentTypeId"), insPeriod);
 				Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 				Predicate n13 = cb.equal(b.get("status"), "Y");
 				query.where(n1, n5, n6, n7,n9,n10,n13).orderBy(orderList);
@@ -1083,7 +1086,10 @@ package com.maan.eway.master.service.impl;
 				if (list.size()>0) {
 					for (EmiMaster data : list) {
 						 res = new EmiDisplayRes();
-						Integer noOfMonth = Integer.valueOf(data.getInstallmentPeriod().toString());
+						 if(!data.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod())) {
+							 continue;
+						 }
+						Integer noOfMonth = Integer.valueOf(req.getInstallmentPeriod().toString());
 						interestPercent = Double.valueOf(data.getInterestPercent().toString());
 						advancePercent = Double.valueOf(data.getAdvancePercent().toString());
 						

@@ -83,5 +83,5 @@ public interface EserviceInsuredDetailsRepository  extends JpaRepository<Eservic
 	public void deleteByInsuredReferenceNo(String insuredReferenceNo);
 	public void deleteByCustomerReferenceNo(String customerReferenceNo);
 	List<EserviceInsuredDetails> findAllByCustomerReferenceNo(String customerReferenceNo);
-
+	List<EserviceInsuredDetails>  findByCustomerReferenceNoOrderByEntryDateDesc(String customerReferenceNo);
 }

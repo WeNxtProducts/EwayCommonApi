@@ -2835,7 +2835,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			List<EserviceInsuredDetails> data = insuredRepository.findByInsuredReferenceNoOrderByEntryDateDesc(req.getInsuredReferenceNo());
+			List<EserviceInsuredDetails> data = insuredRepository.findByCustomerReferenceNoOrderByEntryDateDesc(req.getCustomerReferenceNo());
 	
 			if(data != null && !data.isEmpty() && StringUtils.isNotBlank(data.get(0).getInsuredReferenceNo()))	{
 				res = dozerMapper.map(data.get(0), InsuredDetailsGetRes.class);
