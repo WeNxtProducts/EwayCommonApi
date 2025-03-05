@@ -3910,13 +3910,13 @@ public class JasperCustomServiceImple {
 						//WARRANTY
 						List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 					
-						List<LinkedHashMap<String, Object>> termsAndconditions = Stream.of(warrantyList,conditionList,exclusionList).flatMap(Collection::stream).distinct()
+						List<LinkedHashMap<String, Object>> termsAndconditions = Stream.of(warrantyList,conditionList,exclusionList).flatMap(Collection::stream)
 								.sorted(Comparator.comparing(p -> Integer.parseInt(p.get("Sno").toString())))	
 								.map(u -> {
 										LinkedHashMap<String,Object> m = new LinkedHashMap<String, Object>();
 										m.put("conditionTerms", u.get("conditionTerms")==null?"":u.get("conditionTerms").toString());
 										return m;
-									}).collect(Collectors.toList());
+									}).distinct().collect(Collectors.toList());
 
 							int conditionsize = termsAndconditions.size();
 							int midIndex = conditionsize / 2;
