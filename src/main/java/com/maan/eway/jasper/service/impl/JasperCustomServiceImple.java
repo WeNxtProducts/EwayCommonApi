@@ -2569,7 +2569,6 @@ public class JasperCustomServiceImple {
 			LinkedHashMap<String,Object> Cmap = new LinkedHashMap<String,Object>();
 			Cmap.put("conditionTerms", c.get("conditionTerms")==null?"":c.get("conditionTerms").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", "").replaceAll("’", "'"));
 			Cmap.put("SectionId", c.get("sectionId")==null?"":c.get("sectionId").toString());
-			Cmap.put("Sno", c.get("clausesId")==null?"":c.get("clausesId").toString());
 			return Cmap;
 		}).collect(Collectors.toList());
 	}catch(Exception e) {
@@ -2646,7 +2645,6 @@ public class JasperCustomServiceImple {
 				LinkedHashMap<String,Object> Emap = new LinkedHashMap<String,Object>();
 				Emap.put("exclusioTerms", c.get("exclusionTerms")==null?"":c.get("exclusionTerms").toString().replaceAll("\\n|\\t|\\r|\\r\\n|\\f|", "").replaceAll("’", "'"));
 				Emap.put("SectionId", c.get("sectionId")==null?"":c.get("sectionId").toString());
-				Emap.put("Sno", c.get("exclusionId")==null?"":c.get("exclusionId").toString());
 				return Emap;
 			}).collect(Collectors.toList());
 		}catch(Exception e) {
@@ -3911,7 +3909,16 @@ public class JasperCustomServiceImple {
 						List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 					
 						List<LinkedHashMap<String, Object>> termsAndconditions = Stream.of(warrantyList,conditionList,exclusionList).flatMap(Collection::stream)
-								.sorted(Comparator.comparing(p -> Integer.parseInt(p.get("Sno").toString())))	
+								.sorted(Comparator.comparing(p -> {
+								    if (p.get("Sno") == null || p.get("Sno").toString().isEmpty()) {
+								        return Integer.MAX_VALUE;
+								    }
+								    try {
+								        return Integer.parseInt(p.get("Sno").toString());
+								    } catch (NumberFormatException e) {
+								        return Integer.MAX_VALUE;
+								    }
+								}))
 								.map(u -> {
 										LinkedHashMap<String,Object> m = new LinkedHashMap<String, Object>();
 										m.put("conditionTerms", u.get("conditionTerms")==null?"":u.get("conditionTerms").toString());
@@ -3919,14 +3926,14 @@ public class JasperCustomServiceImple {
 									}).distinct().collect(Collectors.toList());
 
 							int conditionsize = termsAndconditions.size();
-							int midIndex = conditionsize / 2;
-							if(midIndex<1) {
-								midIndex = 1;
+							List<LinkedHashMap<String, Object>> firstHalf,secondHalf = new ArrayList<LinkedHashMap<String, Object>>();
+							if(conditionsize>10) {
+								int midIndex = conditionsize / 2;
+								firstHalf = termsAndconditions.subList(0, midIndex);
+								secondHalf = termsAndconditions.subList(midIndex, conditionsize);
+							}else {
+								firstHalf = termsAndconditions.subList(0, conditionsize);
 							}
-							
-							List<LinkedHashMap<String, Object>> firstHalf = termsAndconditions.subList(0, midIndex);
-
-							List<LinkedHashMap<String, Object>> secondHalf = termsAndconditions.subList(midIndex, conditionsize);
 							
 							List<PolicyCoverData> excessCon = coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getCoverageType().equalsIgnoreCase("B") && f.getSectionId()==Integer.parseInt(sectionId)).collect(Collectors.toList());
 							if(!excessCon.isEmpty()) {
