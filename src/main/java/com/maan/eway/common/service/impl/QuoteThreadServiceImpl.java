@@ -97,10 +97,12 @@ import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceInsuredDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.InsurerInfoRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MasterReferralDetailsRepository;
@@ -119,13 +121,10 @@ import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.calcengine.ReferralApi;
 import com.maan.eway.res.ReferalResponse;
-import com.maan.eway.res.SectionDetails;
 import com.maan.eway.res.calc.AdminReferral;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.thread.MyTaskList;
 import com.maan.eway.workstream.request.QuoteProposalSaveReq;
-import com.maan.eway.workstream.service.QuoteProposalService;
-import com.maan.eway.workstream.serviceimpl.QuoteProposalServiceImpl;
 import com.maan.eway.workstream.serviceimpl.QuoteProposalServiceImpl;
 
 import jakarta.persistence.EntityManager;
@@ -295,6 +294,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private EServiceSectionDetailsRepository eserviceSectionRepo;
 	
+// Insurer
+	@Autowired
+	private EserviceInsuredDetailsRepository eserInsurerRepo ;
+	@Autowired
+	private InsurerInfoRepository insurerInfoRepo ;
+	
 	@Lazy
 	@Autowired
 	private QuoteProposalServiceImpl quoteProposalService;
@@ -425,8 +430,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
             	     , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo,eservicedriverRepo,msDriverRepo );
             queue.add(sectionSave);
+            //Insurer Save Thread Call
+            QuoteThreadCall2 insurerSave = new QuoteThreadCall2("InsurerSave",request,em , eserCustRepo ,
+            		eserMotRepo,eserTraRepo, eserCommonRepo,eserBuildRepo,eserInsurerRepo,insurerInfoRepo);
+            queue.add(insurerSave);
             
-            int threadCount = 2 ;
+            int threadCount = 3 ;
             int success = 0;
             
            
@@ -458,7 +467,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
  			List<Map<String,Object>> covRes =  new ArrayList<Map<String,Object>>() ;
  			List<Map<String,Object>> traRes =  new ArrayList<Map<String,Object>>();
  			Map<String,Object> secRes =  new HashMap<String,Object>();
- 			
+ 			Map<String,Object> insRes = new HashMap<String,Object>() ;
  			// Cover Save 
  			{
  				List<Callable<Object>> queue2 = new ArrayList<Callable<Object>>();
@@ -517,6 +526,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							traRes.add((Map<String,Object>) future.getValue());
 						} else if ("SectionSave".equalsIgnoreCase(future.getKey())) {
 							secRes= (Map<String,Object>) future.getValue();
+						}else if ("InsurerSave".equalsIgnoreCase(future.getKey())) {
+							insRes= (Map<String,Object>) future.getValue();
 						}
 					}
 
@@ -537,6 +548,14 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				
 			} else if( secRes.get("Response")!=null && secRes.get("Response").toString().equals("Failed") ) {
 				errors.add(new Error("01","Section Save",secRes.get("Errors").toString()));
+				commonRes.setCommonResponse(null);
+				commonRes.setIsError(true);
+				commonRes.setErrorMessage(errors);
+				commonRes.setMessage("Failed");
+				return commonRes ; 
+				
+			} else if( custRes.get("Response")!=null && custRes.get("Response").toString().equals("Failed") ) {
+				errors.add(new Error("01","Insurer Save",custRes.get("Errors").toString()));
 				commonRes.setCommonResponse(null);
 				commonRes.setIsError(true);
 				commonRes.setErrorMessage(errors);

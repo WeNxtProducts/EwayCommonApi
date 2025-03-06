@@ -654,13 +654,13 @@ private static final long serialVersionUID = 1L;
    private String   platecolor ;
    
    @Column(name="NO_OF_DOORS", length=10)
-   private Integer     noofdoors ;
+   private Integer noOfDoors;
    
    @Column(name="NO_OF_DOORS_DESC", length=10)
    private String   noofdoorsdesc ;
    
    @Column(name="ENGINE_TYPE", length=100)
-   private String   enginetype ; 
+   private String engineType;
    
 	@Column(name = "LOSS_RATIO")
 	private Double previousLossRatio;
@@ -784,6 +784,41 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="ABOUT_VEHICLE", length=100)
     private String   aboutvehicle ; 
+    
+    @Column(name = "MODALITY_SELECTION", length = 5)
+	private String modalitySelection;
+    
+	@Column(name = "INFLATION_SI"  )
+	private BigDecimal inflationSi;
+	
+	@Column(name = "INFLATION", length = 100)
+ 	private String inflation;
+	
+	@Column(name = "DEPRECIATION_VEHICLE_VALUE")
+	private BigDecimal depreciationVehicleValue;
+	
+	@Column(name = "TRANSPORT_HYDRO")
+	private String transportHydro;
+	
+	@Column(name = "PLATE_TYPE")
+	private String plateType;
+
+ 	@Temporal(TemporalType.TIMESTAMP)
+ 	@Column(name = "REGISTRATION_DATE")
+ 	private Date registrationDate;
+ 	
+ 	@Column(name = "REGISTRATION_STATUS", length = 10)
+	private String registrationStatus;
+ 	
+ 	@Column(name = "EXCESS", length = 100)
+	private String excess;
+    
+    @Column(name = "VEHICLE_VALUE_TYPE", length = 100)
+	private String vehicleValueType;
+ 	
+ 	@Temporal(TemporalType.TIMESTAMP)
+ 	@Column(name = "PURCHASE_DATE")
+ 	private Date purchaseDate;
 }
 
 
