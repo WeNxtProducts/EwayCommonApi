@@ -260,5 +260,8 @@ public class InsuredDetailsGetRes {
 		
 		@JsonProperty("Country")
 		private String     country ;
+		
+		@JsonProperty("MaritalStatus")
+		private String maritalStatus;
 
 }
