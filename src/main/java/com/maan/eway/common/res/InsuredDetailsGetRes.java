@@ -264,4 +264,7 @@ public class InsuredDetailsGetRes {
 		@JsonProperty("MaritalStatus")
 		private String maritalStatus;
 
+		@JsonFormat(pattern = "dd/MM/yyyy")
+		@JsonProperty("ExpiryDate")
+		private Date expiryDate;
 }
