@@ -3788,26 +3788,24 @@ public class JasperCustomServiceImple {
 							}).collect(Collectors.toList());
 							burglaryDetails.addAll(locationList);
 						}else if("42".equalsIgnoreCase(sectionId)) { //Money
-							List<Map<String,Object>> locationList = buildingRiskData.stream().map(k ->{
-								LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
-								lmap.put("locationName", k.getLocationName());
-								lmap.put("moneymajorloss", k.getMoneyMajorLoss());
-								lmap.put("moneycollector", k.getMoneyCollector());
-								lmap.put("moneysafelimit", k.getMoneySafeLimit());
-								lmap.put("moneyoutofsafe", k.getMoneyOutofSafe());
-								lmap.put("moneydirectorresidence", k.getMoneyDirectorResidence());
-								lmap.put("strongroomsi", k.getStrongroomSi());
-								lmap.put("moneyannualestimatelc", k.getMoneyAnnualEstimate());
-								lmap.put("sumInsured", k.getSumInsured());
-								lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
-								lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
-										&& f.getSectionId()==Integer.parseInt(sectionId))
-										.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
-								lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
-										.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
-								return lmap;
-							}).collect(Collectors.toList());
-							moneyDetails.addAll(locationList);
+							List<PolicyCoverData> moneyList = coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+									&& f.getSectionId()==Integer.parseInt(sectionId) && (!f.getCoverageType().equalsIgnoreCase("B")))
+									.collect(Collectors.toList());
+							if(moneyList!=null && moneyList.size()>0) {
+								moneyList.forEach(k -> {
+									LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
+									lmap.put("locationName", locationName);	
+									lmap.put("coverName", k.getCoverName());
+									lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+											.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
+									lmap.put("currency", map.get("currency")==null?"":map.get("currency").toString());
+									lmap.put("sumInsured", k.getSumInsured());
+									lmap.put("premium", coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0
+											&& f.getSectionId()==Integer.parseInt(sectionId))
+											.map(u -> u.getPremiumExcludedTaxLc()).collect(Collectors.summingDouble(BigDecimal::doubleValue)));
+									moneyDetails.add(lmap);
+								});
+							}
 						}else if(Arrays.asList("198","56").contains(sectionId)) { //Office Contents
 							List<Map<String,Object>> locationList = buildingRiskData.stream().map(k ->{
 								LinkedHashMap<String,Object> lmap = new LinkedHashMap<String,Object>();
