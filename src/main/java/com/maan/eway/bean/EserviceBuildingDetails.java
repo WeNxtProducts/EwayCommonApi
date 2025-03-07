@@ -847,5 +847,9 @@ public class EserviceBuildingDetails implements Serializable {
 	
 	@Column(name = "NO_OF_CLAIM")
     private Integer noOfClaim;
+	
+	@Column(name = "NO_OF_CLAIM_DESC", length = 20)
+    private String noOfClaimDesc;
+
 
 }
