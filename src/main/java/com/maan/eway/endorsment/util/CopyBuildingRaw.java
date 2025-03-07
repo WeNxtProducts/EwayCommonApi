@@ -157,7 +157,7 @@ public class CopyBuildingRaw {
 	public BuildingCopyRes copyBuildingRiskTable(Endorsment ent) {
 		try {
 			List<EserviceBuildingDetails> BuildingDatas=null;
-			Integer count=eBuildingRepo.countByOriginalPolicyNoAndRiskIdAndSectionId(ent.getPolicyNo(),1 ,"0");
+			Integer count=eBuildingRepo.countByOriginalPolicyNo(ent.getPolicyNo());
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
 			String newRequestNo =null;
@@ -165,7 +165,7 @@ public class CopyBuildingRaw {
 			// Response 
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			if(count>0) {
-				List<EserviceBuildingDetails> BuildingList=eBuildingRepo.findByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
+				List<EserviceBuildingDetails> BuildingList=eBuildingRepo.findByOriginalPolicyNo(ent.getPolicyNo());
 				//Compar
 				BuildingList.sort(new Comparator<EserviceBuildingDetails>() {
 
@@ -229,10 +229,29 @@ public class CopyBuildingRaw {
 			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
 					/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()),new Date(), new Date());*/
 			List<EserviceBuildingDetails> BuildingList=eBuildingRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+			
+			List<BuildingRiskDetails> buildingRisk = buildRiskRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+			
+			List<EserviceBuildingDetails> filteredBuildingList = BuildingList.stream()
+				    .filter(m -> buildingRisk.stream()
+				        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
+				                        && m.getQuoteNo().equals(risk.getQuoteNo())
+				                        && m.getLocationId().equals(risk.getLocationId())
+				                        && m.getSectionId().equals(risk.getSectionId())
+				        		))
+				    .collect(Collectors.toList());
 			List<EserviceBuildingDetails> newBuildingList=new ArrayList<EserviceBuildingDetails>();
 			++count;
-			for(EserviceBuildingDetails m :BuildingList) {
-				 
+			for(EserviceBuildingDetails m :filteredBuildingList) {
+				BuildingRiskDetails matchingRisk = buildingRisk.stream()
+						.filter(risk -> risk.getRiskId().equals(m.getRiskId())
+								&& risk.getQuoteNo().equals(m.getQuoteNo())
+								&& risk.getLocationId().equals(m.getLocationId())
+								&& risk.getSectionId().equals(m.getSectionId()))
+						.findFirst().orElse(null);
+
+				if (matchingRisk != null) {
+
 				EserviceBuildingDetails newObject = dozerMapper.map(m , EserviceBuildingDetails.class);
 				newObject.setRequestReferenceNo(newRequestNo);
 				newObject.setOriginalPolicyNo(ent.getPolicyNo());
@@ -266,8 +285,16 @@ public class CopyBuildingRaw {
 					newObject.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	newObject.getSourceTypeId());
 				}
 				newObject.setSubUserType(ent.getSubUserType());
+				newObject.setVatPremium(matchingRisk.getVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getVatPremium() );
+				newObject.setEndtPremium(matchingRisk.getEndtPremium()==null ? 0 : matchingRisk.getEndtPremium() );
+				newObject.setEndtVatPremium(matchingRisk.getEndtVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getEndtVatPremium() );
+				newObject.setActualPremiumFc(matchingRisk.getActualPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumFc() );
+				newObject.setActualPremiumLc(matchingRisk.getActualPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumLc() );
+				newObject.setOverallPremiumFc(matchingRisk.getOverallPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumFc() );
+				newObject.setOverallPremiumLc(matchingRisk.getOverallPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumLc() );
 				newBuildingList.add(newObject);
 			}
+		}
 			eBuildingRepo.saveAllAndFlush(newBuildingList);
 			
 			
@@ -288,6 +315,7 @@ public class CopyBuildingRaw {
 			res.setLoginId(newBuildingList.get(0).getLoginId());
 			res.setSubUserType(newBuildingList.get(0).getSubUserType());
 			return res;
+			
 		}catch(ObjectOptimisticLockingFailureException ex ) {
 			return copyBuildingRiskTable(ent);
 		}catch (Exception e) {
@@ -308,9 +336,22 @@ public class CopyBuildingRaw {
 			if (buildSecCount > 0) {
 				eserSecRepo.deleteByRequestReferenceNoAndRiskId(newReqRefNo, 1);
 			}
-
-			List<String> secList = new ArrayList<String>(); 
-			for (EserviceSectionDetails section : oldSecDatas) {
+			List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D");
+			
+			List<EserviceSectionDetails> filteredSectionList = oldSecDatas.stream()
+				    .filter(m -> secList.stream()
+				        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
+				                        && m.getQuoteNo().equals(risk.getQuoteNo())
+				                        && m.getLocationId().equals(risk.getLocationId())
+				                        && m.getSectionId().equals(risk.getSectionId())
+				        		))
+				    .collect(Collectors.toList());
+			
+			List<String> secListSave = new ArrayList<String>();
+			List<EserviceSectionDetails> secListSave1 = new ArrayList<EserviceSectionDetails>();
+			if (filteredSectionList != null && filteredSectionList.size()>0 ) {
+			 
+			for (EserviceSectionDetails section : filteredSectionList) {
 				EserviceSectionDetails secData = new EserviceSectionDetails();
 			
 				dozerMapper.map(section, secData);
@@ -318,11 +359,14 @@ public class CopyBuildingRaw {
 				secData.setUserOpt("N");
 				secData.setPolicyNo(buildingData.getPolicyNo());
 				secData.setQuoteNo(null);
-				eserSecRepo.saveAndFlush(secData);
-				secList.add(secData.getSectionId());
+				
+				secListSave.add(secData.getSectionId());
+				secListSave1.add(secData);
+			}
+			eserSecRepo.saveAllAndFlush(secListSave1);
 			}
 			
-			return secList;
+			return secListSave;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

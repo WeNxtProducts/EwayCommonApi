@@ -2713,8 +2713,28 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 
 		List<EserviceSectionDetails> eserSec = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
-		if (eserSec != null && eserSec.size()>0 ) {
-			for (EserviceSectionDetails data : eserSec) {
+		List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+		
+		List<EserviceSectionDetails> filteredSectionList = eserSec.stream()
+			    .filter(m -> secList.stream()
+			        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
+			                        && m.getQuoteNo().equals(risk.getQuoteNo())
+			                        && m.getLocationId().equals(risk.getLocationId())
+			                        && m.getSectionId().equals(risk.getSectionId())
+			        		))
+			    .collect(Collectors.toList());
+		
+		
+		if (filteredSectionList != null && filteredSectionList.size()>0 ) {
+			for (EserviceSectionDetails data : filteredSectionList) {
+				
+				SectionDataDetails matchingRisk = secList.stream()
+						.filter(risk -> risk.getRiskId().equals(data.getRiskId())
+								&& risk.getQuoteNo().equals(data.getQuoteNo())
+								&& risk.getLocationId().equals(data.getLocationId())
+								&& risk.getSectionId().equals(data.getSectionId()))
+						.findFirst().orElse(null);
+
 				savedata = dozerMapper.map(data, EserviceSectionDetails.class);
 				savedata.setEntryDate(new Date());
 				savedata.setCustomerReferenceNo(custRefNo);
@@ -2771,6 +2791,13 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						    .collect(Collectors.toList());
 					if (commData!=null && commData.size()>0 ) 
 						for(EserviceCommonDetails commData1:commData) {
+							CommonDataDetails matchingRisk = commDataList.stream()
+									.filter(risk -> risk.getRiskId().equals(commData1.getRiskId())
+											&& risk.getQuoteNo().equals(commData1.getQuoteNo())
+											&& risk.getLocationId().equals(commData1.getLocationId())
+											&& risk.getSectionId().equals(commData1.getSectionId()))
+									.findFirst().orElse(null);
+
 							savedata = dozerMapper.map(commData1, EserviceCommonDetails.class);
 							savedata.setEntryDate(new Date());
 							savedata.setQuoteNo(quoteNo);
@@ -2797,6 +2824,13 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							savedata.setApplicationId(req.getApplicationId());
 							savedata.setLoginId(req.getLoginId()==null?commData1.getLoginId():(req.getLoginId()));
 							savedata.setSubUserType(req.getSubUserType());
+							savedata.setVatPremium(matchingRisk.getVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getVatPremium() );
+							savedata.setEndtPremium(matchingRisk.getEndtPremium()==null ? 0 : matchingRisk.getEndtPremium() );
+							savedata.setEndtVatPremium(matchingRisk.getEndtVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getEndtVatPremium() );
+							savedata.setActualPremiumFc(matchingRisk.getActualPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumFc() );
+							savedata.setActualPremiumLc(matchingRisk.getActualPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumLc() );
+							savedata.setOverallPremiumFc(matchingRisk.getOverallPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumFc() );
+							savedata.setOverallPremiumLc(matchingRisk.getOverallPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumLc() );
 							eserCommonRepo.saveAndFlush(savedata);
 				
 						}

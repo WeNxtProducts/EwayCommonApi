@@ -55,4 +55,6 @@ public interface SectionDataDetailsRepository  extends JpaRepository<SectionData
 	
 	SectionDataDetails findByQuoteNoAndSectionIdAndRiskId(String quoteNo,String sectionId, Integer Riskid);
 
+	List<SectionDataDetails> findByQuoteNoAndStatusNotOrderByRiskIdAsc(String prevQuoteNo, String string);
+
 }
