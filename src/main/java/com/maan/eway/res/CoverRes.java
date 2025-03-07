@@ -84,6 +84,9 @@ public class CoverRes {
 	 
 	 @JsonProperty("MinimumPremiumYn") 
 	 private String minimumPremiumYn;
+	 
+	 @JsonProperty("CoverageLimit") 
+	 private String coverageLimit;
 	
 	
 }

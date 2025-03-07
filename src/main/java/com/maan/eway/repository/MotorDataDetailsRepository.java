@@ -73,5 +73,6 @@ public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDeta
 	String getAmountByWords(Double amtInWordValue);
 
 	List<MotorDataDetails> findByRegistrationNumber(String registrationNumber);
-
+	
+	List<MotorDataDetails> findByRegistrationNumberOrderByEntryDateDesc(String chassisno);
 }

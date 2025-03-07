@@ -1370,7 +1370,8 @@ public class QuoteServiceImpl implements QuoteService {
 					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
-									
+					coverRes.setCoverageLimit(filterCover.get(0).getCoverageLimit()==null ? "" :filterCover.get(0).getCoverageLimit().toPlainString());
+					
 //					// Discount Covers Or Promo Covers
 //					List<PolicyCoverData> filterDiscountCover = coverGroups.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 //					
@@ -1418,6 +1419,7 @@ public class QuoteServiceImpl implements QuoteService {
 					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
+					coverRes.setCoverageLimit(filterCover.get(0).getCoverageLimit()==null ? "" :filterCover.get(0).getCoverageLimit().toPlainString());
 					
 					List<SubCoverRes>  subCoverListRes = new ArrayList<SubCoverRes>();
 					List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getPremiumExcludedTaxLc()!=null ).collect(Collectors.toList());
@@ -1441,9 +1443,11 @@ public class QuoteServiceImpl implements QuoteService {
 						subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc());
 						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc());
 						subCoverRes.setRegulatoryCode(filterCover.get(0).getRegulatoryCode());
+						subCoverRes.setCoverageLimit(filterSubCover.get(0).getCoverageLimit()==null ? "" :filterSubCover.get(0).getCoverageLimit().toPlainString());
 						coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
+						coverRes.setCoverageLimit(filterCover.get(0).getCoverageLimit()==null ? "" :filterCover.get(0).getCoverageLimit().toPlainString());
 //						// Discount Covers Or Promo Covers
 //						List<PolicyCoverData> filterDiscountCover = coverGroups.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") )  ).collect(Collectors.toList());
 //						

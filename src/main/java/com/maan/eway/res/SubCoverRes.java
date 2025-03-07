@@ -65,5 +65,8 @@ public class SubCoverRes {
 		 
 		 @JsonProperty("MinimumPremiumYn") 
 		 private String minimumPremiumYn;
+		 
+		 @JsonProperty("CoverageLimit") 
+		 private String coverageLimit;
 
 }
