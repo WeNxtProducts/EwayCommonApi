@@ -69,6 +69,8 @@ public interface EServiceSectionDetailsRepository  extends JpaRepository<Eservic
 	Long countByRequestReferenceNo(String newReqRefNo);
 
 	void deleteByRequestReferenceNo(String newReqRefNo);
+
+	List<EserviceSectionDetails> findByRequestReferenceNoAndProductId(String prevRequestRefNo, String plainString);
 	
 
 }

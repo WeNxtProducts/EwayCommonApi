@@ -194,6 +194,9 @@ public class CopyBuildingRaw {
 					 newRequestNo=BuildingDatas.get(0).getRequestReferenceNo();
 					 String prevRequestRefNo=BuildingDatas.get(0).getRequestReferenceNo();
 					 List<EserviceBuildingDetails> rows = eBuildingRepo.findByRequestReferenceNoAndProductId(prevRequestRefNo,ent.getProductId().toPlainString());
+					 List<EserviceSectionDetails> section = eserSecRepo.findByRequestReferenceNoAndProductId(prevRequestRefNo,ent.getProductId().toPlainString());
+					 eserSecRepo.deleteAll(section);
+					 eserSecRepo.flush();
 					 eBuildingRepo.deleteAllInBatch(rows);
 					 eBuildingRepo.flush();
 					 count--;
