@@ -334,7 +334,7 @@ public class CopyBuildingRaw {
 			// Building Section Insert
 			List<EserviceSectionDetails> buildSecCount = eserSecRepo.findByRequestReferenceNo(newReqRefNo);
 			if (buildSecCount.size()>0 && ! buildSecCount.isEmpty()) {
-				eserSecRepo.deleteAll();
+				eserSecRepo.deleteAll(buildSecCount);
 			}
 			List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D");
 			
@@ -356,6 +356,22 @@ public class CopyBuildingRaw {
 				dozerMapper.map(section, secData);
 				secData.setRequestReferenceNo(newReqRefNo);
 				secData.setUserOpt("Y");
+				secData.setPolicyNo(buildingData.getPolicyNo());
+				secData.setQuoteNo(null);
+				
+				secData.setOriginalPolicyNo(buildingData.getPolicyNo());
+				secData.setEndorsementDate(new Date());
+				
+//				secData.setEndorsementEffdate(buildingData.gete());
+				secData.setEndtPrevPolicyNo(buildingData.getEndtPrevPolicyNo());
+				secData.setEndtPrevQuoteNo(buildingData.getEndtPrevQuoteNo());
+				secData.setEndtCount(buildingData.getEndtCount());
+				secData.setEndtStatus("P");
+				secData.setIsFinaceYn(buildingData.getIsFinanceYn());
+				secData.setEndtCategDesc(buildingData.getEndtCategoryDesc());
+//				secData.setEndorsementType(Integer.parseInt(buildingData.get()));
+				secData.setEndorsementTypeDesc(buildingData.getEndtCategoryDesc());
+				secData.setStatus("E");
 				secData.setPolicyNo(buildingData.getPolicyNo());
 				secData.setQuoteNo(null);
 				
