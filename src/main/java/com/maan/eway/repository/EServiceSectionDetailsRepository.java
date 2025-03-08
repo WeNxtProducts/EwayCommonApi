@@ -65,6 +65,10 @@ public interface EServiceSectionDetailsRepository  extends JpaRepository<Eservic
 
 	List<EserviceSectionDetails> findByRequestReferenceNoAndRiskIdAndProductIdAndLocationIdOrderBySectionIdAsc(
 			String requestReferenceNo, Integer valueOf, String productId, Integer valueOf2);
+
+	Long countByRequestReferenceNo(String newReqRefNo);
+
+	void deleteByRequestReferenceNo(String newReqRefNo);
 	
 
 }

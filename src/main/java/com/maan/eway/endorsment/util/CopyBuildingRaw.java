@@ -332,16 +332,15 @@ public class CopyBuildingRaw {
 			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D") ;
 			
 			// Building Section Insert
-			Long buildSecCount = eserSecRepo.countByRequestReferenceNoAndRiskId(newReqRefNo, 1);
-			if (buildSecCount > 0) {
-				eserSecRepo.deleteByRequestReferenceNoAndRiskId(newReqRefNo, 1);
+			List<EserviceSectionDetails> buildSecCount = eserSecRepo.findByRequestReferenceNo(newReqRefNo);
+			if (buildSecCount.size()>0 && ! buildSecCount.isEmpty()) {
+				eserSecRepo.deleteAll();
 			}
 			List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D");
 			
 			List<EserviceSectionDetails> filteredSectionList = oldSecDatas.stream()
 				    .filter(m -> secList.stream()
 				        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
-				                        && m.getQuoteNo().equals(risk.getQuoteNo())
 				                        && m.getLocationId().equals(risk.getLocationId())
 				                        && m.getSectionId().equals(risk.getSectionId())
 				        		))
@@ -356,7 +355,7 @@ public class CopyBuildingRaw {
 			
 				dozerMapper.map(section, secData);
 				secData.setRequestReferenceNo(newReqRefNo);
-				secData.setUserOpt("N");
+				secData.setUserOpt("Y");
 				secData.setPolicyNo(buildingData.getPolicyNo());
 				secData.setQuoteNo(null);
 				
