@@ -6,11 +6,13 @@
 package com.maan.eway.service.impl;
 
 import java.math.BigDecimal;
+
 import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,6 +58,7 @@ import com.maan.eway.bean.MsPolicyDetails;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataEndt;
 import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
@@ -78,6 +81,7 @@ import com.maan.eway.common.res.EwayFactorResultRes;
 import com.maan.eway.common.res.FdFactorCalcRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.SectionCoverMasterGetReq;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -1230,10 +1234,189 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 		}return res;
 	}
 	
+	public List<SectionCoverMaster> getBySectionCoverId(String Company_id,Integer product_id,Integer Sectionid,List<Integer> coverIdsToExclude) {
+		List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		String pattern = "#####0.00";
+		DecimalFormat df = new DecimalFormat(pattern);
+		
+		String patternn = "#####0.0000";
+		DecimalFormat df1 = new DecimalFormat(patternn);
+		
+		try {
+			Date today  =  new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+
+			
+			// Find Latest Record
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<SectionCoverMaster> query2 = cb2.createQuery(SectionCoverMaster.class);
+
+			// Find All
+			Root<SectionCoverMaster> b2 = query2.from(SectionCoverMaster.class);
+
+			// Effective Date Max Filter
+			
+			Subquery<Long> amendId = query2.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm2 = amendId.from(SectionCoverMaster.class);
+			amendId.select(cb2.max(ocpm2.get("amendId")));
+			Predicate a7 = cb2.equal(ocpm2.get("coverId"), b2.get("coverId"));
+			Predicate a8 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
+			Predicate a9 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
+			Predicate a10 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+			Predicate a11 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
+			Predicate a13 = cb2.equal(ocpm2.get("agencyCode"), b2.get("agencyCode"));
+			Predicate a14 = cb2.equal(ocpm2.get("branchCode"), b2.get("branchCode"));
+			amendId.where(a7,a8,a9,a10,a11,a13,a14);
+
+			// Select
+			query2.select(b2);
+
+			// Order By
+			List<Order> orderList2 = new ArrayList<Order>();
+			orderList2.add(cb2.desc(b2.get("effectiveDateEnd")));
+
+			// Where
+			Predicate n5 = cb2.equal(b2.get("amendId"),amendId);
+			Predicate n6 =cb2.equal(b2.get("subCoverId"), "0");
+			Predicate n7 = cb2.equal(b2.get("productId"),product_id);
+			Predicate n14 = cb2.equal(b2.get("companyId"), Company_id);
+			Predicate n15 = cb2.equal(b2.get("sectionId"), Sectionid);
+			Predicate n16 = cb2.equal(b2.get("coverageType"), "A");
+			Predicate n18 = cb2.equal(b2.get("status"), "Y");
+
+			Predicate n17;
+			if (coverIdsToExclude != null && !coverIdsToExclude.isEmpty()) {
+			    n17 = cb2.not(b2.get("coverId").in(coverIdsToExclude));
+			} else {
+			    n17 = cb2.conjunction(); // No exclusion
+			}
+			Predicate[] predicatesArray = new Predicate[] { n5, n6, n7, n14, n15, n16,n17,n18 };
+
+		
+			query2.where(predicatesArray).orderBy(orderList2);
+
+			// Get Result
+			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
+			list = result2.getResultList();
+			list.stream().distinct().collect(Collectors.toList());
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+
+    public void benifitCoverInsert(FactorRateDetailsGetReq req)
+    {
+    	
+    	List<FactorRateRequestDetails> saveRecords = new ArrayList<>();
+    	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
+    	try {
+    	    // Fetch sections inserted in factor_rate_request_details
+    	    List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+
+    	    // Create a map of sectionId to FactorRateRequestDetails and a map of sectionId to distinct coverIds
+    	    Map<Integer, FactorRateRequestDetails> sectionIds = findCovers.stream()
+    	        .collect(Collectors.toMap(
+    	            FactorRateRequestDetails::getSectionId,
+    	            details -> details,
+    	            (existing, replacement) -> existing
+    	        ));
+    	    
+    	    Map<Integer, List<Integer>> sectionAndCoverIds = findCovers.stream()
+    	        .collect(Collectors.groupingBy(
+    	            FactorRateRequestDetails::getSectionId,
+    	            Collectors.mapping(FactorRateRequestDetails::getCoverId, Collectors.toSet())
+    	        ))
+    	        .entrySet()
+    	        .stream()
+    	        .collect(Collectors.toMap(
+    	            Map.Entry::getKey,
+    	            entry -> List.copyOf(entry.getValue())
+    	        ));
+
+    	    // Process each sectionId
+    	    System.out.println("Size of sectionIds: " + sectionIds.size());
+    	    System.out.println("sectionIds contents: " + sectionIds);
+
+    	    sectionIds.forEach((sectionId, details) -> {
+    	        System.out.println("Processing sectionId: " + sectionId);
+
+    	        List<Integer> coverIds = sectionAndCoverIds.get(sectionId);
+    	        System.out.println("Retrieved coverIds for sectionId: " + sectionId + " -> " + coverIds);
+
+    	        // Fetch benefit covers from section cover master
+    	        List<SectionCoverMaster> sectionCoverMaster = getBySectionCoverId(
+    	            details.getCompanyId(),
+    	            details.getProductId(),
+    	            details.getSectionId(),
+    	            coverIds
+    	        );
+
+    	        System.out.println("sectionCoverMaster for sectionId " + sectionId + ": " + sectionCoverMaster);
+
+    	        sectionCoverMaster.forEach(savedData -> {
+    	            FactorRateRequestDetails newRecord = new FactorRateRequestDetails();
+
+    	            // Use sectionIds mapping to get corresponding details
+    	            FactorRateRequestDetails originalDetails = sectionIds.get(savedData.getSectionId());
+                   
+    	            if (originalDetails != null) {
+    	            	 dozerMapper.map(originalDetails, newRecord);
+    	                newRecord.setCoverId(savedData.getCoverId());
+    	                newRecord.setCoverName(savedData.getCoverName());
+    	                newRecord.setCoverDesc(savedData.getCoverDesc());
+    	                newRecord.setCalcType(originalDetails.getCalcType()); // Assuming it has common properties
+    	                newRecord.setSumInsured(BigDecimal.ZERO);
+    	                newRecord.setRate(BigDecimal.ZERO);
+    	                newRecord.setPremiumAfterDiscountFc(BigDecimal.ZERO);
+    	                newRecord.setPremiumAfterDiscountLc(BigDecimal.ZERO);
+    	                newRecord.setPremiumBeforeDiscountFc(BigDecimal.ZERO);
+    	                newRecord.setPremiumBeforeDiscountLc(BigDecimal.ZERO);
+    	                newRecord.setPremiumExcludedTaxFc(BigDecimal.ZERO);
+    	                newRecord.setPremiumExcludedTaxLc(BigDecimal.ZERO);
+    	                newRecord.setPremiumIncludedTaxFc(BigDecimal.ZERO);
+    	                newRecord.setPremiumIncludedTaxLc(BigDecimal.ZERO);
+    	                newRecord.setDependentCoverId("0");
+    	                newRecord.setCoverageLimit(savedData.getCoverageLimit());
+    	                newRecord.setCoverageType("A");
+    	                newRecord.setIsSelected("Y"); // Can also be taken from originalDetails if needed
+    	                saveRecords.add(newRecord);
+    	            } else {
+    	                System.out.println("Original details not found for sectionId: " + savedData.getSectionId());
+    	            }
+    	        });
+    	    });
+    	    
+    	    System.out.println("Benefit Covers: " + saveRecords);
+        	//save in factor rate request no::
+        	repository.saveAllAndFlush(saveRecords);
+    	} catch (Exception e) {
+    	    // Handle exceptions appropriately
+    	    System.err.println("Error processing benefit covers: " + e.getMessage());
+    	    e.printStackTrace();
+    	}
+
+    	
+    	
+    }
 	@Override
 	public List<EservieMotorDetailsViewRes>  getFactorRateRequestDetails(FactorRateDetailsGetReq req,String token) {
 		List<EservieMotorDetailsViewRes>  resList = new ArrayList<EservieMotorDetailsViewRes>();
 		try {
+			
+			//Insert Benifit Cover
+			benifitCoverInsert(req);
+			
 			// Find Risk Datas
 			resList = getRiskDetails(req);
 			
