@@ -90,7 +90,7 @@ import jakarta.persistence.criteria.Subquery;
  */
 @Service
 @Transactional
-public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsService {
+public class PhoenixZambiaEmiTransactionDetails {
 
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
@@ -137,35 +137,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	Gson json = new Gson();
 
 	private Logger log = LogManager.getLogger(EmiTransactionDetailsServiceImpl.class);
-	
-	@Autowired
-	private KenyaEmiTransactionDetails kenyaEmiTransactionDetails;
-	
-	@Autowired
-	private PhoenixZambiaEmiTransactionDetails PhoenixZambiaEmiTransactionDetails;
-	
-	@Autowired
-	private PhoenixBotswanaEmiTransactionDetailsService phoenixBotswanaEmiTransactionDetailsService;
-	
-	@Autowired
-	private PhoenixMozambiqueEmiTransactionDetailsService phoenixMozambiqueEmiTransactionDetailsService;
-	
-	@Autowired
-	private PhoenixNamibiaEmiTransactionDetailsService phoenixNamibiaEmiTransactionDetailsService;
-	
-	@Autowired
-	private PhoenixSwazilndEmiTransactionDetailsService phoenixSwazilndEmiTransactionDetailsService;
-	
-	@Autowired
-	private PhoenixZambiaEmiTransactionDetailsService phoenixZambiaEmiTransactionDetailsService;
-
-	@Autowired
-	private EagleEmiTransactionDetailsService eagleEmiTransactionDetailsService;
 
 //Insert Validation
 	
-/*
-	@Override
+
 	public List<Error> validateEmiTransactionDetails(EmiTransactionDetailsSaveReq req) {
 
 		List<Error> errorList = new ArrayList<Error>();
@@ -234,7 +209,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 	//Insert
 	@Transactional
-	@Override
 	public SuccessRes insertEmiTransactionDetails(EmiTransactionDetailsSaveReq req) {
 		SuccessRes res = new SuccessRes();
 		DecimalFormat df = new DecimalFormat("0.00");
@@ -290,17 +264,17 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 //				premiumWithTax = Double.valueOf(req.getPremiumWithTax());
 				premiumWithTax = Double.valueOf(homeData.getOverallPremiumLc().toString());
 				interestAmount = premiumWithTax * interestPercent / 100;
-				interestAmount=interestAmount/12;
-				interestAmount=interestAmount*noOfMonth;
+				interestAmount=(Double.valueOf(Math.round(interestAmount)))/12;
+				interestAmount=(Double.valueOf(Math.round(interestAmount)))*noOfMonth;
 				totalLoanAmount = premiumWithTax + interestAmount;
 				advanceAmount = totalLoanAmount * advancePercent / 100;
-				adv=new BigDecimal(advanceAmount);
+				adv=new BigDecimal(Math.round(advanceAmount));
 				if (i == 1) {
-					balanceAmount = totalLoanAmount - advanceAmount;
+					balanceAmount = totalLoanAmount - (Double.valueOf(Math.round(advanceAmount)));
 					installment = balanceAmount / (noOfMonth-1);
 				} else {
 					temp = balanceAmount;
-					temp -= installment;
+					temp -= (Double.valueOf(Math.round(installment)));
 					balanceAmount = temp;
 				}
 				// Save
@@ -408,7 +382,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 					save=dozermapper.map(data, EserviceMotorDetails.class);
 					save.setEmiYn("Y");
 					save.setInstallmentPeriod(Integer.valueOf(installmentPeriod != null && !installmentPeriod.isEmpty()? installmentPeriod : "0" ));
-					save.setNoOfInstallment(Integer.valueOf(noOFIns != null && !noOFIns.isEmpty() ? noOFIns : "0"));
+					save.setNoOfInstallment(Integer.valueOf(noOFIns != null && !noOFIns.isEmpty() ? noOFIns : "1"));
 					save.setEmiPremium(adv);
 					motorRepo.save(save);
 				}
@@ -678,7 +652,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		return list;
 	}
 	//Update Validation
-	@Override
 	public List<Error> validateUpdateEmiTransactionDetails(List<EmiTransactionDetailsUpdateReq> reqList) {
 		List<Error> errorList = new ArrayList<Error>();
 
@@ -739,7 +712,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	}
 	
 	//Update
-	@Override
 	public SuccessRes updateEmiTransactionDetails(List<EmiTransactionDetailsUpdateReq> reqList) {
 		SuccessRes res = new SuccessRes();
 		EmiTransactionDetails saveData = new EmiTransactionDetails();
@@ -854,7 +826,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	}
 	
 	// Get All Emi Transaction Details
-	@Override
 	public List<EmiTransactionDetailsRes> getEmiDetailsByQuoteNo(EmiTransactionDetailsGetReq req) {
 		List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
@@ -896,7 +867,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				res.setDueAmount((Double.valueOf(Math.round(data.getDueAmount()))).toString());
 				res.setBalanceAmount((Double.valueOf(Math.round(data.getBalanceAmount()))).toString());
 				res.setPaymentDetails(data.getPaymentDetails());
-				PaymentDetail paymentData=paymentdetailrepo.findByPaymentId(data.getPaymentId());
+//				PaymentDetail paymentData=paymentdetailrepo.findByPaymentId(data.getPaymentId());
+				PaymentDetail paymentData=paymentdetailrepo.findByMerchantReferenceAndPaymentStatus(data.getMerchantReference(),"ACCEPTED");
 				if(paymentData!=null) {
 				res.setMerchantReference(paymentData.getMerchantReference()==null?"":paymentData.getMerchantReference());
 				res.setBankName(paymentData.getBankName()==null?"":paymentData.getBankName());
@@ -931,7 +903,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 	//EMI Insatallment Details
 	//Validation
-	@Override
 	public List<Error> validateEmiInstallmentDetails(EmiInstallmentDetailsReq req) {
 		List<Error> errorList = new ArrayList<Error>();
 
@@ -963,7 +934,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		return errorList;
 	}
 
-	@Override
 	public List<EmiDisplayRes> viewEmiInstallmentDetails(EmiInstallmentDetailsReq req) {
 		List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
 		//DecimalFormat df = new DecimalFormat("0.0");
@@ -997,17 +967,17 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 						// Response
 						
 						interestAmount = premiumWithTax * interestPercent / 100;
-						interestAmount=interestAmount/12;
-						interestAmount=interestAmount*noOfMonth;
+						interestAmount=Double.valueOf(Math.round(interestAmount))/12;
+						interestAmount=Double.valueOf(Math.round(interestAmount))*noOfMonth;
 						totalLoanAmount = premiumWithTax + interestAmount;
 						advanceAmount = totalLoanAmount * advancePercent / 100;
 						if (i == 1) {
-							balanceAmount = totalLoanAmount - advanceAmount;
+							balanceAmount = totalLoanAmount - Double.valueOf(Math.round(advanceAmount));
 							installment = balanceAmount / (noOfMonth-1);
 							insDesc="Advance Amount";
 						} else {
 							temp = balanceAmount;
-							temp -= installment;
+							temp -= (Double.valueOf(Math.round(installment)));
 							balanceAmount = temp;
 							insDesc="Installment Amount";
 						}
@@ -1162,7 +1132,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	}
 	
 	// Get Next Emi Transaction Details
-	@Override
 	public List<EmiTransactionDetailsRes> getNextEmiDetails(EmiTransactionDetailsNextReq req) {
 		List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
@@ -1196,7 +1165,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 
-	@Override
+
 	public SuccessRes getEndorsementEmiDetails(EmiTransactionDetailsSaveReq req) {
 		EmiTransactionDetails saveData = new EmiTransactionDetails();
 		SuccessRes res = new SuccessRes();
@@ -1332,7 +1301,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		return res;
 	}
 
-	@Override
 	public void sendSmsEmail(EmiDataRequest req) {
 
 		boolean sms=true,mail=true;
@@ -1397,11 +1365,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			if("Y".equalsIgnoreCase(req.getLastNotifyYN()))
 			updateNotifyStatus(req.getLastNotifyYN(),req.getPolicyNo());
 		}
-		updateCurrentStatus(remarks,req.getPolicyNo());*/ 
-/*	
+		updateCurrentStatus(remarks,req.getPolicyNo());*/
+	
 	}
 
-	@Override
 	public List<EmiDataRequest> getEmiNotificationRequestList() {
 		try {
 			
@@ -1510,390 +1477,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		}
 		return list ;
 	}
-*/			
-//Insert Validation
-   @Override
-   public List<Error> validateEmiTransactionDetails(EmiTransactionDetailsSaveReq req) {
+			
 
-		List<Error> errorList = new ArrayList<Error>();
 
-		try {
-			if(req.getCompanyId().equalsIgnoreCase("100020")) {
-				errorList=kenyaEmiTransactionDetails.validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100047")) {
-				errorList=phoenixBotswanaEmiTransactionDetailsService.validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100050")) {
-				errorList=phoenixNamibiaEmiTransactionDetailsService .validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100048")) {
-				errorList=phoenixMozambiqueEmiTransactionDetailsService.validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100049")) {
-				errorList=phoenixSwazilndEmiTransactionDetailsService .validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100046")) {
-				errorList=phoenixZambiaEmiTransactionDetailsService .validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100028")) {
-				errorList=eagleEmiTransactionDetailsService .validateEmiTransactionDetails(req);
-			}
-		 } catch (Exception e) {
-			log.error(e);
-			e.printStackTrace();
-		}
-		return errorList;
-	}
-   
- //Insert
- 	@Transactional
- 	@Override
- 	public SuccessRes insertEmiTransactionDetails(EmiTransactionDetailsSaveReq req) {
- 		SuccessRes res = new SuccessRes();
-		if(req.getCompanyId().equalsIgnoreCase("100020")) {
-			res=kenyaEmiTransactionDetails.insertEmiTransactionDetails(req);
-		} 
-		else if(req.getCompanyId().equalsIgnoreCase("100046")) {
-			res=PhoenixZambiaEmiTransactionDetails.insertEmiTransactionDetails(req);
-		} 
-		
-		/*
-			 * else if(req.getCompanyId().equalsIgnoreCase("100047")) {
-			 * res=phoenixBotswanaEmiTransactionDetailsService.insertEmiTransactionDetails(
-			 * req); }else if(req.getCompanyId().equalsIgnoreCase("100050")) {
-			 * res=phoenixNamibiaEmiTransactionDetailsService.insertEmiTransactionDetails(
-			 * req); }else if(req.getCompanyId().equalsIgnoreCase("100048")) {
-			 * res=phoenixMozambiqueEmiTransactionDetailsService.insertEmiTransactionDetails
-			 * (req); }else if(req.getCompanyId().equalsIgnoreCase("100049")) {
-			 * res=phoenixSwazilndEmiTransactionDetailsService.insertEmiTransactionDetails(
-			 * req); }else if(req.getCompanyId().equalsIgnoreCase("100046")) {
-			 * res=phoenixZambiaEmiTransactionDetailsService.insertEmiTransactionDetails(req
-			 * ); }else if(req.getCompanyId().equalsIgnoreCase("100028")) {
-			 * res=eagleEmiTransactionDetailsService.insertEmiTransactionDetails(req); }
-			 */
-		else {
-			res=null;
-		}
- 		return res;
- 	}
 	
- 	//Update Validation
- 		@Override
- 		public List<Error> validateUpdateEmiTransactionDetails(List<EmiTransactionDetailsUpdateReq> reqList) {
- 			List<Error> errorList = new ArrayList<Error>();
-
- 			try {
- 				if(reqList!= null) {
- 				if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
- 					errorList=kenyaEmiTransactionDetails.validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100047")) {
- 					errorList=phoenixBotswanaEmiTransactionDetailsService.validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100050")) {
- 					errorList=phoenixNamibiaEmiTransactionDetailsService .validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100048")) {
- 					errorList=phoenixMozambiqueEmiTransactionDetailsService.validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100049")) {
- 					errorList=phoenixSwazilndEmiTransactionDetailsService .validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100046")) {
- 					errorList=phoenixZambiaEmiTransactionDetailsService .validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100028")) {
- 					errorList=eagleEmiTransactionDetailsService .validateUpdateEmiTransactionDetails(reqList);
- 				}
- 			  }
- 			} catch (Exception e) {
- 				log.error(e);
- 				e.printStackTrace();
- 			}
- 			return errorList;
- 		}
- 		
- 		//Update
- 		@Override
- 		public SuccessRes updateEmiTransactionDetails(List<EmiTransactionDetailsUpdateReq> reqList) {
- 			SuccessRes res = new SuccessRes();
- 			try {
- 				if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
- 					res=kenyaEmiTransactionDetails.updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100047")) {
- 					res=phoenixBotswanaEmiTransactionDetailsService.updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100050")) {
- 					res=phoenixNamibiaEmiTransactionDetailsService .updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100048")) {
- 					res=phoenixMozambiqueEmiTransactionDetailsService.updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100049")) {
- 					res=phoenixSwazilndEmiTransactionDetailsService .updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100046")) {
- 					res=phoenixZambiaEmiTransactionDetailsService .updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100028")) {
- 					res=eagleEmiTransactionDetailsService .updateEmiTransactionDetails(reqList);
- 				}
- 				else {
- 					res=null;
- 				}
- 				
- 			} catch (Exception e) {
- 				e.printStackTrace();
- 				log.info("Exception is --> " + e.getMessage());
- 				return null;
- 			}
- 			return res;
- 		}
- 			
- 	// Get All Emi Transaction Details
- 		@Override
- 		public List<EmiTransactionDetailsRes> getEmiDetailsByQuoteNo(EmiTransactionDetailsGetReq req) {
- 			List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
- 			try {
- 				if(req.getCompanyId().equalsIgnoreCase("100020")) {
- 					resList=kenyaEmiTransactionDetails.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    resList = phoenixBotswanaEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    resList = phoenixNamibiaEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    resList = phoenixMozambiqueEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    resList = phoenixSwazilndEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    resList = phoenixZambiaEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
- 				    resList = eagleEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				}
- 			}catch (Exception e) {
- 				e.printStackTrace();
- 				log.info("Log Details" + e.getMessage());
- 				return null;
- 			}
-
- 			return resList;
- 		}
- 	// Get Next Emi Transaction Details
- 		@Override
- 		public List<EmiTransactionDetailsRes> getNextEmiDetails(EmiTransactionDetailsNextReq req) {
- 			List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
- 			try {
- 				if(req.getCompanyId().equalsIgnoreCase("100020")) {
- 					resList=kenyaEmiTransactionDetails.getNextEmiDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    resList = phoenixBotswanaEmiTransactionDetailsService.getNextEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    resList = phoenixNamibiaEmiTransactionDetailsService.getNextEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    resList = phoenixMozambiqueEmiTransactionDetailsService.getNextEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    resList = phoenixSwazilndEmiTransactionDetailsService.getNextEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    resList = phoenixZambiaEmiTransactionDetailsService.getNextEmiDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
- 				    resList = eagleEmiTransactionDetailsService.getNextEmiDetails(req);
- 				}
- 			} catch (Exception e) {
- 				e.printStackTrace();
- 				log.info("Log Details" + e.getMessage());
- 				return null;
- 			}
-
- 			return resList;
- 		}
-
- 		@Override
- 		public SuccessRes getEndorsementEmiDetails(EmiTransactionDetailsSaveReq req) {
- 			SuccessRes res = new SuccessRes();
- 			try {
- 				if(req.getCompanyId().equalsIgnoreCase("100020")) {
- 					res=kenyaEmiTransactionDetails.getEndorsementEmiDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    res = phoenixBotswanaEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    res = phoenixNamibiaEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    res = phoenixMozambiqueEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    res = phoenixSwazilndEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    res = phoenixZambiaEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
- 				    res =eagleEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				}
- 				
-  			} catch (Exception e) {
- 				e.printStackTrace();
- 				log.info("Log Details" + e.getMessage());
- 				return null;
- 			}
-
- 			return res;
- 		}
-
- 		//EMI Insatallment Details
- 		//Validation
- 		@Override
- 		public List<Error> validateEmiInstallmentDetails(EmiInstallmentDetailsReq req) {
- 			List<Error> errorList = new ArrayList<Error>();
-
- 			try {
- 				if(req.getCompanyId().equalsIgnoreCase("100020")) {
- 					errorList=kenyaEmiTransactionDetails.validateEmiInstallmentDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    errorList = phoenixBotswanaEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    errorList = phoenixNamibiaEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    errorList = phoenixMozambiqueEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    errorList = phoenixSwazilndEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    errorList = phoenixZambiaEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
- 				    errorList = eagleEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				}
- 			}catch (Exception e) {
- 					e.printStackTrace();
- 					log.info("Log Details" + e.getMessage());
- 					return null;
- 				}
- 			return errorList;
- 		}
-
- 		@Override
- 		public List<EmiDisplayRes> viewEmiInstallmentDetails(EmiInstallmentDetailsReq req) {
- 			List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
- 			try {
- 				if(req.getCompanyId().equalsIgnoreCase("100020")) {
- 					resList=kenyaEmiTransactionDetails.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    resList = phoenixBotswanaEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    resList = phoenixNamibiaEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    resList = phoenixMozambiqueEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    resList = phoenixSwazilndEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    resList = phoenixZambiaEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
- 				    resList = eagleEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				}
- 	 		} catch (Exception e) {
- 				e.printStackTrace();
- 				log.info("Log Details" + e.getMessage());
- 				return null;
- 			}
-
- 			return resList;
- 		}
-
-		@Override
-		public void sendSmsEmail(EmiDataRequest req) {
-			
-			boolean sms=true,mail=true;
-			//String remarks="",currenctStatus="",currentStatusCode="";
-			try {
-				
-			if(StringUtils.isBlank(req.getMobileno())) {
-				//remarks="Mobile Not Available";
-				//currentStatusCode="ACV";
-				//currenctStatus="ADMIN-CALL-ALLIANCE";
-				sms=false;
-			}else if(StringUtils.isBlank(req.getMobileno())) {
-				//remarks="Email Not Available";
-				mail=false;
-			}
-			if(sms || mail) {
-				Calendar calend = Calendar.getInstance();
-				calend.setTime(new Date()); 
-				calend.add(Calendar.DATE, 1); 
-				NotifTransactionDetails nt = NotifTransactionDetails.builder()
-						.brokerCompanyName(req.getCustomerName())
-						.brokerMailId(req.getEmail())					
-						.companyName(req.getCompanyName())
-						.customerPhoneCode(Integer.parseInt(req.getMobileCode()))
-						.customerPhoneNo(req.getMobileno()==null?null:new BigDecimal(req.getMobileno()))
-						.customerMailid(req.getEmail())					
-						.customerName(req.getCustomerName())
-						.entryDate(new Date())
-						.notifcationPushDate(new Date())
-						.notifcationEndDate(calend.getTime())
-						.regNo(req.getDueAmount())
-						.expiryDate(req.getDueDate())
-						//.notifDescription(tempPassword)
-						.notifNo(Instant.now().toEpochMilli())
-						//.notifNo(null)
-						.notifPriority(1)
-						.notifPushedStatus("P")
-						.notifTemplatename("EMI_NOTIFICATION1")											
-						.productName("Common")					
-						//.tinyUrl(n.getTinyUrl())
-						.companyid(req.getCompanyId())
-						.productid(99999)
-						//.companyLogo(cm.getCompanyLogo())
-						//.companyAddress(cm.getCompanyAddress())											
-						.tinyUrlActive("N")
-						//.tinyGroupId(tinyGroupId)
-						.build();
-				NotifTransactionDetails sv = notifTrans.save(nt);
-				List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
-				text.add(sv);
-				notificationService.jobProcess(text);
-				//currentStatusCode="ASS";
-				//currenctStatus="ALLIANCE-SMS-SENT";
-			}
-			}catch (Exception e) {
-				e.printStackTrace();
-				//currentStatusCode="ASF";
-				//currenctStatus="ALLIANCE-SMS-FAILED";
-			}
-			/*if(sms) {
-				updateRenewalStatusAndStage("V",currentStatusCode,currenctStatus,req.getPolicyNo());
-				if("Y".equalsIgnoreCase(req.getLastNotifyYN()))
-				updateNotifyStatus(req.getLastNotifyYN(),req.getPolicyNo());
-			}
-			updateCurrentStatus(remarks,req.getPolicyNo());*/ 
-
-		}
-
-		@Override
-		public List<EmiDataRequest> getEmiNotificationRequestList() {
-			try {
-				
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<EmiDataRequest> query = cb.createQuery(EmiDataRequest.class);
-
-				Root<EmiTransactionDetails> m = query.from(EmiTransactionDetails.class);
-				Root<HomePositionMaster> hpm = query.from(HomePositionMaster.class);
-				Root<PersonalInfo> pi = query.from(PersonalInfo.class);
-				// Select
-				query.multiselect(m.get("quoteNo").alias("quoteNo"),pi.get("title").alias("title"),pi.get("clientName").alias("customerName"),
-						pi.get("mobileCode1").alias("mobileCode"),pi.get("mobileNo1").alias("mobileno"),pi.get("email1").alias("email"),
-						hpm.get("companyId").alias("companyId"), hpm.get("productId").as(String.class).alias("productCode"),hpm.get("sectionId").as(String.class).alias("sectionCode"),
-						hpm.get("branchCode").alias("branchCode"),m.get("instalment").alias("instalment"),m.get("dueDate").alias("dueDate"),
-						m.get("dueAmount").as(String.class).alias("dueAmount"));
-
-				Predicate n1=null;
-				if("mysql".equalsIgnoreCase(dataBaseType)) {
-					Expression<Integer> dateDiffExpression = cb.function("DATEDIFF",Integer.class, m.get("dueDate"),cb.currentDate());
-					n1 = cb.equal(dateDiffExpression,0);
-				}
-				else {
-					Expression<Long> dateDiffExpression = cb.diff(
-					    cb.function("TRUNC", Date.class, m.get("dueDate")).as(Long.class),
-					    cb.function("TRUNC", Date.class, cb.currentDate()).as(Long.class)
-					);
-					n1 = cb.equal(dateDiffExpression,0);
-				}
-				Predicate n2=cb.equal(m.get("paymentStatus"),"Pending");
-				Predicate n3 = cb.equal(m.get("quoteNo"), hpm.get("quoteNo")); 
-				Predicate n4 = cb.equal(hpm.get("customerId"), pi.get("customerId")); 
-				Predicate n5 = cb.isNull(hpm.get("endtTypeId"));
-				
-				query.where(n1,n2,n3,n4,n5);
-				
-				// Get Result
-				TypedQuery<EmiDataRequest> result = em.createQuery(query);
-				return result.getResultList();
-
-			
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
-			}
-
-		}
-
+	
 }
