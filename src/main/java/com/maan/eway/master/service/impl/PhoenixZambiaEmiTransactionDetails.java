@@ -945,7 +945,7 @@ public class PhoenixZambiaEmiTransactionDetails {
 //			HomePositionMaster homeData=homerepo.findByQuoteNo(req.getQuoteNo());
 			premiumWithTax = Double.valueOf(req.getPremiumWithTax());
 //			premiumWithTax = Double.valueOf(homeData.getOverallPremiumLc().toString());
-			if(!req.getCurrency().equalsIgnoreCase("KES")) {
+			if(!req.getCurrency().equalsIgnoreCase("ZMW")) {
 				List<ExchangeMaster> exchangeData=exchangeMasterRepo.findByCurrencyIdAndCompanyIdOrderByAmendIdDesc(req.getCurrency(),req.getCompanyId());				if(exchangeData.size()>0) 
 					exchangeDate= exchangeData.get(0).getExchangeRate();
 					
