@@ -68,6 +68,7 @@ public class PushedStateChange implements  Function<NotifTransactionDetails,List
 							.master(SmsConfigMasterDto.builder().smsPartyUrl(smsmaster.getSmsPartyUrl()).smsUserPass(smsmaster.getSmsUserPass()).smsUserName(smsmaster.getSmsUserName())
 									.senderid(smsmaster.getSenderId())
 									.secureYn("Y")
+									.insId(t.get("companyid")==null?BigDecimal.ZERO:new BigDecimal(t.get("companyid").toString()))
 									.build())
 							.mobileCode(obj.getCustomerPhoneCode().toString())
 							.notifNo(t.get("notifNo")==null?0L:Long.parseLong(t.get("notifNo").toString()))

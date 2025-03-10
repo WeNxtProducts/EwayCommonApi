@@ -218,7 +218,7 @@ public class ValuationServiceImpl implements ValuationService {
 						.productid(99999)
 						.companyLogo(cm.get(0).getCompanyLogo())
 						.companyAddress(cm.get(0).getCompanyAddress())											
-						.tinyUrlActive("N")
+						.tinyUrlActive("N").pushedBy(vdata.getValCompanyName())
 						//.tinyGroupId(tinyGroupId)
 						.build();
 				NotifTransactionDetails sv = notifTrans.save(nt);
