@@ -139,6 +139,7 @@ public class SaveResponseToTable {
 							 i.setSubCoverDescLocal(i.getCoverDesc());
 							 i.setSubCoverName(i.getCoverName());
 							 i.setSubCoverNameLocal(i.getCoverName());
+							 i.setIsselected("D".equals(i.getIsselected())?"Y":i.getIsselected());
 						} 
 							 
 							 

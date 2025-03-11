@@ -40,7 +40,7 @@ public class CoverFromAzentoResponse implements Function<Map<String, Object>,Cov
 					.dependentCoveryn("N")
 					.dependentCoverId("")
 					.coverageType(coverageType)
-					.isselected(!"B".equals(coverageType)?t.get("addCoverYN")==null?"N":t.get("addCoverYN").toString():"Y")
+					.isselected(!"B".equals(coverageType)?t.get("addCoverYN")==null?"N":t.get("addCoverYN").toString():"D")
 					.isReferral("N")
 					.referalDescription("")
 					.coverBasedOn("sumInsured")
