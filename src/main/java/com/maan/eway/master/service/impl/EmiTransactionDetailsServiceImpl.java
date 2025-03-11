@@ -1520,19 +1520,31 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 		try {
 			if(req.getCompanyId().equalsIgnoreCase("100020")) {
 				errorList=kenyaEmiTransactionDetails.validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100047")) {
-				errorList=phoenixBotswanaEmiTransactionDetailsService.validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100050")) {
-				errorList=phoenixNamibiaEmiTransactionDetailsService .validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100048")) {
-				errorList=phoenixMozambiqueEmiTransactionDetailsService.validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100049")) {
-				errorList=phoenixSwazilndEmiTransactionDetailsService .validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100046")) {
-				errorList=phoenixZambiaEmiTransactionDetailsService .validateEmiTransactionDetails(req);
-			}else if(req.getCompanyId().equalsIgnoreCase("100028")) {
-				errorList=eagleEmiTransactionDetailsService .validateEmiTransactionDetails(req);
 			}
+			else if(req.getCompanyId().equalsIgnoreCase("100046")){
+				errorList=PhoenixZambiaEmiTransactionDetails.validateEmiTransactionDetails(req);
+            }
+			
+			/*
+			 * else if(req.getCompanyId().equalsIgnoreCase("100047")) {
+			 * errorList=phoenixBotswanaEmiTransactionDetailsService.
+			 * validateEmiTransactionDetails(req); }else
+			 * if(req.getCompanyId().equalsIgnoreCase("100050")) {
+			 * errorList=phoenixNamibiaEmiTransactionDetailsService
+			 * .validateEmiTransactionDetails(req); }else
+			 * if(req.getCompanyId().equalsIgnoreCase("100048")) {
+			 * errorList=phoenixMozambiqueEmiTransactionDetailsService.
+			 * validateEmiTransactionDetails(req); }else
+			 * if(req.getCompanyId().equalsIgnoreCase("100049")) {
+			 * errorList=phoenixSwazilndEmiTransactionDetailsService
+			 * .validateEmiTransactionDetails(req); }else
+			 * if(req.getCompanyId().equalsIgnoreCase("100046")) {
+			 * errorList=phoenixZambiaEmiTransactionDetailsService
+			 * .validateEmiTransactionDetails(req); }else
+			 * if(req.getCompanyId().equalsIgnoreCase("100028")) {
+			 * errorList=eagleEmiTransactionDetailsService
+			 * .validateEmiTransactionDetails(req); }
+			 */
 		 } catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -1581,19 +1593,32 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  				if(reqList!= null) {
  				if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
  					errorList=kenyaEmiTransactionDetails.validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100047")) {
- 					errorList=phoenixBotswanaEmiTransactionDetailsService.validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100050")) {
- 					errorList=phoenixNamibiaEmiTransactionDetailsService .validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100048")) {
- 					errorList=phoenixMozambiqueEmiTransactionDetailsService.validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100049")) {
- 					errorList=phoenixSwazilndEmiTransactionDetailsService .validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100046")) {
- 					errorList=phoenixZambiaEmiTransactionDetailsService .validateUpdateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100028")) {
- 					errorList=eagleEmiTransactionDetailsService .validateUpdateEmiTransactionDetails(reqList);
  				}
+ 				else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100046"))
+ 				{
+ 					errorList=PhoenixZambiaEmiTransactionDetails.validateUpdateEmiTransactionDetails(reqList);
+ 				}
+ 				
+				/*
+				 * else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100047")) {
+				 * errorList=phoenixBotswanaEmiTransactionDetailsService.
+				 * validateUpdateEmiTransactionDetails(reqList); }else
+				 * if(reqList.get(0).getCompanyId().equalsIgnoreCase("100050")) {
+				 * errorList=phoenixNamibiaEmiTransactionDetailsService
+				 * .validateUpdateEmiTransactionDetails(reqList); }else
+				 * if(reqList.get(0).getCompanyId().equalsIgnoreCase("100048")) {
+				 * errorList=phoenixMozambiqueEmiTransactionDetailsService.
+				 * validateUpdateEmiTransactionDetails(reqList); }else
+				 * if(reqList.get(0).getCompanyId().equalsIgnoreCase("100049")) {
+				 * errorList=phoenixSwazilndEmiTransactionDetailsService
+				 * .validateUpdateEmiTransactionDetails(reqList); }else
+				 * if(reqList.get(0).getCompanyId().equalsIgnoreCase("100046")) {
+				 * errorList=phoenixZambiaEmiTransactionDetailsService
+				 * .validateUpdateEmiTransactionDetails(reqList); }else
+				 * if(reqList.get(0).getCompanyId().equalsIgnoreCase("100028")) {
+				 * errorList=eagleEmiTransactionDetailsService
+				 * .validateUpdateEmiTransactionDetails(reqList); }
+				 */
  			  }
  			} catch (Exception e) {
  				log.error(e);
@@ -1609,19 +1634,30 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  			try {
  				if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
  					res=kenyaEmiTransactionDetails.updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100047")) {
- 					res=phoenixBotswanaEmiTransactionDetailsService.updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100050")) {
- 					res=phoenixNamibiaEmiTransactionDetailsService .updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100048")) {
- 					res=phoenixMozambiqueEmiTransactionDetailsService.updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100049")) {
- 					res=phoenixSwazilndEmiTransactionDetailsService .updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100046")) {
- 					res=phoenixZambiaEmiTransactionDetailsService .updateEmiTransactionDetails(reqList);
- 				}else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100028")) {
- 					res=eagleEmiTransactionDetailsService .updateEmiTransactionDetails(reqList);
  				}
+ 				else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100046"))
+ 				{
+ 					res=PhoenixZambiaEmiTransactionDetails.updateEmiTransactionDetails(reqList);
+	            }
+ 				
+				/*
+				 * else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100047")) {
+				 * res=phoenixBotswanaEmiTransactionDetailsService.updateEmiTransactionDetails(
+				 * reqList); }else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100050"))
+				 * { res=phoenixNamibiaEmiTransactionDetailsService
+				 * .updateEmiTransactionDetails(reqList); }else
+				 * if(reqList.get(0).getCompanyId().equalsIgnoreCase("100048")) {
+				 * res=phoenixMozambiqueEmiTransactionDetailsService.updateEmiTransactionDetails
+				 * (reqList); }else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100049"))
+				 * { res=phoenixSwazilndEmiTransactionDetailsService
+				 * .updateEmiTransactionDetails(reqList); }else
+				 * if(reqList.get(0).getCompanyId().equalsIgnoreCase("100046")) {
+				 * res=phoenixZambiaEmiTransactionDetailsService
+				 * .updateEmiTransactionDetails(reqList); }else
+				 * if(reqList.get(0).getCompanyId().equalsIgnoreCase("100028")) {
+				 * res=eagleEmiTransactionDetailsService .updateEmiTransactionDetails(reqList);
+				 * }
+				 */
  				else {
  					res=null;
  				}
@@ -1729,19 +1765,27 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  			try {
  				if(req.getCompanyId().equalsIgnoreCase("100020")) {
  					errorList=kenyaEmiTransactionDetails.validateEmiInstallmentDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    errorList = phoenixBotswanaEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    errorList = phoenixNamibiaEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    errorList = phoenixMozambiqueEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    errorList = phoenixSwazilndEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    errorList = phoenixZambiaEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
- 				    errorList = eagleEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
  				}
+ 				else if(req.getCompanyId().equalsIgnoreCase("100046"))
+ 				{
+ 					errorList=PhoenixZambiaEmiTransactionDetails.validateEmiInstallmentDetails(req);
+
+ 				}
+ 				
+				/*
+				 * else if (req.getCompanyId().equalsIgnoreCase("100047")) { errorList =
+				 * phoenixBotswanaEmiTransactionDetailsService.validateEmiInstallmentDetails(req
+				 * ); } else if (req.getCompanyId().equalsIgnoreCase("100050")) { errorList =
+				 * phoenixNamibiaEmiTransactionDetailsService.validateEmiInstallmentDetails(req)
+				 * ; } else if (req.getCompanyId().equalsIgnoreCase("100048")) { errorList =
+				 * phoenixMozambiqueEmiTransactionDetailsService.validateEmiInstallmentDetails(
+				 * req); } else if (req.getCompanyId().equalsIgnoreCase("100049")) { errorList =
+				 * phoenixSwazilndEmiTransactionDetailsService.validateEmiInstallmentDetails(req
+				 * ); } else if (req.getCompanyId().equalsIgnoreCase("100046")) { errorList =
+				 * phoenixZambiaEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
+				 * }else if (req.getCompanyId().equalsIgnoreCase("100028")) { errorList =
+				 * eagleEmiTransactionDetailsService.validateEmiInstallmentDetails(req); }
+				 */
  			}catch (Exception e) {
  					e.printStackTrace();
  					log.info("Log Details" + e.getMessage());
@@ -1756,17 +1800,23 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  			try {
  				if(req.getCompanyId().equalsIgnoreCase("100020")) {
  					resList=kenyaEmiTransactionDetails.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    resList = phoenixBotswanaEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    resList = phoenixNamibiaEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    resList = phoenixMozambiqueEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    resList = phoenixSwazilndEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    resList = phoenixZambiaEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
+ 				} 
+ 				else if(req.getCompanyId().equalsIgnoreCase("100046"))
+ 				{
+ 					resList=PhoenixZambiaEmiTransactionDetails.viewEmiInstallmentDetails(req);
+ 				}
+				/*
+				 * else if (req.getCompanyId().equalsIgnoreCase("100047")) { resList =
+				 * phoenixBotswanaEmiTransactionDetailsService.viewEmiInstallmentDetails(req); }
+				 * else if (req.getCompanyId().equalsIgnoreCase("100050")) { resList =
+				 * phoenixNamibiaEmiTransactionDetailsService.viewEmiInstallmentDetails(req); }
+				 * else if (req.getCompanyId().equalsIgnoreCase("100048")) { resList =
+				 * phoenixMozambiqueEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
+				 * } else if (req.getCompanyId().equalsIgnoreCase("100049")) { resList =
+				 * phoenixSwazilndEmiTransactionDetailsService.viewEmiInstallmentDetails(req); }
+				 * else if (req.getCompanyId().equalsIgnoreCase("100046")) { resList =
+				 * phoenixZambiaEmiTransactionDetailsService.viewEmiInstallmentDetails(req); }
+				 */else if (req.getCompanyId().equalsIgnoreCase("100028")) {
  				    resList = eagleEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
  				}
  	 		} catch (Exception e) {
