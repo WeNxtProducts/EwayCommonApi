@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,9 +128,21 @@ public class SaveResponseToTable {
 				        .collect(Collectors.toList());
 					 if(!collect.isEmpty()) {
 						 
-						 Cover base = collect.get(0);
+						 Cover base = collect.stream().filter(i->i!=null).collect(Collectors.toList()).get(0);
 						 base.setIsSubCover("Y");
-						 collect.forEach(i-> i.setSubCoverId(base.getCoverId()));
+						 base.setSubCoverId("0");
+						 
+						 for (Cover i : collect) {
+							 i.setSubCoverId(i.getCoverId());
+							 i.setCoverId(base.getCoverId());
+							 i.setSubCoverDesc(i.getCoverDesc());
+							 i.setSubCoverDescLocal(i.getCoverDesc());
+							 i.setSubCoverName(i.getCoverName());
+							 i.setSubCoverNameLocal(i.getCoverName());
+						} 
+							 
+							 
+							 
 						 base.setSubcovers(collect);
 						 retc.removeAll(collect);
 						 retc.add(base);						 

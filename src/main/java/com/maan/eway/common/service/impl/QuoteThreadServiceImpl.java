@@ -124,6 +124,8 @@ import com.maan.eway.res.ReferalResponse;
 import com.maan.eway.res.calc.AdminReferral;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.thread.MyTaskList;
+import com.maan.eway.workflow.dto.WorkEngine;
+import com.maan.eway.workflow.service.JsonMapperFromDB;
 import com.maan.eway.workstream.request.QuoteProposalSaveReq;
 import com.maan.eway.workstream.serviceimpl.QuoteProposalServiceImpl;
 
@@ -303,6 +305,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Lazy
 	@Autowired
 	private QuoteProposalServiceImpl quoteProposalService;
+	
+	@Autowired
+	private JsonMapperFromDB jsonMapper;
 	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -671,6 +676,17 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				}
 			}
 			
+			if("100040".equals(request.getInsuranceId()) || "100027".equals(request.getInsuranceId())) {
+				WorkEngine work=new WorkEngine();
+				work.setCompanyId(request.getInsuranceId());
+				work.setProductId(request.getProductId());
+				work.setQuoteNo(response.getQuoteNo());
+				work.setRequestReferenceNo(request.getRequestReferenceNo() );
+				work.setIntegType("UPD_QUOT_INTEG");
+				work.setSectionId(request.getSectionId());
+				
+				jsonMapper.createQuotation(work);
+			}
 				notiService.motorQuotationNotification(req);
 				trackingDetailsQuote(request);
 				

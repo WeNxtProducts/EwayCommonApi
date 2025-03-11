@@ -447,7 +447,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 		}
 	public synchronized EserviceMotorDetailsSaveRes calculator(CalcEngine engine, String token) {
 		
-		if("100027".equals(engine.getInsuranceId())) {
+		if("100040".equals(engine.getInsuranceId())  || "100027".equals(engine.getInsuranceId())) {
 			
 			WorkEngine work=new WorkEngine();
 			work.setCompanyId(engine.getInsuranceId());
