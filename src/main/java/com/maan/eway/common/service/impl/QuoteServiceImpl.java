@@ -1402,13 +1402,13 @@ public class QuoteServiceImpl implements QuoteService {
 			
 					List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
 					List<SectionCoverMaster> coverdetails=new ArrayList<>();
-					if(filterCover!=null ||! filterCover.isEmpty() ||filterCover.size()>=0)
+					/*if(filterCover!=null ||! filterCover.isEmpty() ||filterCover.size()>=0)
 					{
 						coverdetails= sectioncoverrepo.findByCompanyIdAndSectionIdAndCoverIdOrderByAmendIdDesc(filterCover.get(0).getCompanyId(), filterCover.get(0).getSectionId(), coverId);
-					    if(coverdetails!=null || coverdetails.size()>=0)
+					    if(!coverdetails.isEmpty() )
 					    coverRes.setCoverNameLocal(coverdetails.get(0).getCoverNameLocal());
 					      
-					}
+					}*/
 					coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
 					 coverRes.setCoverName(filterCover.get(0).getCoverName());
 					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
@@ -1427,11 +1427,11 @@ public class QuoteServiceImpl implements QuoteService {
 						SubCoverRes subCoverRes = new SubCoverRes();
 						List<SectionCoverMaster> subcoverdetails=new ArrayList<>();
 						
-						subcoverdetails= sectioncoverrepo.findByCompanyIdAndSectionIdAndCoverIdOrderByAmendIdDesc(subCovers.getCompanyId(), subCovers.getSectionId(), coverId);
+					/*	subcoverdetails= sectioncoverrepo.findByCompanyIdAndSectionIdAndCoverIdOrderByAmendIdDesc(subCovers.getCompanyId(), subCovers.getSectionId(), coverId);
 						    if(subcoverdetails!=null || subcoverdetails.size()>=0) {
 						    	subCoverRes.setSubCoverNameLocal(subcoverdetails.get(0).getCoverNameLocal());
 						    }
-						
+						*/
 						subCoverRes = dozerMapper.map(subCovers, SubCoverRes.class);
 						subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
 						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
