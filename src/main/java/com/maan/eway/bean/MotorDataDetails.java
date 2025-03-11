@@ -819,6 +819,13 @@ private static final long serialVersionUID = 1L;
  	@Temporal(TemporalType.TIMESTAMP)
  	@Column(name = "PURCHASE_DATE")
  	private Date purchaseDate;
+ 	
+
+    @Column(name="CORE_QUOTE_NO", length=100)
+    private String   coreQuoteNo ; 
+    @Column(name="RISK_SGSID", length=100)
+    private String   riskSgsId ; 
+
 }
 
 

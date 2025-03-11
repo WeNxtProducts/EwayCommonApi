@@ -966,7 +966,12 @@ private static final long serialVersionUID = 1L;
     private BigDecimal     creditShortfallSi ;
     
     @Column(name="ABOUT_VEHICLE", length=100)
-    private String   aboutvehicle ; 
+    private String   aboutvehicle ;
+    
+    @Column(name="CORE_QUOTE_NO", length=100)
+    private String   coreQuoteNo ; 
+    @Column(name="RISK_SGSID", length=100)
+    private String   riskSgsId ; 
 
 }
 

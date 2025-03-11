@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.PremiaApiDropdownMaster;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -35,8 +37,10 @@ public class SaveResponseToTable {
 	@Autowired
 	private WorkFlowFactorUtil workflow;
 
+	
 	@Autowired
-	private JdbcTemplate template;
+	private EServiceMotorDetailsRepository eserMotorRepo;
+
 	
 	public void saveIntoFactorRequestTable(Map<String, Object> response, WorkEngine engine, Map<String, Object> request) {
 		try {
@@ -79,12 +83,7 @@ public class SaveResponseToTable {
 				Map<String, Object> object3 = (Map<String, Object>) quoteInfo.get("riskInfo");
 				Map<String, Object> object4 = (Map<String, Object>) object3.get("riskDetails");
 				List<Map<String, Object>> object5 = (List<Map<String, Object>>) object4.get("riskDetailsArray");
-				try {
-					String updDatequery="UPDATE eservice_motor_details SET CORE_QUOTE_NO=? WHERE request_reference_no=?";
-					template.update(updDatequery,new Object[] {object1.get("quoteNo"),engine.getRequestReferenceNo()});
-				}catch(Exception e) {
-					e.printStackTrace();
-				}
+				updateQuery(engine, object1);
 				
 				object6=(Map<String, Object>) object5.get(0).get("coverages");
 				premiumResponseArr=(Map<String, Object>) object5.get(0).get("premiumResponseArr");
@@ -245,6 +244,24 @@ public class SaveResponseToTable {
 
 			}
 		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	@Transactional
+	private void updateQuery(WorkEngine engine, Map<String, Object> object1) {
+		try {
+			//String updDatequery="UPDATE eservice_motor_details SET CORE_QUOTE_NO='"+object1.get("quoteNo").toString()+"',RISK_SGSID='"+object1.get("quoteId").toString()+"' WHERE request_reference_no='"+engine.getRequestReferenceNo()+"';";
+			/*String updDatequery="UPDATE eservice_motor_details SET CORE_QUOTE_NO=?,RISK_SGSID=? WHERE request_reference_no=?";
+			int update = template.update(updDatequery,object1.get("quoteNo").toString(),object1.get("quoteId").toString(),engine.getRequestReferenceNo());
+			
+			System.out.println("record upd"+update);*/
+			List<EserviceMotorDetails> emds = eserMotorRepo.findByRequestReferenceNo(engine.getRequestReferenceNo());
+			 for (EserviceMotorDetails i : emds) {
+				 i.setCoreQuoteNo(object1.get("quoteNo").toString());
+				 i.setRiskSgsId(object1.get("quoteId").toString());
+			 }
+			eserMotorRepo.saveAll(emds);
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
