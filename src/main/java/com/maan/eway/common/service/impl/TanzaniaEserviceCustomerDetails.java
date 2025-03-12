@@ -530,9 +530,10 @@ public class TanzaniaEserviceCustomerDetails {
 			saveData.setCountry(req.getCountry());
 			saveData.setCountryName(req.getCountryName());
 			saveData.setCityCode(StringUtils.isBlank(req.getCityCode())?null :Integer.valueOf(req.getCityCode()));
-			saveData.setCityName(req.getCityName());
+			saveData.setCityName(determineCityName(req));
 			saveData.setPinCode(req.getPinCode());
 			saveData.setRegionCode(req.getRegionCode());
+			saveData.setStateName(determineStateName(req));
 			
 			saveData.setVrTinNo(req.getVrTinNo());
 			//saveData.setVrnGst(req.getVrTinNo());
@@ -717,7 +718,7 @@ public class TanzaniaEserviceCustomerDetails {
 				savePersonalInfo.setRegionCode(req.getRegionCode());
 				savePersonalInfo.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 				savePersonalInfo.setCityCode(req.getCityCode());
-				savePersonalInfo.setCityName(req.getCityName());
+				savePersonalInfo.setCityName(determineCityName(req));
 				savePersonalInfo.setClientName(req.getClientName());
 				savePersonalInfo.setClientStatus(req.getClientStatus());
 				savePersonalInfo.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
@@ -788,7 +789,7 @@ public class TanzaniaEserviceCustomerDetails {
 				}
 				savePersonalInfo.setRegionCode(req.getRegionCode());
 				savePersonalInfo.setStateCode(req.getStateCode());
-				savePersonalInfo.setStateName(req.getStateName());
+				savePersonalInfo.setStateName(determineStateName(req));
 				savePersonalInfo.setStatus(req.getStatus());
 				savePersonalInfo.setNationality(req.getNationality());
 				savePersonalInfo.setVrTinNo(req.getVrTinNo());
@@ -839,7 +840,7 @@ public class TanzaniaEserviceCustomerDetails {
 					
 					savePersonalInfo.setIsTaxExempted(StringUtils.isBlank(req.getIsTaxExempted())?"0":req.getIsTaxExempted());
 					savePersonalInfo.setCityCode(req.getCityCode());
-					savePersonalInfo.setCityName(req.getCityName());
+					savePersonalInfo.setCityName(determineCityName(req));
 					savePersonalInfo.setClientName(req.getClientName());
 					savePersonalInfo.setClientStatus(req.getClientStatus());
 					savePersonalInfo.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
@@ -912,7 +913,7 @@ public class TanzaniaEserviceCustomerDetails {
 					}
 					savePersonalInfo.setRegionCode(req.getRegionCode());
 					savePersonalInfo.setStateCode(req.getStateCode());
-					savePersonalInfo.setStateName(req.getStateName());
+					savePersonalInfo.setStateName(determineStateName(req));
 					savePersonalInfo.setStatus(req.getStatus());
 					savePersonalInfo.setNationality(req.getNationality());
 					savePersonalInfo.setVrTinNo(req.getVrTinNo());
@@ -997,5 +998,48 @@ public class TanzaniaEserviceCustomerDetails {
 			return null;
 		}
 		return res;
+	}
+	
+	
+	/**
+	 * This method returns the state name if it's provided. 
+	 * If not, it tries to find the state name using the country, and region code. 
+	 * */
+	private String determineStateName(EserviceCustomerSaveReq req) {
+		
+		if(StringUtils.isNotBlank(req.getStateName())) { 
+			return req.getStateName();
+		}
+		
+		else if(StringUtils.isBlank(req.getStateName()) && StringUtils.isNotBlank(req.getStateCode()) ){
+			List<RegionMaster> regionMaster = regionMasterRepo.findByCountryIdAndRegionCode(req.getCountry(), req.getRegionCode());				
+			if(regionMaster.size() == 1) {
+				return regionMaster.get(0).getRegionName();
+			}
+		}
+		
+		return null;		
+	}
+	
+	
+	/**
+	 * This method returns the city name if it's provided. 
+	 * If not, it looks up the city name using the city code, country, and state code.
+	 * */
+	private String determineCityName(EserviceCustomerSaveReq req) {
+		if(StringUtils.isNotBlank(req.getCityName())) {
+			return req.getCityName();
+		}
+		
+		else if(StringUtils.isBlank(req.getCityName()) && StringUtils.isNotBlank(req.getCityCode())) {
+			List<StateMaster> stateMaster = stateMasterRepo.findByStateIdAndCountryIdAndRegionCode(
+					Integer.valueOf(req.getCityCode()), req.getCountry(), req.getStateCode());
+			
+			if(stateMaster.size() == 1) {
+				return stateMaster.get(0).getStateName();
+			}
+		}	
+		
+		return null;		
 	}
 }
