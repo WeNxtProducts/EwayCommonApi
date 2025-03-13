@@ -78,4 +78,7 @@ public class BuildingCopyRes {
 	@JsonProperty("SubUserType")
 	private String subUserType;
 	
+	@JsonProperty("PreviousRequestReferenceNo")
+	private String previousRequestReferenceNo;
+	
 }

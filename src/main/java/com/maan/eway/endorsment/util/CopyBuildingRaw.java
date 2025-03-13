@@ -161,6 +161,7 @@ public class CopyBuildingRaw {
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
 			String newRequestNo =null;
+			String prevRequestRefNo=null;
 			long pendingcount =0;
 			// Response 
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -192,10 +193,12 @@ public class CopyBuildingRaw {
 					 prevPolicyNo=BuildingDatas.get(0).getEndtPrevPolicyNo();
 					 prevQuoteNo=BuildingDatas.get(0).getEndtPrevQuoteNo();
 					 newRequestNo=BuildingDatas.get(0).getRequestReferenceNo();
-					 String prevRequestRefNo=BuildingDatas.get(0).getRequestReferenceNo();
+					 prevRequestRefNo=BuildingDatas.get(0).getRequestReferenceNo();
 					 List<EserviceBuildingDetails> rows = eBuildingRepo.findByRequestReferenceNoAndProductId(prevRequestRefNo,ent.getProductId().toPlainString());
 					 List<EserviceSectionDetails> section = eserSecRepo.findByRequestReferenceNoAndProductId(prevRequestRefNo,ent.getProductId().toPlainString());
+					 if(section.size()>0 && section!=null) {
 					 eserSecRepo.deleteAll(section);
+					 }
 					 eserSecRepo.flush();
 					 eBuildingRepo.deleteAllInBatch(rows);
 					 eBuildingRepo.flush();
@@ -317,6 +320,7 @@ public class CopyBuildingRaw {
 			res.setApplicationId(newBuildingList.get(0).getApplicationId());
 			res.setLoginId(newBuildingList.get(0).getLoginId());
 			res.setSubUserType(newBuildingList.get(0).getSubUserType());
+			res.setPreviousRequestReferenceNo(prevRequestRefNo);
 			return res;
 			
 		}catch(ObjectOptimisticLockingFailureException ex ) {
@@ -332,14 +336,15 @@ public class CopyBuildingRaw {
 		try {
 			String newReqRefNo=buildingData.getRequestReferenceNo() ;
 		//	String  oldReqRefNo=buildingData.getOldRequestReferenceNo() ;
-			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D") ;
-			
+//			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D") ;
+			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(buildingData.getPreviousRequestReferenceNo(),"D") ;
 			// Building Section Insert
 			List<EserviceSectionDetails> buildSecCount = eserSecRepo.findByRequestReferenceNo(newReqRefNo);
 			if (buildSecCount.size()>0 && ! buildSecCount.isEmpty()) {
 				eserSecRepo.deleteAll(buildSecCount);
 			}
-			List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D");
+//			List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D");
+			List<SectionDataDetails> secList = sectionDataRepo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(buildingData.getPreviousRequestReferenceNo(),"D");
 			
 			List<EserviceSectionDetails> filteredSectionList = oldSecDatas.stream()
 				    .filter(m -> secList.stream()

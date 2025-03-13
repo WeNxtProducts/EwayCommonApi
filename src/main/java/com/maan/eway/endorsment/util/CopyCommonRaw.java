@@ -61,6 +61,7 @@ import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.bean.BuildingDetails;
+import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 @Service
 public class CopyCommonRaw {
@@ -175,8 +176,12 @@ public class CopyCommonRaw {
 					 newRequestNo=CommonDatas.get(0).getRequestReferenceNo();
 					 prevRequestRefNo=CommonDatas.get(0).getRequestReferenceNo();
 					 List<EserviceCommonDetails> rows = eCommonRepo.findByRequestReferenceNo(prevRequestRefNo);
+					 List<EserviceSectionDetails> section = eserSecRepo.findByRequestReferenceNoAndProductId(prevRequestRefNo,ent.getProductId().toPlainString());
 					 if(rows.size()>0 && rows!=null) {
 					 eCommonRepo.deleteAllInBatch(rows);
+					 if(section.size()>0 && section !=null) {
+						 eserSecRepo.deleteAll(section); 
+					 }
 					 eCommonRepo.flush();
 					 count--;
 					 newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
@@ -219,6 +224,17 @@ public class CopyCommonRaw {
 			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
 					//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
 			List<EserviceCommonDetails> CommonList=eCommonRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+			
+			List<CommonDataDetails> commonData = 
+					commonDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo, "D");
+
+			List<EserviceCommonDetails> filteredCommonList = CommonList.stream().filter(m -> commonData.stream()
+					.anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) && m.getQuoteNo().equals(risk.getQuoteNo())
+							&& m.getLocationId().equals(risk.getLocationId())
+							&& m.getSectionId().equals(risk.getSectionId())))
+					.collect(Collectors.toList());
+			List<EserviceBuildingDetails> newBuildingList = new ArrayList<EserviceBuildingDetails>();
+			
 			List<EserviceCommonDetails> newCommonList = new ArrayList<EserviceCommonDetails>();
 //			List<EserviceCommonDetails> endtList = eCommonRepo.findByPolicyNo(ent.getPolicyNo() + "-" + count);
 //			if (endtList.size() > 0 && endtList.get(0).getEndorsementType() != null
@@ -230,41 +246,57 @@ public class CopyCommonRaw {
 //
 //				}
 			++count;
-			for(EserviceCommonDetails m :CommonList) {
-			EserviceCommonDetails newObject = dozerMapper.map(m , EserviceCommonDetails.class);
-			newObject.setRequestReferenceNo(newRequestNo);
-			newObject.setOriginalPolicyNo(ent.getPolicyNo());
-			newObject.setEndorsementDate(new Date());
-			newObject.setEndorsementRemarks(ent.getEndtRemarks());
-			newObject.setEndorsementEffdate(ent.getEndtEffectiveDate());
-			newObject.setEndtPrevPolicyNo(prevPolicyNo);
-			newObject.setEndtPrevQuoteNo(prevQuoteNo);
-			newObject.setEndtCount(new BigDecimal(count));
-			newObject.setEndtStatus("P");
-			newObject.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
-			newObject.setEndtCategDesc(entMaster.getEndtTypeCategory());
-			newObject.setEndorsementType(Integer.parseInt(ent.getEndtType()));
-			newObject.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
-			newObject.setStatus("E");
-			newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
-			newObject.setQuoteNo(null);
-			newObject.setApplicationId(ent.getApplicationId());
-			if(ent.getLoginId()==null || StringUtils.isBlank(ent.getLoginId())) {
-				newObject.setLoginId(m.getLoginId());
-			}else {
-				newObject.setLoginId(ent.getLoginId());
-			}
-			// Source Type Condtion
-			String sourceType = newObject.getSourceType() ;
-			if(StringUtils.isNotBlank(newObject.getApplicationId()) && ! "1".equalsIgnoreCase(newObject.getApplicationId()) ) {
-				List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(newObject.getCompanyId() , newObject.getBranchCode() ,"SOURCE_TYPE"); 
-				List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter( o -> "Y".equalsIgnoreCase(o.getStatus()) 
-						&& o.getItemValue().contains(sourceType) ).collect(Collectors.toList()); 							
-				newObject.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()	: 	newObject.getSourceType());			
-				newObject.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()	: 	newObject.getSourceTypeId());
-			}
-			newObject.setSubUserType(ent.getSubUserType());
-			newCommonList.add(newObject);
+			for (EserviceCommonDetails m : filteredCommonList) {
+				CommonDataDetails matchingRisk = commonData.stream()
+						.filter(risk -> risk.getRiskId().equals(m.getRiskId())
+								&& risk.getQuoteNo().equals(m.getQuoteNo())
+								&& risk.getLocationId().equals(m.getLocationId())
+								&& risk.getSectionId().equals(m.getSectionId()))
+						.findFirst().orElse(null);
+
+				if (matchingRisk != null) {
+
+					EserviceCommonDetails newObject = dozerMapper.map(m, EserviceCommonDetails.class);
+					newObject.setRequestReferenceNo(newRequestNo);
+					newObject.setOriginalPolicyNo(ent.getPolicyNo());
+					newObject.setEndorsementDate(new Date());
+					newObject.setEndorsementRemarks(ent.getEndtRemarks());
+					newObject.setEndorsementEffdate(ent.getEndtEffectiveDate());
+					newObject.setEndtPrevPolicyNo(prevPolicyNo);
+					newObject.setEndtPrevQuoteNo(prevQuoteNo);
+					newObject.setEndtCount(new BigDecimal(count));
+					newObject.setEndtStatus("P");
+					newObject.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+					newObject.setEndtCategDesc(entMaster.getEndtTypeCategory());
+					newObject.setEndorsementType(Integer.parseInt(ent.getEndtType()));
+					newObject.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+					newObject.setStatus("E");
+					newObject.setPolicyNo(ent.getPolicyNo() + "-" + count);
+					newObject.setQuoteNo(null);
+					newObject.setApplicationId(ent.getApplicationId());
+					if (ent.getLoginId() == null || StringUtils.isBlank(ent.getLoginId())) {
+						newObject.setLoginId(m.getLoginId());
+					} else {
+						newObject.setLoginId(ent.getLoginId());
+					}
+					// Source Type Condtion
+					String sourceType = newObject.getSourceType();
+					if (StringUtils.isNotBlank(newObject.getApplicationId())
+							&& !"1".equalsIgnoreCase(newObject.getApplicationId())) {
+						List<ListItemValue> sourcerTypes = genSeqNoService.getSourceTypeDropdown(
+								newObject.getCompanyId(), newObject.getBranchCode(), "SOURCE_TYPE");
+						List<ListItemValue> acitveSourcerTypes = sourcerTypes.stream().filter(
+								o -> "Y".equalsIgnoreCase(o.getStatus()) && o.getItemValue().contains(sourceType))
+								.collect(Collectors.toList());
+						newObject.setSourceType(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemValue()
+								: newObject.getSourceType());
+						newObject
+								.setSourceTypeId(acitveSourcerTypes.size() > 0 ? acitveSourcerTypes.get(0).getItemCode()
+										: newObject.getSourceTypeId());
+					}
+					newObject.setSubUserType(ent.getSubUserType());
+					newCommonList.add(newObject);
+				}
 			}
 			eCommonRepo.saveAllAndFlush(newCommonList);
 			//}
@@ -312,38 +344,71 @@ public class CopyCommonRaw {
 		return list;
 	}
 	
-	public List<String> copyBuildingSections( CommonCopyRes buildingData ) {
+	public List<String> copyBuildingSections(CommonCopyRes buildingData) {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			String newReqRefNo=buildingData.getRequestReferenceNo() ;
-		//	String  oldReqRefNo=buildingData.getOldRequestReferenceNo() ;
-			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo()) ;
-			
+			String newReqRefNo = buildingData.getRequestReferenceNo();
+			// String oldReqRefNo=buildingData.getOldRequestReferenceNo() ;
+			List<EserviceSectionDetails> oldSecDatas = eserSecRepo
+					.findByQuoteNoOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo());
+
 			// Building Section Insert
-			Long buildSecCount = eserSecRepo.countByRequestReferenceNoAndRiskId(newReqRefNo, 1);
-			if (buildSecCount > 0) {
-				eserSecRepo.deleteByRequestReferenceNoAndRiskId(newReqRefNo, 1);
+			List<EserviceSectionDetails> buildSecCount = eserSecRepo.findByRequestReferenceNo(newReqRefNo);
+			if (buildSecCount.size() > 0 && !buildSecCount.isEmpty()) {
+				eserSecRepo.deleteAll(buildSecCount);
+			}
+			List<SectionDataDetails> secList = sectionDataRepo
+					.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(), "D");
+
+			List<EserviceSectionDetails> filteredSectionList = oldSecDatas.stream()
+					.filter(m -> secList.stream()
+							.anyMatch(risk -> m.getRiskId().equals(risk.getRiskId())
+									&& m.getLocationId().equals(risk.getLocationId())
+									&& m.getSectionId().equals(risk.getSectionId())))
+					.collect(Collectors.toList());
+
+			List<String> secListSave = new ArrayList<String>();
+			List<EserviceSectionDetails> secListSave1 = new ArrayList<EserviceSectionDetails>();
+			if (filteredSectionList != null && filteredSectionList.size() > 0) {
+
+				for (EserviceSectionDetails section : filteredSectionList) {
+					EserviceSectionDetails secData = new EserviceSectionDetails();
+
+					dozerMapper.map(section, secData);
+					secData.setRequestReferenceNo(newReqRefNo);
+					secData.setUserOpt("Y");
+					secData.setPolicyNo(buildingData.getPolicyNo());
+					secData.setQuoteNo(null);
+
+					secData.setOriginalPolicyNo(buildingData.getPolicyNo());
+					secData.setEndorsementDate(new Date());
+
+//							secData.setEndorsementEffdate(buildingData.gete());
+					secData.setEndtPrevPolicyNo(buildingData.getEndtPrevPolicyNo());
+					secData.setEndtPrevQuoteNo(buildingData.getEndtPrevQuoteNo());
+					secData.setEndtCount(buildingData.getEndtCount());
+					secData.setEndtStatus("P");
+					secData.setIsFinaceYn(buildingData.getIsFinanceYn());
+					secData.setEndtCategDesc(buildingData.getEndtCategoryDesc());
+//							secData.setEndorsementType(Integer.parseInt(buildingData.get()));
+					secData.setEndorsementTypeDesc(buildingData.getEndtCategoryDesc());
+					secData.setStatus("E");
+					secData.setPolicyNo(buildingData.getPolicyNo());
+					secData.setQuoteNo(null);
+
+					secListSave.add(secData.getSectionId());
+					secListSave1.add(secData);
+				}
+				eserSecRepo.saveAllAndFlush(secListSave1);
 			}
 
-			List<String> secList = new ArrayList<String>(); 
-			for (EserviceSectionDetails section : oldSecDatas) {
-				EserviceSectionDetails secData = new EserviceSectionDetails();
-			
-				dozerMapper.map(section, secData);
-				secData.setRequestReferenceNo(newReqRefNo);
-				secData.setUserOpt("N");
-				secData.setPolicyNo(buildingData.getPolicyNo());
-				secData.setQuoteNo(null);
-				eserSecRepo.saveAndFlush(secData);
-				secList.add(secData.getSectionId());
-			}
-			
-			return secList;
-		}catch (Exception e) {
+			return secListSave;
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+
 	@PersistenceContext
 	private EntityManager em;
 
@@ -358,11 +423,11 @@ public class CopyCommonRaw {
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
 
-				Subquery<Long> endtPre = query.subquery(Long.class);
+				Subquery<BigDecimal> endtPre = query.subquery(BigDecimal.class);
 				Root<HomePositionMaster> h = endtPre.from(HomePositionMaster.class);
 				endtPre.select(cb.sum(h.get("endtPremium") ) ) ;
 				Predicate pm1 = cb.equal(h.get("companyId"), m.get("companyId"));
-				Predicate pm2 = cb.equal(h.get("productId"), m.get("productId"));
+				Predicate pm2 = cb.equal(h.get("productId"), m.get("productId").as(Integer.class));
 				Predicate pm3   = cb.like(h.get("policyNo"), m.get("policyNo"));
 				endtPre.where(pm1,pm2,pm3);
 				
@@ -371,7 +436,7 @@ public class CopyCommonRaw {
 				Root<HomePositionMaster> h2 = debitNoteNo.from(HomePositionMaster.class);
 				debitNoteNo.select(cb.max(h2.get("debitNoteNo"))) ;
 				Predicate pm4 = cb.equal(h2.get("companyId"), m.get("companyId"));
-				Predicate pm5 = cb.equal(h2.get("productId"), m.get("productId"));
+				Predicate pm5 = cb.equal(h2.get("productId"), m.get("productId").as(Integer.class));
 				Predicate pm6   = cb.equal(h2.get("policyNo"), m.get("policyNo"));
 				debitNoteNo.where(pm4,pm5,pm6);
 				
@@ -379,7 +444,7 @@ public class CopyCommonRaw {
 				Root<HomePositionMaster> h3 = creditNo.from(HomePositionMaster.class);
 				creditNo.select(cb.max(h3.get("creditNo"))) ;
 				Predicate pm7 = cb.equal(h3.get("companyId"), m.get("companyId"));
-				Predicate pm8 = cb.equal(h3.get("productId"), m.get("productId"));
+				Predicate pm8 = cb.equal(h3.get("productId"), m.get("productId").as(Integer.class));
 				Predicate pm9   = cb.equal(h3.get("policyNo"), m.get("policyNo"));
 				creditNo.where(pm7,pm8,pm9);
 		
@@ -387,7 +452,7 @@ public class CopyCommonRaw {
 				Root<HomePositionMaster> h4 = endtPreTax.from(HomePositionMaster.class);
 				endtPreTax.select(cb.sum(h4.get("endtPremiumTax") ) ) ;
 				Predicate pm10 = cb.equal(h4.get("companyId"), m.get("companyId"));
-				Predicate pm11 = cb.equal(h4.get("productId"), m.get("productId"));
+				Predicate pm11 = cb.equal(h4.get("productId"), m.get("productId").as(Integer.class));
 				Predicate pm12   = cb.equal(h4.get("policyNo"), m.get("policyNo"));
 				endtPreTax.where(pm10,pm11,pm12);
 				
@@ -431,7 +496,7 @@ public class CopyCommonRaw {
 				// Where
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
-				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
+				Predicate n3 = cb.equal(m.get("productId"), request.getProductId().toPlainString());
 			//	Predicate n4 = cb.notEqual(m.get("status"),"D");
 				// Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D")); //
 				// m.get("status").in("E","P"));

@@ -1,5 +1,8 @@
 package com.maan.eway.common.res;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -38,6 +41,47 @@ public class CommonCopyRes {
 	
 	@JsonProperty("EndtPrevQuoteNo")
 	private String endtPrevQuoteNo;
+		
+	@JsonProperty("RiskId")
+	private String riskId;
+	
+	@JsonProperty("LocationId")
+	private String locationId;
+	
+	@JsonProperty("SectionId")
+	private List<String> sectionIds;
+	
+	@JsonProperty("EndtPrevPolicyNo")
+	private String endtPrevPolicyNo;
+	
+	@JsonProperty("EndtCount")
+	private BigDecimal endtCount;
+	
+	@JsonProperty("EndtStatus")
+	private String endtStatus;
+	
+	@JsonProperty("IsFinanceYn")
+	private String isFinanceYn ;
+	
+	@JsonProperty("EndtCategDesc")
+	private String endtCategoryDesc;
+	
+	@JsonProperty("EndtTypeDesc")
+	private String endTypeDesc;
+	
+	@JsonProperty("OriginalPolicyNo")
+	private String originalPolicyNo;
+	
+	
+	@JsonProperty("ApplicationId")
+	private String applicationId;
+	
+	@JsonProperty("LoginId")
+	private String loginId;
+	
+	@JsonProperty("SubUserType")
+	private String subUserType;
+
 	
 	
 }
