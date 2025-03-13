@@ -157,6 +157,7 @@ public class QuoteThreadCall2 implements Callable<Object>  {
 			// Find Customer
 			EserviceInsuredDetails insData = eserInsurerRepo.findByCustomerReferenceNo(customerRefNo);
 			
+			if(insData!=null) {
 			// Save Personal INfo
 			InsurerInfo insurerInfo = new InsurerInfo();
 			dozerMapper.map(insData, insurerInfo);
@@ -175,7 +176,7 @@ public class QuoteThreadCall2 implements Callable<Object>  {
 			
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
-			
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());

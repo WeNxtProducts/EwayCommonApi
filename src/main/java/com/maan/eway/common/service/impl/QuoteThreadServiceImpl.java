@@ -559,8 +559,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				commonRes.setMessage("Failed");
 				return commonRes ; 
 				
-			} else if( custRes.get("Response")!=null && custRes.get("Response").toString().equals("Failed") ) {
-				errors.add(new Error("01","Insurer Save",custRes.get("Errors").toString()));
+			} else if(insRes==null?false:(insRes.get("Response")!=null && custRes.get("Response").toString().equals("Failed")) ) {
+				errors.add(new Error("01","Insurer Save",insRes.get("Errors").toString()));
 				commonRes.setCommonResponse(null);
 				commonRes.setIsError(true);
 				commonRes.setErrorMessage(errors);
