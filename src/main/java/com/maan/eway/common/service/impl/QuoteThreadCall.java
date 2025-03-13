@@ -546,9 +546,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double endtChangePremium=totalcovers.stream().filter( o ->  o.getPremiumIncludedTaxFc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())  )
 			 .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
 			 
-			 newCovers.removeIf(p-> {
-				 return oldcoversf.stream().anyMatch(x-> (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
-			 });
+			newCovers.removeIf(p -> {
+				return oldcoversf.stream()
+						.anyMatch(x -> (x.getVehicleId().equals(p.getVehicleId())
+								&& x.getSectionId().equals(p.getSectionId())
+								&& x.getProductId().equals(p.getProductId()) 
+								&& x.getCoverId().equals(p.getCoverId())));
+			});
 			 Double addedCoverPremium =newCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
 					 o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null 
 					 && !"D".equals(o.getStatus())
@@ -563,12 +567,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double endtChangePremiumWithoutTax=totalcovers.stream().filter( o ->  o.getPremiumExcludedTaxFc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())  )
 			 .mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
 			 
-			 newCovers.removeIf(p-> {
-				 return oldcoversf.stream().anyMatch(x-> (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
-			 });
+			newCovers.removeIf(p -> {
+				return oldcoversf.stream()
+						.anyMatch(x -> (x.getVehicleId().equals(p.getVehicleId())
+								&& x.getSectionId().equals(p.getSectionId())
+								&& x.getProductId().equals(p.getProductId()) 
+								&& x.getCoverId().equals(p.getCoverId())));
+			});
 			 Double addedCoverPremiumWithoutTax =newCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
 					 o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null 
-					 && !"D".equals(o.getStatus())
+					 && !"D".equals(o.getStatus()) 
 					 && effDate.compareTo(o.getCoverPeriodFrom())>=0  ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
 				BigDecimal endtPremiumWithoutTax = new  BigDecimal(removedCoverPremiumWithoutTax+addedCoverPremiumWithoutTax+endtChangePremiumWithoutTax);
 					
@@ -652,7 +660,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				
 			} else if (request.getMotorYn().equalsIgnoreCase("A")) {
-				List<BuildingRiskDetails> BuildingRisk = buildRepo.findByQuoteNoAndSectionIdNotOrderByRiskIdAsc(request.getQuoteNo() ,"0");
+//				List<BuildingRiskDetails> BuildingRisk = buildRepo.findByQuoteNoAndSectionIdNotOrderByRiskIdAsc(request.getQuoteNo() ,"0");
+				List<BuildingRiskDetails> BuildingRisk = buildRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteNo());
 	
 					// Asset
 					for (BuildingRiskDetails build : BuildingRisk) {
@@ -1417,10 +1426,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
 			List<EserviceBuildingDetails>     eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
 					request.getRequestReferenceNo(),locationid ,sectionid,riskIDs,Coverid);
-               if(eserBuild1.isEmpty()	)	
-            		   {eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdIn(
-					request.getRequestReferenceNo(),locationid ,sectionid,riskIDs);
-            		   }
+			if (eserBuild1.isEmpty()) {
+				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdIn(
+						request.getRequestReferenceNo(), locationid, sectionid, riskIDs);
+			}
 			
 			 for(EserviceBuildingDetails section:eserBuild1) { 
 				EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() ,section.getRiskId() ,request.getSectionId(),request.getLocationId());
