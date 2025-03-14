@@ -336,15 +336,14 @@ public class CopyBuildingRaw {
 		try {
 			String newReqRefNo=buildingData.getRequestReferenceNo() ;
 		//	String  oldReqRefNo=buildingData.getOldRequestReferenceNo() ;
-//			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D") ;
-			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(buildingData.getPreviousRequestReferenceNo(),"D") ;
+			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D") ;
+			
 			// Building Section Insert
 			List<EserviceSectionDetails> buildSecCount = eserSecRepo.findByRequestReferenceNo(newReqRefNo);
 			if (buildSecCount.size()>0 && ! buildSecCount.isEmpty()) {
 				eserSecRepo.deleteAll(buildSecCount);
 			}
-//			List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D");
-			List<SectionDataDetails> secList = sectionDataRepo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(buildingData.getPreviousRequestReferenceNo(),"D");
+			List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D");
 			
 			List<EserviceSectionDetails> filteredSectionList = oldSecDatas.stream()
 				    .filter(m -> secList.stream()
@@ -367,7 +366,7 @@ public class CopyBuildingRaw {
 				secData.setPolicyNo(buildingData.getPolicyNo());
 				secData.setQuoteNo(null);
 				
-				secData.setOriginalPolicyNo(buildingData.getPolicyNo());
+				secData.setOriginalPolicyNo(buildingData.getOriginalPolicyNo());
 				secData.setEndorsementDate(new Date());
 				
 //				secData.setEndorsementEffdate(buildingData.gete());

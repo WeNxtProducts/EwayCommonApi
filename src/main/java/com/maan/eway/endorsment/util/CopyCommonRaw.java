@@ -380,7 +380,7 @@ public class CopyCommonRaw {
 					secData.setPolicyNo(buildingData.getPolicyNo());
 					secData.setQuoteNo(null);
 
-					secData.setOriginalPolicyNo(buildingData.getPolicyNo());
+					secData.setOriginalPolicyNo(buildingData.getOriginalPolicyNo());
 					secData.setEndorsementDate(new Date());
 
 //							secData.setEndorsementEffdate(buildingData.gete());
