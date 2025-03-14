@@ -47,10 +47,12 @@ import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
+import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.repository.CommonDataDetailsRepository;
+import com.maan.eway.common.service.impl.BuildingGridServiceImpl;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
@@ -68,6 +70,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 
 @Service
 public class CopyBuildingRaw {
@@ -119,6 +122,9 @@ public class CopyBuildingRaw {
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService ; 
+	
+	@Autowired
+	private BuildingGridServiceImpl buildingGridService ;	 
 
 	 
 
@@ -139,6 +145,18 @@ public class CopyBuildingRaw {
 			// Personal Accident Copy
 			String res = copyPersonalAccident (riskRes.getRequestReferenceNo() ,	riskRes.getOldRequestReferenceNo() ,sectionIds ,  riskRes ,request  ) ;
 			
+			//Document Copy
+			coverDocumentUploadDetailsEndoCopyquote(riskRes);
+			
+			//Human Additional info
+			productEmpDetailsEndoCopyquote(riskRes);
+			
+			//Content copy
+			contentAndRiskEndoCopyquote(riskRes);
+			
+			//Building Details copy 
+			buildingDetailsEndoCopyquote(riskRes);
+			
 		//	EserviceBuildingDetails buildData = eBuildingRepo.findByRequestReferenceNoAndRiskId(riskRes.getRequestReferenceNo() , 1 );
 			List<EserviceBuildingDetails> buildData = eBuildingRepo.findByRequestReferenceNo(riskRes.getRequestReferenceNo());
 			buildData = buildData.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
@@ -150,6 +168,192 @@ public class CopyBuildingRaw {
 		}
 		return null;
 	}
+	
+	private  void buildingDetailsEndoCopyquote(BuildingCopyRes riskRes) {
+		List<BuildingDetails> savelist = new ArrayList<BuildingDetails>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<BuildingDetails> buildingData=buildingRepo.findByQuoteNoOrderByRiskIdAsc(riskRes.getEndtPrevQuoteNo());
+			
+			List<BuildingDetails> coverDocList =null;
+			coverDocList=buildingRepo.findByRequestReferenceNo(riskRes.getRequestReferenceNo());
+			if (coverDocList.size() > 0) {
+				buildingRepo.deleteAll(coverDocList);
+			}
+			if (buildingData!=null) {
+				for(BuildingDetails data :buildingData) {
+					BuildingDetails savedata = new BuildingDetails();
+					savedata = dozerMapper.map(data, BuildingDetails.class);
+					savedata.setRequestReferenceNo(riskRes.getRequestReferenceNo());
+					savedata.setQuoteNo(null);
+					savedata.setEntryDate(new Date());
+					savedata.setCreatedBy(riskRes.getCreatedBy());
+					savedata.setOriginalPolicyNo(riskRes.getOriginalPolicyNo());
+					savedata.setEndorsementDate(new Date());
+					savedata.setEndorsementRemarks(riskRes.getEndtCategoryDesc());
+					savedata.setEndorsementEffdate(null);
+					savedata.setEndtPrevPolicyNo(riskRes.getEndtPrevPolicyNo());
+					savedata.setEndtPrevQuoteNo(riskRes.getEndtPrevQuoteNo());
+					savedata.setEndtCount(riskRes.getEndtCount());
+					savedata.setEndtStatus("P");
+					savedata.setIsFinaceYn(riskRes.getIsFinanceYn());
+					savedata.setEndtCategDesc(riskRes.getEndtCategoryDesc());
+					savedata.setEndorsementType(null);
+					savedata.setEndorsementTypeDesc(riskRes.getEndTypeDesc());
+					savedata.setStatus("E");
+					savelist.add(savedata);
+					
+				}
+				buildingRepo.saveAllAndFlush(savelist);
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return ;
+		}
+		return ;
+		
+	}
+
+	
+	private void coverDocumentUploadDetailsEndoCopyquote(BuildingCopyRes riskRes) {
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		List<DocumentTransactionDetails> saveList = new ArrayList<DocumentTransactionDetails>();
+		try {
+			List<DocumentTransactionDetails> motorData = coverDocUploadDetails.findByQuoteNo(riskRes.getEndtPrevQuoteNo());
+			
+			List<DocumentTransactionDetails> coverDocList =null;
+			coverDocList=coverDocUploadDetails.findByRequestReferenceNo(riskRes.getRequestReferenceNo());
+			if (coverDocList.size() > 0) {
+				coverDocUploadDetails.deleteAll(coverDocList);
+			}
+			if (motorData.size() > 0) {
+				for (DocumentTransactionDetails data : motorData) {
+					DocumentTransactionDetails savedata = new DocumentTransactionDetails();
+					savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
+					savedata.setRequestReferenceNo(riskRes.getRequestReferenceNo());
+					savedata.setQuoteNo(null);
+					savedata.setEntryDate(new Date());
+					savedata.setCreatedBy(riskRes.getCreatedBy());
+					savedata.setOriginalPolicyNo(riskRes.getOriginalPolicyNo());
+					savedata.setEndorsementDate(new Date());
+					savedata.setEndorsementRemarks(riskRes.getEndtCategoryDesc());
+					savedata.setEndorsementEffdate(null);
+					savedata.setEndtPrevPolicyNo(riskRes.getEndtPrevPolicyNo());
+					savedata.setEndtPrevQuoteNo(riskRes.getEndtPrevQuoteNo());
+					savedata.setEndtCount(riskRes.getEndtCount());
+					savedata.setEndtStatus("P");
+					savedata.setIsFinaceYn(riskRes.getIsFinanceYn());
+					savedata.setEndtCategDesc(riskRes.getEndtCategoryDesc());
+					savedata.setEndorsementType(null);
+					savedata.setEndorsementTypeDesc(riskRes.getEndTypeDesc());
+					savedata.setStatus("E");
+					saveList.add(savedata);
+					//savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+					
+				}
+				coverDocUploadDetails.saveAllAndFlush(saveList);
+			}
+	
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void productEmpDetailsEndoCopyquote(BuildingCopyRes req) {
+		List<ProductEmployeeDetails> savelist = new ArrayList<ProductEmployeeDetails>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<ProductEmployeeDetails> PA = proEmplyeeRepo.findByQuoteNo(req.getEndtPrevQuoteNo());
+			List<ProductEmployeeDetails> productEmployee =null;
+			productEmployee=proEmplyeeRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			if (productEmployee.size() > 0) {
+				proEmplyeeRepo.deleteAll(productEmployee);
+			}
+			if (PA != null && PA.size() > 0) {
+				for (ProductEmployeeDetails data : PA) {
+					ProductEmployeeDetails savedata = new ProductEmployeeDetails();
+					savedata = dozerMapper.map(data, ProductEmployeeDetails.class);
+					savedata.setEntryDate(new Date());
+					savedata.setRequestReferenceNo(req.getRequestReferenceNo());
+					savedata.setQuoteNo(null);	 
+					savedata.setCreatedBy(req.getCreatedBy());
+					savedata.setOriginalPolicyNo(req.getPolicyNo());
+					savedata.setEndorsementDate(new Date());
+					savedata.setEndorsementRemarks(req.getEndtCategoryDesc());
+					savedata.setEndorsementEffdate(new Date());
+					savedata.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
+					savedata.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+					savedata.setEndtCount(req.getEndtCount());
+					savedata.setEndtStatus("P");
+					savedata.setIsFinaceYn(req.getIsFinanceYn());
+					savedata.setEndtCategDesc(req.getEndtCategoryDesc());
+					savedata.setEndorsementType(null);
+					savedata.setEndorsementTypeDesc(req.getEndTypeDesc());
+					savedata.setStatus("E");
+					savedata.setPolicyNo(req.getPolicyNo());
+					savelist.add(savedata);			
+				}
+				proEmplyeeRepo.saveAllAndFlush(savelist);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return;
+		}
+		return;
+
+	}
+	
+//	Content and Risk
+	private void contentAndRiskEndoCopyquote(BuildingCopyRes req) {
+		List<ContentAndRisk> saveList = new ArrayList<ContentAndRisk>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			
+			List<ContentAndRisk> content = contentAndRiskRepo.findByQuoteNoOrderByRiskIdAsc(req.getEndtPrevQuoteNo());
+			List<ContentAndRisk> coverDocList =null;
+			coverDocList=contentAndRiskRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			if (coverDocList.size() > 0) {
+				contentAndRiskRepo.deleteAll(coverDocList);
+			}
+			if (content != null && content.size() > 0) {
+				for (ContentAndRisk data : content) {
+					ContentAndRisk savedata = new ContentAndRisk();
+					savedata = dozerMapper.map(data, ContentAndRisk.class);
+					savedata.setEntryDate(new Date());
+					savedata.setRequestReferenceNo(req.getRequestReferenceNo());
+					savedata.setQuoteNo(null);	 
+					savedata.setCreatedBy(req.getCreatedBy());
+					savedata.setOriginalPolicyNo(req.getPolicyNo());
+					savedata.setEndorsementDate(new Date());
+					savedata.setEndorsementRemarks(req.getEndtCategoryDesc());
+					savedata.setEndorsementEffdate(new Date());
+					savedata.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
+					savedata.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+					savedata.setEndtCount(req.getEndtCount());
+					savedata.setEndtStatus("P");
+					savedata.setIsFinaceYn(req.getIsFinanceYn());
+					savedata.setEndtCategDesc(req.getEndtCategoryDesc());
+					savedata.setEndorsementType(null);
+					savedata.setEndorsementTypeDesc(req.getEndTypeDesc());
+					savedata.setStatus("E");
+					savedata.setPolicyNo(req.getPolicyNo());
+					saveList.add(savedata);
+				}
+				contentAndRiskRepo.saveAllAndFlush(saveList);
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return;
+		}
+		return ;
+	}
+	
 	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
 	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
@@ -187,22 +391,51 @@ public class CopyBuildingRaw {
 					//res.setPolicyNo(ent.getPolicyNo()+"-"+count) ;
 					return res;
 				}
-				if(pendingcount>0) {
-					 List<EserviceBuildingDetails> pendingData = BuildingList.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
-					 BuildingDatas= pendingData;
-					 prevPolicyNo=BuildingDatas.get(0).getEndtPrevPolicyNo();
-					 prevQuoteNo=BuildingDatas.get(0).getEndtPrevQuoteNo();
-					 newRequestNo=BuildingDatas.get(0).getRequestReferenceNo();
-					 prevRequestRefNo=BuildingDatas.get(0).getRequestReferenceNo();
-					 List<EserviceBuildingDetails> rows = eBuildingRepo.findByRequestReferenceNoAndProductId(prevRequestRefNo,ent.getProductId().toPlainString());
-					 List<EserviceSectionDetails> section = eserSecRepo.findByRequestReferenceNoAndProductId(prevRequestRefNo,ent.getProductId().toPlainString());
-					 if(section.size()>0 && section!=null) {
-					 eserSecRepo.deleteAll(section);
-					 }
-					 eserSecRepo.flush();
-					 eBuildingRepo.deleteAllInBatch(rows);
-					 eBuildingRepo.flush();
-					 count--;
+				if (pendingcount > 0) {
+					List<EserviceBuildingDetails> pendingData = BuildingList.stream()
+							.filter(m -> m.getEndtStatus().equals("P")).collect(Collectors.toList());
+					BuildingDatas = pendingData;
+					prevPolicyNo = BuildingDatas.get(0).getEndtPrevPolicyNo();
+					prevQuoteNo = BuildingDatas.get(0).getEndtPrevQuoteNo();
+					newRequestNo = BuildingDatas.get(0).getRequestReferenceNo();
+					prevRequestRefNo = BuildingDatas.get(0).getRequestReferenceNo();
+					List<EserviceBuildingDetails> rows = eBuildingRepo
+							.findByRequestReferenceNoAndProductId(prevRequestRefNo, ent.getProductId().toPlainString());
+					List<EserviceSectionDetails> section = eserSecRepo
+							.findByRequestReferenceNoAndProductId(prevRequestRefNo, ent.getProductId().toPlainString());
+
+					if (section.size() > 0 && section != null) {
+						eserSecRepo.deleteAll(section);
+					}
+
+					List<ContentAndRisk> content = contentAndRiskRepo.findByRequestReferenceNo(prevRequestRefNo);
+					if (content.size() > 0 && content != null) {
+						contentAndRiskRepo.deleteAll(content);
+					}
+
+					List<ProductEmployeeDetails> empDetails = proEmplyeeRepo.findByRequestReferenceNo(prevRequestRefNo);
+					if (empDetails.size() > 0 && empDetails != null) {
+						proEmplyeeRepo.deleteAll(empDetails);
+					}
+
+					List<BuildingDetails> buildingDetails = buildingRepo.findByRequestReferenceNo(prevRequestRefNo);
+					if (buildingDetails.size() > 0 && buildingDetails != null) {
+						buildingRepo.deleteAll(buildingDetails);
+					}
+
+					List<DocumentTransactionDetails> coverDocList = coverDocUploadDetails
+							.findByRequestReferenceNo(prevRequestRefNo);
+					if (coverDocList.size() > 0 && coverDocList != null) {
+						coverDocUploadDetails.deleteAll(coverDocList);
+					}
+					proEmplyeeRepo.flush();
+					coverDocUploadDetails.flush();
+					contentAndRiskRepo.flush();
+					buildingRepo.flush();
+					eserSecRepo.flush();
+					eBuildingRepo.deleteAllInBatch(rows);
+					eBuildingRepo.flush();
+					count--;
 				}else {
 					BuildingDatas=BuildingList;
 					
