@@ -826,6 +826,38 @@ private static final long serialVersionUID = 1L;
     @Column(name="RISK_SGSID", length=100)
     private String   riskSgsId ; 
 
+    @Column(name="FORMULA_TYPE")
+    private String formulaType;
+    
+    @Column(name="VEH_LOC_TYPE")
+    private String vehiculeDeLocationType;
+
+    @Column(name = "ATT_TYPE")
+    private String attestationType;
+    
+	@Column(name = "MUNICIPALITY_TRAFFIC")
+	private String municipalityTraffic;
+	
+	@Column(name = "AGGREGATED_VALUE")
+	private Integer aggregatedValue;
+    
+	@Column(name = "NEW_VALUE")
+	private Integer newValue;
+	
+	@Column(name = "NO_OF_CARDS")
+	private Integer noOfCards;
+	
+	@Column(name = "ZONE_CIRCULATION")
+    private String zonecirculation;
+	
+	@Column(name = "ZONE")
+	private Integer zone;
+	
+	@Column(name = "USAGE_ID")
+    private String usageId;
+	
+    @Column(name = "COVER_ID")
+  	private Integer coverId;
 }
 
 

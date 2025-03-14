@@ -802,7 +802,13 @@ public class SanlamEserviceCustomerDetails {
 			saveData.setIdTypeDesc(policyHolderTypeIdDesc);
 			saveData.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
 			saveData.setAge(age);
-			
+			if(StringUtils.isBlank(req.getWhatsappCode()) && StringUtils.isNotBlank(req.getMobileCode1())) {
+				saveData.setWhatsappCodeDesc(req.getMobileCode1());
+				saveData.setWhatsappCode(req.getMobileCode1());
+				if(StringUtils.isBlank(req.getWhatsappNo()) && StringUtils.isNotBlank(req.getMobileNo1())) {
+					saveData.setWhatsappNo(req.getMobileNo1());
+				}
+			}
 			
 			//local desc feilds
 			saveData.setGenderDescLocal(genderLocal);
