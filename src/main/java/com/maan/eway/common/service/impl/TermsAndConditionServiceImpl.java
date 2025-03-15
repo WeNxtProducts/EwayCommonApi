@@ -1,7 +1,11 @@
+/**@note   : Excess related portions only added by
+ * @author : Ashok Kumar S 
+ * @since  : 13-03-2025
+ */
 package com.maan.eway.common.service.impl;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -20,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +36,7 @@ import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.ExcessMaster;
 import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -38,6 +44,7 @@ import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.WarrantyMaster;
+import com.maan.eway.common.req.ExcessReq;
 import com.maan.eway.common.req.SectionDataRes;
 import com.maan.eway.common.req.TermsAndConditionGetBySubIdReq;
 import com.maan.eway.common.req.TermsAndConditionGetReq;
@@ -46,6 +53,7 @@ import com.maan.eway.common.req.TermsAndConditionListReq;
 import com.maan.eway.common.req.TermsAndConditionReq;
 import com.maan.eway.common.res.ClausesRes;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.ExcessRes;
 import com.maan.eway.common.res.ExclusionRes;
 import com.maan.eway.common.res.TermsAndConditionGetBySubIdRes;
 import com.maan.eway.common.res.TermsAndConditionGetRes;
@@ -126,6 +134,15 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 	
 	@Autowired
 	private EServiceMotorDetailsRepository EServiceMotorDetailsRepo;
+	
+	@Autowired
+	private EntityManager entityManager;
+	
+	@Autowired
+	private ModelMapper mapper;
+	
+	private static final Integer ID_FOR_EXCESS = 1;
+	private static final String DESC_FOR_EXCESS = "Excess";
 
 	@Override
 	public TermsAndConditionRes viewTermsAndCondition(TermsAndConditionReq req) {
@@ -256,7 +273,11 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					}
 				}
 			}
-
+			
+		// Retrieves the list of excess details that are present in the terms and conditions.
+			List<ExcessRes> excessInTC = retrieveExcessDetailsPresentInTermsAndCondition(req);
+			res.setExcessRes(excessInTC);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --> " + e.getMessage());
@@ -576,6 +597,30 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						errorList.add(new Error("06", "Description", "Please Enter Warrranty Description"));
 				}
 			}
+			
+			if(!req.getExcessReq().isEmpty()) {
+				int rowNum = 1 ;
+				
+				for(ExcessReq ex : req.getExcessReq()) {
+					
+					if(StringUtils.isBlank(ex.getSubIdDesc())) {
+						errorList.add(new Error("11", "SubIdDesc", "Sub ID Desc or Excess description is required for row no. :" + rowNum));
+					}
+					
+					if(ex.getExcessAmount() == null) {
+						errorList.add(new Error("12", "ExcessAmount", "Excess amount is required for row no. :" + rowNum));
+					}
+					
+					if(ex.getExcessPercentage() == null) {
+						errorList.add(new Error("13", "ExcessPercentage", "Excess percentage is required for row no. :" + rowNum));
+					}
+					
+					if(StringUtils.isBlank(ex.getCurrency())) {
+						errorList.add(new Error("14", "Currency", "Currency is required for row no. :" + rowNum));
+					}
+					
+				}
+			}			
 
 		} catch (Exception e) {
 			log.error(e);
@@ -666,6 +711,11 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					savelist.add(saveDatas);
 				}
 			}
+			
+		//Saves excess-related terms and conditions 
+			List<TermsAndCondition> excessTC = toSaveExcessTermsAndConditions(req, saveData);
+			savelist.addAll(excessTC);
+			
 			if(savelist!=null &&!savelist.isEmpty())
 			{
 			termsRepo.saveAllAndFlush(savelist);
@@ -1014,8 +1064,13 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 								res.setExclusionRes(exclusionresList);
 						}
 							
-				}	
-							
+				}
+				
+			//	Retrieves the excess details, If excess details are present in the Terms and Conditions, they are returned.
+			//	Otherwise, active excess master records are returned.			
+				List<ExcessRes> excessDetails = getExcessDetails(req);	
+				res.setExcessRes(excessDetails);
+				
 							data.setCommonResponse(res);
 							data.setErrorMessage(Collections.emptyList());
 							data.setIsError(false);
@@ -1169,5 +1224,198 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
+	/**
+	 * Retrieves excess details that are present in the Terms and Conditions 
+	 * based on the provided request parameters.
+	 *
+	 * This method fetches Terms and Conditions records from the repository 
+	 * and filters them based on the predefined excess identifier {@code ID_FOR_EXCESS}.
+	 * The filtered records are then mapped to {@link ExcessRes} objects and returned.
+	 *
+	 * @param req The request object containing company, branch, product, 
+	 *            section identifiers, and request reference number.
+	 * @return A list of {@link ExcessRes} objects representing the excess details 
+	 *         found in the Terms and Conditions.
+	 */
+	private List<ExcessRes> retrieveExcessDetailsPresentInTermsAndCondition(TermsAndConditionReq req){
+		List<ExcessRes> excessList = new ArrayList<>();
+		
+	    // Fetch Terms and Conditions records from the repository
+		List<TermsAndCondition> termsAndConditions = termsRepo
+				.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRequestReferenceNoOrderBySnoAsc(req.getCompanyId(),
+						req.getBranchCode(), req.getProductId(), req.getSectionId(), req.getRequestReferenceNo());
+		
+		if(!termsAndConditions.isEmpty()) {			
+	        // Filter records that match the excess identifier (ID_FOR_EXCESS)
+			List<TermsAndCondition> filteredTC = termsAndConditions
+						.stream()
+						.filter(tc -> ID_FOR_EXCESS.equals(tc.getId()))
+						.toList();
+			
+			filteredTC.forEach(tc -> {
+				ExcessRes excess =  new ExcessRes();
+				
+				excess.setCoverId(null);
+				
+				excess.setId(tc.getId());
+				excess.setSubId(tc.getSubId());
+								
+				excess.setSubIdDesc(tc.getSubIdDesc());
+				excess.setExcessAmount(tc.getExcessAmount());
+				excess.setExcessPercentage(tc.getExcessPercentage());
+				excess.setCurrency(tc.getCurrency());				
+				
+				excessList.add(excess);				
+			});
+								
+		}
+		return excessList;	
+	}
+	
+	
+	/**
+	 * Retrieves the excess details based on the provided {@link TermsAndConditionReq} request.
+	 * If excess details are present in the Terms and Conditions, they are returned.
+	 * Otherwise, active excess master records are retrieved and transformed into {@link ExcessRes} objects.
+	 *
+	 * @param req The request object containing company, product, and section identifiers.
+	 * @return A list of {@link ExcessRes} objects representing the excess details.
+	 * @throws Exception If an error occurs while retrieving excess details.
+	 */
+	private List<ExcessRes> getExcessDetails(TermsAndConditionReq req) throws Exception {
+		List<ExcessRes> excessList = new ArrayList<>();
+		
+	    // Retrieve excess details that are present in the Terms and Conditions
+		List<ExcessRes> excessInTC = retrieveExcessDetailsPresentInTermsAndCondition(req);
+		if(!excessInTC.isEmpty()) {
+			excessList.addAll(excessInTC);
+		}
+
+		// If no excess details exist in Terms and Conditions, retrieve from the master table
+		else {
+			List<ExcessMaster> allExcess = retrieveAllActiveExcessMaster(
+					req.getCompanyId(), req.getProductId(), req.getSectionId());
+			
+			allExcess.forEach(ex -> {
+				ExcessRes excess =  new ExcessRes();
+								
+				excess.setCoverId(Integer.valueOf(ex.getCoverId()));
+				
+				excess.setId(ID_FOR_EXCESS);
+				excess.setSubId(ex.getExcessId());
+				
+				excess.setSubIdDesc(ex.getExcessDescription());				
+				excess.setExcessAmount(ex.getExcessAmount());
+				excess.setExcessPercentage(ex.getExcessPercentage());
+				excess.setCurrency(ex.getCurrency());
+				
+				excessList.add(excess);				
+			});
+		
+		}
+		
+		return excessList;
+	}
+	
+	
+	/**
+	 * Retrieves a list of active {@link ExcessMaster} records based on the given company, product, and section IDs.
+	 * The method ensures only the latest amendment (highest amendId) is considered, 
+	 * and filters records based on active status and validity period.
+	 *
+	 * @param companyId The ID of the company.
+	 * @param productId The ID of the product.
+	 * @param sectionId The ID of the section.
+	 * @return A list of active {@link ExcessMaster} entities matching the criteria.
+	 * @throws Exception If an error occurs during query execution.
+	 */
+	private List<ExcessMaster> retrieveAllActiveExcessMaster(
+			String companyId, String productId, String sectionId) throws Exception {
+		
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<ExcessMaster> query = cb.createQuery(ExcessMaster.class);
+		
+		Root<ExcessMaster> excessRoot = query.from(ExcessMaster.class);
+		
+	    // Subquery to find the maximum amendment ID
+		Subquery<Integer> maxAmendId = query.subquery(Integer.class);	
+		Root<ExcessMaster> subRoot = maxAmendId.from(ExcessMaster.class);
+		
+		maxAmendId.select(cb.max(subRoot.get("amendId")))
+			.where(
+					cb.equal(excessRoot.get("companyId"), subRoot.get("companyId")),
+					cb.equal(excessRoot.get("productId"), subRoot.get("productId")),
+					cb.equal(excessRoot.get("sectionId"), subRoot.get("sectionId")),
+					cb.equal(excessRoot.get("coverId"), subRoot.get("coverId")),
+					cb.equal(excessRoot.get("excessId"), subRoot.get("excessId"))					
+			);
+		
+		// Define filters for the query
+		Predicate [] filters = new Predicate[] {
+				cb.equal(excessRoot.get("companyId"), companyId),
+				cb.equal(excessRoot.get("productId"), productId),
+				cb.equal(excessRoot.get("sectionId"), sectionId),
+				cb.equal(excessRoot.get("status"), "Y"), 				//"Y" means active
+				cb.equal(excessRoot.get("amendId"), maxAmendId),
+				cb.lessThanOrEqualTo(excessRoot.get("effectiveDateStart"), LocalDateTime.now()),
+				cb.greaterThanOrEqualTo(excessRoot.get("effectiveDateEnd"), LocalDateTime.now())
+		};
+				
+	    // Build and execute the query
+		query.select(excessRoot)
+			.where(cb.and(filters))
+			.orderBy(cb.asc(excessRoot.get("excessDescription")));
+		
+		return entityManager.createQuery(query).getResultList();		
+	}
+
+	
+	/**
+	 * Saves excess-related terms and conditions by mapping input request details 
+	 * into {@link TermsAndCondition} entities.
+	 * 
+	 * This method iterates through the list of excess details from the request, 
+	 * maps them to TermsAndCondition objects, assigns IDs, and prepares them 
+	 * for persistence.
+	 * 
+	 * @param req The request object containing excess details to be saved.
+	 * @param basicDetails The base details used for mapping the TermsAndCondition entries.
+	 * @return A list of {@link TermsAndCondition} objects representing to be saved excess terms and conditions.
+	 */
+	private List<TermsAndCondition> toSaveExcessTermsAndConditions(
+			TermsAndConditionInsertReq req, TermsAndCondition basicDetails) {
+				
+		List<TermsAndCondition> termsAndConditions = new ArrayList<>();
+		
+		List<ExcessReq> allExcessSaveReq = req.getExcessReq();
+		
+		int subIdStart = 1001;
+		int srNoStart = 1;
+		
+		for(ExcessReq excess : allExcessSaveReq) {
+			
+			TermsAndCondition tc = mapper.map(basicDetails, TermsAndCondition.class);
+			tc.setSno(srNoStart++);
+			
+			tc.setId(ID_FOR_EXCESS);
+			tc.setIdDesc(DESC_FOR_EXCESS);		
+			
+			Integer subId =  excess.getSubId() != null ? excess.getSubId() : subIdStart++ ;			
+			tc.setSubId(subId);
+			
+			tc.setSubIdDesc(excess.getSubIdDesc());
+			tc.setExcessAmount(excess.getExcessAmount());
+			tc.setExcessPercentage(excess.getExcessPercentage());
+			tc.setCurrency(excess.getCurrency());
+						
+			termsAndConditions.add(tc);
+		}		
+		
+		return termsAndConditions;
+	}
+	
+	
 	
 }

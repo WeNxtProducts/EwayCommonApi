@@ -41,4 +41,7 @@ public class TermsAndConditionInsertReq {
 	@JsonProperty("TermsAndConditionReq")
 	private List<TermsAndConditionListReq> termsAndConditionReq;
 	
+	@JsonProperty("ExcessReq")
+	private List<ExcessReq> excessReq;
+	
 }

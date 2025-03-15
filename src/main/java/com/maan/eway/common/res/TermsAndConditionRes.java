@@ -3,7 +3,7 @@ package com.maan.eway.common.res;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.error.Error;
+
 import lombok.Data;
 
 @Data
@@ -37,4 +37,7 @@ public class TermsAndConditionRes {
 	@JsonProperty("WarrateList")
 	private List<WarrateRes> warrateRes;
 	*/
+	
+	@JsonProperty("ExcessList")
+	private List<ExcessRes> excessRes;
 }

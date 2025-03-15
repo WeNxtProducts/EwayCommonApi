@@ -144,7 +144,16 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="Type_Id",length=1) 	//o-optional, D-Default
     private String  typeId;
-
+    
+    @Column(name = "EXCESS_PERCENTAGE")
+    private Integer excessPercentage;
+    
+    @Column(name = "EXCESS_AMOUNT")
+    private Double excessAmount;
+    
+    @Column(name = "CURRENCY")
+    private String currency;
+    
 }
 
 
