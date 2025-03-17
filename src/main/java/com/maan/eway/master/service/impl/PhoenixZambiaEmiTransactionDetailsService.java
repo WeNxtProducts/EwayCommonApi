@@ -3,83 +3,82 @@ package com.maan.eway.master.service.impl;
 
 
 	import java.math.BigDecimal;
-	import java.text.DecimalFormat;
-	import java.time.Instant;
-	import java.util.ArrayList;
-	import java.util.Calendar;
-	import java.util.Date;
-	import java.util.GregorianCalendar;
-	import java.util.LinkedList;
-	import java.util.List;
-	import java.util.Map;
-	import java.util.concurrent.ConcurrentHashMap;
-	import java.util.stream.Collectors;
+import java.text.DecimalFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-	import org.apache.commons.collections.CollectionUtils;
-	import org.apache.commons.lang3.StringUtils;
-	import org.apache.logging.log4j.LogManager;
-	import org.apache.logging.log4j.Logger;
-	import org.dozer.DozerBeanMapper;
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.beans.factory.annotation.Value;
-	import org.springframework.stereotype.Service;
-	import org.springframework.transaction.annotation.Transactional;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-	import com.google.gson.Gson;
-	import com.maan.eway.bean.CompanyProductMaster;
-	import com.maan.eway.bean.EmiMaster;
-	import com.maan.eway.bean.EmiTransactionDetails;
-	import com.maan.eway.bean.EserviceBuildingDetails;
-	import com.maan.eway.bean.EserviceCommonDetails;
-	import com.maan.eway.bean.EserviceLifeDetails;
-	import com.maan.eway.bean.EserviceMotorDetails;
-	import com.maan.eway.bean.EserviceTravelDetails;
-	import com.maan.eway.bean.ExchangeMaster;
-	import com.maan.eway.bean.HomePositionMaster;
-	import com.maan.eway.bean.ListItemValue;
-	import com.maan.eway.bean.MotorDataDetails;
-	import com.maan.eway.bean.PaymentDetail;
-	import com.maan.eway.bean.PersonalInfo;
-	import com.maan.eway.bean.RenewQuotePolicy;
-	import com.maan.eway.bean.RenewalNotificationMaster;
-	import com.maan.eway.error.Error;
-	import com.maan.eway.master.req.EmiInstallmentDetailsReq;
-	import com.maan.eway.master.req.EmiTransactionDetailsGetReq;
-	import com.maan.eway.master.req.EmiTransactionDetailsNextReq;
-	import com.maan.eway.master.req.EmiTransactionDetailsSaveReq;
-	import com.maan.eway.master.req.EmiTransactionDetailsUpdateReq;
-	import com.maan.eway.master.res.EmiCompanyInfoListRes;
-	import com.maan.eway.master.res.EmiDisplayListRes;
-	import com.maan.eway.master.res.EmiDisplayRes;
-	import com.maan.eway.master.res.EmiInfoListRes;
-	import com.maan.eway.master.res.EmiTransactionDetailsRes;
-	import com.maan.eway.master.service.EmiTransactionDetailsService;
-	import com.maan.eway.notification.bean.NotifTransactionDetails;
-	import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
-	import com.maan.eway.notification.service.NotificationService;
-	import com.maan.eway.renewal.req.EmiDataRequest;
-	import com.maan.eway.renewal.req.RenewDataRequest;
-	import com.maan.eway.repository.EServiceMotorDetailsRepository;
-	import com.maan.eway.repository.EmiTransactionDetailsRepository;
-	import com.maan.eway.repository.EserviceBuildingDetailsRepository;
-	import com.maan.eway.repository.EserviceCommonDetailsRepository;
-	import com.maan.eway.repository.EserviceLifeDetailsRepository;
-	import com.maan.eway.repository.EserviceTravelDetailsRepository;
-	import com.maan.eway.repository.ExchangeMasterRepository;
-	import com.maan.eway.repository.HomePositionMasterRepository;
-	import com.maan.eway.repository.PaymentDetailRepository;
-	import com.maan.eway.res.SuccessRes;
+import com.google.gson.Gson;
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.EmiMaster;
+import com.maan.eway.bean.EmiTransactionDetails;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceLifeDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.ExchangeMaster;
+import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.PaymentDetail;
+import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.EmiInstallmentDetailsReq;
+import com.maan.eway.master.req.EmiTransactionDetailsGetReq;
+import com.maan.eway.master.req.EmiTransactionDetailsNextReq;
+import com.maan.eway.master.req.EmiTransactionDetailsSaveReq;
+import com.maan.eway.master.req.EmiTransactionDetailsUpdateReq;
+import com.maan.eway.master.res.EmiCompanyInfoListRes;
+import com.maan.eway.master.res.EmiDisplayListRes;
+import com.maan.eway.master.res.EmiDisplayRes;
+import com.maan.eway.master.res.EmiInfoListRes;
+import com.maan.eway.master.res.EmiTransactionDetailsRes;
+import com.maan.eway.notification.bean.NotifTransactionDetails;
+import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
+import com.maan.eway.notification.service.NotificationService;
+import com.maan.eway.renewal.req.EmiDataRequest;
+import com.maan.eway.repository.CompanyProductMasterRepository;
+import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EmiTransactionDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
+import com.maan.eway.repository.EserviceLifeDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.repository.ExchangeMasterRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.PaymentDetailRepository;
+import com.maan.eway.res.SuccessRes;
 
-	import jakarta.persistence.EntityManager;
-	import jakarta.persistence.PersistenceContext;
-	import jakarta.persistence.TypedQuery;
-	import jakarta.persistence.criteria.CriteriaBuilder;
-	import jakarta.persistence.criteria.CriteriaQuery;
-	import jakarta.persistence.criteria.Expression;
-	import jakarta.persistence.criteria.Order;
-	import jakarta.persistence.criteria.Predicate;
-	import jakarta.persistence.criteria.Root;
-	import jakarta.persistence.criteria.Subquery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 	
 	@Service
@@ -128,10 +127,25 @@ package com.maan.eway.master.service.impl;
 		@Autowired
 		private NotificationService notificationService;
 		
+		@Autowired
+		private CompanyProductMasterRepository companyProductMasterRepo;
+		
 		Gson json = new Gson();
 
 		private Logger log = LogManager.getLogger(EmiTransactionDetailsServiceImpl.class);
+		
+		public static final Map<Integer, String> installmentType;
+		public static final Set<Integer> installmentTypeIds;
 
+		static {
+		    installmentType = new LinkedHashMap<>();
+		    installmentType.put(1, "Monthly");
+		    installmentType.put(2, "Bimonthly");
+		    installmentType.put(3, "Quarterly");
+		    installmentType.put(6, "Halfyearly");
+
+		    installmentTypeIds = installmentType.keySet(); // Maintains insertion order now
+		}
 	//Insert Validation
 		
 
@@ -445,7 +459,7 @@ package com.maan.eway.master.service.impl;
 						temp = balanceAmount;
 						temp -= installment;
 						balanceAmount = temp;
-					}
+					}	
 					// Save
 					saveData.setPremiumWithTax(premiumWithTax);
 					saveData.setInstallmentPeriod(installmentPeriod.toString());
@@ -1325,7 +1339,225 @@ package com.maan.eway.master.service.impl;
 	         }
 			return resList;
 		}
+//NEW TRIAL
+			
+			    public static Long DaysToMonthDifference(Integer days) {
+	
+			        LocalDate today = LocalDate.now();
+			        LocalDate futureDate = today.plusDays(days);
 
+			        long monthsBetween = ChronoUnit.MONTHS.between(today, futureDate);
+                
+			        System.out.println("Today: " + today);
+			        System.out.println("Future Date after " + days + " days: " + futureDate);
+			        System.out.println("Month(s) between: " + monthsBetween);
+			        return monthsBetween;
+			    }
+			
+			public List<EmiDisplayRes> viewEmiInstallmentDetails5(EmiInstallmentDetailsReq req) {
+				List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
+				//DecimalFormat df = new DecimalFormat("0.0");
+				try {
+					Integer i = 0;
+					String insDesc = "";
+					Double temp = 0d, premiumWithTax, interestPercent, advancePercent, interestAmount, totalLoanAmount,
+							advanceAmount, balanceAmount = null, installment = 0d,exchangeDate=0d,curPremium=0d;
+					premiumWithTax = Double.valueOf(req.getPremiumWithTax());
+					if(!req.getCurrency().equalsIgnoreCase("ZMW")) {
+						List<ExchangeMaster> exchangeData=exchangeMasterRepo.findByCurrencyIdAndCompanyIdOrderByAmendIdDesc(req.getCurrency(),req.getCompanyId());				if(exchangeData.size()>0) 
+							exchangeDate= exchangeData.get(0).getExchangeRate();
+							
+							curPremium=exchangeDate*premiumWithTax;
+							premiumWithTax=Double.valueOf(Math.round(curPremium));
+						
+					}
+					Integer noOfMonth = 0;
+					Integer policyPeriod=0;
+					List<CompanyProductMaster> cpm = companyProductMasterRepo.findByCompanyIdAndProductIdOrderByAmendIdDesc(req.getCompanyId(), Integer.parseInt(req.getProductId()));
+					
+					if(cpm.get(0).getMotorYn().equalsIgnoreCase("A")) {		
+						List<EserviceBuildingDetails> buildingDetails = buildingRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+						if(!buildingDetails.isEmpty()) {
+							 policyPeriod=buildingDetails.get(0).getPolicyPeriord();
+							 noOfMonth=DaysToMonthDifference(policyPeriod).intValue();
+						}
+					}else if(cpm.get(0).getMotorYn().equalsIgnoreCase("H")) {		
+						List<EserviceCommonDetails> commonDetails = commonRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+						if(!commonDetails.isEmpty()) {
+							 policyPeriod=commonDetails.get(0).getPolicyPeriod();
+							 noOfMonth=DaysToMonthDifference(policyPeriod).intValue();
+						}
+					}else if(cpm.get(0).getMotorYn().equalsIgnoreCase("M")) {		
+						List<EserviceMotorDetails> motorDetails = motorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+						if(!motorDetails.isEmpty()) {
+							 policyPeriod=Integer.parseInt(motorDetails.get(0).getPeriodOfInsurance());
+							 noOfMonth=DaysToMonthDifference(policyPeriod).intValue();
+						}
+					}
+					
+					List<EmiMaster> list = getEmiMasterData(req.getCompanyId(), req.getProductId(), req.getPolicyType(),
+							premiumWithTax);
+					EmiDisplayRes res=null;
+					if (!list.isEmpty()){
+						EmiMaster data=list.get(0);
+							
+							interestPercent = Double.valueOf(data.getInterestPercent().toString());
+							advancePercent = Double.valueOf(data.getAdvancePercent().toString());
+							for(Integer ids:installmentTypeIds) {
+								Integer instalId=ids;	
+								 res = new EmiDisplayRes();
+
+								List<EmiDisplayRes> result=viewEmiInstallmentDetailsByInstalId5(req,interestPercent,advancePercent,premiumWithTax,instalId,res,data, noOfMonth);
+								 System.out.println("InstalId: " + instalId + " -> Response: " + result);
+								if(!result.isEmpty()){  
+								resList.add(result.get(0)); 
+								} System.out.println(resList);							
+							}
+						
+
+					}else if(list.size() == 0){
+						 res = new EmiDisplayRes();
+						res.setEmiYn("N");
+						res.setEmiYnDesc("Emi Option is not Available ");
+						resList.add(res);
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.info("Log Details" + e.getMessage());
+					return null;
+				}
+
+				return resList;
+			}
+				public List<EmiDisplayRes> viewEmiInstallmentDetailsByInstalId5(EmiInstallmentDetailsReq req, Double interestPercent, Double advancePercent,Double premiumWithTax, 
+					Integer instalId,EmiDisplayRes res,EmiMaster data, Integer installmentPeriod) {
+				List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
+				Long balanceAmount=null, temp=0l; Long installment=0l,trackTotLnAmtWithInterest=0l, trackInsAmt=0l;
+				Integer i=0; String insDesc = ""; Integer in=0;
+				Integer loop=installmentPeriod/instalId, loop2=installmentPeriod/instalId;
+				Long skipAmount=0l;
+				Long totalLoanAmount=Math.round(premiumWithTax+premiumWithTax*interestPercent/100);
+				Long interestAmount = Math.round(premiumWithTax*interestPercent/100);
+				Long advanceAmount = Math.round(totalLoanAmount * advancePercent / 100);		
+				
+					if(!(installmentPeriod/instalId>1) || !(installmentPeriod%instalId==0)) {
+						return resList;
+					}
+					if(i==0 && advanceAmount>0 && instalId>1) {
+						advanceAmount = Math.round(premiumWithTax * advancePercent / 100);
+						totalLoanAmount=Math.round(premiumWithTax-advanceAmount);
+						totalLoanAmount=Math.round(totalLoanAmount+totalLoanAmount*interestPercent/100);
+						trackTotLnAmtWithInterest=totalLoanAmount;
+						balanceAmount = totalLoanAmount;
+						in=loop-1;
+						installment = (long) Math.round(balanceAmount/in);
+						insDesc="Advance Amount";
+						
+					}else if(i==0) {
+						advanceAmount=0l;
+						balanceAmount = totalLoanAmount - advanceAmount;
+						trackTotLnAmtWithInterest=totalLoanAmount;
+						in=loop;
+						installment = (long) Math.round(balanceAmount/in);
+						insDesc="Installment Amount";
+					
+					}else {
+						
+						temp = balanceAmount;
+						temp -= installment;
+						balanceAmount = temp;
+						insDesc="Installment Amount";
+						
+					}
+					EmiInfoListRes emiInfoListRes = new EmiInfoListRes();
+					emiInfoListRes.setPremiumWithTax(Long.valueOf(Math.round(premiumWithTax)).toString());
+					emiInfoListRes.setNoOfMonth(installmentPeriod.toString());
+					emiInfoListRes.setInterestAmount(Long.valueOf(Math.round(interestAmount)).toString());
+					emiInfoListRes.setAdvanceAmount(Long.valueOf(Math.round(advanceAmount)).toString());
+					emiInfoListRes.setBalanceAmount(Long.valueOf(Math.round(balanceAmount)).toString());
+					emiInfoListRes.setTotalLoanAmount(Long.valueOf(Math.round(totalLoanAmount)).toString());
+					emiInfoListRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
+					emiInfoListRes.setInstallmentTypeId(instalId.toString());
+					emiInfoListRes.setInstallmentTypeDesc(installmentType.get(instalId));		
+					
+					res.setEmiInfoRes(emiInfoListRes);
+
+					EmiCompanyInfoListRes compInfoRes = new EmiCompanyInfoListRes();
+					compInfoRes.setPremiumStart(data.getPremiumStart().toString());
+					compInfoRes.setPremiumEnd(data.getPremiumEnd().toString());
+					compInfoRes.setInterest(interestPercent.toString());
+					compInfoRes.setAdvance(advancePercent.toString());
+					res.setCompanyEmiInfo(compInfoRes);
+
+					List<EmiDisplayListRes> emiPremiumResList = new ArrayList<EmiDisplayListRes>();
+					Calendar cal = Calendar.getInstance();
+					Date dueDate = cal.getTime();
+					for (i = 0; i < loop2; i++) {
+						EmiDisplayListRes emiPremiumRes = new EmiDisplayListRes();
+										Integer inc=i;
+						if(i==0 && advanceAmount>0.0 && instalId>1) {
+							cal.add(Calendar.MONTH, 0);
+							dueDate = cal.getTime();
+							insDesc="Advance Amount";
+							emiPremiumRes.setInstallment(Long.valueOf(Math.round(advanceAmount)).toString());
+						}else if (i == 0) {
+							cal.add(Calendar.MONTH, 0);
+							dueDate = cal.getTime();
+							insDesc="Installment Amount";
+							emiPremiumRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
+							inc=inc+1;
+							emiPremiumRes.setNoOfInstallment(inc.toString());
+							
+							trackInsAmt+=installment;
+							temp = balanceAmount;
+							temp -= installment;
+							balanceAmount = temp;
+						
+						} else {
+					        // Increment calendar based on the installment period
+					                cal.add(Calendar.MONTH, instalId);       
+					        dueDate = cal.getTime();
+					       if((trackTotLnAmtWithInterest-trackInsAmt)<installment) {
+								skipAmount=installment-(trackTotLnAmtWithInterest-trackInsAmt);
+								balanceAmount = installment-skipAmount;
+								emiPremiumRes.setInstallment(Long.valueOf(Math.round(balanceAmount)).toString());
+							}else if((balanceAmount-installment)<12 && (balanceAmount-installment)>0) {
+								skipAmount=(balanceAmount-installment);
+								balanceAmount = installment+skipAmount;
+								emiPremiumRes.setInstallment(Long.valueOf(Math.round(balanceAmount)).toString());
+								  
+							}else {
+							trackInsAmt+=installment;
+							emiPremiumRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
+							}
+					       temp = balanceAmount;
+							temp -= installment;
+							balanceAmount = temp;
+							
+					       insDesc="Installment Amount";
+							inc=advanceAmount>0.0?inc:(inc+1);
+							emiPremiumRes.setNoOfInstallment(inc.toString());
+							
+						}
+
+						emiPremiumRes.setNoOfInstallment(inc.toString());
+						emiPremiumRes.setDueDate(dueDate);
+						emiPremiumRes.setInstallmentDesc(insDesc);
+						emiPremiumResList.add(emiPremiumRes);
+
+					}
+					res.setEmiPremium(emiPremiumResList);
+					res.setEmiYn("Y");
+					res.setEmiYnDesc("Emi Data");
+				
+		         if(balanceAmount!=null) {
+				 resList.add(res);
+		         }
+				return resList;
+			}
+
+//END TRIAL
 		
 		public List<EmiMaster> getEmiMasterData( String companyId, String productId,String policyType,Double amt) {
 			List<EmiMaster> list = new ArrayList<EmiMaster>();

@@ -33,6 +33,6 @@ public class EmiInstallmentDetailsReq implements Serializable {
 	@JsonProperty("PolicyType")
 	private String policyType;
 	
-	@JsonProperty("InstallmentPeriod")
-    private String installmentPeriod ;
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
 }
