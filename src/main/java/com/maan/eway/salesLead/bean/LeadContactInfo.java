@@ -29,8 +29,8 @@ import lombok.Setter;
 @Entity
 @DynamicUpdate
 @Data
-@Table(name = "eway_sales_lead")
-public class SalesLead  implements Serializable{
+@Table(name = "lead_contact_info")
+public class LeadContactInfo  implements Serializable{
 	/**
 	 * 
 	 */

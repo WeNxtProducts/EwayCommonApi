@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -185,4 +186,15 @@ public class DashBoardController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@GetMapping("/dashboard/v1/payments/{loginId}")
+	public ResponseEntity<?> getPaymentDetailsByLoginId(@PathVariable ("loginId") String loginId){
+		CommonRes data = entityService.getPaymentDetailsByLoginId(loginId);
+		if(data!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}else {
+			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+		}
+	}
+	
 }

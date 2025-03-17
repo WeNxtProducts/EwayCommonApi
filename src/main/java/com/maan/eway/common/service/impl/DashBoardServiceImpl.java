@@ -19,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.DashBoardGetReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DasboardCountRes;
 import com.maan.eway.common.res.DasboardListRes;
 import com.maan.eway.common.res.DasboardPolicyListRes;
@@ -34,6 +36,7 @@ import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -64,7 +67,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 	@Autowired
 	private LoginBranchMasterRepository loginBranchRepo;
-
+	
+	@Autowired
+	private LoginMasterRepository loginRepo;
 	
 	@Autowired
 	private EserviceTravelDetailsRepository travelRepo;
@@ -705,6 +710,43 @@ return reslist;
 			return null;
 		}
 		return reslist;
+	}
+
+
+
+
+	@Override
+	public CommonRes getPaymentDetailsByLoginId(String loginId) {
+		log.info("welcome to getPaymentDetailsByLoginId || "+loginId);
+		try {
+			LoginMaster lmData = loginRepo.findByLoginId(loginId);
+			if(lmData!=null) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+				Root<PaymentDetail> pdRoot = cq.from(PaymentDetail.class);
+				Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
+				
+				if("Broker".equalsIgnoreCase(lmData.getUserType())) {
+					
+				}else if("User".equalsIgnoreCase(lmData.getUserType())) {
+					
+				}else if("Issuer".equalsIgnoreCase(lmData.getUserType())) {
+					
+				}
+				
+				cq.multiselect(pdRoot.get("quoteNo").alias("quoteNo"),pdRoot.get("customerName").alias("customerName"),
+						pdRoot.get("premiumFc").alias("premiumFc"),pdRoot.get("paymentStatus").alias("paymentStatus"));
+				
+				
+			}
+			
+			
+			log.info("whoo whoo PaymentDetailsByLoginId Method Completed!");
+		}catch(Exception e) {
+			log.info("Exception in getPaymentDetailsByLoginId ----> "+e);
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

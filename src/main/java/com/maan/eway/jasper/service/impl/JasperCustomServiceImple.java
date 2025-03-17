@@ -292,7 +292,9 @@ public class JasperCustomServiceImple {
 		
 			List<Selection> selectionList = 	Arrays.asList(
 				mddRoot.get("vehicleId").alias("vehicleId"),
-				cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+				cb.concat(piRoot.get("titleDesc"), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("titleDesc")), "")
+						.when(cb.equal(piRoot.get("titleDesc"),""), "").otherwise(".").as(String.class),
+						piRoot.get("clientName"))).alias("customerName"),
 				cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")),hpmRoot.get("customerName"))
 						.otherwise(insureName).alias("insurerName"),
 				hpmRoot.get("policyCovertedDate").alias("paymentDate"),
@@ -474,7 +476,9 @@ public class JasperCustomServiceImple {
 				cb.equal(imageURLRoot.get("amendId"), imageURLAmd));*/
 		
 		cq.multiselect(luiRoot.get("userName").alias("userName"),hpmRoot.get("approvedBy").alias("approvedBy"),hpmRoot.get("agencyCode").alias("agencyCode"),
-				cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),cb.concat(piRoot.get("address1"), cb.concat(",",
+				cb.concat(piRoot.get("titleDesc"), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("titleDesc")), "")
+						.when(cb.equal(piRoot.get("titleDesc"),""), "").otherwise(".").as(String.class),
+						piRoot.get("clientName"))).alias("customerName"),cb.concat(piRoot.get("address1"), cb.concat(",",
 				cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(cb.concat("P.O.BOX ", piRoot.get("pinCode"))).as(String.class),
 				cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("cityName"),cb.concat(",",cb.concat(piRoot.get("stateName"),cb.concat(",\n", countryName)))))))).alias("address"),
 				piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("idTypeDesc").alias("identificationName"),piRoot.get("idNumber").alias("identificationNo"),hpmRoot.get("brokerCode").alias("intermediaryRefNo"),
@@ -716,7 +720,9 @@ public class JasperCustomServiceImple {
 		
 		cq.multiselect(cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), hpmRoot.get("customerName"))
 				.otherwise(luiRoot.get("userName")).alias("brokerName"),
-			cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+			cb.concat(piRoot.get("titleDesc"), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("titleDesc")), "")
+					.when(cb.equal(piRoot.get("titleDesc"),""), "").otherwise(".").as(String.class),
+					piRoot.get("clientName"))).alias("customerName"),
 			cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "")
 					.when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), 
 					cb.concat(",", cb.concat(piRoot.get("cityName"), cb.concat(",\n", countryName)))))))).alias("address"),
@@ -928,7 +934,9 @@ public class JasperCustomServiceImple {
 				
 				
 		cq.multiselect(cpmRoot.get("companyId").alias("companyId"),cpmRoot.get("effectiveDateStart").alias("effectiveDateStart"),cpmRoot.get("effectiveDateEnd").alias("effectiveDateEnd"),
-			hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+			hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("titleDesc")), "")
+					.when(cb.equal(piRoot.get("titleDesc"),""), "").otherwise(".").as(String.class),
+					piRoot.get("clientName"))).alias("customerName"),
 			hpmRoot.get("debitNoteNo").alias("debitNoteNo"),cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(piRoot.get("cityName"),
 				cb.concat(" Street", cb.concat(",", cb.concat(piRoot.get("stateName"), cb.concat(",", countryName))))))).alias("address"),
 			cb.selectCase().when(cb.isNotNull(piRoot.get("pinCode")), cb.concat("P.O.BOX ", cb.concat(piRoot.get("pinCode"), cb.concat(",", cb.concat(piRoot.get("cityName"),
@@ -1426,7 +1434,9 @@ public class JasperCustomServiceImple {
 				cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
 		
 		cq.multiselect(hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("policyNo").alias("policyNo"),cb.upper(cb.concat(piRoot.get("titleDesc"),
-				cb.concat(".", piRoot.get("clientName")))).alias("customerName"),cb.concat(piRoot.get("address1"), cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),
+				cb.concat(cb.selectCase().when(cb.isNotNull(piRoot.get("titleDesc")), ".")
+						.when(cb.equal(piRoot.get("titleDesc"),""), "")
+						.otherwise("").as(String.class), piRoot.get("clientName")))).alias("customerName"),cb.concat(piRoot.get("address1"), cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),
 						cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), 
 								cb.concat(",", cb.concat(piRoot.get("cityName"), cb.concat(",", countryName))))))).alias("address"),
 				piRoot.get("telephoneNo1").alias("telephoneNo1"),lmRoot.get("agencyCode").alias("agencyCode"),hpmRoot.get("inceptionDate").alias("inceptionDate"),hpmRoot.get("expiryDate").alias("expiryDate"),
@@ -1563,7 +1573,9 @@ public class JasperCustomServiceImple {
 		payments.select(paymentsRoot.get("payments")).where(cb.equal(paymentsRoot.get("quoteNo"), hpmRoot.get("quoteNo")),cb.equal(paymentsRoot.get("paymentStatus"), "ACCEPTED"),
 				cb.equal(paymentsRoot.get("merchantReference"), paymentAmd.as(String.class)));
 		
-		cq.multiselect(cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+		cq.multiselect(cb.concat(piRoot.get("titleDesc"), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("titleDesc")), "")
+				.when(cb.equal(piRoot.get("titleDesc"),""), "")
+				.otherwise(".").as(String.class), piRoot.get("clientName"))).alias("customerName"),
 			hpmRoot.get("policyNo").alias("EndorsementNo"),hpmRoot.get("originalPolicyNo").alias("originalPolicyNo"),hpmRoot.get("effectiveDate").alias("effectiveDate"),
 			hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("inceptionDate").alias("inceptionDate"),hpmRoot.get("currency").alias("currency"),
 			hpmRoot.get("endtPremium").alias("endtPremium"),hpmRoot.get("endtTypeDesc").alias("endtTypeDesc"),hpmRoot.get("endorsementRemarks").alias("endorsementRemarks"),
@@ -1690,7 +1702,10 @@ public class JasperCustomServiceImple {
 				cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
 		
 		cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),bmRoot.get("branchName").alias("branchName"),
-				hpmRoot.get("entryDate").alias("entryDate"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+				hpmRoot.get("entryDate").alias("entryDate"),cb.concat(piRoot.get("titleDesc"), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("titleDesc")), "")
+						.when(cb.equal(piRoot.get("titleDesc"),""), "")
+						.otherwise(".").as(String.class),
+						piRoot.get("clientName"))).alias("customerName"),
 				cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), cb.concat(cb.selectCase()
 					.when(cb.equal(piRoot.get("pinCode"), ""), "").when(cb.isNull(piRoot.get("pinCode")), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"),
 							cb.concat(",", cb.concat(piRoot.get("cityName"), cb.concat(",", countryName)))))))).alias("address"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
@@ -1820,7 +1835,9 @@ public class JasperCustomServiceImple {
 					cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("vatPremiumLc")).otherwise(hpmRoot.get("vatPremiumFc")).alias("vatPremium"),
 					cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("overallPremiumLc")).otherwise(hpmRoot.get("overallPremiumFc")).alias("overAllPremium"),
 					hpmRoot.get("commissionPercentage").alias("commissionPercentage"),hpmRoot.get("commission").alias("commission"),hpmRoot.get("branchName").alias("branchName"),hpmRoot.get("inceptionDate").alias("inceptionDate"),
-					hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("paymentType").alias("paymentType"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+					hpmRoot.get("expiryDate").alias("expiryDate"),hpmRoot.get("paymentType").alias("paymentType"),cb.concat(piRoot.get("titleDesc"), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("titleDesc")), "")
+							.when(cb.equal(piRoot.get("titleDesc"),""), "").otherwise(".").as(String.class),
+							piRoot.get("clientName"))).alias("customerName"),
 					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "")
 					.otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),cb.concat(",", countryName)))))))).alias("address"),
 					piRoot.get("vrTinNo").alias("vrTinNo"),piRoot.get("email1").alias("email1"),piRoot.get("mobileNo1").alias("mobileNo1"),imageURL.alias("companyLogo"),luiRoot.get("brokerLogo").alias("brokerLogo"))
@@ -1931,7 +1948,9 @@ public class JasperCustomServiceImple {
 			imageURL.select(imageURLRoot.get("companyLogo")).where(cb.equal(imageURLRoot.get("companyId"), hpmRoot.get("companyId")),
 					cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
 			
-			cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("requestReferenceNo").alias("requestReferenceNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+			cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("requestReferenceNo").alias("requestReferenceNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("titleDesc")), "")
+					.when(cb.equal(piRoot.get("titleDesc"),""), "").otherwise(".").as(String.class),
+					piRoot.get("clientName"))).alias("customerName"),
 					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "")
 							.when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),
 									cb.concat(",", countryName)))))))).alias("address"),piRoot.get("email1").alias("email1"),hpmRoot.get("branchCode").alias("branchCode"),luiRoot.get("agencyCode").alias("agencyCode"),
@@ -2794,7 +2813,9 @@ public class JasperCustomServiceImple {
 					cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
 			
 			cq.multiselect(cpmRoot.get("companyId").alias("companyId"),cpmRoot.get("effectiveDateStart").alias("effectiveDateStart"),cpmRoot.get("effectiveDateEnd").alias("effectiveDateEnd"),
-				hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+				hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("titleDesc")), "")
+						.when(cb.equal(piRoot.get("titleDesc"),""), "").otherwise(".").as(String.class),
+						piRoot.get("clientName"))).alias("customerName"),
 				hpmRoot.get("debitNoteNo").alias("debitNoteNo"),cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(piRoot.get("cityName"),
 					cb.concat(" Street", cb.concat(",", cb.concat(piRoot.get("stateName"), cb.concat(",", countryName))))))).alias("address"),
 				cb.selectCase().when(cb.isNotNull(piRoot.get("pinCode")), cb.concat("P.O.BOX ", cb.concat(piRoot.get("pinCode"), cb.concat(",", cb.concat(piRoot.get("cityName"),
@@ -3449,7 +3470,9 @@ public class JasperCustomServiceImple {
 			imageURL.select(imageURLRoot.get("companyLogo")).where(cb.equal(imageURLRoot.get("companyId"), hpmRoot.get("companyId")),
 					cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
 			
-			cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("requestReferenceNo").alias("requestReferenceNo"),cb.concat(piRoot.get("titleDesc"), cb.concat(".", piRoot.get("clientName"))).alias("customerName"),
+			cq.multiselect(hpmRoot.get("policyNo").alias("policyNo"),hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("requestReferenceNo").alias("requestReferenceNo"),cb.concat(piRoot.get("titleDesc"),
+					cb.concat(cb.selectCase().when(cb.isNotNull(piRoot.get("titleDesc")), ".").when(cb.equal(piRoot.get("titleDesc"),""), "")
+							.otherwise("").as(String.class), piRoot.get("clientName"))).alias("customerName"),
 					cb.concat(piRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(piRoot.get("pinCode"), ""), cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "")
 							.when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.concat(piRoot.get("stateName"), cb.concat(",", cb.concat(piRoot.get("cityName"),
 									cb.concat(",", countryName)))))))).alias("address"),piRoot.get("email1").alias("email1"),hpmRoot.get("branchCode").alias("branchCode"),luiRoot.get("agencyCode").alias("agencyCode"),
