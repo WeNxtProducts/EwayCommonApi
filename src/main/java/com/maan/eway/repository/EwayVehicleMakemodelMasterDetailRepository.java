@@ -19,6 +19,8 @@ import com.maan.eway.bean.EwayMotorMakemodelMaster;
 import com.maan.eway.bean.EwayVehicleMakemodelMasterDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+
 import com.maan.eway.bean.EwayVehicleMakemodelMasterDetailId;
 /**
  * <h2>EwayVehicleMakemodelMasterDetailRepository</h2>
@@ -35,5 +37,9 @@ public interface EwayVehicleMakemodelMasterDetailRepository  extends JpaReposito
 	List<EwayVehicleMakemodelMasterDetail> findByVehicleid(String string);
 
 	List<EwayVehicleMakemodelMasterDetail> findByModelId(Integer string);
+
+	@Query(nativeQuery=true,value="SELECT model_id FROM `eway_motor_makemodel_master` WHERE company_id='100002' AND model_name_en=?1 AND STATUS='y' AND \r\n"
+			+ "amend_id=(SELECT MAX(amend_id) FROM `eway_motor_makemodel_master` WHERE company_id='100002' AND model_name_en=?1 AND STATUS='y' )")
+	Integer findModelIdWithMaxAmendId(String model);
 
 }

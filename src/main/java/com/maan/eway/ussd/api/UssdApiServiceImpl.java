@@ -14,6 +14,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -38,8 +39,11 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
+import com.maan.eway.repository.EwayVehicleMakemodelMasterDetailRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.MotorBodyTypeMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.MotorMakeMasterRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
@@ -64,6 +68,15 @@ public class UssdApiServiceImpl implements UssdApiService {
 	@Autowired
 	private GenerateSeqNoServiceImpl genSeqNoService;
 	private Logger log = LogManager.getLogger(UssdApiServiceImpl.class);
+	
+	@Autowired
+	private MotorBodyTypeMasterRepository bodyTypeRepo;
+	
+	@Autowired
+	private MotorMakeMasterRepository makeRepo;
+	
+	@Autowired
+	private EwayVehicleMakemodelMasterDetailRepository modelRepo;
 
 	@Override
 	public Object ussdApi(UssdApiReq req) {
@@ -303,6 +316,20 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      } else if (gender.equalsIgnoreCase("F")) {
 	         genderDesc = "Female";
 	      }
+	      
+	      //Motor Ids 
+	     Integer bodyTypeValue = bodyTypeRepo.findBodyIdWithMaxAmendId(bodyType);
+	     String bodyTypeId = bodyTypeValue == null ? "99999" : String.valueOf(bodyTypeValue);
+	     
+	     
+	     Integer makeIdValue = makeRepo.findMakeIdWithMaxAmendId(make);
+	     String makeId = makeIdValue == null ? "99999" : String.valueOf(makeIdValue);
+	     
+	     Integer modelIdValue = modelRepo.findModelIdWithMaxAmendId(model);
+	     String modelId = modelIdValue == null ? "99999" : String.valueOf(modelIdValue);
+	     
+	     
+	     //String modelId = modelRepo
 
 	      LocalDate currentDate = LocalDate.now();
 	      LocalTime constantTime = LocalTime.of(5, 30);
@@ -347,17 +374,17 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      saveMotorData.setMotorUsage(motorUsageId);
 	      saveMotorData.setRegistrationNumber(regNo);
 	      saveMotorData.setChassisNumber(chassisNumber);
-	      saveMotorData.setVehicleMake(make);
+	      saveMotorData.setVehicleMake(makeId);
 	      saveMotorData.setVehicleMakeDesc(make);
-	      saveMotorData.setVehcileModel(model);
+	      saveMotorData.setVehcileModel(modelId);
 	      saveMotorData.setVehcileModelDesc(model);
-	      saveMotorData.setVehicleType(bodyType);
+	      saveMotorData.setVehicleType(bodyTypeId);
 	      saveMotorData.setVehicleTypeDesc(bodyType);
 	      saveMotorData.setModelNumber(modelNo);
 	      saveMotorData.setEngineNumber(engineNo);
 	      saveMotorData.setFuelType(fuel);
 	      saveMotorData.setFuelTypeDesc(fuel);
-	      saveMotorData.getSeatingCapacity();
+	      saveMotorData.setSeatingCapacity(Double.valueOf(sittingCapacity));
 	      saveMotorData.setCubicCapacity(Double.valueOf(engineCapacity));
 	      saveMotorData.setColor(color);
 	      saveMotorData.setColorDesc(color);
@@ -426,6 +453,10 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      saveMotorData.setNoOfPassengers(Integer.valueOf(sittingCapacity));
 	      saveMotorData.setFuelTypeDescLocal(fuel);
 	      saveMotorData.setColorDescLocal(color);
+	      saveMotorData.setVehicleMakeId(makeId);
+	      saveMotorData.setVehicleModelId(modelId);
+	      saveMotorData.setSumInsuredLc(BigDecimal.valueOf(sumInsured));
+	      saveMotorData.setEndtCount(BigDecimal.valueOf(0));
 	      
 	      motorDataRepo.saveAndFlush(saveMotorData);
 	      
@@ -548,13 +579,13 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      policyCoverDataSave.setNoOfDays(BigDecimal.valueOf(366L));
 	      policyCoverDataSave.setStatus("Y");
 	      policyCoverDataSave.setCreatedBy("UssdBroker");
-	      policyCoverDataSave.setTaxId(Integer.valueOf(taxCode));
+	      policyCoverDataSave.setTaxId(Integer.valueOf(0));
 	      policyCoverDataSave.setTaxRate(BigDecimal.valueOf(taxRate));
 	      policyCoverDataSave.setTaxAmount(BigDecimal.valueOf(taxAmount));
 	      policyCoverDataSave.setIsTaxExtempted(isTaxExempted);
 	      policyCoverDataSave.setTaxExemptType(taxExemptionType);
 	      policyCoverDataSave.setIsReferral("N");
-	      policyCoverDataSave.setRegulatoryCode("NA");
+	      policyCoverDataSave.setRegulatoryCode("SP014001000000");
 	      policyCoverDataSave.setExcessAmount(BigDecimal.valueOf(0L));
 	      policyCoverDataSave.setMultiSelectYn("N");
 	      policyCoverDataSave.setMinimumPremiumYn("N");
@@ -621,7 +652,8 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      homePositionSave.setStickerNumber(stickerNumber);
 	      homePositionSave.setPrevCoverNoteRefNo(prevCoverNoteRefNo);
 	      homePositionSave.setCommissionModifyYn("N");
-	      	      
+	      homePositionSave.setEndtCount(0);
+	      
 	      homeRepo.saveAndFlush(homePositionSave);
 	      
 	      //Make Payment Api
@@ -641,8 +673,8 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      makePaymentMap.put("UserType", "Broker");
 	      String makePaymentReq = objectPrint.toJson(makePaymentMap);
 	      System.out.println("makePaymentReq" + makePaymentReq);
-	      String makePaymentApi = "http://localhost:8086/EwayCommonApi/payment/makepayment";
-	    //  String makePaymentApi = "http://192.168.1.42:8086/payment/makepayment";
+	    String makePaymentApi = "http://localhost:8086/EwayCommonApi/payment/makepayment";
+	   //   String makePaymentApi = "http://192.168.1.42:8086/payment/makepayment";
 	      response = this.callEwayApi(makePaymentApi, makePaymentReq);
 	      System.out.println("makePaymentRes" + response);
 	      Map<String, Object> makePaymentResult = null;
@@ -682,8 +714,8 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      insertPayment.put("MobileNo1", policyHolderPhoneNumber);
 	      String insertPaymentReq = this.objectPrint.toJson(insertPayment);
 	      System.out.println("insertPaymentReq" + insertPaymentReq);
-	      String insertPaymentApi = "http://localhost:8086/EwayCommonApi/payment/insertpaymentdetails";
-	     // String insertPaymentApi = "http://192.168.1.42:8086/payment/insertpaymentdetails";
+	    String insertPaymentApi = "http://localhost:8086/EwayCommonApi/payment/insertpaymentdetails";
+	   //   String insertPaymentApi = "http://192.168.1.42:8086/payment/insertpaymentdetails";
 	      response = this.callEwayApi(insertPaymentApi, insertPaymentReq);
 	      System.out.println("insertPaymentRes" + response);
 	      Map<String, Object> insertPaymentResult = null;
@@ -730,8 +762,8 @@ public class UssdApiServiceImpl implements UssdApiService {
 	         tokReq.put("LoginId", "UssdBroker");
 	         tokReq.put("Password", "Admin@10");
 	         tokReq.put("ReLoginKey", "Y");
-	         String tokenApi = "http://localhost:8086/EwayCommonApi/authentication/login";
-	       //  String tokenApi = "http://192.168.1.42:8086/authentication/login";
+	       String tokenApi = "http://localhost:8086/EwayCommonApi/authentication/login";
+	     //    String tokenApi = "http://192.168.1.42:8086/authentication/login";
 	        // System.out.println("Token Api URL ==> " + tokenApi);
 	         String jsonTokenRequest = (new Gson()).toJson(tokReq);
 	         CloseableHttpClient httpClient = createHttpClientWithTimeouts();
