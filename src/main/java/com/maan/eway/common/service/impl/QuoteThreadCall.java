@@ -3358,7 +3358,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 	
 	 
-
+	@Transactional
 	private synchronized Map<String,Object> call_SectionSave(QuoteThreadReq  request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		ModelMapper mapper = new ModelMapper();
@@ -3428,7 +3428,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}
 						
 			secRepo.saveAllAndFlush(secList);
-			eserSecRepo.saveAllAndFlush(updateEserSec);
+			eserSecRepo.saveAll(updateEserSec);
 			updateAdditionalInfo(quoteno,product_id);
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
