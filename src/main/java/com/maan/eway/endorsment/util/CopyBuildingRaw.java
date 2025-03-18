@@ -361,7 +361,12 @@ public class CopyBuildingRaw {
 	public BuildingCopyRes copyBuildingRiskTable(Endorsment ent) {
 		try {
 			List<EserviceBuildingDetails> BuildingDatas=null;
-			Integer count=eBuildingRepo.countByOriginalPolicyNo(ent.getPolicyNo());
+			Integer count=0;
+			List<Object> list=getMasterTableCount(ent.getPolicyNo());
+			if (list.size() > 0) {
+				count = list.size();
+			}
+//			Integer count=eBuildingRepo.countByOriginalPolicyNo(ent.getPolicyNo());
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
 			String newRequestNo =null;
@@ -563,7 +568,33 @@ public class CopyBuildingRaw {
 		}
 		return null;
 	}
-	
+	public List<Object> getMasterTableCount(String policyNo) {
+		List<Object> list = new ArrayList<Object>();
+		try {
+			//List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Object> query = cb.createQuery(Object.class);
+			//Find all
+			Root<EserviceBuildingDetails> b = query.from(EserviceBuildingDetails.class);
+			// Select
+			query.multiselect(b.get("policyNo").alias("policyNo"));
+						
+			Predicate n1 = cb.equal(b.get("originalPolicyNo"),policyNo);
+			query.where(n1).groupBy(b.get("policyNo"));
+			
+			// Get Result
+			TypedQuery<Object> result = em.createQuery(query);
+			list = result.getResultList();
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+		}
+		return list;
+	}
+
 	public List<String> copyBuildingSections( BuildingCopyRes buildingData ) {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
