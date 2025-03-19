@@ -134,18 +134,6 @@ import jakarta.persistence.criteria.Subquery;
 
 		private Logger log = LogManager.getLogger(EmiTransactionDetailsServiceImpl.class);
 		
-		public static final Map<Integer, String> installmentType;
-		public static final Set<Integer> installmentTypeIds;
-
-		static {
-		    installmentType = new LinkedHashMap<>();
-		    installmentType.put(1, "Monthly");
-		    installmentType.put(2, "Bimonthly");
-		    installmentType.put(3, "Quarterly");
-		    installmentType.put(6, "Halfyearly");
-
-		    installmentTypeIds = installmentType.keySet(); // Maintains insertion order now
-		}
 	//Insert Validation
 		
 
@@ -283,66 +271,6 @@ import jakarta.persistence.criteria.Subquery;
 	            //	premiumWithTax = Double.valueOf(req.getPremiumWithTax());				
 	            	advanceAmount=insertEmiTransactionDetailsByInstalId2(req, interestPercent, advancePercent, premiumWithTax,instalId, noOfMonth );
 	            	adv=new BigDecimal(advanceAmount);
-	            }else if(noOfMonth!=null) { 
-	            	
-				// Calculation
-				for (i = 0; i <= noOfMonth; i++) {
-					Calendar cal = Calendar.getInstance();
-					cal.add(Calendar.MONTH, i);
-					Date dueDate = cal.getTime();
-
-					premiumWithTax = Double.valueOf(req.getPremiumWithTax());
-					interestAmount = premiumWithTax * interestPercent / 100;
-					interestAmount=interestAmount/12;
-					interestAmount=interestAmount*noOfMonth;
-					totalLoanAmount = premiumWithTax + interestAmount;
-					advanceAmount = totalLoanAmount * advancePercent / 100;
-					adv=new BigDecimal(advanceAmount);
-					if (i == 0) {
-						balanceAmount = totalLoanAmount - advanceAmount;
-						installment = balanceAmount / noOfMonth;
-					} else {
-						temp = balanceAmount;
-						temp -= installment;
-						balanceAmount = temp;
-					}
-					// Save
-					saveData.setPremiumWithTax(premiumWithTax);
-					saveData.setInstallmentPeriod(noOfMonth.toString());
-					saveData.setInterest(interestPercent);
-					saveData.setAdvance(advancePercent.toString());
-					saveData.setInterestAmount((Double.valueOf(Math.round(interestAmount))));
-					if (i == 0) {
-						saveData.setDueAmount((Double.valueOf(Math.round(advanceAmount))));
-						insDesc="Advance Amount";
-						//saveData.setPaymentDate(entryDate);
-						saveData.setStatus(req.getStatus());
-						saveData.setPaymentDetails(req.getPaymentDetails());
-					} else {
-						saveData.setDueAmount((Double.valueOf(Math.round(installment))));
-						insDesc="Installment Amount";
-						saveData.setStatus("Y");
-						saveData.setPaymentDetails(null);
-					}
-					saveData.setPaymentDate(null);
-					saveData.setPaymentStatus("Pending");
-					saveData.setQuoteNo(quoteNo);
-					saveData.setProductId(req.getProductId());
-					saveData.setCompanyId(req.getCompanyId());
-					saveData.setBalanceAmount(Double.valueOf(Math.round(balanceAmount)));
-					saveData.setTotalLoanAmount(Double.valueOf(Math.round(totalLoanAmount)));
-					saveData.setInstallmentDesc(insDesc);
-					saveData.setInstalment(i.toString());
-					saveData.setEntryDate(entryDate);
-					saveData.setCreatedBy(req.getCreatedBy());
-					saveData.setUpdatedDate(new Date());
-					saveData.setUpdatedBy(createdBy);
-					saveData.setDueDate(dueDate);
-					saveData.setRemarks(req.getRemarks());
-				
-					
-					repo.saveAndFlush(saveData);
-				 }
 	            }
 				res.setSuccessId(quoteNo);
 				res.setResponse("Saved Successful");
@@ -1398,20 +1326,16 @@ import jakarta.persistence.criteria.Subquery;
 					List<EmiMaster> list = getEmiMasterData(req.getCompanyId(), req.getProductId(), req.getPolicyType(),
 							premiumWithTax);
 					EmiDisplayRes res=null;
-					if (!list.isEmpty()){
-						EmiMaster data=list.get(0);
-							
-							interestPercent = Double.valueOf(data.getInterestPercent().toString());
-							advancePercent = Double.valueOf(data.getAdvancePercent().toString());
-							for(Integer ids:installmentTypeIds) {
-								Integer instalId=ids;	
-								 res = new EmiDisplayRes();
-
+					if (!list.isEmpty()){	
+						for(EmiMaster data:list) {
+								interestPercent = Double.valueOf(data.getInterestPercent().toString());
+								advancePercent = Double.valueOf(data.getAdvancePercent().toString());	
+								Integer instalId=Integer.parseInt(data.getInstallmentTypeId());	
+								res = new EmiDisplayRes();
 								List<EmiDisplayRes> result=viewEmiInstallmentDetailsByInstalId5(req,interestPercent,advancePercent,premiumWithTax,instalId,res,data, noOfMonth);
-								 System.out.println("InstalId: " + instalId + " -> Response: " + result);
 								if(!result.isEmpty()){  
 								resList.add(result.get(0)); 
-								} System.out.println(resList);							
+								} 						
 							}
 						
 
@@ -1479,7 +1403,7 @@ import jakarta.persistence.criteria.Subquery;
 					emiInfoListRes.setTotalLoanAmount(Long.valueOf(Math.round(totalLoanAmount)).toString());
 					emiInfoListRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
 					emiInfoListRes.setInstallmentTypeId(instalId.toString());
-					emiInfoListRes.setInstallmentTypeDesc(installmentType.get(instalId));		
+					emiInfoListRes.setInstallmentTypeDesc(data.getInstallmentTypeDesc());		
 					
 					res.setEmiInfoRes(emiInfoListRes);
 

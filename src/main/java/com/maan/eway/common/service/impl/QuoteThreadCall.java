@@ -3,7 +3,6 @@ package com.maan.eway.common.service.impl;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -17,6 +16,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +55,6 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MsDriverDetails;
-import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
@@ -1434,6 +1433,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 for(EserviceBuildingDetails section:eserBuild1) { 
 				EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() ,section.getRiskId() ,request.getSectionId(),request.getLocationId());
 				EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo() , section.getRiskId(),request.getSectionId(),request.getLocationId());
+				 premiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+				 overAllPremiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
+				
+				 premiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+				 overAllPremiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+				 taxPremium = coverTaxes.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") &&  Objects.equals(o.getCoverId(), eserBuild.getCoverId()) ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
+				
 				eserBuild.setQuoteNo(request.getQuoteNo());
 				eserBuild.setCustomerId(request.getCustomerId());
 			
