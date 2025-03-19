@@ -134,16 +134,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				JsonObject response = null;
  
 				if("lipila".equals(vendor.getVendorName())) {
-					// Online Payment not available
-					response = new JsonObject();
-					response.addProperty("result", "SUCCESS");
-					
-					JsonObject innerResponse=new JsonObject();
-					innerResponse.addProperty("payment_gateway_url", "dXJsIG5vdCBhdmFpbGFibGU=");
-					JsonArray asJsonArray =new JsonArray(1);
-					asJsonArray.add(innerResponse);
-					response.add("data", asJsonArray);
-					return response;
+					return lipila(vendor,payment);
 				}else if("ipayafrica".equals(vendor.getVendorName())) {
 					return ipayafrica(vendor,payment);
 				}else if("pesapal".equals(vendor.getVendorName())){
@@ -155,6 +146,63 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			}
 
 		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	private JsonObject lipila(PaymentVendorMaster vendor, PaymentDetail payment) {
+		try {
+			String apisecrectkey=null;
+			String apibaseURL = null;
+			String redirect_url=null;
+			CloseableHttpClient httpClient = null;
+			if(vendor!=null) {
+				apibaseURL=vendor.getRemarks();
+				apisecrectkey=vendor.getApiSecretKey();
+				redirect_url=vendor.getReturnUrlLink();
+				redirect_url=redirect_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
+			}
+			try {
+				JsonObject request=new JsonObject();
+				request.addProperty("currency",payment.getCurrencyId());
+				request.addProperty("amount",payment.getPremium());
+				request.addProperty("email", payment.getCustomerEmail());
+				request.addProperty("phoneNumber", payment.getReqBillToPhone());
+				request.addProperty("customerFirstName", payment.getCustomerName());
+				request.addProperty("customerLastName", "NA");
+				request.addProperty("customerCity", payment.getReqBillToAddressCity());
+				request.addProperty("customerCountry", payment.getReqBillToCountry());
+				request.addProperty("customerAddress", payment.getReqBillToAddressLine1()+payment.getReqBillToAddressLine2());
+				request.addProperty("customerZip", 0);
+				request.addProperty("externalId", payment.getMerchantReference());
+				request.addProperty("narration", payment.getMerchantReference());
+				request.addProperty("redirectUrl", redirect_url);
+
+				httpClient= HttpClientBuilder.create().build();
+				HttpPost postRequest = new HttpPost(apibaseURL);
+				postRequest.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+				postRequest.setHeader("Accept",MediaType.APPLICATION_JSON_VALUE);														
+				postRequest.setHeader("Authorization","Bearer "+ apisecrectkey);
+
+				StringEntity params = new StringEntity(request.toString());
+				postRequest.setEntity(params);
+				HttpResponse hresp  = httpClient.execute(postRequest);
+
+				org.apache.http.HttpEntity httpEntity = hresp.getEntity();
+				String apiOutput = EntityUtils.toString(httpEntity);
+				System.out.println("output"+ apiOutput);
+				JsonObject resp = new Gson().fromJson(apiOutput, JsonObject.class);
+				resp.addProperty("result", "SUCCESS");
+				JsonObject innerResponse=new JsonObject();
+				innerResponse.addProperty("payment_gateway_url", resp.get("redirectUrl").getAsString());
+				JsonArray asJsonArray =new JsonArray(1);
+				asJsonArray.add(innerResponse);
+				resp.add("data", asJsonArray);
+				return resp;
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		return null;
