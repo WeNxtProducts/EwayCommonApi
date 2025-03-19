@@ -4019,7 +4019,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					engine.setRequestReferenceNo(data.getRequestReferenceNo());
 					engine.setEffectiveDate(data.getPolicyStartDate());
 					engine.setPolicyEndDate(data.getPolicyEndDate());
-					engine.setCoverModification("N");
+					engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 					engine.setVehicleId(data.getRiskId().toString());		
 					EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
 					System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
@@ -4065,7 +4065,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									engine.setRequestReferenceNo(bd.getRequestReferenceNo());
 									engine.setEffectiveDate(bd.getPolicyStartDate());
 									engine.setPolicyEndDate(bd.getPolicyEndDate());
-									engine.setCoverModification("N");
+									engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 									engine.setVehicleId(bd.getRiskId().toString());	
 									System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
 									EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
@@ -4092,7 +4092,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							engine.setRequestReferenceNo(cd.getRequestReferenceNo());
 							engine.setEffectiveDate(cd.getPolicyStartDate());
 							engine.setPolicyEndDate(cd.getPolicyEndDate());
-							engine.setCoverModification("N");
+							engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 							engine.setVehicleId(cd.getRiskId().toString());		
 							EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
 							System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());

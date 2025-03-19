@@ -168,6 +168,7 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 				System.out.println("Oracle Main Quey : "+query);
 				System.out.println("**********************************************************");
 				List<String> asList = fromQuerytoList(query);
+				
 				Map<String, String> maps = fromListToMaps(asList);
 				
 				Map<String,String> avoidd=new HashMap<String,String>();
@@ -177,7 +178,7 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 					for (PremiaConfigDataMaster data : configData) {
 						
 						if(!"Y".equals(data.getDefaultYn())) {
-							Map<String, String> filterdmap=maps.entrySet().stream().filter(m-> data.getInputColumn().equals(m.getKey()) ).collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));  
+							Map<String, String> filterdmap=maps.entrySet().stream().filter(m-> data.getInputColumn().equalsIgnoreCase(m.getKey()) ).collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));  
 							// Map<String, String> filered = filterdmap.get(0);
 							 String queryvalue = filterdmap.get(data.getInputColumn());
 							 
@@ -833,10 +834,11 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		String companyId="";
 		String productId="";
 		HomePositionMaster home=null;
+		String status="";
 		//HomePositionMaster home = homeRepo.findByQuoteNo(request.getPolicyNo());
-		if(StringUtils.isBlank(request.getQuoteNo())) {
+		if (StringUtils.isBlank(request.getQuoteNo())) {
 			home = homeRepo.findByPolicyNo(request.getPolicyNo());
-		}else{
+		} else {
 			home = homeRepo.findByQuoteNo(request.getQuoteNo());
 		}
 		if (home != null) {
@@ -845,9 +847,10 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			reqRefNo = home.getRequestReferenceNo();
 			companyId = home.getCompanyId();
 			productId = home.getProductId().toString();
-		}
+			status=home.getStatus();
+		} 
 		CompanyProductMaster product = getCompanyProductMasterDropdown(companyId, productId);
-
+		if("P".equalsIgnoreCase(status)) {
 		List<PremiaConfigMaster> configMasterList = getPremiaConfigMaster(home.getCompanyId(), home.getProductId(),
 				request.getPremiaIds());
 
@@ -855,24 +858,22 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		param.add(quoteNo);
 		List<String> successList = new ArrayList<>();
 		Set<String> stickerNoList = new HashSet<>();
-		List<String> successOracleList=new  ArrayList<>();
-		List<String> failureOracleList=new  ArrayList<>();
-		
-		//Insert Data MySql
-		System.out.println("*********Inserting Data In MySql Started "+quoteNo+" "+formattedDateTime );
+		List<String> successOracleList = new ArrayList<>();
+		List<String> failureOracleList = new ArrayList<>();
+
+		// Insert Data MySql
+		System.out.println("*********Inserting Data In MySql Started " + quoteNo + " " + formattedDateTime);
 		List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(request.getQuoteNo());
 		if (risks != null) {
-			stickerNoList = risks.stream()
-		                        .map(SectionDataDetails::getStickerNumber)
-		                        .filter(Objects::nonNull) 
-		                        .collect(Collectors.toSet());
+			stickerNoList = risks.stream().map(SectionDataDetails::getStickerNumber).filter(Objects::nonNull)
+					.collect(Collectors.toSet());
 		}
-		
-		//TIRA233
-		if ("100002".equalsIgnoreCase(companyId)){
+
+		// TIRA233
+		if ("100002".equalsIgnoreCase(companyId) && "5".equalsIgnoreCase(productId)) {
 			if ((!stickerNoList.isEmpty() && stickerNoList.size() == home.getNoOfVehicles())) {
 				for (PremiaConfigMaster configMas : configMasterList) {
-					boolean push = push(configMas, param, quoteNo); 
+					boolean push = push(configMas, param, quoteNo);
 					if (push == true) {
 						response.setResponse("Success");
 						successList.add(configMas.getPremiaTableName());
@@ -881,7 +882,18 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 					}
 
 				}
-			} 
+			} else if (!"5".equalsIgnoreCase(productId) || !"46".equalsIgnoreCase(productId)) {
+				for (PremiaConfigMaster configMas : configMasterList) {
+					boolean push = push(configMas, param, quoteNo);
+					if (push == true) {
+						response.setResponse("Success");
+						successList.add(configMas.getPremiaTableName());
+					} else {
+						response.setResponse("Failed");
+					}
+
+				}
+			}
 //			else if (!stickerNoList.isEmpty() && (stickerNoList.size() != home.getNoOfVehicles())) {
 //				List<SectionDataDetails> risks1 = risks.stream()
 //						.filter(risk -> (!risk.getResponseStatusCode().equalsIgnoreCase("TIRA233"))
@@ -918,19 +930,19 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				home.setIntegrationError("Premia Failed Sticker Number is Null");
 				homeRepo.save(home);
 			}
-				
-		}else if((!"100002".equalsIgnoreCase(companyId)))  {
-			for (PremiaConfigMaster configMas :  configMasterList ) {
-				boolean push = push(configMas , param,quoteNo);
-				if(push ==true  ) {
-					response.setResponse("Success");	
+
+		} else if ((!"100002".equalsIgnoreCase(companyId))) {
+			for (PremiaConfigMaster configMas : configMasterList) {
+				boolean push = push(configMas, param, quoteNo);
+				if (push == true) {
+					response.setResponse("Success");
 					successList.add(configMas.getPremiaTableName());
 				} else {
 					response.setResponse("Failed");
-				} 
-				
+				}
+
 			}
-		}else {
+		} else {
 			response.setResponse("Premia Failed Sticker Number is Null");
 			System.out.println("Premia Failed Sticker Number is Null");
 			failureOracleList.add("Premia Failed Sticker Number is Null");
@@ -939,12 +951,19 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			home.setIntegrationError("Premia Failed Sticker Number is Null");
 			homeRepo.save(home);
 		}
-		
+
 		// Status of My Sql Data
-		String mySqlTable ="F";
-		if (("100002".equalsIgnoreCase(companyId))) {
+		String mySqlTable = "F";
+		if ("100002".equalsIgnoreCase(companyId)) {
 
 			if ((!stickerNoList.isEmpty() && stickerNoList.size() == home.getNoOfVehicles())) {
+				mySqlTable = updateIntegrationStatus(quoteNo, home, reqRefNo);
+				if (mySqlTable.equalsIgnoreCase("S")) {
+					response.setResponse("Success");
+				} else {
+					response.setResponse("Failed to Save in My Sql");
+				}
+			} else if (!"5".equalsIgnoreCase(productId) || !"46".equalsIgnoreCase(productId)) {
 				mySqlTable = updateIntegrationStatus(quoteNo, home, reqRefNo);
 				if (mySqlTable.equalsIgnoreCase("S")) {
 					response.setResponse("Success");
@@ -982,8 +1001,8 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				home.setIntegrationError("Premia Failed Sticker Number is Null");
 				homeRepo.save(home);
 			}
-				
-		}else if(! "100002".equalsIgnoreCase(companyId))  {
+
+		} else if (!"100002".equalsIgnoreCase(companyId)) {
 			mySqlTable = updateIntegrationStatus(quoteNo, home, reqRefNo);
 			if (mySqlTable.equalsIgnoreCase("S")) {
 				response.setResponse("Success");
@@ -993,18 +1012,18 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				System.out.println("Failed to Save in My Sql");
 			}
 		}
-		System.out.println("*********MySql Block Ended "+quoteNo+" "+formattedDateTime );
+		System.out.println("*********MySql Block Ended " + quoteNo + " " + formattedDateTime);
 		// Framing External Api
-		
-		System.out.println("Response from mySqlTable :"+mySqlTable);
-		System.out.println("*********Oracle Block started "+quoteNo+" "+formattedDateTime );
-		if(mySqlTable.equalsIgnoreCase("S")) {
-			
-			for (PremiaConfigMaster configMas :  configMasterList ) {
-				IntegrationSaveRes oraclpush =ewayMotorPremiaPush(policyNo, reqRefNo, configMas,home);
-				System.out.println("Response after oracle push "+oraclpush);
-				if("Connection refused".equalsIgnoreCase(oraclpush.getResponse())) {
-					
+
+		System.out.println("Response from mySqlTable :" + mySqlTable);
+		System.out.println("*********Oracle Block started " + quoteNo + " " + formattedDateTime);
+		if (mySqlTable.equalsIgnoreCase("S")) {
+
+			for (PremiaConfigMaster configMas : configMasterList) {
+				IntegrationSaveRes oraclpush = ewayMotorPremiaPush(policyNo, reqRefNo, configMas, home);
+				System.out.println("Response after oracle push " + oraclpush);
+				if ("Connection refused".equalsIgnoreCase(oraclpush.getResponse())) {
+
 					home.setCoreIntgStatus("Data Failed saved in  Oracle DB Connection refused");
 //					home.setIntegrationStatus("F");
 					home.setIntegrationError(oraclpush.getErrorMessage());
@@ -1014,69 +1033,68 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 					response.setResponse("Data Failed saved in  Oracle DB Connection refused");
 					failureOracleList.add("Data Failed saved in  Oracle DB Connection refused");
 					break;
-				}
-				else if("Success".equalsIgnoreCase(oraclpush.getResponse() ) ) {
-					response.setResponse("Success");	
+				} else if ("Success".equalsIgnoreCase(oraclpush.getResponse())) {
+					response.setResponse("Success");
 					successOracleList.add(configMas.getPremiaTableName());
 					home.setCoreIntgStatus("Data saved in  Oracle DB");
 //					home.setIntegrationStatus("S");
 					home.setIntegrationError("");
 					homeRepo.save(home);
 					System.out.println("--------Saved in Oracle");
-					
+
 				} else {
 					response.setResponse("Data Failed saved in  Oracle DB");
-					if(configMas.getPremiaId()==1||configMas.getPremiaId()==2
-							||configMas.getPremiaId()==3||configMas.getPremiaId()==5
-							||configMas.getPremiaId()==7||configMas.getPremiaId()==8
-							||configMas.getPremiaId()==9||configMas.getPremiaId()==10
-							||configMas.getPremiaId()==11) {
+					if (configMas.getPremiaId() == 1 || configMas.getPremiaId() == 2 || configMas.getPremiaId() == 3
+							|| configMas.getPremiaId() == 5 || configMas.getPremiaId() == 7
+							|| configMas.getPremiaId() == 8 || configMas.getPremiaId() == 9
+							|| configMas.getPremiaId() == 10 || configMas.getPremiaId() == 11) {
 						failureOracleList.add(configMas.getPremiaTableName());
 						home.setCoreIntgStatus("Data Failed saved in  Oracle DB");
 //						home.setIntegrationStatus("F");
 						home.setIntegrationError(oraclpush.getErrorMessage());
 						homeRepo.save(home);
-						System.out.println("-------Not Saved in Oracle "+failureOracleList);
-						
+						System.out.println("-------Not Saved in Oracle " + failureOracleList);
+
 					}
 				}
 			}
-			
-		}
-		System.out.println("*********Oracle Block Ended "+quoteNo+" "+formattedDateTime );
-		// Premia Posting Calling procedural call
-		System.out.println("*********Procedure Block Started "+quoteNo+" "+formattedDateTime );
-		if (failureOracleList.isEmpty()) {
-			if("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) {
-			System.out.println("*********Premia Integration Wecore Api Call:");
-			System.out.println("Policy No :" +policyNo+" Company Id :"+companyId);
-			IntegrationSaveRes list = frameReqService.premiaExternalCall(policyNo,companyId);
-			System.out.println("List " + json.toJson(list));
-//			IntegrationSaveRes status = frameReqService.updatePremiaExternalCallStatus(policyNo,companyId);
-			if (list.getResponse().equalsIgnoreCase("Failed")) {
-				
-				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ? "Data not Integrated"
-						: list.getPWsResponseType());
-//				home.setIntegrationStatus("F");
-				home.setIntegrationError(
-						StringUtils.isBlank(list.getPWsError()) ? list.getErrorMessage() : list.getPWsError());
-				homeRepo.save(home);
-				response.setResponse("Failed");
-			} else {
-				home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ?"Data Integrated"
-						: list.getPWsResponseType());
-//				home.setIntegrationStatus("S");
-				home.setIntegrationError(StringUtils.isBlank(list.getPWsError()) ? "" : list.getPWsError());
-				homeRepo.save(home);
-				response.setResponse(StringUtils.isBlank(list.getPWsResponseType()) ?"Data Integrated"
-						: list.getPWsResponseType());
-			}
 
-			System.out.println("List " + json.toJson(list));
-			System.out.println("_____________________________________________ ");
 		}
-		System.out.println("*********Procedure Block Ended "+quoteNo+" "+formattedDateTime );
+		System.out.println("*********Oracle Block Ended " + quoteNo + " " + formattedDateTime);
+		// Premia Posting Calling procedural call
+		System.out.println("*********Procedure Block Started " + quoteNo + " " + formattedDateTime);
+		if (failureOracleList.isEmpty()) {
+			if ("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) {
+				System.out.println("*********Premia Integration Wecore Api Call:");
+				System.out.println("Policy No :" + policyNo + " Company Id :" + companyId);
+				IntegrationSaveRes list = frameReqService.premiaExternalCall(policyNo, companyId);
+				System.out.println("List " + json.toJson(list));
+//				IntegrationSaveRes status = frameReqService.updatePremiaExternalCallStatus(policyNo,companyId);
+				if (list.getResponse().equalsIgnoreCase("Failed")) {
+
+					home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ? "Data not Integrated"
+							: list.getPWsResponseType());
+//					home.setIntegrationStatus("F");
+					home.setIntegrationError(
+							StringUtils.isBlank(list.getPWsError()) ? list.getErrorMessage() : list.getPWsError());
+					homeRepo.save(home);
+					response.setResponse("Failed");
+				} else {
+					home.setCoreIntgStatus(StringUtils.isBlank(list.getPWsResponseType()) ? "Data Integrated"
+							: list.getPWsResponseType());
+//					home.setIntegrationStatus("S");
+					home.setIntegrationError(StringUtils.isBlank(list.getPWsError()) ? "" : list.getPWsError());
+					homeRepo.save(home);
+					response.setResponse(StringUtils.isBlank(list.getPWsResponseType()) ? "Data Integrated"
+							: list.getPWsResponseType());
+				}
+
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+			}
+			System.out.println("*********Procedure Block Ended " + quoteNo + " " + formattedDateTime);
 		}
+	}
 		if ("100004".equalsIgnoreCase(companyId)) {
 			 SeqPiftTranId entity=new SeqPiftTranId();
 			 List<SeqPiftTranId> data=seqPiftTranIdRepo.findAllByOrderByTranIdDesc();
@@ -1158,9 +1176,9 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			Predicate n7 = cb.equal(c.get("productId"), "99999");
 			Predicate n8 = cb.or(n5,n7);
 			//In 
-//			Expression<String>e0= c.get("premiaId");
-//			Predicate n6 = e0.in(premiaIds);
-			query.where(n1,n2,n3,n4,n8).orderBy(orderList);
+			Expression<String>e0= c.get("premiaId");
+			Predicate n6 = e0.in(premiaIds);
+			query.where(n1,n2,n3,n4,n8,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
