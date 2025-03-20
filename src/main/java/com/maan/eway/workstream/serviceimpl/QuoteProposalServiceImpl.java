@@ -961,7 +961,7 @@ public class QuoteProposalServiceImpl implements QuoteProposalService {
 	    // Subquery to get the latest actionTakenOn for the Proposal
 	    Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
 	    Root<WorkflowTracking> subRoot = subquery.from(WorkflowTracking.class);
-	    subquery.select(cb.greatest(subRoot.get("actionTakenOn")));
+	    subquery.select(cb.greatest(subRoot.<LocalDateTime>get("actionTakenOn")));
 	    subquery.where(
 	            cb.equal(subRoot.get("companyId"), proposalRoot.get("companyId")),
 	            cb.equal(subRoot.get("productId"), proposalRoot.get("productId")),
@@ -1020,7 +1020,7 @@ public class QuoteProposalServiceImpl implements QuoteProposalService {
 	    // Subquery to get the latest actionTakenOn for the Proposal
 	    Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
 	    Root<WorkflowTracking> subRoot = subquery.from(WorkflowTracking.class);
-	    subquery.select(cb.greatest(subRoot.get("actionTakenOn")));
+	    subquery.select(cb.greatest(subRoot.<LocalDateTime>get("actionTakenOn")));
 	    subquery.where(
 	            cb.equal(subRoot.get("companyId"), proposalRoot.get("companyId")),
 	            cb.equal(subRoot.get("productId"), proposalRoot.get("productId")),
@@ -1092,7 +1092,7 @@ public class QuoteProposalServiceImpl implements QuoteProposalService {
 	    // Subquery to get the latest actionTakenOn for the Proposal
 	    Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
 	    Root<WorkflowTracking> subRoot = subquery.from(WorkflowTracking.class);
-	    subquery.select(cb.greatest(subRoot.get("actionTakenOn")));
+	    subquery.select(cb.greatest(subRoot.<LocalDateTime>get("actionTakenOn")));
 	    subquery.where(
 	            cb.equal(subRoot.get("companyId"), proposalRoot.get("companyId")),
 	            cb.equal(subRoot.get("productId"), proposalRoot.get("productId")),
@@ -1165,7 +1165,7 @@ public class QuoteProposalServiceImpl implements QuoteProposalService {
 	    // Subquery to get the latest actionTakenOn for the Proposal
 	    Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
 	    Root<WorkflowTracking> subRoot = subquery.from(WorkflowTracking.class);
-	    subquery.select(cb.greatest(subRoot.get("actionTakenOn")));
+	    subquery.select(cb.greatest(subRoot.<LocalDateTime>get("actionTakenOn")));
 	    subquery.where(
 	            cb.equal(subRoot.get("companyId"), proposalRoot.get("companyId")),
 	            cb.equal(subRoot.get("productId"), proposalRoot.get("productId")),
@@ -1230,7 +1230,7 @@ public class QuoteProposalServiceImpl implements QuoteProposalService {
 	    // Subquery to get the latest actionTakenOn for the Proposal
 	    Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
 	    Root<WorkflowTracking> subRoot = subquery.from(WorkflowTracking.class);
-	    subquery.select(cb.greatest(subRoot.get("actionTakenOn")));
+	    subquery.select(cb.greatest(subRoot.<LocalDateTime>get("actionTakenOn")));
 	    subquery.where(
 	            cb.equal(subRoot.get("companyId"), proposalRoot.get("companyId")),
 	            cb.equal(subRoot.get("productId"), proposalRoot.get("productId")),
