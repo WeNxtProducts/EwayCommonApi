@@ -309,15 +309,17 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					
 			// Find Datas
 			req.setSectionId(StringUtils.isNotBlank(req.getSectionId())?req.getSectionId():"0");
+			
 			Long factorCount = repository.countByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()), req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()));
 			List<FactorRateRequestDetails> coverIds =null;
+			List<Integer> coverList=req.getCoverList().stream().map(a->a.getCoverId()!=null?Integer.valueOf(a.getCoverId()):0).collect(Collectors.toList());
 			// Delete Old Datas
 			if( factorCount > 0 ) {
 				coverIds = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdOrderByCoverIdAsc(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId())
 						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()) );				
 				
 				repository.deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId())
-						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()) );
+						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()),coverList );
 			}
 			
 			// Save New Details

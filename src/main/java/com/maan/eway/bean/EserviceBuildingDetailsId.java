@@ -38,4 +38,7 @@ public class EserviceBuildingDetailsId implements Serializable {
     private String  sectionId; 
     
     private Integer    locationId ;
+    
+	private Integer coverId;
+
 }

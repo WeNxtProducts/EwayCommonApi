@@ -4048,7 +4048,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 							 if(!buildingdata.isEmpty()&&buildingdata.size()>0 && buildingdata!=null) {
 							List<EserviceBuildingDetails> building=buildingdata.stream()
 									.filter(o -> o.getLocationId().equals(data) && o.getSectionId().equals(s.getSectionId())
-											&& o.getRiskId().equals(s.getRiskId()))
+									&& o.getRiskId().equals(s.getRiskId())
+									&& o.getCoverId().toString().equals(s.getCoverId().toString())
+											)
 									.collect(Collectors.toList());
 							
 							for (EserviceBuildingDetails bd : building) {
@@ -4064,7 +4066,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									engine.setCreatedBy(bd.getCreatedBy());
 									engine.setRequestReferenceNo(bd.getRequestReferenceNo());
 									engine.setEffectiveDate(bd.getPolicyStartDate());
-									engine.setPolicyEndDate(bd.getPolicyEndDate());
+									
 									engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 									engine.setVehicleId(bd.getRiskId().toString());	
 									System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
@@ -4077,7 +4079,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 						 if(!comdata.isEmpty()&&comdata.size()>0 && comdata!=null) {
 						 List<EserviceCommonDetails> common=comdata.stream()
 								.filter(o -> o.getLocationId().equals(data) && o.getSectionId().equals(s.getSectionId())
-										&& o.getRiskId().equals(s.getRiskId()))
+										&& o.getRiskId().equals(s.getRiskId())
+										&&o.getCoverId().toString().equals(s.getCoverId().toString())
+										)
 								.collect(Collectors.toList());
 						for (EserviceCommonDetails cd : common) {
 							engine.setLocationId(cd.getLocationId().toString());
