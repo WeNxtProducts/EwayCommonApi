@@ -319,7 +319,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()) );				
 				
 				repository.deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId())
-						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()),coverList );
+						, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()) );
 			}
 			
 			// Save New Details
@@ -1436,7 +1436,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 				// Set Covers
 				List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
-						o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId())  && o.getLocationId().toString().equals(res.getLocationId()) ).collect(Collectors.toList());
+						o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId())  && o.getLocationId().toString().equals(res.getLocationId()) && Objects.equals(o.getCoverId(), res.getCoverId())).collect(Collectors.toList());
 				
 				Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 				List<Cover> coverListRes = 	getCoversList(groupByCover);
@@ -1965,6 +1965,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						   
 						EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
 						dozerMapper.map(buildData,res);
+						res.setCoverId(buildData.getCoverId());
 						res.setInsuranceId(buildData.getCompanyId());
 						res.setSectionId(filterData.get(0).getSectionId());
 						res.setVehicleId(buildData.getRiskId().toString());
