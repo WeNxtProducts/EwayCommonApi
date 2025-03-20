@@ -51,12 +51,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
 
-    @Id
+    //--- ENTITY DATA FIELDS 
+   // @Convert(converter = AttributeEncryptor.class)    
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer    productId ;
 
-    //--- ENTITY DATA FIELDS 
-   // @Convert(converter = AttributeEncryptor.class)
     @Column(name="CLIENT_NAME", length=100)
     private String     clientName ;
 

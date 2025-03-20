@@ -487,7 +487,7 @@ public class PhoenixEserviceCustomerDetails {
 				EserviceCustomerDetails findData = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());
 				entryDate = findData.getEntryDate();
 				createdBy = findData.getCreatedBy();
-				productId=findData.getProductId();
+				productId=req.getProductId()==null?findData.getProductId():Integer.parseInt(req.getProductId());
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(custRefNo);
 			}

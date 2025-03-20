@@ -32,8 +32,5 @@ public class EserviceCustomerDetailsId implements Serializable {
     private String     customerReferenceNo ;
     
     private String     companyId ;
-    
-    private Integer    productId ;
-    
      
 }
