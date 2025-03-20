@@ -14,6 +14,10 @@ public class LoginBranchCriteriaRes {
 	@JsonProperty("BranchCode")
 	private String branchCode ;
 	
+	@JsonProperty("BelongingBranch")
+	private String belongingBranch ;
+	
+	
 	@JsonProperty("RegionCode")
 	private String regionCode ;
 	
@@ -43,4 +47,9 @@ public class LoginBranchCriteriaRes {
 	@JsonProperty("CustomerCode")
 	private String customerCode;  
 	*/
+	@JsonProperty("OriginationCountryId")
+	private Long originationCountryId ;
+	
+	@JsonProperty("DestinationCountryId")
+	private Long destinationCountryId ;
 }

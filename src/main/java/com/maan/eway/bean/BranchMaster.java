@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import jakarta.persistence.Table;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -162,6 +161,15 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="ADDRESS2_LOCAL", length=100)
     private String    address2Local;
+    
+    @Column(name="BELONGING_BRANCH", length=100)
+    private String     belongingBranch;
+    
+    @Column(name="ORIGINATION_COUNTRY_ID", length=100)
+    private Long     originationCountryId;
+    
+    @Column(name="DESTINATION_COUNTRY_ID", length=100)
+    private Long     destinationCountryId;
     
     
 }
