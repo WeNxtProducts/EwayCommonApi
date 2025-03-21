@@ -609,19 +609,19 @@ public class CopyBuildingRaw {
 			}
 			List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D");
 			
-			List<EserviceSectionDetails> filteredSectionList = oldSecDatas.stream()
-				    .filter(m -> secList.stream()
-				        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
-				                        && m.getLocationId().equals(risk.getLocationId())
-				                        && m.getSectionId().equals(risk.getSectionId())
-				        		))
-				    .collect(Collectors.toList());
+//			List<EserviceSectionDetails> filteredSectionList = oldSecDatas.stream()
+//				    .filter(m -> secList.stream()
+//				        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
+//				                        && m.getLocationId().equals(risk.getLocationId())
+//				                        && m.getSectionId().equals(risk.getSectionId())
+//				        		))
+//				    .collect(Collectors.toList());
 			
 			List<String> secListSave = new ArrayList<String>();
 			List<EserviceSectionDetails> secListSave1 = new ArrayList<EserviceSectionDetails>();
-			if (filteredSectionList != null && filteredSectionList.size()>0 ) {
+			if (secList != null && secList.size()>0 ) {
 			 
-			for (EserviceSectionDetails section : filteredSectionList) {
+			for (SectionDataDetails section : secList) {
 				EserviceSectionDetails secData = new EserviceSectionDetails();
 			
 				dozerMapper.map(section, secData);
