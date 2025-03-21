@@ -88,7 +88,7 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			for (ProductSectionMaster data : filteredSectionList) {
 				DropdownResponse dropres = new DropdownResponse();
 				dropres.setCode(data.getSectionId().toString());
-				dropres.setCodeDesc(StringUtils.isBlank(data.getSectionNameLocal()) ? "" : data.getSectionNameLocal());
+				dropres.setCodeDesc(StringUtils.isBlank(data.getSectionName()) ? "" : data.getSectionName());
 				unOpdropList.add(dropres);
 			}
 			List<DropdownResponse> opdropList = new ArrayList<DropdownResponse>();
