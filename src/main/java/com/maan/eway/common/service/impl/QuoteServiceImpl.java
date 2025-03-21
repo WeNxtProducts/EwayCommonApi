@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.BrokerCommissionDetails;
-import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
@@ -60,13 +59,13 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataIndividuals;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.bean.UWRefferralHistory;
-import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.ChangeFinalyzereq;
 import com.maan.eway.common.req.CoverIdsReq;
@@ -137,16 +136,17 @@ import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.ProductMasterRepository;
+import com.maan.eway.repository.ProductSectionMasterRepository;
+import com.maan.eway.repository.SectionCoverMasterRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.repository.UWReferralHistoryRepository;
-import com.maan.eway.repository.ProductSectionMasterRepository;
-import com.maan.eway.repository.SectionCoverMasterRepository;
 import com.maan.eway.res.BuildingSumInsuredDetails;
 import com.maan.eway.res.CommonSumInsuredDetails;
 import com.maan.eway.res.CoverRes;
+import com.maan.eway.res.EndorsmentRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.GetEmployeeCountRes;
 import com.maan.eway.res.GroupSuminsuredDetailsRes;
@@ -560,7 +560,7 @@ public class QuoteServiceImpl implements QuoteService {
 				
 				Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 				
-				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+				List<CoverRes>  coverListRes = getCoverDetails(groupByCover, covers);
 				BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscount()!=null ).map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
 				BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscountLC()!=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
 				BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscount()!=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
@@ -683,7 +683,7 @@ public class QuoteServiceImpl implements QuoteService {
 					
 					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 					
-					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+					List<CoverRes>  coverListRes = getCoverDetails(groupByCover, covers);
 					BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscount()!=null ).map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
 					BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscountLC()!=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
 					BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscount()!=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
@@ -1227,7 +1227,7 @@ public class QuoteServiceImpl implements QuoteService {
 					if( filterCovers.size() > 0 ) {
 						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 						
-							List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+							List<CoverRes>  coverListRes = getCoverDetails(groupByCover, covers);
 
 							BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscount()!=null ) .map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
 							BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscountLC()!=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
@@ -1267,7 +1267,7 @@ public class QuoteServiceImpl implements QuoteService {
 					
 					contentType=StringUtil.isBlank(bulData.get(0).getContentId()) || bulData.get(0).getContentId()==null ?"":bulData.get(0).getContentId();
 					contentDesc=StringUtil.isBlank(bulData.get(0).getContentDesc()) || bulData.get(0).getContentDesc()==null?"":bulData.get(0).getContentDesc();
-					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+					List<CoverRes>  coverListRes = getCoverDetails(groupByCover, covers);
 					// Build
 //				/	SectionDetails buildSec = new SectionDetails(); 
 					BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
@@ -1338,13 +1338,14 @@ public class QuoteServiceImpl implements QuoteService {
 		return viewRes;
 	}
 	
-	public List<CoverRes> getCoverDetails(Map<Integer,List<PolicyCoverData>> groupByCover  ) {
+	public List<CoverRes> getCoverDetails(Map<Integer,List<PolicyCoverData>> groupByCover, List<PolicyCoverData> covers ) {
 		List<CoverRes>  coverListRes = new ArrayList<CoverRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			for ( Integer coverId : groupByCover.keySet() ) {
 				List<PolicyCoverData>  coverGroups  = groupByCover.get(coverId);
 				CoverRes coverRes = new CoverRes();
+				
 				
 				if (coverGroups.get(0).getSubCoverYn().equalsIgnoreCase("N") ) {
 					// Get Covers
@@ -1372,6 +1373,30 @@ public class QuoteServiceImpl implements QuoteService {
 					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
 					coverRes.setCoverageLimit(filterCover.get(0).getCoverageLimit()==null ? "" :filterCover.get(0).getCoverageLimit().toPlainString());
 					
+					List<PolicyCoverData> endCoverData = covers.stream()
+							.filter(a -> a.getCoverId().equals(coverId) && a.getCoverageType().equalsIgnoreCase("E"))
+							.collect(Collectors.toList());
+					if (endCoverData != null && !endCoverData.isEmpty()){
+						EndorsmentRes endorsmentRes = new EndorsmentRes();
+						endorsmentRes = dozerMapper.map(endCoverData.get(0), EndorsmentRes.class);
+						endorsmentRes.setPremiumAfterDiscount(endCoverData.get(0).getPremiumAfterDiscountFc());
+						endorsmentRes.setPremiumBeforeDiscount(endCoverData.get(0).getPremiumBeforeDiscountFc());
+						endorsmentRes.setPremiumExcluedTax(endCoverData.get(0).getPremiumExcludedTaxFc());
+						endorsmentRes.setPremiumIncludedTax(endCoverData.get(0).getPremiumIncludedTaxFc());
+						endorsmentRes.setPremiumAfterDiscountLC(endCoverData.get(0).getPremiumAfterDiscountLc());
+						endorsmentRes.setPremiumBeforeDiscountLC(endCoverData.get(0).getPremiumBeforeDiscountLc());
+						endorsmentRes.setPremiumExcluedTaxLC(endCoverData.get(0).getPremiumExcludedTaxLc());
+						endorsmentRes.setPremiumIncludedTaxLC(endCoverData.get(0).getPremiumIncludedTaxLc());
+						endorsmentRes.setCoverageType(endCoverData.get(0).getCoverageType());
+						endorsmentRes.setCalcType(endCoverData.get(0).getCalcType());
+						endorsmentRes.setExcessAmount(endCoverData.get(0).getExcessAmount() == null ? ""
+								: endCoverData.get(0).getExcessAmount().toPlainString());
+						endorsmentRes.setExcessPercent(endCoverData.get(0).getExcessPercent() == null ? ""
+								: endCoverData.get(0).getExcessPercent().toPlainString());
+						endorsmentRes.setCoverageLimit(endCoverData.get(0).getCoverageLimit() == null ? ""
+								: endCoverData.get(0).getCoverageLimit().toPlainString());
+						coverRes.setEndorsmentRes(endorsmentRes);
+					}
 //					// Discount Covers Or Promo Covers
 //					List<PolicyCoverData> filterDiscountCover = coverGroups.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 //					
@@ -1448,6 +1473,7 @@ public class QuoteServiceImpl implements QuoteService {
 						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
 						coverRes.setCoverageLimit(filterCover.get(0).getCoverageLimit()==null ? "" :filterCover.get(0).getCoverageLimit().toPlainString());
+						
 //						// Discount Covers Or Promo Covers
 //						List<PolicyCoverData> filterDiscountCover = coverGroups.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") )  ).collect(Collectors.toList());
 //						
@@ -1625,7 +1651,7 @@ public class QuoteServiceImpl implements QuoteService {
 					
 					if( filterCovers.size() > 0 ) {
 						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));
-						coverListRes = getCoverDetails(groupByCover);
+						coverListRes = getCoverDetails(groupByCover, covers);
 						PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
 						PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
 						PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
@@ -1770,7 +1796,7 @@ public class QuoteServiceImpl implements QuoteService {
 					if (filterCovers.size() > 0) {
 						Map<Integer, List<PolicyCoverData>> groupByCover = filterCovers.stream()
 								.collect(Collectors.groupingBy(PolicyCoverData::getCoverId));
-						coverListRes = getCoverDetails(groupByCover);
+						coverListRes = getCoverDetails(groupByCover, covers);
 						PremiumAfterDiscount = (coverListRes.stream().map(CoverRes::getPremiumAfterDiscount)
 								.reduce((x, y) -> x.add(y)).get());
 						PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes::getPremiumAfterDiscountLC)
@@ -1861,7 +1887,7 @@ public class QuoteServiceImpl implements QuoteService {
 				
 				Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 				
-				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+				List<CoverRes>  coverListRes = getCoverDetails(groupByCover, covers);
 				BigDecimal PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
 				BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
 				BigDecimal PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
@@ -1981,7 +2007,7 @@ public class QuoteServiceImpl implements QuoteService {
 						
 						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 						
-						List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+						List<CoverRes>  coverListRes = getCoverDetails(groupByCover, covers);
 						BigDecimal PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
 						BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
 						BigDecimal PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
