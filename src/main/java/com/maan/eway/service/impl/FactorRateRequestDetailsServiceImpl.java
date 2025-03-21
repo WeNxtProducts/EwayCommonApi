@@ -6,13 +6,11 @@
 package com.maan.eway.service.impl;
 
 import java.math.BigDecimal;
-
 import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -81,7 +79,6 @@ import com.maan.eway.common.res.EwayFactorResultRes;
 import com.maan.eway.common.res.FdFactorCalcRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.SectionCoverMasterGetReq;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -2633,7 +2630,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			String endtPrevQuoteNo="";
 			String originalPolicyNo="";
 			BigDecimal endtCount=BigDecimal.ZERO;
-			CalcEngine engine= new CalcEngine();
+			List<CalcEngine> engineList =new ArrayList<>();
+			
 			
 			// delete unselected cover block start
 			String companyId =req.getCompanyId();
@@ -2644,7 +2642,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			{
 				for(SectionDetailsReq sectiondetails :loctondetails.getSectiondetails())
 				{
-					
+					CalcEngine engine= new CalcEngine();
 					Integer sectionId =Integer.valueOf(sectiondetails.getSectionId());
 					Integer vehicleId =sectiondetails.getVehicleId();
 					Integer LocationId=Integer.valueOf(loctondetails.getLocationId());
@@ -2985,36 +2983,43 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						
 						
 					}
+					engineList.add(engine);
 				}
 			}
 
 		
-			Gson json = new Gson();
-			log.info( "Referral Calc Request --> " +  json.toJson(engine) );
-			
 			EserviceMotorDetailsSaveRes resp=null;
-			if(StringUtils.isBlank(endtTypdId)) {
-				resp=calcEngine.referalCalculator(engine);
-			}else {
-				
-					EndtTypeMaster endt=ratingutil.getEndtMasterData(engine.getInsuranceId(), engine.getProductId(),endtTypdId);
+			Gson json = new Gson();
+			
+			
+			for (CalcEngine engine : engineList) {
+				log.info("Referral Calc Request --> " + json.toJson(engine));
+				if (StringUtils.isBlank(endtTypdId)) {
+					resp = calcEngine.referalCalculator(engine);
+				} else {
+
+					EndtTypeMaster endt = ratingutil.getEndtMasterData(engine.getInsuranceId(), engine.getProductId(),
+							endtTypdId);
 					engine.setCoverModification(endt.getIsCoverendt());
 					List<PolicyCoverData> oldPolicyCovers = coverDataRepo
 							.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusOrderByCoverIdAsc(
 									endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
-									Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
-					
-					Boolean isPolicyDateEndt=((oldPolicyCovers.size()>0)? findCovers.get(0).getCoverPeriodTo().after(oldPolicyCovers.get(0).getCoverPeriodTo()):false);
-				
-				//	synchronized (engine) {
-						calcEngine.loadOnetimetable(engine);
-						 
-					resp=calcEngine.endorsementCalculator(engine,endtCount,endtTypdId,isPolicyDateEndt);
-				//}
-				
+									Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()),
+									"Y");
+
+					Boolean isPolicyDateEndt = ((oldPolicyCovers.size() > 0)
+							? findCovers.get(0).getCoverPeriodTo().after(oldPolicyCovers.get(0).getCoverPeriodTo())
+							: false);
+
+					// synchronized (engine) {
+					calcEngine.loadOnetimetable(engine);
+
+					resp = calcEngine.endorsementCalculator(engine, endtCount, endtTypdId, isPolicyDateEndt);
+					// }
+
+				}
+
 			}
-			 
-		
 			 
 			// Update Referral Details 
 			if(StringUtils.isNotBlank(req.getAdminLoginId())) {

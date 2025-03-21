@@ -87,6 +87,9 @@ public class CoverRes {
 	 
 	 @JsonProperty("CoverageLimit") 
 	 private String coverageLimit;
+	 
+	 @JsonProperty("endorsmentRes") 
+	 private EndorsmentRes endorsmentRes;
 	
 	
 }
