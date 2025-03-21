@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -59,6 +60,7 @@ import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GridServiceImpl;
 import com.maan.eway.common.service.impl.PaymentServiceImpl;
+import com.maan.eway.endorsment.request.EndRequest;
 import com.maan.eway.endorsment.request.EndorsementType;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.endorsment.request.EndtMaster;
@@ -1491,8 +1493,34 @@ public class EndorsementService {
 		}
 		return error;
 	}
-	
-	
+
+	public CommonRes updateAdditionalInfo(EndRequest request) {
+		try {
+
+			// Document Copy
+			List<DocumentTransactionDetails> response=copyBuildingraw.coverDocumentUploadDetailsEndoCopyquote(request);
+
+//			// Human Additional info
+//			copyBuildingraw.productEmpDetailsEndoCopyquote(request);
+//
+//			// Content copy
+//			copyBuildingraw.contentAndRiskEndoCopyquote(request);
+//
+//			// Building Details copy
+//			copyBuildingraw.buildingDetailsEndoCopyquote(request);
+			
+			CommonRes com=new CommonRes();
+			com.setCommonResponse(response);
+			com.setErroCode(0);
+			com.setIsError(false);
+			com.setMessage("Success");
+			return com;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }
 
