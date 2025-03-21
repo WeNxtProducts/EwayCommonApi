@@ -75,5 +75,7 @@ public interface EServiceSectionDetailsRepository  extends JpaRepository<Eservic
 	List<EserviceSectionDetails> findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(String previousRequestReferenceNo,
 			String string);
 	
+	EserviceSectionDetails findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationIdAndCoverId(String requestReferenceNo,
+			Integer vehicleId, String sectionId, Integer locationId, Integer coverId);
 
 }

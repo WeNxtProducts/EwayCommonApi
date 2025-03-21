@@ -80,6 +80,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="LOCATION_ID", nullable=false)
     private Integer    locationId ;
+    
+    @Id
+    @Column(name = "COVER_ID")
+	private Integer coverId;
 
      //--- ENTITY DATA FIELDS 
     @Column(name="PRODUCT_ID", length=20)
@@ -843,9 +847,6 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="SUM_INSURED_LC")
  	  private BigDecimal sumInsuredLc;
-      
-      @Column(name = "COVER_ID")
-  	private Integer coverId;
       
       @Column(name = "NO_OF_CLAIM")
       private Integer noOfClaim;
