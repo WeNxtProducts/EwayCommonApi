@@ -83,10 +83,12 @@ import com.maan.eway.common.res.EndtUpdatePremiumRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
+import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.endorsment.util.CoverFromPolicy;
 import com.maan.eway.endorsment.util.CreateEndorsment;
 import com.maan.eway.endorsment.util.DiscountFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
+import com.maan.eway.error.Error;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
@@ -4021,10 +4023,20 @@ public class CalculatorEngineService implements CalculatorEngine {
 					engine.setEffectiveDate(data.getPolicyStartDate());
 					engine.setPolicyEndDate(data.getPolicyEndDate());
 					engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
-					engine.setVehicleId(data.getRiskId().toString());		
-					EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
-					System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
-					resList.add(res);
+					engine.setVehicleId(data.getRiskId().toString());	
+					List<Error> error=validateEngine(engine);
+					EserviceMotorDetailsSaveRes res= new EserviceMotorDetailsSaveRes();
+					if (error.size() < 0 || !error.isEmpty()) {
+						res = calculator(engine, token);
+						System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
+						res.setErrorMessage(null);
+						resList.add(res);
+					}else {
+						res.setErrorMessage(error);
+						resList.add(res);
+						return resList;
+					}
+										
 				}
 			}else {
 			
@@ -4051,7 +4063,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									.filter(o -> o.getLocationId().equals(data) && o.getSectionId().equals(s.getSectionId())
 											&& o.getRiskId().equals(s.getRiskId()))
 									.collect(Collectors.toList());
-							
+							if(!building.isEmpty()) {
 							for (EserviceBuildingDetails bd : building) {
 								
 									engine.setLocationId(bd.getLocationId().toString());
@@ -4068,10 +4080,21 @@ public class CalculatorEngineService implements CalculatorEngine {
 									engine.setPolicyEndDate(bd.getPolicyEndDate());
 									engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 									engine.setVehicleId(bd.getRiskId().toString());	
-									System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
-									EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
-									resList.add(res);
+									
+									List<Error> error=validateEngine(engine);
+									EserviceMotorDetailsSaveRes res= new EserviceMotorDetailsSaveRes();
+									if (error.size() < 0 || !error.isEmpty()) {
+										res = calculator(engine, token);
+										System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
+										res.setErrorMessage(null);
+										resList.add(res);
+									}else {
+										res.setErrorMessage(error);
+										resList.add(res);
+										return resList;
 									}
+									}
+							 }
 							}
 					 }else  if("H".equalsIgnoreCase(s.getProductType())) {
 						 List<EserviceCommonDetails> comdata = eservicecommonRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo(),data);
@@ -4094,10 +4117,20 @@ public class CalculatorEngineService implements CalculatorEngine {
 							engine.setEffectiveDate(cd.getPolicyStartDate());
 							engine.setPolicyEndDate(cd.getPolicyEndDate());
 							engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
-							engine.setVehicleId(cd.getRiskId().toString());		
-							EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
-							System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
-							resList.add(res);
+							engine.setVehicleId(cd.getRiskId().toString());
+							List<Error> error=validateEngine(engine);
+							EserviceMotorDetailsSaveRes res= new EserviceMotorDetailsSaveRes();
+							if (error.size() < 0 || !error.isEmpty()) {
+								res = calculator(engine, token);
+								System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
+								res.setErrorMessage(null);
+								resList.add(res);
+							}else {
+								res.setErrorMessage(error);
+								resList.add(res);
+								return resList;
+							}
+						
 						}
 					 }
 					}
@@ -4114,5 +4147,57 @@ public class CalculatorEngineService implements CalculatorEngine {
 		}
 
 		return resList;
+	}
+	
+	public List<Error> validateEngine(CalcEngine engine) {
+		List<Error> error = new ArrayList<Error>();
+
+		try {
+
+			// Null validation after setting the values
+			if (engine.getLocationId() == null || engine.getLocationId().isEmpty()) {
+				error.add(new Error("01", "Location Id", "Location Id Is Null"));
+			}else
+
+			if (engine.getBranchCode() == null) {
+				error.add(new Error("02", "Branch Code", "Branch Code Is Null"));
+			}else
+
+			if (engine.getInsuranceId() == null) {
+				error.add(new Error("03", "Insurance Id", "Insurance Id Is Null"));
+			}else
+
+			if (engine.getSectionId() == null) {
+				error.add(new Error("04", "Section Id", "Section Id Is Null"));
+			}else
+
+			if (engine.getProductId() == null) {
+				error.add(new Error("05", "Product Id", "Section Id Is Null"));
+			}else
+
+			if (engine.getMsrefno() == null || engine.getMsrefno().isEmpty()) {
+				error.add(new Error("06", "Ms Refno", "Ms Refno Is Null"));
+			}else
+
+			if (engine.getCdRefNo() == null || engine.getCdRefNo().isEmpty()) {
+				error.add(new Error("07", "CdRefNo", "CdRefNo Is Null"));
+			}else
+
+			if (engine.getVdRefNo() == null || engine.getVdRefNo().isEmpty()) {
+				error.add(new Error("08", "VdRefNo", "VdRefNo Id Is Null"));
+			}else
+
+			if (engine.getVehicleId() == null || engine.getVehicleId().isEmpty()) {
+				error.add(new Error("09", "VehicleId", "VehicleId Is Null"));
+			}
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			error.add(new Error("01", "CommonError", e.getMessage() ));
+			return null;
+		}
+		return error;
 	}
 }
