@@ -496,7 +496,7 @@ import jakarta.persistence.criteria.Subquery;
 					
 					for(EserviceBuildingDetails data:list) {
 					save = dozermapper.map(data, EserviceBuildingDetails.class);
-					save.setEmiYn("Y");
+					save.setEmiYn(status);
 					save.setInstallmentPeriod(StringUtils.isBlank(installmentPeriod)?null:Integer.valueOf(installmentPeriod));
 					save.setNoOfInstallment(StringUtils.isBlank(noOFIns)?null:Integer.valueOf(noOFIns));
 					save.setEmiPremium(adv);
