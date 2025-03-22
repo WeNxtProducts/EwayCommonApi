@@ -44,8 +44,8 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					//.coverToolTip(t.get ==null?"":t.get("toolTip").toString())
 					.isSubCover( t.getSubCoverYn()==null?"N":t.getSubCoverYn())
 					.sumInsuredLc(BigDecimal.ZERO)
-					.sumInsured(BigDecimal.ZERO)
-					
+					//.sumInsured(BigDecimal.ZERO)
+					.sumInsured(t.getSumInsured())
 					.rate(t.getRate()==null?0D: t.getRate().doubleValue() )
 					.subCoverId( (t.getSubCoverId()==null || "N".equals(subc) )?null:t.getSubCoverId().toString())
 					.subCoverDesc("Y".equals(subc)?(t.getSubCoverDesc()==null?"":t.getSubCoverDesc()):null)
