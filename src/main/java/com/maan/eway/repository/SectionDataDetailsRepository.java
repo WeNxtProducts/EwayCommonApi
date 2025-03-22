@@ -60,4 +60,11 @@ public interface SectionDataDetailsRepository  extends JpaRepository<SectionData
 	List<SectionDataDetails> findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(String previousRequestReferenceNo,
 			String string);
 
+	List<SectionDataDetails> findByRequestReferenceNoOrderByLocationIdAsc(String requestReferenceNo);
+
+	List<SectionDataDetails> findByRequestReferenceNoAndSectionIdOrderByLocationIdAsc(String prevPolicyNo,
+			String sectionId);
+
+	List<SectionDataDetails> findByPolicyNoOrderByLocationIdAsc(String prevPolicyNo);
+
 }

@@ -9,6 +9,9 @@ public class LoginBranchDetailsRes {
 	@JsonProperty("BranchCode")
 	private String branchCode ;
 	
+	@JsonProperty("BelongingBranch")
+	private String belongingBranch ;
+	
 	@JsonProperty("BrokerBranchCode")
 	private String brokerBranchCode ;
 	
@@ -74,5 +77,11 @@ public class LoginBranchDetailsRes {
 //	
 //	@JsonProperty("CustomerName")
 //	private String customerName ;
+	
+	@JsonProperty("OriginationCountryId")
+	private String originationCountryId ;
+	
+	@JsonProperty("DestinationCountryId")
+	private String destinationCountryId ;
 	
 }

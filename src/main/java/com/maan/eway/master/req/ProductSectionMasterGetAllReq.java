@@ -18,16 +18,5 @@ public class ProductSectionMasterGetAllReq implements Serializable {
     
     @JsonProperty("InsuranceId")
     private String insuranceId;
-    
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
-    
-    @JsonFormat(pattern ="dd/MM/yyyy")
-    @JsonProperty("EffectiveDateStart")
-    private Date effectiveDateStart;
-
   
 }

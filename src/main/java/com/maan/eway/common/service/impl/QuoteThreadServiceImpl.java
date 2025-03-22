@@ -375,8 +375,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				
 			    // Retrieve customer details using the composite key
 				EserviceCustomerDetailsId customerid = new EserviceCustomerDetailsId(
-						sectionDetails.getCustomerReferenceNo(), sectionDetails.getCompanyId(), 
-						Integer.valueOf(sectionDetails.getProductId()));
+						sectionDetails.getCustomerReferenceNo(), sectionDetails.getCompanyId());
 				
 				Optional<EserviceCustomerDetails> optCustomer = eserCustRepo.findById(customerid);
 				if(optCustomer.isPresent()){

@@ -178,6 +178,9 @@ private static final long serialVersionUID = 1L;
 	
 	@Column(name = "CAN_ESCALATE")
 	private Boolean canEscalate;
+	
+	@Column(name = "open_cover_no")
+	private String opencoverno;
     
 }
 

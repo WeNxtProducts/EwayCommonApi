@@ -853,7 +853,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		if("P".equalsIgnoreCase(status)) {
 		List<PremiaConfigMaster> configMasterList = getPremiaConfigMaster(home.getCompanyId(), home.getProductId(),
 				request.getPremiaIds());
-
+		if(configMasterList.size()>0 && configMasterList !=null && !configMasterList.isEmpty()	) {
 		List<String> param = new ArrayList<String>();
 		param.add(quoteNo);
 		List<String> successList = new ArrayList<>();
@@ -870,7 +870,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		}
 
 		// TIRA233
-		if ("100002".equalsIgnoreCase(companyId) && "5".equalsIgnoreCase(productId)) {
+		if ("100002".equalsIgnoreCase(companyId)) {
 			if ((!stickerNoList.isEmpty() && stickerNoList.size() == home.getNoOfVehicles())) {
 				for (PremiaConfigMaster configMas : configMasterList) {
 					boolean push = push(configMas, param, quoteNo);
@@ -1094,6 +1094,9 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			}
 			System.out.println("*********Procedure Block Ended " + quoteNo + " " + formattedDateTime);
 		}
+		}else {
+			response.setResponse("Premia Not Available");
+		}
 	}
 		if ("100004".equalsIgnoreCase(companyId)) {
 			 SeqPiftTranId entity=new SeqPiftTranId();
@@ -1173,18 +1176,20 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), insuraceId);
 			Predicate n5 = cb.equal(c.get("productId"), productId);
-			Predicate n7 = cb.equal(c.get("productId"), "99999");
-			Predicate n8 = cb.or(n5,n7);
+			Predicate n10 = cb.equal(c.get("status"), "Y");
+//			Predicate n7 = cb.equal(c.get("productId"), "99999");
+//			Predicate n8 = cb.or(n5,n7);
 			//In 
-			Expression<String>e0= c.get("premiaId");
-			Predicate n6 = e0.in(premiaIds);
-			query.where(n1,n2,n3,n4,n8,n6).orderBy(orderList);
+//			Expression<String>e0= c.get("premiaId");
+//			Predicate n6 = e0.in(premiaIds);
+			query.where(n1,n2,n3,n4,n5,n10).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			
+			if(list.size()>0) {
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPremiaId()))).collect(Collectors.toList());
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();

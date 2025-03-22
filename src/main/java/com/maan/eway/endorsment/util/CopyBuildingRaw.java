@@ -55,6 +55,7 @@ import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.common.service.impl.BuildingGridServiceImpl;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
+import com.maan.eway.endorsment.request.EndRequest;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.endorsment.service.EndorsementService;
 import com.maan.eway.repository.BuildingDetailsRepository;
@@ -145,9 +146,9 @@ public class CopyBuildingRaw {
 			// Personal Accident Copy
 			String res = copyPersonalAccident (riskRes.getRequestReferenceNo() ,	riskRes.getOldRequestReferenceNo() ,sectionIds ,  riskRes ,request  ) ;
 			
-			//Document Copy
-			coverDocumentUploadDetailsEndoCopyquote(riskRes);
-			
+//			//Document Copy
+//			coverDocumentUploadDetailsEndoCopyquote(riskRes);
+//			
 			//Human Additional info
 			productEmpDetailsEndoCopyquote(riskRes);
 			
@@ -169,7 +170,7 @@ public class CopyBuildingRaw {
 		return null;
 	}
 	
-	private  void buildingDetailsEndoCopyquote(BuildingCopyRes riskRes) {
+	public  void buildingDetailsEndoCopyquote(BuildingCopyRes riskRes) {
 		List<BuildingDetails> savelist = new ArrayList<BuildingDetails>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -196,7 +197,6 @@ public class CopyBuildingRaw {
 					savedata.setEndtPrevQuoteNo(riskRes.getEndtPrevQuoteNo());
 					savedata.setEndtCount(riskRes.getEndtCount());
 					savedata.setEndtStatus("P");
-					savedata.setIsFinaceYn(riskRes.getIsFinanceYn());
 					savedata.setEndtCategDesc(riskRes.getEndtCategoryDesc());
 					savedata.setEndorsementType(null);
 					savedata.setEndorsementTypeDesc(riskRes.getEndTypeDesc());
@@ -217,14 +217,14 @@ public class CopyBuildingRaw {
 	}
 
 	
-	private void coverDocumentUploadDetailsEndoCopyquote(BuildingCopyRes riskRes) {
+	public List<DocumentTransactionDetails> coverDocumentUploadDetailsEndoCopyquote(EndRequest req) {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		List<DocumentTransactionDetails> saveList = new ArrayList<DocumentTransactionDetails>();
 		try {
-			List<DocumentTransactionDetails> motorData = coverDocUploadDetails.findByQuoteNo(riskRes.getEndtPrevQuoteNo());
+			List<DocumentTransactionDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getEndtPrevQuoteNo());
 			
 			List<DocumentTransactionDetails> coverDocList =null;
-			coverDocList=coverDocUploadDetails.findByRequestReferenceNo(riskRes.getRequestReferenceNo());
+			coverDocList=coverDocUploadDetails.findByRequestReferenceNo(req.getRequestReferenceNo());
 			if (coverDocList.size() > 0) {
 				coverDocUploadDetails.deleteAll(coverDocList);
 			}
@@ -232,25 +232,25 @@ public class CopyBuildingRaw {
 				for (DocumentTransactionDetails data : motorData) {
 					DocumentTransactionDetails savedata = new DocumentTransactionDetails();
 					savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
-					savedata.setRequestReferenceNo(riskRes.getRequestReferenceNo());
-					savedata.setQuoteNo(null);
+					savedata.setRequestReferenceNo(req.getRequestReferenceNo());
+					savedata.setQuoteNo(req.getQuoteNo()); 
 					savedata.setEntryDate(new Date());
-					savedata.setCreatedBy(riskRes.getCreatedBy());
-					savedata.setOriginalPolicyNo(riskRes.getOriginalPolicyNo());
+					savedata.setCreatedBy(req.getCreatedBy());
+					savedata.setOriginalPolicyNo(req.getOriginalPolicyNo());
 					savedata.setEndorsementDate(new Date());
-					savedata.setEndorsementRemarks(riskRes.getEndtCategoryDesc());
-					savedata.setEndorsementEffdate(null);
-					savedata.setEndtPrevPolicyNo(riskRes.getEndtPrevPolicyNo());
-					savedata.setEndtPrevQuoteNo(riskRes.getEndtPrevQuoteNo());
-					savedata.setEndtCount(riskRes.getEndtCount());
+					savedata.setEndorsementRemarks(req.getEndorsementRemarks());
+					savedata.setEndorsementEffdate(req.getEndorsementEffdate());
+					savedata.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
+					savedata.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+					savedata.setEndtCount(req.getEndtCount());
 					savedata.setEndtStatus("P");
-					savedata.setIsFinaceYn(riskRes.getIsFinanceYn());
-					savedata.setEndtCategDesc(riskRes.getEndtCategoryDesc());
+					savedata.setIsFinaceYn(req.getIsFinaceYn());
+					savedata.setEndtCategDesc(req.getEndtCategDesc());
 					savedata.setEndorsementType(null);
-					savedata.setEndorsementTypeDesc(riskRes.getEndTypeDesc());
+					savedata.setEndorsementTypeDesc(req.getEndorsementTypeDesc());
 					savedata.setStatus("E");
 					saveList.add(savedata);
-					//savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+				
 					
 				}
 				coverDocUploadDetails.saveAllAndFlush(saveList);
@@ -259,10 +259,10 @@ public class CopyBuildingRaw {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+		return saveList;
 	}
 	
-	private void productEmpDetailsEndoCopyquote(BuildingCopyRes req) {
+	public void productEmpDetailsEndoCopyquote(BuildingCopyRes req) {
 		List<ProductEmployeeDetails> savelist = new ArrayList<ProductEmployeeDetails>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -308,7 +308,7 @@ public class CopyBuildingRaw {
 	}
 	
 //	Content and Risk
-	private void contentAndRiskEndoCopyquote(BuildingCopyRes req) {
+	public void contentAndRiskEndoCopyquote(BuildingCopyRes req) {
 		List<ContentAndRisk> saveList = new ArrayList<ContentAndRisk>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -609,19 +609,19 @@ public class CopyBuildingRaw {
 			}
 			List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D");
 			
-			List<EserviceSectionDetails> filteredSectionList = oldSecDatas.stream()
-				    .filter(m -> secList.stream()
-				        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
-				                        && m.getLocationId().equals(risk.getLocationId())
-				                        && m.getSectionId().equals(risk.getSectionId())
-				        		))
-				    .collect(Collectors.toList());
+//			List<EserviceSectionDetails> filteredSectionList = oldSecDatas.stream()
+//				    .filter(m -> secList.stream()
+//				        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
+//				                        && m.getLocationId().equals(risk.getLocationId())
+//				                        && m.getSectionId().equals(risk.getSectionId())
+//				        		))
+//				    .collect(Collectors.toList());
 			
 			List<String> secListSave = new ArrayList<String>();
 			List<EserviceSectionDetails> secListSave1 = new ArrayList<EserviceSectionDetails>();
-			if (filteredSectionList != null && filteredSectionList.size()>0 ) {
+			if (secList != null && secList.size()>0 ) {
 			 
-			for (EserviceSectionDetails section : filteredSectionList) {
+			for (SectionDataDetails section : secList) {
 				EserviceSectionDetails secData = new EserviceSectionDetails();
 			
 				dozerMapper.map(section, secData);
@@ -1195,6 +1195,6 @@ public class CopyBuildingRaw {
 
 		
 	}*/
-
+	
 
 }

@@ -909,6 +909,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			List<Cover> retc = new ArrayList<Cover>();
 
 			List<String> dependedcovers = new ArrayList<String>();
+			EserviceMotorDetailsSaveRes response = new EserviceMotorDetailsSaveRes();
 
 			dependedcovers.add("N");
 			dependedcovers.add("Y");
@@ -1137,11 +1138,6 @@ public class CalculatorEngineService implements CalculatorEngine {
 				retc.addAll(totalcovers);
 				Comparator<Cover> comp = Comparator.comparing(Cover::getCoverageType);
 				retc.sort(comp);
-
-			}
-			
-			try {
-				EserviceMotorDetailsSaveRes response = new EserviceMotorDetailsSaveRes();
 				response.setCoverList(retc);
 				response.setResponse("Saved Successfully");
 				response.setRequestReferenceNo(request.getRequestReferenceNo());
@@ -1160,6 +1156,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 				// response.setUwList(referr);
 
 				fservice.saveFactorRateRequestDetails(response);
+
+			}
+			
+			try {
+				
 
 				// Update Premium,referral
 

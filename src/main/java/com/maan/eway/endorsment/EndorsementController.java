@@ -16,6 +16,7 @@ import com.maan.eway.common.req.EndtSectionListReq;
 import com.maan.eway.common.req.EndtSectionSaveReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
+import com.maan.eway.endorsment.request.EndRequest;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.endorsment.request.EndtMaster;
 import com.maan.eway.endorsment.service.EndorsementService;
@@ -117,4 +118,16 @@ public class EndorsementController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/updateAdditionalInfo")
+	public ResponseEntity<CommonRes> updateAdditionalInfo(@RequestBody EndRequest request) {
+		CommonRes data = new CommonRes();
+			data = eservice.updateAdditionalInfo(request);
+		 	if (data != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
 }

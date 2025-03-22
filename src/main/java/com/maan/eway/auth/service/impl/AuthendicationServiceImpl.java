@@ -283,6 +283,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					LoginBranchCriteriaRes getBranch = filterBranchCriteria.get(0);
 					branchRes.setBranchName(getBranch.getBranchName());
 					branchRes.setBrokerBranchCode(data.getBrokerBranchCode());
+					
 					branchRes.setBrokerBranchName(data.getBrokerBranchName());
 					branchRes.setRegionCode(getBranch.getRegionCode() );
 				//	branchRes.setRegionName(getBranch.getRegionName() );
@@ -295,6 +296,10 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 //					branchRes.setCustomerCode(data.getCustomerCode());
 //					branchRes.setCustomerName(data.getCustomerName());
 					branchRes.setBrokerBranchNameLocal(data.getBrokerBranchNameLocal());
+					branchRes.setBelongingBranch(getBranch.getBelongingBranch());
+					branchRes.setOriginationCountryId(getBranch.getOriginationCountryId()==null?"":getBranch.getOriginationCountryId().toString());
+					branchRes.setDestinationCountryId(getBranch.getDestinationCountryId()==null?"":getBranch.getDestinationCountryId().toString());
+					
 				}
 				
 				// Attached Branch
@@ -314,6 +319,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 						branchRes.setDepartmentCode(data.getDepartmentCode());
 //						branchRes.setCustomerCode(data.getCustomerCode());
 //						branchRes.setCustomerName(data.getCustomerName());
+						branchRes.setBelongingBranch(getAttachedBranch.getBelongingBranch());
+						branchRes.setOriginationCountryId(getAttachedBranch.getOriginationCountryId()==null?"":getAttachedBranch.getOriginationCountryId().toString());
+						branchRes.setDestinationCountryId(getAttachedBranch.getDestinationCountryId()==null?"":getAttachedBranch.getDestinationCountryId().toString());
 					}
 				}
 				loginBranchRes.add(branchRes);
@@ -661,9 +669,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 //			region.where(rm2,rm3);
 //			
 			// Select
-			query.multiselect(b.get("branchCode").alias("branchCode") , b.get("regionCode").alias("regionCode") ,
+			query.multiselect(b.get("branchCode").alias("branchCode"),b.get("belongingBranch").alias("belongingBranch") , b.get("regionCode").alias("regionCode") ,
 					b.get("companyId").alias("companyId") , b.get("branchName").alias("branchName") ,
-					company.alias("companyName") ,
+					company.alias("companyName") ,b.get("originationCountryId").alias("originationCountryId"),b.get("destinationCountryId").alias("destinationCountryId"),
 					//region.alias("regionName") , 
 				//	companyLogo.alias("companyLogo") ,
 					currency.alias("currencyId") );
