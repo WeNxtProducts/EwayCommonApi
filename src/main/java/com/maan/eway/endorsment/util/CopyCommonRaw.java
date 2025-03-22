@@ -120,8 +120,8 @@ public class CopyCommonRaw {
 			List<String> sectionIds = copyBuildingSections(riskRes);
 //			riskRes.setSectionIds(sectionIds);
 //			riskRes.setLocationId(riskRes.getLocationId());
-			//Document Copy
-			coverDocumentUploadDetailsEndoCopyquote(riskRes);
+//			//Document Copy
+//			coverDocumentUploadDetailsEndoCopyquote(riskRes);
 			
 			productEmpDetailsEndoCopyquote(riskRes);
 			List<EserviceCommonDetails> commonData = eCommonRepo.findByRequestReferenceNo(riskRes.getRequestReferenceNo());
