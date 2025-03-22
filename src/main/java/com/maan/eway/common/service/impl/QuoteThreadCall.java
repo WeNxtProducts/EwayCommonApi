@@ -3383,29 +3383,42 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<EserviceSectionDetails> updateEserSec =  new ArrayList<EserviceSectionDetails>();
 			
 			for (VehicleIdsReq veh : VehicleIdsList) {
-				List<EserviceSectionDetails> filterSecId =  eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) && o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList());
+				List<EserviceSectionDetails> filterSecId =  eserSec.stream().filter( o -> 
+				          o.getRiskId().equals(veh.getVehicleId() ) 
+						&& o.getSectionId().equalsIgnoreCase( veh.getSectionId())
+						&& o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList());
 				if(filterSecId.size() > 0 ) {
 					
-					EserviceSectionDetails filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) &&  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) && o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList()).get(0);	
-					filterSec.setUserOpt("Y");
-					filterSec.setQuoteNo(request.getQuoteNo());
-					filterSec.setUpdatedDate(new Date());
-					updateEserSec.add(filterSec);
-					
-					SectionDataDetails  saveSec = new  SectionDataDetails();
-					mapper.map(filterSec, saveSec)	;
-					saveSec.setQuoteNo(request.getQuoteNo());
-					quoteno=request.getQuoteNo();
-					product_id=request.getProductId();
-					saveSec.setUpdatedDate(new Date());
-					saveSec.setSectionDesc(filterSec.getSectionName());
-					List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
-	    					o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
-					if(filterCoverList.size() == 0 || filterCoverList.get(0).getCoverIdList()==null  || filterCoverList.get(0).getCoverIdList().size() == 0 ) {
-						saveSec.setStatus("D");
+					for(CoverIdsReq coverdetails :veh.getCoverIdList())
+					{
+						
+						EserviceSectionDetails filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) 
+								&&  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) 
+								&&String.valueOf(o.getCoverId()).equals(String.valueOf(coverdetails.getCoverId()))
+								&&o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList()).get(0);	
+						
+						
+						filterSec.setUserOpt("Y");
+						filterSec.setQuoteNo(request.getQuoteNo());
+						filterSec.setUpdatedDate(new Date());
+						updateEserSec.add(filterSec);
+						
+						SectionDataDetails  saveSec = new  SectionDataDetails();
+						mapper.map(filterSec, saveSec)	;
+						saveSec.setQuoteNo(request.getQuoteNo());
+						quoteno=request.getQuoteNo();
+						product_id=request.getProductId();
+						saveSec.setUpdatedDate(new Date());
+						saveSec.setSectionDesc(filterSec.getSectionName());
+						List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
+		    					o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
+						if(filterCoverList.size() == 0 || filterCoverList.get(0).getCoverIdList()==null  || filterCoverList.get(0).getCoverIdList().size() == 0 ) {
+							saveSec.setStatus("D");
+						}
+						secList.add(saveSec);	
+
 					}
-					secList.add(saveSec);	
-				} else {
+									} else {
 					filterSecId =  eserSec.stream().filter( o ->   o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
 
 					if(filterSecId.size() > 0 ) {
