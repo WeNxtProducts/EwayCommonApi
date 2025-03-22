@@ -1431,8 +1431,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}
 			
 			 for(EserviceBuildingDetails section:eserBuild1) { 
-				EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationIdAndCoverId(request.getRequestReferenceNo() ,section.getRiskId() ,request.getSectionId(),request.getLocationId(),section.getCoverId());
-				EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationIdAndCoverId(request.getRequestReferenceNo() , section.getRiskId(),request.getSectionId(),request.getLocationId(),section.getCoverId());
+				EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationIdAndCoverId(section.getRequestReferenceNo() ,section.getRiskId() ,section.getSectionId(),section.getLocationId(),section.getCoverId());
+				EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationIdAndCoverId(section.getRequestReferenceNo() , section.getRiskId(),section.getSectionId(),section.getLocationId(),section.getCoverId());
 				 premiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
 				 overAllPremiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
 				
