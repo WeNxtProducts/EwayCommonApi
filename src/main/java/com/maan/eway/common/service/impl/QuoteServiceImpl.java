@@ -1258,10 +1258,13 @@ public class QuoteServiceImpl implements QuoteService {
 					}
 					
 				}else {
-					List<BuildingRiskDetails> bulData =  	buildRiskRepo.findByQuoteNoAndSectionIdAndLocationIdAndRiskIdOrderByLocationIdAsc(req.getQuoteNo() , sec.getSectionId(),d,sec.getRiskId());
+					List<BuildingRiskDetails> bulData =  	buildRiskRepo.findByQuoteNoAndSectionIdAndLocationIdAndRiskIdAndCoverIdOrderByLocationIdAsc(req.getQuoteNo() , sec.getSectionId(),d,sec.getRiskId(),sec.getCoverId());
 					for (BuildingRiskDetails	 bul : bulData ) {
 					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(bul.getRiskId())) &&
-							o.getCompanyId().equals(bul.getCompanyId()) && o.getProductId().toString().equals(bul.getProductId()) && o.getSectionId().toString().equals(bul.getSectionId()) &&  o.getLocationId().equals(bul.getLocationId())).collect(Collectors.toList());
+							o.getCompanyId().equals(bul.getCompanyId()) 
+							&& o.getProductId().toString().equals(bul.getProductId()) && o.getSectionId().toString().equals(bul.getSectionId())
+							&& String.valueOf(o.getCoverId()).equals(String.valueOf(bul.getCoverId()))
+							&&  o.getLocationId().equals(bul.getLocationId())).collect(Collectors.toList());
 				
 					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 					

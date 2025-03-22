@@ -81,4 +81,7 @@ public interface BuildingRiskDetailsRepository  extends JpaRepository<BuildingRi
 	void deleteByRequestReferenceNoAndLocationIdAndRiskIdAndSectionIdAndCoverId(String request, Integer Locationid,
 			Integer riskid,String sectionid,Integer CoverId);
 
+	List<BuildingRiskDetails> findByQuoteNoAndSectionIdAndLocationIdAndRiskIdAndCoverIdOrderByLocationIdAsc(
+			String quoteNo, String sectionId, Integer d, Integer riskId, Integer coverId);
+
 }
