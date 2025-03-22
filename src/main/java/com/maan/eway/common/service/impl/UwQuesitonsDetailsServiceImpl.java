@@ -1,12 +1,9 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -17,19 +14,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
-import com.maan.eway.admin.req.PolicyTypeMasterGetReq;
 import com.maan.eway.admin.service.RestTemplateApiService;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -46,8 +38,6 @@ import com.maan.eway.bean.UwQuestionsDetailsArch;
 import com.maan.eway.common.req.UwQuestionsDetailsGetReq;
 import com.maan.eway.common.req.UwQuestionsDetailsSaveReq;
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.DropdownCommonRes;
-import com.maan.eway.common.res.PremiaCommonRes;
 import com.maan.eway.common.res.UwQuestionsDetailsRes;
 import com.maan.eway.common.service.UwQuestionsDetailsService;
 import com.maan.eway.error.Error;
@@ -746,22 +736,47 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 	@Override
 	public List<UwQuestionsDetailsRes> getUwQuestionsDetails(UwQuestionsDetailsGetReq req) {
 		List<UwQuestionsDetailsRes> resList = new ArrayList<UwQuestionsDetailsRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		ModelMapper modelMapper = new ModelMapper();
 		
 		try {
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		List<UwQuestionsDetails> datas = uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndSectionId(req.getCompanyId(),Integer.valueOf(req.getProductId()),req.getRequestReferenceNo(),req.getSectionId());
-		for(UwQuestionsDetails data : datas) {
-			UwQuestionsDetailsRes res = new UwQuestionsDetailsRes();
-			res=dozerMapper.map(data,UwQuestionsDetailsRes.class);
-			res.setValue(data.getValue()==null?"":data.getValue());
-			resList.add(res);
-		}
+			
+
+			List<UwQuestionsDetails> datas = new ArrayList<UwQuestionsDetails>();
+
+			if (req.getSectionId() == null || req.getSectionId().isEmpty()) {
+
+				datas = uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(req.getCompanyId(),
+						Integer.valueOf(req.getProductId()), req.getRequestReferenceNo());
+
+			} else if (req.getSectionId() == "99999") {
+				datas= uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndSectionId(req.getCompanyId(),
+						Integer.valueOf(req.getProductId()), req.getRequestReferenceNo(), req.getSectionId());
+			} else {
+				datas= uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndSectionId(req.getCompanyId(),
+						Integer.valueOf(req.getProductId()), req.getRequestReferenceNo(), req.getSectionId());
+			}
+			
+			if(datas.isEmpty()) {
+				log.info("No data found for the given request.");
+			    return Collections.emptyList();
+			}
+			else {
+
+			for (UwQuestionsDetails data : datas) {
+				UwQuestionsDetailsRes res = new UwQuestionsDetailsRes();
+				res = modelMapper.map(data, UwQuestionsDetailsRes.class);
+				res.setValue(data.getValue() == null ? "" : data.getValue());
+				resList.add(res);
+			}
+			}
+
 		}
 		catch(Exception e)
 		{
 		e.printStackTrace();
 		log.info("Exception is --->" + e.getMessage());
-		return null;
+		 return Collections.emptyList(); 
 	}
 	return resList;
 }
