@@ -270,5 +270,8 @@ public class QuoteDetailsRes {
 	@JsonProperty("StickerNumber")
 	private String stickerNumber;
 	
+	@JsonProperty("ValuationYN")
+	private String valuationYN;
+	
 	
 }
