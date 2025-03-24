@@ -71,7 +71,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 
 				// t.setProRata(new BigDecimal("1"));
 				if("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt()) && endorsement!=null) {
-					t.setProRata(t.getProRata().divide(new BigDecimal("100")));
+//					t.setProRata(t.getProRata().divide(new BigDecimal("100")));
+					t.setProRata(t.getProRata());
 				}else  if(prorata!=null && prorata.size()>0 && "Y".equals(t.getProRataYn()) ) {
 					BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
 					t.setProRata(percenat.divide(new BigDecimal("100")));
