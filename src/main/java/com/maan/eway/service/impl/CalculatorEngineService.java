@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BrokerCommissionDetails;
@@ -4022,8 +4024,13 @@ public class CalculatorEngineService implements CalculatorEngine {
 					engine.setPolicyEndDate(data.getPolicyEndDate());
 					engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 					engine.setVehicleId(data.getRiskId().toString());		
+					engine.setCoverId(data.getCoverId()==null?"0":data.getCoverId().toString());
+					engine.setAgencyCode(data.getAgencyCode());								
+//					System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
+					ObjectMapper objectMapper = new ObjectMapper();
+					objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE);
+					System.out.println("Calculator Request -->Vehicle Id " +data.getRiskId()+" \nCover Id : "+data.getCoverId()+"\nRequest -->  " + objectMapper.writeValueAsString(engine));
 					EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
-					System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
 					resList.add(res);
 				}
 			}else {
@@ -4068,7 +4075,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 									engine.setPolicyEndDate(bd.getPolicyEndDate());
 									engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 									engine.setVehicleId(bd.getRiskId().toString());	
-									System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
+									engine.setCoverId(bd.getCoverId()==null?"0":bd.getCoverId().toString());
+									engine.setAgencyCode(bd.getAgencyCode());								
+//									System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
+									ObjectMapper objectMapper = new ObjectMapper();
+									objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE);
+									System.out.println("Calculator Request -->Vehicle Id " +bd.getRiskId()+" \nCover Id : "+bd.getCoverId()+"\nRequest -->  " + objectMapper.writeValueAsString(engine));
 									EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
 									resList.add(res);
 									}
@@ -4094,9 +4106,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 							engine.setEffectiveDate(cd.getPolicyStartDate());
 							engine.setPolicyEndDate(cd.getPolicyEndDate());
 							engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
-							engine.setVehicleId(cd.getRiskId().toString());		
+							engine.setVehicleId(cd.getRiskId().toString());	
+							engine.setCoverId(cd.getCoverId()==null?"0":cd.getCoverId().toString());
+							engine.setAgencyCode(cd.getAgencyCode());								
+//							System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
+							ObjectMapper objectMapper = new ObjectMapper();
+							objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE);
+							System.out.println("Calculator Request -->Vehicle Id " +cd.getRiskId()+" \nCover Id : "+cd.getCoverId()+"\nRequest -->  " + objectMapper.writeValueAsString(engine));
 							EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
-							System.out.println((new StringBuilder("Json Req==>")).append((new Gson()).toJson(engine)).toString());
 							resList.add(res);
 						}
 					 }
