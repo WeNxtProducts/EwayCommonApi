@@ -430,7 +430,7 @@ public class QuoteServiceImpl implements QuoteService {
 				
 			// ValuationYN 100020 kenya
 			quoteRes.setValuationYN("N"); // Default
-			if("100020".equalsIgnoreCase(homeData.getQuoteNo())) {
+			if("100020".equalsIgnoreCase(homeData.getCompanyId())) {
 				List<MotorDataDetails> motorData = motorRepo.findByQuoteNo(homeData.getQuoteNo());
 				if(motorData!=null && motorData.size()>0) {
 					String motor_usage = motorData.get(0).getMotorUsage()==null?"":motorData.get(0).getMotorUsage();
