@@ -48,6 +48,9 @@ public class MsAssetDetailsId implements Serializable {
     private String    endtCategoryId ;
     
     private Integer    riskId;
+    
+ 	private Integer coverId;
+
 
      
 }

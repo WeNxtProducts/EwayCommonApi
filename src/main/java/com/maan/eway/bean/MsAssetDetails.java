@@ -92,6 +92,11 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="ENDT_CATEGORY_ID")
     private String    endtCategoryId ;
+    
+    
+    @Id
+    @Column(name = "COVER_ID")
+ 	private Integer coverId;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="BUILDING_AGE")
@@ -486,8 +491,6 @@ private static final long serialVersionUID = 1L;
    @Column(name="CONTENT_ID")
    private String contentId;
    
-   @Column(name = "COVER_ID")
-	private Integer coverId;
    
    @Column(name = "NO_OF_CLAIM")
    private Integer noOfClaim;
