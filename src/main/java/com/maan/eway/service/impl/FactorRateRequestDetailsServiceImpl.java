@@ -122,6 +122,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -424,7 +425,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					saveCover.setExcessPercent(coverData.getExcessPercent()==null ? null : coverData.getExcessPercent());
 					saveCover.setProRataYn(coverData.getProRataYn()==null ? "N" : coverData.getProRataYn());
 					//String userOpt=(!"D".equals(saveCover.getIsSelected()) )?(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt()):(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt());
-					String userOpt="N";
+					String userOpt=coverData.getUserOpt();
 					saveCover.setRegulatoryCode(coverData.getRegulatoryCode());
 					saveCover.setMinimumPremiumYn(StringUtils.isBlank(coverData.getMinimumPremiumYn())?"N":coverData.getMinimumPremiumYn());
 				/*	if(coverIds!=null && !coverIds.isEmpty()) {
@@ -2841,10 +2842,26 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 								updateCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
 								updateCover.setExcessDesc(covReq.getExcessDesc());
 								updateCover.setCoverageLimit(  covReq.getCoverageLimit()!=null?new BigDecimal(covReq.getCoverageLimit()) :new BigDecimal(0)); 
-								updateCover.setUserOpt("Y");
+								updateCover.setUserOpt(covReq.getUserOpt());
 								updateCoverList.add(updateCover);
 								
-								repository.saveAndFlush(updateCover);
+								repository.save(updateCover);
+																
+							/*	CriteriaBuilder cb = em.getCriteriaBuilder();
+								CriteriaUpdate<FactorRateRequestDetails> cq = cb.createCriteriaUpdate(FactorRateRequestDetails.class);
+								Root<FactorRateRequestDetails> cRoot = cq.from(FactorRateRequestDetails.class);
+								
+								cq.set(cRoot.get("minimumPremium"), new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))))
+									.set(cRoot.get("rate"), new BigDecimal(covReq.getRate()))
+									.set(cRoot.get("excessAmount"), new BigDecimal(covReq.getExcessAmount()))
+									.set(cRoot.get("excessPercent"), new BigDecimal(covReq.getExcessPercent()))
+									.set(cRoot.get("excessDesc"), covReq.getExcessDesc())
+									.set(cRoot.get("coverageLimit"), covReq.getCoverageLimit()!=null?new BigDecimal(covReq.getCoverageLimit()) :new BigDecimal(0))
+									.set(cRoot.get("userOpt"), covReq.getUserOpt())
+									.where(cb.equal(cRoot.get("coverId"), covReq.getCoverId()),cb.equal(cRoot.get("discLoadId"), 0),
+											cb.equal(cRoot.get("taxId"), 0),cb.equal(cRoot.get("requestReferenceNo"), req.getRequestReferenceNo()));
+								
+								em.createQuery(cq).executeUpdate();*/
 								
 								// Loadings
 								if( covReq.getLoadings()!=null && covReq.getLoadings().size() > 0 ) {
