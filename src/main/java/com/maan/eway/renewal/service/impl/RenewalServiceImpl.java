@@ -1044,7 +1044,7 @@ public class RenewalServiceImpl implements RenewalService{
 			orderList.add(cb.desc(r.get("newstartDate")));
 			
 			List<String>status=new ArrayList<>()	;
-			status.add("RS");status.add("ACV");status.add("APG");status.add("ASS");status.add("ASF");status.add("ASC");
+			status.add("RP");status.add("ACV");status.add("APG");status.add("ASS");status.add("ASF");status.add("ASC");
 			// Where
 				
 			List<Predicate>	predicate=new ArrayList<Predicate>();
