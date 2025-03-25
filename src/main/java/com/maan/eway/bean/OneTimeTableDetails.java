@@ -116,7 +116,8 @@ private String     updatedBy ;
 @Column(name="UPDATED_DATE")
 private Date  updatedDate ;
 
-
+@Column(name="PRODUCT_ID")
+private String  productId ;
 //--- ENTITY LINKS ( RELATIONSHIP )
 
 }

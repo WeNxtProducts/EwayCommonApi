@@ -297,11 +297,11 @@ public List<DropDownRes> columnName(ColumnNameDropDownlReq req) {
 			if(!data.getItemType().equalsIgnoreCase("ONE_TIME_TABLE")) {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getItemCode());
-			res.setCodeDesc(data.getDisplayName());
+			res.setCodeDesc(data.getProductId());
 			res.setStatus(data.getStatus());
 			resList.add(res);
 			}
-		}
+		}	
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
