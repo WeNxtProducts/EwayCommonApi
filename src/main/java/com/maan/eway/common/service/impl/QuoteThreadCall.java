@@ -537,7 +537,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 }
 			 
 			 List<PolicyCoverData>  oldcoversf=oldcovers;
-			
+			System.out.println("CoverId :"+ totalcovers.get(0).getCoverId());
 			// Premium With Tax 
 			Double removedCoverPremium =  (totalcovers.stream().filter( o ->   o.getPremiumIncludedTaxFc()!=null 
 					 && "D".equals(o.getStatus())   && "E".equals(o.getCoverageType())  ) .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum());			 
@@ -557,7 +557,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					 && !"D".equals(o.getStatus())
 					 && effDate.compareTo(o.getCoverPeriodFrom())>=0  ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
 				BigDecimal endtPremium= new  BigDecimal(removedCoverPremium+addedCoverPremium+endtChangePremium);
-				
+			
 				
 			// Premium Without Tax 
 			Double removedCoverPremiumWithoutTax =  (totalcovers.stream().filter( o ->   o.getPremiumExcludedTaxFc()!=null 
@@ -1386,9 +1386,20 @@ public class QuoteThreadCall implements Callable<Object>  {
 				List<CoverIdsReq> coverReqList = veh.getCoverIdList().size() > 0 ? veh.getCoverIdList() : new ArrayList<CoverIdsReq>();
 				for ( CoverIdsReq covReq :  coverReqList) {
 					 
-					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getVehicleId().equals(veh.getVehicleId()) && 
-					o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) &&  o.getIsSelected()!=null && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());				
-					List<FactorRateRequestDetails> filterCoverTaxes = covers.stream().filter( o ->   o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getCoverageType().equalsIgnoreCase("T") ).collect(Collectors.toList());				
+					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream()
+							.filter(o -> o.getVehicleId().equals(veh.getVehicleId())
+									&& o.getSectionId().equals(Integer.valueOf(veh.getSectionId()))
+									&& o.getIsSelected() != null 
+									&& o.getCoverId().equals(covReq.getCoverId())
+									&& o.getDiscLoadId().equals(0) 
+									&& o.getTaxId().equals(0))
+							.collect(Collectors.toList());				
+					List<FactorRateRequestDetails> filterCoverTaxes = covers
+							.stream().filter(o -> 
+										o.getCoverId().equals(covReq.getCoverId())
+									&& o.getDiscLoadId().equals(0) 
+									&& o.getCoverageType().equalsIgnoreCase("T"))
+							.collect(Collectors.toList());				
 					
 					if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
 						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
@@ -1414,20 +1425,27 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double premiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
 			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
 			Double taxPremium = coverTaxes.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
-			
-			
+
+			List<FactorRateRequestDetails> isEndt = covers.stream()
+					.filter(o -> o.getCoverageType().equalsIgnoreCase("E"))
+					.collect(Collectors.toList());
 			
 			// Find Building
-			//List<EserviceBuildingDetails> eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndSectionIdAnd(request.getRequestReferenceNo() ,request.getSectionId());
 			List<Integer> riskIDs = request.getVehicleIdsList().stream().map(a -> a.getVehicleId()) .collect(Collectors.toList());
 			List<Integer> Coverid=request.getVehicleIdsList().stream().flatMap(a->a.getCoverIdList().stream().map(x->x.getCoverId())).collect(Collectors.toList());
 			List<String> sectionid=request.getVehicleIdsList().stream().map(a->a.getSectionId()).collect(Collectors.toList());
 			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
-			List<EserviceBuildingDetails>     eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
-					request.getRequestReferenceNo(),locationid ,sectionid,riskIDs,Coverid);
-			if (eserBuild1.isEmpty()) {
-				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdIn(
-						request.getRequestReferenceNo(), locationid, sectionid, riskIDs);
+			List<EserviceBuildingDetails> eserBuild1 = null;
+			if (isEndt.size() > 0 && isEndt != null && !isEndt.isEmpty()) {
+				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndSectionIdAndLocationId(
+						request.getRequestReferenceNo(), request.getSectionId(), request.getLocationId());
+			} else {
+				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
+						request.getRequestReferenceNo(), locationid, sectionid, riskIDs, Coverid);
+				if (eserBuild1.isEmpty()) {
+					eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdIn(
+							request.getRequestReferenceNo(), locationid, sectionid, riskIDs);
+				}
 			}
 			
 			 for(EserviceBuildingDetails section:eserBuild1) { 
@@ -1562,7 +1580,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				buildRepo.saveAndFlush(refinedBuilding);
 				
 			} else {
-				bulildDetails.setStatus(bulildDetails.getSectionId().equalsIgnoreCase("0") ?  bulildDetails.getStatus() : "D" );
+//				bulildDetails.setStatus(bulildDetails.getSectionId().equalsIgnoreCase("0") ?  bulildDetails.getStatus() : "D" );
+				bulildDetails.setStatus(!bulildDetails.getSectionId().equalsIgnoreCase("0") ?  bulildDetails.getStatus() : "D" );
 				if( bulildDetails.getStatus().equalsIgnoreCase("D") ) {
 					bulildDetails.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue() >0 ? -endtRes.getEndtPremium().doubleValue() : endtRes.getEndtPremium().doubleValue() );
 					bulildDetails.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());	

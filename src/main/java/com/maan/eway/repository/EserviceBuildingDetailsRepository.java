@@ -87,6 +87,8 @@ public interface EserviceBuildingDetailsRepository  extends JpaRepository<Eservi
 	List<EserviceBuildingDetails> findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdIn(String requestReferenceNo,List<Integer> Locationids, List<String> sectionId,List<Integer> Riskid);
 	List<EserviceBuildingDetails> findByOriginalPolicyNo(String policyNo);
 	Integer countByOriginalPolicyNo(String policyNo);
+	List<EserviceBuildingDetails> findByRequestReferenceNoAndSectionIdAndLocationId(String requestReferenceNo,
+			String sectionId, Integer locationId);
 
 
 
