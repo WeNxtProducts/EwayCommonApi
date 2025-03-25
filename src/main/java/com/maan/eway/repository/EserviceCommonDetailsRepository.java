@@ -105,7 +105,12 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 		List<EserviceCommonDetails> findByRequestReferenceNoAndLocationId(String requestReferenceNo, Integer data);
 
+		List<EserviceCommonDetails> findByRequestReferenceNoAndLocationIdAndSectionId(String requestReferenceNo,
+				Integer locationId, String sectionId);
 
+		List<EserviceCommonDetails> findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
+				String requestReferenceNo, List<Integer> locationid, List<String> sectionid, List<Integer> riskIDs,
+				List<Integer> coverid);
 
 
 

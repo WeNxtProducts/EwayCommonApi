@@ -39,4 +39,6 @@ public class CommonDataDetailsId implements Serializable {
     
     private Integer    locationId ;
      
+	private Integer coverId;
+
 }

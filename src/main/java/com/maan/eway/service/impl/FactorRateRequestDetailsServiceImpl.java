@@ -32,6 +32,7 @@ import org.jsoup.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -2776,7 +2777,9 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 					//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 					} else  {
-						EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(req.getRequestReferenceNo() , sectiondetails.getVehicleId() ,sectiondetails.getSectionId(),Integer.valueOf(loctondetails.getLocationId()) ) ;
+						List<EserviceCommonDetails>    findCommon1 = eserCommonRepo.findByRequestReferenceNoAndLocationIdAndSectionId(req.getRequestReferenceNo(),LocationId ,sectiondetails.getSectionId()) ;
+						
+						for(EserviceCommonDetails findCommon:findCommon1) {
 						agencyCode = findCommon.getBrokerCode();
 						branchCode = findCommon.getBranchCode();
 						currencyId = findCommon.getCurrency();
@@ -2790,7 +2793,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						eserCommonRepo.save(findCommon);
 					//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 					//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
-					}
+						}
+						}
 					
 					String decimalDigits = currencyDecimalFormat(req.getCompanyId() , currencyId ).toString();
 					String stringFormat = "%0"+decimalDigits+"d" ;
@@ -2840,7 +2844,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 								updateCover.setUserOpt("Y");
 								updateCoverList.add(updateCover);
 								
-								repository.save(updateCover);
+								repository.saveAndFlush(updateCover);
 								
 								// Loadings
 								if( covReq.getLoadings()!=null && covReq.getLoadings().size() > 0 ) {

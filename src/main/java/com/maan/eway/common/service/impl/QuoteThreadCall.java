@@ -309,7 +309,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 	}
 
-	private Map<String,Object> call_CommonDataSave(QuoteThreadReq request) {
+	/*private Map<String,Object> call_CommonDataSave(QuoteThreadReq request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -445,6 +445,177 @@ public class QuoteThreadCall implements Callable<Object>  {
 			commonDataRepo.saveAndFlush(commonData);
 			log.error("Save Common Info is ---> " + json.toJson(commonData));
 			
+			// Update Eservice Motor
+			
+			
+	
+			res.put("Response", "Success") ;
+			res.put("Errors", null) ;
+			
+			// Copy Old Quote Additional Details
+			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+				
+		//		res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+				res =  copyQuoteLocationDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+			}
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			res.put("Response", "Failed") ;
+			res.put("Errors", "Failed To Save Common Id : " + request.getVehicleId() + " Details" ) ;
+		}
+	
+		return res;
+	}*/
+	private Map<String,Object> call_CommonDataSave(QuoteThreadReq request) {
+		Map<String,Object> res= new HashMap<String,Object>() ;
+		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+		
+			// Cover Calc
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdAndLocationIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getSectionId()),request.getLocationId());
+			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
+			List<FactorRateRequestDetails>  coverTaxes = new  ArrayList<FactorRateRequestDetails>();
+
+			for (VehicleIdsReq veh :  request.getVehicleIdsList() ) {
+				List<CoverIdsReq> coverReqList = veh.getCoverIdList().size() > 0 ? veh.getCoverIdList() : new ArrayList<CoverIdsReq>();
+				for ( CoverIdsReq covReq :  coverReqList) {
+				 
+					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getVehicleId().equals(veh.getVehicleId()) && 
+							o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) &&  o.getIsSelected()!=null && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());				
+							List<FactorRateRequestDetails> filterCoverTaxes = covers.stream().filter( o ->   o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getCoverageType().equalsIgnoreCase("T") ).collect(Collectors.toList());				
+							
+				if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
+					if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+						
+						premiumCovers.addAll(filterNonDefaultCovers);
+						if(filterCoverTaxes.size() > 0)coverTaxes.addAll(filterCoverTaxes);
+						
+					}else {
+						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) &&   o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+						premiumCovers.addAll(filterNonDefaultSubCovers);
+						
+						List<FactorRateRequestDetails> filtersubCoverTaxes = filterNonDefaultCovers.stream().filter( o ->    o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) && o.getCoverageType().equalsIgnoreCase("T") ).collect(Collectors.toList());
+						if(filtersubCoverTaxes.size() > 0)coverTaxes.addAll(filtersubCoverTaxes);
+					}
+				}
+			 }
+			}
+			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
+			
+			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+			Double taxPremium = coverTaxes.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
+
+			System.out.println("Vehicle :" + request.getVehicleId() + " PremiumFc --> "  + premiumFc );
+			System.out.println("Vehicle :" + request.getVehicleId() + " OverAllPremiumFc --> "  + overAllPremiumFc );
+			System.out.println("Vehicle :" + request.getVehicleId() + " PremiumLc --> "  + premiumLc );
+			System.out.println("Vehicle :" + request.getVehicleId() + " OverAllPremiumLc --> "  + overAllPremiumLc );
+			
+			List<Integer> riskIDs = request.getVehicleIdsList().stream().map(a -> a.getVehicleId()) .collect(Collectors.toList());
+			List<Integer> Coverid=request.getVehicleIdsList().stream().flatMap(a->a.getCoverIdList().stream().map(x->x.getCoverId())).collect(Collectors.toList());
+			List<String> sectionid=request.getVehicleIdsList().stream().map(a->a.getSectionId()).collect(Collectors.toList());
+			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
+			List<EserviceCommonDetails>     eserCommonData1 = eserCommonRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
+					request.getRequestReferenceNo(),locationid ,sectionid,riskIDs,Coverid);
+		
+			for(EserviceCommonDetails eserCommonData:eserCommonData1) {
+			String decimalDigits = currencyDecimalFormat(eserCommonData.getCompanyId() , eserCommonData.getCurrency() ).toString();
+			String stringFormat = "%0"+decimalDigits+"d" ;
+			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+			DecimalFormat df = new DecimalFormat(pattern);
+			
+			premiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserCommonData.getCoverId())).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+			 overAllPremiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserCommonData.getCoverId())).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
+			
+			 premiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserCommonData.getCoverId())).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+			 overAllPremiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserCommonData.getCoverId())).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+			 taxPremium = coverTaxes.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") &&  Objects.equals(o.getCoverId(), eserCommonData.getCoverId()) ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
+			
+			 
+			// Update Eservice Motor
+			eserCommonData.setActualPremiumFc(new BigDecimal(df.format(premiumFc)));
+			eserCommonData.setActualPremiumLc(new BigDecimal(df.format(premiumLc)));
+			eserCommonData.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+			eserCommonData.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
+			eserCommonData.setVatPremium(new BigDecimal(df.format(taxPremium)));
+			eserCommonData.setQuoteNo(request.getQuoteNo());
+			eserCommonData.setCustomerId(request.getCustomerId());
+			
+			//Update Eservice Section Details
+			EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationIdAndCoverId(eserCommonData.getRequestReferenceNo() ,eserCommonData.getRiskId() ,eserCommonData.getSectionId(),eserCommonData.getLocationId(),eserCommonData.getCoverId());
+			if(eSecUpdate!=null) {
+			eSecUpdate.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+			eSecUpdate.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
+			eserSecRepo.saveAndFlush(eSecUpdate);
+			}
+			// Save Details
+			CommonDataDetails commonData= new CommonDataDetails();
+			//MotorDataDetails motorData  = new MotorDataDetails();
+			dozerMapper.map(eserCommonData, commonData);
+			commonData.setEntryDate(new Date());	
+			commonData.setCreatedBy(request.getCreatedBy());
+			commonData.setQuoteNo(request.getQuoteNo());
+			commonData.setCustomerId(request.getCustomerId());
+//			commonData.setRiskId(eserCommonData.getOriginalRiskId());
+			commonData.setRiskId(eserCommonData.getRiskId());
+			commonData.setStatus(eserCommonData.getStatus());
+			commonData.setSectionDesc(eserCommonData.getSectionName());		
+			commonData.setLocationId(eserCommonData.getLocationId());
+			EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes();
+			if(eserCommonData.getEndorsementType()!=null) {
+				String prevQuoteNo=eserCommonData.getEndtPrevQuoteNo();
+				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
+				endtRes = updateEndtPremium2(request.getQuoteNo(),eserCommonData.getEndorsementEffdate(),prevQuoteNo, eserCommonData.getRiskId(),Endtcovers,Integer.valueOf(eserCommonData.getProductId()) , Integer.valueOf(eserCommonData.getSectionId()) );				
+				eserCommonData.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue());
+				eserCommonData.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null : endtRes.getEndtVatPremium());
+				commonData.setEndtPremium(eserCommonData.getEndtPremium());
+				commonData.setEndtVatPremium(eserCommonData.getEndtVatPremium());
+			} 
+			List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
+					o.getVehicleId().equals(eserCommonData.getRiskId()) && o.getSectionId().equalsIgnoreCase(eserCommonData.getSectionId()) ).collect(Collectors.toList());
+		
+			if(filterCoverList.size()== 0 || filterCoverList.get(0).getCoverIdList()==null  || filterCoverList.get(0).getCoverIdList().size() == 0 ) {
+				commonData.setStatus("D");
+				commonData.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue() >0 ? -endtRes.getEndtPremium().doubleValue() : endtRes.getEndtPremium().doubleValue() );
+				commonData.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null :  endtRes.getEndtVatPremium().doubleValue() >0 ? new BigDecimal(-endtRes.getEndtVatPremium().doubleValue()) : endtRes.getEndtVatPremium());	
+				eserCommonData.setEndtPremium(commonData.getEndtPremium());
+				eserCommonData.setEndtVatPremium(commonData.getEndtVatPremium());
+				commonData.setActualPremiumFc(BigDecimal.ZERO);
+				commonData.setActualPremiumLc(BigDecimal.ZERO);
+				commonData.setOverallPremiumFc(BigDecimal.ZERO);
+				commonData.setOverallPremiumLc(BigDecimal.ZERO);
+				commonData.setVatPremium(BigDecimal.ZERO);
+				eserCommonData.setVatPremium(BigDecimal.ZERO);
+				eserCommonData.setActualPremiumFc(BigDecimal.ZERO);
+				eserCommonData.setActualPremiumLc(BigDecimal.ZERO);
+				eserCommonData.setOverallPremiumFc(BigDecimal.ZERO);
+				eserCommonData.setOverallPremiumLc(BigDecimal.ZERO);
+				
+				CommonDataDetails oldRisk = commonDataRepo.findByQuoteNoAndRiskIdAndSectionIdAndLocationId(request.getEndtPrevQuoteNo() ,1 ,request.getSectionId(),request.getLocationId());
+				if(oldRisk!=null ) {
+					eserCommonData.setVatPremium(oldRisk.getVatPremium());
+					eserCommonData.setActualPremiumFc(oldRisk.getActualPremiumFc());
+					eserCommonData.setActualPremiumLc(oldRisk.getActualPremiumLc() );
+					eserCommonData.setOverallPremiumFc(oldRisk.getOverallPremiumFc());
+					eserCommonData.setOverallPremiumLc(oldRisk.getOverallPremiumLc());
+					commonData.setVatPremium(oldRisk.getVatPremium());
+					commonData.setActualPremiumFc(oldRisk.getActualPremiumFc());
+					commonData.setActualPremiumLc(oldRisk.getActualPremiumLc() );
+					commonData.setOverallPremiumFc(oldRisk.getOverallPremiumFc());
+					commonData.setOverallPremiumLc(oldRisk.getOverallPremiumLc());
+				}
+				
+			}
+			
+			eserCommonRepo.saveAndFlush(eserCommonData);
+			commonDataRepo.saveAndFlush(commonData);
+			log.error("Save Common Info is ---> " + json.toJson(commonData));
+			}
 			// Update Eservice Motor
 			
 			
@@ -3829,8 +4000,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 		try {
 			String sectionid=request.getVehicleIdsList().get(0).getSectionId();
 			Integer locationid=request.getVehicleIdsList().get(0).getLocationId();
-			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationId(request.getRequestReferenceNo(), request.getVehicleId(), sectionid, locationid);
-		
+			List<EserviceCommonDetails>  eserCommonData1 = eserCommonRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
+			EserviceCommonDetails eserCommonData=eserCommonData1.get(0);
 //			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndOriginalRiskIdAndSectionId(request.getRequestReferenceNo() , request.getVehicleId(),sectionid) ;
 			Long commonCount =  eserCommonRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(eserCommonData.getCustomerReferenceNo());

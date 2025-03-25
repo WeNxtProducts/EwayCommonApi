@@ -3019,7 +3019,8 @@ public class PaymentServiceImpl implements PaymentService {
 	    		   eserHumanList.forEach( o -> {
 		    			  
 	    			  List<CommonDataDetails> filterHuman = humanList.stream().filter( e -> e.getRiskId().equals(o.getRiskId())
-	    					  && e.getSectionId().equals(o.getSectionId()) && e.getLocationId().equals(o.getLocationId())).collect(Collectors.toList());
+	    					  && e.getSectionId().equals(o.getSectionId()) && e.getLocationId().equals(o.getLocationId()) 
+	    					  && String.valueOf(e.getCoverId()).equals(String.valueOf(o.getCoverId()))).collect(Collectors.toList());
 	    			  
 	    			  if( filterHuman.size()> 0 ) {
 	    				  EserviceCommonDetails updateEser = o; 

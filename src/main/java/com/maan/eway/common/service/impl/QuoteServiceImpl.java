@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -1886,7 +1887,8 @@ public class QuoteServiceImpl implements QuoteService {
 			for (CommonDataDetails com :  commonDatas) {
 				
 				// Cover Details
-				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(com.getRiskId()))).collect(Collectors.toList());
+				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(com.getRiskId())) 
+						&& Objects.equals(o.getCoverId(),com.getCoverId())).collect(Collectors.toList());
 				
 				Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 				
@@ -2006,7 +2008,7 @@ public class QuoteServiceImpl implements QuoteService {
 						
 						// Cover Details
 						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(com.getRiskId()))&&
-								 o.getSectionId().toString().equals(com.getSectionId()) &&  o.getLocationId().equals(com.getLocationId()) ).collect(Collectors.toList());
+								 o.getSectionId().toString().equals(com.getSectionId()) &&  o.getLocationId().equals(com.getLocationId()) && Objects.equals(o.getCoverId(),com.getCoverId()) ).collect(Collectors.toList());
 						
 						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 						
