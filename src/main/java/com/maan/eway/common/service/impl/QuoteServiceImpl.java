@@ -429,6 +429,20 @@ public class QuoteServiceImpl implements QuoteService {
 					quoteRes.setDueAmount(emiDetails.get(0).getDueAmount()==null?"":new BigDecimal(emiDetails.get(0).getDueAmount()).toPlainString());
 				}
 				
+			// ValuationYN 100020 kenya
+			quoteRes.setValuationYN("N"); // Default
+			if("100020".equalsIgnoreCase(homeData.getCompanyId())) {
+				List<MotorDataDetails> motorData = motorRepo.findByQuoteNo(homeData.getQuoteNo());
+				if(motorData!=null && motorData.size()>0) {
+					String motor_usage = motorData.get(0).getMotorUsage()==null?"":motorData.get(0).getMotorUsage();
+					if("4".equalsIgnoreCase(motor_usage)) {
+						Double sum_insured = motorData.get(0).getSumInsured()==null?0.0:motorData.get(0).getSumInsured();
+						if(sum_insured >= 500000) {
+							quoteRes.setValuationYN("Y");
+						}
+					}
+				}
+			}
 			
 			// Customer Details
 			PersonalInfo custData = custRepo.findByCustomerId(homeData.getCustomerId());
