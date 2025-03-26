@@ -7,62 +7,38 @@ package com.maan.eway.master.service.impl;
 
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiTransactionDetails;
-import com.maan.eway.bean.EserviceBuildingDetails;
-import com.maan.eway.bean.EserviceCommonDetails;
-import com.maan.eway.bean.EserviceLifeDetails;
-import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EserviceTravelDetails;
-import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PersonalInfo;
-import com.maan.eway.bean.RenewQuotePolicy;
-import com.maan.eway.bean.RenewalNotificationMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EmiInstallmentDetailsReq;
 import com.maan.eway.master.req.EmiTransactionDetailsGetReq;
 import com.maan.eway.master.req.EmiTransactionDetailsNextReq;
 import com.maan.eway.master.req.EmiTransactionDetailsSaveReq;
 import com.maan.eway.master.req.EmiTransactionDetailsUpdateReq;
-import com.maan.eway.master.res.EmiCompanyInfoListRes;
-import com.maan.eway.master.res.EmiDisplayListRes;
 import com.maan.eway.master.res.EmiDisplayRes;
-import com.maan.eway.master.res.EmiInfoListRes;
 import com.maan.eway.master.res.EmiTransactionDetailsRes;
 import com.maan.eway.master.service.EmiTransactionDetailsService;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.renewal.req.EmiDataRequest;
-import com.maan.eway.renewal.req.RenewDataRequest;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -80,10 +56,8 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>EmiTransactionDetailsServiceimpl</h2>
@@ -143,18 +117,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	
 	@Autowired
 	private PhoenixZambiaEmiTransactionDetails PhoenixZambiaEmiTransactionDetails;
-	
-	@Autowired
-	private PhoenixBotswanaEmiTransactionDetailsService phoenixBotswanaEmiTransactionDetailsService;
-	
-	@Autowired
-	private PhoenixMozambiqueEmiTransactionDetailsService phoenixMozambiqueEmiTransactionDetailsService;
-	
-	@Autowired
-	private PhoenixNamibiaEmiTransactionDetailsService phoenixNamibiaEmiTransactionDetailsService;
-	
-	@Autowired
-	private PhoenixSwazilndEmiTransactionDetailsService phoenixSwazilndEmiTransactionDetailsService;
 	
 	@Autowired
 	private PhoenixZambiaEmiTransactionDetailsService phoenixZambiaEmiTransactionDetailsService;
@@ -1637,7 +1599,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  				}
  				else if(reqList.get(0).getCompanyId().equalsIgnoreCase("100046"))
  				{
- 					res=PhoenixZambiaEmiTransactionDetails.updateEmiTransactionDetails(reqList);
+ 					res=phoenixZambiaEmiTransactionDetailsService.updateEmiTransactionDetails(reqList);
 	            }
  				
 				/*
@@ -1677,18 +1639,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  			try {
  				if(req.getCompanyId().equalsIgnoreCase("100020")) {
  					resList=kenyaEmiTransactionDetails.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    resList = phoenixBotswanaEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    resList = phoenixNamibiaEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    resList = phoenixMozambiqueEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    resList = phoenixSwazilndEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    resList = phoenixZambiaEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
  				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
  				    resList = eagleEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
+ 				}else {
+ 				   resList = phoenixZambiaEmiTransactionDetailsService.getEmiDetailsByQuoteNo(req);
  				}
  			}catch (Exception e) {
  				e.printStackTrace();
@@ -1705,18 +1659,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  			try {
  				if(req.getCompanyId().equalsIgnoreCase("100020")) {
  					resList=kenyaEmiTransactionDetails.getNextEmiDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    resList = phoenixBotswanaEmiTransactionDetailsService.getNextEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    resList = phoenixNamibiaEmiTransactionDetailsService.getNextEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    resList = phoenixMozambiqueEmiTransactionDetailsService.getNextEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    resList = phoenixSwazilndEmiTransactionDetailsService.getNextEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    resList = phoenixZambiaEmiTransactionDetailsService.getNextEmiDetails(req);
  				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
  				    resList = eagleEmiTransactionDetailsService.getNextEmiDetails(req);
+ 				}else {
+ 					resList = phoenixZambiaEmiTransactionDetailsService.getNextEmiDetails(req);
  				}
  			} catch (Exception e) {
  				e.printStackTrace();
@@ -1733,18 +1679,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  			try {
  				if(req.getCompanyId().equalsIgnoreCase("100020")) {
  					res=kenyaEmiTransactionDetails.getEndorsementEmiDetails(req);
- 				}else if (req.getCompanyId().equalsIgnoreCase("100047")) {
- 				    res = phoenixBotswanaEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100050")) {
- 				    res = phoenixNamibiaEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100048")) {
- 				    res = phoenixMozambiqueEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100049")) {
- 				    res = phoenixSwazilndEmiTransactionDetailsService.getEndorsementEmiDetails(req);
- 				} else if (req.getCompanyId().equalsIgnoreCase("100046")) {
- 				    res = phoenixZambiaEmiTransactionDetailsService.getEndorsementEmiDetails(req);
  				}else if (req.getCompanyId().equalsIgnoreCase("100028")) {
  				    res =eagleEmiTransactionDetailsService.getEndorsementEmiDetails(req);
+ 				}else {
+ 					  res = phoenixZambiaEmiTransactionDetailsService.getEndorsementEmiDetails(req);
  				}
  				
   			} catch (Exception e) {
@@ -1768,24 +1706,11 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  				}
  				else if(req.getCompanyId().equalsIgnoreCase("100046"))
  				{
- 					errorList=PhoenixZambiaEmiTransactionDetails.validateEmiInstallmentDetails(req);
+ 					errorList=phoenixZambiaEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
 
  				}
  				
-				/*
-				 * else if (req.getCompanyId().equalsIgnoreCase("100047")) { errorList =
-				 * phoenixBotswanaEmiTransactionDetailsService.validateEmiInstallmentDetails(req
-				 * ); } else if (req.getCompanyId().equalsIgnoreCase("100050")) { errorList =
-				 * phoenixNamibiaEmiTransactionDetailsService.validateEmiInstallmentDetails(req)
-				 * ; } else if (req.getCompanyId().equalsIgnoreCase("100048")) { errorList =
-				 * phoenixMozambiqueEmiTransactionDetailsService.validateEmiInstallmentDetails(
-				 * req); } else if (req.getCompanyId().equalsIgnoreCase("100049")) { errorList =
-				 * phoenixSwazilndEmiTransactionDetailsService.validateEmiInstallmentDetails(req
-				 * ); } else if (req.getCompanyId().equalsIgnoreCase("100046")) { errorList =
-				 * phoenixZambiaEmiTransactionDetailsService.validateEmiInstallmentDetails(req);
-				 * }else if (req.getCompanyId().equalsIgnoreCase("100028")) { errorList =
-				 * eagleEmiTransactionDetailsService.validateEmiInstallmentDetails(req); }
-				 */
+				
  			}catch (Exception e) {
  					e.printStackTrace();
  					log.info("Log Details" + e.getMessage());
@@ -1804,20 +1729,11 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
  				/*else if(req.getCompanyId().equalsIgnoreCase("100046"))
  				{
  					resList=PhoenixZambiaEmiTransactionDetails.viewEmiInstallmentDetails(req);
- 				}
-				
-				 * else if (req.getCompanyId().equalsIgnoreCase("100047")) { resList =
-				 * phoenixBotswanaEmiTransactionDetailsService.viewEmiInstallmentDetails(req); }
-				 * else if (req.getCompanyId().equalsIgnoreCase("100050")) { resList =
-				 * phoenixNamibiaEmiTransactionDetailsService.viewEmiInstallmentDetails(req); }
-				 * else if (req.getCompanyId().equalsIgnoreCase("100048")) { resList =
-				 * phoenixMozambiqueEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
-				 * } else if (req.getCompanyId().equalsIgnoreCase("100049")) { resList =
-				 * phoenixSwazilndEmiTransactionDetailsService.viewEmiInstallmentDetails(req); }
-				 */else if (req.getCompanyId().equalsIgnoreCase("100046")) { resList =
-				  phoenixZambiaEmiTransactionDetailsService.viewEmiInstallmentDetails5(req); }
+ 				}*/
 				   else if (req.getCompanyId().equalsIgnoreCase("100028")) {
  				    resList = eagleEmiTransactionDetailsService.viewEmiInstallmentDetails(req);
+ 				} else { 
+ 					resList =phoenixZambiaEmiTransactionDetailsService.viewEmiInstallmentDetails(req); 
  				}
  	 		} catch (Exception e) {
  				e.printStackTrace();

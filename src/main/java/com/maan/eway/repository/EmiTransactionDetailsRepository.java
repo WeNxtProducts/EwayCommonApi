@@ -49,6 +49,8 @@ public interface EmiTransactionDetailsRepository extends JpaRepository<EmiTransa
 	List<EmiTransactionDetails> findByQuoteNo(String quoteNo);
 
 	List<EmiTransactionDetails> findByQuoteNoOrderByInstalmentAsc(String quoteno);
+	
+	List<EmiTransactionDetails> findByQuoteNoOrderByBalanceAmountDesc(String quoteNo);
 
 
 
