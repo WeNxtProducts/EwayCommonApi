@@ -909,10 +909,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				// Update Non Opted Covers
 				for (FactorRateRequestDetails cover : nonOptCovers ) {
 					String userOptCond = StringUtils.isNotBlank(cover.getUserOpt()) && "Y".equalsIgnoreCase(cover.getUserOpt()) 
-							&& cover.getEndtCount()!=null && cover.getEndtCount().compareTo(BigDecimal.ZERO) >0 ? "Y" :"N";
+							&& cover.getEndtCount()!=null && cover.getEndtCount().compareTo(BigDecimal.ZERO) >=0 ? "Y" :"N";
 					cover.setUserOpt(userOptCond);
 					
 				}
+				
 				facRateRepo.saveAllAndFlush(nonOptCovers);
 				em.flush();
 			}	
