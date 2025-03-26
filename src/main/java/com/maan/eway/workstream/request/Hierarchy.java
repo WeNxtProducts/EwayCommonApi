@@ -25,5 +25,11 @@ public class Hierarchy {
 	
 	@JsonProperty("HierarchyLevel")
 	private String hierarchyLevel;
+	
+	@JsonProperty("CanFinalize")
+	private boolean canFinalize;
+	
+	@JsonProperty("CanEscalate")
+	private boolean canEscalate;
 
 }

@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +54,7 @@ import com.maan.eway.master.res.EmiDisplayListRes;
 import com.maan.eway.master.res.EmiDisplayRes;
 import com.maan.eway.master.res.EmiInfoListRes;
 import com.maan.eway.master.res.EmiTransactionDetailsRes;
+import com.maan.eway.master.service.EmiTransactionDetailsService;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.notification.service.NotificationService;
@@ -82,8 +84,9 @@ import jakarta.persistence.criteria.Subquery;
 
 	
 	@Service
+	@Primary
 	@Transactional
-	public class PhoenixZambiaEmiTransactionDetailsService {
+	public class PhoenixZambiaEmiTransactionDetailsService  implements EmiTransactionDetailsService{
 
 		@Value(value = "${travel.productId}")
 		private String travelProductId;
@@ -130,10 +133,17 @@ import jakarta.persistence.criteria.Subquery;
 		@Autowired
 		private CompanyProductMasterRepository companyProductMasterRepo;
 		
+		@Autowired
+		private KenyaEmiTransactionDetails kenyaEmiTransactionDetails;
+		
+		@Autowired
+		private EagleEmiTransactionDetailsService eagleEmiTransactionDetailsService;
+		
 		Gson json = new Gson();
 
 		private Logger log = LogManager.getLogger(EmiTransactionDetailsServiceImpl.class);
 		
+
 	//Insert Validation
 		
 
@@ -143,6 +153,10 @@ import jakarta.persistence.criteria.Subquery;
 			List<Error> errorList = new ArrayList<Error>();
 
 			try {
+				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+					errorList=kenyaEmiTransactionDetails.validateEmiTransactionDetails(req);
+					return errorList;
+				}
 
 				if(StringUtils.isBlank(req.getEndtTypeId())) {
 //				if (StringUtils.isBlank(req.getPremiumWithTax())) {
@@ -188,6 +202,8 @@ import jakarta.persistence.criteria.Subquery;
 					errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
 				}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
 					errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				}else if("N".equalsIgnoreCase(req.getStatus())) {
+					errorList.add(new Error("06", "Status", "No Emi Option"));
 				}
 
 				if (StringUtils.isBlank(req.getCreatedBy())) {
@@ -214,7 +230,10 @@ import jakarta.persistence.criteria.Subquery;
 			SuccessRes res = new SuccessRes();
 			DecimalFormat df = new DecimalFormat("0.00");
 			EmiTransactionDetails saveData = new EmiTransactionDetails();
-
+			if(req.getCompanyId().equalsIgnoreCase("100020")) {
+				res=kenyaEmiTransactionDetails.insertEmiTransactionDetails(req);
+				return res;
+			} 
 			try {
 				BigDecimal adv=new BigDecimal(0);
 				Integer noOfMonth=0, instalId=0;
@@ -723,7 +742,10 @@ import jakarta.persistence.criteria.Subquery;
 			List<Error> errorList = new ArrayList<Error>();
 
 			try {
-
+				if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
+ 					errorList=kenyaEmiTransactionDetails.validateUpdateEmiTransactionDetails(reqList);
+ 				return errorList;
+				}
 //				if (StringUtils.isBlank(req.getPremiumWithTax())) {
 //					errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
 //				} 
@@ -786,6 +808,10 @@ import jakarta.persistence.criteria.Subquery;
 			List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
+				if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
+ 					res=kenyaEmiTransactionDetails.updateEmiTransactionDetails(reqList);
+ 					return res;
+ 				}
 				String productId ="";
 				String companyId ="";
 				List<EmiTransactionDetails> list1 = repo.findByQuoteNoAndSelectYn(reqList.get(0).getQuoteNo(),"Y");
@@ -901,6 +927,10 @@ import jakarta.persistence.criteria.Subquery;
 			DozerBeanMapper mapper = new DozerBeanMapper();
 			DecimalFormat df = new DecimalFormat("0.00");
 			try {
+				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+ 					resList=kenyaEmiTransactionDetails.getEmiDetailsByQuoteNo(req);
+ 				return resList;
+				}
 				String quoteNo = req.getQuoteNo();
 				String productId = req.getProductId();
 				List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
@@ -977,6 +1007,10 @@ import jakarta.persistence.criteria.Subquery;
 			List<Error> errorList = new ArrayList<Error>();
 
 			try {
+				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+ 					errorList=kenyaEmiTransactionDetails.validateEmiInstallmentDetails(req);
+ 					return errorList;
+ 				}
 
 				if (StringUtils.isBlank(req.getPremiumWithTax())) {
 					errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
@@ -990,12 +1024,12 @@ import jakarta.persistence.criteria.Subquery;
 				if (StringUtils.isBlank(req.getPolicyType())) {
 					errorList.add(new Error("04", "PolicyType", "Please Enter PolicyType"));
 				}
-//				else {
-//					List<EmiMaster> policyType =   getEmiMasterData(req.getCompanyId(), req.getProductId(),req.getPolicyType(),req.getPremiumWithTax());
-//					if(policyType ==null ) {
-//						errorList.add(new Error("05", "PolicyType", "No Data Exist"));
-//					} 
-//				}
+				List<EmiMaster> list = getEmiMasterData(req.getCompanyId(), req.getProductId(), req.getPolicyType(),
+						Double.parseDouble(req.getPremiumWithTax()));
+				if(list==null || list.isEmpty()) {
+					errorList.add(new Error("05", " ", "No Master Setup For This Company"));
+				}
+
 			}catch (Exception e) {
 					e.printStackTrace();
 					log.info("Log Details" + e.getMessage());
@@ -1004,269 +1038,7 @@ import jakarta.persistence.criteria.Subquery;
 			return errorList;
 		}
 
-		
-		public List<EmiDisplayRes> viewEmiInstallmentDetails(EmiInstallmentDetailsReq req) {
-			List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
-			//DecimalFormat df = new DecimalFormat("0.0");
-			try {
-				Integer i = 0;
-				String insDesc = "";
-				Double temp = 0d, premiumWithTax, interestPercent, advancePercent, interestAmount, totalLoanAmount,
-						advanceAmount, balanceAmount = null, installment = 0d,exchangeDate=0d,curPremium=0d;
-				premiumWithTax = Double.valueOf(req.getPremiumWithTax());
-				if(!req.getCurrency().equalsIgnoreCase("TZS")) {
-					List<ExchangeMaster> exchangeData=exchangeMasterRepo.findByCurrencyIdAndCompanyIdOrderByAmendIdDesc(req.getCurrency(),req.getCompanyId());				if(exchangeData.size()>0) 
-						exchangeDate= exchangeData.get(0).getExchangeRate();
-						
-						curPremium=exchangeDate*premiumWithTax;
-						premiumWithTax=Double.valueOf(Math.round(curPremium));
-					
-				}
-				List<EmiMaster> list = getEmiMasterData(req.getCompanyId(), req.getProductId(), req.getPolicyType(),
-						premiumWithTax);
-				EmiDisplayRes res=null;
-				if (list.size()>0) {
-					for (EmiMaster data : list) {
-						 res = new EmiDisplayRes();
-						 if(!data.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod())) {
-							 continue;
-						 }
-						Integer noOfMonth = Integer.valueOf(req.getInstallmentPeriod().toString());
-						interestPercent = Double.valueOf(data.getInterestPercent().toString());
-						advancePercent = Double.valueOf(data.getAdvancePercent().toString());
-						
-						if(data.getInstallmentTypeId()!=null) {
-							Integer instalId=Integer.parseInt(data.getInstallmentTypeId());	
-							List<EmiDisplayRes> result=viewEmiInstallmentDetailsByInstalId2(req,interestPercent,advancePercent,premiumWithTax,instalId,res,data, noOfMonth);
-						    if(!result.isEmpty()){  
-							resList.add(result.get(0)); 
-							}
-						}else {
-						// Calculation
-						for (i = 0; i <= noOfMonth; i++) {
-							// Response
-							
-							interestAmount = premiumWithTax * interestPercent / 100;
-							interestAmount=interestAmount/12;
-							interestAmount=interestAmount*noOfMonth;
-							totalLoanAmount = premiumWithTax + interestAmount;
-							advanceAmount = totalLoanAmount * advancePercent / 100;
-							if (i == 0) {
-								balanceAmount = totalLoanAmount - advanceAmount;
-								installment = balanceAmount / noOfMonth;
-								insDesc="Advance Amount";
-							} else {
-								temp = balanceAmount;
-								temp -= installment;
-								balanceAmount = temp;
-								insDesc="Installment Amount";
-							}
-							EmiInfoListRes emiInfoListRes = new EmiInfoListRes();
-							emiInfoListRes.setPremiumWithTax(Long.valueOf(Math.round(premiumWithTax)).toString());
-							emiInfoListRes.setNoOfMonth(noOfMonth.toString());
-							emiInfoListRes.setInterestAmount(Long.valueOf(Math.round(interestAmount)).toString());
-						//	emiInfoListRes.setAdvanceAmount(df.format(advanceAmount));
-							emiInfoListRes.setAdvanceAmount(Long.valueOf(Math.round(advanceAmount)).toString());
-							emiInfoListRes.setBalanceAmount(Long.valueOf(Math.round(balanceAmount)).toString());
-							emiInfoListRes.setTotalLoanAmount(Long.valueOf(Math.round(totalLoanAmount)).toString());
-						//	emiInfoListRes.setInstallment((df.format(installment)));
-							emiInfoListRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-							res.setEmiInfoRes(emiInfoListRes);
 
-							EmiCompanyInfoListRes compInfoRes = new EmiCompanyInfoListRes();
-							compInfoRes.setPremiumStart(data.getPremiumStart().toString());
-							compInfoRes.setPremiumEnd(data.getPremiumEnd().toString());
-							compInfoRes.setInterest(interestPercent.toString());
-							compInfoRes.setAdvance(advancePercent.toString());
-							res.setCompanyEmiInfo(compInfoRes);
-
-							List<EmiDisplayListRes> emiPremiumResList = new ArrayList<EmiDisplayListRes>();
-							for (i = 0; i <= noOfMonth; i++) {
-								EmiDisplayListRes emiPremiumRes = new EmiDisplayListRes();
-								Calendar cal = Calendar.getInstance();
-								cal.add(Calendar.MONTH, i);
-								Date dueDate = cal.getTime();
-								if (i == 0) {
-									insDesc="Advance Amount";
-									emiPremiumRes.setInstallment(Long.valueOf(Math.round(advanceAmount)).toString());
-								} else {
-									insDesc="Installment Amount";
-									emiPremiumRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-								}
-								emiPremiumRes.setNoOfInstallment(i.toString());
-								emiPremiumRes.setDueDate(dueDate);
-								emiPremiumRes.setInstallmentDesc(insDesc);
-								emiPremiumResList.add(emiPremiumRes);
-
-							}
-							res.setEmiPremium(emiPremiumResList);
-							res.setEmiYn("Y");
-							res.setEmiYnDesc("Emi Data");
-						}
-
-						resList.add(res);
-					  }
-					}
-
-				}else if(list.size() == 0){
-					 res = new EmiDisplayRes();
-					res.setEmiYn("N");
-					res.setEmiYnDesc("Emi Option is not Available ");
-					resList.add(res);
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
-			}
-
-			return resList;
-		}
-			public List<EmiDisplayRes> viewEmiInstallmentDetailsByInstalId2(EmiInstallmentDetailsReq req, Double interestPercent, Double advancePercent,Double premiumWithTax, 
-				Integer instalId,EmiDisplayRes res,EmiMaster data, Integer installmentPeriod) {
-			List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
-			Long balanceAmount=null, temp=0l; Long installment=0l,trackTotLnAmtWithInterest=0l, trackInsAmt=0l;
-			Integer i=0; String insDesc = ""; Integer in=0;
-			Integer loop=installmentPeriod/instalId, loop2=installmentPeriod/instalId;
-			Long skipAmount=0l;
-			Long totalLoanAmount=Math.round(premiumWithTax+premiumWithTax*interestPercent/100);
-			Long interestAmount = Math.round(premiumWithTax*interestPercent/100);
-			Long advanceAmount = Math.round(totalLoanAmount * advancePercent / 100);		
-			for(i=0; i<loop; i++) {
-				if(!(installmentPeriod/instalId>1) || !(installmentPeriod%instalId==0)) {
-					break;
-				}
-				if(i==0 && advanceAmount>0 && instalId>1) {
-					advanceAmount = Math.round(premiumWithTax * advancePercent / 100);
-					totalLoanAmount=Math.round(premiumWithTax-advanceAmount);
-					totalLoanAmount=Math.round(totalLoanAmount+totalLoanAmount*interestPercent/100);
-					trackTotLnAmtWithInterest=totalLoanAmount;
-					balanceAmount = totalLoanAmount;
-					in=loop-1;
-					installment = (long) Math.round(balanceAmount/in);
-					insDesc="Advance Amount";
-					
-				}else if(i==0) {
-					advanceAmount=0l;
-					balanceAmount = totalLoanAmount - advanceAmount;
-					trackTotLnAmtWithInterest=totalLoanAmount;
-					in=loop;
-					installment = (long) Math.round(balanceAmount/in);
-					insDesc="Installment Amount";
-				
-				}else {
-					/*if(trackInsAmt>trackTotLnAmtWithInterest) {
-						skipAmount=trackTotLnAmtWithInterest-trackTotLnAmtWithInterest;
-						temp = balanceAmount;
-						temp -= installment;
-						balanceAmount = temp-skipAmount;
-						insDesc="Installment Amount";
-					}else if((trackTotLnAmtWithInterest-trackInsAmt)<12 && (trackTotLnAmtWithInterest-trackInsAmt)>0) {
-						skipAmount=trackTotLnAmtWithInterest-trackInsAmt;
-						temp = balanceAmount;
-						temp -= installment;
-						balanceAmount = temp+skipAmount;
-						insDesc="Installment Amount";
-					}else {
-					temp = balanceAmount;
-					temp -= installment;
-					balanceAmount = temp;
-					insDesc="Installment Amount";
-					trackInsAmt+=installment;
-					}*/
-					temp = balanceAmount;
-					temp -= installment;
-					balanceAmount = temp;
-					insDesc="Installment Amount";
-					
-				}
-				EmiInfoListRes emiInfoListRes = new EmiInfoListRes();
-				emiInfoListRes.setPremiumWithTax(Long.valueOf(Math.round(premiumWithTax)).toString());
-				emiInfoListRes.setNoOfMonth(installmentPeriod.toString());
-				emiInfoListRes.setInterestAmount(Long.valueOf(Math.round(interestAmount)).toString());
-				emiInfoListRes.setAdvanceAmount(Long.valueOf(Math.round(advanceAmount)).toString());
-				emiInfoListRes.setBalanceAmount(Long.valueOf(Math.round(balanceAmount)).toString());
-				emiInfoListRes.setTotalLoanAmount(Long.valueOf(Math.round(totalLoanAmount)).toString());
-				emiInfoListRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-				emiInfoListRes.setInstallmentTypeId(instalId.toString());
-				emiInfoListRes.setInstallmentTypeDesc(data.getInstallmentTypeDesc());		
-				
-				res.setEmiInfoRes(emiInfoListRes);
-
-				EmiCompanyInfoListRes compInfoRes = new EmiCompanyInfoListRes();
-				compInfoRes.setPremiumStart(data.getPremiumStart().toString());
-				compInfoRes.setPremiumEnd(data.getPremiumEnd().toString());
-				compInfoRes.setInterest(interestPercent.toString());
-				compInfoRes.setAdvance(advancePercent.toString());
-				res.setCompanyEmiInfo(compInfoRes);
-
-				List<EmiDisplayListRes> emiPremiumResList = new ArrayList<EmiDisplayListRes>();
-				Calendar cal = Calendar.getInstance();
-				Date dueDate = cal.getTime();
-				for (i = 0; i < loop2; i++) {
-					EmiDisplayListRes emiPremiumRes = new EmiDisplayListRes();
-									Integer inc=i;
-					if(i==0 && advanceAmount>0.0 && instalId>1) {
-						cal.add(Calendar.MONTH, 0);
-						dueDate = cal.getTime();
-						insDesc="Advance Amount";
-						emiPremiumRes.setInstallment(Long.valueOf(Math.round(advanceAmount)).toString());
-					}else if (i == 0) {
-						cal.add(Calendar.MONTH, 0);
-						dueDate = cal.getTime();
-						insDesc="Installment Amount";
-						emiPremiumRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-						inc=inc+1;
-						emiPremiumRes.setNoOfInstallment(inc.toString());
-						
-						trackInsAmt+=installment;
-						temp = balanceAmount;
-						temp -= installment;
-						balanceAmount = temp;
-					
-					} else {
-				        // Increment calendar based on the installment period
-				                cal.add(Calendar.MONTH, instalId);       
-				        dueDate = cal.getTime();
-				       if((trackTotLnAmtWithInterest-trackInsAmt)<installment) {
-							skipAmount=installment-(trackTotLnAmtWithInterest-trackInsAmt);
-							balanceAmount = installment-skipAmount;
-							emiPremiumRes.setInstallment(Long.valueOf(Math.round(balanceAmount)).toString());
-						}else if((balanceAmount-installment)<12 && (balanceAmount-installment)>0) {
-							skipAmount=(balanceAmount-installment);
-							balanceAmount = installment+skipAmount;
-							emiPremiumRes.setInstallment(Long.valueOf(Math.round(balanceAmount)).toString());
-							  
-						}else {
-						trackInsAmt+=installment;
-						emiPremiumRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-						}
-				       temp = balanceAmount;
-						temp -= installment;
-						balanceAmount = temp;
-						
-				       insDesc="Installment Amount";
-						inc=advanceAmount>0.0?inc:(inc+1);
-						emiPremiumRes.setNoOfInstallment(inc.toString());
-						
-					}
-
-					emiPremiumRes.setNoOfInstallment(inc.toString());
-					emiPremiumRes.setDueDate(dueDate);
-					emiPremiumRes.setInstallmentDesc(insDesc);
-					emiPremiumResList.add(emiPremiumRes);
-
-				}
-				res.setEmiPremium(emiPremiumResList);
-				res.setEmiYn("Y");
-				res.setEmiYnDesc("Emi Data");
-			}
-	         if(balanceAmount!=null) {
-			 resList.add(res);
-	         }
-			return resList;
-		}
 //NEW TRIAL
 			
 			    public static Long DaysToMonthDifference(Integer days) {
@@ -1282,10 +1054,14 @@ import jakarta.persistence.criteria.Subquery;
 			        return monthsBetween;
 			    }
 			
-			public List<EmiDisplayRes> viewEmiInstallmentDetails5(EmiInstallmentDetailsReq req) {
+			public List<EmiDisplayRes> viewEmiInstallmentDetails(EmiInstallmentDetailsReq req) {
 				List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
 				//DecimalFormat df = new DecimalFormat("0.0");
 				try {
+					if(req.getCompanyId().equalsIgnoreCase("100020")) {
+	 					resList=kenyaEmiTransactionDetails.viewEmiInstallmentDetails(req);
+	 					return resList;
+					}
 					Integer i = 0;
 					String insDesc = "";
 					Double temp = 0d, premiumWithTax, interestPercent, advancePercent, interestAmount, totalLoanAmount,
@@ -1578,6 +1354,10 @@ import jakarta.persistence.criteria.Subquery;
 			List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
 			DozerBeanMapper mapper = new DozerBeanMapper();
 			try {
+				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+ 					resList=kenyaEmiTransactionDetails.getNextEmiDetails(req);
+ 				return resList;
+				}
 				String quoteNo = req.getQuoteNo();
 				List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
 				list = repo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateAsc(quoteNo, "Pending");
@@ -1613,6 +1393,10 @@ import jakarta.persistence.criteria.Subquery;
 			SuccessRes res = new SuccessRes();
 			DecimalFormat df = new DecimalFormat("0.00");
 			try {
+				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+ 					res=kenyaEmiTransactionDetails.getEndorsementEmiDetails(req);
+ 				return res;
+				}
 				if("Y".equalsIgnoreCase(req.getEmiYn()) && StringUtils.isNotBlank(req.getEndtTypeId())) {
 					// Finding Old Record
 					List<EmiTransactionDetails> list = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),

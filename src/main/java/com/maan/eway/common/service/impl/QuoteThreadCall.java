@@ -1577,14 +1577,25 @@ public class QuoteThreadCall implements Callable<Object>  {
 						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
 							
 							premiumCovers.addAll(filterNonDefaultCovers);
-							if(filterCoverTaxes.size() > 0)coverTaxes.addAll(filterCoverTaxes);
+							if(filterCoverTaxes.size() > 0)
+								coverTaxes.addAll(filterCoverTaxes);
 							
 						}else {
-							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> o.getVehicleId().equals(veh.getVehicleId()) && 
-									o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) &&  o.getIsSelected()!=null &&    o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
+							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream()
+									.filter(o -> o.getVehicleId().equals(veh.getVehicleId())
+											&& o.getSectionId().equals(Integer.valueOf(veh.getSectionId()))
+											&& o.getIsSelected() != null && o.getCoverId().equals(covReq.getCoverId())
+											&& o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))
+											&& o.getDiscLoadId().equals(0) && o.getTaxId().equals(0))
+									.collect(Collectors.toList());
 							premiumCovers.addAll(filterNonDefaultSubCovers);
-							List<FactorRateRequestDetails> filtersubCoverTaxes = filterNonDefaultCovers.stream().filter( o ->    o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) && o.getCoverageType().equalsIgnoreCase("T") ).collect(Collectors.toList());
-							if(filtersubCoverTaxes.size() > 0)coverTaxes.addAll(filtersubCoverTaxes);
+							List<FactorRateRequestDetails> filtersubCoverTaxes = filterNonDefaultCovers.stream()
+									.filter(o -> o.getCoverId().equals(covReq.getCoverId())
+											&& o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))
+											&& o.getDiscLoadId().equals(0) && o.getCoverageType().equalsIgnoreCase("T"))
+									.collect(Collectors.toList());
+							if(filtersubCoverTaxes.size() > 0)
+								coverTaxes.addAll(filtersubCoverTaxes);
 						}
 					}
 				}
@@ -1650,7 +1661,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 					eserBuild.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue());
 					eserBuild.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null : endtRes.getEndtVatPremium());
 					bulildDetails.setEndtPremium(eserBuild.getEndtPremium());
-					bulildDetails.setEndtVatPremium(eserBuild.getEndtVatPremium());	
+					bulildDetails.setEndtVatPremium(eserBuild.getEndtVatPremium());
+					
+					List<PolicyCoverData> updateremovedcover = coverRepo
+							.findByQuoteNoAndLocationIdAndSectionIdAndVehicleIdAndCoverIdAndStatus(request.getQuoteNo(),
+									Integer.valueOf(request.getLocationId()), Integer.valueOf(request.getSectionId()), Integer.valueOf(section.getRiskId()),
+									Integer.valueOf(eserBuild.getCoverId()), "D");
+					if (updateremovedcover.size() > 0 && updateremovedcover != null && !updateremovedcover.isEmpty()) {
+							bulildDetails.setStatus(updateremovedcover.get(0).getStatus());
+					}
 				}
 				
 			}
@@ -1785,7 +1804,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    
 		}
 			
-			
+			 
+			 
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
 			

@@ -1264,35 +1264,11 @@ public class JasperCustomServiceImple {
 						});
 					}
 				}
-		}else {
-			CriteriaBuilder cb1 = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> doc = cb1.createQuery(Tuple.class);
-			Root<ListItemValue> dudRoot = doc.from(ListItemValue.class);
-			
-			Subquery<Integer> amdMax = cq.subquery(Integer.class);
-			Root<ListItemValue> aSub = amdMax.from(ListItemValue.class);
-			
-			amdMax.select(aSub.get("amendId"))
-			.where(cb.equal(aSub.get("itemType"), dudRoot.get("itemType")),
-						cb.equal(aSub.get("companyId"), dudRoot.get("companyId")),
-						cb.equal(aSub.get("param1"), dudRoot.get("param1")));
-			
-			doc.multiselect(dudRoot.get("itemCode").alias("docRefNo"),dudRoot.get("itemValue").alias("filePathOrginal"))
-				.where(cb.equal(dudRoot.get("itemType"), "ATTACHMENTS"),
-						cb.equal(dudRoot.get("companyId"), map.get("companyId")==null?"":map.get("companyId").toString()),
-						cb.equal(dudRoot.get("param1"), map.get("productId")==null?"":map.get("productId").toString()),
-						cb.equal(dudRoot.get("amendId"), amdMax));
-			
-			List<Tuple> docList = em.createQuery(doc).getResultList();
-			if(!docList.isEmpty()) {
-				docList.forEach(e -> {
-					AttachMentRes m = AttachMentRes.builder()
-							.docRefNo(e.get("docRefNo")==null?"":e.get("docRefNo").toString())
-							.docloction(e.get("filePathOrginal")==null?"":e.get("filePathOrginal").toString())
-							.build();
-					attachments.add(m);
-				});
+			if(attachments ==null || attachments.isEmpty()) {
+				attachments.addAll(getAttachMentList(map.get("companyId")==null?"":map.get("companyId").toString(),map.get("productId")==null?"":map.get("productId").toString(),"ATTACHMENTS",vehicleDetails.get(0).getMotorUsage().toString()));
 			}
+		}else {
+			attachments.addAll(getAttachMentList(map.get("companyId")==null?"":map.get("companyId").toString(),map.get("productId")==null?"":map.get("productId").toString(),"ATTACHMENTS",null));
 		}
 			String polNo = map.get("policyNo")==null?"":map.get("policyNo").toString();
 			if(StringUtils.isNotBlank(vehicleId)) {
@@ -4133,5 +4109,44 @@ public class JasperCustomServiceImple {
 		return result;
 	
 	}
+	
+ private List<AttachMentRes> getAttachMentList(String companyId,String productId,String itemType,String motorusage){
+	 List<AttachMentRes> attachments = new ArrayList<>();
+	 	try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+			Root<ListItemValue> dudRoot = cq.from(ListItemValue.class);
+			
+			Subquery<Integer> amdMax = cq.subquery(Integer.class);
+			Root<ListItemValue> aSub = amdMax.from(ListItemValue.class);
+			
+			amdMax.select(aSub.get("amendId"))
+			.where(cb.equal(aSub.get("itemType"), dudRoot.get("itemType")),
+						cb.equal(aSub.get("companyId"), dudRoot.get("companyId")),
+						cb.equal(aSub.get("param1"), dudRoot.get("param1")),
+						StringUtils.isNotBlank(motorusage)?cb.like(aSub.get("param2"), dudRoot.get("param2")):cb.conjunction());
+			
+			cq.multiselect(dudRoot.get("itemCode").alias("docRefNo"),dudRoot.get("itemValue").alias("filePathOrginal"))
+				.where(cb.equal(dudRoot.get("itemType"), itemType),
+						cb.equal(dudRoot.get("companyId"), companyId),
+						cb.equal(dudRoot.get("param1"), productId),
+						cb.equal(dudRoot.get("amendId"), amdMax),
+						StringUtils.isNotBlank(motorusage)?cb.like(dudRoot.get("param2"), "%"+motorusage+"%"):cb.conjunction());
+			
+			List<Tuple> docList = em.createQuery(cq).getResultList();
+			if(!docList.isEmpty()) {
+				docList.forEach(e -> {
+					AttachMentRes m = AttachMentRes.builder()
+							.docRefNo(e.get("docRefNo")==null?"":e.get("docRefNo").toString())
+							.docloction(e.get("filePathOrginal")==null?"":e.get("filePathOrginal").toString())
+							.build();
+					attachments.add(m);
+				});
+			}
+	 	}catch(Exception e) {
+	 		e.printStackTrace();
+	 	}
+	return attachments;
+ }
 	
 }
