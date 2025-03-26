@@ -595,6 +595,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      policyCoverDataSave.setTaxAmountLc(BigDecimal.valueOf(taxAmount));
 	      policyCoverDataSave.setIndividualId(1);
 	      policyCoverDataSave.setCoverageLimit(BigDecimal.valueOf(999999999L));
+	      policyCoverDataSave.setCoverageType("B");
 	      
 	      policyCoverDataRepo.saveAndFlush(policyCoverDataSave);
 	      
@@ -715,7 +716,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      String insertPaymentReq = this.objectPrint.toJson(insertPayment);
 	      System.out.println("insertPaymentReq" + insertPaymentReq);
 	    String insertPaymentApi = "http://localhost:8086/EwayCommonApi/payment/insertpaymentdetails";
-	   //   String insertPaymentApi = "http://192.168.1.42:8086/payment/insertpaymentdetails";
+	  //    String insertPaymentApi = "http://192.168.1.42:8086/payment/insertpaymentdetails";
 	      response = this.callEwayApi(insertPaymentApi, insertPaymentReq);
 	      System.out.println("insertPaymentRes" + response);
 	      Map<String, Object> insertPaymentResult = null;
@@ -763,7 +764,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	         tokReq.put("Password", "Admin@10");
 	         tokReq.put("ReLoginKey", "Y");
 	       String tokenApi = "http://localhost:8086/EwayCommonApi/authentication/login";
-	     //    String tokenApi = "http://192.168.1.42:8086/authentication/login";
+	      //   String tokenApi = "http://192.168.1.42:8086/authentication/login";
 	        // System.out.println("Token Api URL ==> " + tokenApi);
 	         String jsonTokenRequest = (new Gson()).toJson(tokReq);
 	         CloseableHttpClient httpClient = createHttpClientWithTimeouts();

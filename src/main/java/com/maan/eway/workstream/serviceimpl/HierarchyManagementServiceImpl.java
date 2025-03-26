@@ -93,6 +93,8 @@ public class HierarchyManagementServiceImpl implements HierarchyManagementServic
 						.productId(req.getProductId())
 						.hierarchyLevel(hierarchy.getHierarchyLevel())
 						.hierarchyValue(hierarchy.getHierarchyValue())
+						.canFinalize(hierarchy.isCanFinalize())
+						.canEscalate(hierarchy.isCanEscalate())
 						.build();
 			
 				list.add(hierarchyManagement);
