@@ -1441,7 +1441,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 	public List<EservieMotorDetailsViewRes>  getFactorRateRequestDetails(FactorRateDetailsGetReq req,String token) {
 		List<EservieMotorDetailsViewRes>  resList = new ArrayList<EservieMotorDetailsViewRes>();
 		try {
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			//Insert Benifit Cover
 			benifitCoverInsert(req);
 			
@@ -1461,8 +1462,19 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			for (EservieMotorDetailsViewRes res : resList ) {
 			
 				// Set Covers
-				List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
-						o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId())  && o.getLocationId().toString().equals(res.getLocationId()) && Objects.equals(o.getCoverId(), res.getCoverId())).collect(Collectors.toList());
+				List<FactorRateRequestDetails> filterVehicleCovers = null;
+				if(product.getMotorYn().equals("A") || product.getMotorYn().equals("H"))
+				{
+					filterVehicleCovers=   findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
+							o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId())  && o.getLocationId().toString().equals(res.getLocationId()) 
+							&& Objects.equals(o.getCoverId(), res.getCoverId())).collect(Collectors.toList());
+					
+				}else {
+					filterVehicleCovers=   findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
+								o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId())  
+								&& o.getLocationId().toString().equals(res.getLocationId()) ).collect(Collectors.toList());
+						
+				}
 				
 				Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 				

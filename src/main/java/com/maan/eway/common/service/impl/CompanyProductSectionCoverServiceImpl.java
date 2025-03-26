@@ -168,11 +168,11 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			List<SectionCoverMaster> filteredSectionList = null;
 			List<SectionDataDetails> secList = secRepo
 					.findByRequestReferenceNoAndSectionIdOrderByLocationIdAsc(req.getPrevPolicyNo(),req.getSectionId());
-			List<SectionDataDetails> optedSec = secList.stream().filter(distinctByKey(o -> Arrays.asList(o.getSectionId()))).collect(Collectors.toList());
+			List<SectionDataDetails> optedSec = secList.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId()))).collect(Collectors.toList());
 			if (secList != null && getSectionCoverList != null) {
 				filteredSectionList = getSectionCoverList.stream()
 						.filter(m -> secList.stream()
-								.noneMatch(risk -> m.getSectionId().equals(Integer.valueOf(risk.getSectionId())))) 
+								.noneMatch(risk -> m.getSectionId().equals(Integer.valueOf(risk.getCoverId())))) 
 						.collect(Collectors.toList());
 			}
 			
@@ -186,9 +186,9 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			List<DropdownResponse> opdropList = new ArrayList<DropdownResponse>();
 			for (SectionDataDetails data : optedSec) {
 				DropdownResponse dropres = new DropdownResponse();
-//				String coverName = getSectionCoverList.stream().filter( o -> o.getCoverId().equalsIgnoreCase(data.getCoverId())).collect(Collectors.toList()).get(0).getCoverDesc();
-//				dropres.setCode(data.getCoverId().toString());
-//				dropres.setCodeDesc(StringUtils.isBlank(coverName) ? "" : coverName);
+				String coverName = getSectionCoverList.stream().filter( o -> o.getCoverId().equals(data.getCoverId())).collect(Collectors.toList()).get(0).getCoverDesc();
+				dropres.setCode(data.getCoverId().toString());
+				dropres.setCodeDesc(StringUtils.isBlank(coverName) ? "" : coverName);
 				opdropList.add(dropres);
 
 			}
