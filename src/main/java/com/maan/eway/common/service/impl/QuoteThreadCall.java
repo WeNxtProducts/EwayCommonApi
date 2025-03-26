@@ -35,6 +35,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
@@ -156,7 +157,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 	// productId
 	private String travelProductId;
-	
+		
 	// Document
 	private DocumentUniqueDetailsRepository docUniqueRepo ;
 	private DocumentTransactionDetailsRepository docTranRepo ;
@@ -3565,7 +3566,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<EserviceSectionDetails> eserSec = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(request.getRequestReferenceNo());
 			eserSec.forEach( o -> o.setUserOpt("N")  ) ;
 			eserSecRepo.saveAllAndFlush(eserSec);
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(request.getInsuranceId() , request.getProductId().toString());
 			List<VehicleIdsReq> VehicleIdsList = request.getVehicleIdsList();
 			
 			
@@ -3581,12 +3582,18 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 					for(CoverIdsReq coverdetails :veh.getCoverIdList())
 					{
-						
-						EserviceSectionDetails filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) 
+						EserviceSectionDetails filterSec;
+						if(product.getMotorYn().equalsIgnoreCase("M")) {
+							 filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) 
+									&&  o.getSectionId().equalsIgnoreCase( veh.getSectionId())
+									&&o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList()).get(0);	
+						}
+						else {
+						 filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) 
 								&&  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) 
 								&&String.valueOf(o.getCoverId()).equals(String.valueOf(coverdetails.getCoverId()))
 								&&o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList()).get(0);	
-						
+						}
 						
 						filterSec.setUserOpt("Y");
 						filterSec.setQuoteNo(request.getQuoteNo());
@@ -4217,6 +4224,67 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 
-	
+	public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) :null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return product;
+	}
+
 	
 }
