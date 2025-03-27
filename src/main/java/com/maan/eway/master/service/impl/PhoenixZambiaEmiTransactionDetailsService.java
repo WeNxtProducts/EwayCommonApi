@@ -158,15 +158,7 @@ import jakarta.persistence.criteria.Subquery;
 					return errorList;
 				}
 
-				if(StringUtils.isBlank(req.getEndtTypeId())) {
-//				if (StringUtils.isBlank(req.getPremiumWithTax())) {
-//					errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
-//				} 
 				
-				if (StringUtils.isBlank(req.getInstallmentTypeId())) {
-					errorList.add(new Error("02", "NoOfMonth", "Please Select Installment Type"));
-				}
-				}
 
 				if (StringUtils.isBlank(req.getQuoteNo())) {
 					errorList.add(new Error("03", "QuoteNo", "Please Enter QuoteNo"));
@@ -202,8 +194,6 @@ import jakarta.persistence.criteria.Subquery;
 					errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
 				}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
 					errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
-				}else if("N".equalsIgnoreCase(req.getStatus())) {
-					errorList.add(new Error("06", "Status", "No Emi Option"));
 				}
 
 				if (StringUtils.isBlank(req.getCreatedBy())) {
@@ -235,6 +225,9 @@ import jakarta.persistence.criteria.Subquery;
 				return res;
 			} 
 			try {
+				if("N".equalsIgnoreCase(req.getStatus())){	
+					return null;
+				}
 				BigDecimal adv=new BigDecimal(0);
 				Integer noOfMonth=0, instalId=0;
 			if("N".equalsIgnoreCase(req.getStatus())) {
