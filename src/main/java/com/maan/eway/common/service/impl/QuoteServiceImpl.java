@@ -1390,23 +1390,56 @@ public class QuoteServiceImpl implements QuoteService {
 					List<PolicyCoverData> endCoverData = covers.stream()
 							.filter(a -> a.getCoverId().equals(coverId) && a.getCoverageType().equalsIgnoreCase("E"))
 							.collect(Collectors.toList());
-					if (endCoverData != null && !endCoverData.isEmpty()){
+					if (endCoverData != null && !endCoverData.isEmpty()) {
 						EndorsmentRes endorsmentRes = new EndorsmentRes();
 						endorsmentRes = dozerMapper.map(endCoverData.get(0), EndorsmentRes.class);
-						endorsmentRes.setPremiumAfterDiscount(endCoverData.get(0).getPremiumAfterDiscountFc());
-						endorsmentRes.setPremiumBeforeDiscount(endCoverData.get(0).getPremiumBeforeDiscountFc());
-						endorsmentRes.setPremiumExcluedTax(endCoverData.get(0).getPremiumExcludedTaxFc());
-						endorsmentRes.setPremiumIncludedTax(endCoverData.get(0).getPremiumIncludedTaxFc());
-						endorsmentRes.setPremiumAfterDiscountLC(endCoverData.get(0).getPremiumAfterDiscountLc());
-						endorsmentRes.setPremiumBeforeDiscountLC(endCoverData.get(0).getPremiumBeforeDiscountLc());
-						endorsmentRes.setPremiumExcluedTaxLC(endCoverData.get(0).getPremiumExcludedTaxLc());
-						endorsmentRes.setPremiumIncludedTaxLC(endCoverData.get(0).getPremiumIncludedTaxLc());
+						endorsmentRes.setPremiumAfterDiscount(endCoverData.get(0).getPremiumAfterDiscountFc() != null
+								&& endCoverData.get(0).getPremiumAfterDiscountFc().compareTo(BigDecimal.ZERO) != 0
+										? endCoverData.get(0).getPremiumAfterDiscountFc()
+										: filterCover.get(0).getPremiumAfterDiscountFc());
+						endorsmentRes.setPremiumBeforeDiscount(endCoverData.get(0).getPremiumBeforeDiscountFc() != null
+								? endCoverData.get(0).getPremiumBeforeDiscountFc()
+								: filterCover.get(0).getPremiumBeforeDiscountFc());
+
+						endorsmentRes.setPremiumExcluedTax(endCoverData.get(0).getPremiumExcludedTaxFc() != null
+								&& endCoverData.get(0).getPremiumExcludedTaxFc().compareTo(BigDecimal.ZERO) != 0
+										? endCoverData.get(0).getPremiumExcludedTaxFc()
+										: filterCover.get(0).getPremiumExcludedTaxFc());
+						endorsmentRes.setPremiumIncludedTax(endCoverData.get(0).getPremiumIncludedTaxFc() != null
+								&& endCoverData.get(0).getPremiumIncludedTaxFc().compareTo(BigDecimal.ZERO) != 0
+										? endCoverData.get(0).getPremiumIncludedTaxFc()
+										: filterCover.get(0).getPremiumIncludedTaxFc());
+						endorsmentRes.setPremiumAfterDiscountLC(endCoverData.get(0).getPremiumAfterDiscountLc() != null
+								&& endCoverData.get(0).getPremiumAfterDiscountLc().compareTo(BigDecimal.ZERO) != 0
+										? endCoverData.get(0).getPremiumAfterDiscountLc()
+										: filterCover.get(0).getPremiumAfterDiscountLc());
+						endorsmentRes
+								.setPremiumBeforeDiscountLC(endCoverData.get(0).getPremiumBeforeDiscountLc() != null
+										&& endCoverData.get(0).getPremiumBeforeDiscountLc().compareTo(BigDecimal.ZERO) != 0
+												? endCoverData.get(0).getPremiumBeforeDiscountLc()
+												: filterCover.get(0).getPremiumBeforeDiscountLc());
+
+						endorsmentRes.setPremiumExcluedTaxLC(endCoverData.get(0).getPremiumExcludedTaxLc() != null
+								&& endCoverData.get(0).getPremiumExcludedTaxLc().compareTo(BigDecimal.ZERO) != 0
+										? endCoverData.get(0).getPremiumExcludedTaxLc()
+										: filterCover.get(0).getPremiumExcludedTaxLc());
+
+						endorsmentRes.setPremiumIncludedTaxLC(endCoverData.get(0).getPremiumIncludedTaxLc() != null
+								&& endCoverData.get(0).getPremiumIncludedTaxLc().compareTo(BigDecimal.ZERO) != 0
+										? endCoverData.get(0).getPremiumIncludedTaxLc()
+										: filterCover.get(0).getPremiumIncludedTaxLc());
+
 						endorsmentRes.setCoverageType(endCoverData.get(0).getCoverageType());
 						endorsmentRes.setCalcType(endCoverData.get(0).getCalcType());
-						endorsmentRes.setExcessAmount(endCoverData.get(0).getExcessAmount() == null ? ""
-								: endCoverData.get(0).getExcessAmount().toPlainString());
-						endorsmentRes.setExcessPercent(endCoverData.get(0).getExcessPercent() == null ? ""
-								: endCoverData.get(0).getExcessPercent().toPlainString());
+						endorsmentRes.setExcessAmount(endCoverData.get(0).getExcessAmount() == null
+								&& endCoverData.get(0).getExcessAmount().compareTo(BigDecimal.ZERO) != 0
+										? endCoverData.get(0).getExcessAmount().toPlainString()
+										: filterCover.get(0).getExcessAmount().toPlainString());
+
+						endorsmentRes.setExcessPercent(endCoverData.get(0).getExcessPercent() == null
+								&& endCoverData.get(0).getExcessPercent().compareTo(BigDecimal.ZERO) != 0
+										? endCoverData.get(0).getExcessPercent().toPlainString()
+										: filterCover.get(0).getExcessPercent().toPlainString());
 						endorsmentRes.setCoverageLimit(endCoverData.get(0).getCoverageLimit() == null ? ""
 								: endCoverData.get(0).getCoverageLimit().toPlainString());
 						coverRes.setEndorsmentRes(endorsmentRes);
