@@ -2305,7 +2305,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				List<EserviceCommonDetails> motors = ecommDataList.stream()
 					    .filter(m -> commDataList.stream()
 					        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
-					                        && m.getQuoteNo().equals(risk.getQuoteNo())
+					                        && m.getRequestReferenceNo().equals(risk.getRequestReferenceNo())
 					                        && m.getLocationId().equals(risk.getLocationId())
 					                        && m.getSectionId().equals(risk.getSectionId())
 					        		))
@@ -2315,7 +2315,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 					for (EserviceCommonDetails data : motors) {
 						CommonDataDetails matchingRisk = commDataList.stream()
 								.filter(risk -> risk.getRiskId().equals(data.getRiskId())
-										&& risk.getQuoteNo().equals(data.getQuoteNo())
+										&& risk.getRequestReferenceNo().equals(data.getRequestReferenceNo())
 										&& risk.getLocationId().equals(data.getLocationId())
 										&& risk.getSectionId().equals(data.getSectionId()))
 								.findFirst().orElse(null);
@@ -3087,10 +3087,23 @@ public class CommonGridServiceImpl implements CommonGridService {
 						.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 								req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 								Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
-
-				List<EserviceSectionDetails> eserSec = eserSecRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
-				if (eserSec != null && eserSec.size()>0 ) {
-					for (EserviceSectionDetails data : eserSec) {
+				List<EserviceSectionDetails> eserSec = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+				List<SectionDataDetails> secList = sectionDataRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
+				
+				List<EserviceSectionDetails> filteredSectionList = eserSec.stream()
+					    .filter(m -> secList.stream()
+					        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
+					        		  && m.getRequestReferenceNo().equals(risk.getRequestReferenceNo())
+					                        && m.getLocationId().equals(risk.getLocationId())
+					                        && m.getSectionId().equals(risk.getSectionId())
+					        		))
+					    .collect(Collectors.toList());
+				
+				
+				
+				
+				if (filteredSectionList != null && filteredSectionList.size()>0 ) {
+					for (EserviceSectionDetails data : filteredSectionList) {
 						savedata = dozerMapper.map(data, EserviceSectionDetails.class);
 						savedata.setEntryDate(new Date());
 						savedata.setCustomerReferenceNo(custRefNo);
