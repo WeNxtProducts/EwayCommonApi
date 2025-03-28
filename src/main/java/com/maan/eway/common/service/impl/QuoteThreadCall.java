@@ -3717,33 +3717,35 @@ public class QuoteThreadCall implements Callable<Object>  {
 		String quoteno="";
 		String product_id="";
 		try {
-			
-			List<EserviceSectionDetails> eserSec = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(request.getRequestReferenceNo());
-			eserSec.forEach( o -> o.setUserOpt("N")  ) ;
+
+			List<EserviceSectionDetails> eserSec = eserSecRepo
+					.findByRequestReferenceNoOrderByRiskIdAsc(request.getRequestReferenceNo());
+			eserSec.forEach(o -> o.setUserOpt("N"));
 			eserSecRepo.saveAllAndFlush(eserSec);
-			CompanyProductMaster product =  getCompanyProductMasterDropdown(request.getInsuranceId() , request.getProductId().toString());
+			CompanyProductMaster product = getCompanyProductMasterDropdown(request.getInsuranceId(),
+					request.getProductId().toString());
 			List<VehicleIdsReq> VehicleIdsList = request.getVehicleIdsList();
-			
-			
+
 			List<SectionDataDetails> secList = new ArrayList<SectionDataDetails>();
-			List<EserviceSectionDetails> updateEserSec =  new ArrayList<EserviceSectionDetails>();
-			
+			List<EserviceSectionDetails> updateEserSec = new ArrayList<EserviceSectionDetails>();
+
 			for (VehicleIdsReq veh : VehicleIdsList) {
-				List<EserviceSectionDetails> filterSecId =  eserSec.stream().filter( o -> 
-				          o.getRiskId().equals(veh.getVehicleId() ) 
-						&& o.getSectionId().equalsIgnoreCase( veh.getSectionId())
-						&& o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList());
-				if(filterSecId.size() > 0 ) {
-					
-					for(CoverIdsReq coverdetails :veh.getCoverIdList())
-					{
-						EserviceSectionDetails filterSec=null;
-						if(product.getMotorYn().equalsIgnoreCase("M")) {
-							 filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) 
-									&&  o.getSectionId().equalsIgnoreCase( veh.getSectionId())
-									&&o.getLocationId().equals( veh.getLocationId())).collect(Collectors.toList()).get(0);	
-						}
-						else {
+				List<EserviceSectionDetails> filterSecId = eserSec.stream()
+						.filter(o -> o.getRiskId().equals(veh.getVehicleId())
+								&& o.getSectionId().equalsIgnoreCase(veh.getSectionId())
+								&& o.getLocationId().equals(veh.getLocationId()))
+						.collect(Collectors.toList());
+				if (filterSecId.size() > 0) {
+
+					for (CoverIdsReq coverdetails : veh.getCoverIdList()) {
+						EserviceSectionDetails filterSec = null;
+						if (product.getMotorYn().equalsIgnoreCase("M")) {
+							filterSec = eserSec.stream()
+									.filter(o -> o.getRiskId().equals(veh.getVehicleId())
+											&& o.getSectionId().equalsIgnoreCase(veh.getSectionId())
+											&& o.getLocationId().equals(veh.getLocationId()))
+									.collect(Collectors.toList()).get(0);
+						} else {
 							if (!filterSecId.isEmpty()) {
 								if ("E".equalsIgnoreCase(filterSecId.get(0).getStatus())) {
 									filterSec = eserSec.stream()
@@ -3762,66 +3764,78 @@ public class QuoteThreadCall implements Callable<Object>  {
 										.collect(Collectors.toList()).get(0);
 							}
 						}
-						
+
 						filterSec.setUserOpt("Y");
 						filterSec.setQuoteNo(request.getQuoteNo());
 						filterSec.setUpdatedDate(new Date());
 						updateEserSec.add(filterSec);
-						
-						SectionDataDetails  saveSec = new  SectionDataDetails();
-						mapper.map(filterSec, saveSec)	;
+
+						SectionDataDetails saveSec = new SectionDataDetails();
+						mapper.map(filterSec, saveSec);
 						saveSec.setQuoteNo(request.getQuoteNo());
-						quoteno=request.getQuoteNo();
-						product_id=request.getProductId();
+						quoteno = request.getQuoteNo();
+						product_id = request.getProductId();
 						saveSec.setUpdatedDate(new Date());
 						saveSec.setSectionDesc(filterSec.getSectionName());
-						List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
-		    					o.getVehicleId().equals(veh.getVehicleId()) && 
-		    					o.getSectionId().equalsIgnoreCase(veh.getSectionId())  
-		    					).collect(Collectors.toList());
-						if(filterCoverList.size() == 0 || filterCoverList.get(0).getCoverIdList()==null  || filterCoverList.get(0).getCoverIdList().size() == 0 ) {
+						Integer coverId=filterSec.getCoverId();
+						 List<CoverIdsReq> filterCoverList = veh.getCoverIdList().stream()
+						            .filter(o -> o.getCoverId().equals(coverId))
+						            .collect(Collectors.toList());
+//						List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream()
+//								.filter(o -> o.getVehicleId() != null && StringUtils.isNotBlank(o.getSectionId())
+//										&& o.getVehicleId().equals(veh.getVehicleId())
+//										&& o.getSectionId().equalsIgnoreCase(veh.getSectionId()))
+//								.collect(Collectors.toList());
+//						if (filterCoverList.size() == 0 || filterCoverList.get(0).getCoverIdList() == null
+//								|| filterCoverList.get(0).getCoverIdList().size() == 0) {
+						if (filterCoverList.size() == 0 ) {
 							saveSec.setStatus("D");
 						}
-						secList.add(saveSec);	
+						secList.add(saveSec);
 
 					}
-									} else {
-					filterSecId =  eserSec.stream().filter( o ->   o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
+				} else {
+					filterSecId = eserSec.stream().filter(o -> o.getSectionId().equalsIgnoreCase(veh.getSectionId()))
+							.collect(Collectors.toList());
 
-					if(filterSecId.size() > 0 ) {
-						
-						EserviceSectionDetails filterSec = eserSec.stream().filter( o ->   o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
+					if (filterSecId.size() > 0) {
+
+						EserviceSectionDetails filterSec = eserSec.stream()
+								.filter(o -> o.getSectionId().equalsIgnoreCase(veh.getSectionId()))
+								.collect(Collectors.toList()).get(0);
 						filterSec.setUserOpt("Y");
-						quoteno=request.getQuoteNo();
-						product_id=request.getProductId();
+						quoteno = request.getQuoteNo();
+						product_id = request.getProductId();
 						filterSec.setQuoteNo(request.getQuoteNo());
 						filterSec.setUpdatedDate(new Date());
 						updateEserSec.add(filterSec);
-						
-						SectionDataDetails  saveSec = new  SectionDataDetails();
-						mapper.map(filterSec, saveSec)	;
+
+						SectionDataDetails saveSec = new SectionDataDetails();
+						mapper.map(filterSec, saveSec);
 						saveSec.setQuoteNo(request.getQuoteNo());
 						saveSec.setUpdatedDate(new Date());
 						saveSec.setSectionDesc(filterSec.getSectionName());
-						List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
-		    					o.getVehicleId().equals(veh.getVehicleId()) && 
-		    					o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
-						
-						
-						if(filterCoverList.size() == 0 || filterCoverList.get(0).getCoverIdList()==null  || filterCoverList.get(0).getCoverIdList().size() == 0 ) {
+						List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream()
+								.filter(o -> o.getVehicleId() != null && StringUtils.isNotBlank(o.getSectionId())
+										&& o.getVehicleId().equals(veh.getVehicleId())
+										&& o.getSectionId().equalsIgnoreCase(veh.getSectionId()))
+								.collect(Collectors.toList());
+
+						if (filterCoverList.size() == 0 || filterCoverList.get(0).getCoverIdList() == null
+								|| filterCoverList.get(0).getCoverIdList().size() == 0) {
 							saveSec.setStatus("D");
 						}
-						secList.add(saveSec);	
+						secList.add(saveSec);
 					}
 				}
 			}
-						
+
 			secRepo.saveAllAndFlush(secList);
 			eserSecRepo.saveAll(updateEserSec);
-			updateAdditionalInfo(quoteno,product_id);
-			res.put("Response", "Success") ;
-			res.put("Errors", null) ;
-			
+			updateAdditionalInfo(quoteno, product_id);
+			res.put("Response", "Success");
+			res.put("Errors", null);
+
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
