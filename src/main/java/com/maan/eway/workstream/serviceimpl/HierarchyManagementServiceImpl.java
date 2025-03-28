@@ -10,9 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.workstream.entity.HierarchyManagement;
 import com.maan.eway.workstream.repository.HierarchyManagementRepository;
@@ -35,7 +33,6 @@ import jakarta.persistence.criteria.Subquery;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
 
 
 @Service
@@ -96,68 +93,37 @@ public class HierarchyManagementServiceImpl implements HierarchyManagementServic
 	}
 	
 	
-	public SuccessRes saveAllHierarchyManagement(HierarchyManagementSaveReq req) {	
-		SuccessRes res = new SuccessRes();
+	public Boolean saveAllHierarchyManagement(HierarchyManagementSaveReq req) {		
 		try {
 			List<HierarchyManagement> allHierarchy = hierarchyRepo.findAllByCompanyIdAndProductId(
 					req.getCompanyId(), req.getProductId());
 			
-			if("Y".equalsIgnoreCase(req.getHierarchyYN())) {
-							
-				if(allHierarchy.isEmpty()) {
-					List<HierarchyManagement> list = new ArrayList<>();
-					for(Hierarchy hierarchy : req.getHierarchies()) {
-						
-						HierarchyManagement hierarchyManagement = HierarchyManagement.builder()
-								.companyId(req.getCompanyId())
-								.productId(req.getProductId())
-								.hierarchyLevel(hierarchy.getHierarchyLevel())
-								.hierarchyValue(hierarchy.getHierarchyValue())
-								.canFinalize(hierarchy.isCanFinalize())
-								.canEscalate(hierarchy.isCanEscalate())
-								.build();
-					
-						list.add(hierarchyManagement);
-					}
-					hierarchyRepo.saveAllAndFlush(list);
-					res.setResponse("Saved Successfully");
-				}else {
-					
-					List<HierarchyManagement> list = new ArrayList<>();
-					for(Hierarchy hierarchy : req.getHierarchies()) {
-						
-						HierarchyManagement hierarchyManagement = HierarchyManagement.builder()
-								.companyId(req.getCompanyId())
-								.productId(req.getProductId())
-								.hierarchyLevel(hierarchy.getHierarchyLevel())
-								.hierarchyValue(hierarchy.getHierarchyValue())
-								.canFinalize(hierarchy.isCanFinalize())
-								.canEscalate(hierarchy.isCanEscalate())
-								.build();
-					
-						list.add(hierarchyManagement);
-					}
-					hierarchyRepo.saveAllAndFlush(list);
-					res.setResponse("Update Successfully");
-				}
-			}else if("N".equalsIgnoreCase(req.getHierarchyYN())) {
-				if(!allHierarchy.isEmpty()) {
-					hierarchyRepo.deleteAll(allHierarchy);
-					//removeHeirarchyLevels(req.getCompanyId(), req.getProductId());
-					//int deletedRows = hierarchyRepo.deleteByCompanyIdAndProductId(req.getCompanyId(), req.getProductId());
-					res.setResponse("Deleted Successfully");
-				}
+			if(!allHierarchy.isEmpty()) {
+				return false;
 			}
+			List<HierarchyManagement> list = new ArrayList<>();
+			for(Hierarchy hierarchy : req.getHierarchies()) {
+				
+				HierarchyManagement hierarchyManagement = HierarchyManagement.builder()
+						.companyId(req.getCompanyId())
+						.productId(req.getProductId())
+						.hierarchyLevel(hierarchy.getHierarchyLevel())
+						.hierarchyValue(hierarchy.getHierarchyValue())
+						.canFinalize(hierarchy.isCanFinalize())
+						.canEscalate(hierarchy.isCanEscalate())
+						.build();
 			
-			
+				list.add(hierarchyManagement);
+			}
+			hierarchyRepo.saveAllAndFlush(list);
+			return true;
 		} catch (Exception e) {
 			log.error("Exception occurred: {}", e.getMessage(), e);
 			return null;
 		}
-		return res;
 	}
 	
-
+	
 	public List<HierarchyRes> getAllHierarchyManagement(Integer companyId, Integer productId) {
 		List<HierarchyManagement> allHierarchy = hierarchyRepo.findAllByCompanyIdAndProductId(companyId, productId);
 		return allHierarchy.stream()
@@ -231,7 +197,6 @@ public class HierarchyManagementServiceImpl implements HierarchyManagementServic
 	
 		return resList;
 	}
-
 	
 	
 }
