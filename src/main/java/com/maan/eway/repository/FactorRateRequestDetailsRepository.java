@@ -193,4 +193,7 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 	 * @since : 09-01-2025
 	 */
 	public List<FactorRateRequestDetails> findAllByRequestReferenceNo(String requestReferenceNo);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndSectionIdNot(String requestReferenceNo, int i);
+
 }

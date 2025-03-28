@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -30,7 +31,10 @@ import com.maan.eway.common.req.GetSectionReq;
 import com.maan.eway.common.res.DropdownResponse;
 import com.maan.eway.common.res.GetSectionRes;
 import com.maan.eway.common.service.CompanyProductSectionCoverService;
+import com.maan.eway.repository.FactorRateMasterRepository;
+import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 
 import jakarta.persistence.EntityManager;
@@ -53,6 +57,12 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 
 	@Autowired
 	private SectionDataDetailsRepository secRepo;
+	
+	@Autowired
+	private FactorRateRequestDetailsRepository factorRepo;
+	
+	@Autowired
+	private PolicyCoverDataRepository policyRepo;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -72,12 +82,20 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 
 			
 			List<ProductSectionMaster> getSectionList = getallSectionDetails(req.getProductId(), req.getCompanyId());
-			List<ProductSectionMaster> filteredSectionList = null;
+			
+			HomePositionMaster homeData = homeRepo.findByPolicyNo(req.getPrevPolicyNo());
+			List<FactorRateRequestDetails> factorList=factorRepo.findByRequestReferenceNoAndSectionIdNot(homeData.getRequestReferenceNo(),99999);
+			List<FactorRateRequestDetails> uniqueSecId = factorList.stream().filter(distinctByKey(o -> Arrays.asList(o.getSectionId())))
+					.collect(Collectors.toList());
+			uniqueSecId.sort(Comparator.comparing(FactorRateRequestDetails::getSectionId));
+			List<FactorRateRequestDetails> filteredSectionList = null;
+			
+			
 			List<SectionDataDetails> secList = secRepo
-					.findByPolicyNoOrderByLocationIdAsc(req.getPrevPolicyNo());
+					.findByPolicyNoAndStatusNotOrderByLocationIdAsc(req.getPrevPolicyNo(),"D");
 			List<SectionDataDetails> optedSec = secList.stream().filter(distinctByKey(o -> Arrays.asList(o.getSectionId()))).collect(Collectors.toList());
-			if (secList != null && getSectionList != null) {
-				filteredSectionList = getSectionList.stream()
+			if (secList != null && uniqueSecId != null) {
+				filteredSectionList = uniqueSecId.stream()
 						.filter(m -> secList.stream()
 								.noneMatch(risk -> m.getSectionId().equals(Integer.valueOf(risk.getSectionId())))) 
 						.collect(Collectors.toList());
@@ -85,10 +103,11 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			
 			
 			List<DropdownResponse> unOpdropList = new ArrayList<DropdownResponse>();
-			for (ProductSectionMaster data : filteredSectionList) {
+			for (FactorRateRequestDetails data : filteredSectionList) {
 				DropdownResponse dropres = new DropdownResponse();
+				List<ProductSectionMaster> p=getSectionList.stream().filter(o->o.getSectionId().equals(data.getSectionId())).collect(Collectors.toList());
 				dropres.setCode(data.getSectionId().toString());
-				dropres.setCodeDesc(StringUtils.isBlank(data.getSectionName()) ? "" : data.getSectionName());
+				dropres.setCodeDesc(StringUtils.isBlank(p.get(0).getSectionName()) ? "" : p.get(0).getSectionName());
 				unOpdropList.add(dropres);
 			}
 			List<DropdownResponse> opdropList = new ArrayList<DropdownResponse>();
