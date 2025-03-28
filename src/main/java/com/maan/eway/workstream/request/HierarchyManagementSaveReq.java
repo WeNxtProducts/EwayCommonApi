@@ -29,5 +29,8 @@ public class HierarchyManagementSaveReq {
 		
 	@JsonProperty("Hierarchies")
 	private List<Hierarchy> hierarchies;
+	
+	@JsonProperty("HierarchyYN")
+	private String hierarchyYN;
 
 }

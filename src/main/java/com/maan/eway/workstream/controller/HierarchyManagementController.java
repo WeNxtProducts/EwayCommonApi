@@ -20,6 +20,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.workstream.request.HierarchyLevelDropdownReq;
 import com.maan.eway.workstream.request.HierarchyManagementGetReq;
 import com.maan.eway.workstream.request.HierarchyManagementSaveReq;
@@ -62,20 +63,16 @@ public class HierarchyManagementController {
 		}
 		
 		
-		Boolean savedResponse = hierarchyService.saveAllHierarchyManagement(req);
+		SuccessRes savedResponse = hierarchyService.saveAllHierarchyManagement(req);
 		if(savedResponse == null) {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 		
 		response.setMessage("success");
 		response.setIsError(false);
-		if(savedResponse == false) {
-			response.setCommonResponse(Map.of("Status", "Hierarchy Management Already Exists"));
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		}
-		
-		response.setCommonResponse(Map.of("Status", "Hierarchy Management Saved Successfully"));
-		return new ResponseEntity<>(response, HttpStatus.CREATED);				
+		response.setCommonResponse(savedResponse);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+					
 	}
 	
 	
