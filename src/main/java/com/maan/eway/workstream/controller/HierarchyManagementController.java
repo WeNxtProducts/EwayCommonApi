@@ -4,6 +4,7 @@
  */
 package com.maan.eway.workstream.controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.workstream.request.HierarchyLevelDropdownReq;
 import com.maan.eway.workstream.request.HierarchyManagementGetReq;
 import com.maan.eway.workstream.request.HierarchyManagementSaveReq;
 import com.maan.eway.workstream.response.HierarchyRes;
@@ -58,20 +63,16 @@ public class HierarchyManagementController {
 		}
 		
 		
-		Boolean savedResponse = hierarchyService.saveAllHierarchyManagement(req);
+		SuccessRes savedResponse = hierarchyService.saveAllHierarchyManagement(req);
 		if(savedResponse == null) {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 		
 		response.setMessage("success");
 		response.setIsError(false);
-		if(savedResponse == false) {
-			response.setCommonResponse(Map.of("Status", "Hierarchy Management Already Exists"));
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		}
-		
-		response.setCommonResponse(Map.of("Status", "Hierarchy Management Saved Successfully"));
-		return new ResponseEntity<>(response, HttpStatus.CREATED);				
+		response.setCommonResponse(savedResponse);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+					
 	}
 	
 	
@@ -106,6 +107,23 @@ public class HierarchyManagementController {
 		response.setCommonResponse(hierarchyLevels);
 		
 		return new ResponseEntity<>(response, HttpStatus.OK);		
+	}
+	
+	@PostMapping("/dropdown")
+	public ResponseEntity<DropdownCommonRes> hierarchyLevelDropdown(@RequestBody HierarchyLevelDropdownReq req){
+		DropdownCommonRes data = new DropdownCommonRes();
+		
+		List<DropDownRes> res = hierarchyService.getHierarchyLevelDropdown(req.getCompanyId(),req.getItemType());
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 	}
 
 }

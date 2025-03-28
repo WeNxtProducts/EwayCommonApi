@@ -7,6 +7,7 @@ package com.maan.eway.workstream.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.workstream.request.HierarchyManagementGetReq;
 import com.maan.eway.workstream.request.HierarchyManagementSaveReq;
 import com.maan.eway.workstream.response.HierarchyRes;
@@ -17,7 +18,7 @@ public interface HierarchyManagementService {
 	
 	public List<Error> validateParametersForHierarchyGetReq(HierarchyManagementGetReq req);
 	
-	public Boolean saveAllHierarchyManagement(HierarchyManagementSaveReq req);
+	public SuccessRes saveAllHierarchyManagement(HierarchyManagementSaveReq req);
 	
 	public List<HierarchyRes> getAllHierarchyManagement(Integer companyId, Integer productId);
 	

@@ -2261,7 +2261,7 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 		List<EserviceBuildingDetails> motors = ebuilding.stream()
 			    .filter(m -> buildingRisk.stream()
 			        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
-			                        && m.getQuoteNo().equals(risk.getQuoteNo())
+			                        && m.getRequestReferenceNo().equals(risk.getRequestReferenceNo())
 			                        && m.getLocationId().equals(risk.getLocationId())
 			                        && m.getSectionId().equals(risk.getSectionId())
 			        		))
@@ -2272,7 +2272,7 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 			for (EserviceBuildingDetails data : motors) {
 				BuildingRiskDetails matchingRisk = buildingRisk.stream()
 						.filter(risk -> risk.getRiskId().equals(data.getRiskId())
-								&& risk.getQuoteNo().equals(data.getQuoteNo())
+								&& risk.getRequestReferenceNo().equals(data.getRequestReferenceNo())
 								&& risk.getLocationId().equals(data.getLocationId())
 								&& risk.getSectionId().equals(data.getSectionId()))
 						.findFirst().orElse(null);
@@ -2718,7 +2718,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 		List<EserviceSectionDetails> filteredSectionList = eserSec.stream()
 			    .filter(m -> secList.stream()
 			        .anyMatch(risk -> m.getRiskId().equals(risk.getRiskId()) 
-			                        && m.getQuoteNo().equals(risk.getQuoteNo())
+			        		  && m.getRequestReferenceNo().equals(risk.getRequestReferenceNo())
 			                        && m.getLocationId().equals(risk.getLocationId())
 			                        && m.getSectionId().equals(risk.getSectionId())
 			        		))
@@ -2730,7 +2730,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				
 				SectionDataDetails matchingRisk = secList.stream()
 						.filter(risk -> risk.getRiskId().equals(data.getRiskId())
-								&& risk.getQuoteNo().equals(data.getQuoteNo())
+								&& risk.getRequestReferenceNo().equals(data.getRequestReferenceNo())
 								&& risk.getLocationId().equals(data.getLocationId())
 								&& risk.getSectionId().equals(data.getSectionId()))
 						.findFirst().orElse(null);
@@ -2758,6 +2758,16 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 				savedata.setStatus("E");
 				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+//				savedata.setSumInsured(matchingRisk.getSumInsured()==null ? BigDecimal.ZERO : matchingRisk.getSumInsured() );
+//				savedata.setSumInsuredLc(matchingRisk.getSumInsuredLc()==null ? BigDecimal.ZERO : matchingRisk.getSumInsuredLc() );
+////				savedata.setEmiPremium(BigDecimal.ONE);
+//				savedata.setVatPremium(matchingRisk.getVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getVatPremium() );
+//				savedata.setEndtPremium(matchingRisk.getEndtPremium()==null ? 0 : matchingRisk.getEndtPremium() );
+//				savedata.setEndtVatPremium(matchingRisk.getEndtVatPremium()==null ? BigDecimal.ZERO : matchingRisk.getEndtVatPremium() );
+//				savedata.setActualPremiumFc(matchingRisk.getActualPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumFc() );
+//				savedata.setActualPremiumLc(matchingRisk.getActualPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getActualPremiumLc() );
+//				savedata.setOverallPremiumFc(matchingRisk.getOverallPremiumFc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumFc() );
+//				savedata.setOverallPremiumLc(matchingRisk.getOverallPremiumLc()==null ? BigDecimal.ZERO : matchingRisk.getOverallPremiumLc() );
 				eserSecRepo.saveAndFlush(savedata);
 			}
 		}

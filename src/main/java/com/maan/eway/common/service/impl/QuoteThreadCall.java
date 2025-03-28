@@ -1078,6 +1078,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    
 		    MotorDataDetails refinedMotor = m.convertValue(motorKeyValue, MotorDataDetails.class);
 		    BigDecimal exchangeRate = refinedMotor.getExchangeRate()!=null ? new BigDecimal(refinedMotor.getExchangeRate()) : BigDecimal.ZERO ;
+		    refinedMotor.setSeatingCapacity(motorData.getSeatingCapacity() != null ? motorData.getSeatingCapacity() :0);
 		    refinedMotor.setSumInsuredLc(refinedMotor.getSumInsured()==null ? null : new BigDecimal(refinedMotor.getSumInsured()).multiply(exchangeRate) );
 		    refinedMotor.setAcccessoriesSumInsuredLc(refinedMotor.getAcccessoriesSumInsured()==null ? null : new BigDecimal(refinedMotor.getAcccessoriesSumInsured()).multiply(exchangeRate) );
 		    refinedMotor.setWindScreenSumInsuredLc(refinedMotor.getWindScreenSumInsured()==null ? null : new BigDecimal(refinedMotor.getWindScreenSumInsured()).multiply(exchangeRate) );

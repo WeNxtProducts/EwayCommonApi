@@ -226,7 +226,7 @@ import jakarta.persistence.criteria.Subquery;
 			} 
 			try {
 				if("N".equalsIgnoreCase(req.getStatus())){	
-					return null;
+					return res;
 				}
 				BigDecimal adv=new BigDecimal(0);
 				Integer noOfMonth=0, instalId=0;
