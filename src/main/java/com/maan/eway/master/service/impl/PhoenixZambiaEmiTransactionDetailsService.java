@@ -225,9 +225,7 @@ import jakarta.persistence.criteria.Subquery;
 				return res;
 			} 
 			try {
-				if("N".equalsIgnoreCase(req.getStatus())){	
-					return res;
-				}
+				
 				BigDecimal adv=new BigDecimal(0);
 				Integer noOfMonth=0, instalId=0;
 			if("N".equalsIgnoreCase(req.getStatus())) {
@@ -236,8 +234,8 @@ import jakarta.persistence.criteria.Subquery;
 				if (list.size() > 0 && StringUtils.isNotBlank(req.getQuoteNo())) {
 					repo.deleteAll(list);
 				}
-				res.setSuccessId(req.getQuoteNo());
-				res.setResponse("Saved Successful");
+				res.setSuccessId("N");
+				res.setResponse("No Choose EMI");
 			}else if("Y".equalsIgnoreCase(req.getEmiYn()) && StringUtils.isNotBlank(req.getEndtTypeId()) && "Y".equalsIgnoreCase(req.getStatus())) {
 				res= getEndorsementEmiDetails(req);
 			}else {

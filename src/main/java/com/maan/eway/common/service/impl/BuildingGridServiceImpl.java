@@ -3625,8 +3625,6 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					
 					if (portfolio != null && portfolio.size() > 0) {
 						portfolio = portfolio.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
-					}else {
-						portfolio=null;
 					}
 					resp.setPending(portfolio);
 					resp.setCount(totalProtfolioPending( req,branches,startDate,limit,offset, status) );
