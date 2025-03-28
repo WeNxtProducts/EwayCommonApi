@@ -22,11 +22,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.gson.Gson;
+import com.maan.eway.admin.service.RestTemplateApiService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
@@ -81,6 +86,7 @@ import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.req.ViewQuoteReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndtUpdatePremiumRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
@@ -89,6 +95,7 @@ import com.maan.eway.endorsment.util.CoverFromPolicy;
 import com.maan.eway.endorsment.util.CreateEndorsment;
 import com.maan.eway.endorsment.util.DiscountFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
+import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
@@ -165,8 +172,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 	  private CoverCalculator calc;
 	 */
 	
+	@Autowired
+	RestTemplateApiService restTemplateApiService;
+	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
+	
+	@Value(value = "${calEngine}")
+	private String calEngine;
 
 	
 	protected List<Tuple> commontbl = null;
@@ -808,19 +821,33 @@ public class CalculatorEngineService implements CalculatorEngine {
 				BigDecimal endtCount = new BigDecimal(result.get(0).get("endtCount").toString());
 
 				String originalPolicyNo = result.get(0).get("originalPolicyNo").toString();
-				List<PolicyCoverDataEndt> oldPolicyData = policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
+				List<PolicyCoverDataEndt> oldPolicyData =null;
+				if(!"0".equals(engine.getCoverId())) {
+					oldPolicyData =policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndCoverIdOrderByCoverIdAsc(originalPolicyNo,
+							Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
+							Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()),Integer.parseInt(engine.getCoverId()));
+				}else {
+					oldPolicyData =policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
 						Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 						Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()));
-				
+				}
 				EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(engine.getInsuranceId(), engine.getProductId(),
 						endtTypeId);
 
 				retc.stream().forEach(i -> i.setEndtCount(endtCount));
 			 	// find Prev Quote Data
-				List<PolicyCoverData> oldPolicyCovers = coverDataRepo
+				List<PolicyCoverData> oldPolicyCovers =null;
+				if(!"0".equals(engine.getCoverId())) {
+					oldPolicyCovers= coverDataRepo
+							.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusAndCoverIdOrderByCoverIdAsc(
+									endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
+									Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y",Integer.parseInt(engine.getCoverId()));
+				}else {
+					oldPolicyCovers = coverDataRepo
 						.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusOrderByCoverIdAsc(
 								endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 								Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
+				}
 				List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
 				TaxUtils tzx = new TaxUtils(endtCount,"");
 				TaxUtils tzxEndt = new TaxUtils(endtCount,endtTypeId);
@@ -4052,7 +4079,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 	}
   
 	@Override
-	public synchronized List<EserviceMotorDetailsSaveRes> getCalc(CalcEngine request, String token) {
+	public  List<EserviceMotorDetailsSaveRes> getCalc(CalcEngine request, String token) {
 		 List<EserviceMotorDetailsSaveRes> resList=new ArrayList<EserviceMotorDetailsSaveRes>();
 		try {
 			Integer locationId=0;
@@ -4140,8 +4167,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 									objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE);
 									System.out.println("Calculator Request -->Vehicle Id " +bd.getRiskId()+" \nCover Id : "+bd.getCoverId()+"\nRequest -->  " + objectMapper.writeValueAsString(engine));
 								
-									EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
-									new Thread().sleep(10000L);
+								  //   = calculator( engine,  token) ;
+								    String url = calEngine;
+                                    EserviceMotorDetailsSaveRes res = restTemplateApiService.callEngine( url,engine, token);
+
+									//new Thread().sleep(10000L);
 									resList.add(res);
 									}
 							}
@@ -4174,7 +4204,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 							ObjectMapper objectMapper = new ObjectMapper();
 							objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE);
 							System.out.println("Calculator Request -->Vehicle Id " +cd.getRiskId()+" \nCover Id : "+cd.getCoverId()+"\nRequest -->  " + objectMapper.writeValueAsString(engine));
-							EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+							String url = calEngine;
+                            EserviceMotorDetailsSaveRes res = restTemplateApiService.callEngine( url,engine, token);
 							resList.add(res);
 						}
 					 }
@@ -4193,4 +4224,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 		return resList;
 	}
+	
+	
+
 }

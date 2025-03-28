@@ -36,4 +36,7 @@ public interface PolicyCoverDataEndtRepository  extends JpaRepository<PolicyCove
 	List<PolicyCoverDataEndt> findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(
 			String originalPolicyNo, int parseInt, String insuranceId, int parseInt2, int parseInt3);
 
+	List<PolicyCoverDataEndt> findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndCoverIdOrderByCoverIdAsc(
+			String originalPolicyNo, int parseInt, String insuranceId, int parseInt2, int parseInt3, int parseInt4);
+
 }
