@@ -59,4 +59,10 @@ public class EserviceMotorDetailsSaveRes {
 	
 	@JsonProperty("MasterReferral")
 	private List<MasterReferal> referals;
+	
+	@JsonProperty("CoverId")
+	public String coverId;
+
+	
+	
 }

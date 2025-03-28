@@ -91,6 +91,9 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(
 			String requestReferenceNo, Integer vehicleId, Integer productId, Integer sectionId);
+	
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdAndCoverId(
+			String requestReferenceNo, Integer vehicleId, Integer productId, Integer sectionId,Integer Coverid);
 
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(
 			String requestReferenceNo, int i, int j);
@@ -108,6 +111,11 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 	void deleteByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndCoverIdNotIn(
 			String companyId,Integer productId,String requestRefNo,Integer vehicleId,Integer sectionId,
 			List<Integer> coverId);
+	
+	@Transactional
+	void deleteByCompanyIdAndProductIdAndRequestReferenceNoAndLocationIdAndVehicleIdAndSectionIdAndCoverIdNotIn(
+			String insuranceId,Integer Productid,String requestReferenceno,Integer LocatinId,Integer riskid,Integer Sectionid, List<Integer> coverIdList);
+	
 
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndVehicleIdAndSectionIdOrderByVehicleIdAsc(
 			String requestReferenceNo, int i, int j, Integer vehicleId, Integer valueOf, Integer valueOf2);
@@ -201,5 +209,14 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndSectionIdNot(String requestReferenceNo, int i);
 
+
+
+	void deleteByRequestReferenceNoAndVehicleIdAndSectionIdNotInAndLocationIdAndCoverId(String requestReferenceNo,
+			Integer valueOf, List<Integer> optedSectionIds, Integer valueOf2, Integer valueOf3);
+
+	@Transactional
+	void deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdAndCoverId(
+			String requestReferenceNo, Integer valueOf, String insuranceId, Integer valueOf2, Integer valueOf3,
+			Integer valueOf4, Integer parseInt);
 
 }

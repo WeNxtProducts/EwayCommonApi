@@ -745,7 +745,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				 */catch (Exception e) {
 				e.printStackTrace();
 			}
-
+             System.out.println("FactorRateRequestDetails Save-----------------------------");
 			try {
 				EserviceMotorDetailsSaveRes response = new EserviceMotorDetailsSaveRes();
 				response.setCoverList(retc);
@@ -764,6 +764,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				response.setUpdateas(isEndt);
 				response.setUwList(referr);
 				response.setReferals(masterreferral);
+				response.setCoverId(engine.getCoverId());
 				fservice.saveFactorRateRequestDetails(response);
 
 				// Update Premium,referral
@@ -874,6 +875,45 @@ public class CalculatorEngineService implements CalculatorEngine {
 					CoverFromPolicy coverUtil = new CoverFromPolicy("");
 					List<Cover> covers = oldPolicyCovers.stream().filter(r -> d.getCoverId() == r.getCoverId())
 							.map(coverUtil).filter(dx -> dx != null).collect(Collectors.toList());
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
 					/*
 					 * List<Cover> oldTax = covers.stream().filter(c ->
 					 * "T".equals(c.getCoverageType())).collect(Collectors.toList());
@@ -915,11 +955,24 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 			dependedcovers.add("N");
 			dependedcovers.add("Y");
-
-			List<FactorRateRequestDetails> factors = repository
-					.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(
-							request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),
-							Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
+			List<FactorRateRequestDetails> factors;
+			
+			
+			
+			if(!"0".equals(request.getCoverId())) {
+				 factors = repository
+						.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdAndCoverId(
+								request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),
+								Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()),
+								Integer.valueOf(request.getCoverId())
+								);	
+			}
+			else {
+				 factors = repository
+						.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(
+								request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),
+								Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
+			}
 
 			// TaxFromFactor tzx=new TaxFromFactor();
 			List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
@@ -1155,6 +1208,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				response.setLocationId(request.getLocationId());
 				response.setMsrefno(request.getMsrefno());
 				response.setUpdateas("admin");
+				response.setCoverId(request.getCoverId());
 				// response.setUwList(referr);
 
 				fservice.saveFactorRateRequestDetails(response);
@@ -1510,7 +1564,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				response.setLocationId(request.getLocationId());
 				response.setUpdateas("admin");
 				// response.setUwList(referr);
-
+                response.setCoverId(request.getCoverId());
 				fservice.saveFactorRateRequestDetails(response);
 
 				// Update Premium,referral
@@ -3873,6 +3927,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setUwList(referr);
 			response.setReferals(masterreferral);
 			response.setLocationId(engine.getLocationId());
+			response.setCoverId(engine.getCoverId());
 			fservice.saveFactorRateRequestDetails(response); 
 			return response;
 		}catch (Exception e) {
@@ -3995,21 +4050,22 @@ public class CalculatorEngineService implements CalculatorEngine {
 		date = calendar.getTime();
 		return date;
 	}
-
+  
 	@Override
-	public List<EserviceMotorDetailsSaveRes> getCalc(CalcEngine request, String token) {
+	public synchronized List<EserviceMotorDetailsSaveRes> getCalc(CalcEngine request, String token) {
 		 List<EserviceMotorDetailsSaveRes> resList=new ArrayList<EserviceMotorDetailsSaveRes>();
 		try {
 			Integer locationId=0;
 			String riskId="";
 			String sectionId="";
 			
-			CalcEngine engine=new CalcEngine();
+			
 			System.out.println("Calculator Calling Api");
 			
 			List<EserviceMotorDetails> motorList=eservicemotorRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 			if(!motorList.isEmpty()) {
 				for(EserviceMotorDetails data:motorList) {
+					CalcEngine engine=new CalcEngine();
 					engine.setLocationId(data.getLocationId()==null?"1":data.getLocationId().toString());
 					engine.setBranchCode(data.getBranchCode());
 					engine.setInsuranceId(data.getCompanyId());
@@ -4062,7 +4118,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									.collect(Collectors.toList());
 							
 							for (EserviceBuildingDetails bd : building) {
-								
+									CalcEngine engine=new CalcEngine();
 									engine.setLocationId(bd.getLocationId().toString());
 									engine.setBranchCode(bd.getBranchCode());
 									engine.setInsuranceId(bd.getCompanyId());
@@ -4083,7 +4139,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 									ObjectMapper objectMapper = new ObjectMapper();
 									objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE);
 									System.out.println("Calculator Request -->Vehicle Id " +bd.getRiskId()+" \nCover Id : "+bd.getCoverId()+"\nRequest -->  " + objectMapper.writeValueAsString(engine));
+								
 									EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+									new Thread().sleep(10000L);
 									resList.add(res);
 									}
 							}
@@ -4095,6 +4153,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 										&& o.getRiskId().equals(s.getRiskId()))
 								.collect(Collectors.toList());
 						for (EserviceCommonDetails cd : common) {
+							CalcEngine engine=new CalcEngine();
 							engine.setLocationId(cd.getLocationId().toString());
 							engine.setBranchCode(cd.getBranchCode());
 							engine.setInsuranceId(cd.getCompanyId());
