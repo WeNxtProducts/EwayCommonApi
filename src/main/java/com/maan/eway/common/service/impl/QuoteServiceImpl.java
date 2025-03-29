@@ -1207,7 +1207,8 @@ public class QuoteServiceImpl implements QuoteService {
 //			totalList.addAll(paccGetResList);
 			// Location Wise Details
 		//	List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
-		List<SectionDataDetails> secDatas2 = secDataRepo.findByQuoteNoAndStatusNot(req.getQuoteNo(), "D");
+//		List<SectionDataDetails> secDatas2 = secDataRepo.findByQuoteNoAndStatusNot(req.getQuoteNo(), "D");
+			List<SectionDataDetails> secDatas2 = secDataRepo.findByQuoteNo(req.getQuoteNo());
 		Set<Integer> findlocationid = secDatas2.stream().map(SectionDataDetails::getLocationId).distinct()
 				.collect(Collectors.toSet());
 		LocationDetailsRes locRes = null;
