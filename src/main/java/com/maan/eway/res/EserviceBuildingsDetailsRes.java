@@ -386,5 +386,9 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 
 	@JsonProperty("FinalyzeYn")
 	private String finalizeYn;
+	
+
+	@JsonProperty("CategoryDesc")
+	private String categoryDesc;
 
 }
