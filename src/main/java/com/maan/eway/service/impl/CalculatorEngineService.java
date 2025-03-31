@@ -1400,8 +1400,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 			dependedcovers.add("Y");
 
 			List<FactorRateRequestDetails> factors = repository
-					.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(
-							request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),
+					.findByRequestReferenceNoAndLocationIdAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(
+							request.getRequestReferenceNo(),Integer.valueOf(request.getLocationId()), Integer.valueOf(request.getVehicleId()),
 							Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
 
 			// TaxFromFactor tzx=new TaxFromFactor();
