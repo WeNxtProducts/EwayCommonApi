@@ -473,9 +473,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-		
+			List<Integer> riskIDs = request.getVehicleIdsList().stream().map(a -> a.getVehicleId()) .collect(Collectors.toList());
+			List<Integer> Coverid=request.getVehicleIdsList().stream().flatMap(a->a.getCoverIdList().stream().map(x->x.getCoverId())).collect(Collectors.toList());
+			List<String> sectionid=request.getVehicleIdsList().stream().map(a->a.getSectionId()).collect(Collectors.toList());
+			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
 			// Cover Calc
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdAndLocationIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getSectionId()),request.getLocationId());
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdInAndLocationIdInOrderByVehicleIdAsc(request.getRequestReferenceNo() ,sectionid,locationid);
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
 			List<FactorRateRequestDetails>  coverTaxes = new  ArrayList<FactorRateRequestDetails>();
 
@@ -483,8 +486,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 				List<CoverIdsReq> coverReqList = veh.getCoverIdList().size() > 0 ? veh.getCoverIdList() : new ArrayList<CoverIdsReq>();
 				for ( CoverIdsReq covReq :  coverReqList) {
 				 
-					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getVehicleId().equals(veh.getVehicleId()) && 
-							o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) &&  o.getIsSelected()!=null && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());				
+					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getVehicleId().equals(veh.getVehicleId())
+							&& 	o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) 
+							&&  o.getIsSelected()!=null && o.getCoverId().equals(covReq.getCoverId()) 
+							&& o.getDiscLoadId().equals(0) 
+							&& o.getTaxId().equals(0) 
+							&& o.getLocationId().equals(veh.getLocationId()))
+							.collect(Collectors.toList());				
 							List<FactorRateRequestDetails> filterCoverTaxes = covers.stream().filter( o ->   o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getCoverageType().equalsIgnoreCase("T") ).collect(Collectors.toList());				
 							
 				if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
@@ -542,12 +550,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
 			DecimalFormat df = new DecimalFormat(pattern);
 			
-			premiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserCommonData.getCoverId())).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
-			 overAllPremiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserCommonData.getCoverId())).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
+			premiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserCommonData.getCoverId()) &&  Objects.equals(o.getSectionId().toString(), eserCommonData.getSectionId()) && Objects.equals(o.getLocationId(), eserCommonData.getLocationId())).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+			 overAllPremiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserCommonData.getCoverId()) &&  Objects.equals(o.getSectionId().toString(), eserCommonData.getSectionId()) && Objects.equals(o.getLocationId(), eserCommonData.getLocationId())).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
 			
-			 premiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserCommonData.getCoverId())).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
-			 overAllPremiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserCommonData.getCoverId())).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
-			 taxPremium = coverTaxes.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") &&  Objects.equals(o.getCoverId(), eserCommonData.getCoverId()) ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
+			 premiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserCommonData.getCoverId()) &&  Objects.equals(o.getSectionId().toString(), eserCommonData.getSectionId()) && Objects.equals(o.getLocationId(), eserCommonData.getLocationId())).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+			 overAllPremiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserCommonData.getCoverId()) &&  Objects.equals(o.getSectionId().toString(), eserCommonData.getSectionId()) && Objects.equals(o.getLocationId(), eserCommonData.getLocationId())).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+			 taxPremium = coverTaxes.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") &&  Objects.equals(o.getCoverId(), eserCommonData.getCoverId()) &&  Objects.equals(o.getSectionId().toString(), eserCommonData.getSectionId()) && Objects.equals(o.getLocationId(), eserCommonData.getLocationId())).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
 			
 			 
 			// Update Eservice Motor
@@ -1683,7 +1691,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdAndLocationIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getSectionId()),request.getLocationId());
+			List<Integer> riskIDs = request.getVehicleIdsList().stream().map(a -> a.getVehicleId()) .collect(Collectors.toList());
+			List<Integer> Coverid=request.getVehicleIdsList().stream().flatMap(a->a.getCoverIdList().stream().map(x->x.getCoverId())).collect(Collectors.toList());
+			List<String> sectionid=request.getVehicleIdsList().stream().map(a->a.getSectionId()).collect(Collectors.toList());
+			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdInAndLocationIdInOrderByVehicleIdAsc(request.getRequestReferenceNo() ,sectionid,locationid);
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
 			List<FactorRateRequestDetails>  coverTaxes = new  ArrayList<FactorRateRequestDetails>();
 			//find non useropted cover:
@@ -1698,7 +1710,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 									&& o.getIsSelected() != null 
 									&& o.getCoverId().equals(covReq.getCoverId())
 									&& o.getDiscLoadId().equals(0) 
-									&& o.getTaxId().equals(0))
+									&& o.getTaxId().equals(0)
+									&& o.getLocationId().equals(veh.getLocationId()))
 							.collect(Collectors.toList());				
 					List<FactorRateRequestDetails> filterCoverTaxes = covers
 							.stream().filter(o -> 
@@ -1748,10 +1761,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					.collect(Collectors.toList());
 			
 			// Find Building
-			List<Integer> riskIDs = request.getVehicleIdsList().stream().map(a -> a.getVehicleId()) .collect(Collectors.toList());
-			List<Integer> Coverid=request.getVehicleIdsList().stream().flatMap(a->a.getCoverIdList().stream().map(x->x.getCoverId())).collect(Collectors.toList());
-			List<String> sectionid=request.getVehicleIdsList().stream().map(a->a.getSectionId()).collect(Collectors.toList());
-			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
+			
 			List<EserviceBuildingDetails> eserBuild1 = null;
 			if (isEndt.size() > 0 && isEndt != null && !isEndt.isEmpty()) {
 				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndSectionIdAndLocationId(
@@ -1768,12 +1778,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 for(EserviceBuildingDetails section:eserBuild1) { 
 				EserviceSectionDetails  eSecUpdate = eserSecRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationIdAndCoverId(section.getRequestReferenceNo() ,section.getRiskId() ,section.getSectionId(),section.getLocationId(),section.getCoverId());
 				EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionIdAndLocationIdAndCoverId(section.getRequestReferenceNo() , section.getRiskId(),section.getSectionId(),section.getLocationId(),section.getCoverId());
-				 premiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
-				 overAllPremiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
+				 premiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserBuild.getCoverId()) && Objects.equals(o.getSectionId().toString(), eserBuild.getSectionId()) && Objects.equals(o.getLocationId(), eserBuild.getLocationId())).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+				 overAllPremiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D && Objects.equals(o.getCoverId(), eserBuild.getCoverId()) && Objects.equals(o.getSectionId().toString(), eserBuild.getSectionId()) && Objects.equals(o.getLocationId(), eserBuild.getLocationId())).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
 				
-				 premiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
-				 overAllPremiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserBuild.getCoverId())).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
-				 taxPremium = coverTaxes.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") &&  Objects.equals(o.getCoverId(), eserBuild.getCoverId()) ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
+				 premiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserBuild.getCoverId()) && Objects.equals(o.getSectionId().toString(), eserBuild.getSectionId()) && Objects.equals(o.getLocationId(), eserBuild.getLocationId())).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+				 overAllPremiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0)  && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D &&  Objects.equals(o.getCoverId(), eserBuild.getCoverId()) && Objects.equals(o.getSectionId().toString(), eserBuild.getSectionId()) && Objects.equals(o.getLocationId(), eserBuild.getLocationId())).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+				 taxPremium = coverTaxes.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") &&  Objects.equals(o.getCoverId(), eserBuild.getCoverId()) && Objects.equals(o.getSectionId().toString(), eserBuild.getSectionId()) && Objects.equals(o.getLocationId(), eserBuild.getLocationId())).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
 				
 				eserBuild.setQuoteNo(request.getQuoteNo());
 				eserBuild.setCustomerId(request.getCustomerId());

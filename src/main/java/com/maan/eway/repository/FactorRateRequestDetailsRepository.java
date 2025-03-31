@@ -219,4 +219,7 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 			String requestReferenceNo, Integer valueOf, String insuranceId, Integer valueOf2, Integer valueOf3,
 			Integer valueOf4, Integer parseInt);
 
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndSectionIdInAndLocationIdInOrderByVehicleIdAsc(
+			String requestReferenceNo, List<String> sectionid, List<Integer> locationid);
+
 }
