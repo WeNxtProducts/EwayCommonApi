@@ -16,5 +16,7 @@ public class GetSectionReq {
 	private String productId;
 	@JsonProperty("SectionId")
 	private String sectionId;
+	@JsonProperty("LocationId")
+	private String locationId;
 	
 }

@@ -12,4 +12,6 @@ public interface CompanyProductSectionCoverService {
 	GetSectionRes getOptedAndUnoptedSection(GetSectionReq req);
 
 	GetSectionRes getOptedAndUnoptedSectionCover(GetSectionReq req);
+
+	GetSectionRes getOptedLocationId(GetSectionReq req);
 }

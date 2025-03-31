@@ -4175,7 +4175,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									resList.add(res);
 									}
 							}
-					 }else  if("H".equalsIgnoreCase(s.getProductType())) {
+					 }else  if("H".equalsIgnoreCase(s.getProductType())&& (!s.getProductId().equalsIgnoreCase(travelProductId))) {
 						 List<EserviceCommonDetails> comdata = eservicecommonRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo(),data);
 						 if(!comdata.isEmpty()&&comdata.size()>0 && comdata!=null) {
 						 List<EserviceCommonDetails> common=comdata.stream()
