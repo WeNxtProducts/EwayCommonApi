@@ -1388,7 +1388,9 @@ public class QuoteServiceImpl implements QuoteService {
 					coverRes.setCoverageLimit(filterCover.get(0).getCoverageLimit()==null ? "" :filterCover.get(0).getCoverageLimit().toPlainString());
 					
 					List<PolicyCoverData> endCoverData = covers.stream()
-							.filter(a -> a.getCoverId().equals(coverId) && a.getCoverageType().equalsIgnoreCase("E"))
+							.filter(a -> a.getCoverId().equals(coverId)
+									&& a.getVehicleId() == filterCover.get(0).getVehicleId()
+									&& a.getCoverageType().equalsIgnoreCase("E"))
 							.collect(Collectors.toList());
 					if (endCoverData != null && !endCoverData.isEmpty()){
 						EndorsmentRes endorsmentRes = new EndorsmentRes();
