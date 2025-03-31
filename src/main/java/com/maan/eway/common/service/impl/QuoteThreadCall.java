@@ -477,6 +477,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<Integer> Coverid=request.getVehicleIdsList().stream().flatMap(a->a.getCoverIdList().stream().map(x->x.getCoverId())).collect(Collectors.toList());
 			List<String> sectionid=request.getVehicleIdsList().stream().map(a->a.getSectionId()).collect(Collectors.toList());
 			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
+
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdInAndLocationIdInOrderByVehicleIdAsc(request.getRequestReferenceNo() ,sectionid,locationid);
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
@@ -525,11 +526,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<FactorRateRequestDetails> isEndt = covers.stream()
 					.filter(o -> o.getCoverageType().equalsIgnoreCase("E"))
 					.collect(Collectors.toList());
-			List<Integer> riskIDs = request.getVehicleIdsList().stream().map(a -> a.getVehicleId()) .collect(Collectors.toList());
-			List<Integer> Coverid=request.getVehicleIdsList().stream().flatMap(a->a.getCoverIdList().stream().map(x->x.getCoverId())).collect(Collectors.toList());
-			List<String> sectionid=request.getVehicleIdsList().stream().map(a->a.getSectionId()).collect(Collectors.toList());
-			List<Integer> locationid=request.getVehicleIdsList().stream().map(a->a.getLocationId()).collect(Collectors.toList());
-			List<EserviceCommonDetails>     eserCommonData1=null;
+						List<EserviceCommonDetails>     eserCommonData1=null;
 			if (isEndt.size() > 0 && isEndt != null && !isEndt.isEmpty()) {
 				eserCommonData1 = eserCommonRepo.findByRequestReferenceNoAndSectionIdAndLocationId(
 						request.getRequestReferenceNo(), request.getSectionId(), request.getLocationId());
