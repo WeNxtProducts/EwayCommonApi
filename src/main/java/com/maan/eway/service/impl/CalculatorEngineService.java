@@ -3954,7 +3954,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setUwList(referr);
 			response.setReferals(masterreferral);
 			response.setLocationId(engine.getLocationId());
-			response.setCoverId(engine.getCoverId());
+			response.setCoverId(StringUtils.isBlank(engine.getCoverId())?"99999":engine.getCoverId());
 			fservice.saveFactorRateRequestDetails(response); 
 			return response;
 		}catch (Exception e) {
