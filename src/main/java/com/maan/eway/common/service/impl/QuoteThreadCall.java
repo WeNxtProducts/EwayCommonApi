@@ -1761,8 +1761,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			List<EserviceBuildingDetails> eserBuild1 = null;
 			if (isEndt.size() > 0 && isEndt != null && !isEndt.isEmpty()) {
-				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndSectionIdAndLocationId(
-						request.getRequestReferenceNo(), request.getSectionId(), request.getLocationId());
+				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationId(
+						request.getRequestReferenceNo(), request.getLocationId());
 			} else {
 				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
 						request.getRequestReferenceNo(), locationid, sectionid, riskIDs, Coverid);
@@ -1806,8 +1806,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 					List<PolicyCoverData> updateremovedcover = coverRepo
 							.findByQuoteNoAndLocationIdAndSectionIdAndVehicleIdAndCoverIdAndStatus(request.getQuoteNo(),
-									Integer.valueOf(request.getLocationId()), Integer.valueOf(request.getSectionId()), Integer.valueOf(section.getRiskId()),
-									Integer.valueOf(eserBuild.getCoverId()), "D");
+									Integer.valueOf(section.getLocationId()), Integer.valueOf(section.getSectionId()), Integer.valueOf(section.getRiskId()),
+									Integer.valueOf(section.getCoverId()), "D");
 					if (updateremovedcover.size() > 0 && updateremovedcover != null && !updateremovedcover.isEmpty()) {
 							bulildDetails.setStatus(updateremovedcover.get(0).getStatus());
 					}
@@ -3742,7 +3742,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					        // Check if there's a match in VehicleIdsList
 					        return request.getVehicleIdsList().stream()
 					            .anyMatch(b -> b.getLocationId().equals(a.getLocationId())
-					                    && b.getSectionId().equals(a.getSectionId())
+//					                    && b.getSectionId().equals(a.getSectionId())
 					                    && b.getVehicleId().toString().equals(a.getRiskId().toString())
 					                    && b.getCoverIdList() != null
 					                    && b.getCoverIdList().stream()
