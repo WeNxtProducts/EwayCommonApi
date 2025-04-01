@@ -912,10 +912,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 //					String userOptCond = StringUtils.isNotBlank(cover.getUserOpt()) && "Y".equalsIgnoreCase(cover.getUserOpt()) 
 //							&& cover.getEndtCount()!=null && cover.getEndtCount().compareTo(BigDecimal.ZERO) >=0 ? "Y" :"N";
 
-						String userOptCond = StringUtils.isNotBlank(cover.getUserOpt())
+						/*String userOptCond = StringUtils.isNotBlank(cover.getUserOpt())
 								&& "Y".equalsIgnoreCase(cover.getUserOpt()) ? "N" : "Y";
 
-						cover.setUserOpt(userOptCond);
+						cover.setUserOpt(userOptCond);*/
+						cover.setUserOpt("N");
 
 					}
 				}
