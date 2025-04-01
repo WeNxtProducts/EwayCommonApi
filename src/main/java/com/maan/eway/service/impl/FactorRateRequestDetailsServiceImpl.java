@@ -1194,8 +1194,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 				saveLod.setNoOfDays(new BigDecimal(diff));
 			//	repository.saveAndFlush(saveLod);
 				
-				if(!(saveLod.getDiscLoadId()==90001 && saveLod.getPremiumExcludedTaxFc().compareTo(BigDecimal.ZERO)==0) )
-					saveLodings.add(saveLod)	;		
+			//	if(!(saveLod.getDiscLoadId()==90001 && saveLod.getPremiumExcludedTaxFc().compareTo(BigDecimal.ZERO)==0) )
+					saveLodings.add(saveLod)	;
 			}
 			repository.saveAllAndFlush(saveLodings);
 			res = "Success" ;
