@@ -988,8 +988,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 			
 			if(!"0".equals(request.getCoverId())) {
 				 factors = repository
-						.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdAndCoverId(
-								request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),
+						.findByRequestReferenceNoAndLocationIdAndVehicleIdAndProductIdAndSectionIdAndCoverId(
+								request.getRequestReferenceNo(),Integer.valueOf(request.getLocationId()), Integer.valueOf(request.getVehicleId()),
 								Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()),
 								Integer.valueOf(request.getCoverId())
 								);	
