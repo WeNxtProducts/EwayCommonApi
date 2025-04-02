@@ -598,7 +598,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				}
 			}
 			
-			if(!req.getExcessReq().isEmpty()) {
+			if(req.getExcessReq() != null && !req.getExcessReq().isEmpty()) {
 				int rowNum = 1 ;
 				
 				for(ExcessReq ex : req.getExcessReq()) {
@@ -1386,33 +1386,34 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 	 */
 	private List<TermsAndCondition> toSaveExcessTermsAndConditions(
 			TermsAndConditionInsertReq req, TermsAndCondition basicDetails) {
-				
+
 		List<TermsAndCondition> termsAndConditions = new ArrayList<>();
-		
+
 		List<ExcessReq> allExcessSaveReq = req.getExcessReq();
-		
+
 		int subIdStart = 1001;
 		int srNoStart = 1;
-		
-		for(ExcessReq excess : allExcessSaveReq) {
-			
-			TermsAndCondition tc = mapper.map(basicDetails, TermsAndCondition.class);
-			tc.setSno(srNoStart++);
-			
-			tc.setId(ID_FOR_EXCESS);
-			tc.setIdDesc(DESC_FOR_EXCESS);		
-			
-			Integer subId =  excess.getSubId() != null ? excess.getSubId() : subIdStart++ ;			
-			tc.setSubId(subId);
-			
-			tc.setSubIdDesc(excess.getSubIdDesc());
-			tc.setExcessAmount(excess.getExcessAmount());
-			tc.setExcessPercentage(excess.getExcessPercentage());
-			tc.setCurrency(excess.getCurrency());
-						
-			termsAndConditions.add(tc);
-		}		
-		
+		if (allExcessSaveReq != null && !allExcessSaveReq.isEmpty()) {
+			for (ExcessReq excess : allExcessSaveReq) {
+
+				TermsAndCondition tc = mapper.map(basicDetails, TermsAndCondition.class);
+				tc.setSno(srNoStart++);
+
+				tc.setId(ID_FOR_EXCESS);
+				tc.setIdDesc(DESC_FOR_EXCESS);
+
+				Integer subId = excess.getSubId() != null ? excess.getSubId() : subIdStart++;
+				tc.setSubId(subId);
+
+				tc.setSubIdDesc(excess.getSubIdDesc());
+				tc.setExcessAmount(excess.getExcessAmount());
+				tc.setExcessPercentage(excess.getExcessPercentage());
+				tc.setCurrency(excess.getCurrency());
+
+				termsAndConditions.add(tc);
+			}
+		}
+
 		return termsAndConditions;
 	}
 	
