@@ -40,5 +40,7 @@ public class EserviceCommonDetailsId implements Serializable {
     private Integer    originalRiskId ;
     
     private Integer locationId;
+    
+ 	private Integer coverId;
 
 }

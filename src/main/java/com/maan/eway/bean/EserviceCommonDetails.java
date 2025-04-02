@@ -75,6 +75,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="ORIGINAL_RISK_ID" )
     private Integer    originalRiskId ;
+    
+    @Id
+    @Column(name = "COVER_ID")
+   	private Integer coverId;
   
     @Column(name="OCCUPATION_TYPE", length=100)
     private String occupationType ;
@@ -510,7 +514,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="PROFESSIONAL_TYPE_DESC")
     private String professionaltypedesc ;
     
-    @Column(name="INDEMNITY_TYPE  ")
+    @Column(name="INDEMNITY_TYPE")
     private String indemnitytype  ;
     
     @Column(name="INDEMNITY_TYPE_DESC")
@@ -530,9 +534,6 @@ private static final long serialVersionUID = 1L;
 //    private BigDecimal       domesticServentSiLc;
 
 
-    
-    @Column(name = "COVER_ID")
-	private Integer coverId;
     
     @Column(name = "ADDRESS", length = 300)
 	private String address;

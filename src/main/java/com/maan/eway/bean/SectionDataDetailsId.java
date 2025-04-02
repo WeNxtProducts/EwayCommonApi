@@ -38,5 +38,8 @@ public class SectionDataDetailsId implements Serializable {
     private String  productId ;
     private String  sectionId ;
     private Integer  locationId ;
+    
+	private Integer coverId;
+
 
 }

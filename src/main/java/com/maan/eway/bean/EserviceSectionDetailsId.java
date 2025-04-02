@@ -39,5 +39,8 @@ public class EserviceSectionDetailsId implements Serializable {
     private String  sectionId ;
     
     private Integer    locationId ;
+    
+	private Integer coverId;
+
 
 }

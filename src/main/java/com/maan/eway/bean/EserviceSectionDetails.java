@@ -74,6 +74,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SECTION_ID", length=20)
     private String  sectionId ;
+    
+    @Id
+	@Column(name = "COVER_ID", nullable=false )
+	private Integer coverId;
 
     //--- ENTITY DATA FIELDS 
 

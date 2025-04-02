@@ -80,6 +80,10 @@ public class EserviceBuildingDetails implements Serializable {
 	@Id
 	@Column(name = "SECTION_ID", nullable = false, length = 20)
 	private String sectionId;
+	
+	@Id
+	@Column(name = "COVER_ID", nullable=false )
+	private Integer coverId;
 
 	// --- ENTITY DATA FIELDS
 	@Column(name = "DOMESTIC_PACKAGE_YN", length = 20)
@@ -842,8 +846,7 @@ public class EserviceBuildingDetails implements Serializable {
 	@Column(name = "SUM_INSURED_LC")
 	private BigDecimal sumInsuredLc;
 	
-	@Column(name = "COVER_ID")
-	private Integer coverId;
+	
 	
 	@Column(name = "NO_OF_CLAIM")
     private Integer noOfClaim;

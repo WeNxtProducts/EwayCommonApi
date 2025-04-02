@@ -46,9 +46,10 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 				}
 				 
 				 //BigDecimal si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
-				 BigDecimal si=BigDecimal.ZERO;
-				 if(!"A".equals(t.getCalcType()))
+				 BigDecimal si=t.getSumInsured();
+				/* if(!"A".equals(t.getCalcType()))
 					 si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
+					 */
 				 if("Y".equals(t.getDependentCoveryn())) {
 					 if(calculatedcover!=null) {
 						Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);

@@ -84,7 +84,7 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			List<ProductSectionMaster> getSectionList = getallSectionDetails(req.getProductId(), req.getCompanyId());
 			
 			HomePositionMaster homeData = homeRepo.findByPolicyNo(req.getPrevPolicyNo());
-			List<FactorRateRequestDetails> factorList=factorRepo.findByRequestReferenceNoAndSectionIdNot(homeData.getRequestReferenceNo(),99999);
+			List<FactorRateRequestDetails> factorList=factorRepo.findByRequestReferenceNoAndSectionIdNotAndLocationId(homeData.getRequestReferenceNo(),99999,Integer.valueOf(req.getLocationId()));
 			List<FactorRateRequestDetails> uniqueSecId = factorList.stream().filter(distinctByKey(o -> Arrays.asList(o.getSectionId())))
 					.collect(Collectors.toList());
 			uniqueSecId.sort(Comparator.comparing(FactorRateRequestDetails::getSectionId));
@@ -92,7 +92,7 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			
 			
 			List<SectionDataDetails> secList = secRepo
-					.findByPolicyNoAndStatusNotOrderByLocationIdAsc(req.getPrevPolicyNo(),"D");
+					.findByPolicyNoAndStatusNotAndLocationIdOrderByLocationIdAsc(req.getPrevPolicyNo(),"D",Integer.valueOf(req.getLocationId()));
 			List<SectionDataDetails> optedSec = secList.stream().filter(distinctByKey(o -> Arrays.asList(o.getSectionId()))).collect(Collectors.toList());
 			if (secList != null && uniqueSecId != null) {
 				filteredSectionList = uniqueSecId.stream()
@@ -106,6 +106,7 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			for (FactorRateRequestDetails data : filteredSectionList) {
 				DropdownResponse dropres = new DropdownResponse();
 				List<ProductSectionMaster> p=getSectionList.stream().filter(o->o.getSectionId().equals(data.getSectionId())).collect(Collectors.toList());
+				dropres.setLocationId(data.getLocationId().toString());
 				dropres.setCode(data.getSectionId().toString());
 				dropres.setCodeDesc(StringUtils.isBlank(p.get(0).getSectionName()) ? "" : p.get(0).getSectionName());
 				unOpdropList.add(dropres);
@@ -113,6 +114,7 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			List<DropdownResponse> opdropList = new ArrayList<DropdownResponse>();
 			for (SectionDataDetails data : optedSec) {
 				DropdownResponse dropres = new DropdownResponse();
+				dropres.setLocationId(data.getLocationId().toString());
 				dropres.setCode(data.getSectionId().toString());
 				dropres.setCodeDesc(StringUtils.isBlank(data.getSectionDesc()) ? "" : data.getSectionDesc());
 				opdropList.add(dropres);
@@ -186,18 +188,19 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			List<SectionCoverMaster> getSectionCoverList=getallSectionCoverDetails( req.getProductId(),req.getSectionId(),req.getCompanyId());
 			List<SectionCoverMaster> filteredSectionList = null;
 			List<SectionDataDetails> secList = secRepo
-					.findByRequestReferenceNoAndSectionIdOrderByLocationIdAsc(req.getPrevPolicyNo(),req.getSectionId());
-			List<SectionDataDetails> optedSec = secList.stream().filter(distinctByKey(o -> Arrays.asList(o.getSectionId()))).collect(Collectors.toList());
+					.findByPolicyNoAndSectionIdAndLocationIdOrderByLocationIdAsc(req.getPrevPolicyNo(),req.getSectionId(),Integer.valueOf(req.getLocationId())); 
+			List<SectionDataDetails> optedSec = secList.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId()))).collect(Collectors.toList());
 			if (secList != null && getSectionCoverList != null) {
 				filteredSectionList = getSectionCoverList.stream()
 						.filter(m -> secList.stream()
-								.noneMatch(risk -> m.getSectionId().equals(Integer.valueOf(risk.getSectionId())))) 
+								.noneMatch(risk -> m.getSectionId().equals(Integer.valueOf(risk.getCoverId())))) 
 						.collect(Collectors.toList());
 			}
 			
 			List<DropdownResponse> unOpdropList = new ArrayList<DropdownResponse>();
 			for (SectionCoverMaster data : filteredSectionList) {
 				DropdownResponse dropres = new DropdownResponse();
+				dropres.setLocationId(req.getLocationId().toString());
 				dropres.setCode(data.getCoverId().toString());
 				dropres.setCodeDesc(StringUtils.isBlank(data.getCoverDesc()) ? "" : data.getCoverDesc());
 				unOpdropList.add(dropres);
@@ -205,9 +208,10 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 			List<DropdownResponse> opdropList = new ArrayList<DropdownResponse>();
 			for (SectionDataDetails data : optedSec) {
 				DropdownResponse dropres = new DropdownResponse();
-//				String coverName = getSectionCoverList.stream().filter( o -> o.getCoverId().equalsIgnoreCase(data.getCoverId())).collect(Collectors.toList()).get(0).getCoverDesc();
-//				dropres.setCode(data.getCoverId().toString());
-//				dropres.setCodeDesc(StringUtils.isBlank(coverName) ? "" : coverName);
+				String coverName = getSectionCoverList.stream().filter( o -> o.getCoverId().equals(data.getCoverId())).collect(Collectors.toList()).get(0).getCoverDesc();
+				dropres.setLocationId(data.getLocationId().toString());
+				dropres.setCode(data.getCoverId().toString());
+				dropres.setCodeDesc(StringUtils.isBlank(coverName) ? "" : coverName);
 				opdropList.add(dropres);
 
 			}
@@ -288,5 +292,30 @@ public class CompanyProductSectionCoverServiceImpl implements CompanyProductSect
 		}
 		return resList;
 	}
+	
+	@Override
+	public GetSectionRes getOptedLocationId(GetSectionReq req) {
+		GetSectionRes res = new GetSectionRes();
+		try {
+			List<SectionDataDetails> secList = secRepo
+					.findByPolicyNoAndStatusNotOrderByLocationIdAsc(req.getPrevPolicyNo(),"D");
+			List<SectionDataDetails> optLoc = secList.stream().filter(distinctByKey(o -> Arrays.asList(o.getLocationId()))).collect(Collectors.toList());
+			List<DropdownResponse> opdropList = new ArrayList<DropdownResponse>();
+			for (SectionDataDetails data : optLoc) {
+				DropdownResponse dropres = new DropdownResponse();
+				dropres.setCode(data.getLocationId().toString());
+				dropres.setCodeDesc(data.getLocationName());
+				opdropList.add(dropres);
+			}
+			res.setOptedSectionList(opdropList);
+			res.setUnOptedSectionList(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
 
 }

@@ -72,6 +72,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="SECTION_ID", length=20)
     private String  sectionId ;
     
+    @Id
+    @Column(name = "COVER_ID")
+	private Integer coverId;
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="PRODUCT_ID", length=20)
     private String  productId ;
@@ -483,9 +487,6 @@ private static final long serialVersionUID = 1L;
 //	@Column(name = "PTD_SUM_INSURED_LC")
 //	private Integer ptdSumInsuredLc;
 
-	
-	 @Column(name = "COVER_ID")
-		private Integer coverId;
 
 }
 

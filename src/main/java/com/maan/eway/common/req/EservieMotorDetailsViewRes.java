@@ -179,4 +179,7 @@ public class EservieMotorDetailsViewRes {
 	 
 	 @JsonProperty("ContentDesc")
 	 private String contentDesc;
+	 
+	 @JsonProperty("CoverId")
+	 public Integer coverId;
 }

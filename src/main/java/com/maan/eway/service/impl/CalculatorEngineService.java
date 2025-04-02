@@ -22,11 +22,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.gson.Gson;
+import com.maan.eway.admin.service.RestTemplateApiService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
@@ -81,6 +86,7 @@ import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.req.ViewQuoteReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndtUpdatePremiumRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
@@ -89,6 +95,7 @@ import com.maan.eway.endorsment.util.CoverFromPolicy;
 import com.maan.eway.endorsment.util.CreateEndorsment;
 import com.maan.eway.endorsment.util.DiscountFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
+import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
@@ -165,8 +172,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 	  private CoverCalculator calc;
 	 */
 	
+	@Autowired
+	RestTemplateApiService restTemplateApiService;
+	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
+	
+	@Value(value = "${calEngine}")
+	private String calEngine;
 
 	
 	protected List<Tuple> commontbl = null;
@@ -745,7 +758,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				 */catch (Exception e) {
 				e.printStackTrace();
 			}
-
+             System.out.println("FactorRateRequestDetails Save-----------------------------");
 			try {
 				EserviceMotorDetailsSaveRes response = new EserviceMotorDetailsSaveRes();
 				response.setCoverList(retc);
@@ -764,6 +777,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				response.setUpdateas(isEndt);
 				response.setUwList(referr);
 				response.setReferals(masterreferral);
+				response.setCoverId(engine.getCoverId());
 				fservice.saveFactorRateRequestDetails(response);
 
 				// Update Premium,referral
@@ -807,19 +821,33 @@ public class CalculatorEngineService implements CalculatorEngine {
 				BigDecimal endtCount = new BigDecimal(result.get(0).get("endtCount").toString());
 
 				String originalPolicyNo = result.get(0).get("originalPolicyNo").toString();
-				List<PolicyCoverDataEndt> oldPolicyData = policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
+				List<PolicyCoverDataEndt> oldPolicyData =null;
+				if(!"0".equals(engine.getCoverId())) {
+					oldPolicyData =policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndCoverIdOrderByCoverIdAsc(originalPolicyNo,
+							Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
+							Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()),Integer.parseInt(engine.getCoverId()));
+				}else {
+					oldPolicyData =policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
 						Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 						Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()));
-				
+				}
 				EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(engine.getInsuranceId(), engine.getProductId(),
 						endtTypeId);
 
 				retc.stream().forEach(i -> i.setEndtCount(endtCount));
 			 	// find Prev Quote Data
-				List<PolicyCoverData> oldPolicyCovers = coverDataRepo
+				List<PolicyCoverData> oldPolicyCovers =null;
+				if(!"0".equals(engine.getCoverId())) {
+					oldPolicyCovers= coverDataRepo
+							.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusAndCoverIdOrderByCoverIdAsc(
+									endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
+									Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y",Integer.parseInt(engine.getCoverId()));
+				}else {
+					oldPolicyCovers = coverDataRepo
 						.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusOrderByCoverIdAsc(
 								endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 								Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
+				}
 				List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
 				TaxUtils tzx = new TaxUtils(endtCount,"");
 				TaxUtils tzxEndt = new TaxUtils(endtCount,endtTypeId);
@@ -874,6 +902,45 @@ public class CalculatorEngineService implements CalculatorEngine {
 					CoverFromPolicy coverUtil = new CoverFromPolicy("");
 					List<Cover> covers = oldPolicyCovers.stream().filter(r -> d.getCoverId() == r.getCoverId())
 							.map(coverUtil).filter(dx -> dx != null).collect(Collectors.toList());
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
 					/*
 					 * List<Cover> oldTax = covers.stream().filter(c ->
 					 * "T".equals(c.getCoverageType())).collect(Collectors.toList());
@@ -915,11 +982,24 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 			dependedcovers.add("N");
 			dependedcovers.add("Y");
-
-			List<FactorRateRequestDetails> factors = repository
-					.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(
-							request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),
-							Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
+			List<FactorRateRequestDetails> factors;
+			
+			
+			
+			if(!"0".equals(request.getCoverId())) {
+				 factors = repository
+						.findByRequestReferenceNoAndLocationIdAndVehicleIdAndProductIdAndSectionIdAndCoverId(
+								request.getRequestReferenceNo(),Integer.valueOf(request.getLocationId()), Integer.valueOf(request.getVehicleId()),
+								Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()),
+								Integer.valueOf(request.getCoverId())
+								);	
+			}
+			else {
+				 factors = repository
+						.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(
+								request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),
+								Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
+			}
 
 			// TaxFromFactor tzx=new TaxFromFactor();
 			List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
@@ -1155,6 +1235,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				response.setLocationId(request.getLocationId());
 				response.setMsrefno(request.getMsrefno());
 				response.setUpdateas("admin");
+				response.setCoverId(request.getCoverId());
 				// response.setUwList(referr);
 
 				fservice.saveFactorRateRequestDetails(response);
@@ -1319,8 +1400,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 			dependedcovers.add("Y");
 
 			List<FactorRateRequestDetails> factors = repository
-					.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(
-							request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),
+					.findByRequestReferenceNoAndLocationIdAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(
+							request.getRequestReferenceNo(),Integer.valueOf(request.getLocationId()), Integer.valueOf(request.getVehicleId()),
 							Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
 
 			// TaxFromFactor tzx=new TaxFromFactor();
@@ -1510,7 +1591,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				response.setLocationId(request.getLocationId());
 				response.setUpdateas("admin");
 				// response.setUwList(referr);
-
+                response.setCoverId(request.getCoverId());
 				fservice.saveFactorRateRequestDetails(response);
 
 				// Update Premium,referral
@@ -3873,6 +3954,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setUwList(referr);
 			response.setReferals(masterreferral);
 			response.setLocationId(engine.getLocationId());
+			response.setCoverId(StringUtils.isBlank(engine.getCoverId())?"99999":engine.getCoverId());
 			fservice.saveFactorRateRequestDetails(response); 
 			return response;
 		}catch (Exception e) {
@@ -3995,21 +4077,22 @@ public class CalculatorEngineService implements CalculatorEngine {
 		date = calendar.getTime();
 		return date;
 	}
-
+  
 	@Override
-	public List<EserviceMotorDetailsSaveRes> getCalc(CalcEngine request, String token) {
+	public  List<EserviceMotorDetailsSaveRes> getCalc(CalcEngine request, String token) {
 		 List<EserviceMotorDetailsSaveRes> resList=new ArrayList<EserviceMotorDetailsSaveRes>();
 		try {
 			Integer locationId=0;
 			String riskId="";
 			String sectionId="";
 			
-			CalcEngine engine=new CalcEngine();
+			
 			System.out.println("Calculator Calling Api");
 			
 			List<EserviceMotorDetails> motorList=eservicemotorRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 			if(!motorList.isEmpty()) {
 				for(EserviceMotorDetails data:motorList) {
+					CalcEngine engine=new CalcEngine();
 					engine.setLocationId(data.getLocationId()==null?"1":data.getLocationId().toString());
 					engine.setBranchCode(data.getBranchCode());
 					engine.setInsuranceId(data.getCompanyId());
@@ -4055,12 +4138,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 									.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo(),data);
 							 if(!buildingdata.isEmpty()&&buildingdata.size()>0 && buildingdata!=null) {
 							List<EserviceBuildingDetails> building=buildingdata.stream()
-									.filter(o -> o.getLocationId().equals(data) && o.getSectionId().equals(s.getSectionId())
+									.filter(o -> o.getLocationId().equals(data) 
+											&& o.getSectionId().equals(s.getSectionId())
+											&& o.getCoverId().toString().equals(s.getCoverId().toString())
 											&& o.getRiskId().equals(s.getRiskId()))
 									.collect(Collectors.toList());
 							
 							for (EserviceBuildingDetails bd : building) {
-								
+									CalcEngine engine=new CalcEngine();
 									engine.setLocationId(bd.getLocationId().toString());
 									engine.setBranchCode(bd.getBranchCode());
 									engine.setInsuranceId(bd.getCompanyId());
@@ -4081,11 +4166,16 @@ public class CalculatorEngineService implements CalculatorEngine {
 									ObjectMapper objectMapper = new ObjectMapper();
 									objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE);
 									System.out.println("Calculator Request -->Vehicle Id " +bd.getRiskId()+" \nCover Id : "+bd.getCoverId()+"\nRequest -->  " + objectMapper.writeValueAsString(engine));
-									EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+								
+								  //   = calculator( engine,  token) ;
+								    String url = calEngine;
+                                    EserviceMotorDetailsSaveRes res = restTemplateApiService.callEngine( url,engine, token);
+
+									//new Thread().sleep(10000L);
 									resList.add(res);
 									}
 							}
-					 }else  if("H".equalsIgnoreCase(s.getProductType())) {
+					 }else  if("H".equalsIgnoreCase(s.getProductType())&& (!s.getProductId().equalsIgnoreCase(travelProductId))) {
 						 List<EserviceCommonDetails> comdata = eservicecommonRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo(),data);
 						 if(!comdata.isEmpty()&&comdata.size()>0 && comdata!=null) {
 						 List<EserviceCommonDetails> common=comdata.stream()
@@ -4093,6 +4183,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 										&& o.getRiskId().equals(s.getRiskId()))
 								.collect(Collectors.toList());
 						for (EserviceCommonDetails cd : common) {
+							CalcEngine engine=new CalcEngine();
 							engine.setLocationId(cd.getLocationId().toString());
 							engine.setBranchCode(cd.getBranchCode());
 							engine.setInsuranceId(cd.getCompanyId());
@@ -4113,7 +4204,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 							ObjectMapper objectMapper = new ObjectMapper();
 							objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE);
 							System.out.println("Calculator Request -->Vehicle Id " +cd.getRiskId()+" \nCover Id : "+cd.getCoverId()+"\nRequest -->  " + objectMapper.writeValueAsString(engine));
-							EserviceMotorDetailsSaveRes res= calculator( engine,  token) ;
+							String url = calEngine;
+                            EserviceMotorDetailsSaveRes res = restTemplateApiService.callEngine( url,engine, token);
 							resList.add(res);
 						}
 					 }
@@ -4132,4 +4224,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 		return resList;
 	}
+	
+	
+
 }

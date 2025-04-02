@@ -2968,7 +2968,9 @@ public class PaymentServiceImpl implements PaymentService {
 		    	   eserBuildingList.forEach( o -> {
 		    			  
 	    			  List<BuildingRiskDetails> filterAsset = buildingList.stream().filter( e -> e.getRiskId().equals(o.getRiskId())
-	    					  && e.getSectionId().equals(o.getSectionId())&& e.getLocationId().equals(o.getLocationId()) ).collect(Collectors.toList());
+	    					  && e.getSectionId().equals(o.getSectionId())
+	    					  && String.valueOf(e.getCoverId()).equals(String.valueOf(o.getCoverId()))
+	    					  && e.getLocationId().equals(o.getLocationId()) ).collect(Collectors.toList());
 	    			  
 	    			  if( filterAsset.size()> 0 ) {
 	    				  EserviceBuildingDetails updateEser = o; 
@@ -3055,7 +3057,8 @@ public class PaymentServiceImpl implements PaymentService {
 	    		   eserHumanList.forEach( o -> {
 		    			  
 	    			  List<CommonDataDetails> filterHuman = humanList.stream().filter( e -> e.getRiskId().equals(o.getRiskId())
-	    					  && e.getSectionId().equals(o.getSectionId()) && e.getLocationId().equals(o.getLocationId())).collect(Collectors.toList());
+	    					  && e.getSectionId().equals(o.getSectionId()) && e.getLocationId().equals(o.getLocationId()) 
+	    					  && String.valueOf(e.getCoverId()).equals(String.valueOf(o.getCoverId()))).collect(Collectors.toList());
 	    			  
 	    			  if( filterHuman.size()> 0 ) {
 	    				  EserviceCommonDetails updateEser = o; 
@@ -3137,7 +3140,9 @@ public class PaymentServiceImpl implements PaymentService {
 	    	   eserBuildingList.forEach( o -> {
 	    			  
     			  List<SectionDataDetails> filterAsset = secList.stream().filter( e -> e.getRiskId().equals(o.getRiskId())
-    					  && e.getSectionId().equals(o.getSectionId()) && e.getLocationId().equals(o.getLocationId())).collect(Collectors.toList());
+    					  && e.getSectionId().equals(o.getSectionId()) 
+    					  && String.valueOf(e.getCoverId()).equals(String.valueOf(o.getCoverId()))
+    					  &&e.getLocationId().equals(o.getLocationId())).collect(Collectors.toList());
     			  
     			  if( filterAsset.size()> 0 ) {
     				  EserviceSectionDetails updateEser = o; 

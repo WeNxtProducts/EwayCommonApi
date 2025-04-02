@@ -381,8 +381,6 @@ private static final long serialVersionUID = 1L;
 	@Column(name ="NO_OF_PASSENGERS")
 	private Integer noOfPassengers;
     
-	@Column(name = "COVER_ID")
-	private Integer coverId;
 	
 	
 	@Column(name = "CREDIT_SHORTFALL_SI")

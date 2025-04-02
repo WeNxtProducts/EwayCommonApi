@@ -134,4 +134,8 @@ public class EserviceCommonGetRes {
 	
 	@JsonProperty("LocationName")
 	private String locationName;
+	
+
+	@JsonProperty("CategoryDesc")
+	private String categoryDesc;
 }

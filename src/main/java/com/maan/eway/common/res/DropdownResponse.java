@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 public class DropdownResponse {
 
-	@JsonProperty("LoctionId")
-	private String loctionId;
+	@JsonProperty("LocationId")
+	private String locationId;
 	@JsonProperty("Code")
 	private String code;
 	@JsonProperty("CodeDesc")
