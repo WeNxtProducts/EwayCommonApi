@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -94,6 +95,7 @@ import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceDriverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
+import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
@@ -308,6 +310,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	@Autowired
 	private JsonMapperFromDB jsonMapper;
+	
+	@Autowired
+	private EmiTransactionDetailsRepository emitransrepo;
+	
 	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -1959,6 +1965,16 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				isFinYn 	 = data.getIsFinaceYn()==null ? "N" :data.getIsFinaceYn() ;
 				
 			}
+
+				if("N".equalsIgnoreCase(req.getEmiYn())) {
+							    if(StringUtils.isNotBlank(quoteNo)) {
+							    	List<EmiTransactionDetails> list = emitransrepo.findByQuoteNoAndCompanyIdAndProductId(quoteNo,
+											req.getInsuranceId(), req.getProductId());
+									if (list.size() > 0 && StringUtils.isNotBlank(quoteNo)) {
+										emitransrepo.deleteAll(list);
+									}
+							    }
+							}
 			
 			// Get Endt Fields
 			if(StringUtils.isNotBlank(endtType) ) {
