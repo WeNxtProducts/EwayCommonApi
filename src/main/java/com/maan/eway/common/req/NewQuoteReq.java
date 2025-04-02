@@ -50,4 +50,6 @@ public class NewQuoteReq {
 	@JsonProperty("CommissionPercent")
 	private String commissionPercent;
 
+	@JsonProperty("EmiYn")
+	private String emiYn;
 }
