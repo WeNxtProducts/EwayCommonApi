@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -439,13 +440,27 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			existingQuotes = result.getResultList();
 			if (existingQuotes != null && existingQuotes.size() > 0) {
 				//existingQuotes = existingQuotes.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+				
+				Map<String, Long> requestCount = existingQuotes.stream()
+			            .collect(Collectors.groupingBy(QuoteCriteriaRes::getRequestReferenceNo, LinkedHashMap::new, Collectors.counting()));
+			
+				  // Filter the list
+		        List<QuoteCriteriaRes> filteredList = existingQuotes.stream()
+		            .filter(ex -> {
+		                long count = requestCount.get(ex.getRequestReferenceNo());
+		                // If duplicate exists, remove ones where CustomerId & QuoteNo are null/empty
+		                return count == 1 || (ex.getCustomerId() != null && //!ex.getCustomerId().isEmpty() &&
+		                                      ex.getQuoteNo() != null && !ex.getQuoteNo().isEmpty());
+		            })
+		            .collect(Collectors.toList());
+		        existingQuotes=filteredList;
 			}else {
 				existingQuotes=null;
 			}
 			resp.setQuoteRes(existingQuotes);
 			
-			resp.setTotalCount(totalcountexisting(req, startDate, endDate, "Y"));
-			
+		//	resp.setTotalCount(totalcountexisting(req, startDate, endDate, "Y"));
+			resp.setTotalCount((long)existingQuotes.size());
 			
 		} catch (Exception e) {
 			e.printStackTrace();
