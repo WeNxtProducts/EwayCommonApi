@@ -266,18 +266,22 @@ import jakarta.persistence.criteria.Subquery;
 				
 		
 				//Getting Record from Emi Master
-				List<EmiMaster> emiMasterData = getEmiMasterDataByInsPeriod(req.getCompanyId(), req.getProductId(),
-						req.getPolicyType(),noOfMonth.toString()); System.out.println(emiMasterData);
+				List<EmiMaster> emiMasterData = getEmiMasterData(req.getCompanyId(), req.getProductId(),
+						req.getPolicyType(),instalId.toString()); System.out.println(emiMasterData);
 				interestPercent = Double.valueOf(emiMasterData.get(0).getInterestPercent().toString());
 				advancePercent = Double.valueOf(emiMasterData.get(0).getAdvancePercent().toString());
                 HomePositionMaster homeData=homerepo.findByQuoteNo(quoteNo);
 				
 				premiumWithTax = Double.valueOf(homeData.getOverallPremiumLc().toString());
-				noOfMonth=Integer.valueOf(emiMasterData.get(0).getInstallmentPeriod());
+		//		noOfMonth=Integer.valueOf(emiMasterData.get(0).getInstallmentPeriod());
 				
 	            if(req.getInstallmentTypeId()!=null) {
 	            	instalId=Integer.valueOf(req.getInstallmentTypeId());
-	            //	premiumWithTax = Double.valueOf(req.getPremiumWithTax());				
+	            //	premiumWithTax = Double.valueOf(req.getPremiumWithTax());	
+	            	if(StringUtils.isNotBlank(emiMasterData.get(0).getInstallmentPeriod())) {
+						noOfMonth=Integer.parseInt(emiMasterData.get(0).getInstallmentPeriod());
+						instalId=1;
+	            	}
 	            	advanceAmount=insertEmiTransactionDetailsByInstalId2(req, interestPercent, advancePercent, premiumWithTax,instalId, noOfMonth );
 	            	adv=new BigDecimal(advanceAmount);
 	            }
@@ -353,7 +357,7 @@ import jakarta.persistence.criteria.Subquery;
 			Calendar cal = Calendar.getInstance();
 			Date dueDate = cal.getTime();
 	           for(i=0; i<loop; i++) {
-					if(i==0 && advanceAmount>0.0 && instalId>1) {
+					if(i==0 && advanceAmount>0.0) {
 						cal.add(Calendar.MONTH, 0);
 						dueDate = cal.getTime();
 						advanceAmount = Math.round(premiumWithTax * advancePercent / 100);
@@ -1128,12 +1132,13 @@ import jakarta.persistence.criteria.Subquery;
 					EmiDisplayRes res=null;
 					if (!list.isEmpty()){	
 						for(EmiMaster data:list) {
-							if(StringUtils.isNotBlank(data.getInstallmentPeriod())) {
-								noOfMonth=Integer.parseInt(data.getInstallmentPeriod());
-							}
 								interestPercent = Double.valueOf(data.getInterestPercent().toString());
 								advancePercent = Double.valueOf(data.getAdvancePercent().toString());	
-								Integer instalId=Integer.parseInt(data.getInstallmentTypeId());	
+								Integer instalId=Integer.parseInt(data.getInstallmentTypeId());
+								if(StringUtils.isNotBlank(data.getInstallmentPeriod())) {
+									noOfMonth=Integer.parseInt(data.getInstallmentPeriod());
+									instalId=1;
+								}
 								res = new EmiDisplayRes();
 								List<EmiDisplayRes> result=viewEmiInstallmentDetailsByInstalId5(req,interestPercent,advancePercent,premiumWithTax,instalId,res,data, noOfMonth);
 								if(!result.isEmpty()){  
@@ -1219,7 +1224,7 @@ import jakarta.persistence.criteria.Subquery;
 					emiInfoListRes.setBalanceAmount(Long.valueOf(Math.round(balanceAmount)).toString());
 					emiInfoListRes.setTotalLoanAmount(Long.valueOf(Math.round(totalLoanAmount)).toString());
 					emiInfoListRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-					emiInfoListRes.setInstallmentTypeId(instalId.toString());
+					emiInfoListRes.setInstallmentTypeId(data.getInstallmentTypeId());
 					emiInfoListRes.setInstallmentTypeDesc(data.getInstallmentTypeDesc());		
 					
 					res.setEmiInfoRes(emiInfoListRes);
@@ -1764,6 +1769,96 @@ import jakarta.persistence.criteria.Subquery;
 			return list ;
 		}
 				
+		public List<EmiMaster> getEmiMasterData( String companyId, String productId,String policyType,String instalId) {
+			List<EmiMaster> list = new ArrayList<EmiMaster>();
+			
+			try {
+
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				Date todayEnd = cal.getTime();
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
+
+				// Find All
+				Root<EmiMaster> b = query.from(EmiMaster.class);
+
+				// Select
+				query.select( b );
+
+//				// Effective Date Max Filter
+				Subquery<Date> effectiveDate = query.subquery(Date.class);
+				Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
+				Predicate a1 = cb.equal( b.get("emiId"),ocpm1.get("emiId"));
+				Predicate a2 = cb.equal( b.get("companyId"),ocpm1.get("companyId"));
+				Predicate a3 = cb.equal( b.get("productId"),ocpm1.get("productId"));
+				Predicate a9 = cb.equal( b.get("policyType"),ocpm1.get("policyType"));
+				Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);	
+				effectiveDate.where(a1, a2, a3, a4,a9);
+				
+				// Effective Date End Max Filter
+				Subquery<Date> effectiveDate2 = query.subquery(Date.class);
+				Root<EmiMaster> ocpm2 = effectiveDate2.from(EmiMaster.class);
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
+				Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
+				Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
+				Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
+				Predicate a10 = cb.equal( b.get("policyType"),ocpm2.get("policyType"));
+				Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				effectiveDate2.where(a5, a6, a7, a8,a10);
+//				// AmendI Max Filter
+//				
+//				Subquery<Long> amendId = query.subquery(Long.class);
+//				Root<EmiMaster> ocpm2 = amendId.from(EmiMaster.class);
+//				amendId.select(cb.max(ocpm2.get("amendId")));
+//				Predicate a5 = cb.equal( b.get("emiId"),ocpm2.get("emiId"));
+//				Predicate a6 = cb.equal( b.get("companyId"),ocpm2.get("companyId"));
+//				Predicate a7 = cb.equal( b.get("productId"),ocpm2.get("productId"));
+//				Predicate a10 = cb.equal( b.get("policyType"),ocpm2.get("policyType"));
+//				amendId.where(a5, a6, a7,a10);
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(b.get("companyId")));
+
+				// Where
+			//	Predicate n1 = cb.equal(b.get("amendId"), amendId);
+				Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n2 = cb.equal(b.get("companyId"), companyId);
+				Predicate n3 = cb.equal(b.get("companyId"), "99999");
+				Predicate n5 = cb.or(n3, n2);
+				Predicate n6 = cb.equal(b.get("productId"), productId);
+				Predicate n7 = cb.equal(b.get("policyType"), policyType);
+//				Predicate n11 = cb.equal(b.get("policyType"), "99999");
+//				Predicate n12 = cb.or(n7, n11);
+			//	Predicate n9 = cb.between(cb.literal(amt).as(Double.class) , b.get("premiumStart").as(Double.class), b.get("premiumEnd").as(Double.class));
+				Predicate n9 = cb.equal(b.get("installmentTypeId"), instalId);
+				Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+				Predicate n13 = cb.equal(b.get("status"), "Y");
+				query.where(n1, n5, n6,n7,n9,n13,n10).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<EmiMaster> result = em.createQuery(query);
+				
+				list = result.getResultList();
+				list = list.stream().filter(o -> o.getEmiId() != null)
+						.filter(distinctByKey(o -> o.getEmiId() )).collect(Collectors.toList());
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return list;
+		}
+		
 
 
 		
