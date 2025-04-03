@@ -1090,6 +1090,9 @@ import jakarta.persistence.criteria.Subquery;
 							 LocalDate policyStartDate=buildingDetails.get(0).getPolicyStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 							 LocalDate policyEndDate=buildingDetails.get(0).getPolicyEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 							 Long monthsBetween = ChronoUnit.MONTHS.between(policyStartDate, policyEndDate);
+							 if (policyEndDate.getDayOfMonth() < policyStartDate.getDayOfMonth()) {
+								    monthsBetween += 1;  // Add 1 month since the difference missed the last full month
+								}
 							 noOfMonth=monthsBetween.intValue();
 						}
 					}else if(cpm.get(0).getMotorYn().equalsIgnoreCase("H")) {		
@@ -1100,6 +1103,9 @@ import jakarta.persistence.criteria.Subquery;
 							 LocalDate policyStartDate=commonDetails.get(0).getPolicyStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 							 LocalDate policyEndDate=commonDetails.get(0).getPolicyEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 							 Long monthsBetween = ChronoUnit.MONTHS.between(policyStartDate, policyEndDate);
+							 if (policyEndDate.getDayOfMonth() < policyStartDate.getDayOfMonth()) {
+								    monthsBetween += 1;  // Add 1 month since the difference missed the last full month
+								}
 							 noOfMonth=monthsBetween.intValue();
 						}
 					}else if(cpm.get(0).getMotorYn().equalsIgnoreCase("M")) {		
@@ -1110,6 +1116,9 @@ import jakarta.persistence.criteria.Subquery;
 							 LocalDate policyStartDate=motorDetails.get(0).getPolicyStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 							 LocalDate policyEndDate=motorDetails.get(0).getPolicyEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 							 Long monthsBetween = ChronoUnit.MONTHS.between(policyStartDate, policyEndDate);
+							 if (policyEndDate.getDayOfMonth() < policyStartDate.getDayOfMonth()) {
+								    monthsBetween += 1;  // Add 1 month since the difference missed the last full month
+								}
 							 noOfMonth=monthsBetween.intValue();
 						}
 					}
