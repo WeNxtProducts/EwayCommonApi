@@ -6,16 +6,15 @@ package com.maan.eway.master.service.impl;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -1073,20 +1072,32 @@ import jakarta.persistence.criteria.Subquery;
 					if(cpm.get(0).getMotorYn().equalsIgnoreCase("A")) {		
 						List<EserviceBuildingDetails> buildingDetails = buildingRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						if(!buildingDetails.isEmpty()) {
-							 policyPeriod=buildingDetails.get(0).getPolicyPeriord();
-							 noOfMonth=DaysToMonthDifference(policyPeriod).intValue();
+//							 policyPeriod=buildingDetails.get(0).getPolicyPeriord();							 
+//							 noOfMonth=DaysToMonthDifference(policyPeriod).intValue();
+							 LocalDate policyStartDate=buildingDetails.get(0).getPolicyStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+							 LocalDate policyEndDate=buildingDetails.get(0).getPolicyEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+							 Long monthsBetween = ChronoUnit.MONTHS.between(policyStartDate, policyEndDate);
+							 noOfMonth=monthsBetween.intValue();
 						}
 					}else if(cpm.get(0).getMotorYn().equalsIgnoreCase("H")) {		
 						List<EserviceCommonDetails> commonDetails = commonRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						if(!commonDetails.isEmpty()) {
-							 policyPeriod=commonDetails.get(0).getPolicyPeriod();
-							 noOfMonth=DaysToMonthDifference(policyPeriod).intValue();
+//							 policyPeriod=commonDetails.get(0).getPolicyPeriod();
+//							 noOfMonth=DaysToMonthDifference(policyPeriod).intValue();
+							 LocalDate policyStartDate=commonDetails.get(0).getPolicyStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+							 LocalDate policyEndDate=commonDetails.get(0).getPolicyEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+							 Long monthsBetween = ChronoUnit.MONTHS.between(policyStartDate, policyEndDate);
+							 noOfMonth=monthsBetween.intValue();
 						}
 					}else if(cpm.get(0).getMotorYn().equalsIgnoreCase("M")) {		
 						List<EserviceMotorDetails> motorDetails = motorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						if(!motorDetails.isEmpty()) {
-							 policyPeriod=Integer.parseInt(motorDetails.get(0).getPeriodOfInsurance());
-							 noOfMonth=DaysToMonthDifference(policyPeriod).intValue();
+//							 policyPeriod=Integer.parseInt(motorDetails.get(0).getPeriodOfInsurance());
+//							 noOfMonth=DaysToMonthDifference(policyPeriod).intValue();
+							 LocalDate policyStartDate=motorDetails.get(0).getPolicyStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+							 LocalDate policyEndDate=motorDetails.get(0).getPolicyEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+							 Long monthsBetween = ChronoUnit.MONTHS.between(policyStartDate, policyEndDate);
+							 noOfMonth=monthsBetween.intValue();
 						}
 					}
 					
