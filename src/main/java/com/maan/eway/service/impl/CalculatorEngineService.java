@@ -190,6 +190,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 	protected BigDecimal minimumPremium=BigDecimal.ZERO;
 	protected List<Tuple> policytbl = null;
 	protected List<Tuple> drivers = null;
+	protected  List<Tuple> customerChoiceTaxes;
 	
 
 	@Autowired
@@ -1206,13 +1207,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 				totalcovers.stream().forEach(taxRemov);
 				EndtCoverCalculator calc = new EndtCoverCalculator(isPolicyPeriod);
+				List<Tuple> customerChoiceTaxes	=ratingutil.customerTaxList(request);
 				
 				if ((commontbl == null || commontbl.size() == 0) || (vehicles == null || vehicles.size() == 0)
 						|| (customers == null || customers.size() == 0)) {
 					loadOnetimetable(request);
 				}
 				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil,
-						request.getEffectiveDate(), decimalFormat,drivers);
+						request.getEffectiveDate(), decimalFormat,drivers,customerChoiceTaxes);
 
 				totalcovers.stream().filter(t -> "Y".equals(t.getStatus())).forEach(calc);
 				// remove error records
