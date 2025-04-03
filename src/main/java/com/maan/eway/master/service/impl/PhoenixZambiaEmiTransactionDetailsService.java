@@ -152,10 +152,10 @@ import jakarta.persistence.criteria.Subquery;
 			List<Error> errorList = new ArrayList<Error>();
 
 			try {
-				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+			/*	if(req.getCompanyId().equalsIgnoreCase("100020")) {
 					errorList=kenyaEmiTransactionDetails.validateEmiTransactionDetails(req);
 					return errorList;
-				}
+				} */
 
 				
 
@@ -219,10 +219,10 @@ import jakarta.persistence.criteria.Subquery;
 			SuccessRes res = new SuccessRes();
 			DecimalFormat df = new DecimalFormat("0.00");
 			EmiTransactionDetails saveData = new EmiTransactionDetails();
-			if(req.getCompanyId().equalsIgnoreCase("100020")) {
+			/*if(req.getCompanyId().equalsIgnoreCase("100020")) {
 				res=kenyaEmiTransactionDetails.insertEmiTransactionDetails(req);
 				return res;
-			} 
+			} */
 			try {
 				
 				BigDecimal adv=new BigDecimal(0);
@@ -732,10 +732,10 @@ import jakarta.persistence.criteria.Subquery;
 			List<Error> errorList = new ArrayList<Error>();
 
 			try {
-				if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
+			/*	if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
  					errorList=kenyaEmiTransactionDetails.validateUpdateEmiTransactionDetails(reqList);
  				return errorList;
-				}
+				}*/
 //				if (StringUtils.isBlank(req.getPremiumWithTax())) {
 //					errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
 //				} 
@@ -798,10 +798,10 @@ import jakarta.persistence.criteria.Subquery;
 			List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
+			/*	if(reqList.get(0).getCompanyId().equalsIgnoreCase("100020")) {
  					res=kenyaEmiTransactionDetails.updateEmiTransactionDetails(reqList);
  					return res;
- 				}
+ 				}*/
 				String productId ="";
 				String companyId ="";
 				List<EmiTransactionDetails> list1 = repo.findByQuoteNoAndSelectYn(reqList.get(0).getQuoteNo(),"Y");
@@ -917,10 +917,10 @@ import jakarta.persistence.criteria.Subquery;
 			DozerBeanMapper mapper = new DozerBeanMapper();
 			DecimalFormat df = new DecimalFormat("0.00");
 			try {
-				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+			/*	if(req.getCompanyId().equalsIgnoreCase("100020")) {
  					resList=kenyaEmiTransactionDetails.getEmiDetailsByQuoteNo(req);
  				return resList;
-				}
+				} */
 				String quoteNo = req.getQuoteNo();
 				String productId = req.getProductId();
 				List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
@@ -997,10 +997,10 @@ import jakarta.persistence.criteria.Subquery;
 			List<Error> errorList = new ArrayList<Error>();
 
 			try {
-				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+			/*	if(req.getCompanyId().equalsIgnoreCase("100020")) {
  					errorList=kenyaEmiTransactionDetails.validateEmiInstallmentDetails(req);
  					return errorList;
- 				}
+ 				} */
 
 				if (StringUtils.isBlank(req.getPremiumWithTax())) {
 					errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
@@ -1043,15 +1043,28 @@ import jakarta.persistence.criteria.Subquery;
 			        System.out.println("Month(s) between: " + monthsBetween);
 			        return monthsBetween;
 			    }
+			    /**
+			     * Retrieves a list of EMI installment details based on the provided request.
+			     * 
+			     * @param req The request object containing the necessary parameters to fetch EMI installment details.
+			     *            - companyId: The ID of the company for which the EMI details are to be retrieved.
+			     *            - productId: The ID of the product associated with the EMI.
+			     *            - policyType: The type of policy for which the EMI details are to be retrieved.
+			     *            - premiumWithTax: The premium amount including tax.
+			     *            - currency: The currency in which the premium is specified.
+			     *            - requestReferenceNo: The reference number for the request.
+			     * @return A list of {@link EmiDisplayRes} objects containing the EMI installment details.
+			     *         If no EMI options are available, a single object with a message indicating the unavailability is returned.
+			     */
 			
 			public List<EmiDisplayRes> viewEmiInstallmentDetails(EmiInstallmentDetailsReq req) {
 				List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
 				//DecimalFormat df = new DecimalFormat("0.0");
 				try {
-					if(req.getCompanyId().equalsIgnoreCase("100020")) {
+				/*	if(req.getCompanyId().equalsIgnoreCase("100020")) {
 	 					resList=kenyaEmiTransactionDetails.viewEmiInstallmentDetails(req);
 	 					return resList;
-					}
+					} */
 					Integer i = 0;
 					String insDesc = "";
 					Double temp = 0d, premiumWithTax, interestPercent, advancePercent, interestAmount, totalLoanAmount,
@@ -1132,6 +1145,20 @@ import jakarta.persistence.criteria.Subquery;
 
 				return resList;
 			}
+			  /**
+		     * Calculates and retrieves a list of EMI installment details based on the provided parameters.
+		     * 
+		     * @param req The request object containing the necessary parameters to fetch EMI installment details.
+		     * @param interestPercent The interest percentage applicable to the EMI.
+		     * @param advancePercent The advance percentage applicable to the EMI.
+		     * @param premiumWithTax The premium amount including tax.
+		     * @param instalId The installment type identifier.
+		     * @param res The response object to be populated with EMI details.
+		     * @param data The EMI master data used for calculations.
+		     * @param installmentPeriod The total period for which installments are calculated.
+		     * @return A list of {@link EmiDisplayRes} objects containing the EMI installment details.
+		     *         If the installment period is not valid, an empty list is returned.
+		     */
 				public List<EmiDisplayRes> viewEmiInstallmentDetailsByInstalId5(EmiInstallmentDetailsReq req, Double interestPercent, Double advancePercent,Double premiumWithTax, 
 					Integer instalId,EmiDisplayRes res,EmiMaster data, Integer installmentPeriod) {
 				List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
@@ -1259,8 +1286,17 @@ import jakarta.persistence.criteria.Subquery;
 				return resList;
 			}
 
-//END TRIAL
-		
+//END TRIAL	
+				 /**
+			     * Retrieves a list of EMI master data based on the provided parameters.
+			     * 
+			     * @param companyId The ID of the company for which the EMI master data is to be retrieved.
+			     * @param productId The ID of the product associated with the EMI.
+			     * @param policyType The type of policy for which the EMI master data is to be retrieved.
+			     * @param amt The premium amount used to filter the EMI master data.
+			     * @return A list of {@link EmiMaster} objects containing the EMI master data.
+			     *         If no data is found, an empty list is returned.
+			     */
 		public List<EmiMaster> getEmiMasterData( String companyId, String productId,String policyType,Double amt) {
 			List<EmiMaster> list = new ArrayList<EmiMaster>();
 			
@@ -1351,15 +1387,23 @@ import jakarta.persistence.criteria.Subquery;
 		}
 		
 		// Get Next Emi Transaction Details
-		
+		/**
+	     * Retrieves the next EMI transaction details for a given quote number.
+	     * 
+	     * @param req The request object containing the necessary parameters to fetch the next EMI details.
+	     *            - quoteNo: The quote number for which the EMI details are to be retrieved.
+	     *            - companyId: The ID of the company associated with the EMI.
+	     * @return A list of {@link EmiTransactionDetailsRes} objects containing the next EMI transaction details.
+	     *         If no pending EMI details are found, an empty list is returned.
+	     */
 		public List<EmiTransactionDetailsRes> getNextEmiDetails(EmiTransactionDetailsNextReq req) {
 			List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
 			DozerBeanMapper mapper = new DozerBeanMapper();
 			try {
-				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+			/*	if(req.getCompanyId().equalsIgnoreCase("100020")) {
  					resList=kenyaEmiTransactionDetails.getNextEmiDetails(req);
  				return resList;
-				}
+				}*/
 				String quoteNo = req.getQuoteNo();
 				List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
 				list = repo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateAsc(quoteNo, "Pending");
@@ -1395,10 +1439,10 @@ import jakarta.persistence.criteria.Subquery;
 			SuccessRes res = new SuccessRes();
 			DecimalFormat df = new DecimalFormat("0.00");
 			try {
-				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+			/*	if(req.getCompanyId().equalsIgnoreCase("100020")) {
  					res=kenyaEmiTransactionDetails.getEndorsementEmiDetails(req);
  				return res;
-				}
+				} */
 				if("Y".equalsIgnoreCase(req.getEmiYn()) && StringUtils.isNotBlank(req.getEndtTypeId())) {
 					// Finding Old Record
 					List<EmiTransactionDetails> list = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
