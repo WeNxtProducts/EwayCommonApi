@@ -4214,6 +4214,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 				}
 			}
 			}
+			
+			}else {
 			System.out.println("Section List is Empty for this  Request Reference Number : "+request.getRequestReferenceNo());
 			}
 		}
