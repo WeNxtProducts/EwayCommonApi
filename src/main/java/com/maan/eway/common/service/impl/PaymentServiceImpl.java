@@ -2268,7 +2268,7 @@ public class PaymentServiceImpl implements PaymentService {
 					System.out.println(req.getQuoteNo()+"Period :" +period);
 					
 				}*/
-				if (result!=null && !(result<=0)) {
+				if (result!=null && !(result<0)) {
 					EmiTransactionDetails saveDate = new EmiTransactionDetails();
 					final String finalResult = String.valueOf(result);
 					Optional<EmiTransactionDetails> first = emiDetails.stream()
