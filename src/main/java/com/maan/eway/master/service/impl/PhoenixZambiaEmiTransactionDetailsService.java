@@ -1128,6 +1128,9 @@ import jakarta.persistence.criteria.Subquery;
 					EmiDisplayRes res=null;
 					if (!list.isEmpty()){	
 						for(EmiMaster data:list) {
+							if(StringUtils.isNotBlank(data.getInstallmentPeriod())) {
+								noOfMonth=Integer.parseInt(data.getInstallmentPeriod());
+							}
 								interestPercent = Double.valueOf(data.getInterestPercent().toString());
 								advancePercent = Double.valueOf(data.getAdvancePercent().toString());	
 								Integer instalId=Integer.parseInt(data.getInstallmentTypeId());	
@@ -1182,7 +1185,7 @@ import jakarta.persistence.criteria.Subquery;
 					if(!(installmentPeriod/instalId>1) || !(installmentPeriod%instalId==0)) {
 						return resList;
 					}
-					if(i==0 && advanceAmount>0 && instalId>1) {
+					if(i==0 && advanceAmount>0 ) {
 						advanceAmount = Math.round(premiumWithTax * advancePercent / 100);
 						totalLoanAmount=Math.round(premiumWithTax-advanceAmount);
 						totalLoanAmount=Math.round(totalLoanAmount+totalLoanAmount*interestPercent/100);
@@ -1234,7 +1237,7 @@ import jakarta.persistence.criteria.Subquery;
 					for (i = 0; i < loop2; i++) {
 						EmiDisplayListRes emiPremiumRes = new EmiDisplayListRes();
 										Integer inc=i;
-						if(i==0 && advanceAmount>0.0 && instalId>1) {
+						if(i==0 && advanceAmount>0.0 ) {
 							cal.add(Calendar.MONTH, 0);
 							dueDate = cal.getTime();
 							insDesc="Advance Amount";
