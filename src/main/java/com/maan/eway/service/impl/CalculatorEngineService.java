@@ -903,45 +903,6 @@ public class CalculatorEngineService implements CalculatorEngine {
 					CoverFromPolicy coverUtil = new CoverFromPolicy("");
 					List<Cover> covers = oldPolicyCovers.stream().filter(r -> d.getCoverId() == r.getCoverId())
 							.map(coverUtil).filter(dx -> dx != null).collect(Collectors.toList());
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
 					/*
 					 * List<Cover> oldTax = covers.stream().filter(c ->
 					 * "T".equals(c.getCoverageType())).collect(Collectors.toList());
@@ -960,7 +921,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 						covers.stream().forEach( c -> {
 							c.setCoverageLimit(item.getCoverageLimit());
 							c.setEffectiveDate(engine.getEffectiveDate());
-							c.setPolicyEndDate(engine.getPolicyEndDate());
+//							c.setPolicyEndDate(engine.getPolicyEndDate());
 							});
 					});
 					retc.removeAll(operatedList);

@@ -174,7 +174,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						if(("Y".equals(t.getProRataYn()) || "D".equals(t.getProRataYn())) && "Y".equals(t.getUserOpt())) {
 							// Date Differents
 							Date periodStart =  effectiveDate;
-							Date periodEnd = t.getPolicyEndDate() ;
+//							Date periodEnd = t.getPolicyEndDate() ;
+							Date periodEnd = endorsement.getPolicyEndDate() ;
 							Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
 							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) +1;
 							// Check Leap Year
@@ -183,11 +184,12 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 
 							String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
-					        int period = Integer.parseInt(periodOfInsurance);
-					        int diffValue = Integer.parseInt(diff);
-					        int result = period - diffValue;
-					        diff = String.valueOf(result);
-//							diff= String.valueOf(Integer.parseInt(periodOfInsurance)-Integer.parseInt(diff));
+//					        int period = Integer.parseInt(periodOfInsurance);
+//					        int diffValue = Integer.parseInt(diff);
+//					        int result = period - diffValue;
+//					        diff = String.valueOf(result);
+							diff= String.valueOf(Integer.parseInt(periodOfInsurance)-Integer.parseInt(diff));
+							diff= String.valueOf(Math.abs(Integer.parseInt(diff)));
 							String policyTypeId = (vehicles.get(0).get("insuranceClass") == null ? "99999"
 									: vehicles.get(0).get("insuranceClass").toString());
 							if(Integer.parseInt(diff)<0) diff="0";
