@@ -229,6 +229,7 @@ public class EndorsementService {
 			FactorRateDetailsGetReq viewCalcReq=new FactorRateDetailsGetReq();
 			viewCalcReq.setProductId(request.getProductId().toPlainString());
 			viewCalcReq.setRequestReferenceNo(request.getRequestReferenceNo());
+			viewCalcReq.setInsuranceId(request.getCompanyId());
 			List<EservieMotorDetailsViewRes> viewCalc = factorService.getFactorRateRequestDetails(viewCalcReq, "");
 			
 			List<VehicleIdsReq> vehicles=new ArrayList<VehicleIdsReq>();
