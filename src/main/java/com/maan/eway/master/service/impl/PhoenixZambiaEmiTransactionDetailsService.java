@@ -282,7 +282,7 @@ import jakarta.persistence.criteria.Subquery;
 						noOfMonth=Integer.parseInt(emiMasterData.get(0).getInstallmentPeriod());
 						instalId=1;
 	            	}
-	            	advanceAmount=insertEmiTransactionDetailsByInstalId2(req, interestPercent, advancePercent, premiumWithTax,instalId, noOfMonth );
+	            	advanceAmount=insertEmiTransactionDetailsByInstalId2(req, interestPercent, advancePercent, premiumWithTax,instalId, noOfMonth,emiMasterData );
 	            	adv=new BigDecimal(advanceAmount);
 	            }
 				res.setSuccessId(quoteNo);
@@ -339,7 +339,7 @@ import jakarta.persistence.criteria.Subquery;
 			return res;
 		}
 		private Double insertEmiTransactionDetailsByInstalId2(EmiTransactionDetailsSaveReq req,Double interestPercent,Double advancePercent, 
-				Double premiumWithTax, Integer instalId, Integer installmentPeriod) {
+				Double premiumWithTax, Integer instalId, Integer installmentPeriod,List<EmiMaster> emiMasterData) {
 			EmiTransactionDetails saveData = new EmiTransactionDetails();
 			Long adv=0l;
 			String quoteNo = req.getQuoteNo();
@@ -434,8 +434,8 @@ import jakarta.persistence.criteria.Subquery;
 					saveData.setUpdatedBy(createdBy);
 					saveData.setDueDate(dueDate);
 					saveData.setRemarks(req.getRemarks());
-					List<ListItemValue> installmentList=getInstallmentTypeDesc(req.getCompanyId() , "99999",  "INSTALLMENT_TYPE",req.getInstallmentTypeId());
-					String installmentDesc=installmentList.get(0).getItemValue();
+					
+					String installmentDesc=emiMasterData.get(0).getInstallmentTypeDesc();
 					saveData.setInstallmentTypeId(req.getInstallmentTypeId());
 					saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc)? "" : installmentDesc);
 					set_installment++;
