@@ -4105,8 +4105,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 					engine.setVdRefNo(data.getVdRefNo().toString());
 					engine.setCreatedBy(data.getCreatedBy());
 					engine.setRequestReferenceNo(data.getRequestReferenceNo());
-					engine.setEffectiveDate(data.getPolicyStartDate());
-					engine.setPolicyEndDate(data.getPolicyEndDate());
+					engine.setEffectiveDate(request.getEffectiveDate());
+					engine.setPolicyEndDate(request.getPolicyEndDate());
 					engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 					engine.setVehicleId(data.getRiskId().toString());		
 					engine.setCoverId(data.getCoverId()==null?"0":data.getCoverId().toString());
@@ -4158,8 +4158,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 									engine.setVdRefNo(bd.getVdRefno().toString());
 									engine.setCreatedBy(bd.getCreatedBy());
 									engine.setRequestReferenceNo(bd.getRequestReferenceNo());
-									engine.setEffectiveDate(bd.getPolicyStartDate());
-									engine.setPolicyEndDate(bd.getPolicyEndDate());
+									engine.setEffectiveDate(request.getEffectiveDate());
+									engine.setPolicyEndDate(request.getPolicyEndDate());
 									engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 									engine.setVehicleId(bd.getRiskId().toString());	
 									engine.setCoverId(bd.getCoverId()==null?"0":bd.getCoverId().toString());
@@ -4196,8 +4196,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 							engine.setVdRefNo(cd.getVdRefNo().toString());
 							engine.setCreatedBy(cd.getCreatedBy());
 							engine.setRequestReferenceNo(cd.getRequestReferenceNo());
-							engine.setEffectiveDate(cd.getPolicyStartDate());
-							engine.setPolicyEndDate(cd.getPolicyEndDate());
+							engine.setEffectiveDate(request.getEffectiveDate());
+							engine.setPolicyEndDate(request.getPolicyEndDate());
 							engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 							engine.setVehicleId(cd.getRiskId().toString());	
 							engine.setCoverId(cd.getCoverId()==null?"0":cd.getCoverId().toString());
