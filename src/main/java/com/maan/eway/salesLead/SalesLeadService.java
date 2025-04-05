@@ -13,9 +13,9 @@ import com.maan.eway.res.SuccessRes;
 
 public interface SalesLeadService {
 
-	CommonRes insertLeadContact(List<InsertSalesReq> req);
+	boolean insertLeadDetails(List<InsertSalesReq> req);
 
-	CommonRes getLeadContact(String leadId);
+	CommonRes getSalesLead(String leadId);
 
 	CommonRes insertEnquiry(EnquiryDetailsDTO req);
 

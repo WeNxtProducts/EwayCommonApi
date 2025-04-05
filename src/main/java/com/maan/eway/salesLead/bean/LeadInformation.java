@@ -29,8 +29,8 @@ import lombok.Setter;
 @Entity
 @DynamicUpdate
 @Data
-@Table(name = "lead_contact_info")
-public class LeadContactInfo  implements Serializable{
+@Table(name = "lead_information")
+public class LeadInformation  implements Serializable{
 	/**
 	 * 
 	 */
@@ -40,20 +40,32 @@ public class LeadContactInfo  implements Serializable{
 	@Column(name = "LEAD_ID", length = 20, nullable = false)
 	private String leadId;
 	
-	@Column(name = "FIRST_NAME")
-	private String firstName;
+	@Column(name = "CLIENT_NAME")
+	private String clientName;
 	
-	@Column(name = "LAST_NAME")
-	private String lastName;
+	@Column(name = "CLIENT_CODE")
+	private String clientCode;
 	
-	@Column(name = "ADDRESS")
-	private String address;
+	@Column(name = "ADDRESS1")
+	private String address1;
 	
-	@Column(name = "EMAIL")
-	private String email;
+	@Column(name = "ADDRESS2")
+	private String address2;
 	
-	@Column(name = "MOBILE")
-	private String mobile;
+	@Column(name = "STATE")
+	private String state;
+	
+	@Column(name = "CITY")
+	private String city;
+	
+	@Column(name = "PINCODE")
+	private String pincode;
+	
+	@Column(name = "PHONE")
+	private String phone;
+	
+	@Column(name = "GST_IDENTIFICATION_NO")
+	private String gstIdentificationNo;
 	
 	@Column(name = "BRANCH_CODE")
 	private String branchCode;
@@ -62,15 +74,19 @@ public class LeadContactInfo  implements Serializable{
 	@Column(name = "ENTRY_DATE")
 	private Date entryDate;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "LEAD_CREATED_DATE")
+	private Date leadCreatedDate;
+	
 	@Column(name = "CREATED_BY")
 	private String createdBy;
+	
+	@Column(name = "UPDATED_BY")
+	private String updatedBy;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "UPDATED_DATE")
 	private Date updatedDate;
-	
-	@Column(name = "UPDATED_BY")
-	private String updatedBy;
 	
 	@Column(name = "INTERMEDIATE_ID")
 	private String intermediateId;
@@ -84,19 +100,31 @@ public class LeadContactInfo  implements Serializable{
 	@Column(name = "CHANNEL_DESC")
 	private String channelDesc;
 	
+	@Column(name = "SECTION_TYPE_ID")
+	private String sectionTypeId;
+	
+	@Column(name = "SECTION_TYPE_DESC")
+	private String sectionTypeDesc;
+	
 	@Column(name = "PROPOBABILITY_OF_SUCCESS_ID")
 	private String propobabilityOfSuccessId;
-					
-	@Column(name = "PROPOBABILITY_OF_SUCCESS")
-	private String propobabilityOfSuccess;
+	
+	@Column(name = "PROPOBABILITY_OF_SUCCESS_DESC")
+	private String propobabilityOfSuccessDesc;
 	
 	@Column(name = "TYPE_OF_BUSINESS_ID")
 	private String typeOfBusinessId;
 	
-	@Column(name = "TYPE_OF_BUSINESS")
-	private String typeOfBusiness;
-	
+	@Column(name = "TYPE_OF_BUSINESS_DESC")
+	private String typeOfBusinessDesc;
+
 	@Column(name = "CURRENT_INSURER")
 	private String currentInsurer;
+	
+	@Column(name = "COMPANY_ID")
+	private String companyId;
+	
+	@Column(name = "PRODUCT_ID")
+	private String productId;
 	
 }

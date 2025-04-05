@@ -1,5 +1,6 @@
 package com.maan.eway.salesLead;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.maan.eway.auth.service.impl.LoginCriteriaQueryServiceImpl;
 import com.maan.eway.bean.EserviceLeadDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.IplcmsListItemValue;
@@ -54,9 +56,11 @@ import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.salesLead.Repository.EnquiryDetailsRepository;
-import com.maan.eway.salesLead.Repository.LeadContactInfoRepository;
+import com.maan.eway.salesLead.Repository.LeadContactPersonRepository;
+import com.maan.eway.salesLead.Repository.LeadInformationRepository;
 import com.maan.eway.salesLead.bean.EnquiryDetails;
-import com.maan.eway.salesLead.bean.LeadContactInfo;
+import com.maan.eway.salesLead.bean.LeadContactPerson;
+import com.maan.eway.salesLead.bean.LeadInformation;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -68,10 +72,11 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import jakarta.transaction.Transactional;
-import com.maan.eway.error.Error;
 
 @Service
 public class SalesLeadServiceImpl implements SalesLeadService {
+
+    private final LoginCriteriaQueryServiceImpl loginCriteriaQueryServiceImpl;
 
 	
 	private Logger log = LogManager.getLogger(SalesLeadServiceImpl.class);
@@ -80,7 +85,10 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	SalesLeadCustomRepositry salesLeadCustomRepo;
 	
 	@Autowired
-	private LeadContactInfoRepository leadContactRepo;
+	private LeadInformationRepository leadInfoRepo;
+	
+	@Autowired
+	private LeadContactPersonRepository leadContactRepo;
 	
 	@Autowired
 	private EnquiryDetailsRepository enquiryDetailsRepo;
@@ -123,107 +131,169 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 	private final static Logger logger = LogManager.getLogger(SalesLeadServiceImpl.class);
+
+    SalesLeadServiceImpl(LoginCriteriaQueryServiceImpl loginCriteriaQueryServiceImpl) {
+        this.loginCriteriaQueryServiceImpl = loginCriteriaQueryServiceImpl;
+    }
 	
 	@Override
-	public CommonRes insertLeadContact(List<InsertSalesReq> reqList) {
+	public boolean insertLeadDetails(List<InsertSalesReq> reqList) {
 		logger.info("Enter into insertSales.\n Argument ==> "+gson.toJson(reqList));
-		CommonRes res = new CommonRes();
-		List<LeadContactInfo> resList = new ArrayList<LeadContactInfo>();
-		List<Error> error = new ArrayList<Error>();
-		AtomicInteger autoIndex = new AtomicInteger(0);
+		boolean result = false;
 		try {
 			if(reqList!=null && reqList.size()>0) {
 				reqList.forEach(req -> {
-					int currentIndex = autoIndex.getAndIncrement();
-					if(StringUtils.isBlank(req.getLeadId()))
-						error.add(new Error(String.valueOf(currentIndex),"LeadId","LeadId Required to Save Information"));
-					Optional<LeadContactInfo> salesLead = leadContactRepo.findById(StringUtils.isBlank(req.getLeadId())?"":req.getLeadId());
-					LeadContactInfo existingList=null;
-					if(salesLead.isPresent()) {
-						existingList = salesLead.get();
+					String leadId = null,createdBy=null,updatedBy=null;
+					Date updatedDate=null,entryDate=null;
+					Optional<LeadInformation> exitingData = leadInfoRepo.findById(req.getLeadId());
+					if(exitingData.isPresent()) {
+						LeadInformation ed = exitingData.get();
+						leadId = ed.getLeadId();
+						createdBy = ed.getCreatedBy();
+						updatedBy = req.getLoginId();
+						entryDate = ed.getEntryDate();
+						updatedDate = new Date();
+					}else {
+						SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
+			 		 	generateSeqReq.setInsuranceId(req.getInsuranceId());  
+			 		 	generateSeqReq.setProductId(req.getProductId());
+			 		 	generateSeqReq.setType("8");
+			 		 	generateSeqReq.setTypeDesc("LEAD_REFERENCE_NO");
+			 		 	leadId =  genSeqNoService.generateSeqCall(generateSeqReq);
+						createdBy = req.getLoginId();
+						entryDate = new Date();
 					}
-					LeadContactInfo s = LeadContactInfo.builder()
-							.leadId(salesLead.isPresent()?existingList.getLeadId():req.getLeadId())//salesLeadCustomRepo.getMaxLeadId()
-							.firstName(req.getFirstName())
-							.lastName(req.getLastName())
-							.address(req.getAddress())
-							.email(req.getEmail())
-							.mobile(req.getMobile())
-							.branchCode(req.getBranchCode())
-							.entryDate(salesLead.isPresent()?existingList.getEntryDate():new Date())
-							.createdBy(salesLead.isPresent()?existingList.getCreatedBy():req.getLoginId())
-							.updatedDate(salesLead.isPresent()?new Date():null)
-							.updatedBy(salesLead.isPresent()?req.getLoginId():null)
-							.intermediateId(req.getIntermediateId())
-							.intermediateName(req.getIntermediateName())
-							.channelId(req.getChannelId())
-							.channelDesc(req.getChannelDesc())
-							.propobabilityOfSuccessId(req.getPropobabilityOfSuccessId())
-							.propobabilityOfSuccess(req.getPropobabilityOfSuccess())
-							.typeOfBusinessId(req.getTypeOfBusinessId())
-							.typeOfBusiness(req.getTypeOfBusiness())
-							.currentInsurer(req.getCurrentInsurer())
-							.build();
-					leadContactRepo.save(s);
-					resList.add(s);
+					try {
+						LeadInformation m = LeadInformation.builder()
+								.leadId(leadId)
+								.clientName(req.getClientName())
+								.clientCode(req.getClientCode())
+								.address1(req.getAddress1())
+								.address2(req.getAddress2())
+								.state(req.getState())
+								.city(req.getCity())
+								.createdBy(createdBy)
+								.updatedBy(updatedBy)
+								.entryDate(entryDate)
+								.updatedDate(updatedDate)
+								.pincode(req.getPinCode())
+								.phone(req.getMobile())
+								.gstIdentificationNo(req.getGstIdentificationNo())
+								.branchCode(req.getBranchCode())
+								.entryDate(new Date())
+								.leadCreatedDate(sdf.parse(req.getLeadCreatedOn()))
+								.intermediateId(req.getIntermediateId())
+								.intermediateName(req.getIntermediateName())
+								.channelId(req.getChannelId())
+								.channelDesc(req.getChannelDesc())
+								.sectionTypeId(req.getSectionTypeId())
+								.companyId(req.getInsuranceId())
+								.productId(req.getProductId())
+								.sectionTypeDesc(req.getSectionTypeDesc())
+								.propobabilityOfSuccessId(req.getPropobabilityOfSuccessId())
+								.propobabilityOfSuccessDesc(req.getPropobabilityOfSuccessDesc())
+								.typeOfBusinessId(req.getTypeOfBusinessId())
+								.typeOfBusinessDesc(req.getTypeOfBusinessDesc())
+								.currentInsurer(req.getCurrentInsurer())
+								.build();
+							leadInfoRepo.save(m);
+							
+							if(req.getLeadContactPersonReq()!=null && req.getLeadContactPersonReq().size()>0) {
+								List<LeadContactPerson> cps = new ArrayList<LeadContactPerson>();
+								String ioe = leadId;
+								leadContactRepo.deleteByLeadId(leadId);
+								AtomicInteger autoIndex = new AtomicInteger(GetLeadContactMaxSno());
+								req.getLeadContactPersonReq().forEach(a -> {
+									LeadContactPerson p = LeadContactPerson.builder()
+											.sno(new BigDecimal(autoIndex.getAndIncrement()))
+											.leadId(ioe)
+											.contactType(a.getContactType())
+											.contactPersonName(a.getContactPersonName())
+											.emailAddress(a.getEmailAddress())
+											.mobile(a.getMobileNo())
+											.phone(a.getPhoneNo())
+											.designation(a.getDesignation())
+											.Remarks(a.getRemarks())
+											.build();
+									cps.add(p);
+								});
+								leadContactRepo.saveAll(cps);
+							}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				});
-				res.setCommonResponse(resList);
-				res.setMessage("SUCCESS");
-				res.setIsError(false);
-				res.setErrorMessage(Collections.emptyList());
-			}else {
-				error.add(new Error("01", "Request", "Request Data is Empty"));
-				res.setCommonResponse(null);
-				res.setMessage("FAILED");
-				res.setIsError(false);
-				res.setErrorMessage(error);
+				result = true;
 			}
-			
 		logger.info("Exist into insertSales");
-		return res;
 		}catch(Exception e) {
 			logger.info("Error in insertSales ==> "+e.getMessage());
 			e.printStackTrace();
 		}
-		return null;
+		return result;
+	}
+
+	private int GetLeadContactMaxSno() {
+		Integer value = null;
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BigDecimal> cq = cb.createQuery(BigDecimal.class);
+			Root<LeadContactPerson> lpRoot = cq.from(LeadContactPerson.class);
+			cq.select(cb.coalesce(cb.sum(cb.max(lpRoot.get("sno")),BigDecimal.ONE), BigDecimal.ZERO));
+			BigDecimal o = em.createQuery(cq).getSingleResult();
+			value = o.intValue();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return value;
 	}
 
 	@Override
-	public CommonRes getLeadContact(String leadId) {
+	public CommonRes getSalesLead(String leadId) {
 		logger.info("Enter into getAllSales.");
 		CommonRes res = new CommonRes();
 		List<GetSalesLeadRes> resList = new ArrayList<GetSalesLeadRes>();
 		try {
-			List<LeadContactInfo> salesList = new ArrayList<LeadContactInfo>();
+			List<LeadInformation> salesList = new ArrayList<LeadInformation>();
 			if(StringUtils.isBlank(leadId)) {
-				salesList = leadContactRepo.findAll();
+				salesList = leadInfoRepo.findAll();
 			}else {
-				LeadContactInfo salesById = leadContactRepo.findById(leadId).get();
+				LeadInformation salesById = leadInfoRepo.findById(leadId).get();
 				salesList.add(salesById);
 			}
 			if(!salesList.isEmpty()) {
 				salesList.forEach(k -> {
 					GetSalesLeadRes m = GetSalesLeadRes.builder()
 							.leadId(k.getLeadId()==null?"":k.getLeadId())
-							.firstName(k.getFirstName()==null?"":k.getFirstName())
-							.lastName(k.getLastName()==null?"":k.getLastName())
-							.address(k.getAddress()==null?"":k.getAddress())
-							.email(k.getEmail()==null?"":k.getEmail())
-							.mobile(k.getMobile()==null?"":k.getMobile())
-							.branchCode(k.getBranchCode()==null?"":k.getBranchCode())
-							.entryDate(k.getEntryDate()==null?"":sdf.format(k.getEntryDate()))
+							.insuranceId(k.getCompanyId()==null?"":k.getCompanyId())
+							.productId(k.getProductId()==null?"":k.getProductId())
+							.clientName(k.getClientName()==null?"":k.getClientName())
+							.clientCode(k.getClientCode()==null?"":k.getClientCode())
+							.address1(k.getAddress1()==null?"":k.getAddress1())
+							.address2(k.getAddress2()==null?"":k.getAddress2())
+							.state(k.getState()==null?"":k.getState())
+							.city(k.getCity()==null?"":k.getCity())
 							.createdBy(k.getCreatedBy()==null?"":k.getCreatedBy())
 							.updatedBy(k.getUpdatedBy()==null?"":k.getUpdatedBy())
+							.entryDate(k.getEntryDate()==null?"":sdf.format(k.getEntryDate()))
 							.updatedDate(k.getUpdatedDate()==null?"":sdf.format(k.getUpdatedDate()))
+							.pinCode(k.getPincode()==null?"":k.getPincode())
+							.mobile(k.getPhone()==null?"":k.getPhone())
+							.gstIdentificationNo(k.getGstIdentificationNo()==null?"":k.getGstIdentificationNo())
+							.branchCode(k.getBranchCode()==null?"":k.getBranchCode())
+							.leadCreatedOn(k.getLeadCreatedDate()==null?"":sdf.format(k.getLeadCreatedDate()))
 							.intermediateId(k.getIntermediateId()==null?"":k.getIntermediateId())
 							.intermediateName(k.getIntermediateName()==null?"":k.getIntermediateName())
 							.channelId(k.getChannelId()==null?"":k.getChannelId())
 							.channelDesc(k.getChannelDesc()==null?"":k.getChannelDesc())
-							.propobabilityOfSuccess(k.getPropobabilityOfSuccess()==null?"":k.getPropobabilityOfSuccess())
+							.sectionTypeId(k.getSectionTypeId()==null?"":k.getSectionTypeId())
+							.sectionTypeDesc(k.getSectionTypeDesc()==null?"":k.getSectionTypeDesc())
 							.propobabilityOfSuccessId(k.getPropobabilityOfSuccessId()==null?"":k.getPropobabilityOfSuccessId())
+							.propobabilityOfSuccessDesc(k.getPropobabilityOfSuccessDesc()==null?"":k.getPropobabilityOfSuccessDesc())
 							.typeOfBusinessId(k.getTypeOfBusinessId()==null?"":k.getTypeOfBusinessId())
-							.typeOfBusiness(k.getTypeOfBusiness()==null?"":k.getTypeOfBusiness())
+							.typeOfBusinessDesc(k.getTypeOfBusinessDesc()==null?"":k.getTypeOfBusinessDesc())
 							.currentInsurer(k.getCurrentInsurer()==null?"":k.getCurrentInsurer())
+							.leadContactPersonReq(GetLeadContactPerson(k.getLeadId()))
 							.build();
 					resList.add(m);
 				});
@@ -239,6 +309,30 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	private List<LeadContactPersonReq> GetLeadContactPerson(String leadId) {
+		List<LeadContactPersonReq> result = new ArrayList<LeadContactPersonReq>();
+		try {
+			List<LeadContactPerson> list = leadContactRepo.findByLeadId(leadId);
+			if(list!=null && list.size()>0) {
+				list.forEach(k -> {
+					LeadContactPersonReq m = LeadContactPersonReq.builder()
+							.contactType(k.getContactType()==null?"":k.getContactType())
+							.contactPersonName(k.getContactPersonName()==null?"":k.getContactPersonName())
+							.emailAddress(k.getEmailAddress()==null?"":k.getEmailAddress())
+							.mobileNo(k.getMobile()==null?"":k.getMobile())
+							.phoneNo(k.getPhone()==null?"":k.getPhone())
+							.designation(k.getDesignation()==null?"":k.getDesignation())
+							.remarks(k.getRemarks()==null?"":k.getRemarks())
+							.build();
+					result.add(m);
+				});
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	@Override

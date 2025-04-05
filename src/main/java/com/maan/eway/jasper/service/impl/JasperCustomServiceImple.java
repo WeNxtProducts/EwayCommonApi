@@ -1265,7 +1265,8 @@ public class JasperCustomServiceImple {
 					}
 				}
 			if(attachments ==null || attachments.isEmpty()) {
-				attachments.addAll(getAttachMentList(map.get("companyId")==null?"":map.get("companyId").toString(),map.get("productId")==null?"":map.get("productId").toString(),"ATTACHMENTS",vehicleDetails.get(0).getMotorUsage().toString()));
+				attachments.addAll(getAttachMentList(map.get("companyId")==null?"":map.get("companyId").toString(),map.get("productId")==null?"":map.get("productId").toString(),"ATTACHMENTS",
+						vehicleDetails.get(0).getPolicyType().toString().equalsIgnoreCase("1")?vehicleDetails.get(0).getInsuranceType().toString():null));
 			}
 		}else {
 			attachments.addAll(getAttachMentList(map.get("companyId")==null?"":map.get("companyId").toString(),map.get("productId")==null?"":map.get("productId").toString(),"ATTACHMENTS",null));

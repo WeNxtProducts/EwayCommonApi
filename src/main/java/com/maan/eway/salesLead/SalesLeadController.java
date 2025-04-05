@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +39,9 @@ public class SalesLeadController {
 	private SalesLeadService service;
 	
 	@Autowired
+	private SalesLeadValidation leadVali;
+	
+	@Autowired
 	private PrintReqService reqPrinter;
 	
 	@Autowired
@@ -48,19 +50,33 @@ public class SalesLeadController {
 	@Autowired 
 	private EserviceCustomerDetailsService entityService ; 
 	
-	@PostMapping("/insertSalesContact")
+	@PostMapping("/insertLeadDetails")
 	public ResponseEntity<?> insertLeadContact(@RequestBody List<InsertSalesReq> req){
-		CommonRes res = service.insertLeadContact(req);
-		if(res!=null) {
-			return new ResponseEntity<CommonRes>(res,HttpStatus.ACCEPTED);
-		}else {
-			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+		CommonRes data = new CommonRes();
+		List<Error> errors = leadVali.insertLeadContactVali(req);
+		if (errors != null && errors.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(errors);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		} else {
+			boolean status = service.insertLeadDetails(req);
+			data.setCommonResponse(status);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (status) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
 	}
 	
 	@GetMapping("/getSalesLead")
-	public ResponseEntity<?> getLeadContact(@RequestParam (value = "leadId",required = false) String leadId){
-		CommonRes res = service.getLeadContact(leadId);
+	public ResponseEntity<?> getSalesLead(@RequestParam (value = "leadId",required = false) String leadId){
+		CommonRes res = service.getSalesLead(leadId);
 		if(res!=null) {
 			return new ResponseEntity<CommonRes>(res,HttpStatus.ACCEPTED);
 		}else {
@@ -259,13 +275,7 @@ public class SalesLeadController {
 		}
 
 	}
-	
-	@PostMapping("insert/personalInfo/{enquiryId}")
-	public ResponseEntity<?> insertPersonalInfo(@PathVariable ("enquiryId") String enquiryId){
-		//CommonRes res = service.insertPersonalInfo(enquiryId);
-		return null;
-	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/saveleaddetails")
 	public ResponseEntity<CommonRes> saveLeadDetails(@RequestBody  EserviceCustomerSaveReq req) {

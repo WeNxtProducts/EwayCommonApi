@@ -1,5 +1,7 @@
 package com.maan.eway.salesLead;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -11,38 +13,47 @@ import lombok.Setter;
 @Builder
 public class GetSalesLeadRes {
 
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("ProductId")
+	private String productId;
+	
 	@JsonProperty("LeadId")
 	private String leadId;
 	
-	@JsonProperty("FirstName")
-	private String firstName;
+	@JsonProperty("ClientName")
+	private String clientName;
 	
-	@JsonProperty("LastName")
-	private String lastName;
+	@JsonProperty("ClientCode")
+	private String clientCode;
 	
-	@JsonProperty("Address")
-	private String address;
+	@JsonProperty("Address1")
+	private String address1;
 	
-	@JsonProperty("Email")
-	private String email;
+	@JsonProperty("Address2")
+	private String address2;
+	
+	@JsonProperty("State")
+	private String state;
+	
+	@JsonProperty("City")
+	private String city;
+	
+	@JsonProperty("PinCode")
+	private String pinCode;
 	
 	@JsonProperty("Mobile")
 	private String mobile;
 	
+	@JsonProperty("GstIdentificationNo")
+	private String gstIdentificationNo;
+	
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
-	@JsonProperty("EntryDate")
-	private String entryDate;
-	
-	@JsonProperty("CreatedBy")
-	private String createdBy;
-	
-	@JsonProperty("UpdatedDate")
-	private String updatedDate;
-	
-	@JsonProperty("UpdatedBy")
-	private String updatedBy;
+	@JsonProperty("LeadCreatedOn")
+	private String leadCreatedOn;
 	
 	@JsonProperty("IntermediateId")
 	private String intermediateId;
@@ -56,19 +67,40 @@ public class GetSalesLeadRes {
 	@JsonProperty("ChannelDesc")
 	private String channelDesc;
 	
+	@JsonProperty("SectionTypeId")
+	private String sectionTypeId;
+	
+	@JsonProperty("SectionTypeDesc")
+	private String sectionTypeDesc;
+	
 	@JsonProperty("PropobabilityOfSuccessId")
 	private String propobabilityOfSuccessId;
 	
-	@JsonProperty("PropobabilityOfSuccess")
-	private String propobabilityOfSuccess;
+	@JsonProperty("PropobabilityOfSuccessDesc")
+	private String propobabilityOfSuccessDesc;
 	
 	@JsonProperty("TypeOfBusinessId")
 	private String typeOfBusinessId;
 	
-	@JsonProperty("TypeOfBusiness")
-	private String typeOfBusiness;
+	@JsonProperty("TypeOfBusinessDesc")
+	private String typeOfBusinessDesc;
 	
 	@JsonProperty("CurrentInsurer")
 	private String currentInsurer;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+	
+	@JsonProperty("EntryDate")
+	private String entryDate;
+	
+	@JsonProperty("UpdatedDate")
+	private String updatedDate;
+	
+	@JsonProperty("LeadContactPerson")
+	private List<LeadContactPersonReq> leadContactPersonReq;
 	
 }

@@ -3,7 +3,7 @@ package com.maan.eway.salesLead;
 import org.springframework.stereotype.Repository;
 
 import com.maan.eway.salesLead.bean.EnquiryDetails;
-import com.maan.eway.salesLead.bean.LeadContactInfo;
+import com.maan.eway.salesLead.bean.LeadInformation;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -23,7 +23,7 @@ public class SalesLeadCustomRepositryImpl implements SalesLeadCustomRepositry {
 	public String getMaxLeadId() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
-		Root<LeadContactInfo> slRoot = cq.from(LeadContactInfo.class);
+		Root<LeadInformation> slRoot = cq.from(LeadInformation.class);
 		Expression<Integer> startIndex = cb.literal(3);
 		cq.multiselect(cb.coalesce(cb.sum(cb.max(
 				cb.substring(slRoot.get("leadId"), startIndex, cb.length(slRoot.get("leadId"))).as(Integer.class)), 1),
