@@ -2994,7 +2994,7 @@ public class JasperCustomServiceImple {
 					cb.equal(imageURLRoot.get("amendId"), imageURLAmd));
 			
 			cq.multiselect(luiRoot.get("userName").alias("userName"),emdRoot.get("requestReferenceNo").alias("requestReferenceNo"),emdRoot.get("companyId").alias("companyId"),
-					emdRoot.get("currency").alias("currency"),emdRoot.get("policyStartDate").alias("inceptionDate"),emdRoot.get("branchName").alias("branchName"),
+					emdRoot.get("currency").alias("currency"),emdRoot.get("policyStartDate").alias("inceptionDate"),emdRoot.get("branchName").alias("branchName"),emdRoot.get("quoteNo").alias("quoteNo"),
 					emdRoot.get("policyEndDate").alias("expiryDate"),emdRoot.get("policyType").alias("policyType"),emdRoot.get("policyTypeDesc").alias("policyTypeDesc"),emdRoot.get("vehicleClass").alias("vehicleClass"),
 					(cb.selectCase().when(cb.isNull(ecdRoot.get("titleDesc")), ecdRoot.get("clientName")).otherwise(cb.concat(cb.concat(ecdRoot.get("titleDesc"),"."), ecdRoot.get("clientName")))) .alias("customerName"),companyName.alias("companyName"),
 					cb.concat(ecdRoot.get("address1"), cb.concat(",", cb.concat(cb.coalesce(ecdRoot.get("pinCode"), ""),cb.concat(cb.selectCase().when(cb.isNull(ecdRoot.get("pinCode")), "").when(cb.equal(ecdRoot.get("pinCode"), ""), "")
@@ -3031,8 +3031,14 @@ public class JasperCustomServiceImple {
 			
 			String policyTypeDesc=map.get("policyTypeDesc")==null?"":map.get("policyTypeDesc").toString();
 			String referenceNo=map.get("requestReferenceNo")==null?"":map.get("requestReferenceNo").toString();
+			String quoteNo=map.get("quoteNo")==null?"":map.get("quoteNo").toString();
 			//List<FactorRateRequestDetails> coverData = factorRateRequestDetailsRepo.findByRequestReferenceNo(referenceNo);
-			List<PolicyCoverData>coverData=coverDataRepository.findByRequestReferenceNo(referenceNo);
+			List<PolicyCoverData>coverData=null;
+			if(StringUtils.isNotBlank(quoteNo)) {
+				coverData=coverDataRepository.findByRequestReferenceNoAndQuoteNo(referenceNo,quoteNo);
+			}else {
+				coverData=coverDataRepository.findByRequestReferenceNo(referenceNo);
+			}
 			if(coverData!=null && !coverData.isEmpty()) {
 				
 				
@@ -3139,8 +3145,7 @@ public class JasperCustomServiceImple {
 				result.put("taxRate", new BigDecimal(Double.valueOf(taxRate.toString())).toString());
 				result.put("taxAmount", new BigDecimal(Double.valueOf(taxAmount.toString())).toString());
 		}
-			
-			List<Tuple>taxlist=getTaxDetails(referenceNo);
+			List<Tuple>taxlist=getTaxDetails(referenceNo,quoteNo);
 			if(!CollectionUtils.isEmpty(taxlist)) {
 				for (Tuple tuple : taxlist) {
 					Map<String,Object>tax=new HashMap<>();
@@ -3256,7 +3261,7 @@ public class JasperCustomServiceImple {
 		return result;
 	}
 
-	private List<Tuple> getTaxDetails(String referenceNo) {
+	private List<Tuple> getTaxDetails(String referenceNo, String quoteNo) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
 	    CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
@@ -3267,8 +3272,19 @@ public class JasperCustomServiceImple {
 	    Expression<Long> sumTaxAmount = cb.sum(root.get("taxAmount"));
 	    cq.multiselect(root.get("taxId").alias("taxId"), root.get("taxRate").alias("taxRate"), sumTaxAmount.alias("taxAmount"),root.get("taxDesc").alias("taxDesc") );
 
-	    cq.where(cb.equal(root.get("requestReferenceNo"), referenceNo),cb.notEqual(root.get("taxId"), 0),cb.equal(root.get("coverageType"), "T"),
-	    		cb.or(cb.equal(root.get("isSelected"), "D"),cb.equal(root.get("isSelected"), "Y")));
+	    List<Predicate> predicate = new ArrayList<Predicate>();
+		predicate.add(cb.equal(root.get("requestReferenceNo"), referenceNo));
+		predicate.add(cb.notEqual(root.get("taxId"), 0));
+		predicate.add(cb.equal(root.get("coverageType"), "T"));
+		predicate.add(cb.or(cb.equal(root.get("isSelected"), "D"),cb.equal(root.get("isSelected"), "Y")));
+		if(StringUtils.isNotBlank(quoteNo))
+		predicate.add(cb.equal(root.get("quoteNo"), quoteNo));
+		
+		Predicate [] predicateArray = new Predicate[predicate.size()];
+		predicate.toArray(predicateArray);
+		cq.where(predicateArray);
+	    //cq.where(cb.equal(root.get("requestReferenceNo"), referenceNo),cb.notEqual(root.get("taxId"), 0),cb.equal(root.get("coverageType"), "T"),
+	    		//cb.or(cb.equal(root.get("isSelected"), "D"),cb.equal(root.get("isSelected"), "Y")));
 
 	    cq.groupBy(root.get("taxId"), root.get("taxRate"),root.get("taxDesc"));
 
