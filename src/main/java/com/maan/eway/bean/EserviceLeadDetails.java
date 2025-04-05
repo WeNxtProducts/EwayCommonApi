@@ -11,17 +11,25 @@
 
 package com.maan.eway.bean;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.*;
-import jakarta.persistence.*;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
-
-import java.util.Date;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
 * Domain class for entity "EserviceCustomerDetails"
@@ -399,5 +407,45 @@ private static final long serialVersionUID = 1L;
     
     @Column(name = "ACTIVITIES", length=100)
     private String activities;
+    
+    @Column(name = "GST_IDENTIFICATION_NO", length=100)
+    private String gstIdentificationNo;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "LEAD_CREATED_DATE")
+    private Date leadCreatedDate;
+    
+    @Column(name = "INTERMEDIATE_ID", length=100)
+    private String intermediateId;
+    
+    @Column(name = "INTERMEDIATE_NAME", length=100)
+    private String intermediateName;
+    
+    @Column(name = "CHANNEL_ID", length=100)
+    private String channelId;
+    
+    @Column(name = "CHANNEL_NAME", length=100)
+    private String channelName;
+    
+    @Column(name = "SECTION_TYPE_ID", length=100)
+    private String sectionTypeId;
+    
+    @Column(name = "SECTION_TYPE_DESC", length=100)
+    private String sectionTypeDesc;
+    
+    @Column(name = "PROPOBABILITY_OF_SUCCESS_ID", length=100)
+    private String propobabilityOfSuccessId;
+
+    @Column(name = "PROPOBABILITY_OF_SUCCESS_DESC", length=100)
+    private String propobabilityOfSuccessDesc;
+    
+    @Column(name = "TYPE_OF_BUSSINESS_ID", length=100)
+    private String typeOfBussinessId;
+    
+    @Column(name = "TYPE_OF_BUSSINESS_DESC", length=100)
+    private String typeOfBussinessDesc;
+
+    @Column(name = "CURRENT_INSURER", length=100)
+    private String currentInsurer;
     
 }

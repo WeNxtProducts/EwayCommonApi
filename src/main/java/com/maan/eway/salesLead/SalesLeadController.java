@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.CommonErrorModuleReq;
-import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
-import com.maan.eway.common.service.EserviceCustomerDetailsService;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -46,10 +44,7 @@ public class SalesLeadController {
 	
 	@Autowired
 	private FetchErrorDescServiceImpl errorDescService ;
-	
-	@Autowired 
-	private EserviceCustomerDetailsService entityService ; 
-	
+		
 	@PostMapping("/insertLeadDetails")
 	public ResponseEntity<?> insertLeadContact(@RequestBody List<InsertSalesReq> req){
 		CommonRes data = new CommonRes();
@@ -278,12 +273,12 @@ public class SalesLeadController {
 
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/saveleaddetails")
-	public ResponseEntity<CommonRes> saveLeadDetails(@RequestBody  EserviceCustomerSaveReq req) {
+	public ResponseEntity<CommonRes> saveLeadDetails(@RequestBody  EserviceLeadSaveReq req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		List<String> validationCodes = new ArrayList<>();
-		 validationCodes = entityService.validateCustomerDetails(req);
+		 validationCodes = leadVali.validateCustomerDetails(req);
 		List<Error> validation = null;
 		if(validationCodes!=null && validationCodes.size() > 0 ) {
 			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
@@ -318,29 +313,13 @@ public class SalesLeadController {
 		}
     }
 	
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@PostMapping("/getallLeaddetails")
-	public ResponseEntity<CommonRes> getallLeadDetails(@RequestBody GetAllCustomerDetailsReq req) {
-		CommonRes data = new CommonRes();
-		reqPrinter.reqPrint(req);
-		List<CustomerDetailsGetRes> res = service.getallLeadDetails(req);
-		data.setCommonResponse(res);
-		data.setErrorMessage(Collections.emptyList());
-		data.setIsError(false);
-		data.setMessage("Success");
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getLeaddetails")
 	public ResponseEntity<CommonRes> getLeadDetails(@RequestBody GetCustomerDetailsReq req) {
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
-		CustomerDetailsGetRes res = service.getLeadDetails(req);
+		List<GetLeadDetailsRes> res = service.getLeadDetails(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

@@ -2,7 +2,6 @@ package com.maan.eway.salesLead;
 
 import java.util.List;
 
-import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.res.CommonRes;
@@ -39,12 +38,8 @@ public interface SalesLeadService {
 
 	List<DropDownRes> probabilityOfSuccess(LovDropDownReq req);
 
-	CommonRes insertPersonalInfo(String enquiryId);
+	SuccessRes saveLeadDetails(EserviceLeadSaveReq req);
 
-	SuccessRes saveLeadDetails(EserviceCustomerSaveReq req);
-
-	List<CustomerDetailsGetRes> getallLeadDetails(GetAllCustomerDetailsReq req);
-
-	CustomerDetailsGetRes getLeadDetails(GetCustomerDetailsReq req);
+	List<GetLeadDetailsRes> getLeadDetails(GetCustomerDetailsReq req);
 
 }
