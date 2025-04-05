@@ -1,10 +1,11 @@
-package com.maan.eway.payment.service.impl;
-
+package com.maan.eway.payment.service.impl; 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -23,16 +26,20 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.internal.util.type.PrimitiveWrapperHelper.BooleanDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -46,6 +53,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.maan.eway.auth.dto.ClaimLoginResponse;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginRequest;
@@ -139,6 +147,8 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					return ipayafrica(vendor,payment);
 				}else if("pesapal".equals(vendor.getVendorName())){
 					return pesapal(vendor,payment);
+				}else if("peach".equals(vendor.getVendorName())){
+					return peach(vendor,payment);
 				}else {
 					return selcomPayment(vendor,payment);
 				}
@@ -150,6 +160,139 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		}
 		return null;
 	}
+	private JsonObject peach(PaymentVendorMaster vendor, PaymentDetail payment) {
+		DecimalFormat df = new DecimalFormat("0.00");
+		String signature ="";
+		String castAmountValue="0";
+		List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+		if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
+			castAmountValue = df.format(payment.getPremiumLc().toPlainString());
+		else
+			castAmountValue=  df.format(payment.getPremiumFc().toPlainString());
+		
+		try {
+			Map<String, String> params = new HashMap<>();
+			params.put("authentication.entityId", vendor.getApiKey());
+			params.put("amount", castAmountValue);
+			params.put("currency", payment.getCurrencyId());
+			params.put("merchantTransactionId",payment.getMerchantReference());
+			params.put("nonce", payment.getMerchantReference());
+			params.put("paymentType", "DB");
+			params.put("shopperResultUrl", vendor.getReturnUrlLink());
+			signature = peachGenerateSignature(params, vendor.getApiSecretKey());			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		JsonObject jsonResponse = new JsonObject();
+		try {
+			Map<String, String> params = new LinkedHashMap<>();			 
+			params.put("amount", castAmountValue);
+			params.put("authentication.entityId", vendor.getApiKey());
+			params.put("currency", payment.getCurrencyId());
+			params.put("merchantTransactionId", payment.getMerchantReference());
+			params.put("nonce", payment.getMerchantReference());
+			params.put("paymentType", "DB");
+			params.put("shopperResultUrl", URLEncoder.encode(vendor.getReturnUrlLink(), StandardCharsets.UTF_8.toString()));			 
+			params.put("signature", signature);
+			params.put("customer.merchantCustomerId", payment.getCustomerId());
+			params.put("customer.givenName", payment.getCustomerName());
+			params.put("customer.surname", "");
+			params.put("customer.mobile", payment.getReqBillToPhone());
+			params.put("customer.email",StringUtils.isBlank(payment.getCustomerEmail())?"":payment.getCustomerEmail());
+			params.put("customer.status", "Active");
+			params.put("customer.birthDate", "");
+			params.put("customer.phone", payment.getReqBillToPhone());
+			
+			params.put("billing.street1", payment.getReqBillToAddressLine1());
+			params.put("billing.street2", payment.getReqBillToAddressLine2());
+			params.put("billing.city", payment.getReqBillToAddressCity());
+			params.put("billing.company", payment.getReqBillToCompanyName());
+			params.put("billing.country", payment.getReqBillToCountry());			
+			params.put("billing.state", payment.getReqBillToAddressState());
+			params.put("billing.postcode", payment.getReqBillToAddrPostalCode());
+			params.put("cancelUrl", vendor.getCancelUrlLink());
+			params.put("notificationUrl", vendor.getWebhookUrlLink());
+			
+			String requestBody = params.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
+					.collect(Collectors.joining("&"));
+			System.out.println(" checkOut Request Body: " + requestBody);
+
+			try (CloseableHttpClient client = HttpClients.createDefault()) {
+				HttpPost httpPost = new HttpPost(vendor.getPaymentUrlLink());
+				httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+				httpPost.setEntity(new StringEntity(requestBody));
+
+				try (CloseableHttpResponse response = client.execute(httpPost)) {
+					org.apache.http.HttpEntity entity = response.getEntity();
+					String responseString = EntityUtils.toString(entity);
+					System.out.println("Response: " + responseString);
+					JsonObject responseJson = JsonParser.parseString(responseString).getAsJsonObject();
+					if (responseJson.has("redirectUrl")) {
+	                    jsonResponse.addProperty("redirectUrl", responseJson.get("redirectUrl").getAsString());
+	                    
+	                    jsonResponse.addProperty("result", "SUCCESS");				
+	    				JsonObject innerResponse=new JsonObject();
+	    				innerResponse.addProperty("payment_gateway_url",responseJson.get("redirectUrl").getAsString());
+	    				JsonArray asJsonArray =new JsonArray(1);
+	    				asJsonArray.add(innerResponse);
+	    				jsonResponse.add("data", asJsonArray);
+	                    
+	                } else {
+	                    jsonResponse.addProperty("status", "error");
+	                    jsonResponse.addProperty("message", "redirectUrl not found in response");
+	                }					
+						
+				}
+			}catch (Exception e) {
+				 e.printStackTrace();
+				 
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonResponse.addProperty("status", "error");
+			jsonResponse.addProperty("message", "Failed to initiate checkout");
+		}
+		return jsonResponse;
+	}
+	
+	public static String peachGenerateSignature(Map<String, String> body, String secret) {
+		Map<String, String> sortedParams = new TreeMap<>(body);
+		StringBuilder result = new StringBuilder();
+
+		for (Map.Entry<String, String> entry : sortedParams.entrySet()) {
+			String key = entry.getKey().trim();
+			String value = entry.getValue() != null ? entry.getValue().trim() : "";
+
+			if ("signature".equals(key)) {
+				continue;
+			}
+
+			result.append(key).append(value);
+		}
+		 
+		System.out.println("Signature String (before hashing): [" + result.toString() + "]");
+		return pesapalHmacSha256(result.toString(), secret);
+	}
+	
+	private static String pesapalHmacSha256(String data, String secret) {
+		try {
+			Mac mac = Mac.getInstance("HmacSHA256");
+			SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+			mac.init(secretKey);
+			byte[] hash = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+
+			StringBuilder hexString = new StringBuilder();
+			for (byte b : hash) {
+				hexString.append(String.format("%02x", b));
+
+			}
+
+			return hexString.toString();
+		} catch (Exception e) {
+			return "Error generating HMAC-SHA256 signature";
+		}
+	}
+	
 	private JsonObject lipila(PaymentVendorMaster vendor, PaymentDetail payment) {
 		try {
 			String apisecrectkey=null;
@@ -598,7 +741,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 						responses=lipilaOrderStatus(payment,vendor);
 					}else if("pesapal".equals(vendor.getVendorName())) {
 						responses=pesapalOrderStatus(payment,vendor);
-					} else {
+					} else if("peach".equals(vendor.getVendorName())) {
+						responses=peachOrderStatus(payment,vendor);
+					}else {
 						responses=selcomOrderStatus(payment,vendor);
 					}
 
@@ -667,6 +812,84 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 
+	private JsonObject peachOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
+		try (CloseableHttpClient client = HttpClients.createDefault()) {  
+			Map<String, String> params = new HashMap<>();
+			params.put("authentication.entityId", vendor.getApiKey());
+			params.put("merchantTransactionId", payment.getMerchantReference());
+			String signaturestatus = peachGenerateSignature(params, vendor.getApiSecretKey());
+			System.out.println("status signaturestatus->"+signaturestatus); 
+			String param = params.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
+					.collect(Collectors.joining("&"));
+			StringBuilder urlString = new StringBuilder(vendor.getCheckStatusUrl().concat(param));
+
+			HttpGet httpGet = new HttpGet(urlString.toString());
+			httpGet.setHeader("Content-Type", "application/json");
+			httpGet.setHeader("accept", "application/json");
+
+			try (CloseableHttpResponse response = client.execute(httpGet)) {
+				org.apache.http.HttpEntity entity = response.getEntity();
+				String responseString = EntityUtils.toString(entity);
+				System.out.println("Response: " + responseString);
+				JsonObject responseJson = JsonParser.parseString(responseString).getAsJsonObject();
+				if( responseJson!=null ) {
+
+					if(responseJson.get("status") !=null && "successful".equals(responseJson.get("status").getAsString()) ) {
+						JsonObject redirect_post_data = responseJson.get("redirect_post_data").getAsJsonObject(); 
+
+						if("000.000.000".equals(redirect_post_data.get("result.code").getAsString())) {
+							String amountStr=redirect_post_data.get("amount").getAsString();
+							BigDecimal OurPremium=BigDecimal.ZERO;
+							List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+							if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId())) {
+								OurPremium = payment.getPremiumLc();
+							}else {
+								OurPremium = payment.getPremiumFc();
+							}
+
+							if(OurPremium.setScale(0, RoundingMode.UP).compareTo(new BigDecimal(amountStr))>=0) {
+								payment.setPaymentStatus("ACCEPTED");
+								payment.setAuthTransRefNo(redirect_post_data.get("checkoutId").getAsString());
+								payment.setChannel(redirect_post_data.get("checkoutId").getAsString());
+								payment.setReference(redirect_post_data.get("checkoutId").getAsString());
+								payment.setMsisdn(redirect_post_data.get("checkoutId").getAsString());
+								payment.setAccountNumber(redirect_post_data.get("checkoutId").getAsString());
+								payment.setAuthAmount(redirect_post_data.get("amount").getAsString());
+								payment.setAuthResponse(redirect_post_data.get("result.code").getAsString());
+								payment.setAuthTime(redirect_post_data.get("timestamp").getAsString());
+								payment.setResponseTime(new Date());
+								payment.setResponseMessage(redirect_post_data.get("result.description").getAsString());
+							}else {
+								payment.setPaymentStatus("FAILED");
+								payment.setAuthResponse(redirect_post_data.get("result.code") !=null?redirect_post_data.get("result.code").getAsString():"");
+								payment.setResponseMessage("Premium Amount is Mismatch ,Customer Paid Only "+amountStr);
+								payment.setResponseTime(new Date());
+								payment.setAuthAmount(redirect_post_data.get("amount")!=null? redirect_post_data.get("amount").getAsString():"0");
+							}
+						}
+					}else if(responseJson.get("status") !=null &&  "pending".equals(responseJson.get("status").getAsString()))
+						payment.setPaymentStatus("PENDING");
+					else if(responseJson.get("status") !=null && ( "cancelled".equals(responseJson.get("status").getAsString()) 
+							|| "uncertain".equals(responseJson.get("status").getAsString())  
+							))							 
+						payment.setPaymentStatus("FAILED");
+
+					payment.setAuthResponse(responseJson.get("result.code") !=null?responseJson.get("result.code").getAsString():"");
+					payment.setResponseMessage(responseJson.get("result.description")!=null?responseJson.get("result.description").getAsString():"");
+					payment.setResponseTime(new Date());
+					payment.setAuthAmount(responseJson.get("amount")!=null? responseJson.get("amount").getAsString():"0");
+
+					paymentDetailRepo.save(payment);
+
+
+				}
+				return responseJson;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return null;
+	}
 	private JsonObject pesapalOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
 		CloseableHttpClient httpClient = null;
 		String token="",notificationId="";
