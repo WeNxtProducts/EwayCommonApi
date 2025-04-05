@@ -161,15 +161,15 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 	private JsonObject peach(PaymentVendorMaster vendor, PaymentDetail payment) {
-		DecimalFormat df = new DecimalFormat("0.00");
+		DecimalFormat df = new DecimalFormat("#####");
 		String signature ="";
 		String castAmountValue="0";
 		List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
 		if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
-			castAmountValue = df.format(payment.getPremiumLc().toPlainString());
+			castAmountValue = df.format( payment.getPremiumLc().doubleValue());
 		else
-			castAmountValue=  df.format(payment.getPremiumFc().toPlainString());
-		
+			castAmountValue=  df.format( payment.getPremiumLc().doubleValue());
+		 
 		try {
 			Map<String, String> params = new HashMap<>();
 			params.put("authentication.entityId", vendor.getApiKey());
@@ -240,6 +240,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 	                } else {
 	                    jsonResponse.addProperty("status", "error");
 	                    jsonResponse.addProperty("message", "redirectUrl not found in response");
+	                    jsonResponse.addProperty("result", "ERROR");
 	                }					
 						
 				}
