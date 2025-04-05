@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -23,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -231,8 +234,10 @@ public class EndorsementService {
 			viewCalcReq.setRequestReferenceNo(request.getRequestReferenceNo());
 			viewCalcReq.setInsuranceId(request.getCompanyId());
 			List<EservieMotorDetailsViewRes> viewCalc = factorService.getFactorRateRequestDetails(viewCalcReq, "");
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(viewCalcReq.getInsuranceId(), viewCalcReq.getProductId().toString());
 			List<VehicleIdsReq> vehicles=new ArrayList<VehicleIdsReq>();
+			if(product.getMotorYn().equals("M") || viewCalcReq.getProductId().equalsIgnoreCase(travelProductId)) {
+				
 			for (EservieMotorDetailsViewRes motors : viewCalc) {
 				
 				VehicleIdsReq v=new VehicleIdsReq();
@@ -277,6 +282,69 @@ public class EndorsementService {
 				
 				
 			}  
+			
+		}else {
+			Set<String> findlocationid = viewCalc.stream().map(EservieMotorDetailsViewRes::getLocationId)
+					.distinct().collect(Collectors.toSet());
+			for (String data : findlocationid) {
+				String LocationId=data;
+				List<EservieMotorDetailsViewRes> locFilter = viewCalc.stream()
+						.filter(o -> o.getLocationId().equals(data)).collect(Collectors.toList());
+				Set<String> findVehicleid = locFilter.stream().map(EservieMotorDetailsViewRes::getVehicleId).distinct()
+						.collect(Collectors.toSet());
+				for (String vehicle : findVehicleid) {
+					List<EservieMotorDetailsViewRes> vehicleFilter = locFilter.stream()
+							.filter(o -> o.getVehicleId().equals(vehicle)).collect(Collectors.toList());
+					VehicleIdsReq v = new VehicleIdsReq();
+
+					v.setVehicleId(Integer.parseInt(vehicle));
+					v.setLocationId(Integer.parseInt(LocationId));
+					List<CoverIdsReq> covers = new ArrayList<CoverIdsReq>();
+					for (EservieMotorDetailsViewRes motors : vehicleFilter) {
+						
+						
+						List<Cover> coverList = motors.getCoverList();
+						List<Cover> distinctSections = coverList.stream().filter(distinctByKey(c -> c.getSectionId()))
+								.collect(Collectors.toList());
+
+						for (Cover ds : distinctSections) {
+							v.setSectionId(ds.getSectionId());
+							
+							for (Cover cover : coverList) {
+
+								if ("Y".equals(cover.getUserOpt()) && ds.getSectionId().equals(cover.getSectionId())) {
+									String isSubCover = cover.getIsSubCover();
+
+									if ("Y".equals(isSubCover)) {
+										List<Cover> subcovers = cover.getSubcovers().stream()
+												.filter(f -> "Y".equals(f.getUserOpt())).collect(Collectors.toList());
+										for (Cover c : subcovers) {
+											CoverIdsReq r = new CoverIdsReq();
+											r.setSubCoverYn(isSubCover);
+											r.setCoverId(Integer.parseInt(c.getCoverId()));
+											r.setSubCoverId(c.getSubCoverId());
+											covers.add(r);
+										}
+									} else {
+										CoverIdsReq r = new CoverIdsReq();
+
+										r.setSubCoverYn(isSubCover);
+										r.setCoverId(Integer.parseInt(cover.getCoverId()));
+										r.setSubCoverId(null);
+										covers.add(r);
+									}
+
+								}
+							}
+							v.setCoverIdList(covers);
+						}
+					
+
+					}
+					vehicles.add(v);
+				}
+			}
+		}
 			NewQuoteReq newq=new NewQuoteReq();
 			 
 			newq.setCreatedBy(request.getCreatedBy());
@@ -286,8 +354,10 @@ public class EndorsementService {
 			newq.setRequestReferenceNo(request.getRequestReferenceNo());
 			newq.setSectionId(null);
 			newq.setVehicleIdsList(vehicles);
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE);
+			System.out.println("Buy Policy Request -->" + objectMapper.writeValueAsString(newq));
 			CommonRes generateNewQuote = entityService.generateNewQuote(newq);
-			
 			if(!generateNewQuote.getIsError()) {
 				NewQuoteRes view=(NewQuoteRes) generateNewQuote.getCommonResponse();
 				ViewQuoteReq requestView=new ViewQuoteReq();
