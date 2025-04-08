@@ -321,6 +321,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				request.addProperty("externalId", payment.getMerchantReference());
 				request.addProperty("narration", payment.getMerchantReference());
 				request.addProperty("redirectUrl", redirect_url);
+				request.addProperty("clientRedirectUrl", redirect_url);
 
 				httpClient= HttpClientBuilder.create().build();
 				HttpPost postRequest = new HttpPost(apibaseURL);
