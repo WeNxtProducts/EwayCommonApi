@@ -84,10 +84,12 @@ public class PushedStateChange implements  Function<NotifTransactionDetails,List
 				if(tomailds!=null) {
 					String tomaildstr=(String )tomailds;
 					String tomailid=tomaildstr;
+					String ccMailId ="";
 					List<String> mailcc=null;
 					if(tomaildstr.indexOf(",")!=1) {
 						tomailid=tomaildstr.split(",")[0];
-						String[] mailcsc = tomailid.split(",");
+						ccMailId=tomaildstr.split(",")[1];
+						String[] mailcsc = ccMailId.split(",");
 						List<String> asList = Arrays.asList(mailcsc);
 						mailcc= (asList.size()>5)?asList.subList(0, 5):asList;
 					}

@@ -217,6 +217,18 @@ private static final long serialVersionUID = 1L;
     @Column(name="EXPIRY_DATE")
     public Date       expiryDate ;
     
+    @Column(name="POLICY_START_DATE", length=100)
+    public String startDate ;
+    
+    @Column(name="POLICY_END_DATE", length=100)
+    public String endDate ;
+    
+    @Column(name="INSURANCE_CLASS", length=100)
+    public String insuranceClass;
+    
+    @Column(name="PREMIUM_AMOUNT", length=100)
+    public String premiumAmount;
+    
 }
 
 

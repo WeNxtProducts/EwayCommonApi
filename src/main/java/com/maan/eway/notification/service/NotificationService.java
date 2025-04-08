@@ -282,6 +282,11 @@ public class NotificationService {
 							.refno(n.getRefNo())
 							.tinyUrlActive("Y")
 							.tinyGroupId(tinyGroupId)
+							.regNo(n.getRegNo())
+							.startDate(n.getStartDate())
+							.endDate(n.getEndDate())
+							.premiumAmount(n.getPremiumAmount())
+							.insuranceClass(n.getInsuranceClass())
 							.build();
 					if(StringUtils.isBlank(n.getTinyUrl()))
 						generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
@@ -335,6 +340,11 @@ public class NotificationService {
 						.tinyUrlActive("Y")
 						.tinyGroupId(tinyGroupId)
 						.tinyUrl(StringUtils.isBlank(n.getTinyUrl())?"":n.getTinyUrl())
+						.regNo(n.getRegNo())
+						.startDate(n.getStartDate())
+						.endDate(n.getEndDate())
+						.premiumAmount(n.getPremiumAmount())
+						.insuranceClass(n.getInsuranceClass())
 						.build();
 				if(n.getUnderwriters()!=null) {
 					nt.setUwMailid((n.getUnderwriters().size()>5)?n.getUnderwriters().subList(0, 5).stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")):

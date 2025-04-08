@@ -71,6 +71,21 @@ public class Notification {
 	@JsonProperty("RequestReferenceNo")
 	private String refNo;
 	
+	@JsonProperty("RegistrationNo")
+	private String regNo;
+	
+	@JsonProperty("InsuranceClass")
+	private String insuranceClass;
+	
+	@JsonProperty("PolicyStartDate")
+	private String startDate;
+	
+	@JsonProperty("PolicyEndDate")
+	private String endDate;
+	
+	@JsonProperty("PremiumAmount")
+	private String premiumAmount;
+	
 
 }
 
