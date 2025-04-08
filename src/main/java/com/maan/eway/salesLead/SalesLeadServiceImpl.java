@@ -750,6 +750,49 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 					String businessType = Optional.ofNullable(businessTypeDesc).map(map -> map.get("itemDesc")).orElse("");
 					saveData.setBusinessTypeDesc(businessType);
 				}
+				
+				if (StringUtils.isNotBlank(req.getChannelId())) {
+					List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("CUSTOMER_TYPE");
+					String channelName = getList.stream()
+						    .filter(k -> req.getChannelId().equalsIgnoreCase(String.valueOf(k.getId())))
+						    .map(k -> String.valueOf(k.getItemValue()))
+						    .findFirst()
+						    .orElse(null);
+					saveData.setChannelName(channelName);
+				}
+				
+				if (StringUtils.isNotBlank(req.getSectionTypeId())) {
+					List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("SECTION_TYPE");
+					String sectionTypeName = getList.stream()
+						    .filter(k -> req.getSectionTypeId().equalsIgnoreCase(String.valueOf(k.getId())))
+						    .map(k -> String.valueOf(k.getItemValue()))
+						    .findFirst()
+						    .orElse(null);
+					saveData.setSectionTypeDesc(sectionTypeName);
+				}
+				
+				if (StringUtils.isNotBlank(req.getPropobabilityOfSuccessId())) {
+					List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("POS");
+					String propobabilityOfSuccessName = getList.stream()
+						    .filter(k -> req.getPropobabilityOfSuccessId().equalsIgnoreCase(String.valueOf(k.getId())))
+						    .map(k -> String.valueOf(k.getItemValue()))
+						    .findFirst()
+						    .orElse(null);
+					saveData.setPropobabilityOfSuccessDesc(propobabilityOfSuccessName);
+				}
+				
+				if (StringUtils.isNotBlank(req.getTypeOfBusinessId())) {
+					List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("POS");
+					String typeOfBussinessName = getList.stream()
+						    .filter(k -> req.getTypeOfBusinessId().equalsIgnoreCase(String.valueOf(k.getId())))
+						    .map(k -> String.valueOf(k.getItemValue()))
+						    .findFirst()
+						    .orElse(null);
+					saveData.setTypeOfBussinessDesc(typeOfBussinessName);
+				}
+				
+				
+				
 	 			Map<String,String> occupation = custService.getByOccupationIdDesc(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
 				String occupationDesc = Optional.ofNullable(occupation).map(map -> map.get("occupationName")).orElse("");
 				String occupationDescLocal = Optional.ofNullable(occupation).map(map -> map.get("occupationNameLocal")).orElse("");
@@ -799,15 +842,11 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 				saveData.setIntermediateId(req.getIntermediateId());
 				saveData.setIntermediateName(req.getIntermediateName());
 				saveData.setChannelId(req.getChannelId());
-				saveData.setChannelName(req.getChannelDesc());
 				saveData.setSectionTypeId(req.getSectionTypeId());
 				saveData.setCompanyId(req.getCompanyId());
 				saveData.setProductId(Integer.parseInt(req.getProductId()));
-				saveData.setSectionTypeDesc(req.getSectionTypeDesc());
 				saveData.setPropobabilityOfSuccessId(req.getPropobabilityOfSuccessId());
-				saveData.setPropobabilityOfSuccessDesc(req.getPropobabilityOfSuccessDesc());
 				saveData.setTypeOfBussinessId(req.getTypeOfBusinessId());
-				saveData.setTypeOfBussinessDesc(req.getTypeOfBusinessDesc());
 				saveData.setCurrentInsurer(req.getCurrentInsurer());
 				leadrepo.save(saveData);
 				
