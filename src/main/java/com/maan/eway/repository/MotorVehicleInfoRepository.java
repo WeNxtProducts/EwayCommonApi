@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -32,6 +34,9 @@ public interface MotorVehicleInfoRepository  extends JpaRepository<MotorVehicleI
 
 
 	MotorVehicleInfo findTop1ByResChassisNumberAndCompanyIdOrderByEntryDateDesc(String reqChassisNumber, String companyId);
+
+	List<MotorVehicleInfo> findTop1ByResRegNumberInAndResChassisNumberInAndSavedFromAndCompanyIdOrderByEntryDateDesc(
+			List<String> regNoList, List<String> chassisNoList, String string, String insuranceId);
 
 
 

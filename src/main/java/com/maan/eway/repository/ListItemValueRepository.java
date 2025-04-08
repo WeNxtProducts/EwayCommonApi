@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +66,9 @@ public interface ListItemValueRepository  extends JpaRepository<ListItemValue,Li
 
 	List<ListItemValue> findByItemTypeAndParam1AndParam2AndStatus(String string, String policyType, String vehicelClass,
 			String string2);
+
+	List<ListItemValue> findByCompanyIdAndBranchCodeAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+			String insuranceId, String branchCode, String string, Date currentDate, Date currentDate2);
 
 
 
