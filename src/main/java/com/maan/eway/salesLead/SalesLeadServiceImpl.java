@@ -369,7 +369,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 			if(StringUtils.isBlank(enquiryId)) {
 				enquiryList = enquiryDetailsRepo.findAll();
 			}else if(StringUtils.isBlank(leadId)) {
-				enquiryList = enquiryDetailsRepo.findLeadId(leadId);
+				enquiryList = enquiryDetailsRepo.findByLeadId(leadId);
 			}else {
 				EnquiryDetails enquiry = enquiryDetailsRepo.findByEnquiryId(enquiryId);
 				enquiryList.add(enquiry);

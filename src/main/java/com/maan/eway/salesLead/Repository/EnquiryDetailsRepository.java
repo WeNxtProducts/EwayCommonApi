@@ -12,5 +12,5 @@ public interface EnquiryDetailsRepository extends JpaRepository<EnquiryDetails, 
 
 	EnquiryDetails findByEnquiryId(String enquiryId);
 
-	List<EnquiryDetails> findLeadId(String leadId);
+	List<EnquiryDetails> findByLeadId(String leadId);
 }
