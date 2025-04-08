@@ -360,7 +360,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	}
 
 	@Override
-	public CommonRes getEnquirys(String enquiryId) {
+	public CommonRes getEnquirys(String enquiryId,String leadId) {
 		logger.info("Enter into getAllEnquiry.");
 		CommonRes res = new CommonRes();
 		List<EnquiryDetailsDTO> resList = new ArrayList<EnquiryDetailsDTO>();
@@ -368,6 +368,8 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 			List<EnquiryDetails> enquiryList = new ArrayList<EnquiryDetails>();
 			if(StringUtils.isBlank(enquiryId)) {
 				enquiryList = enquiryDetailsRepo.findAll();
+			}else if(StringUtils.isBlank(leadId)) {
+				enquiryList = enquiryDetailsRepo.findLeadId(leadId);
 			}else {
 				EnquiryDetails enquiry = enquiryDetailsRepo.findByEnquiryId(enquiryId);
 				enquiryList.add(enquiry);

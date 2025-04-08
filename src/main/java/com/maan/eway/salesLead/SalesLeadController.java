@@ -90,8 +90,8 @@ public class SalesLeadController {
 	}
 	
 	@GetMapping("/getEnquirys")
-	public ResponseEntity<?> getAllEnquiry(@RequestParam (value = "enquiryId",required = false) String enquiryId){
-		CommonRes res = service.getEnquirys(enquiryId);
+	public ResponseEntity<?> getAllEnquiry(@RequestParam (value = "enquiryId",required = false) String enquiryId,@RequestParam (value = "leadId",required = false) String leadId){
+		CommonRes res = service.getEnquirys(enquiryId,leadId);
 		if(res!=null) {
 			return new ResponseEntity<CommonRes>(res,HttpStatus.ACCEPTED);
 		}else {

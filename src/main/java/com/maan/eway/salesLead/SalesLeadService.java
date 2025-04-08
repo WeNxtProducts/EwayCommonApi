@@ -18,7 +18,7 @@ public interface SalesLeadService {
 
 	CommonRes insertEnquiry(EnquiryDetailsDTO req);
 
-	CommonRes getEnquirys(String enquiryId);
+	CommonRes getEnquirys(String enquiryId, String leadId);
 
 	List<DropDownRes> contactType(LovDropDownReq req);
 
