@@ -2375,7 +2375,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoAndStatusOrderByVehicleIdAsc(request.getEndtPrevQuoteNo() ,"Y" );
+				List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoAndLocationIdAndStatusOrderByVehicleIdAsc(request.getEndtPrevQuoteNo(),request.getLocationId() ,"Y" );
 				
 						
 				// Save Cover Details
@@ -2472,7 +2472,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 					boolean isFinYn = request.getIsFinYn().equalsIgnoreCase("Y") ? true : false ;
 					// Premium
-					if( (isFinYn==false || endtCovModify == true)  && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
+				/*	if( (isFinYn==false || endtCovModify == true)  && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 && cov.getTaxId()!=0 ) ) {
 				//	if(endtCovModify == true && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
 					
 						coverData.setDiffPremiumIncludedTaxLc(BigDecimal.ZERO);
@@ -2486,7 +2486,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						coverData.setPremiumIncludedTaxFc(BigDecimal.ZERO);
 						coverData.setPremiumIncludedTaxLc(BigDecimal.ZERO);
 						
-					} else {
+					} else */{
 						
 						coverData.setDiffPremiumIncludedTaxLc(cov.getDiffPremiumIncludedTaxLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
 						coverData.setDiffPremiumIncludedTaxFc(cov.getDiffPremiumIncludedTaxFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
