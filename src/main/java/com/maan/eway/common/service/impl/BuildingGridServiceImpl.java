@@ -1314,25 +1314,26 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			String companyId = req.getInsuranceId();
 			String loginId = req.getLoginId();
 			String userType = req.getUserType();
+			String productId=req.getProductId();
 
 			if ("RequestReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches, productId);
 			} else if ("CustomerReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches, productId);
 			} else if ("ClientName".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches, productId);
 			} else if ("QuoteNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches, productId);
 			} else if ("ChassisNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches, productId);
 			} else if ("RegistrationNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches, productId);
 			} else if ("EntryDate".equalsIgnoreCase(searchKey)) {
 			//	Date entryDate = sdf.parse(searchValue);
 			//	searchValue = sdf.format(entryDate);
-				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches, productId);
 			}else if ("PolicyNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches, productId);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1344,7 +1345,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 
 	public List<Tuple> searchDetails(String searchKey, String searchValue, String companyId, String loginId,
-			String userType, List<String> branches) {
+			String userType, List<String> branches, String productId) {
 		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -1561,6 +1562,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n3 = null;
 			Predicate n4 = null;
 			Predicate n5 = null;
+			Predicate n6 = null;
 
 			// Where
 			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
@@ -1619,15 +1621,16 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				}
 			}
 			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			n6=cb.equal(c.get("productId"),productId);
 			if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
-			query.where(n1,n2,n3,n4,n5)
+			query.where(n1,n2,n3,n4,n5,n6)
 			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 					c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
 			
 			.orderBy(orderList);
 			}else {
-				query.where(n1,n2,n4,n5)
+				query.where(n1,n2,n4,n5,n6)
 				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
@@ -1635,7 +1638,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				.orderBy(orderList);
 			}
 			if (searchKey.equalsIgnoreCase("ClientName")) {
-				query.where(n1, n2,n4,n5)
+				query.where(n1, n2,n4,n5,n6)
 				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
@@ -1643,7 +1646,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				.orderBy(orderList);
 			}
 			if (searchKey.equalsIgnoreCase("EntryDate")) {
-				query.where(n1,n2,n3,n4)
+				query.where(n1,n2,n3,n4,n6)
 				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
