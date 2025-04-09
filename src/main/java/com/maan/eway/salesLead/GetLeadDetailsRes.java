@@ -6,181 +6,266 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.Data;
 
 @Data
 public class GetLeadDetailsRes {
 
-	@JsonProperty("BrokerBranchCode")
-	private String brokerBranchCode;
+	@Column(name = "CustomerReferenceNo")
+	private String customerReferenceNo ;
 	
-	@JsonProperty("CustomerReferenceNo")
-	private String customerReferenceNo;
+	@Column(name = "CompanyId")
+	private String companyId ;
 	
-	@JsonProperty("InsuranceId")
-	private String companyId;
+	@Column(name = "ProductId")
+	private Integer productId ;
 	
-	@JsonProperty("BranchCode")
-	private String branchCode;
+	@Column(name = "ClientName")
+	private String clientName ;
 	
-	@JsonProperty("ProductId")
-	private String productId;
+	@Column(name = "Address1")
+	private String address1 ;
 	
-	@JsonProperty("Address1")
-	private String address1;
+	@Column(name = "Address2")
+	private String address2 ;
 	
-	@JsonProperty("BusinessType")
-	private String businessType;
+	@Column(name = "Title")
+	private String title ;
 	
-	@JsonProperty("CityCode")
-	private String cityCode;
+	@Column(name = "RegionCode")
+	private String regionCode ;
 	
-	@JsonProperty("CityName")
-	private String cityName;
+	@Column(name = "TitleDesc")
+	private String titleDesc ;
 	
-	@JsonProperty("ClientName")
-	private String clientName;
+	@Column(name = "ClientStatus")
+	private String clientStatus ;
 	
-	@JsonProperty("Clientstatus")
-	private String clientStatus;
+	@Column(name = "StateCode")
+	private Integer stateCode ;
 	
-	@JsonProperty("CreatedBy")
-	private String createdBy;
+	@Column(name = "VrTinNo")
+	private String vrTinNo ;
+	
+	@Column(name = "StateName")
+	private String stateName ;
+	
+	@Column(name = "BrokerBranchCode")
+	private String brokerBranchCode ;
+	
+	@Column(name = "ClientStatusDesc")
+	private String clientStatusDesc ;
+	
+	@Column(name = "PolicyHolderType")
+	private String policyHolderType ;
+	
+	@Column(name = "CityCode")
+	private Integer cityCode ;
+	
+	@Column(name = "CityName")
+	private String cityName ;
+	
+	@Column(name = "PolicyHolderTypeid")
+	private String policyHolderTypeid ;
+	
+	@Column(name = "IdType")
+	private String idType ;
+	
+	@Column(name = "IdTypeDesc")
+	private String idTypeDesc ;
+	
+	@Column(name = "IdNumber")
+	private String idNumber ;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("DobOrRegDate")
-	private Date dobOrRegDate;
+	@Temporal(TemporalType.DATE)
+	@Column(name = "DobOrRegDate")
+	private Date dobOrRegDate ;
 	
-	@JsonProperty("Email1")
-	private String email1;
+	@Column(name = "CreatedBy")
+	private String createdBy ;
 	
-	@JsonProperty("Fax")
-	private String fax;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@Temporal(TemporalType.DATE)
+	@Column(name = "EntryDate")
+	private Date entryDate ;
 	
-	@JsonProperty("Gender")
-	private String gender;
+	@Column(name = "Age")
+	private Integer age ;
 	
-	@JsonProperty("IdNumber")
-	private String idNumber;
+	@Column(name = "Nationality")
+	private String nationality ;
 	
-	@JsonProperty("IdType")
-	private String idType;
+	@Column(name = "Status")
+	private String status ;
 	
-	@JsonProperty("IsTaxExempted")
-	private String isTaxExempted;
+	@Column(name = "UpdatedBy")
+	private String updatedBy ;
 	
-	@JsonProperty("MobileNo1")
-	private String mobileNo1;
+	@Column(name = "PlaceOfBirth")
+	private String placeOfBirth ;
+
+	@Column(name = "Gender")
+	private String gender ;
 	
-	@JsonProperty("Country")
-	private String     country ;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@Temporal(TemporalType.DATE)
+	@Column(name = "UpdatedDate")
+	private Date updatedDate ;
 	
-	@JsonProperty("CountryName")
-	private String     countryName ;
+	@Column(name = "GenderDesc")
+	private String genderDesc ;
 	
-	@JsonProperty("Occupation")
-	private String occupation;
+	@Column(name = "Occupation")
+	private String occupation ;
 	
-	@JsonProperty("OtherOccupation")
+	@Column(name = "OccupationDesc")
+	private String occupationDesc ;
+	
+	@Column(name = "BusinessType")
+	private String businessType ;
+	
+	@Column(name = "BusinessTypeDesc")
+	private String businessTypeDesc ;
+	
+	@Column(name = "VrnGst")
+	private String vrnGst ;
+	
+	@Column(name = "Fax")
+	private String fax ;
+	
+	@Column(name = "TelephoneNo1")
+	private String telephoneNo1 ;
+	
+	@Column(name = "Language")
+	private String language ;
+	
+	@Column(name = "LanguageDesc")
+	private String languageDesc ;
+	
+	@Column(name = "IsTaxExempted")
+	private String isTaxExempted ;
+	
+	@Column(name = "TaxExemptedId")
+	private String taxExemptedId ;
+	
+	@Column(name = "BranchCode")
+	private String branchCode ;
+	
+	@Column(name = "PolicyHolderTypeDesc")
+	private String policyHolderTypeDesc ;
+	
+	@Column(name = "PolicyHolderTypeIdDesc")
+	private String policyHolderTypeIdDesc ;
+	
+	@Column(name = "Street")
+	private String street ;
+	
+	@Column(name = "MobileCode1")
+	private String mobileCode1 ;
+	
+	@Column(name = "MobileCodeDesc1")
+	private String mobileCodeDesc1 ;
+	
+	@Column(name = "MobileNo1")
+	private String mobileNo1 ;
+	
+	@Column(name = "WhatsappCode")
+	private String whatsappCode ;
+	
+	@Column(name = "WhatsappCodeDesc")
+	private String whatsappCodeDesc ;
+	
+	@Column(name = "WhatsappNo")
+	private String whatsappNo ;
+	
+	@Column(name = "Email1")
+	private String email1 ;
+	
+	@Column(name = "PreferredNotification")
+	private String preferredNotification ;
+	
+	@Column(name = "PinCode")
+	private String pinCode ;
+	
+	@Column(name = "OtherOccupation")
 	private String otherOccupation;
 	
-	@JsonProperty("Placeofbirth")
-	private String placeOfBirth;
-
-	@JsonProperty("PolicyHolderType")
-	private String policyHolderType;
+	@Column(name = "LicenseDuration")
+	private Integer licenseDuration ;
 	
-	@JsonProperty("PolicyHolderTypeid")
-	private String policyHolderTypeid;
+	@Column(name = "AreaGroup")
+	private String areaGroup ;
 	
-	@JsonProperty("PreferredNotification")
-	private String preferredNotification;
+	@Column(name = "AreaClasification")
+	private String areaClasification ;
 	
-	@JsonProperty("RegionCode")
-	private String regionCode;
+	@Column(name = "MaritalStatus")
+	private String maritalStatus ;
 	
-	@JsonProperty("MobileCode1")
-	private String mobileCode1;
+	@Column(name = "PolCustCode")
+	private String polCustCode ;
 	
-	@JsonProperty("MobileCodeDesc1")
-	private String mobileCodeDesc1;
+	@Column(name = "FirstName")
+	private String firstName ;
 	
-	@JsonProperty("WhatsappCode")
-	private String whatsappCode;
+	@Column(name = "MiddleName")
+	private String middleName ;
 	
-	@JsonProperty("WhatsappDesc")
-	private String whatsappDesc;
+	@Column(name = "LastName")
+	private String lastName ;
 	
-	@JsonProperty("StateCode")
-	private String stateCode;
+	@Column(name = "CustomerCode")
+	private String customerCode ;
 	
-	@JsonProperty("StateName")
-	private String stateName;
+	@Column(name = "Address3")
+	private String address3 ;
 	
-	@JsonProperty("Status")
-	private String status;
+	@Column(name = "Zone")
+	private Integer zone;
 	
-	@JsonProperty("Street")
-	private String street;
-	
-	@JsonProperty("TaxExemptedId")
-	private String taxExemptedId;
-	
-	@JsonProperty("PinCode")
-	private String pinCode;
-	
-	@JsonProperty("Title")
-	private String title;
-	
-	@JsonProperty("VrTinNo")
-	private String vrTinNo;
-	
-	@JsonProperty("SaveOrSubmit")
-	private String saveOrSubmit;
-	
-	@JsonProperty("Zone")
-	private String zone;
-	
-	@JsonProperty("CustomerAsInsurer")
-	private String customerAsInsurer;
-	
-	@JsonProperty("GstIdentificationNo")
+	@Column(name = "GstIdentificationNo")
 	private String gstIdentificationNo;
 	
-	@JsonProperty("LeadCreatedOn")
-	private String leadCreatedOn;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@Temporal(TemporalType.DATE)
+	@Column(name = "LeadCreatedDate")
+	private Date leadCreatedDate;
 	
-	@JsonProperty("IntermediateId")
+	@Column(name = "IntermediateId")
 	private String intermediateId;
 	
-	@JsonProperty("IntermediateName")
+	@Column(name = "IntermediateName")
 	private String intermediateName;
 	
-	@JsonProperty("ChannelId")
+	@Column(name = "ChannelId")
 	private String channelId;
 	
-	@JsonProperty("ChannelDesc")
-	private String channelDesc;
+	@Column(name = "ChannelName")
+	private String channelName;
 	
-	@JsonProperty("SectionTypeId")
+	@Column(name = "SectionTypeId")
 	private String sectionTypeId;
-	
-	@JsonProperty("SectionTypeDesc")
+
+	@Column(name = "SectionTypeDesc")
 	private String sectionTypeDesc;
 	
-	@JsonProperty("PropobabilityOfSuccessId")
+	@Column(name = "PropobabilityOfSuccessId")
 	private String propobabilityOfSuccessId;
 	
-	@JsonProperty("PropobabilityOfSuccessDesc")
+	@Column(name = "PropobabilityOfSuccessDesc")
 	private String propobabilityOfSuccessDesc;
 	
-	@JsonProperty("TypeOfBusinessId")
-	private String typeOfBusinessId;
+	@Column(name = "TypeOfBussinessId")
+	private String typeOfBussinessId;
 	
-	@JsonProperty("TypeOfBusinessDesc")
-	private String typeOfBusinessDesc;
+	@Column(name = "TypeOfBussinessDesc")
+	private String typeOfBussinessDesc;
 	
-	@JsonProperty("CurrentInsurer")
+	@Column(name = "CurrentInsurer")
 	private String currentInsurer;
 	
 	@JsonProperty("LeadContactPerson")
