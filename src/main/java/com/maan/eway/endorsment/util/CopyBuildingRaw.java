@@ -808,7 +808,7 @@ public class CopyBuildingRaw {
 						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
 						//Home Position Master
-						cb.sum(overAllPremiumLc).alias("overallPremiumLc"), cb.sum(overAllPremiumFc).alias("overallPremiumFc"),
+						cb.max(overAllPremiumLc).alias("overallPremiumLc"), cb.max(overAllPremiumFc).alias("overallPremiumFc"),
 						cb.sum(endtPre,endtPreTax).alias("endtPremium"),cb.max( m.get("currency")).alias("currency"),
 						debitNoteNo.alias("debitNoteNo") ,creditNo.alias("creditNo")
 						

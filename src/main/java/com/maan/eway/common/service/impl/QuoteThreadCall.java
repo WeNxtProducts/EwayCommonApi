@@ -588,7 +588,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(eserCommonData.getEndorsementType()!=null) {
 				String prevQuoteNo=eserCommonData.getEndtPrevQuoteNo();
 				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-				endtRes = updateAssetHumanEndtPremium2(request.getQuoteNo(),eserCommonData.getEndorsementEffdate(),prevQuoteNo, eserCommonData.getRiskId(),Endtcovers,Integer.valueOf(eserCommonData.getProductId()) , Integer.valueOf(eserCommonData.getSectionId()),Integer.valueOf(eserCommonData.getCoverId()) );				
+				endtRes = updateAssetHumanEndtPremium2(request.getQuoteNo(),eserCommonData.getEndorsementEffdate(),prevQuoteNo, eserCommonData.getRiskId(),Endtcovers,Integer.valueOf(eserCommonData.getProductId()) , Integer.valueOf(eserCommonData.getSectionId()),Integer.valueOf(eserCommonData.getCoverId()),eserCommonData.getLocationId() );				
 				eserCommonData.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue());
 				eserCommonData.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null : endtRes.getEndtVatPremium());
 				commonData.setEndtPremium(eserCommonData.getEndtPremium());
@@ -829,7 +829,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return endtRes;
 	}
 
-	private EndtUpdatePremiumRes updateAssetHumanEndtPremium2(String quoteNo,Date effDate,String prevQuoteNo,Integer riskId, List<PolicyCoverData> covers, Integer productId , Integer sectionId,Integer coverId ) {
+	private EndtUpdatePremiumRes updateAssetHumanEndtPremium2(String quoteNo,Date effDate,String prevQuoteNo,Integer riskId, List<PolicyCoverData> covers, Integer productId , Integer sectionId,Integer coverId, Integer locationId) {
 		EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes();  
 		try {
 			List<PolicyCoverData> newCovers=null;
@@ -842,8 +842,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				 oldcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(prevQuoteNo ,0, 0 ,"D");
 			 }else {
 				 newCovers=covers.stream().filter(i -> i.getVehicleId().doubleValue()==riskId.doubleValue()).collect(Collectors.toList());
-				 totalcovers = coverRepo.findByQuoteNoAndVehicleIdAndProductIdAndSectionIdAndCoverIdOrderByVehicleIdAsc(quoteNo,riskId,productId,sectionId,coverId);
-				 oldcovers = coverRepo.findByQuoteNoAndVehicleIdAndDiscLoadIdAndTaxIdAndStatusNotAndProductIdAndSectionIdAndCoverIdOrderByVehicleIdAsc(prevQuoteNo ,riskId,0, 0 ,"D",productId,sectionId,coverId);
+				 totalcovers = coverRepo.findByQuoteNoAndVehicleIdAndProductIdAndSectionIdAndCoverIdAndLocationIdOrderByVehicleIdAsc(quoteNo,riskId,productId,sectionId,coverId,locationId);
+				 oldcovers = coverRepo.findByQuoteNoAndVehicleIdAndDiscLoadIdAndTaxIdAndStatusNotAndProductIdAndSectionIdAndCoverIdAndLocationIdOrderByVehicleIdAsc(prevQuoteNo ,riskId,0, 0 ,"D",productId,sectionId,coverId,locationId);
 			 }
 			 
 			 List<PolicyCoverData>  oldcoversf=oldcovers;
@@ -858,6 +858,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			newCovers.removeIf(p -> {
 				return oldcoversf.stream()
 						.anyMatch(x -> (x.getVehicleId().equals(p.getVehicleId())
+								&&  x.getLocationId().equals(p.getLocationId())
 								&& x.getSectionId().equals(p.getSectionId())
 								&& x.getProductId().equals(p.getProductId()) 
 								&& x.getCoverId().equals(p.getCoverId())));
@@ -879,6 +880,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			newCovers.removeIf(p -> {
 				return oldcoversf.stream()
 						.anyMatch(x -> (x.getVehicleId().equals(p.getVehicleId())
+								&&  x.getLocationId().equals(p.getLocationId())
 								&& x.getSectionId().equals(p.getSectionId())
 								&& x.getProductId().equals(p.getProductId()) 
 								&& x.getCoverId().equals(p.getCoverId())));
@@ -905,14 +907,23 @@ public class QuoteThreadCall implements Callable<Object>  {
 					o.getDiscLoadId().equals(Integer.valueOf(request.getEndtType()))  ).collect(Collectors.toList());
 		    // old cover taxes
 		     endtTaxCovers.removeIf(p-> {
-		    	return endt0Covers.stream().anyMatch(x->  (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
+		    	return endt0Covers.stream().anyMatch(x->
+		    	( Objects.equals(x.getVehicleId(), p.getVehicleId()) 
+		    	&& Objects.equals(x.getSectionId(), p.getSectionId())
+		    	&& Objects.equals(x.getProductId(), p.getProductId())
+		    	&&  Objects.equals(x.getCoverId(), p.getCoverId())));
 		    });
 		    // new cover taxes
 		     List<PolicyCoverData>  newCoverTax  =  totalcovers.stream().filter( o -> o.getCoverageType().equalsIgnoreCase("T") && 
 						o.getDiscLoadId().equals(0) && !o.getTaxId().equals(0) ).collect(Collectors.toList());
-		     newCoverTax.removeIf(p-> {
-			    	return oldcoversf.stream().anyMatch(x->  (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
-			  });
+		     newCoverTax.removeIf(p ->  {
+		       return  oldcoversf.stream().anyMatch(x -> 
+		         Objects.equals(x.getVehicleId(), p.getVehicleId()) &&
+		         Objects.equals(x.getSectionId(), p.getSectionId()) &&
+		         Objects.equals(x.getProductId(), p.getProductId()) &&
+		         Objects.equals(x.getCoverId(), p.getCoverId())
+		     );
+		     });
 		    
 		    
 //					endt0Covers.stream().filter( o -> o.getCoverageType().equalsIgnoreCase("T") && 
@@ -1761,8 +1772,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			List<EserviceBuildingDetails> eserBuild1 = null;
 			if (isEndt.size() > 0 && isEndt != null && !isEndt.isEmpty()) {
-				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationId(
-						request.getRequestReferenceNo(), request.getLocationId());
+				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
+						request.getRequestReferenceNo(), locationid, sectionid, riskIDs, Coverid);
 			} else {
 				eserBuild1 = eserBuildRepo.findByRequestReferenceNoAndLocationIdInAndSectionIdInAndRiskIdInAndCoverIdIn(
 						request.getRequestReferenceNo(), locationid, sectionid, riskIDs, Coverid);
@@ -1798,7 +1809,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				String prevQuoteNo=eserBuild.getEndtPrevQuoteNo();
 				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdAndLocationIdAndSectionIdAndCoverIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0,section.getLocationId(),Integer.valueOf(section.getSectionId()),section.getCoverId());
 				if(! "0".equalsIgnoreCase(bulildDetails.getSectionId()) ) {
-					endtRes = updateAssetHumanEndtPremium2(request.getQuoteNo(),eserBuild.getEndorsementEffdate(),prevQuoteNo, eserBuild.getRiskId(),Endtcovers,Integer.valueOf(bulildDetails.getProductId()) , Integer.valueOf(bulildDetails.getSectionId()),Integer.valueOf(bulildDetails.getCoverId()));				
+					endtRes = updateAssetHumanEndtPremium2(request.getQuoteNo(),eserBuild.getEndorsementEffdate(),prevQuoteNo, eserBuild.getRiskId(),Endtcovers,Integer.valueOf(bulildDetails.getProductId()) , Integer.valueOf(bulildDetails.getSectionId()),Integer.valueOf(bulildDetails.getCoverId()),bulildDetails.getLocationId());				
 					eserBuild.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue());
 					eserBuild.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null : endtRes.getEndtVatPremium());
 					bulildDetails.setEndtPremium(eserBuild.getEndtPremium());
