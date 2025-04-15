@@ -288,7 +288,14 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 //						Boolean result1=deleteTable(quoteNo,masterdata.getPremiaTableName(),jmap);
 						System.out.println("***************************************************************");
 						System.out.println("MySQL Inset Query");
-						String insertQuery="INSERT INTO "+masterdata.getPremiaTableName()+" ("+StringUtils.join(colums,",")
+//						String insertQuery="INSERT INTO "+masterdata.getPremiaTableName()+" ("+StringUtils.join(colums,",")
+//						+") VALUES ("+StringUtils.join(values,",")+")";
+//						log.info("Insert Query::"+insertQuery);
+//						oracle.insert(insertQuery);
+						String resultColumn = colums.stream().map(String::toLowerCase).collect(Collectors.joining(","));
+						 
+						  
+						String insertQuery="INSERT INTO "+masterdata.getPremiaTableName().toLowerCase()+" ("+resultColumn
 						+") VALUES ("+StringUtils.join(values,",")+")";
 						log.info("Insert Query::"+insertQuery);
 						oracle.insert(insertQuery);
