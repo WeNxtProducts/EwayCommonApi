@@ -36,7 +36,7 @@ public class SalesLeadController {
 	@Autowired
 	private SalesLeadService service;
 	
-	@Autowired
+	@Autowired	
 	private SalesLeadValidation leadVali;
 	
 	@Autowired
@@ -89,7 +89,7 @@ public class SalesLeadController {
 		}
 	}
 	
-	@GetMapping("/getEnquirys")
+	@PostMapping("/getEnquirys")
 	public ResponseEntity<?> getAllEnquiry(@RequestParam (value = "enquiryId",required = false) String enquiryId,@RequestParam (value = "leadId",required = false) String leadId){
 		CommonRes res = service.getEnquirys(enquiryId,leadId);
 		if(res!=null) {
