@@ -30,7 +30,7 @@ jobs:
           password: ${{ secrets.HOSTINGER_PASSWORD }}
           port: 22
           source: target/*.war
-          target: /var/lib/tomcat10/webapps/
+          target: /var/lib/tomcat10/webapps/ROOT/
           strip_components: 1
 
 
