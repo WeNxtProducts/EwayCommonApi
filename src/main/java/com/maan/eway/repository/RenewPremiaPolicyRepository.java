@@ -18,6 +18,8 @@ public interface RenewPremiaPolicyRepository  extends JpaRepository<RenewPremiaP
 
 	List<RenewPremiaPolicy> findAllByInsuredMobile(String insuredMobile);
 
+	List<RenewPremiaPolicy> findBySourceCode(String coreAppBrokerCode);
+
 
 
 	
