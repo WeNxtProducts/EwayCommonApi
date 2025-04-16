@@ -220,6 +220,46 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENGINE_NUMBER")
     private String    engineNumber ;
     
+    @Column(name="DIVISION_CODE")
+    private String    divisionCode ;
+    
+    @Column(name="DIVISION_NAME")
+    private String    divisionName ;
+    
+    @Column(name="POL_PROD_CODE")
+    private String    polProductCode ;
+    
+    @Column(name="PROD_NAME")
+    private String    productName ;
+    
+    @Column(name="POL_TYPE")
+    private String    polType ;
+    
+    @Column(name="CUSTOMER_CODE")
+    private String    customerCode ;
+    
+    @Column(name="POL_ASSR_CODE")
+    private String    polAssureCode ;
+    
+    @Column(name="POL_ASSR_NAME")
+    private String    polAssureName ;
+    
+    @Column(name="SOURCE_CODE")
+    private String    sourceCode ;
+    
+    @Column(name="SOURCE_NAME")
+    private String    sourceName ;
+    
+    @Column(name="LOSS_REASON")
+    private String    lossReason ;
+    
+    @Column(name="LOSS_REMARKS")
+    private String    lossRemarks ;
+    
+    @Column(name="COMPETITOR")
+    private String    competitor ;
+    
+    
     
 }
 

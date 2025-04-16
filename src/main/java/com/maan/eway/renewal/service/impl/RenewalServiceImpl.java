@@ -1659,8 +1659,19 @@ public class RenewalServiceImpl implements RenewalService{
 				data.setCurrentStageCode("R");
    			 	data.setCurrentStatus("RENEW-SUCCESS");
    			 	data.setCurrentStatusCode("RS");
+				data.setDivisionCode(rdata.getDivisionCode()); 
+				data.setDivisionName(rdata.getDivisionName());
+				data.setPolProductCode(rdata.getPolProdCode());
+				data.setProductName(rdata.getProdName());
+				data.setPolType(rdata.getPolType());
+				data.setCustomerCode(rdata.getCustomerCode());
+				data.setPolAssureCode(rdata.getPolAssrCode());
+				data.setPolAssureName(rdata.getPolAssrName());
+				data.setSourceCode(rdata.getSourceCode());
+				data.setSourceName(rdata.getSourceName());
 				
-   			 	List<LoginUserInfo> loginUserData = loginUserRepo.findByCoreAppBrokerCode(rdata.getSourceCode());
+				
+				List<LoginUserInfo> loginUserData = loginUserRepo.findByCoreAppBrokerCode(rdata.getSourceCode());
    			 	if(!CollectionUtils.isEmpty(loginUserData) ) {
    			 	data.setLoginId(loginUserData.get(0).getLoginId());
    			 	}
