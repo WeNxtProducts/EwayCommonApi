@@ -231,7 +231,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	@Value(value = "${MotCommDiscountDetailPHZam}")
 	private String MotCommDiscountDetailPHZam;
-	/****************************************/
+
 	@Value(value = "${YiVatDetailPHSAZ}")
 	private String YiVatDetailPHSAZ;
 	
@@ -334,6 +334,22 @@ public class FrameReqServiceImpl implements FrameReqService {
 	
 	@Value(value = "${MotCommDiscountDetailPHNAM}")
 	private String MotCommDiscountDetailPHNAM;
+	
+	@Value(value = "${PremiaIntegrationExtCallMoz}")
+	private String PremiaIntegrationExtCallMoz;
+	
+	
+	@Value(value = "${PremiaIntegrationExtCallZam}")
+	private String PremiaIntegrationExtCallZam;
+	
+	@Value(value = "${PremiaIntegrationExtCallSAZ}")
+	private String PremiaIntegrationExtCallSAZ;
+	
+	@Value(value = "${PremiaIntegrationExtCallNAM}")
+	private String PremiaIntegrationExtCallNAM;
+	
+	@Value(value = "${PremiaIntegrationExtCallBOT}")
+	private String PremiaIntegrationExtCallBOT;
 
 	SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-dd-MM");
@@ -1302,7 +1318,21 @@ public class FrameReqServiceImpl implements FrameReqService {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url="";
 		try {
-			url = PremiaIntegrationExtCall;
+			//url = PremiaIntegrationExtCall;
+			if (StringUtils.isNotBlank(companyId) && "100046".equalsIgnoreCase(companyId)) {
+				url = PremiaIntegrationExtCallZam;
+			} else if (StringUtils.isNotBlank(companyId) && "100047".equalsIgnoreCase(companyId)) {
+				url = PremiaIntegrationExtCallBOT;
+			} else if (StringUtils.isNotBlank(companyId) && "100048".equalsIgnoreCase(companyId)) {
+				url = PremiaIntegrationExtCallMoz;
+			} else if (StringUtils.isNotBlank(companyId) && "100049".equalsIgnoreCase(companyId)) {
+				url = PremiaIntegrationExtCallSAZ;
+			} else if (StringUtils.isNotBlank(companyId) && "100050".equalsIgnoreCase(companyId)) {
+				url = PremiaIntegrationExtCallNAM;
+			} else {
+				url = PremiaIntegrationExtCall;
+			}
+
 			String auth = BasicAuthName + ":" + BasicAuthPass;
 			byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 			String authHeader = "Basic " + new String(encodedAuth);
