@@ -29,8 +29,8 @@ jobs:
           username: ${{ secrets.HOSTINGER_USER }}
           password: ${{ secrets.HOSTINGER_PASSWORD }}
           port: 22
-          source: target/EwayCommonApi-0.0.2-SNAPSHOT.war
-          target: /opt/tomcat/webapps/EwayCommonApi.war
+          source: target/*.war
+          target: /opt/tomcat/webapps
           strip_components: 1
 
 
