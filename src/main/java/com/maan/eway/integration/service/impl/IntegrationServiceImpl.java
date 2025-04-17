@@ -475,14 +475,13 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 		HomePositionMaster home) {
 	IntegrationSaveRes res1 = new IntegrationSaveRes();
 	boolean check=false;
-	String companyId = configMas.getCompanyId();
 	try {
 		System.out.println("*********EXTERNAL API CALL STARTS*********");
 		System.out.println("*********PolicyNo " + policyNo);
 		
 		if (configMas.getPremiaId() == 1) {
 			System.out.println("*********1.YiPolicyDetail: ");
-			Object list = frameReqService.pushYiPolicyDetail(policyNo,companyId);
+			Object list = frameReqService.pushYiPolicyDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -495,7 +494,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 				
 		} else if (configMas.getPremiaId() == 2) {
 			System.out.println("*********2.YiSectionDetail:");
-			Object list = frameReqService.pushYiSectionDetail(policyNo,companyId);
+			Object list = frameReqService.pushYiSectionDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -508,7 +507,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 			}
 		} else if (configMas.getPremiaId() == 3) {
 			System.out.println("*********3.PgitPolRiskAddlInfo:");
-			Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo,companyId);
+			Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -521,7 +520,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 			}
 		} else if (configMas.getPremiaId() == 4) {
 			System.out.println("*********4.MotDriverDetail: ");
-			Object list = frameReqService.pushMotDriverDetail(policyNo,companyId);
+			Object list = frameReqService.pushMotDriverDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -534,7 +533,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 			}
 		} else if (configMas.getPremiaId() == 5) {
 			System.out.println("*********5.YiCoverDetail: ");
-			Object list = frameReqService.pushYiCoverDetail(policyNo,companyId);
+			Object list = frameReqService.pushYiCoverDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -547,7 +546,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 			}
 		} else if (configMas.getPremiaId() == 6) {
 			System.out.println("*********6.MotCommDiscountDetail:");
-			Object list = frameReqService.pushMotCommDiscountDetail(policyNo,companyId);
+			Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -560,7 +559,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 			}
 		} else if (configMas.getPremiaId() == 7) {
 			System.out.println("*********7.YiChargeDetail: ");
-			Object list = frameReqService.pushYiChargeDetail(policyNo,companyId);
+			Object list = frameReqService.pushYiChargeDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -573,7 +572,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 			}
 		} else if (configMas.getPremiaId() == 8) {
 			System.out.println("*********8.YiVatDetail:");
-			Object list = frameReqService.pushYiVatDetail(policyNo,companyId);
+			Object list = frameReqService.pushYiVatDetail(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -586,7 +585,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 			}
 		} else if (configMas.getPremiaId() == 9) {
 			System.out.println("*********9.YiPremCal:");
-			Object list = frameReqService.pushYiPremCal(policyNo,companyId);
+			Object list = frameReqService.pushYiPremCal(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -599,7 +598,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 			}
 		} else if (configMas.getPremiaId() == 10) {
 			System.out.println("*********10.YiPolicyApproval:");
-			Object list = frameReqService.pushYiPolicyApproval(policyNo,companyId);
+			Object list = frameReqService.pushYiPolicyApproval(policyNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;
@@ -612,7 +611,7 @@ public IntegrationSaveRes ewayMotorPremiaPush(String policyNo,String reqRefNo,Pr
 			}
 		} else if (configMas.getPremiaId() == 11) {
 			System.out.println("*********11.CreditLimitDetail:");
-			Object list = frameReqService.pushCreditLimitDetail(reqRefNo,companyId);
+			Object list = frameReqService.pushCreditLimitDetail(reqRefNo);
 			System.out.println("List " + json.toJson(list));
 			System.out.println("_____________________________________________ ");
 			res1 = (IntegrationSaveRes)list;

@@ -157,81 +157,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 	
 	@Value(value = "${UpdateStatusPremiaIntegrationExtCall}")
 	private String UpdateStatusPremiaIntegrationExtCall;
-	
-	@Value(value = "${YiVatDetailPHMoz}")
-	private String YiVatDetailPHMoz;
-	
-	@Value(value = "${YiSectionDetailPHMoz}")
-	private String YiSectionDetailPHMoz;
-	
-	@Value(value = "${YiPremCalPHMoz}")
-	private String YiPremCalPHMoz;
-	
-	
-	@Value(value = "${YiPolicyApprovalPHMoz}")
-	private String YiPolicyApprovalPHMoz;
-	
-	@Value(value = "${CreditLimitDetailPHMoz}")
-	private String CreditLimitDetailPHMoz;
-	
-	@Value(value = "${YiPolicyDetailPHMoz}")
-	private String YiPolicyDetailPHMoz;
-	
-	
-	@Value(value = "${YiChargeDetailPHMoz}")
-	private String YiChargeDetailPHMoz;
-	
-	@Value(value = "${YiCoverdetailPHMoz}")
-	private String YiCoverdetailPHMoz;
-
-	@Value(value = "${PgitPolRiskAddlInfoPHMoz}")
-	private String PgitPolRiskAddlInfoPHMoz;
-
-
-	@Value(value = "${MotDriverDetailPHMoz}")
-	private String MotDriverDetailPHMoz;
-	
-
-	@Value(value = "${MotCommDiscountDetailPHMoz}")
-	private String MotCommDiscountDetailPHMoz;
-
-	@Value(value = "${YiVatDetailPHZam}")
-	private String YiVatDetailPHZam;
-	
-	@Value(value = "${YiSectionDetailPHZam}")
-	private String YiSectionDetailPHZam;
-	
-	@Value(value = "${YiPremCalPHZam}")
-	private String YiPremCalPHZam;
-	
-	
-	@Value(value = "${YiPolicyApprovalPHZam}")
-	private String YiPolicyApprovalPHZam;
-	
-	@Value(value = "${CreditLimitDetailPHZam}")
-	private String CreditLimitDetailPHZam;
-	
-	@Value(value = "${YiPolicyDetailPHZam}")
-	private String YiPolicyDetailPHZam;
-	
-	
-	@Value(value = "${YiChargeDetailPHZam}")
-	private String YiChargeDetailPHZam;
-	
-	@Value(value = "${YiCoverdetailPHZam}")
-	private String YiCoverdetailPHZam;
-
-	@Value(value = "${PgitPolRiskAddlInfoPHZam}")
-	private String PgitPolRiskAddlInfoPHZam;
-
-
-	@Value(value = "${MotDriverDetailPHZam}")
-	private String MotDriverDetailPHZam;
-	
-
-	@Value(value = "${MotCommDiscountDetailPHZam}")
-	private String MotCommDiscountDetailPHZam;
-	
 
 	SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-dd-MM");
@@ -240,17 +165,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	// *****************************************Push**********************************************************************
 	@Override
-	public Object pushMotCommDiscountDetail(String policyNo,String companyId) {
+	public Object pushMotCommDiscountDetail(String policyNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		String url = MotCommDiscountDetailCall;
-
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = MotCommDiscountDetailPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = MotCommDiscountDetailPHZam;
-		} else {
-			url = MotCommDiscountDetailCall;
-		}
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -323,16 +240,8 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushMotDriverDetail(String policyNo,String companyId) {
-	//	String url = MotDriverDetailCall;
-		String url=null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = MotDriverDetailPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = MotDriverDetailPHZam;
-		} else {
-			url = MotDriverDetailCall;
-		}
+	public Object pushMotDriverDetail(String policyNo) {
+		String url = MotDriverDetailCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -388,17 +297,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiCoverDetail(String policyNo,String companyId) {
+	public Object pushYiCoverDetail(String policyNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		//String url = YiCoverdetailCall;
-		String url=null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = YiCoverdetailPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = YiCoverdetailPHZam;
-		} else {
-			url = YiCoverdetailPHMoz;
-		}
+		String url = YiCoverdetailCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -466,17 +367,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiChargeDetail(String policyNo,String companyId) {
+	public Object pushYiChargeDetail(String policyNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		//String url = YiChargeDetailCall;
-		String url=null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = YiChargeDetailPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = YiChargeDetailPHZam;
-		} else {
-			url = YiChargeDetailCall;
-		}
+		String url = YiChargeDetailCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -543,16 +436,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiPolicyDetail(String policyNo,String companyId) {
+	public Object pushYiPolicyDetail(String policyNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url =null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = YiPolicyDetailPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = YiPolicyDetailPHZam;
-		} else {
-			url = YiPolicyDetailCall;
-		}
+		String url = YiPolicyDetailCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -621,17 +507,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	////////////////////////////////////////////////////////////////
 	@Override
-	public Object pushCreditLimitDetail(String reqRefNo,String companyId) {
+	public Object pushCreditLimitDetail(String reqRefNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		//String url = CreditLimitDetailCall;
-		String url=null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = CreditLimitDetailPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = CreditLimitDetailPHZam;
-		} else {
-			url = CreditLimitDetailCall;
-		}
+		String url = CreditLimitDetailCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -702,17 +580,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiPolicyApproval(String policyNo,String companyId) {
+	public Object pushYiPolicyApproval(String policyNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		//String url = YiPolicyApprovalCall;
-		String url=null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = YiPolicyApprovalPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = YiPolicyApprovalPHZam;
-		} else {
-			url = YiPolicyApprovalCall;
-		}
+		String url = YiPolicyApprovalCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -782,17 +652,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiPremCal(String policyNo,String companyId) {
+	public Object pushYiPremCal(String policyNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		//String url = YiPremCalCall;
-		String url=null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = YiPremCalPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = YiPremCalPHZam;
-		} else {
-			url = YiPremCalCall;
-		}
+		String url = YiPremCalCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -859,17 +721,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiVatDetail(String policyNo,String companyId) {
+	public Object pushYiVatDetail(String policyNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		//String url = YiVatDetailCall;
-		String url=null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = YiVatDetailPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = YiVatDetailPHZam;
-		} else {
-			url = YiVatDetailCall;
-		}
+		String url = YiVatDetailCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -937,17 +791,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiSectionDetail(String policyNo,String companyId) {
+	public Object pushYiSectionDetail(String policyNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		//String url = YiSectionDetailCall;
-		String url=null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = YiSectionDetailPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = YiSectionDetailPHZam;
-		} else {
-			url = YiSectionDetailCall;
-		}
+		String url = YiSectionDetailCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -1015,17 +861,9 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushPgitPolRiskAddlInfo(String policyNo,String companyId) {
+	public Object pushPgitPolRiskAddlInfo(String policyNo) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		//String url = PgitPolRiskAddlInfoCall;
-		String url=null;
-		if (companyId.equalsIgnoreCase("100048")) {
-			url = PgitPolRiskAddlInfoPHMoz;
-		} else if (companyId.equalsIgnoreCase("100046")) {
-			url = PgitPolRiskAddlInfoPHZam;
-		} else {
-			url = PgitPolRiskAddlInfoCall;
-		}
+		String url = PgitPolRiskAddlInfoCall;
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);

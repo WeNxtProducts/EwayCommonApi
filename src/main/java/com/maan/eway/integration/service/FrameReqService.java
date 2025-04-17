@@ -6,27 +6,27 @@ public interface FrameReqService {
 
 	//Tanzania
 	
-	Object pushMotCommDiscountDetail(String policyNo,String companyId);
+	Object pushMotCommDiscountDetail(String policyNo);
 
-	Object pushMotDriverDetail(String policyNo,String companyId);
+	Object pushMotDriverDetail(String policyNo);
 
-	Object pushYiCoverDetail(String policyNo,String companyId);
+	Object pushYiCoverDetail(String policyNo);
+
+	Object pushYiChargeDetail(String policyNo);
+
+	Object pushYiPolicyDetail(String policyNo);
+
+	Object pushCreditLimitDetail(String reqRefNo);
+
+	Object pushYiPolicyApproval(String policyNo);
+
+	Object pushYiPremCal(String policyNo);
+
+	Object pushYiVatDetail(String policyNo);
+
+	Object pushYiSectionDetail(String policyNo);
 	
-	Object pushYiChargeDetail(String policyNo,String companyId);
-
-	Object pushYiPolicyDetail(String policyNo,String companyId);
-
-	Object pushCreditLimitDetail(String reqRefNo,String companyId);
-
-	Object pushYiPolicyApproval(String policyNo,String companyId);
-
-	Object pushYiPremCal(String policyNo,String companyId);
-
-	Object pushYiVatDetail(String policyNo,String companyId);
-
-	Object pushYiSectionDetail(String policyNo,String companyId);
-	
-	Object pushPgitPolRiskAddlInfo(String policyNo,String companyId);
+	Object pushPgitPolRiskAddlInfo(String policyNo);
 
 	//Madison
 
