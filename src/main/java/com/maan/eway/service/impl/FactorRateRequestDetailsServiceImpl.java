@@ -1551,14 +1551,15 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":new BigDecimal(filterEmi.get(0).getDueAmount()).toPlainString());
 					}
 				}
+				
+				}
+				
 				List<EmiMaster> emiMaster = emiMasterRepo.findByCompanyIdAndProductId(req.getInsuranceId(),Integer.parseInt(req.getProductId())); 
 				if(emiMaster.isEmpty()) {
 					 res.setEmiSetUpYn("N");
 				}else {
 					 res.setEmiSetUpYn("Y");
 				}
-				}
-				
 
 			}
 			
