@@ -185,4 +185,7 @@ public class EservieMotorDetailsViewRes {
 	 
 	@JsonProperty("EmiSetUpYn")
 	private String   emiSetUpYn;
+	
+	@JsonProperty("InstallmentTypeId")
+    private String   installmentTypeId ;
 }

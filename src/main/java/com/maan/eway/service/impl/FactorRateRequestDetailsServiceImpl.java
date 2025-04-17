@@ -1549,6 +1549,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setInstallmentPeriod(filterEmi.get(0).getInstallmentPeriod());
 						res.setInstallmentMonth(filterEmi.get(0).getInstalment() );
 						res.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":new BigDecimal(filterEmi.get(0).getDueAmount()).toPlainString());
+						res.setInstallmentPeriod(filterEmi.get(0).getInstallmentTypeId());
 					}
 				}
 				
