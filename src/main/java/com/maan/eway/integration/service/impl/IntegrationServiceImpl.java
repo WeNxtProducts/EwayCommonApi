@@ -1072,10 +1072,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		// Premia Posting Calling procedural call
 		System.out.println("*********Procedure Block Started " + quoteNo + " " + formattedDateTime);
 		if (failureOracleList.isEmpty()) {
-			if ("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)
-					|| "100046".equalsIgnoreCase(companyId) || "100047".equalsIgnoreCase(companyId)
-					|| "100048".equalsIgnoreCase(companyId) || "100049".equalsIgnoreCase(companyId)
-					|| "100050".equalsIgnoreCase(companyId)) {
+			if ("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) {
 				System.out.println("*********Premia Integration Wecore Api Call:");
 				System.out.println("Policy No :" + policyNo + " Company Id :" + companyId);
 				IntegrationSaveRes list = frameReqService.premiaExternalCall(policyNo, companyId);
