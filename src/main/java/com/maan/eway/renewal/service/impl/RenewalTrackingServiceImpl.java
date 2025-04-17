@@ -484,13 +484,12 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		List<RenewalTrackingDetails> resList = new ArrayList<RenewalTrackingDetails>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			List<RenewPremiaPolicy> rpp = rppRepo.findBySourceCode(req.getSourceCode());
-			if (!rpp.isEmpty()) {
-				for (RenewPremiaPolicy rp : rpp) {
+			List<RenewQuotePolicy> rqp = renewQuotePolicyRepo.findBySourceCode(req.getSourceCode());
+			if (!rqp.isEmpty()) {
+				for (RenewQuotePolicy rp : rqp) {
 					RenewalTrackingDetails res = mapper.map(rp, RenewalTrackingDetails.class);
-					List<RenewQuotePolicy> rq = renewQuotePolicyRepo.findByOldpolicyNo(rp.getPolNo());
-					res.setStatus(rq.get(0).getCurrentStatus());
-					res.setPolExpDt(formatDateOnly(rp.getPolExpDt()));;
+					res.setStatus(rp.getCurrentStatus());
+					res.setPolExpDt(rp.getOldendDate());;
 					resList.add(res);
 				}
 			}
@@ -636,8 +635,8 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				for (RenewQuotePolicy rq : rqp) {
 					RenewalTrackingDetails res = new RenewalTrackingDetails();
 					res.setCustomerName(rq.getCustomerName());
-					res.setProdName(rq.getProductName());
-					res.setPolPrem(rq.getNewPremium()!=null?rq.getNewPremium().doubleValue():null);
+					res.setProductName(rq.getProductName());
+					res.setNewPremium(rq.getNewPremium()!=null?rq.getNewPremium().doubleValue():null);
 					res.setStatus(rq.getCurrentStatus());
 					res.setPolExpDt(rq.getOldendDate());
 					resList.add(res);

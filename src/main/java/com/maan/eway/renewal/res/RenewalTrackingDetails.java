@@ -13,24 +13,24 @@ public class RenewalTrackingDetails {
 	private String customerName;
 
 	@JsonProperty("ProductName")
-	private String prodName;
+	private String productName;
 
 	@JsonProperty("PolicyEndDate")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 	private Date polExpDt;
 
 	@JsonProperty("Premium")
-	private Double polPrem;
+	private Double newPremium;
 
 	@JsonProperty("Status")
 	private String status;
 
-	@JsonProperty("Reason")
-	private String reason;
-
-	@JsonProperty("BranchName")
-	private String branchName;
-
-	@JsonProperty("LoginId")
-	private String loginId;
+//	@JsonProperty("Reason")
+//	private String reason;
+//
+//	@JsonProperty("BranchName")
+//	private String branchName;
+//
+//	@JsonProperty("LoginId")
+//	private String loginId;
 }
