@@ -231,109 +231,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	@Value(value = "${MotCommDiscountDetailPHZam}")
 	private String MotCommDiscountDetailPHZam;
-	/****************************************/
-	@Value(value = "${YiVatDetailPHSAZ}")
-	private String YiVatDetailPHSAZ;
 	
-	@Value(value = "${YiSectionDetailPHSAZ}")
-	private String YiSectionDetailPHSAZ;
-	
-	@Value(value = "${YiPremCalPHSAZ}")
-	private String YiPremCalPHSAZ;
-	
-	
-	@Value(value = "${YiPolicyApprovalPHSAZ}")
-	private String YiPolicyApprovalPHSAZ;
-	
-	@Value(value = "${CreditLimitDetailPHSAZ}")
-	private String CreditLimitDetailPHSAZ;
-	
-	@Value(value = "${YiPolicyDetailPHSAZ}")
-	private String YiPolicyDetailPHSAZ;
-	
-	
-	@Value(value = "${YiChargeDetailPHSAZ}")
-	private String YiChargeDetailPHSAZ;
-	
-	@Value(value = "${YiCoverdetailPHSAZ}")
-	private String YiCoverdetailPHSAZ;
-
-	@Value(value = "${PgitPolRiskAddlInfoPHSAZ}")
-	private String PgitPolRiskAddlInfoPHSAZ;
-
-
-	@Value(value = "${MotDriverDetailPHSAZ}")
-	private String MotDriverDetailPHSAZ;
-	
-
-	@Value(value = "${MotCommDiscountDetailPHSAZ}")
-	private String MotCommDiscountDetailPHSAZ;
-	
-	@Value(value = "${YiVatDetailPHBOT}")
-	private String YiVatDetailPHBOT;
-	
-	@Value(value = "${YiSectionDetailPHBOT}")
-	private String YiSectionDetailPHBOT;
-	
-	@Value(value = "${YiPremCalPHBOT}")
-	private String YiPremCalPHBOT;
-	
-	@Value(value = "${YiPolicyApprovalPHBOT}")
-	private String YiPolicyApprovalPHBOT;
-	
-	@Value(value = "${CreditLimitDetailPHBOT}")
-	private String CreditLimitDetailPHBOT;
-	
-	@Value(value = "${YiPolicyDetailPHBOT}")
-	private String YiPolicyDetailPHBOT;
-	
-	@Value(value = "${YiChargeDetailPHBOT}")
-	private String YiChargeDetailPHBOT;
-	
-	@Value(value = "${YiCoverdetailPHBOT}")
-	private String YiCoverdetailPHBOT;
-
-	@Value(value = "${PgitPolRiskAddlInfoPHBOT}")
-	private String PgitPolRiskAddlInfoPHBOT;
-
-	@Value(value = "${MotDriverDetailPHBOT}")
-	private String MotDriverDetailPHBOT;
-	
-	@Value(value = "${MotCommDiscountDetailPHBOT}")
-	private String MotCommDiscountDetailPHBOT;
-	
-	@Value(value = "${YiVatDetailPHNAM}")
-	private String YiVatDetailPHNAM;
-	
-	@Value(value = "${YiSectionDetailPHNAM}")
-	private String YiSectionDetailPHNAM;
-	
-	@Value(value = "${YiPremCalPHNAM}")
-	private String YiPremCalPHNAM;
-	
-	@Value(value = "${YiPolicyApprovalPHNAM}")
-	private String YiPolicyApprovalPHNAM;
-	
-	@Value(value = "${CreditLimitDetailPHNAM}")
-	private String CreditLimitDetailPHNAM;
-	
-	@Value(value = "${YiPolicyDetailPHNAM}")
-	private String YiPolicyDetailPHNAM;
-	
-	@Value(value = "${YiChargeDetailPHNAM}")
-	private String YiChargeDetailPHNAM;
-	
-	@Value(value = "${YiCoverdetailPHNAM}")
-	private String YiCoverdetailPHNAM;
-
-	@Value(value = "${PgitPolRiskAddlInfoPHNAM}")
-	private String PgitPolRiskAddlInfoPHNAM;
-
-	@Value(value = "${MotDriverDetailPHNAM}")
-	private String MotDriverDetailPHNAM;
-	
-	@Value(value = "${MotCommDiscountDetailPHNAM}")
-	private String MotCommDiscountDetailPHNAM;
 
 	SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-dd-MM");
@@ -350,15 +248,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = MotCommDiscountDetailPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = MotCommDiscountDetailPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = MotCommDiscountDetailPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = MotCommDiscountDetailPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = MotCommDiscountDetailPHSAZ;
 		} else {
 			url = MotCommDiscountDetailCall;
 		}
@@ -441,15 +330,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = MotDriverDetailPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = MotDriverDetailPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = MotDriverDetailPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = MotDriverDetailPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = MotDriverDetailPHSAZ;
 		} else {
 			url = MotDriverDetailCall;
 		}
@@ -516,17 +396,8 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = YiCoverdetailPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = YiCoverdetailPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = YiCoverdetailPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = YiCoverdetailPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = YiCoverdetailPHSAZ;
 		} else {
-			url = YiCoverdetailCall;
+			url = YiCoverdetailPHMoz;
 		}
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
@@ -603,15 +474,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = YiChargeDetailPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = YiChargeDetailPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = YiChargeDetailPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = YiChargeDetailPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = YiChargeDetailPHSAZ;
 		} else {
 			url = YiChargeDetailCall;
 		}
@@ -688,15 +550,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = YiPolicyDetailPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = YiPolicyDetailPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = YiPolicyDetailPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = YiPolicyDetailPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = YiPolicyDetailPHSAZ;
 		} else {
 			url = YiPolicyDetailCall;
 		}
@@ -776,15 +629,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = CreditLimitDetailPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = CreditLimitDetailPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = CreditLimitDetailPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = CreditLimitDetailPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = YiPolicyDetailPHSAZ;
 		} else {
 			url = CreditLimitDetailCall;
 		}
@@ -866,15 +710,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = YiPolicyApprovalPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = YiPolicyApprovalPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = YiPolicyApprovalPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = YiPolicyApprovalPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = YiPolicyApprovalPHSAZ;
 		} else {
 			url = YiPolicyApprovalCall;
 		}
@@ -955,15 +790,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = YiPremCalPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = YiPremCalPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = YiPremCalPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = YiPremCalPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = YiPremCalPHSAZ;
 		} else {
 			url = YiPremCalCall;
 		}
@@ -1041,15 +867,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = YiVatDetailPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = YiVatDetailPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = YiVatDetailPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = YiVatDetailPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = YiVatDetailPHSAZ;
 		} else {
 			url = YiVatDetailCall;
 		}
@@ -1128,15 +945,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = YiSectionDetailPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = YiSectionDetailPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = YiSectionDetailPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = YiSectionDetailPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = YiSectionDetailPHSAZ;
 		} else {
 			url = YiSectionDetailCall;
 		}
@@ -1215,15 +1023,6 @@ public class FrameReqServiceImpl implements FrameReqService {
 			url = PgitPolRiskAddlInfoPHMoz;
 		} else if (companyId.equalsIgnoreCase("100046")) {
 			url = PgitPolRiskAddlInfoPHZam;
-		} else if (companyId.equalsIgnoreCase("100047")) {
-			/** BOTSWANA */
-			url = PgitPolRiskAddlInfoPHBOT;
-		} else if (companyId.equalsIgnoreCase("100050")) {
-			/** NAMIBIA */
-			url = PgitPolRiskAddlInfoPHNAM;
-		} else if (companyId.equalsIgnoreCase("100049")) {
-			/** SWAZILAND */
-			url = PgitPolRiskAddlInfoPHSAZ;
 		} else {
 			url = PgitPolRiskAddlInfoCall;
 		}
