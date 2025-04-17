@@ -2,10 +2,8 @@ package com.maan.eway.salesLead;
 
 import java.util.List;
 
-import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -18,7 +16,7 @@ public interface SalesLeadService {
 
 	CommonRes insertEnquiry(EnquiryDetailsDTO req);
 
-	CommonRes getEnquirys(String enquiryId, String leadId);
+	CommonRes getEnquirys(GetEnquiryDetailsReq req);
 
 	List<DropDownRes> contactType(LovDropDownReq req);
 

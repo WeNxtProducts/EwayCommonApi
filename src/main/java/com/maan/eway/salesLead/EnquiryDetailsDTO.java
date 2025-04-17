@@ -41,12 +41,16 @@ public class EnquiryDetailsDTO implements Serializable {
     @JsonProperty("SuggestPremium")
     private Double suggestPremium;
     
+    @JsonProperty("CreatedBy")
+    private String createdBy;
+
+    @JsonProperty("RejectedDate")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private Date rejectedDate;
+    
     @JsonProperty("EntryDate")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date entryDate;
-    
-    @JsonProperty("CreatedBy")
-    private String createdBy;
     
     @JsonProperty("UpdatedDate")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
@@ -54,10 +58,6 @@ public class EnquiryDetailsDTO implements Serializable {
     
     @JsonProperty("UpdatedBy")
     private String updatedBy;
-    
-    @JsonProperty("RejectedDate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    private Date rejectedDate;
     
     @JsonProperty("RejectedReason")
     private String rejectedReason;
@@ -67,4 +67,18 @@ public class EnquiryDetailsDTO implements Serializable {
     
     @JsonProperty("QuoteNo")
     private String quoteNo;
+    
+    @JsonProperty("Remarks")
+    private String remarks;
+    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @JsonProperty("ReceiptOfenquiry")
+    private String receiptOfenquiry;
+    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @JsonProperty("ExceptedDateCommBussiness")
+    private String exceptedDateCommBussiness;
+    
+    @JsonProperty("UnderWritters")
+    private String underWritters;
 }

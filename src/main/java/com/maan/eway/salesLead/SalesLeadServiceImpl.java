@@ -277,6 +277,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 							.typeOfBusinessDesc(k.getTypeOfBusinessDesc()==null?"":k.getTypeOfBusinessDesc())
 							.currentInsurer(k.getCurrentInsurer()==null?"":k.getCurrentInsurer())
 							.leadContactPersonReq(GetLeadContactPerson(k.getLeadId()))
+							.enquiryCount(String.valueOf(enquiryDetailsRepo.findByLeadId(k.getLeadId()).size()))
 							.build();
 					resList.add(m);
 				});
@@ -336,14 +337,18 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	                .productId(req.getProductId())
 	                .sumInsured(req.getSumInsured())
 	                .suggestPremium(req.getSuggestPremium())
-	                .entryDate(req.getEntryDate())
-	                .createdBy(req.getCreatedBy())
-	                .updatedDate(req.getUpdatedDate())
-	                .updatedBy(req.getUpdatedBy())
+	                .entryDate(enquiryData.isPresent()?existingList.getEntryDate():new Date())
+	                .createdBy(enquiryData.isPresent()?existingList.getCreatedBy():req.getCreatedBy())
+	                .updatedDate(enquiryData.isPresent()?new Date():null)
+	                .updatedBy(enquiryData.isPresent()?req.getCreatedBy():null)
 	                .rejectedDate(req.getRejectedDate())
 	                .rejectedReason(req.getRejectedReason())
 	                .status(req.getStatus())
 	                .quoteNo(req.getQuoteNo())
+	                .remarks(req.getRemarks())
+	                .receiptOfenquiry(req.getReceiptOfenquiry())
+	                .exceptedDateCommBussiness(req.getExceptedDateCommBussiness())
+	                .underWritters(req.getUnderWritters())
 					.build();
 			enquiryDetailsRepo.save(e);
 			res.setCommonResponse(e);
@@ -360,19 +365,29 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	}
 
 	@Override
-	public CommonRes getEnquirys(String enquiryId,String leadId) {
+	public CommonRes getEnquirys(GetEnquiryDetailsReq req) {
 		logger.info("Enter into getAllEnquiry.");
 		CommonRes res = new CommonRes();
 		List<EnquiryDetailsDTO> resList = new ArrayList<EnquiryDetailsDTO>();
 		try {
 			List<EnquiryDetails> enquiryList = new ArrayList<EnquiryDetails>();
-			if(StringUtils.isBlank(enquiryId)) {
-				enquiryList = enquiryDetailsRepo.findAll();
-			}else if(StringUtils.isBlank(leadId)) {
-				enquiryList = enquiryDetailsRepo.findByLeadId(leadId);
-			}else {
-				EnquiryDetails enquiry = enquiryDetailsRepo.findByEnquiryId(enquiryId);
+			if(StringUtils.isNotBlank(req.getEnquiryId())) {
+				EnquiryDetails enquiry = enquiryDetailsRepo.findByEnquiryId(req.getEnquiryId());
 				enquiryList.add(enquiry);
+			}else if(StringUtils.isNotBlank(req.getLeadId())) {
+				enquiryList = enquiryDetailsRepo.findByLeadId(req.getLeadId());
+			}else if(StringUtils.isNotBlank(req.getStatus()) && StringUtils.isNotBlank(req.getLoginId())) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<EnquiryDetails> cq = cb.createQuery(EnquiryDetails.class);
+				Root<EnquiryDetails> edRoot = cq.from(EnquiryDetails.class);
+				
+				cq.select(edRoot)
+				.where(cb.equal(edRoot.get("status"), req.getStatus()),
+						cb.like(edRoot.get("underWritters"), "%" + req.getLoginId() + "%" ));
+				
+				enquiryList = em.createQuery(cq).getResultList();
+			}else {
+				enquiryList = enquiryDetailsRepo.findAll();
 			}
 			if(!enquiryList.isEmpty()) {
 				enquiryList.forEach(k -> {
@@ -392,6 +407,10 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	                        .rejectedReason(k.getRejectedReason() == null ? "" : k.getRejectedReason())
 	                        .status(k.getStatus() == null ? "" : k.getStatus())
 	                        .quoteNo(k.getQuoteNo() == null ? "" : k.getQuoteNo())
+	                        .remarks(k.getRemarks()==null?"":k.getRemarks())
+	                        .receiptOfenquiry(k.getReceiptOfenquiry()==null?"":k.getReceiptOfenquiry())
+	                        .exceptedDateCommBussiness(k.getExceptedDateCommBussiness()==null?"":k.getExceptedDateCommBussiness())
+	                        .underWritters(k.getUnderWritters()==null?"":k.getUnderWritters())
 							.build();
 					resList.add(e);
 				});

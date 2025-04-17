@@ -100,6 +100,9 @@ public class GetSalesLeadRes {
 	@JsonProperty("UpdatedDate")
 	private String updatedDate;
 	
+	@JsonProperty("EnquiryCount")
+	private String enquiryCount;
+	
 	@JsonProperty("LeadContactPerson")
 	private List<LeadContactPersonReq> leadContactPersonReq;
 	

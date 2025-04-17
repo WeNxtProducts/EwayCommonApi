@@ -90,8 +90,8 @@ public class SalesLeadController {
 	}
 	
 	@PostMapping("/getEnquirys")
-	public ResponseEntity<?> getAllEnquiry(@RequestParam (value = "enquiryId",required = false) String enquiryId,@RequestParam (value = "leadId",required = false) String leadId){
-		CommonRes res = service.getEnquirys(enquiryId,leadId);
+	public ResponseEntity<?> getAllEnquiry(@RequestBody GetEnquiryDetailsReq req){
+		CommonRes res = service.getEnquirys(req);
 		if(res!=null) {
 			return new ResponseEntity<CommonRes>(res,HttpStatus.ACCEPTED);
 		}else {

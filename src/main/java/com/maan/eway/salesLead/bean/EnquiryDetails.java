@@ -85,4 +85,16 @@ public class EnquiryDetails implements Serializable{
 	@Column(name ="QUOTE_NO")
 	private String quoteNo;
 	
+	@Column(name ="REMARKS")
+	private String remarks;
+	
+	@Column(name ="RECEIPT_OF_ENQUIRY")
+	private String receiptOfenquiry;
+	
+	@Column(name ="EXCEPTED_DATE_COMM_BUSSINESS")
+	private String exceptedDateCommBussiness;
+	
+	@Column(name ="UNDER_ERITTERS")
+	private String underWritters;
+	
 }

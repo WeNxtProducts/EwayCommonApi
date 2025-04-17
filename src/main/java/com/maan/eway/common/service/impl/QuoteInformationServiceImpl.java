@@ -15,6 +15,14 @@ import com.maan.eway.common.req.QuoteInformationDTO;
 import com.maan.eway.common.service.QuoteInformationService;
 import com.maan.eway.repository.QuoteInformationRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Root;
+
 @Service
 public class QuoteInformationServiceImpl implements QuoteInformationService {
 	
@@ -22,24 +30,27 @@ public class QuoteInformationServiceImpl implements QuoteInformationService {
 
     @Autowired
     private QuoteInformationRepository repository;
+    
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public QuoteInformationDTO saveOrUpdate(QuoteInformationDTO dto) {
         try {
-            // Rule: Reject duplicate Quote_No for the same Enquiry_Id
-            QuoteInformationId id = new QuoteInformationId();
+        	QuoteInformationId id = new QuoteInformationId();
             id.setEnquiryId(dto.getEnquiryId());
             id.setQuoteNo(dto.getQuoteNo());
-
-            boolean exists = repository.existsById(id);
-            if (exists) {
-                throw new IllegalArgumentException("Quote_No '" + dto.getQuoteNo() + "' already exists for Enquiry_Id '" + dto.getEnquiryId() + "'");
-            }
-
-            // Save the new quote
             QuoteInformationIpclms entity = new QuoteInformationIpclms();
-            entity.setEnquiryId(dto.getEnquiryId());
-            entity.setQuoteNo(dto.getQuoteNo());
+        	Optional<QuoteInformationIpclms> exdata = repository.findById(id);
+        	if(exdata.isPresent()) {
+        		QuoteInformationIpclms u = exdata.get();
+        		entity.setEnquiryId(u.getEnquiryId());
+                entity.setQuoteNo(u.getQuoteNo());
+        	}else {
+        		entity.setEnquiryId(dto.getEnquiryId());
+                entity.setQuoteNo(getmaxQuoteNo());
+                dto.setQuoteNo(entity.getQuoteNo());
+        	}
             entity.setQuotationDescription(dto.getQuotationDescription());
             entity.setSumInsured(dto.getSumInsured());
             entity.setPremiumRate(dto.getPremiumRate());
@@ -118,4 +129,19 @@ public class QuoteInformationServiceImpl implements QuoteInformationService {
         id.setQuoteNo(quoteNo);
         repository.deleteById(id);
     }
+    
+    
+    public String getmaxQuoteNo() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<QuoteInformationIpclms> slRoot = cq.from(QuoteInformationIpclms.class);
+		Expression<Integer> startIndex = cb.literal(3);
+		cq.multiselect(cb.coalesce(cb.sum(cb.max(
+				cb.substring(slRoot.get("quoteNo"), startIndex, cb.length(slRoot.get("quoteNo"))).as(Integer.class)), 1),
+				1000));
+		TypedQuery<Integer> query = em.createQuery(cq);
+		Integer value = query.getSingleResult();
+		return "Q-" + value;
+	}
+    
 }
