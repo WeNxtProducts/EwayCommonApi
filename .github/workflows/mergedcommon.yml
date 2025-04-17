@@ -30,7 +30,7 @@ jobs:
           password: ${{ secrets.HOSTINGER_PASSWORD }}
           port: 22
           source: target/*.war
-          target: /opt/tomcat/webapps
+          target: /var/lib/tomcat10/webapps/
           strip_components: 1
 
 
@@ -42,4 +42,4 @@ jobs:
           password: ${{ secrets.HOSTINGER_PASSWORD }}
           port: 22
           script: |
-            sudo systemctl restart tomcat
+            sudo systemctl restart tomcat10
