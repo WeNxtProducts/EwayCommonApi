@@ -6,7 +6,6 @@
 package com.maan.eway.service.impl;
 
 import java.math.BigDecimal;
-
 import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +31,6 @@ import org.jsoup.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +39,8 @@ import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.EmiMaster;
+import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -85,6 +84,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
+import com.maan.eway.repository.EmiMasterRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -123,7 +123,6 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -204,6 +203,9 @@ private RatingFactorsUtil ratingutil;
 
 @Autowired 
 private MotorDataDetailsRepository motorRepo;
+
+@Autowired
+private EmiMasterRepository emiMasterRepo ;
 
 private Logger log=LogManager.getLogger(FactorRateRequestDetailsServiceImpl.class);
 /*
@@ -1548,6 +1550,12 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 						res.setInstallmentMonth(filterEmi.get(0).getInstalment() );
 						res.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":new BigDecimal(filterEmi.get(0).getDueAmount()).toPlainString());
 					}
+				}
+				List<EmiMaster> emiMaster = emiMasterRepo.findByCompanyIdAndProductId(req.getInsuranceId(),Integer.parseInt(req.getProductId())); 
+				if(emiMaster.isEmpty()) {
+					 res.setEmiSetUpYn("N");
+				}else {
+					 res.setEmiSetUpYn("Y");
 				}
 				}
 				

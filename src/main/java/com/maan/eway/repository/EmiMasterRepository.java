@@ -12,12 +12,18 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMasterId;
  
 public interface EmiMasterRepository  extends JpaRepository<EmiMaster,EmiMasterId > , JpaSpecificationExecutor<EmiMaster> {
 
+	List<EmiMaster> findByCompanyIdAndProductIdAndPolicyType(String companyId, Integer productId, String policyType);
+
+	List<EmiMaster> findByCompanyIdAndProductId(String companyId,Integer string);
 	
 }

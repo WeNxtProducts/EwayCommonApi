@@ -182,4 +182,7 @@ public class EservieMotorDetailsViewRes {
 	 
 	 @JsonProperty("CoverId")
 	 public Integer coverId;
+	 
+	@JsonProperty("EmiSetUpYn")
+	private String   emiSetUpYn;
 }
