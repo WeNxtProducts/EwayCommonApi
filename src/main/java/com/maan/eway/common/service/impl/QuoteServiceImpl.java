@@ -3326,7 +3326,9 @@ public class QuoteServiceImpl implements QuoteService {
 						}
 						
 						
-					} else {
+					}
+					
+					else {
 						VehicleIdsReq vehDeh = new VehicleIdsReq();
 						List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
 						List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId())) && o.getVehicleId().equals(sec.getRiskId()) ).collect(Collectors.toList());
@@ -3358,7 +3360,10 @@ public class QuoteServiceImpl implements QuoteService {
 				req2.setCreatedBy(req.getAdminLoginId());	
 				req2.setProductId(req.getProductId());
 				req2.setRequestReferenceNo(req.getRequestReferenceNo());
-				req2.setVehicleIdsList(vehicleIdsList);
+				List<VehicleIdsReq> uniqueVehicleList = vehicleIdsList.stream()
+			            .filter(distinctByKey(v -> Arrays.asList(v.getVehicleId(), v.getSectionId(), v.getLocationId())))
+			            .collect(Collectors.toList());
+				req2.setVehicleIdsList(uniqueVehicleList);
 				req2.setManualReferralYn("N");
 				req2.setReferralRemarks("");
 				req2.setCommissionModifyYn(req.getCommissionModifyYn());
