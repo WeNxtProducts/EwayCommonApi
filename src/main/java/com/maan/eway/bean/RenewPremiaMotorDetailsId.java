@@ -5,11 +5,9 @@
 package com.maan.eway.bean;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.Date;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -32,15 +30,20 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class RenewPremiaPolicyRawId implements Serializable {
+public class RenewPremiaMotorDetailsId implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
-    @Column(name = "POLICY_NUMBER", nullable = false, length = 100)
-    private String policyNumber;
 
-    @Column(name = "EXPIRY_DATE", nullable = false)
-    private Timestamp expiryDate;
+    
+    @Column(name = "TRANSACTION_ID", length = 50)
+    private String transactionId;
+	
+    @Column(name = "POL_EXP_DT")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date polExpDt;
+	 
+    @Column(name = "PLATE_NUMBER", length = 50)
+    private String plateNumber;
     
  
 }

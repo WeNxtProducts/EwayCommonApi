@@ -1490,67 +1490,54 @@ public class RenewalServiceImpl implements RenewalService{
 					Map<String,Object>map=renewalList.get(i);
 					RenewPremiaPolicyRaw rqp=new RenewPremiaPolicyRaw();
 					
+					rqp.setCompanyCode(map.get("COMPANY_CODE")==null?"":map.get("COMPANY_CODE").toString());
+					rqp.setCompanyName(map.get("COMPANY_NAME")==null?"":map.get("COMPANY_NAME").toString());
+					rqp.setClassCode(map.get("CLASS_CODE")==null?"":map.get("CLASS_CODE").toString());
+					rqp.setClassName(map.get("CLASS_NAME")==null?"":map.get("CLASS_NAME").toString());
+					rqp.setProductCode(map.get("PRODUCT_CODE")==null?"":map.get("PRODUCT_CODE").toString());
+					rqp.setProductName(map.get("PRODUCT_NAME")==null?"":map.get("PRODUCT_NAME").toString());
+					
 					rqp.setDivisionCode(map.get("DIVISION_CODE")==null?"":map.get("DIVISION_CODE").toString());
 					rqp.setDivisionName(map.get("DIVISION_NAME")==null?"":map.get("DIVISION_NAME").toString());
-					rqp.setPolProdCode(map.get("POL_PROD_CODE")==null?"":map.get("POL_PROD_CODE").toString());
-					rqp.setProdName(map.get("PROD_NAME")==null?"":map.get("PROD_NAME").toString());
-					rqp.setPolType(map.get("POL_TYPE")==null?"":map.get("POL_TYPE").toString());
+					rqp.setDepartmentCode(map.get("DEPARTMENT_CODE")==null?"":map.get("DEPARTMENT_CODE").toString());
+					rqp.setDepartmentName(map.get("DEPARTMENT_NAME")==null?"":map.get("DEPARTMENT_NAME").toString());
+					rqp.setBusinessType(map.get("BUSINESS_TYPE")==null?"":map.get("BUSINESS_TYPE").toString());
+					rqp.setBusinessName(map.get("BUSINESS_NAME")==null?"":map.get("BUSINESS_NAME").toString());
+					
+					rqp.setPolicyNumber(map.get("POLICY_NUMBER")==null?"":map.get("POLICY_NUMBER").toString());
+					rqp.setEndorsementNumber(map.get("ENDORSEMENT_NUMBER")==null?"":map.get("ENDORSEMENT_NUMBER").toString());
+					
+					rqp.setFromDate(map.get("FROM_DATE")==null?null:inputFormat.parse(map.get("FROM_DATE").toString()));
+					rqp.setExpiryDate(map.get("EXPIRY_DATE")==null?null:inputFormat.parse(map.get("EXPIRY_DATE").toString()));
+					rqp.setRenewalDate(map.get("RENEWAL_DATE")==null?null:inputFormat.parse((map.get("RENEWAL_DATE").toString())));
 					
 					rqp.setCustomerCode(map.get("CUSTOMER_CODE")==null?"":map.get("CUSTOMER_CODE").toString());
 					rqp.setCustomerName(map.get("CUSTOMER_NAME")==null?"":map.get("CUSTOMER_NAME").toString());
-					rqp.setPolAssrCode(map.get("POL_ASSR_CODE")==null?"":map.get("POL_ASSR_CODE").toString());
-					rqp.setPolAssrName(map.get("POL_ASSR_NAME")==null?"":map.get("POL_ASSR_NAME").toString());
-					rqp.setSourceCode(map.get("SOURCE_CODE")==null?"":map.get("SOURCE_CODE").toString());
-					rqp.setSourceName(map.get("SOURCE_NAME")==null?"":map.get("SOURCE_NAME").toString());
-					
-					rqp.setPolNo(map.get("POL_NO")==null?"":map.get("POL_NO").toString());
-					rqp.setPolSysId(map.get("POL_SYS_ID")==null?"":map.get("POL_SYS_ID").toString());
-					rqp.setIndexNo(map.get("INDEX_NO")==null?"":map.get("INDEX_NO").toString());
-					
-					rqp.setPolFmDt(map.get("POL_FM_DT")==null?null:inputFormat.parse(map.get("POL_FM_DT").toString()));
-					rqp.setPolExpDt(map.get("POL_EXP_DT")==null?null:inputFormat.parse(map.get("POL_EXP_DT").toString()));
-					rqp.setNewStartDate(map.get("NEW_START_DATE")==null?null:inputFormat.parse((map.get("NEW_START_DATE").toString())));
-					rqp.setPolPrem(map.get("POL_PREM")==null?null:Double.valueOf(map.get("POL_PREM").toString()));
-					rqp.setPolSiLc1(map.get("POL_SI_LC_1")==null?null:Double.valueOf(map.get("POL_SI_LC_1").toString()));
-					rqp.setNetPrem(map.get("NET_PREM")==null?null:Double.valueOf(map.get("NET_PREM").toString()));
-					rqp.setChargeAmt(map.get("CHARGE_AMT")==null?null:Double.valueOf(map.get("CHARGE_AMT").toString()));
-					rqp.setLoadingPremium(map.get("LOADING_PREMIUM")==null?null:Double.valueOf(map.get("LOADING_PREMIUM").toString()));
-					rqp.setDiscountPremium(map.get("DISCOUNT_PREMIUM")==null?null:Double.valueOf(map.get("DISCOUNT_PREMIUM").toString()));
 					rqp.setInsuredCivilId(map.get("INSURED_CIVIL_ID")==null?"":map.get("INSURED_CIVIL_ID").toString());
 					rqp.setInsuredMobile(map.get("INSURED_MOBILE")==null?"":map.get("INSURED_MOBILE").toString());
 					rqp.setInsuredEmailId(map.get("INSURED_EMAIL_ID")==null?"":map.get("INSURED_EMAIL_ID").toString());
-					rqp.setMakeId(map.get("MAKE_ID")==null?"":map.get("MAKE_ID").toString());
-					rqp.setMakeIdName(map.get("MAKE_ID_NAME")==null?"":map.get("MAKE_ID_NAME").toString());
-					rqp.setModelId(map.get("MODEL_ID")==null?"":map.get("MODEL_ID").toString());
-					rqp.setModelIdName(map.get("MODEL_ID_NAME")==null?"":map.get("MODEL_ID_NAME").toString());
-					rqp.setBodyType(map.get("BODY_TYPE")==null?"":map.get("BODY_TYPE").toString());
-					rqp.setBodyTypeName(map.get("BODY_TYPE_NAME")==null?"":map.get("BODY_TYPE_NAME").toString());
-					rqp.setPlateNumber(map.get("PLATE_NUMBER")==null?"":map.get("PLATE_NUMBER").toString());
-					rqp.setChassNo(map.get("CHASS_NO")==null?"":map.get("CHASS_NO").toString());
-					rqp.setEngineNumber(map.get("ENGINE_NUMBER")==null?"":map.get("ENGINE_NUMBER").toString());
-					rqp.setManufactureYear(map.get("MANUFACTURE_YEAR")==null?null:map.get("MANUFACTURE_YEAR").toString());
-					rqp.setTypeOfCover(map.get("TYPE_OF_COVER")==null?null:(map.get("TYPE_OF_COVER").toString()));
-					rqp.setTypeOfCoverName(map.get("TYPE_OF_COVER_NAME")==null?"":map.get("TYPE_OF_COVER_NAME").toString());
 					
-					rqp.setUsageType(map.get("USAGE_TYPE")==null?"":map.get("USAGE_TYPE").toString());
-					rqp.setUsageTypeName(map.get("USAGE_TYPE_NAME")==null?"":map.get("USAGE_TYPE_NAME").toString());
-					rqp.setVehicleAge(map.get("VEHICLE_AGE")==null?null:(map.get("VEHICLE_AGE").toString()));
-					rqp.setNoOfPassenger(map.get("NO_OF_PASSENGER")==null?null:(map.get("NO_OF_PASSENGER").toString()));
-					rqp.setSeating(map.get("SEATING")==null?"":map.get("SEATING").toString());
-					rqp.setCc(map.get("CC")==null?"":map.get("CC").toString());
-					rqp.setClaimFreeYears(map.get("CLAIM_FREE_YEARS")==null?null:(map.get("CLAIM_FREE_YEARS").toString()));
-					rqp.setRequestTime(new Date());
-					rqp.setResponseTime(new Date());
-					rqp.setRenewalCount(map.get("RENEWAL_COUNT")==null?"":map.get("RENEWAL_COUNT").toString());
-					rqp.setColor(map.get("COLOR")==null?"":map.get("COLOR").toString());
-					rqp.setColorName(map.get("COLOR_NAME")==null?"":map.get("COLOR_NAME").toString());
-					rqp.setPlateColor(map.get("PLATE_COLOR")==null?"":map.get("PLATE_COLOR").toString());
-					rqp.setPlateColorName(map.get("PLATE_COLOR_NAME")==null?"":map.get("PLATE_COLOR_NAME").toString());
-					rqp.setVehicleValue(map.get("VEHICLE_VALUE")==null?null:Double.parseDouble(map.get("VEHICLE_VALUE").toString()));
-					rqp.setTonnage(map.get("TONNAGE")==null?"":map.get("TONNAGE").toString());
+					rqp.setPolAssrCode(map.get("POL_ASSR_CODE")==null?"":map.get("POL_ASSR_CODE").toString());
+					rqp.setPolAssrName(map.get("POL_ASSR_NAME")==null?"":map.get("POL_ASSR_NAME").toString());
+					rqp.setPolSrcType(map.get("POL_SRC_TYPE")==null?"":map.get("POL_SRC_TYPE").toString());
+					rqp.setPolSrcCode(map.get("POL_SRC_CODE")==null?null:map.get("POL_SRC_CODE").toString());
+					rqp.setPolSrcName(map.get("POL_SRC_NAME")==null?null:(map.get("POL_SRC_NAME").toString()));
 					
+					
+					rqp.setPolicySi(map.get("POLICY_SI")==null?null:Double.valueOf(map.get("POLICY_SI").toString()));
+					rqp.setGrossPremium(map.get("GROSS_PREMIUM")==null?null:Double.valueOf(map.get("GROSS_PREMIUM").toString()));
+					rqp.setCoverPremium(map.get("COVER_PREMIUM")==null?null:Double.valueOf(map.get("COVER_PREMIUM").toString()));
+					rqp.setLoadingPremium(map.get("LOADING_PREMIUM")==null?null:Double.valueOf(map.get("LOADING_PREMIUM").toString()));
+					rqp.setDiscountPremium(map.get("DISCOUNT_PREMIUM")==null?null:Double.valueOf(map.get("DISCOUNT_PREMIUM").toString()));
+					
+					rqp.setPvtCoverYn(map.get("PVT_COVER_YN")==null?null:Integer.parseInt(map.get("PVT_COVER_YN").toString()));
+					rqp.setPvtCoverSi(map.get("PVT_COVER_SI")==null?null:Double.valueOf(map.get("PVT_COVER_SI").toString()));
+					rqp.setPvtCoverPremium(map.get("PVT_COVER_PREMIUM")==null?null:Double.valueOf(map.get("PVT_COVER_PREMIUM").toString()));
+					rqp.setChargeAmount(map.get("CHARGE_AMOUNT")==null?null:Double.valueOf(map.get("CHARGE_AMOUNT").toString()));
+					rqp.setTotalPremium(map.get("TOTAL_PREMIUM")==null?null:Double.valueOf(map.get("TOTAL_PREMIUM").toString()));
+					rqp.setTotalPremium(map.get("AG_BROK_COMMISSION")==null?null:Double.valueOf(map.get("AG_BROK_COMMISSION").toString()));
 					rqp.setEntryDate(new Date());
-
+					rqp.setStatus("RP");
 					rqprRepo.save(rqp);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1568,7 +1555,7 @@ public class RenewalServiceImpl implements RenewalService{
 		try {
 			String tranId=saveRenewPremiaPolicy();
 			List<RenewPremiaPolicy> rqplist=rppRepo.findByStatusAndTransactionId("RP",tranId);
-			InsertPremiaRenewal(rqplist,tranId); 
+			//InsertPremiaRenewal(rqplist,tranId); 
 			log.info("getPolicyRequestList--> transactionId: " + tranId);
 			for (RenewPremiaPolicy rdata : rqplist) {
 				RenewDataRequest rdr = new RenewDataRequest();
@@ -1577,12 +1564,12 @@ public class RenewalServiceImpl implements RenewalService{
 				rdr.setCompanyName(null);
 				rdr.setCustomerName(rdata.getCustomerName());
 				rdr.setEmail(rdata.getInsuredEmailId());
-				rdr.setMobileCode(rdata.getMobileCode());
+				//rdr.setMobileCode(rdata.getMobileCode());
 				rdr.setMobileno(rdata.getInsuredMobile());
-				rdr.setPolicyNo(rdata.getPolNo());
+				rdr.setPolicyNo(rdata.getPolicyNumber());
 				rdr.setTransId(tranId);	
-				rdr.setRegistrationNo(rdata.getPlateNumber());
-				rdr.setExpiryDate(rdata.getPolExpDt());
+				//rdr.setRegistrationNo(rdata.getPlateNumber());
+				rdr.setExpiryDate(rdata.getExpiryDate());
 				
 				res.add(rdr);
 			}
@@ -1606,8 +1593,8 @@ public class RenewalServiceImpl implements RenewalService{
 				RenewPremiaPolicy rpp=new RenewPremiaPolicy();
 				rpp=dozerMapper.map(data, RenewPremiaPolicy.class);
 				rpp.setTransactionId(tranId);
-				rpp.setStatus("RP");
-				rpp.setMobileCode("+254");
+				rpp.setCurrentStatus("RP");
+				//rpp.setMobileCode("+254");
 				rpp.setCompanyId(req.getInsuranceId());
 				rpp.setEntryDate(new Date());		
 				rppRepo.saveAndFlush(rpp);
@@ -1619,7 +1606,7 @@ public class RenewalServiceImpl implements RenewalService{
 		}
 		return tranId;
 	}
-	public void InsertPremiaRenewal(List<RenewPremiaPolicy> rqplist,String tranId) {
+	/*public void InsertPremiaRenewal(List<RenewPremiaPolicy> rqplist,String tranId) {
 		CommonRes res=new CommonRes();
 		List<RenewalPolicyDetailsRes>list=new ArrayList<>();
 		//List<RenewPremiaPolicy> rqplist=rppRepo.findByStatusAndTransactionId("RP",tranId);
@@ -1695,7 +1682,7 @@ public class RenewalServiceImpl implements RenewalService{
 			res.setMessage("Renewal Pull failed for "+tranId);
 		}
 	}
-
+*/
 	@Override
 	public List<RenewPremiaPolicyRes> searchRenewPremiaPolicy(RenewalSearchReq req) {
 	
@@ -1704,7 +1691,7 @@ public class RenewalServiceImpl implements RenewalService{
 		List<RenewPremiaPolicy> data = new ArrayList<RenewPremiaPolicy>();
 		try {
 			if(req.getSearchType().equalsIgnoreCase("REGNO")) {
-				data = rppRepo.findAllByPlateNumber(req.getPlateNumber());
+				//data = rppRepo.findAllByPlateNumber(req.getPlateNumber());
 			}
 			else if(req.getSearchType().equalsIgnoreCase("MOBILENUMBER")) {
 				data = rppRepo.findAllByInsuredMobile(req.getInsuredMobile());

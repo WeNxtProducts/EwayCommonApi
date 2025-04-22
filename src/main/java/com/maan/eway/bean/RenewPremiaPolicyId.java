@@ -5,6 +5,7 @@
 package com.maan.eway.bean;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -35,15 +36,14 @@ public class RenewPremiaPolicyId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     
-    @Column(name = "TRANSACTION_ID", length = 50)
+    @Column(name = "TRANSACTION_ID", nullable = false, length = 50)
     private String transactionId;
-	
-    @Column(name = "POL_EXP_DT")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date polExpDt;
-	 
-    @Column(name = "PLATE_NUMBER", length = 50)
-    private String plateNumber;
+
+    @Column(name = "POLICY_NUMBER", nullable = false, length = 100)
+    private String policyNumber;
+
+    @Column(name = "EXPIRY_DATE", nullable = false)
+    private Timestamp expiryDate;
     
  
 }

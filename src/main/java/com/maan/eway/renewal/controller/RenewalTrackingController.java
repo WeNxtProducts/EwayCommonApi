@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import com.maan.eway.renewal.req.GetCustomersByBrokerReq;
 import com.maan.eway.renewal.req.RenewalTrackingInReq;
 import com.maan.eway.renewal.req.RtGetProductsReq;
 import com.maan.eway.renewal.res.RenewalTrackByProductRes;
+import com.maan.eway.renewal.res.RenewalTrackByProductResByDivision;
 import com.maan.eway.renewal.res.RenewalTrackingDetails;
 import com.maan.eway.renewal.res.RenewalTrackingInRes;
 import com.maan.eway.renewal.service.RenewalTrackingService;
@@ -51,7 +54,10 @@ public class RenewalTrackingController {
 		return res;
 	}
 	
-	
+	@GetMapping("/GetRenewalDetailsByDivsion/{divisionCode}/{companyId}")
+	public RenewalTrackByProductResByDivision GetRenewalDetailsByDivsion(@PathVariable("divisionCode") String divisionCode,@PathVariable("companyId") String companyId) {
+		return service.GetRenewalDetailsByDivsion(divisionCode,companyId);
+	}
 	@PostMapping("/getAllproducts")
 	public ResponseEntity<List<RenewalTrackingDetails>> getAllByProductCode(
 			@RequestBody RtGetProductsReq req) {

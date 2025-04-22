@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +31,14 @@ import com.maan.eway.renewal.req.RenewalTrackingInReq;
 import com.maan.eway.renewal.req.RtGetProductsReq;
 import com.maan.eway.renewal.req.RtProductReq;
 import com.maan.eway.renewal.res.GetBrokerListRes;
+import com.maan.eway.renewal.res.RenewalTrackAgentResByProduct;
 import com.maan.eway.renewal.res.RenewalTrackBranchByProductRes;
 import com.maan.eway.renewal.res.RenewalTrackBranchRes;
 import com.maan.eway.renewal.res.RenewalTrackBrokerRes;
 import com.maan.eway.renewal.res.RenewalTrackByProductRes;
+import com.maan.eway.renewal.res.RenewalTrackByProductResByDivision;
 import com.maan.eway.renewal.res.RenewalTrackProductRes;
+import com.maan.eway.renewal.res.RenewalTrackProductResByDivision;
 import com.maan.eway.renewal.res.RenewalTrackingDetails;
 import com.maan.eway.renewal.res.RenewalTrackingInRes;
 import com.maan.eway.renewal.res.RtProductRes;
@@ -241,7 +245,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					RenewalTrackBrokerRes brokerRes = new RenewalTrackBrokerRes();
 
 					LoginUserInfo brokerInfo = userInfo.findByLoginId(b.getLoginId());
-					List<RenewPremiaPolicy> rrp = rppRepo.findBySourceCode(brokerInfo.getCoreAppBrokerCode());
+					List<RenewPremiaPolicy> rrp = rppRepo.findByPolSrcCode(brokerInfo.getCoreAppBrokerCode());
 					branchName = StringUtils.isNotBlank(b.getBranchName()) ? b.getBranchName() : null;
 					if (rrp.isEmpty()) {
 						continue;
@@ -256,13 +260,13 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 						branchName = b.getBranchName();
 						brokerResList.add(brokerRes);
 						if (StringUtils.isNotBlank(brokerInfo.getCoreAppBrokerCode())) {
-							List<RenewPremiaPolicy> rpp = rppRepo.findBySourceCode(brokerInfo.getCoreAppBrokerCode());
+							List<RenewPremiaPolicy> rpp = rppRepo.findByPolSrcCode(brokerInfo.getCoreAppBrokerCode());
 							brokerRes.setSourceName(
-									StringUtils.isNotBlank(rrp.get(0).getSourceName()) ? rrp.get(0).getSourceName()
+									StringUtils.isNotBlank(rrp.get(0).getPolSrcName()) ? rrp.get(0).getPolSrcName()
 											: "");
 
 							// Extract all polNo
-							List<String> policyNos = rpp.stream().map(RenewPremiaPolicy::getPolNo)
+							List<String> policyNos = rpp.stream().map(RenewPremiaPolicy::getPolicyNumber)
 									.collect(Collectors.toList());
 
 							List<RenewQuotePolicy> quotePolicies = renewQuotePolicyRepo.findByOldpolicyNoIn(policyNos);
@@ -329,7 +333,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					RenewalTrackBrokerRes brokerRes = new RenewalTrackBrokerRes();
 
 					LoginUserInfo brokerInfo = userInfo.findByLoginId(b.getLoginId());
-					List<RenewPremiaPolicy> rrp = rppRepo.findBySourceCode(brokerInfo.getCoreAppBrokerCode());
+					List<RenewPremiaPolicy> rrp = rppRepo.findByPolSrcCode(brokerInfo.getCoreAppBrokerCode());
 					branchName = StringUtils.isNotBlank(b.getBranchName()) ? b.getBranchName() : null;
 					if (rrp.isEmpty()) {
 						continue;
@@ -347,7 +351,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 							List<RenewQuotePolicy> rqp = renewQuotePolicyRepo
 									.findBySourceCode(brokerInfo.getCoreAppBrokerCode());
 							brokerRes.setSourceName(
-									StringUtils.isNotBlank(rrp.get(0).getSourceName()) ? rrp.get(0).getSourceName()
+									StringUtils.isNotBlank(rrp.get(0).getPolSrcName()) ? rrp.get(0).getPolSrcName()
 											: "");
 
 							Map<String, Long> statusCountMap = rqp.stream().collect(Collectors
@@ -490,6 +494,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					RenewalTrackingDetails res = mapper.map(rp, RenewalTrackingDetails.class);
 					res.setStatus(rp.getCurrentStatus());
 					res.setPolExpDt(rp.getOldendDate());;
+
 					resList.add(res);
 				}
 			}
@@ -647,6 +652,76 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			e.printStackTrace();
 		}
 		return resList;
+	}
+
+	@Override
+	public RenewalTrackByProductResByDivision GetRenewalDetailsByDivsion(String divisionCode,String companyId) {
+		RenewalTrackByProductResByDivision res=new RenewalTrackByProductResByDivision();
+		List<RenewalTrackProductResByDivision> list=RenewalTrackProductRes(divisionCode,companyId);
+		if(!CollectionUtils.isEmpty(list)) {
+			res.setDivisionCode(divisionCode);
+			//res.setProductList(list);
+			List<RenewalTrackProductResByDivision> productList=new ArrayList<>();
+			for (RenewalTrackProductResByDivision data : list) {
+				RenewalTrackProductResByDivision proRes=new RenewalTrackProductResByDivision();
+				
+				proRes.setProductCode(data.getProductCode());
+				proRes.setProductName(data.getProductName());
+				proRes.setProductCount(data.getProductCount());
+				proRes.setTotalPremium(data.getTotalPremium());
+				List<RenewalTrackAgentResByProduct>agentRes=RenewalTrackAgentRes(divisionCode,companyId,data.getProductCode());
+				if(!CollectionUtils.isEmpty(agentRes))
+				proRes.setAgentList(agentRes);
+				productList.add(proRes);
+			}
+			res.setProductList(productList);
+		}
+		
+		
+		return res;
+	}
+
+	private List<RenewalTrackProductResByDivision> RenewalTrackProductRes(String divisionCode, String companyId) {
+		 CriteriaBuilder cb = em.getCriteriaBuilder();
+	        CriteriaQuery<RenewalTrackProductResByDivision> cq = cb.createQuery(RenewalTrackProductResByDivision.class);
+	        Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
+
+	        cq.select(cb.construct(
+	                RenewalTrackProductResByDivision.class,
+	                root.get("productCode").alias("productCode"),
+	                root.get("productName").alias("productName"),
+	                cb.count(root).as(String.class).alias("productCount"),
+	                cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium")
+	        ));
+
+	        cq.where(cb.equal(root.get("companyId"), companyId),
+	        		cb.equal(root.get("divisionCode"), divisionCode));
+
+	        cq.groupBy(root.get("productCode"), root.get("productName"));
+
+	        return em.createQuery(cq).getResultList();
+	}
+	
+	private List<RenewalTrackAgentResByProduct> RenewalTrackAgentRes(String divisionCode, String companyId,String productCode) {
+		 CriteriaBuilder cb = em.getCriteriaBuilder();
+	        CriteriaQuery<RenewalTrackAgentResByProduct> cq = cb.createQuery(RenewalTrackAgentResByProduct.class);
+	        Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
+
+	        cq.select(cb.construct(
+	        		RenewalTrackAgentResByProduct.class,
+	                root.get("polSrcCode").alias("sourceCode"),
+	                root.get("polSrcName").alias("sourceName"),
+	                cb.count(root).as(String.class).alias("sourceCount"),
+	                cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium")
+	        ));
+
+	        cq.where(cb.equal(root.get("companyId"), companyId),
+	        		cb.equal(root.get("divisionCode"), divisionCode),
+	        		cb.equal(root.get("productCode"), productCode));
+
+	        cq.groupBy(root.get("polSrcCode"), root.get("polSrcName"));
+
+	        return em.createQuery(cq).getResultList();
 	}
 
 }

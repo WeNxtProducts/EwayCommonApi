@@ -14,6 +14,7 @@ package com.maan.eway.bean;
 
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -59,217 +60,128 @@ public class RenewPremiaPolicyRaw implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
+@Id
+@Column(name = "POLICY_NUMBER", nullable = false, length = 100)
+private String policyNumber;
 
-    @Column(name = "DIVISION_CODE", length = 50)
-    private String divisionCode;
+@Id
+@Column(name = "EXPIRY_DATE", nullable = false)
+private Date expiryDate;
 
-    @Column(name = "DIVISION_NAME", length = 250)
-    private String divisionName;
 
-    @Column(name = "POL_PROD_CODE", length = 50)
-    private String polProdCode;
+@Column(name = "COMPANY_CODE", length = 100)
+private String companyCode;
 
-    @Column(name = "PROD_NAME", length = 250)
-    private String prodName;
+@Column(name = "COMPANY_NAME", length = 200)
+private String companyName;
 
-    @Column(name = "POL_TYPE", length = 50)
-    private String polType;
+@Column(name = "CLASS_CODE", length = 50)
+private String classCode;
 
-    @Column(name = "CUSTOMER_CODE", length = 50)
-    private String customerCode;
+@Column(name = "CLASS_NAME", length = 200)
+private String className;
 
-    @Column(name = "CUSTOMER_NAME", length = 250)
-    private String customerName;
+@Column(name = "PRODUCT_CODE", length = 50)
+private String productCode;
 
-    @Column(name = "POL_ASSR_CODE", length = 50)
-    private String polAssrCode;
+@Column(name = "PRODUCT_NAME", length = 200)
+private String productName;
 
-    @Column(name = "POL_ASSR_NAME", length = 250)
-    private String polAssrName;
+@Column(name = "DIVISION_CODE", length = 50)
+private String divisionCode;
 
-    @Column(name = "SOURCE_CODE", length = 50)
-    private String sourceCode;
+@Column(name = "DIVISION_NAME", length = 200)
+private String divisionName;
 
-    @Column(name = "SOURCE_NAME", length = 250)
-    private String sourceName;
+@Column(name = "DEPARTMENT_CODE", length = 50)
+private String departmentCode;
 
-    @Column(name = "POL_NO", length = 50)
-    private String polNo;
+@Column(name = "DEPARTMENT_NAME", length = 200)
+private String departmentName;
 
-    @Column(name = "POL_SYS_ID", length = 50)
-    private String polSysId;
+@Column(name = "BUSINESS_TYPE", length = 50)
+private String businessType;
 
-    @Column(name = "INDEX_NO", length = 50)
-    private String indexNo;
+@Column(name = "BUSINESS_NAME", length = 500)
+private String businessName;
 
-    @Column(name = "POL_FM_DT")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date polFmDt;
+@Column(name = "ENDORSEMENT_NUMBER", length = 100)
+private String endorsementNumber;
+
+@Column(name = "FROM_DATE")
+private Date fromDate;
+
+@Column(name = "RENEWAL_DATE")
+private Date renewalDate;
+
+@Column(name = "CUSTOMER_CODE", length = 50)
+private String customerCode;
+
+@Column(name = "CUSTOMER_NAME", length = 200)
+private String customerName;
+
+@Column(name = "INSURED_CIVIL_ID", length = 50)
+private String insuredCivilId;
+
+@Column(name = "INSURED_MOBILE", length = 50)
+private String insuredMobile;
+
+@Column(name = "INSURED_EMAIL_ID", length = 100)
+private String insuredEmailId;
+
+@Column(name = "POL_ASSR_CODE", length = 50)
+private String polAssrCode;
+
+@Column(name = "POL_ASSR_NAME", length = 100)
+private String polAssrName;
+
+@Column(name = "POL_SRC_TYPE", length = 50)
+private String polSrcType;
+
+@Column(name = "POL_SRC_CODE", length = 50)
+private String polSrcCode;
+
+@Column(name = "POL_SRC_NAME", length = 100)
+private String polSrcName;
+
+@Column(name = "POLICY_SI")
+private Double policySi;
+
+@Column(name = "GROSS_PREMIUM")
+private Double grossPremium;
+
+@Column(name = "COVER_PREMIUM")
+private Double coverPremium;
+
+@Column(name = "DISCOUNT_PREMIUM")
+private Double discountPremium;
+
+@Column(name = "LOADING_PREMIUM")
+private Double loadingPremium;
+
+@Column(name = "PVT_COVER_YN")
+private Integer pvtCoverYn;
+
+@Column(name = "PVT_COVER_SI")
+private Double pvtCoverSi;
+
+@Column(name = "PVT_COVER_PREMIUM")
+private Double pvtCoverPremium;
+
+@Column(name = "CHARGE_AMOUNT")
+private Double chargeAmount;
+
+@Column(name = "TOTAL_PREMIUM")
+private Double totalPremium;
+
+@Column(name = "AG_BROK_COMMISSION")
+private Double agBrokCommission;
+
+@Column(name = "ENTRY_DATE")
+private Date entryDate;
     
-    @Id
-    @Column(name = "POL_EXP_DT")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date polExpDt;
-
-    @Column(name = "NEW_START_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date newStartDate;
-
-    @Column(name = "POL_PREM")
-    private Double polPrem;
-
-    @Column(name = "POL_SI_LC_1")
-    private Double polSiLc1;
-
-    @Column(name = "NET_PREM")
-    private Double netPrem;
-
-    @Column(name = "CHARGE_AMT")
-    private Double chargeAmt;
-
-    @Column(name = "LOADING_PREMIUM")
-    private Double loadingPremium;
-
-    @Column(name = "DISCOUNT_PREMIUM")
-    private Double discountPremium;
-
-    @Column(name = "INSURED_CIVIL_ID", length = 50)
-    private String insuredCivilId;
-
-    @Column(name = "INSURED_MOBILE", length = 50)
-    private String insuredMobile;
-
-    @Column(name = "INSURED_EMAIL_ID", length = 250)
-    private String insuredEmailId;
-
-    @Column(name = "MAKE_ID", length = 50)
-    private String makeId;
-
-    @Column(name = "MAKE_ID_NAME", length = 250)
-    private String makeIdName;
-
-    @Column(name = "MODEL_ID", length = 50)
-    private String modelId;
-
-    @Column(name = "MODEL_ID_NAME", length = 250)
-    private String modelIdName;
-
-    @Column(name = "BODY_TYPE", length = 50)
-    private String bodyType;
-
-    @Column(name = "BODY_TYPE_NAME", length = 250)
-    private String bodyTypeName;
-
-    @Id
-    @Column(name = "PLATE_NUMBER", length = 50)
-    private String plateNumber;
-
-    @Column(name = "CHASS_NO", length = 100)
-    private String chassNo;
-
-    @Column(name = "ENGINE_NUMBER", length = 100)
-    private String engineNumber;
-
-    @Column(name = "MANUFACTURE_YEAR", length = 100)
-    private String manufactureYear;
-
-    @Column(name = "TYPE_OF_COVER", length = 50)
-    private String typeOfCover;
-
-    @Column(name = "TYPE_OF_COVER_NAME", length = 250)
-    private String typeOfCoverName;
-
-    @Column(name = "USAGE_TYPE", length = 50)
-    private String usageType;
-
-    @Column(name = "USAGE_TYPE_NAME", length = 250)
-    private String usageTypeName;
-
-    @Column(name = "VEHICLE_AGE", length = 50)
-    private String vehicleAge;
-
-    @Column(name = "NO_OF_PASSENGER", length = 50)
-    private String noOfPassenger;
-
-    @Column(name = "SEATING", length = 50)
-    private String seating;
-
-    @Column(name = "CC", length = 50)
-    private String cc;
-
-    @Column(name = "CLAIM_FREE_YEARS", length = 50)
-    private String claimFreeYears;
-
-    @Column(name = "RENEWAL_COUNT", length = 50)
-    private String renewalCount;
-
-    @Column(name = "COLOR", length = 50)
-    private String color;
-
-    @Column(name = "COLOR_NAME", length = 250)
-    private String colorName;
-
-    @Column(name = "PLATE_COLOR", length = 50)
-    private String plateColor;
-
-    @Column(name = "PLATE_COLOR_NAME", length = 50)
-    private String plateColorName;
-
-    @Column(name = "VEHICLE_VALUE")
-    private Double vehicleValue;
-
-    @Column(name = "TONNAGE", length = 50)
-    private String tonnage;
-
-    @Column(name = "REQUEST_TIME")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date requestTime;
-
-    @Column(name = "RESPONSE_TIME")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date responseTime;
-    
-    @Column(name = "ENTRY_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date entryDate;
-    
-    @Column(name = "DRIVER_NAME", length = 500)
-    private String driverName;
-    
-    @Column(name = "DRIVER_LICENSE", length = 100)
-    private String driverLicense;
-    
-    @Column(name = "DRIVER_DOB")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date driverDob;
-    
-    @Column(name = "DRIVER_AGE", length = 100)
-    private String driverAge;
-    
-    @Column(name = "DRIVER_GENDER", length = 100)
-    private String driverGender;
-    
-    @Column(name = "DRIVER_NATIONALITY", length = 100)
-    private String driverNationality;
-    
-    @Column(name = "DRIVER_LIC_ISSUE_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date driverLicIssueDate;
-    
-    @Column(name = "DRIVER_LIC_EXPIRE_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date driverLicExpireDate;
-    
-    @Column(name = "DRIVER_LIC_TYPE", length = 100)
-    private String driverLicType;
-    
-    @Column(name = "DRIVER_ISSUED_AT", length = 100)
-    private String driverIssuedAt;
-    
-    @Column(name = "CLAIM_EXP", length = 100)
-    private String claimExp;
-
-    
+@Column(name = "STATUS", length = 50)
+private String status;
 }
 
 

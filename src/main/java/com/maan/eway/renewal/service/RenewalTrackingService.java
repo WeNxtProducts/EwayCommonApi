@@ -6,6 +6,7 @@ import com.maan.eway.renewal.req.GetCustomersByBrokerReq;
 import com.maan.eway.renewal.req.RenewalTrackingInReq;
 import com.maan.eway.renewal.req.RtGetProductsReq;
 import com.maan.eway.renewal.res.RenewalTrackByProductRes;
+import com.maan.eway.renewal.res.RenewalTrackByProductResByDivision;
 import com.maan.eway.renewal.res.RenewalTrackingDetails;
 import com.maan.eway.renewal.res.RenewalTrackingInRes;
 
@@ -18,5 +19,7 @@ public interface RenewalTrackingService {
 	RenewalTrackByProductRes renewTrackForProductPerf(RenewalTrackingInReq req);
 
 	List<RenewalTrackingDetails> getAllByProductCode(RtGetProductsReq req);
+
+	RenewalTrackByProductResByDivision GetRenewalDetailsByDivsion(String divisionCode, String companyId);
 
 }
