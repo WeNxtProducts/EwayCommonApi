@@ -112,6 +112,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="SIGNED_FIELDS")
     private String signedFields;
     
+    @Column(name="UNSIGNED_FIELDS")
+    private String unsignedFields;
+    
     @Column(name="USER_TYPE")
     private String userType;
     

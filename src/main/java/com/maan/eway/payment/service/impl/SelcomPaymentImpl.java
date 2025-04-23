@@ -30,7 +30,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -39,7 +38,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.internal.util.type.PrimitiveWrapperHelper.BooleanDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -49,6 +47,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fc.sdk.APIResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -68,6 +67,8 @@ import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.common.service.impl.TiraIntegerationServiceImpl;
 import com.maan.eway.payment.service.SelcomPaymentService;
 import com.maan.eway.payment.util.ApigwClient;
+import com.maan.eway.payment.util.CyberSouceIntegration;
+import com.maan.eway.payment.util.MPesaIntegration;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
@@ -149,12 +150,40 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					return pesapal(vendor,payment);
 				}else if("peach".equals(vendor.getVendorName())){
 					return peach(vendor,payment);
+				}else if("mpesa".equals(vendor.getVendorName())){
+					return mpesa(vendor,payment);
+				}else if("cybersource".equals(vendor.getVendorName())){
+					return cybersource(vendor,payment);
 				}else {
 					return selcomPayment(vendor,payment);
 				}
 				
 			}
 
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	private JsonObject cybersource(PaymentVendorMaster vendor, PaymentDetail payment) {
+		List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+		String castAmountValue;
+		if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
+			castAmountValue =  payment.getPremiumLc().toPlainString();
+		else
+			castAmountValue=  payment.getPremiumFc().toPlainString();
+		return new CyberSouceIntegration().createPay(vendor,payment,castAmountValue) ;
+	}
+	private JsonObject mpesa(PaymentVendorMaster vendor, PaymentDetail payment) {
+		try {
+			JsonObject resp =new JsonObject();
+			resp.addProperty("result", "SUCCESS");
+			JsonObject innerResponse=new JsonObject();
+			innerResponse.addProperty("payment_gateway_url", "www.dummyurl.com");
+			JsonArray asJsonArray =new JsonArray(1);
+			asJsonArray.add(innerResponse);
+			resp.add("data", asJsonArray);
+			return resp;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -170,49 +199,50 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		else
 			castAmountValue=  df.format( payment.getPremiumLc().doubleValue());
 		 
-		try {
+		/*try {
 			Map<String, String> params = new HashMap<>();
 			params.put("authentication.entityId", vendor.getApiKey());
 			params.put("amount", castAmountValue);
-			params.put("currency", payment.getCurrencyId());
+			params.put("currency", "ZAR");
 			params.put("merchantTransactionId",payment.getMerchantReference());
 			params.put("nonce", payment.getMerchantReference());
 			params.put("paymentType", "DB");
-			params.put("shopperResultUrl", vendor.getReturnUrlLink());
-			signature = peachGenerateSignature(params, vendor.getApiSecretKey());			
+			params.put("shopperResultUrl",vendor.getReturnUrlLink().replaceAll("<QuoteNo>", payment.getQuoteNo()));
+					signature = peachGenerateSignature(params, vendor.getApiSecretKey());	
 		}catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		JsonObject jsonResponse = new JsonObject();
 		try {
 			Map<String, String> params = new LinkedHashMap<>();			 
 			params.put("amount", castAmountValue);
 			params.put("authentication.entityId", vendor.getApiKey());
-			params.put("currency", payment.getCurrencyId());
+			params.put("currency", "ZAR");//payment.getCurrencyId());
 			params.put("merchantTransactionId", payment.getMerchantReference());
 			params.put("nonce", payment.getMerchantReference());
 			params.put("paymentType", "DB");
-			params.put("shopperResultUrl", URLEncoder.encode(vendor.getReturnUrlLink(), StandardCharsets.UTF_8.toString()));			 
-			params.put("signature", signature);
-			params.put("customer.merchantCustomerId", payment.getCustomerId());
-			params.put("customer.givenName", payment.getCustomerName());
-			params.put("customer.surname", "");
-			params.put("customer.mobile", payment.getReqBillToPhone());
-			params.put("customer.email",StringUtils.isBlank(payment.getCustomerEmail())?"":payment.getCustomerEmail());
-			params.put("customer.status", "Active");
-			params.put("customer.birthDate", "");
-			params.put("customer.phone", payment.getReqBillToPhone());
+			params.put("shopperResultUrl", vendor.getReturnUrlLink().replaceAll("<QuoteNo>", payment.getQuoteNo()));//URLEncoder.encode(, StandardCharsets.UTF_8.toString()) );			 
 			
-			params.put("billing.street1", payment.getReqBillToAddressLine1());
-			params.put("billing.street2", payment.getReqBillToAddressLine2());
+			params.put("customer.merchantCustomerId", payment.getCustomerId());
+			params.put("customer.givenName", payment.getCustomerName());			
+			params.put("customer.mobile", payment.getReqBillToPhone());
+			params.put("customer.email",StringUtils.isBlank(payment.getCustomerEmail())?"":payment.getCustomerEmail());			
+			params.put("customer.phone", payment.getReqBillToPhone());
+		 
 			params.put("billing.city", payment.getReqBillToAddressCity());
 			params.put("billing.company", payment.getReqBillToCompanyName());
-			params.put("billing.country", payment.getReqBillToCountry());			
+			params.put("billing.country","SZL".equals(payment.getReqBillToCountry())?"SZ":payment.getReqBillToCountry());			
 			params.put("billing.state", payment.getReqBillToAddressState());
 			params.put("billing.postcode", payment.getReqBillToAddrPostalCode());
-			params.put("cancelUrl", vendor.getCancelUrlLink());
+			params.put("cancelUrl", vendor.getCancelUrlLink().replaceAll("<QuoteNo>", payment.getQuoteNo()));
 			params.put("notificationUrl", vendor.getWebhookUrlLink());
-			
+			//params.put("forceDefaultMethod","true");
+			//params.put("defaultPaymentMethod","CARD");
+			signature = peachGenerateSignature(params, vendor.getApiSecretKey());	
+			params.put("signature", signature);
+			params.put("shopperResultUrl",URLEncoder.encode( vendor.getReturnUrlLink().replaceAll("<QuoteNo>", payment.getQuoteNo()), StandardCharsets.UTF_8.toString()) );//URLEncoder.encode(, StandardCharsets.UTF_8.toString()) );	
+			params.put("cancelUrl", URLEncoder.encode(vendor.getCancelUrlLink().replaceAll("<QuoteNo>", payment.getQuoteNo()), StandardCharsets.UTF_8.toString()));
+			params.put("notificationUrl", URLEncoder.encode(vendor.getWebhookUrlLink(), StandardCharsets.UTF_8.toString()));
 			String requestBody = params.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
 					.collect(Collectors.joining("&"));
 			System.out.println(" checkOut Request Body: " + requestBody);
@@ -321,7 +351,6 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				request.addProperty("externalId", payment.getMerchantReference());
 				request.addProperty("narration", payment.getMerchantReference());
 				request.addProperty("redirectUrl", redirect_url);
-				request.addProperty("clientRedirectUrl", redirect_url);
 
 				httpClient= HttpClientBuilder.create().build();
 				HttpPost postRequest = new HttpPost(apibaseURL);
@@ -745,6 +774,8 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 						responses=pesapalOrderStatus(payment,vendor);
 					} else if("peach".equals(vendor.getVendorName())) {
 						responses=peachOrderStatus(payment,vendor);
+					}else if("mpesa".equals(vendor.getVendorName())){
+						responses=mpesaOrderStatus(payment,vendor);
 					}else {
 						responses=selcomOrderStatus(payment,vendor);
 					}
@@ -814,16 +845,54 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 
+	private JsonObject mpesaOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
+		try { 
+			MPesaIntegration mpesaOrderStatus=new MPesaIntegration();
+			APIResponse jsonObject = mpesaOrderStatus.mpesaOrderStatus(payment, vendor);
+			
+			 
+
+				if("INS-0".equalsIgnoreCase(jsonObject.getParameter("output_ResponseCode")) 
+						&& "Completed".equals(jsonObject.getParameter("output_ResponseTransactionStatus"))) {
+					payment.setPaymentStatus("ACCEPTED");
+					payment.setAuthTransRefNo(jsonObject.getParameter("output_ThirdPartyReference"));
+					payment.setChannel(jsonObject.getParameter("output_ConversationID"));
+					
+					payment.setMsisdn(jsonObject.getParameter("output_ThirdPartyReference"));
+					///isPaymentdone=true;
+				}else if("INS-0".equalsIgnoreCase(jsonObject.getParameter("output_ResponseCode")) 
+						&& ("Cancelled".equals(jsonObject.getParameter("output_ResponseTransactionStatus"))
+								|| "Expired".equals(jsonObject.getParameter("output_ResponseTransactionStatus")) ))
+					payment.setPaymentStatus("FAILED");
+				else 
+					payment.setPaymentStatus("PENDING");
+				
+
+				payment.setAuthResponse(jsonObject.getParameter("output_ResponseCode"));
+				payment.setResponseMessage(jsonObject.getParameter("output_ResponseDesc"));
+				payment.setResponseTime(new Date());
+				paymentDetailRepo.save(payment);
+				JsonObject resp=new JsonObject();
+				for(Map.Entry<String, String> entry: jsonObject.getParameters().entrySet()){					
+					resp.addProperty(entry.getKey(), jsonObject.getParameter(entry.getKey()));
+				}
+			return resp;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	private JsonObject peachOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
 		try (CloseableHttpClient client = HttpClients.createDefault()) {  
 			Map<String, String> params = new HashMap<>();
 			params.put("authentication.entityId", vendor.getApiKey());
 			params.put("merchantTransactionId", payment.getMerchantReference());
 			String signaturestatus = peachGenerateSignature(params, vendor.getApiSecretKey());
+			params.put("signature", signaturestatus);
 			System.out.println("status signaturestatus->"+signaturestatus); 
 			String param = params.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
 					.collect(Collectors.joining("&"));
-			StringBuilder urlString = new StringBuilder(vendor.getCheckStatusUrl().concat(param));
+			StringBuilder urlString = new StringBuilder(vendor.getCheckStatusUrl().concat("?"+param));
 
 			HttpGet httpGet = new HttpGet(urlString.toString());
 			httpGet.setHeader("Content-Type", "application/json");
@@ -835,11 +904,27 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				System.out.println("Response: " + responseString);
 				JsonObject responseJson = JsonParser.parseString(responseString).getAsJsonObject();
 				if( responseJson!=null ) {
+					List<String> successCodes=new ArrayList<String>();
+					successCodes.add("000.000.000");
+					successCodes.add("000.000.100");
+					successCodes.add("000.100.110");
+					successCodes.add("000.100.111");
+					successCodes.add("000.100.112");
+					List<String> pendingCodes=new ArrayList<String>();
+					pendingCodes.add("000.200.000");
+					pendingCodes.add("000.200.001");
+					pendingCodes.add("000.200.100");
+					pendingCodes.add("000.200.101");
+					pendingCodes.add("000.200.102");
+					pendingCodes.add("000.200.103");
+					pendingCodes.add("000.200.200");
+					pendingCodes.add("000.200.201");
+					pendingCodes.add("000.200.999");
+					
+					if(responseJson.get("result.code") !=null && successCodes.contains(responseJson.get("result.code").getAsString()) ) {
+						JsonObject redirect_post_data = responseJson;//.get("redirect_post_data").getAsJsonObject(); 
 
-					if(responseJson.get("status") !=null && "successful".equals(responseJson.get("status").getAsString()) ) {
-						JsonObject redirect_post_data = responseJson.get("redirect_post_data").getAsJsonObject(); 
-
-						if("000.000.000".equals(redirect_post_data.get("result.code").getAsString())) {
+						if(successCodes.contains(redirect_post_data.get("result.code").getAsString())) {
 							String amountStr=redirect_post_data.get("amount").getAsString();
 							BigDecimal OurPremium=BigDecimal.ZERO;
 							List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
@@ -851,11 +936,11 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 
 							if(OurPremium.setScale(0, RoundingMode.UP).compareTo(new BigDecimal(amountStr))>=0) {
 								payment.setPaymentStatus("ACCEPTED");
-								payment.setAuthTransRefNo(redirect_post_data.get("checkoutId").getAsString());
-								payment.setChannel(redirect_post_data.get("checkoutId").getAsString());
-								payment.setReference(redirect_post_data.get("checkoutId").getAsString());
-								payment.setMsisdn(redirect_post_data.get("checkoutId").getAsString());
-								payment.setAccountNumber(redirect_post_data.get("checkoutId").getAsString());
+								payment.setAuthTransRefNo(redirect_post_data.get("recon.rrn").getAsString());
+								payment.setChannel(redirect_post_data.get("recon.authCode").getAsString());
+								payment.setReference(redirect_post_data.get("recon.rrn").getAsString());
+								payment.setMsisdn(redirect_post_data.get("recon.stan").getAsString());
+								payment.setAccountNumber(redirect_post_data.get("card.last4Digits").getAsString());
 								payment.setAuthAmount(redirect_post_data.get("amount").getAsString());
 								payment.setAuthResponse(redirect_post_data.get("result.code").getAsString());
 								payment.setAuthTime(redirect_post_data.get("timestamp").getAsString());
@@ -869,11 +954,11 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 								payment.setAuthAmount(redirect_post_data.get("amount")!=null? redirect_post_data.get("amount").getAsString():"0");
 							}
 						}
-					}else if(responseJson.get("status") !=null &&  "pending".equals(responseJson.get("status").getAsString()))
+					}else if(responseJson.get("result.code") !=null && pendingCodes.contains(responseJson.get("result.code").getAsString()))
 						payment.setPaymentStatus("PENDING");
-					else if(responseJson.get("status") !=null && ( "cancelled".equals(responseJson.get("status").getAsString()) 
+					else /*if(responseJson.get("status") !=null && ( "cancelled".equals(responseJson.get("status").getAsString()) 
 							|| "uncertain".equals(responseJson.get("status").getAsString())  
-							))							 
+							))*/							 
 						payment.setPaymentStatus("FAILED");
 
 					payment.setAuthResponse(responseJson.get("result.code") !=null?responseJson.get("result.code").getAsString():"");
@@ -1232,12 +1317,34 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		
 		if("lipila".equals(vendor.getVendorName())){
 			return lipilaOrderMinimal(payment, vendor);
+		}else if("mpesa".equals(vendor.getVendorName())){
+			return mpesaOrderMinimal(payment,vendor);
 		}else {
 			return selcomOrderMinimal(payment,vendor);
 		}
 			
 	}
 	
+	private JsonObject mpesaOrderMinimal(PaymentDetail payment, PaymentVendorMaster vendor) {
+		try {
+			List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+			
+			MPesaIntegration mpesa=new MPesaIntegration();
+			APIResponse pushMobile = mpesa.pushMobile(payment,vendor,insInfo.get(0));
+			 JsonObject json=new JsonObject();
+			if(pushMobile != null) {	             
+ 	            for(Map.Entry<String, String> entry: pushMobile.getParameters().entrySet()){	                
+	                json.addProperty(entry.getKey(), pushMobile.getParameter(entry.getKey()));
+	            }
+ 	          payment.setReference(pushMobile.getParameter("output_TransactionID"));
+ 	          paymentDetailRepo.save(payment);
+ 	           return json;
+ 	        }	
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	private JsonObject lipilaOrderMinimal(PaymentDetail payment, PaymentVendorMaster vendor) {
 		try {
 
@@ -1251,9 +1358,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
 				
 				if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
-					orderDict.addProperty("amount",  payment.getPremiumLc());
+					orderDict.addProperty("amount",  1);//payment.getPremiumLc()
 				else
-					orderDict.addProperty("amount",  payment.getPremiumFc());
+					orderDict.addProperty("amount",  1);//payment.getPremiumFc()
 				
 				orderDict.addProperty("accountNumber",payment.getReqBillToPhone());
 				orderDict.addProperty("fullName",payment.getCustomerName());

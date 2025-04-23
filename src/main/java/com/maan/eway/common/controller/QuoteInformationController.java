@@ -21,13 +21,13 @@ import com.maan.eway.common.service.QuoteInformationService;
 import com.maan.eway.error.Error;
 
 @RestController
-@RequestMapping("/api/quotes")
+@RequestMapping("/api/salesQuote")
 public class QuoteInformationController {
 
     @Autowired
     private QuoteInformationService service;
 
-    @PostMapping
+    @PostMapping("saveQuote")
 	public ResponseEntity<?> saveOrUpdate(@RequestBody QuoteInformationDTO dto) {
 		QuoteInformationDTO que = service.saveOrUpdate(dto);
 		if (que != null) {
@@ -45,7 +45,7 @@ public class QuoteInformationController {
 		}
 	}
 
-    @GetMapping
+    @GetMapping("getAllQuotes")
     public ResponseEntity<?> getAll() {
     	List<QuoteInformationDTO> que = service.findAll();
     	 if (!que.isEmpty()) {

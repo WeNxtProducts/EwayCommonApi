@@ -94,7 +94,7 @@ public class EnquiryDetails implements Serializable{
 	@Column(name ="EXCEPTED_DATE_COMM_BUSSINESS")
 	private String exceptedDateCommBussiness;
 	
-	@Column(name ="UNDER_ERITTERS")
+	@Column(name ="UNDER_WRITTERS")
 	private String underWritters;
 	
 }
