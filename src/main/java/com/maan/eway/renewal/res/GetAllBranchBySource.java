@@ -7,19 +7,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class RenewalTrackByProductResByDivision {
+public  class GetAllBranchBySource {
 	@JsonProperty("DivisionCode")
 	private String divisionCode;
-	
 	@JsonProperty("DivisionName")
 	private String divisionName;
-	
-	@JsonProperty("TotalProductCount")
-	private String totalProductCount;
-
-	@JsonProperty("TotalPolicyCount")
-	private String totalPolicyCount;
-	
+	@JsonProperty("NoOfProducts")
+	private String noOfProducts;
 	@JsonProperty("ProductList")
-	private List<RenewalTrackProductResByDivision> productList;
+	private List<GetProductBySource> prodList;
 }

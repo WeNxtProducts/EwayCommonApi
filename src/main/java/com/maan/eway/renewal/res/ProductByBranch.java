@@ -1,0 +1,17 @@
+package com.maan.eway.renewal.res;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+@Data
+public class ProductByBranch {
+	@JsonProperty("ProductCode")
+	private String productCode;
+	@JsonProperty("ProductName")
+	private String productName;
+	@JsonProperty("ProductCount")
+	private String productCount;
+	@JsonProperty("TotalPremium")
+	private String totalPremium;
+}
