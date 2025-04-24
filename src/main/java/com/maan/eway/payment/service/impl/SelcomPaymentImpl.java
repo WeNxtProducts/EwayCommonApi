@@ -65,6 +65,7 @@ import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.common.service.impl.TiraIntegerationServiceImpl;
+import com.maan.eway.payment.service.MpesaPaymentService;
 import com.maan.eway.payment.service.SelcomPaymentService;
 import com.maan.eway.payment.util.ApigwClient;
 import com.maan.eway.payment.util.CyberSouceIntegration;
@@ -100,9 +101,13 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 	private AuthendicationService authservice;
 	@Autowired
 	private  TiraIntegerationServiceImpl tiraService;
+
 	
 	@Value("${whatsapp.post.url}")
 	private String whatsappUrl;
+	
+	@Autowired
+	private MpesaPaymentService mpesaPaymentService;
 	
 	@Override
 	public JsonObject createOrderForPayment(String merchantRefernceNo) {
@@ -138,7 +143,6 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					paymentId=paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdAndUserTypeAndProductIdOrderByAmendIdDesc(payment.getCompanyId(),"Y","1",userytype,99999);
 					vendor = paymentId.get(0);
 				}
-
 				
 				JsonObject response = null;
  
@@ -150,9 +154,21 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					return pesapal(vendor,payment);
 				}else if("peach".equals(vendor.getVendorName())){
 					return peach(vendor,payment);
-				}else if("mpesa".equals(vendor.getVendorName())){
-					return mpesa(vendor,payment);
-				}else if("cybersource".equals(vendor.getVendorName())){
+				}
+//				else if("mpesa".equals(vendor.getVendorName())){
+//					return mpesa(vendor,payment);
+//				}
+				
+				else if ("mpesa".equals(vendor.getVendorName())) {
+					JsonObject responsempesa = mPesaPayment(vendor, payment);
+					JsonObject innerResponse = new JsonObject();
+					innerResponse.addProperty("payment_gateway_url", "dXJsIG5vdCBhdmFpbGFibGU=");
+					JsonArray asJsonArray = new JsonArray(1);
+					asJsonArray.add(innerResponse);
+					responsempesa.add("data", asJsonArray);
+					return responsempesa;
+				}
+				else if("cybersource".equals(vendor.getVendorName())){
 					return cybersource(vendor,payment);
 				}else {
 					return selcomPayment(vendor,payment);
@@ -165,6 +181,17 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		}
 		return null;
 	}
+	private JsonObject mPesaPayment(PaymentVendorMaster vendor, PaymentDetail payment) {
+
+		JsonObject outputResponse = new JsonObject();
+
+		outputResponse.addProperty("result", "SUCCESS");
+		outputResponse.addProperty("Message", "Payment Initiated Successfully");
+
+		return outputResponse;
+	}
+	
+	
 	private JsonObject cybersource(PaymentVendorMaster vendor, PaymentDetail payment) {
 		List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
 		String castAmountValue;
@@ -174,21 +201,21 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			castAmountValue=  payment.getPremiumFc().toPlainString();
 		return new CyberSouceIntegration().createPay(vendor,payment,castAmountValue) ;
 	}
-	private JsonObject mpesa(PaymentVendorMaster vendor, PaymentDetail payment) {
-		try {
-			JsonObject resp =new JsonObject();
-			resp.addProperty("result", "SUCCESS");
-			JsonObject innerResponse=new JsonObject();
-			innerResponse.addProperty("payment_gateway_url", "www.dummyurl.com");
-			JsonArray asJsonArray =new JsonArray(1);
-			asJsonArray.add(innerResponse);
-			resp.add("data", asJsonArray);
-			return resp;
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	private JsonObject mpesa(PaymentVendorMaster vendor, PaymentDetail payment) {
+//		try {
+//			JsonObject resp =new JsonObject();
+//			resp.addProperty("result", "SUCCESS");
+//			JsonObject innerResponse=new JsonObject();
+//			innerResponse.addProperty("payment_gateway_url", "www.dummyurl.com");
+//			JsonArray asJsonArray =new JsonArray(1);
+//			asJsonArray.add(innerResponse);
+//			resp.add("data", asJsonArray);
+//			return resp;
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 	private JsonObject peach(PaymentVendorMaster vendor, PaymentDetail payment) {
 		DecimalFormat df = new DecimalFormat("#####");
 		String signature ="";
@@ -774,9 +801,15 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 						responses=pesapalOrderStatus(payment,vendor);
 					} else if("peach".equals(vendor.getVendorName())) {
 						responses=peachOrderStatus(payment,vendor);
-					}else if("mpesa".equals(vendor.getVendorName())){
-						responses=mpesaOrderStatus(payment,vendor);
-					}else {
+					}
+//					else if("mpesa".equals(vendor.getVendorName())){
+//						responses=mpesaOrderStatus(payment,vendor);
+//					}
+					else if ("mpesa".equals(vendor.getVendorName())) {
+						System.out.println("Mpesa");
+						responses = mpesaOrderStatus(payment, vendor);
+					} 
+					else {
 						responses=selcomOrderStatus(payment,vendor);
 					}
 
@@ -844,44 +877,45 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		}
 		return null;
 	}
-
+	
 	private JsonObject mpesaOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
-		try { 
-			MPesaIntegration mpesaOrderStatus=new MPesaIntegration();
-			APIResponse jsonObject = mpesaOrderStatus.mpesaOrderStatus(payment, vendor);
-			
-			 
-
-				if("INS-0".equalsIgnoreCase(jsonObject.getParameter("output_ResponseCode")) 
-						&& "Completed".equals(jsonObject.getParameter("output_ResponseTransactionStatus"))) {
-					payment.setPaymentStatus("ACCEPTED");
-					payment.setAuthTransRefNo(jsonObject.getParameter("output_ThirdPartyReference"));
-					payment.setChannel(jsonObject.getParameter("output_ConversationID"));
-					
-					payment.setMsisdn(jsonObject.getParameter("output_ThirdPartyReference"));
-					///isPaymentdone=true;
-				}else if("INS-0".equalsIgnoreCase(jsonObject.getParameter("output_ResponseCode")) 
-						&& ("Cancelled".equals(jsonObject.getParameter("output_ResponseTransactionStatus"))
-								|| "Expired".equals(jsonObject.getParameter("output_ResponseTransactionStatus")) ))
-					payment.setPaymentStatus("FAILED");
-				else 
-					payment.setPaymentStatus("PENDING");
-				
-
-				payment.setAuthResponse(jsonObject.getParameter("output_ResponseCode"));
-				payment.setResponseMessage(jsonObject.getParameter("output_ResponseDesc"));
-				payment.setResponseTime(new Date());
-				paymentDetailRepo.save(payment);
-				JsonObject resp=new JsonObject();
-				for(Map.Entry<String, String> entry: jsonObject.getParameters().entrySet()){					
-					resp.addProperty(entry.getKey(), jsonObject.getParameter(entry.getKey()));
-				}
-			return resp;
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return mpesaPaymentService.orderStatus(payment, vendor);
 	}
+
+//	private JsonObject mpesaOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
+//		try { 
+//			MPesaIntegration mpesaOrderStatus=new MPesaIntegration();
+//			APIResponse jsonObject = mpesaOrderStatus.mpesaOrderStatus(payment, vendor);
+//			
+//				if("INS-0".equalsIgnoreCase(jsonObject.getParameter("output_ResponseCode"))) {
+//					payment.setPaymentStatus("ACCEPTED");
+//					payment.setAuthTransRefNo(jsonObject.getParameter("output_TransactionID"));
+//					payment.setChannel(jsonObject.getParameter("output_ConversationID"));
+//					
+//					payment.setMsisdn(jsonObject.getParameter("output_ThirdPartyReference"));
+//					///isPaymentdone=true;
+//				}else if("INS-0".equalsIgnoreCase(jsonObject.getParameter("output_ResponseCode")) 
+//						&& ("Cancelled".equals(jsonObject.getParameter("output_ResponseTransactionStatus"))
+//								|| "Expired".equals(jsonObject.getParameter("output_ResponseTransactionStatus")) ))
+//					payment.setPaymentStatus("FAILED");
+//				else 
+//					payment.setPaymentStatus("PENDING");
+//				
+//
+//				payment.setAuthResponse(jsonObject.getParameter("output_ResponseCode"));
+//				payment.setResponseMessage(jsonObject.getParameter("output_ResponseDesc"));
+//				payment.setResponseTime(new Date());
+//				paymentDetailRepo.save(payment);
+//				JsonObject resp=new JsonObject();
+//				for(Map.Entry<String, String> entry: jsonObject.getParameters().entrySet()){					
+//					resp.addProperty(entry.getKey(), jsonObject.getParameter(entry.getKey()));
+//				}
+//			return resp;
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 	private JsonObject peachOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
 		try (CloseableHttpClient client = HttpClients.createDefault()) {  
 			Map<String, String> params = new HashMap<>();
@@ -1317,34 +1351,45 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		
 		if("lipila".equals(vendor.getVendorName())){
 			return lipilaOrderMinimal(payment, vendor);
-		}else if("mpesa".equals(vendor.getVendorName())){
-			return mpesaOrderMinimal(payment,vendor);
-		}else {
+		}
+//		else if("mpesa".equals(vendor.getVendorName())){
+//			return mpesaOrderMinimal(payment,vendor);
+//		}
+		
+		else if ("mpesa".equals(vendor.getVendorName())) {
+			System.out.println("IN MPESA");
+			return mPesaOrderMinimal(payment, vendor);
+		}
+		else {
 			return selcomOrderMinimal(payment,vendor);
 		}
 			
 	}
 	
-	private JsonObject mpesaOrderMinimal(PaymentDetail payment, PaymentVendorMaster vendor) {
-		try {
-			List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
-			
-			MPesaIntegration mpesa=new MPesaIntegration();
-			APIResponse pushMobile = mpesa.pushMobile(payment,vendor,insInfo.get(0));
-			 JsonObject json=new JsonObject();
-			if(pushMobile != null) {	             
- 	            for(Map.Entry<String, String> entry: pushMobile.getParameters().entrySet()){	                
-	                json.addProperty(entry.getKey(), pushMobile.getParameter(entry.getKey()));
-	            }
- 	          payment.setReference(pushMobile.getParameter("output_TransactionID"));
- 	          paymentDetailRepo.save(payment);
- 	           return json;
- 	        }	
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	private JsonObject mPesaOrderMinimal(PaymentDetail payment, PaymentVendorMaster vendor) {
+		return mpesaPaymentService.payment(payment, vendor);
 	}
+	
+//	private JsonObject mpesaOrderMinimal(PaymentDetail payment, PaymentVendorMaster vendor) {
+//		try {
+//			List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
+//			
+//			MPesaIntegration mpesa=new MPesaIntegration();
+//			APIResponse pushMobile = mpesa.pushMobile(payment,vendor,insInfo.get(0));
+//			 JsonObject json=new JsonObject();
+//			if(pushMobile != null) {	             
+// 	            for(Map.Entry<String, String> entry: pushMobile.getParameters().entrySet()){	                
+//	                json.addProperty(entry.getKey(), pushMobile.getParameter(entry.getKey()));
+//	            }
+// 	          payment.setReference(pushMobile.getParameter("output_TransactionID"));
+// 	          paymentDetailRepo.save(payment);
+// 	           return json;
+// 	        }	
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 	private JsonObject lipilaOrderMinimal(PaymentDetail payment, PaymentVendorMaster vendor) {
 		try {
 
@@ -1358,9 +1403,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
 				
 				if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
-					orderDict.addProperty("amount",  1);//payment.getPremiumLc()
+					orderDict.addProperty("amount",  payment.getPremiumLc());
 				else
-					orderDict.addProperty("amount",  1);//payment.getPremiumFc()
+					orderDict.addProperty("amount",  payment.getPremiumFc());
 				
 				orderDict.addProperty("accountNumber",payment.getReqBillToPhone());
 				orderDict.addProperty("fullName",payment.getCustomerName());

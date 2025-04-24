@@ -2046,6 +2046,7 @@ public class PaymentServiceImpl implements PaymentService {
 		try {
 			//Find data from home Position Master
 			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
+			log.info("Customer ID  " + data.getCustomerId());
 			PersonalInfo personaldata = personalrepo.findByCustomerId(data.getCustomerId());
 			String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
 			String installment="";
@@ -3473,8 +3474,10 @@ public class PaymentServiceImpl implements PaymentService {
 					cusReq.setCustomerName(customerData.getClientName());
 					cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
 					cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
+					if(customerData.getWhatsappCodeDesc()!=null) {
 					cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 					cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+					}
 				}
 
 				// UnderWriter Info
