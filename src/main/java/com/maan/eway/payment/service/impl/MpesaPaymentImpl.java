@@ -7,6 +7,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.crypto.Cipher;
 
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.PaymentDetail;
+import com.maan.eway.bean.PaymentDetailId;
 import com.maan.eway.bean.PaymentVendorMaster;
 import com.maan.eway.bean.mpesa.MpesaRequest;
 import com.maan.eway.bean.mpesa.MtnPaymentRequest;
@@ -130,19 +132,36 @@ public class MpesaPaymentImpl implements MpesaPaymentService{
 	            if (entity != null) {
 	                String responseBody = EntityUtils.toString(entity, "UTF-8");
 	                jsonResponse = new JSONObject(responseBody);
-//	                System.out.println("Response Body: " + responseBody);
+	                System.out.println("Response Body: " + responseBody);
 	            }
 	        	
 	        	System.out.println(response);
 	            System.out.println("Response Code: " + response.getCode());
 	            if(response.getCode()==201 || response.getCode()==200) {
-	            	System.out.println("SUCCESS");
-	            	paymentDetailRepo.updatePaymentDetail(jsonResponse.getString("output_ConversationID"), payment.getMerchantReference());
-	            	outputResponse.addProperty("Status", "Success");
+	            	outputResponse.addProperty("result", "Success");
 	            	outputResponse.addProperty("Message", "Request Processed Successfully");
+	            	System.out.println("SUCCESS");
+	            	
+	            	PaymentDetailId id = new PaymentDetailId();
+	            	id.setMerchantReference(payment.getMerchantReference());
+	            	id.setPaymentId(payment.getPaymentId());
+	            	id.setQuoteNo(payment.getQuoteNo());
+	            	
+	            	Optional<PaymentDetail> existing = paymentDetailRepo.findById(id);
+	            	if (existing.isPresent()) {
+	            	    System.out.println("Merchant Reference Found: " + existing.get().getMerchantReference());
+	            	} else {
+	            	    System.out.println("Merchant Reference NOT found!");
+	            	}
+
+	            	String trimmedRef = payment.getMerchantReference().trim();
+	            	paymentDetailRepo.updatePaymentDetail(jsonResponse.getString("output_ConversationID"), trimmedRef);
+	            	
+	            	
+	            	
 	            }else {
 	            	System.out.println("FAIL");
-	            	outputResponse.addProperty("Status", "Failure");
+	            	outputResponse.addProperty("result", "Fail");
 	            	outputResponse.addProperty("Message", "Request Process Failure");
 	            }
 	        }
