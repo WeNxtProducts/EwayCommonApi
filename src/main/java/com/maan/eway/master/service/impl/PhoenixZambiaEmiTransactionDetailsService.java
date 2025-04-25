@@ -1083,6 +1083,7 @@ import jakarta.persistence.criteria.Subquery;
 						
 					}
 					Integer noOfMonth = 0;
+					Integer subNoOfMonth=0;
 					Integer policyPeriod=0;
 					List<CompanyProductMaster> cpm = companyProductMasterRepo.findByCompanyIdAndProductIdOrderByAmendIdDesc(req.getCompanyId(), Integer.parseInt(req.getProductId()));
 					
@@ -1097,7 +1098,7 @@ import jakarta.persistence.criteria.Subquery;
 							 if (policyEndDate.getDayOfMonth() < policyStartDate.getDayOfMonth()) {
 								    monthsBetween += 1;  // Add 1 month since the difference missed the last full month
 								}
-							 noOfMonth=monthsBetween.intValue();
+							 subNoOfMonth=monthsBetween.intValue();
 						}
 					}else if(cpm.get(0).getMotorYn().equalsIgnoreCase("H")) {		
 						List<EserviceCommonDetails> commonDetails = commonRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
@@ -1110,7 +1111,7 @@ import jakarta.persistence.criteria.Subquery;
 							 if (policyEndDate.getDayOfMonth() < policyStartDate.getDayOfMonth()) {
 								    monthsBetween += 1;  // Add 1 month since the difference missed the last full month
 								}
-							 noOfMonth=monthsBetween.intValue();
+							 subNoOfMonth=monthsBetween.intValue();
 						}
 					}else if(cpm.get(0).getMotorYn().equalsIgnoreCase("M")) {		
 						List<EserviceMotorDetails> motorDetails = motorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
@@ -1123,7 +1124,7 @@ import jakarta.persistence.criteria.Subquery;
 							 if (policyEndDate.getDayOfMonth() < policyStartDate.getDayOfMonth()) {
 								    monthsBetween += 1;  // Add 1 month since the difference missed the last full month
 								}
-							 noOfMonth=monthsBetween.intValue();
+							 subNoOfMonth=monthsBetween.intValue();
 						}
 					}
 					
@@ -1132,6 +1133,7 @@ import jakarta.persistence.criteria.Subquery;
 					EmiDisplayRes res=null;
 					if (!list.isEmpty()){	
 						for(EmiMaster data:list) {
+							    noOfMonth = subNoOfMonth;
 								interestPercent = Double.valueOf(data.getInterestPercent().toString());
 								advancePercent = Double.valueOf(data.getAdvancePercent().toString());	
 								Integer instalId=Integer.parseInt(data.getInstallmentTypeId());
