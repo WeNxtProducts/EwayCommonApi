@@ -162,7 +162,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				else if ("mpesa".equals(vendor.getVendorName())) {
 					JsonObject responsempesa = mPesaPayment(vendor, payment);
 					JsonObject innerResponse = new JsonObject();
-					innerResponse.addProperty("payment_gateway_url", "dXJsIG5vdCBhdmFpbGFibGU=");
+					innerResponse.addProperty("payment_gateway_url", "Dummy"); //dXJsIG5vdCBhdmFpbGFibGU=
 					JsonArray asJsonArray = new JsonArray(1);
 					asJsonArray.add(innerResponse);
 					responsempesa.add("data", asJsonArray);
