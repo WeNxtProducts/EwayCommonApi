@@ -1,12 +1,18 @@
 package com.maan.eway.payment.service.impl; 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -57,10 +63,14 @@ import com.maan.eway.auth.dto.ClaimLoginResponse;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.service.AuthendicationService;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentVendorMaster;
+import com.maan.eway.bean.RSTAPushDetails;
 import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.common.service.PaymentService;
@@ -71,9 +81,20 @@ import com.maan.eway.payment.util.ApigwClient;
 import com.maan.eway.payment.util.CyberSouceIntegration;
 import com.maan.eway.payment.util.MPesaIntegration;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PaymentVendorMasterRepository;
+import com.maan.eway.repository.RSTAPushDetailsRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Root;
 
 
 @Service
@@ -87,11 +108,18 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 
 	@Autowired
 	private InsuranceCompanyMasterRepository insuranceRepo;
+	
+	@Autowired
+	private RSTAPushDetailsRepository rstaPushDetailsRepo;
 
 	@Autowired
 	private PaymentService paymentService;
+	
 	@Autowired
 	private PaymentInfoRepository paymentinforepo;
+	
+	@Autowired
+	private ListItemValueRepository itemValueRepo;
 
 	private Logger log = LogManager.getLogger(SelcomPaymentImpl.class);
 
@@ -102,6 +130,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 	@Autowired
 	private  TiraIntegerationServiceImpl tiraService;
 
+	
+	@PersistenceContext
+	private EntityManager em;
 	
 	@Value("${whatsapp.post.url}")
 	private String whatsappUrl;
@@ -837,6 +868,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 										TiraFrameReqCall tira=new TiraFrameReqCall();
 										tira.setQuoteNo(orderId);
 										tiraService.callTiraIntegeration(tira, tokeen);
+										if(paymentInfo.getProductId() == 5 && Arrays.asList("100048").contains(paymentInfo.getCompanyId())) {
+											callRSTAIntegeration(payment.getQuoteNo());
+										}
 									}
 								}catch(Exception e) {
 									e.printStackTrace();
@@ -873,6 +907,116 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			}
 		}catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private void callRSTAIntegeration(String quoteNo) {
+		Gson gson =new Gson();
+		String responseCode="";
+		StringBuffer responseAsString = new StringBuffer();
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		List<Map<String,Object>> request_list = new ArrayList<Map<String,Object>>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+			Root<MotorDataDetails> mdd = cq.from(MotorDataDetails.class);
+			Root<HomePositionMaster> hpm = cq.from(HomePositionMaster.class);
+			
+			cq.multiselect(mdd.get("registrationNumber").alias("registrationNumber"),mdd.get("chassisNumber").alias("chassisNumber"),
+					hpm.get("policyNo").alias("policyNo"),hpm.get("effectiveDate").alias("effectiveDate"),hpm.get("expiryDate").alias("expiryDate"),
+					cb.selectCase().when(cb.in(mdd.get("policyType")).value(Arrays.asList("1","2")), "2").otherwise("1").alias("insuranceType"),
+					cb.selectCase().when(cb.between(cb.literal(new Date()), hpm.get("inceptionDate"), hpm.get("expiryDate")), "1").otherwise("0").alias("status"),
+					hpm.get("companyId").alias("companyId"))
+			.where(cb.equal(mdd.get("quoteNo"), quoteNo),cb.equal(mdd.get("quoteNo"), hpm.get("quoteNo")));
+			
+			TypedQuery<Tuple> query = em.createQuery(cq);
+			
+			List<Tuple> resultList = query.getResultList();
+			
+			resultList.forEach(k -> {
+				Map<String,Object> request = new HashMap<String,Object>();
+				request.put("insuranceType", k.get("insuranceType")==null?"":k.get("insuranceType").toString());
+				request.put("status", k.get("status")==null?"":k.get("status").toString());
+				request.put("registrationMark", k.get("registrationNumber")==null?"":k.get("registrationNumber").toString());
+				request.put("dateFrom", k.get("effectiveDate")==null?"":sdf.format(k.get("effectiveDate")));
+				request.put("dateTo",k.get("expiryDate")==null?"":sdf.format(k.get("expiryDate")));
+				request.put("insurancePolicyNo", k.get("policyNo")==null?"":k.get("policyNo").toString());
+				request.put("chassisNumber", k.get("chassisNumber")==null?"":k.get("chassisNumber").toString());
+				request_list.add(request);
+			});
+			
+			log.info("Policy push request :: "+gson.toJson(request_list));
+			insertRSTA(quoteNo,resultList.get(0).get("policyNo").toString(),gson.toJson(request_list));
+			List<ListItemValue> rstadetails = itemValueRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeDesc("RSTA_PUSH", "Y", resultList.get(0).get("companyId").toString());
+			String url = rstadetails.stream().filter(f -> f.getItemValue().equalsIgnoreCase("API_URL")).map(m -> m.getParam1()).findFirst().get();
+			String authorization = rstadetails.stream().filter(f -> f.getItemValue().equalsIgnoreCase("API_PASSWORD")).map(m -> m.getParam1()).findFirst().get();
+			
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			HttpPost httpPost = new HttpPost(url); 
+			httpPost.setHeader("Content-Type", "application/json");
+			httpPost.setHeader("Accept", "*/*");
+			httpPost.setHeader("Authorization", authorization);
+			StringEntity entity = new StringEntity(gson.toJson(request_list).replaceAll("\"\"", "null"),"UTF-8");
+			httpPost.setEntity(entity);
+			CloseableHttpResponse response = httpclient.execute(httpPost); 
+			if(response.getStatusLine().getStatusCode()<=400 || response.getStatusLine().getStatusCode()==403) {
+				BufferedReader rd1 = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),"UTF-8"));
+				String line = "";
+				while((line = rd1.readLine()) != null) {
+					responseAsString.append(line);
+				}
+				log.info("Policy push response :: "+gson.toJson(responseAsString));
+			}
+			responseCode=String.valueOf(response.getStatusLine().getStatusCode());
+		}catch (Exception e) {
+			e.printStackTrace();
+			responseAsString.append(e.getLocalizedMessage());
+		}
+		updateRSTAResponse(gson.toJson(responseAsString),responseCode,quoteNo);
+	}
+	
+	private void updateRSTAResponse(String responseJson, String responseCode, String quoteNo) {
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaUpdate<RSTAPushDetails> cq = cb.createCriteriaUpdate(RSTAPushDetails.class);
+			Root<RSTAPushDetails> rpd = cq.from(RSTAPushDetails.class);
+			
+			cq.set(rpd.get("rstaResponse"), responseJson)
+				.set(rpd.get("rstaResponseCode"), responseCode)
+				.set(rpd.get("responseTime"), LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")))
+				.where(cb.equal(rpd.get("quoteNo"), quoteNo));
+			em.createQuery(cq).getFirstResult();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void insertRSTA(String quoteNo, String policyNo, String requestJson) {
+		try {
+			RSTAPushDetails m = RSTAPushDetails.builder()
+				.sno(RSTAMaxSno())
+				.quoteNo(quoteNo)
+				.rstaRequest(requestJson)
+				.requestTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+				.entryDate(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+				.build();
+			rstaPushDetailsRepo.save(m);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private BigDecimal RSTAMaxSno() {
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BigDecimal> cq = cb.createQuery(BigDecimal.class);
+			Root<RSTAPushDetails> lpRoot = cq.from(RSTAPushDetails.class);
+			cq.select(cb.coalesce(cb.sum(cb.max(lpRoot.get("sno")),BigDecimal.ONE), BigDecimal.ONE));
+			BigDecimal value = em.createQuery(cq).getSingleResult();
+			return value;
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		return null;

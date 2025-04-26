@@ -2,8 +2,6 @@ package com.maan.eway.payment.service;
 
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
-
 import com.google.gson.JsonObject;
 import com.maan.eway.bean.PaymentDetail;
 
