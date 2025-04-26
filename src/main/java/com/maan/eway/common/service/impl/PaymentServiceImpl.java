@@ -2438,6 +2438,9 @@ public class PaymentServiceImpl implements PaymentService {
 							if(filterCredit!=null && !filterCredit.isEmpty()){
 								creditNo =filterCredit.get(0).getDocNo();
 							}
+							if(paymentInfo.getProductId() == 5 && Arrays.asList("100048").contains(paymentInfo.getCompanyId())) {
+								selcomService.callRSTAIntegeration(req.getQuoteNo());
+							}
 
 							res.setPolicyNo(policyNo);
 							res.setDebitNoteNo(debitNo);

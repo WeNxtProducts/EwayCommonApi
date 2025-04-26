@@ -912,7 +912,8 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 
-	private void callRSTAIntegeration(String quoteNo) {
+
+	public void callRSTAIntegeration(String quoteNo) {
 		Gson gson =new Gson();
 		String responseCode="";
 		StringBuffer responseAsString = new StringBuffer();
@@ -1020,8 +1021,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			e.printStackTrace();
 		}
 		return null;
-	}
-	
+	}	
 	private JsonObject mpesaOrderStatus(PaymentDetail payment, PaymentVendorMaster vendor) {
 		return mpesaPaymentService.orderStatus(payment, vendor);
 	}

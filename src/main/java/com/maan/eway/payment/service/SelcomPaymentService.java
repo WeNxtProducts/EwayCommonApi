@@ -16,4 +16,6 @@ public interface SelcomPaymentService {
 	JsonObject createOrderForPayment(PaymentDetail payment); 
 	
 	JsonObject createOrderMinimal(String merchantRefernceNo);
+
+	void callRSTAIntegeration(String quoteNo);
 }
