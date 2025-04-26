@@ -312,7 +312,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			Long notSecCount = repository.countByRequestReferenceNoAndVehicleIdAndSectionIdNotInAndLocationId(
 					req.getRequestReferenceNo(), Integer.valueOf(req.getVehicleId()), optedSectionIds,
 					Integer.valueOf(req.getLocationId()));
-			if (!"0".equals(req.getCoverId())) {
+			if (req.getCoverId()!=null &&!"0".equals(req.getCoverId()) ) {
 
 				if (notSecCount > 0) {
 					repository.deleteByRequestReferenceNoAndVehicleIdAndSectionIdNotInAndLocationIdAndCoverId(
@@ -350,8 +350,13 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 								req.getRequestReferenceNo(), Integer.valueOf(req.getVehicleId()), req.getInsuranceId(),
 								Integer.valueOf(req.getProductId()), Integer.valueOf(req.getSectionId()),
 								Integer.valueOf(req.getLocationId()));
+				if(req.getProductId().equals("5") || req.getProductId().equals("46"))
+				{
+					repository.deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId())
+							, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()) );
 				
-				if (!"0".equals(req.getCoverId())) {
+				}
+				else if (!"0".equals(req.getCoverId())) {
 					repository.deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndLocationIdAndCoverId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId())
 							, req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getLocationId()),Integer.parseInt(req.getCoverId()) );
 					
