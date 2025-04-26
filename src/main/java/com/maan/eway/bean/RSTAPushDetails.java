@@ -2,6 +2,7 @@ package com.maan.eway.bean;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -10,6 +11,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,13 +55,16 @@ public class RSTAPushDetails implements Serializable {
 	@Column(name = "RSTA_RESPONSE_CODE")
 	private String rstaResponseCode;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "REQUEST_TIME")
-	private String requestTime;
+	private Date requestTime;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "RESPONSE_TIME")
-	private String responseTime	;
+	private Date responseTime	;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "ENTRY_DATE")
-	private String entryDate;
+	private Date entryDate;
 
 }

@@ -10,9 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -52,7 +51,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fc.sdk.APIResponse;
 import com.google.gson.Gson;
@@ -80,7 +78,6 @@ import com.maan.eway.payment.service.MpesaPaymentService;
 import com.maan.eway.payment.service.SelcomPaymentService;
 import com.maan.eway.payment.util.ApigwClient;
 import com.maan.eway.payment.util.CyberSouceIntegration;
-import com.maan.eway.payment.util.MPesaIntegration;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
@@ -96,6 +93,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
 
 
 @Service
@@ -871,7 +869,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 										TiraFrameReqCall tira=new TiraFrameReqCall();
 										tira.setQuoteNo(orderId);
 										tiraService.callTiraIntegeration(tira, tokeen);
-										if(paymentInfo.getProductId() == 5 && Arrays.asList("100048").contains(paymentInfo.getCompanyId())) {
+										if(paymentInfo.getProductId() == 5 && Arrays.asList("100046").contains(paymentInfo.getCompanyId())) {
 											callRSTAIntegeration(payment.getQuoteNo());
 										}
 									}
@@ -920,7 +918,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		Gson gson =new Gson();
 		String responseCode="";
 		StringBuffer responseAsString = new StringBuffer();
-		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		SimpleDateFormat sdf =new SimpleDateFormat("dd/MM/yyyy");
 		List<Map<String,Object>> request_list = new ArrayList<Map<String,Object>>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -981,6 +979,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		updateRSTAResponse(gson.toJson(responseAsString),responseCode,quoteNo);
 	}
 	
+	@Transactional
 	private void updateRSTAResponse(String responseJson, String responseCode, String quoteNo) {
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -989,9 +988,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			
 			cq.set(rpd.get("rstaResponse"), responseJson)
 				.set(rpd.get("rstaResponseCode"), responseCode)
-				.set(rpd.get("responseTime"), LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")))
+				.set(rpd.get("responseTime"), Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.where(cb.equal(rpd.get("quoteNo"), quoteNo));
-			em.createQuery(cq).getFirstResult();
+			em.createQuery(cq).executeUpdate();
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -1003,8 +1002,8 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				.sno(RSTAMaxSno())
 				.quoteNo(quoteNo)
 				.rstaRequest(requestJson)
-				.requestTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
-				.entryDate(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+				.requestTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+				.entryDate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.build();
 			rstaPushDetailsRepo.save(m);
 		}catch(Exception e) {
