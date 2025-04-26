@@ -53,6 +53,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fc.sdk.APIResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -298,17 +299,19 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			//params.put("defaultPaymentMethod","CARD");
 			signature = peachGenerateSignature(params, vendor.getApiSecretKey());	
 			params.put("signature", signature);
-			params.put("shopperResultUrl",URLEncoder.encode( vendor.getReturnUrlLink().replaceAll("<QuoteNo>", payment.getQuoteNo()), StandardCharsets.UTF_8.toString()) );//URLEncoder.encode(, StandardCharsets.UTF_8.toString()) );	
-			params.put("cancelUrl", URLEncoder.encode(vendor.getCancelUrlLink().replaceAll("<QuoteNo>", payment.getQuoteNo()), StandardCharsets.UTF_8.toString()));
-			params.put("notificationUrl", URLEncoder.encode(vendor.getWebhookUrlLink(), StandardCharsets.UTF_8.toString()));
-			String requestBody = params.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
+			params.put("shopperResultUrl",vendor.getReturnUrlLink().replaceAll("<QuoteNo>", payment.getQuoteNo()));//URLEncoder.encode(, StandardCharsets.UTF_8.toString()) );	
+			params.put("cancelUrl", vendor.getCancelUrlLink().replaceAll("<QuoteNo>", payment.getQuoteNo()));
+			params.put("notificationUrl", vendor.getWebhookUrlLink());
+			/*String requestBody = params.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
 					.collect(Collectors.joining("&"));
 			System.out.println(" checkOut Request Body: " + requestBody);
-
+			 */
 			try (CloseableHttpClient client = HttpClients.createDefault()) {
 				HttpPost httpPost = new HttpPost(vendor.getPaymentUrlLink());
-				httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-				httpPost.setEntity(new StringEntity(requestBody));
+				httpPost.setHeader("Content-Type", "application/json");
+				ObjectMapper objectMapper = new ObjectMapper();
+	            String json = objectMapper.writeValueAsString(params);
+				httpPost.setEntity(new StringEntity(json));
 
 				try (CloseableHttpResponse response = client.execute(httpPost)) {
 					org.apache.http.HttpEntity entity = response.getEntity();
