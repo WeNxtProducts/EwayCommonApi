@@ -1271,7 +1271,7 @@ public class SearchServiceImpl implements SearchService {
 					res.setGrossWeight(vehInfo.getResGrossWeight());
 					res.setMotorCategory(data.getMotorCategoryDesc()); 	
 					res.setMotorDesc(data.getSectionName());
-					res.setSeatingCapacity(vehInfo.getResSittingCapacity());
+					res.setSeatingCapacity(Integer.valueOf(vehInfo.getResSittingCapacity()));
 					res.setTareWeight(vehInfo.getResTareWeight());
 					res.setVehicleUsage(vehInfo.getResMotorUsage());	
 					res.setPolicyType(data.getPolicyTypeDesc());

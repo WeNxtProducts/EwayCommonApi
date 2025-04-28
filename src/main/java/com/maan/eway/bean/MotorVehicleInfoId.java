@@ -34,6 +34,8 @@ public class MotorVehicleInfoId implements Serializable {
     private String     reqChassisNumber ;
     
     private String     companyId;
+    
+    private String     savedFrom ;
 
      
 }

@@ -1069,6 +1069,7 @@ import jakarta.persistence.criteria.Subquery;
 	 					resList=kenyaEmiTransactionDetails.viewEmiInstallmentDetails(req);
 	 					return resList;
 					} */
+					Integer stampDuty = 40;
 					Integer i = 0;
 					String insDesc = "";
 					Double temp = 0d, premiumWithTax, interestPercent, advancePercent, interestAmount, totalLoanAmount,
@@ -1081,6 +1082,9 @@ import jakarta.persistence.criteria.Subquery;
 							curPremium=exchangeDate*premiumWithTax;
 							premiumWithTax=Double.valueOf(Math.round(curPremium));
 						
+					}
+					if(req.getCompanyId().equalsIgnoreCase("100020")) {
+						premiumWithTax = premiumWithTax - stampDuty;
 					}
 					Integer noOfMonth = 0;
 					Integer subNoOfMonth=0;

@@ -157,7 +157,7 @@ public class KenyaEserviceCustomerDetails {
 			//if ("2".equalsIgnoreCase(req.getPolicyHolderType())) {
 			if (StringUtils.isBlank(req.getIdType())) {
 				errorList.add("1011");
-			}
+			} 
 			if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
 				errorList.add("1012");
 			}
@@ -176,6 +176,17 @@ public class KenyaEserviceCustomerDetails {
 			if (StringUtils.isBlank(req.getIdNumber())) {
 				errorList.add("1013");
 			}			
+			
+			if (req.getIdNumber() != null && !req.getIdNumber().isEmpty() && req.getIdType() != null
+					&& !req.getIdType().isEmpty()) {
+				if(req.getIdType().equalsIgnoreCase("2")) {
+					if(!req.getIdNumber().matches("[a-zA-Z0-9-]+")) {
+						errorList.add("3320");
+					}
+					
+				}
+
+			}
 
 			if(StringUtils.isNotBlank(req.getPolicyHolderTypeid()) && req.getPolicyHolderTypeid().equals("1")) {
 				if(! req.getIdNumber().matches("^[0-9]{8}") || Long.valueOf(req.getIdNumber()) <= 0) {

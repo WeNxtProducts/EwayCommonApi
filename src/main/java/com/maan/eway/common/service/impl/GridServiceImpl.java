@@ -1054,72 +1054,75 @@ public class GridServiceImpl implements GridService {
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				GetMotorReferalDetailsRes resp = motService.getMotorAdminReferalDetails(req, limit, offset, "RA");
-				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
+				if (resp.getMotorGridCriteriaResRes() != null && !resp.getMotorGridCriteriaResRes().isEmpty()) {
+					List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
 
-				for (MotorGridCriteriaRes data : List2) {
-					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					// res.setCount(data.getIdsCount() == null ? "" :
-					// data.getIdsCount().toString());
-					custRes.add(res);
+					for (MotorGridCriteriaRes data : List2) {
+						EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+						res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+						// res.setCount(data.getIdsCount() == null ? "" :
+						// data.getIdsCount().toString());
+						custRes.add(res);
+					}
 				}
-
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
 
 			} else if (product.getMotorYn().equalsIgnoreCase("L")) {
-				GetMotorReferalDetailsRes resp = lifeService.getLifeAdminReferalDetails(req, limit, offset, "RA");
-				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
+					GetMotorReferalDetailsRes resp = lifeService.getLifeAdminReferalDetails(req, limit, offset, "RA");
+					if (resp.getMotorGridCriteriaResRes() != null && !resp.getMotorGridCriteriaResRes().isEmpty()) {
+						List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
 
-				for (MotorGridCriteriaRes data : List2) {
-					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					custRes.add(res);
+						for (MotorGridCriteriaRes data : List2) {
+							EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+							res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+							custRes.add(res);
+						}
+					}
+					response.setTotalCount(String.valueOf(resp.getTotalCount()));
 				}
-
-				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-
-			}
 			else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req, limit, offset, "RA");
-				adminReferralApprovedList = resp.getReferalGridCriteriaRes();
+				if (resp.getReferalGridCriteriaRes() != null && !resp.getReferalGridCriteriaRes().isEmpty()) {
+					adminReferralApprovedList = resp.getReferalGridCriteriaRes();
 
-				for (ReferalGridCriteriaRes data : adminReferralApprovedList) {
-					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-
-					custRes.add(res);
+					for (ReferalGridCriteriaRes data : adminReferralApprovedList) {
+						EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+						res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+						custRes.add(res);
+					}
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
 
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
 
-				GetTravelReferalDetailsRes resp = buiService.getBuildingAdminReferalDetails(req, limit, offset, "RA");
+					GetTravelReferalDetailsRes resp = buiService.getBuildingAdminReferalDetails(req, limit, offset,
+							"RA");
+					if (resp.getReferalGridCriteriaRes() != null && !resp.getReferalGridCriteriaRes().isEmpty()) {
+						adminReferralApprovedList = resp.getReferalGridCriteriaRes();
 
-				adminReferralApprovedList = resp.getReferalGridCriteriaRes();
+						for (ReferalGridCriteriaRes data : adminReferralApprovedList) {
+							EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+							res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+							custRes.add(res);
+						}
+					}
+					response.setTotalCount(String.valueOf(resp.getTotalCount()));
 
-				for (ReferalGridCriteriaRes data : adminReferralApprovedList) {
-					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-
-					custRes.add(res);
-				}
-				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-
-			} else {
+				} else {
 				GetCommonReferalDetailsRes resp = commonService.getCommonAdminReferalDetails(req, limit, offset, "RA");
+				if (resp.getReferalCommonCriteriaRes() != null && !resp.getReferalCommonCriteriaRes().isEmpty()) {
+					List<ReferalCommonCriteriaRes> adminReferralApprovedList2 = resp.getReferalCommonCriteriaRes();
 
-				List<ReferalCommonCriteriaRes> adminReferralApprovedList2 = resp.getReferalCommonCriteriaRes();
-
-				for (ReferalCommonCriteriaRes data : adminReferralApprovedList2) {
-					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					// res.setCount(data.getIdsCount() == null ? "" :
-					// data.getIdsCount().toString());
-					custRes.add(res);
+					for (ReferalCommonCriteriaRes data : adminReferralApprovedList2) {
+						EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+						res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+						// res.setCount(data.getIdsCount() == null ? "" :
+						// data.getIdsCount().toString());
+						custRes.add(res);
+					}
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-
 			}
 			response.setCustRes(custRes);
 

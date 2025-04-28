@@ -69,12 +69,15 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="REQ_CHASSIS_NUMBER", nullable=false, length=20)
     private String     reqChassisNumber ;
-    
+
+    @Id
+    @Column(name="SAVED_FROM", nullable=false, length=100)
+    private String     savedFrom ;
+
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
-    private String     companyId;
+    private String     companyId ;
 
-    
     //--- ENTITY DATA FIELDS 
     @Column(name="REQ_REQUEST_ID", length=20)
     private String     reqRequestId ;
@@ -88,7 +91,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="REQ_MOTOR_CATEGORY")
     private Integer    reqMotorCategory ;
 
-    @Column(name="REQ_MSG_SIGNATURE", length=500)
+    @Column(name="REQ_MSG_SIGNATURE", length=2000)
     private String     reqMsgSignature ;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -101,8 +104,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", length=200)
     private String     createdBy ;
 
-    @Column(name="RES_RESPONSE_ID")
-    private BigDecimal    resResponseId ;
+    @Column(name="RES_RESPONSE_ID", length=50)
+    private String     resResponseId ;
 
     @Column(name="RES_REQUEST_ID", length=20)
     private String     resRequestId ;
@@ -128,7 +131,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RES_MODEL", length=20)
     private String     resModel ;
 
-    @Column(name="RES_BODY_TYPE", length=20)
+    @Column(name="RES_BODY_TYPE", length=100)
     private String     resBodyType ;
 
     @Column(name="RES_COLOR", length=20)
@@ -150,7 +153,7 @@ private static final long serialVersionUID = 1L;
     private Double     resAxleDistance ;
 
     @Column(name="RES_SITTING_CAPACITY")
-    private Integer    resSittingCapacity ;
+    private String    resSittingCapacity ;
 
     @Column(name="RES_YEAR_OF_MANUFACTURE")
     private Integer    resYearOfManufacture ;
@@ -161,7 +164,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RES_GROSS_WEIGHT")
     private Double     resGrossWeight ;
 
-    @Column(name="RES_MOTOR_USAGE", length=150)
+    @Column(name="RES_MOTOR_USAGE", length=500)
     private String     resMotorUsage ;
 
     @Column(name="RES_OWNER_NAME", length=150)
@@ -170,19 +173,55 @@ private static final long serialVersionUID = 1L;
     @Column(name="RES_OWNER_CATEGORY", length=150)
     private String     resOwnerCategory ;
 
-    @Column(name="RES_MSG_SIGNATURE", length=500)
+    @Column(name="RES_MSG_SIGNATURE", length=2000)
     private String     resMsgSignature ;
-
-    @Column(name="SAVED_FROM", length=100)
-    private String     savedFrom ;
 
     @Column(name="POLICY_YN", length=20)
     private String     policyYn ;
-    
-    @Column(name="MODEL_NUMBER", length=30)
-    private String     ModelNumber;
-    //--- ENTITY LINKS ( RELATIONSHIP )
 
+    @Column(name="OWNER_CATEGORY_ID", length=5)
+    private String     ownerCategoryId ;
+
+    @Column(name="OWNER_CATEGORY", length=30)
+    private String     ownerCategory ;
+
+    @Column(name="OWNER_ADDRESS", length=200)
+    private String     ownerAddress ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="COVERNOTE_START_DATE")
+    private Date       covernoteStartDate ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="COVERNOTE_END_DATE")
+    private Date       covernoteEndDate ;
+
+    @Column(name="CURRENCY_CODE", length=10)
+    private String     currencyCode ;
+
+    @Column(name="PRODUCT_CODE", length=30)
+    private String     productCode ;
+
+    @Column(name="RISK_CODE", length=30)
+    private String     riskCode ;
+
+    @Column(name="SUM_INSURED")
+    private BigDecimal     sumInsured ;
+
+    @Column(name="POLICYTYPE_ID")
+    private String    policytypeId ;
+
+    @Column(name="PRODUCT_DESC", length=200)
+    private String     productDesc ;
+
+    @Column(name="RISK_DESC", length=200)
+    private String     riskDesc ;
+
+    @Column(name="MODEL_NUMBER", length=100)
+    private String     modelNumber ;
+
+    @Column(name="MOTOR_CATEGORY_DESC", length=30)
+    private String     motorCategoryDesc ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="FIRST_REGDATE")
@@ -191,10 +230,53 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="CURRENT_LICENSEEXP_DT")
     private Date       currentLicenseexpDt ;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ROAD_WORTHEXP_DT")
     private Date       roadWorthexpDt ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="REGISTRATION_DATE")
+    private Date       registrationDate ;
+
+    @Column(name="CUST_RENEWAL_YN", length=5)
+    private String     custRenewalYn ;
+
+    @Column(name="RES_MOTOR_CATEGORY_DESC", length=600)
+    private String     resMotorCategoryDesc ;
+    
+    @Column(name = "RES_MAKE_LOCAL", length = 500)
+    private String resMakeLocal;
+
+    @Column(name = "RES_MODEL_LOCAL", length = 500)
+    private String resModelLocal;
+
+    @Column(name = "RES_BODY_TYPE_LOCAL", length = 500)
+    private String resBodyTypeLocal;
+
+    @Column(name = "RES_COLOR_LOCAL", length = 500)
+    private String resColorLocal;
+
+    @Column(name = "RES_FUEL_USED_LOCAL", length = 500)
+    private String resFuelUsedLocal;
+
+    @Column(name = "RES_MOTOR_USAGE_LOCAL", length = 500)
+    private String resMotorUsageLocal;
+
+    @Column(name = "RES_MOTOR_CATEGORY_DESC_LOCAL", length = 500)
+    private String resMotorCategoryDescLocal;
+
+    @Column(name = "HORSE_POWER")
+	private Integer horsePower;
+    
+    @Column(name = "DISPLACEMENT_CM3")
+    private String displacementInCM3;
+    
+    @Column(name = "NO_OF_CYLINDERS")
+    private Integer noOfCylinders;
+    
+    @Column(name = "PLATE_TYPE")
+    private String plateType;
     
     @Column(name="RES_MAKE_ID", length=20)
     private String     resMakeId ;
@@ -202,8 +284,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="RES_MODEL_ID", length=20)
     private String     resModelId ;
 
+    @Column(name = "PLATECODE")
+    private String plateCode;
     
-    }
+    @Column(name="RES_BODY_TYPE_ID", length=100)
+    private String     resBodyTypeId ;
+   
+}
 
 
 
