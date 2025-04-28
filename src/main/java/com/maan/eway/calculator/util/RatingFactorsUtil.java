@@ -987,7 +987,7 @@ public class RatingFactorsUtil {
 			String minRateQuery="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+115+";param10:"+vehicles.get(0).get("vehicleClass").toString()
 			+";param11:"+vehicles.get(0).get("insuranceClass").toString()+";"
-			+(vehicles.get(0).get("sumInsured")==null?0:vehicles.get(0).get("sumInsured"))+"~param1&param2;";
+			+(vehicles.get(0).get("sumInsured")==null?0:new BigDecimal(vehicles.get(0).get("sumInsured").toString()).toPlainString())+"~param1&param2;";
 			;
 			
 			
@@ -1081,7 +1081,7 @@ public class RatingFactorsUtil {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
 			String SumInsured="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+101+";param2<"+vehicles.get(0).get("sumInsured").toString()+";";
+			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+101+";param2<"+new BigDecimal(vehicles.get(0).get("sumInsured").toString()).toPlainString()+";";
 			List<Tuple> result = getResult(SumInsured);
 			if(result.size()==1) {
 				SumInsured="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()

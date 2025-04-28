@@ -70,7 +70,7 @@ public class PerilCalculator {
 				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+23+";param9:"+vehicles.get(0).get("insuranceClass").toString()+";";
 
 				String SumInsured="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
-				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+101+";"+vehicles.get(0).get("sumInsured").toString()+"~param1&param2;";
+				+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+101+";"+new BigDecimal(vehicles.get(0).get("sumInsured").toString()).toPlainString()+"~param1&param2;";
 
 				/* old String ThirdPartyLiabilityLimit="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()
 			+";status:{Y,R};subCoverId:0;"+todayInString+"~effectiveDateStart&effectiveDateEnd;coverId:"+56+";";
