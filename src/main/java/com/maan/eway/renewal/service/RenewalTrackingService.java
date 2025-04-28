@@ -35,6 +35,9 @@ public interface RenewalTrackingService {
 
 	ProductsBySourceRes getProductsBySource(@RequestBody RenewalTrackReq req );
 	
+	List<PolicyDetail> RenewalTrackPolicyDetailsBySource(String divisionCode, String companyId, String productCode,
+			String brokerCode);
+	
 	
 
 }

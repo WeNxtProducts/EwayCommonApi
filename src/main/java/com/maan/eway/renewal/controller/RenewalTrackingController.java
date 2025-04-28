@@ -28,32 +28,6 @@ public class RenewalTrackingController {
 	@Autowired
 	private RenewalTrackingService service;
 	
-	@PostMapping("/GetRenewalDetailsBySource")
-	public GetPolicyBySourceRes getPolicyBySource(@RequestBody GetPolicyBySourceReq req) {
-		return service.getPolicyBySource(req);
-	}
-	
-	@GetMapping("/GetRenewalDetailsByDivsion/{companyId}")
-	public BranchForRenewalTrack GetRenewalDetailsByDivsion(@PathVariable("companyId") String companyId) {
-		return service.RenewalTrackGetBranch(companyId);
-	}
-	
-	@GetMapping("/GetRenewalDetailsByDivsion/{companyId}/{divisionCode}")
-	public List<ProductByBranch> GetRenewalDetailsByDivsion(@PathVariable("divisionCode") String divisionCode,@PathVariable("companyId") String companyId) {
-		return service.GetRenewalDetailsByDivsion2(divisionCode,companyId);
-	}
-	/*
-	@GetMapping("/GetRenewalDetailsByDivsion/{companyId}/{divisionCode}/{productCode}")
-	public List<RenewalTrackAgentResByProduct> GetRenewalDetailsByDivsion(@PathVariable("divisionCode") String divisionCode,@PathVariable("companyId") String companyId, @PathVariable("productCode") String productCode) {
-		return service.RenewalTrackAgentRes(divisionCode,companyId,productCode);
-	}
-	
-	@GetMapping("/GetRenewalDetailsByDivsion/{companyId}/{divisionCode}/{productCode}/{sourceCode}")
-	public List<PolicyDetail> GetRenewalDetailsByDivsion(@PathVariable("divisionCode") String divisionCode,@PathVariable("companyId") String companyId, @PathVariable("productCode") String productCode, @PathVariable("sourceCode") String sourceCode) {
-		return service.RenewalTrackPolicyDetailsBySource(divisionCode,companyId,productCode,sourceCode);
-	}
- */
-
 	    @PostMapping("/getdivisionbycompany")
 	    public ResponseEntity<?> getByCompany(@RequestBody RenewalTrackReq req) {
 	        if (req.getCompanyId() != null && !req.getCompanyId().trim().isEmpty()) {

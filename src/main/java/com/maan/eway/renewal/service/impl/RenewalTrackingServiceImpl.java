@@ -2,61 +2,23 @@ package com.maan.eway.renewal.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import com.maan.eway.admin.req.GetBrokerListDropDownReq;
-import com.maan.eway.bean.LoginBranchMaster;
-import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.RenewPremiaPolicy;
-import com.maan.eway.bean.RenewQuotePolicy;
-import com.maan.eway.renewal.req.GetCustomersByBrokerReq;
-import com.maan.eway.renewal.req.GetPolicyBySourceReq;
 import com.maan.eway.renewal.req.RenewalTrackAgentResByProduct2;
 import com.maan.eway.renewal.req.RenewalTrackReq;
-import com.maan.eway.renewal.req.RenewalTrackingInReq;
-import com.maan.eway.renewal.req.RtGetProductsReq;
-import com.maan.eway.renewal.req.RtProductReq;
 import com.maan.eway.renewal.res.BranchForRenewalTrack;
 import com.maan.eway.renewal.res.DivisionDetails;
-import com.maan.eway.renewal.res.GetBrokerListRes;
-import com.maan.eway.renewal.res.GetPolicyBySourceRes;
-import com.maan.eway.renewal.res.GetProductBySource;
-import com.maan.eway.renewal.res.PolicyDet;
 import com.maan.eway.renewal.res.ProductByBranch;
 import com.maan.eway.renewal.res.ProductDetails;
 import com.maan.eway.renewal.res.ProductsBySourceRes;
-import com.maan.eway.renewal.res.RenewalTrackAgentResByProduct;
 import com.maan.eway.renewal.res.RenewalTrackAgentResByProduct.PolicyDetail;
-import com.maan.eway.renewal.res.RenewalTrackBranchByProductRes;
-import com.maan.eway.renewal.res.RenewalTrackBranchRes;
-import com.maan.eway.renewal.res.RenewalTrackBrokerRes;
-import com.maan.eway.renewal.res.RenewalTrackByProductRes;
-import com.maan.eway.renewal.res.RenewalTrackByProductResByDivision;
-import com.maan.eway.renewal.res.RenewalTrackProductRes;
-import com.maan.eway.renewal.res.RenewalTrackProductResByDivision;
-import com.maan.eway.renewal.res.RenewalTrackingDetails;
-import com.maan.eway.renewal.res.RenewalTrackingInRes;
-import com.maan.eway.renewal.res.RtProductRes;
 import com.maan.eway.renewal.service.RenewalTrackingService;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -65,12 +27,9 @@ import com.maan.eway.repository.RenewPremiaPolicyRepository;
 import com.maan.eway.repository.RenewQuotePolicyRepository;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 @Service
@@ -356,6 +315,14 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			e.printStackTrace();
 		}
 		return resList;
+	}
+
+
+	@Override
+	public List<PolicyDetail> RenewalTrackPolicyDetailsBySource(String divisionCode, String companyId,
+			String productCode, String brokerCode) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
