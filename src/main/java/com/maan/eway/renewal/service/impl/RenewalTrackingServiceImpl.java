@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -94,7 +96,6 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 	@Autowired
 	private EntityManager em;
 
-
 	public BigDecimal rate(Long count, Long totalCount) {
 		if (count == null || totalCount == null || totalCount == 0) {
 			return BigDecimal.ZERO;
@@ -106,104 +107,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		return countBD.multiply(BigDecimal.valueOf(100)).divide(totalCountBD, 2, RoundingMode.HALF_UP); // returns
 																										// percentage
 
-	}
-	
-// new
-	@Override
-	public RenewalTrackByProductResByDivision GetRenewalDetailsByDivsion(String divisionCode, String companyId) {
-		RenewalTrackByProductResByDivision res = new RenewalTrackByProductResByDivision();
-		List<RenewalTrackProductResByDivision> list = RenewalTrackProductRes(divisionCode, companyId);
-		if (!CollectionUtils.isEmpty(list)) {
-			res.setDivisionCode(divisionCode);
-			res.setTotalProductCount(String.valueOf(list.size()));
-			res.setTotalPolicyCount(policyCountByDivision(list).toString());
-			// res.setProductList(list);
-			List<RenewalTrackProductResByDivision> productList = new ArrayList<>();
-			for (RenewalTrackProductResByDivision data : list) {
-				RenewalTrackProductResByDivision proRes = new RenewalTrackProductResByDivision();
+	}	
 
-				proRes.setProductCode(data.getProductCode());
-				proRes.setProductName(data.getProductName());
-				proRes.setProductCount(data.getProductCount());
-				proRes.setTotalPremium(data.getTotalPremium());
-				List<RenewalTrackAgentResByProduct> agentRes = RenewalTrackAgentRes(divisionCode, companyId,
-						data.getProductCode());
-				if (!CollectionUtils.isEmpty(agentRes))
 
-					for (RenewalTrackAgentResByProduct agent : agentRes) {
-
-						List<PolicyDetail> policyDetails = RenewalTrackPolicyDetailsBySource(divisionCode, companyId,
-								data.getProductCode(), agent.getSourceCode());
-						if (!CollectionUtils.isEmpty(policyDetails))
-							agent.setPolicyDetails(policyDetails);
-					}
-				proRes.setAgentList(agentRes);
-				productList.add(proRes);
-			}
-			res.setProductList(productList);
-		}
-
-		return res;
-	}
-
-	private List<RenewalTrackProductResByDivision> RenewalTrackProductRes(String divisionCode, String companyId) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<RenewalTrackProductResByDivision> cq = cb.createQuery(RenewalTrackProductResByDivision.class);
-		Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
-
-		cq.select(cb.construct(RenewalTrackProductResByDivision.class, root.get("productCode").alias("productCode"),
-				root.get("productName").alias("productName"), cb.count(root).as(String.class).alias("productCount"),
-				cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium")));
-
-		cq.where(cb.equal(root.get("companyId"), companyId), cb.equal(root.get("divisionCode"), divisionCode));
-
-		cq.groupBy(root.get("productCode"), root.get("productName"));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	@Override
-	public List<RenewalTrackAgentResByProduct> RenewalTrackAgentRes(String divisionCode, String companyId,
-			String productCode) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<RenewalTrackAgentResByProduct> cq = cb.createQuery(RenewalTrackAgentResByProduct.class);
-		Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
-
-		cq.select(cb.construct(RenewalTrackAgentResByProduct.class, root.get("polSrcCode").alias("sourceCode"),
-				root.get("polSrcName").alias("sourceName"), cb.count(root).as(String.class).alias("sourceCount"),
-				cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium")));
-
-		cq.where(cb.equal(root.get("companyId"), companyId), cb.equal(root.get("divisionCode"), divisionCode),
-				cb.equal(root.get("productCode"), productCode));
-
-		cq.groupBy(root.get("polSrcCode"), root.get("polSrcName"));
-
-		return em.createQuery(cq).getResultList();
-	}
-	
-	
-@Override
-	public List<PolicyDetail> RenewalTrackPolicyDetailsBySource(String divisionCode, String companyId,
-			String productCode, String brokerCode) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PolicyDetail> cq = cb.createQuery(PolicyDetail.class);
-		Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
-
-		cq.select(cb.construct(PolicyDetail.class, root.get("polSrcCode").alias("sourceCode"),
-				root.get("polSrcName").alias("sourceName"), root.get("productCode").alias("productCode"),
-				root.get("productName").alias("productName"), root.get("divisionCode").alias("branchCode"),
-				root.get("divisionName").alias("branchName"), root.get("customerCode").alias("customerCode"),
-				root.get("customerName").alias("customerName"), root.get("expiryDate").alias("policyEndDate"),
-				root.get("currentStatus").alias("status"), root.get("totalPremium").alias("totalPremium")));
-
-		cq.where(cb.equal(root.get("companyId"), companyId), cb.equal(root.get("divisionCode"), divisionCode),
-				cb.equal(root.get("productCode"), productCode), cb.equal(root.get("polSrcCode"), brokerCode));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	private Integer policyCountByDivision(List<RenewalTrackProductResByDivision> list) {
-		int totalPolicyCount = list.stream().map(RenewalTrackProductResByDivision::getProductCount) // get the string
+	private Integer policyCountBySourceAndDiv(List<ProductDetails> list) {
+		int totalPolicyCount = list.stream().map(ProductDetails::getProductCount) // get the string
 				.filter(Objects::nonNull) // avoid nulls
 				.map(String::trim) // clean strings
 				.filter(s -> !s.isEmpty()) // avoid empty strings
@@ -213,183 +121,185 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		return totalPolicyCount;
 	}
 
+	
+//            From division <--> products <--> Agents <--> policy details 
+
+//  Get Divisions From companyId
 	@Override
-	public GetPolicyBySourceRes getPolicyBySource(GetPolicyBySourceReq req) {
-		GetPolicyBySourceRes res = new GetPolicyBySourceRes();
-		try {
-			List<GetProductBySource> productList = getProductListBySource(req.getCompanyId(), req.getDivisionCode(),
-					req.getSourceCode());
-			res.setSourceCode(req.getSourceCode());
-			res.setTotalPolicyCount(policyCountBySource(productList).toString());
-			if (!CollectionUtils.isEmpty(productList)) {
-				res.setNoOfProducts(String.valueOf(productList.size()));
-				for (GetProductBySource product : productList) {
-					List<PolicyDet> policyDetails = getPolicyListBySourceAndProduct(req.getCompanyId(),
-							req.getDivisionCode(), product.getProductCode(), req.getSourceCode());
-					if (!CollectionUtils.isEmpty(productList))
-						product.setPolicyList(policyDetails);
-				}
-				res.setProdList(productList);
-
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return res;
-	}
-
-	private List<GetProductBySource> getProductListBySource(String companyId, String divisionCode, String sourceCode) {
-		List<GetProductBySource> resList = new ArrayList<GetProductBySource>();
+	public BranchForRenewalTrack RenewalTrackGetBranch(String companyId) {
+		BranchForRenewalTrack res = new BranchForRenewalTrack();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<GetProductBySource> cq = cb.createQuery(GetProductBySource.class);
-			Root<RenewPremiaPolicy> r = cq.from(RenewPremiaPolicy.class);
+			CriteriaQuery<DivisionDetails> cq = cb.createQuery(DivisionDetails.class);
+			Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
+			
+			Expression<Long> successCount = cb.sum(
+				    cb.<Long>selectCase()
+				        .when(cb.equal(root.get("currentStatus"), "RS"), 1L)
+				        .otherwise(0L)
+				);
+				Expression<Long> pendingCount = cb.sum(
+				    cb.<Long>selectCase()
+				        .when(cb.equal(root.get("currentStatus"), "RP"), 1L)
+				        .otherwise(0L)
+				);
+				Expression<Long> lostCount = cb.sum(
+				    cb.<Long>selectCase()
+				        .when(cb.equal(root.get("currentStatus"), "RF"), 1L)
+				        .otherwise(0L)
+				);
 
-			cq.select(cb.construct(GetProductBySource.class, r.get("productCode").alias("productCode"),
-					r.get("productName").alias("productName"), cb.count(r).as(String.class).alias("productCount"),
-					cb.sum(r.get("totalPremium")).as(String.class).alias("totalPremium")));
-			cq.where(cb.equal(r.get("companyId"), companyId), cb.equal(r.get("divisionCode"), divisionCode),
-					cb.equal(r.get("polSrcCode"), sourceCode));
-			cq.groupBy(r.get("productCode"), r.get("productName"));
-			resList = em.createQuery(cq).getResultList();
+			// Select DISTINCT division_code
+			cq.multiselect(root.get("divisionCode").alias("divisionCode"),
+					root.get("divisionName").alias("divisionName"),
+					cb.count(root).as(String.class).alias("totalPolicycount"),
+					cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium"),
+					successCount.as(String.class).alias("successCount"),
+					pendingCount.as(String.class).alias("pendingCount"),
+					lostCount.as(String.class).alias("lostCount")
+					);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return resList;
-	}
+			// WHERE company_id = '100020'
+			cq.where(cb.equal(root.get("companyId"), companyId));
 
-	private List<PolicyDet> getPolicyListBySourceAndProduct(String companyId, String divisionCode, String productCode,
-			String brokerCode) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PolicyDet> cq = cb.createQuery(PolicyDet.class);
-		Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
+			cq.groupBy(root.get("divisionCode"), root.get("divisionName"));
 
-		cq.select(cb.construct(PolicyDet.class, root.get("polSrcCode").alias("sourceCode"),
-				root.get("polSrcName").alias("sourceName"), root.get("productCode").alias("productCode"),
-				root.get("productName").alias("productName"), root.get("divisionCode").alias("branchCode"),
-				root.get("divisionName").alias("branchName"), root.get("customerCode").alias("customerCode"),
-				root.get("customerName").alias("customerName"), root.get("expiryDate").alias("policyEndDate"),
-				root.get("currentStatus").alias("status"), root.get("totalPremium").alias("totalPremium")));
-
-		cq.where(cb.equal(root.get("companyId"), companyId), cb.equal(root.get("divisionCode"), divisionCode),
-				cb.equal(root.get("productCode"), productCode), cb.equal(root.get("polSrcCode"), brokerCode));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	private Integer policyCountBySource(List<GetProductBySource> list) {
-		int totalPolicyCount = list.stream().map(GetProductBySource::getProductCount) // get the string
-				.filter(Objects::nonNull) // avoid nulls
-				.map(String::trim) // clean strings
-				.filter(s -> !s.isEmpty()) // avoid empty strings
-				.mapToInt(Integer::parseInt) // convert to int
-				.filter(i -> i >= 0) // only non-negative
-				.sum();
-		return totalPolicyCount;
-	}
-
-	/*
-	public GetAllPolicyBySourceRes getAllPolicyBySource(GetPolicyBySourceReq req) {
-		GetAllPolicyBySourceRes res = new GetAllPolicyBySourceRes();
-		try {
-			List<GetProductBySource> productList = getProductListBySource(req.getCompanyId(), req.getDivisionCode(),
-					req.getSourceCode());
-			res.setSourceCode(req.getSourceCode());
-			res.setTotalPolicyCount(policyCountBySource(productList).toString());
-			if (!CollectionUtils.isEmpty(productList)) {
-				res.setNoOfProducts(String.valueOf(productList.size()));
-				for (GetProductBySource product : productList) {
-					List<PolicyDet> policyDetails = getPolicyListBySourceAndProduct(req.getCompanyId(),
-							req.getDivisionCode(), product.getProductCode(), req.getSourceCode());
-					if (!CollectionUtils.isEmpty(productList))
-						product.setPolicyList(policyDetails);
-				}
-				res.setProdList(productList);
-
+			// Execute query
+			List<DivisionDetails> result = em.createQuery(cq).getResultList();
+			res.setCompanyId(companyId);
+			if (!CollectionUtils.isEmpty(result)) {
+				result.parallelStream().forEach( division-> {
+					Long success=Long.parseLong(division.getSuccessCount());
+					Long totCount=Long.parseLong(division.getTotalPolicycount());
+					BigDecimal rate = rate(success,totCount);
+					division.setSuccessRate(rate.toPlainString());
+				});
+				res.setDivisionDetails(result);
+				res.setNoOfDivisions(String.valueOf(result.size()));
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return res;
 	}
-	*/
-	
+
+// get product details from division
 	public List<ProductByBranch> GetRenewalDetailsByDivsion2(String divisionCode, String companyId) {
 		List<ProductByBranch> list = getBranchByProduct(divisionCode, companyId);
 		return list;
 	}
-	
+
 	private List<ProductByBranch> getBranchByProduct(String divisionCode, String companyId) {
+		List<ProductByBranch> res=new ArrayList<ProductByBranch>();
+		try {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ProductByBranch> cq = cb.createQuery(ProductByBranch.class);
 		Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
+		
+		Expression<Long> successCount = cb.sum(
+			    cb.<Long>selectCase()
+			        .when(cb.equal(root.get("currentStatus"), "RS"), 1L)
+			        .otherwise(0L)
+			);
+			Expression<Long> pendingCount = cb.sum(
+			    cb.<Long>selectCase()
+			        .when(cb.equal(root.get("currentStatus"), "RP"), 1L)
+			        .otherwise(0L)
+			);
+			Expression<Long> lostCount = cb.sum(
+			    cb.<Long>selectCase()
+			        .when(cb.equal(root.get("currentStatus"), "RF"), 1L)
+			        .otherwise(0L)
+			);
+
 
 		cq.select(cb.construct(ProductByBranch.class, root.get("productCode").alias("productCode"),
 				root.get("productName").alias("productName"), cb.count(root).as(String.class).alias("productCount"),
-				cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium")));
+				cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium"),
+				successCount.as(String.class).alias("successCount"),
+				pendingCount.as(String.class).alias("pendingCount"),
+				lostCount.as(String.class).alias("lostCount")
+				));
 
 		cq.where(cb.equal(root.get("companyId"), companyId), cb.equal(root.get("divisionCode"), divisionCode));
 
 		cq.groupBy(root.get("productCode"), root.get("productName"));
+		
+		res=em.createQuery(cq).getResultList();
+		if(!CollectionUtils.isEmpty(res)) {
+		res.parallelStream().forEach(product-> { 
+			Long success=Long.parseLong(product.getSuccessCount());
+			Long totCount=Long.parseLong(product.getProductCount());
+			BigDecimal rate = rate(success,totCount);
+			product.setSuccessRate(rate.toPlainString());
 
-		return em.createQuery(cq).getResultList();
+		});
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		return res;
 	}
 
-
-	@Override
-	 public BranchForRenewalTrack RenewalTrackGetBranch(String companyId) {
-		 BranchForRenewalTrack res = new BranchForRenewalTrack();
-		 try {
-			 CriteriaBuilder cb = em.getCriteriaBuilder();
-			 CriteriaQuery<DivisionDetails> cq = cb.createQuery(DivisionDetails.class);
-			 Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
-
-			 // Select DISTINCT division_code
-			 cq.multiselect(root.get("divisionCode").alias("divisionCode"),
-					 root.get("divisionName").alias("divisionName"),
-					 cb.count(root).as(String.class).alias("totalPolicycount"),
-					 cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium"));
-
-			 // WHERE company_id = '100020'
-			 cq.where(cb.equal(root.get("companyId"), companyId));
-			 
-			 cq.groupBy(root.get("divisionCode"),root.get("divisionName"));
-
-			 // Execute query
-			 List<DivisionDetails> result = em.createQuery(cq).getResultList();
-             res.setCompanyId(companyId);
-             if(!CollectionUtils.isEmpty(result)) {
-             res.setDivisionDetails(result);
-             res.setNoOfDivisions(String.valueOf(result.size()));             };
-		 }catch(Exception e) {
-			 e.printStackTrace();
-		 }
-		 return res;
-	 }
-	
+// get brokers from product
 	@Override
 	public List<RenewalTrackAgentResByProduct2> RenewalTrackAgentRes2(String divisionCode, String companyId,
 			String productCode) {
+		List<RenewalTrackAgentResByProduct2> res = new ArrayList<RenewalTrackAgentResByProduct2>();
+		try {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<RenewalTrackAgentResByProduct2> cq = cb.createQuery(RenewalTrackAgentResByProduct2.class);
 		Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
+		
+		Expression<Long> successCount = cb.sum(
+			    cb.<Long>selectCase()
+			        .when(cb.equal(root.get("currentStatus"), "RS"), 1L)
+			        .otherwise(0L)
+			);
+			Expression<Long> pendingCount = cb.sum(
+			    cb.<Long>selectCase()
+			        .when(cb.equal(root.get("currentStatus"), "RP"), 1L)
+			        .otherwise(0L)
+			);
+			Expression<Long> lostCount = cb.sum(
+			    cb.<Long>selectCase()
+			        .when(cb.equal(root.get("currentStatus"), "RF"), 1L)
+			        .otherwise(0L)
+			);
+
 
 		cq.select(cb.construct(RenewalTrackAgentResByProduct2.class, root.get("polSrcCode").alias("sourceCode"),
 				root.get("polSrcName").alias("sourceName"), cb.count(root).as(String.class).alias("sourceCount"),
-				cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium")));
+				cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium"),
+				successCount.as(String.class).alias("successCount"),
+				pendingCount.as(String.class).alias("pendingCount"),
+				lostCount.as(String.class).alias("lostCount")
+				));
 
 		cq.where(cb.equal(root.get("companyId"), companyId), cb.equal(root.get("divisionCode"), divisionCode),
 				cb.equal(root.get("productCode"), productCode));
 
 		cq.groupBy(root.get("polSrcCode"), root.get("polSrcName"));
+		
+		res=em.createQuery(cq).getResultList();
+		if(!CollectionUtils.isEmpty(res)) {
+	     res.parallelStream().forEach(agent-> {
+			Long success=Long.parseLong(agent.getSuccessCount());
+			Long totCount=Long.parseLong(agent.getSourceCount());
+			BigDecimal rate = rate(success,totCount);
+			agent.setSuccessRate(rate.toPlainString());
+		});
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 
-		return em.createQuery(cq).getResultList();
+		return res;
 	}
 	
-@Override
+	//Get product list by a source in a division & company
+	@Override
 	public ProductsBySourceRes getProductsBySource(RenewalTrackReq req) {
 		ProductsBySourceRes res = new ProductsBySourceRes();
 		try {
@@ -398,8 +308,15 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			res.setSourceCode(req.getSourceCode());
 			res.setTotalPolicyCount(policyCountBySourceAndDiv(productList).toString());
 			if (!CollectionUtils.isEmpty(productList)) {
-				res.setProductDetails(productList);		
-				}
+				
+				productList.parallelStream().forEach(product-> {			
+					Long success=Long.parseLong(product.getSuccessCount());
+					Long totCount=Long.parseLong(product.getProductCount());
+					BigDecimal rate = rate(success,totCount);
+					product.setSuccessRate(rate.toPlainString());
+				});
+				res.setProductDetails(productList);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -414,9 +331,22 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			CriteriaQuery<ProductDetails> cq = cb.createQuery(ProductDetails.class);
 			Root<RenewPremiaPolicy> r = cq.from(RenewPremiaPolicy.class);
 
+			Expression<Long> successCount = cb.sum(
+					cb.<Long>selectCase().when(cb.equal(r.get("currentStatus"), "RS"), 1L).otherwise(0L)
+					);
+			Expression<Long> pendingCount = cb.sum(
+					cb.<Long>selectCase().when(cb.equal(r.get("currentStatus"), "RP"), 1L).otherwise(0L)
+					);
+			Expression<Long> lostCount = cb.sum(
+					cb.<Long>selectCase().when(cb.equal(r.get("currentStatus"), "RF"), 1L).otherwise(0L)
+					);
 			cq.select(cb.construct(ProductDetails.class, r.get("productCode").alias("productCode"),
 					r.get("productName").alias("productName"), cb.count(r).as(String.class).alias("productCount"),
-					cb.sum(r.get("totalPremium")).as(String.class).alias("totalPremium")));
+					cb.sum(r.get("totalPremium")).as(String.class).alias("totalPremium"),
+					successCount.as(String.class).alias("successCount"),
+					pendingCount.as(String.class).alias("pendingCount"),
+					lostCount.as(String.class).alias("lostCount")
+					));
 			cq.where(cb.equal(r.get("companyId"), companyId), cb.equal(r.get("divisionCode"), divisionCode),
 					cb.equal(r.get("polSrcCode"), sourceCode));
 			cq.groupBy(r.get("productCode"), r.get("productName"));
@@ -428,15 +358,5 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		return resList;
 	}
 
-	private Integer policyCountBySourceAndDiv(List<ProductDetails> list) {
-		int totalPolicyCount = list.stream().map(ProductDetails::getProductCount) // get the string
-				.filter(Objects::nonNull) // avoid nulls
-				.map(String::trim) // clean strings
-				.filter(s -> !s.isEmpty()) // avoid empty strings
-				.mapToInt(Integer::parseInt) // convert to int
-				.filter(i -> i >= 0) // only non-negative
-				.sum();
-		return totalPolicyCount;
-	}
 
 }

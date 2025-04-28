@@ -17,4 +17,16 @@ public class DivisionDetails {
 
 	@JsonProperty("TotalPremium")
 	private String totalPremium;
+
+	@JsonProperty("Success")
+	private String successCount;
+
+	@JsonProperty("Pending")
+	private String pendingCount;
+
+	@JsonProperty("Lost")
+	private String lostCount;
+	
+	@JsonProperty("SuccessRate")
+	private String successRate;
 }

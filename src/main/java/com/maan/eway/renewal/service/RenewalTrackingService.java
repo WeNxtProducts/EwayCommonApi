@@ -23,16 +23,10 @@ import com.maan.eway.renewal.res.RenewalTrackingInRes;
 
 public interface RenewalTrackingService {
 
-	RenewalTrackByProductResByDivision GetRenewalDetailsByDivsion(String divisionCode, String companyId);
 
-	GetPolicyBySourceRes getPolicyBySource(GetPolicyBySourceReq req);
 
 	List<ProductByBranch> GetRenewalDetailsByDivsion2(String divisionCode, String companyId);
 
-	List<RenewalTrackAgentResByProduct> RenewalTrackAgentRes(String divisionCode, String companyId, String productCode);
-
-	List<PolicyDetail> RenewalTrackPolicyDetailsBySource(String divisionCode, String companyId, String productCode,
-			String brokerCode);
 
 	BranchForRenewalTrack RenewalTrackGetBranch(String companyId);
 
