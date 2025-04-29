@@ -127,7 +127,7 @@ public class ValuationServiceImpl implements ValuationService {
 				a.get("email").alias("email"),a.get("customerMobile").alias("customerMobile"),a.get("policyNo").alias("policyNo"),
 				a.get("createRequest").alias("createRequest"),a.get("createResponse").alias("createResponse"),a.get("idrequest").alias("idrequest"),
 				a.get("idresponse").alias("statusrequest"),a.get("statusrequest").alias("statusresponse"),a.get("statusresponse").alias("idresponse"),
-				a.get("recordId").alias("recordId"),a.get("status").alias("status"),a.get("valCompanyId").alias("valCompanyId"),
+				a.get("recordId").alias("recordId"),a.get("masterrecordId").alias("masterrecordId"),a.get("status").alias("status"),a.get("valCompanyId").alias("valCompanyId"),
 				a.get("exceptionSumInsured").as(String.class).alias("exceptionSumInusred"),a.get("exceptionStatus").alias("exceptionStatus"),a.get("exceptionRemarks").alias("exceptionRemarks"));
 
 		// Order By
