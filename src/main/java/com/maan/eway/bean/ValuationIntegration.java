@@ -145,6 +145,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="RECORD_ID")
     private String     recordId ;
     
+    @Column(name="MASTER_RECORD_ID")
+    private String     masterrecordId ;
+    
     @Column(name="REMARKS")
     private String     remarks ;
 

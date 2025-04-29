@@ -37,6 +37,10 @@ public class ValuationListRes {
 	@JsonProperty("RecordId")
 	private String recordId;
 	
+	@JsonProperty("MasterrecordId")
+	private String masterrecordId;
+	
+	
 	@JsonProperty("CreateRequest")
 	private String createRequest;
 	

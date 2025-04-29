@@ -235,7 +235,7 @@ public class SolvitValuation  {
 						Map<String ,Object> request=new HashMap<String, Object>();
 						request.put("vehicleRegNo", req.getVehicleRegNo());
 						ResponseEntity<List<ValuationStatusDetailsRes>> response=null;
-						String res="",status="Pending";
+						String res="",status="Pending",masterRecordId="";
 						try {
 							sslverification();
 							RestTemplate restTemplate = new RestTemplate();
@@ -247,7 +247,9 @@ public class SolvitValuation  {
 							System.out.println(entityReq.getBody());
 							response = restTemplate.exchange(list.get(0).getStatusApi(),  HttpMethod.POST,entityReq,new ParameterizedTypeReference<List<ValuationStatusDetailsRes>>() {});
 							System.out.println(response.getBody());
+							res=response.getBody().toString();
 							status=response.getBody().get(0).getStatus();
+							masterRecordId=response.getBody().get(0).getRequestMasterId();
 						}catch (HttpClientErrorException e) {
 			            	System.out.println("Resource is locked. Please try again later.");
 			            	 Map<String, String> headers = e.getResponseHeaders().toSingleValueMap();
@@ -262,17 +264,17 @@ public class SolvitValuation  {
 							resp.setResponse("Failed");
 						}
 						
-						
+						vdata.setMasterrecordId(masterRecordId);
 						vdata.setStatusrequest(request.toString());
 						vdata.setStatusresponse(res);
 						vdata.setStatus(status);
 						valuationIntegrationRepository.saveAndFlush(vdata);
 						resp.setResponse(status);
-						if("Completed".equalsIgnoreCase(status)) {
+						if("Processed".equalsIgnoreCase(status)) {
 							ValuationDetailsReq dreq=new ValuationDetailsReq();
 							dreq.setBranchCode(req.getBranchCode());
 							dreq.setCompanyId(req.getCompanyId());
-							dreq.setRecordId(vdata.getRecordId());
+							dreq.setRecordId(masterRecordId);
 							dreq.setValCompanyId(req.getValCompanyId());
 							getDetails(dreq);
 						}
@@ -291,7 +293,7 @@ public class SolvitValuation  {
 		try {
 			List<ValuationCompanyMaster>list=getValuationCompanyDetails(req.getValCompanyId(), req.getBranchCode(), req.getCompanyId());
 			if(!CollectionUtils.isEmpty(list)) {
-				List<ValuationIntegration>vlist=valuationIntegrationRepository.findByRecordIdOrderByVehicleId(req.getRecordId());
+				List<ValuationIntegration>vlist=valuationIntegrationRepository.findByMasterrecordIdOrderByVehicleId(req.getRecordId());
 				if(!CollectionUtils.isEmpty(vlist)) {
 					String token=getAccessTokern(list.get(0));
 					for (ValuationIntegration vdata : vlist) {
