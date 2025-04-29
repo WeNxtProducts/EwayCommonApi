@@ -15,10 +15,10 @@ import com.maan.eway.renewal.req.RenewalTrackAgentResByProduct2;
 import com.maan.eway.renewal.req.RenewalTrackReq;
 import com.maan.eway.renewal.res.BranchForRenewalTrack;
 import com.maan.eway.renewal.res.DivisionDetails;
+import com.maan.eway.renewal.res.PolicyDet;
 import com.maan.eway.renewal.res.ProductByBranch;
 import com.maan.eway.renewal.res.ProductDetails;
 import com.maan.eway.renewal.res.ProductsBySourceRes;
-import com.maan.eway.renewal.res.RenewalTrackAgentResByProduct.PolicyDetail;
 import com.maan.eway.renewal.service.RenewalTrackingService;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -319,10 +319,40 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 
 	@Override
-	public List<PolicyDetail> RenewalTrackPolicyDetailsBySource(String divisionCode, String companyId,
+	public List<PolicyDet> RenewalTrackPolicyDetailsBySource(String divisionCode, String companyId,
 			String productCode, String brokerCode) {
-		// TODO Auto-generated method stub
-		return null;
+		List<PolicyDet> policyDetails = new ArrayList<PolicyDet>();
+		
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PolicyDet> cq = cb.createQuery(PolicyDet.class);
+			Root<RenewPremiaPolicy> r = cq.from(RenewPremiaPolicy.class);
+
+			cq.select(cb.construct(
+	                PolicyDet.class,
+	                r.get("polSrcCode").alias("sourceCode"),    // sourceCode
+	                r.get("polSrcName").alias("sourceName"),    // sourceName
+	                r.get("productCode").alias("productCode"),   // productCode
+	                r.get("productName").alias("productName"),   // productName
+	                r.get("divisionCode").alias("branchCode"),  // branchCode
+	                r.get("divisionName").alias("branchName"),  // branchName
+	                r.get("customerCode").alias("customerCode"),  // customerCode
+	                r.get("customerName").alias("customerName"),  // customerName
+	                r.get("expiryDate").alias("policyEndDate"),    // expiryDate (Timestamp)
+	                r.get("currentStatus").alias("status"),       // status
+	                r.get("totalPremium").alias("totalPremium")  // totalPremium (Double)
+	        ));
+			
+			cq.where(cb.equal(r.get("companyId"), companyId), cb.equal(r.get("divisionCode"), divisionCode),
+					cb.equal(r.get("polSrcCode"), brokerCode));
+			
+			policyDetails = em.createQuery(cq).getResultList();
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return policyDetails;
 	}
 
 
