@@ -1,9 +1,11 @@
 package com.maan.eway.common.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,30 +98,43 @@ public class QuoteInformationServiceImpl implements QuoteInformationService {
     }
 
     @Override
-    public Optional<QuoteInformationDTO> findById(String enquiryId, String quoteNo) {
+    public List<QuoteInformationDTO> getQuotationDetails(String enquiryId, String quoteNo) {
+    	List<QuoteInformationIpclms> resultList = new ArrayList<QuoteInformationIpclms>();
+    	List<QuoteInformationDTO> resList = new ArrayList<QuoteInformationDTO>();
         try{
-        	QuoteInformationId id = new QuoteInformationId();
-        id.setEnquiryId(enquiryId);
-        id.setQuoteNo(quoteNo);
-        return repository.findById(id).map(entity -> {
-        	QuoteInformationDTO dto = new QuoteInformationDTO();
-            dto.setEnquiryId(entity.getEnquiryId());
-            dto.setQuoteNo(entity.getQuoteNo());
-            dto.setQuotationDescription(entity.getQuotationDescription());
-            dto.setSumInsured(entity.getSumInsured());
-            dto.setPremiumRate(entity.getPremiumRate());
-            dto.setPremiumAmount(entity.getPremiumAmount());
-            dto.setTechnicalDiscount(entity.getTechnicalDiscount());
-            dto.setAdditionalDiscount(entity.getAdditionalDiscount());
-            dto.setQuoteStatus(entity.getQuoteStatus());
-            dto.setQuoteRemarks(entity.getQuoteRemarks());
-            return dto;
-        });
+        if(StringUtils.isNotBlank(quoteNo)) {
+        	 QuoteInformationId id = new QuoteInformationId();
+             id.setEnquiryId(enquiryId);
+             id.setQuoteNo(quoteNo);
+             Optional<QuoteInformationIpclms> data =repository.findById(id);
+             if(data.isPresent()) {
+            	 resultList.add(data.get());
+             }
+        }else {
+        	resultList = repository.findByEnquiryId(enquiryId);
+        }
+        
+        if(resultList!=null && resultList.size()>0) {
+        	resultList.forEach(entity -> {
+        		QuoteInformationDTO dto = new QuoteInformationDTO();
+                dto.setEnquiryId(entity.getEnquiryId());
+                dto.setQuoteNo(entity.getQuoteNo());
+                dto.setQuotationDescription(entity.getQuotationDescription());
+                dto.setSumInsured(entity.getSumInsured());
+                dto.setPremiumRate(entity.getPremiumRate());
+                dto.setPremiumAmount(entity.getPremiumAmount());
+                dto.setTechnicalDiscount(entity.getTechnicalDiscount());
+                dto.setAdditionalDiscount(entity.getAdditionalDiscount());
+                dto.setQuoteStatus(entity.getQuoteStatus());
+                dto.setQuoteRemarks(entity.getQuoteRemarks());
+                resList.add(dto);
+        	});
+        }
     }catch (Exception e){
 		log.error(e);
 		e.printStackTrace();
 	}
-	return null;
+	return resList;
     }
 
     @Override
