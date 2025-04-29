@@ -19,4 +19,7 @@ public class GetEnquiryDetailsReq {
 	@JsonProperty("LoginId")
 	private String loginId;
 	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 }

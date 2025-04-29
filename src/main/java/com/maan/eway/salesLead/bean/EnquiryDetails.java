@@ -6,6 +6,7 @@ import java.util.Date;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -30,6 +31,7 @@ import lombok.Setter;
 @DynamicUpdate
 @Table(name = "eway_enquiry_details")
 @Data
+@IdClass(EnquiryDetailsId.class)
 public class EnquiryDetails implements Serializable{
 	/**
 	 * 
@@ -40,8 +42,13 @@ public class EnquiryDetails implements Serializable{
 	@Column(name = "ENQUIRY_ID", length = 20, nullable = false)
 	private String enquiryId;
 	
-	@Column(name ="LEAD_ID")
+	@Id
+	@Column(name ="LEAD_ID", nullable = false)
 	private String leadId;
+	
+	@Id
+	@Column(name="AMEND_ID", nullable = false)
+	private Integer amendId;
 	
 	@Column(name ="ENQUIRY_DESCRIPTION")
 	private String enquiryDescription;
@@ -65,12 +72,14 @@ public class EnquiryDetails implements Serializable{
 	@Column(name = "CREATED_BY")
 	private String createdBy;
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "UPDATED_DATE")
-	private Date updatedDate;
+	@Column(name = "SALES_REMARKS")
+	private String salesRemarks;
 	
-	@Column(name = "UPDATED_BY")
-	private String updatedBy;
+	@Column(name = "UW_REMARKS")
+	private String uwRemarks;
+	
+	@Column(name ="BUSINESS_TYPE")
+	private String businessType;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "REJECTED_DATE")
@@ -82,19 +91,16 @@ public class EnquiryDetails implements Serializable{
 	@Column(name ="STATUS")
 	private String status;
 	
-	@Column(name ="QUOTE_NO")
-	private String quoteNo;
-	
-	@Column(name ="REMARKS")
-	private String remarks;
-	
 	@Column(name ="RECEIPT_OF_ENQUIRY")
 	private String receiptOfenquiry;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name ="EXCEPTED_DATE_COMM_BUSSINESS")
-	private String exceptedDateCommBussiness;
+	private Date exceptedDateCommBussiness;
 	
 	@Column(name ="UNDER_WRITTERS")
-	private String underWritters;
+	private String underwritters;
+	
+	
 	
 }

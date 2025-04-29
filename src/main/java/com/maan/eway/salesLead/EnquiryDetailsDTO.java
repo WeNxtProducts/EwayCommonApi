@@ -29,8 +29,17 @@ public class EnquiryDetailsDTO implements Serializable {
     @JsonProperty("EnquiryDescription")
     private String enquiryDescription;
     
+    @JsonProperty("ClientName")
+    private String clientName;
+    
+    @JsonProperty("ClientCodeDesc")
+    private String ClientCodeDesc;
+    
     @JsonProperty("LobId")
     private String lobId;
+    
+    @JsonProperty("LobDesc")
+    private String lobDesc;
     
     @JsonProperty("ProductId")
     private String productId;
@@ -52,24 +61,11 @@ public class EnquiryDetailsDTO implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date entryDate;
     
-    @JsonProperty("UpdatedDate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    private Date updatedDate;
-    
-    @JsonProperty("UpdatedBy")
-    private String updatedBy;
-    
     @JsonProperty("RejectedReason")
     private String rejectedReason;
     
     @JsonProperty("Status")
     private String status;
-    
-    @JsonProperty("QuoteNo")
-    private String quoteNo;
-    
-    @JsonProperty("Remarks")
-    private String remarks;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @JsonProperty("ReceiptOfenquiry")
@@ -81,4 +77,14 @@ public class EnquiryDetailsDTO implements Serializable {
     
     @JsonProperty("UnderWritters")
     private String underWritters;
+    
+    @JsonProperty("SalesRemarks")
+    private String salesRemarks;
+    
+    @JsonProperty("UWRemarks")
+    private String uwRemarks;
+    
+    @JsonProperty("BusniessType")
+    private String busniessType;
+    
 }
