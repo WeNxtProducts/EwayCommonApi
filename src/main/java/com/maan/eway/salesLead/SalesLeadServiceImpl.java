@@ -53,11 +53,15 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import jakarta.transaction.Transactional;
 
 @Service
 public class SalesLeadServiceImpl implements SalesLeadService {
+
+    private final SalesLeadController salesLeadController;
 
     private final LoginCriteriaQueryServiceImpl loginCriteriaQueryServiceImpl;
 
@@ -115,8 +119,9 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	
 	private final static Logger logger = LogManager.getLogger(SalesLeadServiceImpl.class);
 
-    SalesLeadServiceImpl(LoginCriteriaQueryServiceImpl loginCriteriaQueryServiceImpl) {
+    SalesLeadServiceImpl(LoginCriteriaQueryServiceImpl loginCriteriaQueryServiceImpl, SalesLeadController salesLeadController) {
         this.loginCriteriaQueryServiceImpl = loginCriteriaQueryServiceImpl;
+        this.salesLeadController = salesLeadController;
     }
 	
 	@Override
@@ -128,7 +133,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 				reqList.forEach(req -> {
 					String leadId = null,createdBy=null,updatedBy=null;
 					Date updatedDate=null,entryDate=null;
-					Optional<LeadInformation> exitingData = leadInfoRepo.findById(req.getLeadId());
+					Optional<LeadInformation> exitingData = leadInfoRepo.findById(StringUtils.isBlank(req.getLeadId())?"":req.getLeadId());
 					if(exitingData.isPresent()) {
 						LeadInformation ed = exitingData.get();
 						leadId = ed.getLeadId();
@@ -324,31 +329,56 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 		logger.info("Enter into insertEnquiry.\n Argument ==> "+gson.toJson(req));
 		CommonRes res = new CommonRes();
 		try {
-			Optional<EnquiryDetails> enquiryData = enquiryDetailsRepo.findById(req.getEnquiryId()==null?"":req.getEnquiryId());
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EnquiryDetails> cq = cb.createQuery(EnquiryDetails.class);
+			Root<EnquiryDetails> edRoot = cq.from(EnquiryDetails.class);
+			List<Predicate> predicates = new ArrayList<Predicate>();
+			
+			cq.select(edRoot);				
+
+			Subquery<Integer> amdMax = cq.subquery(Integer.class);
+			Root<EnquiryDetails> amdRoot = amdMax.from(EnquiryDetails.class);
+			
+			amdMax.select(cb.max(amdRoot.get("amendId")))
+				.where(cb.equal(amdRoot.get("enquiryId"), edRoot.get("enquiryId")),
+						cb.equal(amdRoot.get("leadId"), edRoot.get("leadId")));
+			
+			predicates.add(cb.equal(edRoot.get("enquiryId"), req.getEnquiryId()));
+			predicates.add(cb.equal(edRoot.get("amendId"), amdMax));
+			Predicate [] predicateArray = new Predicate[predicates.size()];
+			predicates.toArray(predicateArray);
+			cq.where(predicateArray);
+			
+			List<EnquiryDetails> enquiryData = em.createQuery(cq).getResultList();
+			
 			EnquiryDetails existingList=null;
-			if(enquiryData.isPresent()) {
-				existingList = enquiryData.get();
+			if(!enquiryData.isEmpty()) {
+				existingList = enquiryData.get(0);
 			}
+			
+			String enquiryId = !enquiryData.isEmpty()?existingList.getEnquiryId():salesLeadCustomRepo.getMaxEnquiryId();
+			
 			EnquiryDetails e = EnquiryDetails.builder()
-					.enquiryId(enquiryData.isPresent()?existingList.getEnquiryId():salesLeadCustomRepo.getMaxEnquiryId())
+					.enquiryId(enquiryId)
 					.leadId(req.getLeadId())
 					.enquiryDescription(req.getEnquiryDescription())
 	                .lobId(req.getLobId())
 	                .productId(req.getProductId())
 	                .sumInsured(req.getSumInsured())
 	                .suggestPremium(req.getSuggestPremium())
-	                .entryDate(enquiryData.isPresent()?existingList.getEntryDate():new Date())
-	                .createdBy(enquiryData.isPresent()?existingList.getCreatedBy():req.getCreatedBy())
-	                .updatedDate(enquiryData.isPresent()?new Date():null)
-	                .updatedBy(enquiryData.isPresent()?req.getCreatedBy():null)
+	                .amendId(MaxEnquiryAmendId(enquiryId,req.getLeadId()))
+	                .entryDate(new Date())
+	                .createdBy(req.getCreatedBy())
+	                .salesRemarks(req.getSalesRemarks())
+	                .uwRemarks(req.getUwRemarks())
+	                .businessType(req.getBusniessType())
 	                .rejectedDate(req.getRejectedDate())
 	                .rejectedReason(req.getRejectedReason())
 	                .status(req.getStatus())
-	                .quoteNo(req.getQuoteNo())
-	                .remarks(req.getRemarks())
 	                .receiptOfenquiry(req.getReceiptOfenquiry())
-	                .exceptedDateCommBussiness(req.getExceptedDateCommBussiness())
-	                .underWritters(req.getUnderWritters())
+	                .exceptedDateCommBussiness(req.getExceptedDateCommBussiness()==null?null:sdf.parse(req.getExceptedDateCommBussiness()))
+	                .underwritters(req.getUnderWritters())
 					.build();
 			enquiryDetailsRepo.save(e);
 			res.setCommonResponse(e);
@@ -364,6 +394,24 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 		return null;
 	}
 
+	private Integer MaxEnquiryAmendId(String enquiryId, String leadId) {
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+			Root<EnquiryDetails> edRoot = cq.from(EnquiryDetails.class);
+			
+			cq.select(cb.coalesce(cb.sum(cb.max(edRoot.get("amendId")),1), 0))
+			.where(cb.equal(edRoot.get("enquiryId"), enquiryId),
+					cb.equal(edRoot.get("leadId"), leadId));
+			
+			return em.createQuery(cq).getSingleResult();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	@Override
 	public CommonRes getEnquirys(GetEnquiryDetailsReq req) {
 		logger.info("Enter into getAllEnquiry.");
@@ -371,24 +419,73 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 		List<EnquiryDetailsDTO> resList = new ArrayList<EnquiryDetailsDTO>();
 		try {
 			List<EnquiryDetails> enquiryList = new ArrayList<EnquiryDetails>();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EnquiryDetails> cq = cb.createQuery(EnquiryDetails.class);
+			Root<EnquiryDetails> edRoot = cq.from(EnquiryDetails.class);
+			List<Predicate> predicates = new ArrayList<Predicate>();
+			
+			cq.select(edRoot);
+			
 			if(StringUtils.isNotBlank(req.getEnquiryId())) {
-				EnquiryDetails enquiry = enquiryDetailsRepo.findByEnquiryId(req.getEnquiryId());
-				enquiryList.add(enquiry);
+				Subquery<Integer> amdMax = cq.subquery(Integer.class);
+				Root<EnquiryDetails> amdRoot = amdMax.from(EnquiryDetails.class);
+				
+				amdMax.select(cb.max(amdRoot.get("amendId")))
+					.where(cb.equal(amdRoot.get("enquiryId"), edRoot.get("enquiryId")),
+							cb.equal(amdRoot.get("leadId"), edRoot.get("leadId")));
+				
+				predicates.add(cb.equal(edRoot.get("enquiryId"), req.getEnquiryId()));
+				predicates.add(cb.equal(edRoot.get("amendId"), amdMax));
+				Predicate [] predicateArray = new Predicate[predicates.size()];
+				predicates.toArray(predicateArray);
+				cq.where(predicateArray);
+				enquiryList.add(em.createQuery(cq).getSingleResult());
 			}else if(StringUtils.isNotBlank(req.getLeadId())) {
-				enquiryList = enquiryDetailsRepo.findByLeadId(req.getLeadId());
+				Subquery<Integer> amdMax = cq.subquery(Integer.class);
+				Root<EnquiryDetails> amdRoot = amdMax.from(EnquiryDetails.class);
+
+				amdMax.select(cb.max(amdRoot.get("amendId")))
+				.where(cb.equal(amdRoot.get("enquiryId"), edRoot.get("enquiryId")),
+						cb.equal(amdRoot.get("leadId"), edRoot.get("leadId")));
+				
+				predicates.add(cb.equal(edRoot.get("leadId"), req.getLeadId()));
+				predicates.add(cb.equal(edRoot.get("amendId"), amdMax));
+				Predicate [] predicateArray = new Predicate[predicates.size()];
+				predicates.toArray(predicateArray);
+				cq.where(predicateArray);
+				enquiryList = em.createQuery(cq).getResultList();				
 			}else if(StringUtils.isNotBlank(req.getStatus()) && StringUtils.isNotBlank(req.getLoginId())) {
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<EnquiryDetails> cq = cb.createQuery(EnquiryDetails.class);
-				Root<EnquiryDetails> edRoot = cq.from(EnquiryDetails.class);
+				Subquery<Integer> amdMax = cq.subquery(Integer.class);
+				Root<EnquiryDetails> amdRoot = amdMax.from(EnquiryDetails.class);
 				
-				cq.select(edRoot)
-				.where(cb.equal(edRoot.get("status"), req.getStatus()),
-						cb.like(edRoot.get("underWritters"), "%" + req.getLoginId() + "%" ));
+				amdMax.select(cb.max(amdRoot.get("amendId")))
+					.where(cb.equal(amdRoot.get("enquiryId"), edRoot.get("enquiryId")),
+							cb.equal(amdRoot.get("leadId"), edRoot.get("leadId")));
 				
+				predicates.add(cb.equal(edRoot.get("status"), req.getStatus()));
+				predicates.add(cb.equal(edRoot.get("underWritters"), req.getLoginId()));
+				predicates.add(cb.equal(edRoot.get("amendId"), amdMax));
+				Predicate [] predicateArray = new Predicate[predicates.size()];
+				predicates.toArray(predicateArray);
+				cq.where(predicateArray);
 				enquiryList = em.createQuery(cq).getResultList();
 			}else {
-				enquiryList = enquiryDetailsRepo.findAll();
+				Subquery<Integer> amdMax = cq.subquery(Integer.class);
+				Root<EnquiryDetails> amdRoot = amdMax.from(EnquiryDetails.class);
+				
+				amdMax.select(cb.max(amdRoot.get("amendId")))
+					.where(cb.equal(amdRoot.get("enquiryId"), edRoot.get("enquiryId")),
+							cb.equal(amdRoot.get("leadId"), edRoot.get("leadId")));
+				
+				predicates.add(cb.equal(edRoot.get("amendId"), amdMax));
+				Predicate [] predicateArray = new Predicate[predicates.size()];
+				predicates.toArray(predicateArray);
+				cq.where(predicateArray);
+				enquiryList = em.createQuery(cq).getResultList();
 			}
+			
+			List<LeadInformation> leadDetails = leadInfoRepo.findAll();
+			
 			if(!enquiryList.isEmpty()) {
 				enquiryList.forEach(k -> {
 					EnquiryDetailsDTO e = EnquiryDetailsDTO.builder()
@@ -396,21 +493,28 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 							.leadId(k.getLeadId()==null?"":k.getLeadId())
 							.enquiryDescription(k.getEnquiryDescription() == null ? "" : k.getEnquiryDescription())
 	                        .lobId(k.getLobId() == null ? "" : k.getLobId())
+	                        .lobDesc(k.getLobId()==null?"":iplcmsListItemValueRepo.findByItemType("LINE_OF_BUSINESS")
+	                        		.stream().filter(f -> k.getLobId().equalsIgnoreCase(f.getId().toString())
+	                        				&& f.getStatus().equalsIgnoreCase("Y")).map(m -> m.getItemValue()).findFirst().get())
+	                        .clientName(leadDetails.stream().filter(f -> f.getLeadId().equalsIgnoreCase(k.getLeadId()))
+	                        		.map(m -> m.getClientName()).findFirst().get())
+	                        .ClientCodeDesc(custService.getListItemLocal ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",
+	                        		leadDetails.stream().filter(f -> f.getLeadId().equalsIgnoreCase(k.getLeadId()))
+	                        		.map(m -> m.getClientCode()).findFirst().get()).get("itemDesc").toString())
 	                        .productId(k.getProductId() == null ? "" : k.getProductId())
 	                        .sumInsured(k.getSumInsured())
 	                        .suggestPremium(k.getSuggestPremium())
 	                        .entryDate(k.getEntryDate())
 	                        .createdBy(k.getCreatedBy() == null ? "" : k.getCreatedBy())
-	                        .updatedDate(k.getUpdatedDate())
-	                        .updatedBy(k.getUpdatedBy() == null ? "" : k.getUpdatedBy())
+	                        .salesRemarks(k.getSalesRemarks()==null?"":k.getSalesRemarks())
+	                        .uwRemarks(k.getUwRemarks()==null?"":k.getUwRemarks())
+	                        .busniessType(k.getBusinessType()==null?"":k.getBusinessType())
 	                        .rejectedDate(k.getRejectedDate())
 	                        .rejectedReason(k.getRejectedReason() == null ? "" : k.getRejectedReason())
 	                        .status(k.getStatus() == null ? "" : k.getStatus())
-	                        .quoteNo(k.getQuoteNo() == null ? "" : k.getQuoteNo())
-	                        .remarks(k.getRemarks()==null?"":k.getRemarks())
 	                        .receiptOfenquiry(k.getReceiptOfenquiry()==null?"":k.getReceiptOfenquiry())
-	                        .exceptedDateCommBussiness(k.getExceptedDateCommBussiness()==null?"":k.getExceptedDateCommBussiness())
-	                        .underWritters(k.getUnderWritters()==null?"":k.getUnderWritters())
+	                        .exceptedDateCommBussiness(k.getExceptedDateCommBussiness()==null?"":sdf.format(k.getExceptedDateCommBussiness()))
+	                        .underWritters(k.getUnderwritters()==null?"":k.getUnderwritters())
 							.build();
 					resList.add(e);
 				});

@@ -52,7 +52,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fc.sdk.APIResponse;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -274,7 +274,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			Map<String, String> params = new LinkedHashMap<>();			 
 			params.put("amount", castAmountValue);
 			params.put("authentication.entityId", vendor.getApiKey());
-			params.put("currency", "ZAR");//payment.getCurrencyId());
+			params.put("currency", payment.getCurrencyId());//payment.getCurrencyId());
 			params.put("merchantTransactionId", payment.getMerchantReference());
 			params.put("nonce", payment.getMerchantReference());
 			params.put("paymentType", "DB");
@@ -891,8 +891,10 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					j.addProperty("result",isPaymentdone?"COMPLETED":"FAIL");
 					j.addProperty("message",responses!=null ?responses.toString():"");
 					System.out.println("Push whatsapp call for "+payment.getMerchantReference()+"--"+payment.getPaymentStatus());
-					if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus()))
-						postCall(j,payment);
+					if(payment.getCompanyId()!="100049") {
+						if("ACCEPTED".equals(payment.getPaymentStatus())|| "FAILED".equals(payment.getPaymentStatus()))
+							postCall(j,payment);
+					}
 				}
 					
 			 	
@@ -902,7 +904,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				JsonObject j=new JsonObject();
 				j.addProperty("result","FAIL");
 				j.addProperty("message","No Data found");
-				//postCall(j,);
+//				postCall(j,);
 				return j;
 
 			}

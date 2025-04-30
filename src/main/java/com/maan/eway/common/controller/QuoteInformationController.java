@@ -2,17 +2,16 @@ package com.maan.eway.common.controller;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.QuoteInformationDTO;
@@ -32,7 +31,9 @@ public class QuoteInformationController {
 		QuoteInformationDTO que = service.saveOrUpdate(dto);
 		if (que != null) {
 			CommonRes res = new CommonRes();
+			res.setMessage("SUCCESS");
 			res.setCommonResponse(que);
+			res.setIsError(false);
 			res.setErroCode(0);
 			res.setErrorMessage(null);
 			return new ResponseEntity<CommonRes>(res, HttpStatus.ACCEPTED);
@@ -50,7 +51,9 @@ public class QuoteInformationController {
     	List<QuoteInformationDTO> que = service.findAll();
     	 if (!que.isEmpty()) {
 			CommonRes res = new CommonRes();
+			res.setMessage("SUCCESS");
 			res.setCommonResponse(que);
+			res.setIsError(false);
 			res.setErroCode(0);
 			res.setErrorMessage(null);
 			return new ResponseEntity<CommonRes>(res, HttpStatus.ACCEPTED);
@@ -63,12 +66,14 @@ public class QuoteInformationController {
 		}
     }
 
-    @GetMapping("/{enquiryId}/{quoteNo}")
-    public ResponseEntity<?> getById(@PathVariable String enquiryId, @PathVariable String quoteNo) {
-    	Optional<QuoteInformationDTO> que = service.findById(enquiryId, quoteNo);
-    	if (que.isPresent()) {
+    @GetMapping("/{enquiryId}")
+    public ResponseEntity<?> getQuotationDetails(@PathVariable String enquiryId, @RequestParam(name = "quoteNo",required = false) String quoteNo) {
+    	List<QuoteInformationDTO> que = service.getQuotationDetails(enquiryId, quoteNo);
+    	if (!que.isEmpty()) {
 			CommonRes res = new CommonRes();
+			res.setMessage("SUCCESS");
 			res.setCommonResponse(que);
+			res.setIsError(false);
 			res.setErroCode(0);
 			res.setErrorMessage(null);
 			return new ResponseEntity<CommonRes>(res, HttpStatus.ACCEPTED);
@@ -82,7 +87,7 @@ public class QuoteInformationController {
        
     }
 
-    @DeleteMapping("/{enquiryId}/{quoteNo}")
+    /*@DeleteMapping("/{enquiryId}/{quoteNo}")
     public ResponseEntity<CommonRes> delete(@PathVariable String enquiryId, @PathVariable String quoteNo) {
         service.delete(enquiryId, quoteNo);
 
@@ -91,5 +96,5 @@ public class QuoteInformationController {
         res.setErroCode(0);
         res.setErrorMessage(null);
         return new ResponseEntity<>(res, HttpStatus.OK);
-    }
+    }*/
 }
