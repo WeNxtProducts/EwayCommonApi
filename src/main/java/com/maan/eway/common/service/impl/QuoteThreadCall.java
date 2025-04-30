@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -3775,6 +3776,7 @@ public class QuoteThreadCall implements Callable<Object>  {
                  
 					for (CoverIdsReq coverdetails : veh.getCoverIdList()) {
 						EserviceSectionDetails filterSec = null;
+						List<EserviceSectionDetails> filterSecList=new ArrayList<EserviceSectionDetails>();
 						if (product.getMotorYn().equalsIgnoreCase("M")) {
 							filterSec = eserSec.stream()
 									.filter(o -> o.getRiskId().equals(veh.getVehicleId())
@@ -3782,14 +3784,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 											&& o.getLocationId().equals(veh.getLocationId()))
 									.collect(Collectors.toList()).get(0);
 						} else {
-							filterSec = eserSec.stream()
+							filterSecList = eserSec.stream()
 									.filter(o -> o.getRiskId().equals(veh.getVehicleId())
 											&& o.getSectionId().equalsIgnoreCase(veh.getSectionId())
 											&& String.valueOf(o.getCoverId())
 													.equals(String.valueOf(coverdetails.getCoverId()))
 											&& o.getLocationId().equals(veh.getLocationId()))
-									.collect(Collectors.toList()).get(0);
-							
+									.collect(Collectors.toList());
+							if(CollectionUtils.isEmpty(filterSecList)) 
+								continue;
+							filterSec=filterSecList.get(0);
 						}
 
 						filterSec.setUserOpt("Y");
