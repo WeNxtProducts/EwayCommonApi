@@ -218,11 +218,11 @@ public class RegentValuation  {
 				List<ValuationIntegration>vlist=valuationIntegrationRepository.findByVehicleRegNoOrderByVehicleId(req.getVehicleRegNo());
 				if(!CollectionUtils.isEmpty(vlist)) {
 					for (ValuationIntegration vdata : vlist) {
-						String status="Completed";
+						String status="Processed";
 							vdata.setStatus(status);
 							valuationIntegrationRepository.saveAndFlush(vdata);
 							resp.setResponse(status);
-							if("Completed".equalsIgnoreCase(status)) {
+							if("Processed".equalsIgnoreCase(status)) {
 								ValuationDetailsReq dreq=new ValuationDetailsReq();
 								dreq.setBranchCode(req.getBranchCode());
 								dreq.setCompanyId(req.getCompanyId());
