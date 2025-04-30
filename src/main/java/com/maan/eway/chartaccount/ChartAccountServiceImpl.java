@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MultiplePolicyDrCrDetail;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyDrcrDetail;
@@ -31,6 +32,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MultiplePolicyDrCrDetailRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.PolicyDrcrDetailRepository;
@@ -68,6 +70,9 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 	
 	@Autowired
 	private PolicyCoverDataRepository pccdRepo;
+	
+	@Autowired 
+	private LoginUserInfoRepository loginUserInfoRepository;
 	
 	Gson printReq = new Gson();
 
@@ -334,6 +339,11 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 							 documentNo =crnumber;
 						 }
 						
+						LoginUserInfo loginUserInfo = loginUserInfoRepository.findByLoginId(hpm.getLoginId());
+
+						String brokerTaxExempted = loginUserInfo.getTaxExemptedYn();
+						
+						if (!"Y".equalsIgnoreCase(brokerTaxExempted)) {
 						ProductTaxSetup taxProductTaxSetup =jpqlQuery.getProductTaxSetup(companyId,coverIds,productId,hpm.getBranchCode(),taxFor); 
 						 
 						BigDecimal taxPer =new BigDecimal(taxProductTaxSetup.getValue());
@@ -344,7 +354,9 @@ public class ChartAccountServiceImpl implements ChartAccountService {
 							 	
 						if("M".equals(vehicle_type))	
 							insertMultiplePolicyCrDr_4(vehicle_type,taxProductTaxSetup,hpm,c,drcrFlag,documentType,documentNo,docId,narration,req); 
-						
+						}else {
+							log.info("Broker Tax Exempted. Tax calculation skipped for QuoteNo: " + hpm.getQuoteNo());
+						}
 						
 					}
 					
