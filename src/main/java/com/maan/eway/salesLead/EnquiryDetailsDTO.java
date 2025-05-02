@@ -87,4 +87,7 @@ public class EnquiryDetailsDTO implements Serializable {
     @JsonProperty("BusniessType")
     private String busniessType;
     
+    @JsonProperty("QuotesCount")
+    private String quotesCount;
+    
 }

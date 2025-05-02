@@ -12,4 +12,5 @@ import com.maan.eway.bean.QuoteInformationIpclms;
 public interface QuoteInformationRepository extends JpaRepository<QuoteInformationIpclms, QuoteInformationId> {
 	 List<QuoteInformationIpclms> findByEnquiryIdAndQuoteNo(String enquiryId, String quoteNo);
 	 List<QuoteInformationIpclms> findByEnquiryId(String enquiryId);
+	List<QuoteInformationIpclms> findByEnquiryIdAndQuoteStatus(String enquiryId, String string);
 }

@@ -336,17 +336,27 @@ public class JasperServiceImpl implements JasperService {
 									}
 									res = getCommonJasperPdfFileByJson("/report/jasper/Main_Report.jrxml", jasperSaveLocation, jsonString, input2, "- Main_Report.json"); // name changes as PhoenixSchedule
 								}else {
-									String obj[] =new String[1];
+									Map<String,Object> CorporateSchedule = jasperCustomeImple.getCorporatePlusSchedule(homeData.getQuoteNo());
+									String jsonStr = gson.toJson(CorporateSchedule );
+										String obj[] =new String[1];
+										obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CorporatePlusCoverageDetails.jrxml";
+										for(String s :obj) {
+											String jrxml_path=s.replace(".jasper", ".jrxml");
+											String path = JasperCompileManager.compileReportToFile(jrxml_path);
+											System.out.println("Jasper compileToReport path" +path);
+										}
+										res = getCommonJasperPdfFileByJson("/report/jasper/CorporatePlus.jrxml", jasperSaveLocation, jsonStr, input2, "- CorporatePlus.json");
+									/*String obj[] =new String[1];
 									obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
 									//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
 									/*obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
-									obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";*/
+									obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";
 									for(String s :obj) {
 										String jrxml_path=s.replace(".jasper", ".jrxml");
 										String path = JasperCompileManager.compileReportToFile(jrxml_path);
 										System.out.println("Jasper compileToReport path" +path);
 									}
-									res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
+									res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");*/
 								}
 							}
 						}

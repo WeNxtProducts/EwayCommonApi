@@ -32,20 +32,11 @@ public class SalesLeadValidation {
 				if(StringUtils.isBlank(req.get(i).getClientName())) {
 					errors.add(new Error("01", "ClientName", "ClientName is Required"));
 				}
-				if(StringUtils.isBlank(req.get(i).getClientCode())) {
+				if(StringUtils.isBlank(req.get(i).getTitle())) {
 					errors.add(new Error("02", "ClientCode", "ClientCode is Required"));
 				}
-				if(StringUtils.isBlank(req.get(i).getAddress1())) {
-					errors.add(new Error("03", "Address1", "Address1 is Required"));
-				}
-				if(StringUtils.isBlank(req.get(i).getAddress2())) {
-					errors.add(new Error("04", "Address2", "Address2 is Required"));
-				}
-				if(StringUtils.isBlank(req.get(i).getState())) {
+				if(StringUtils.isBlank(req.get(i).getStateCode())) {
 					errors.add(new Error("05", "State", "State is Required"));
-				}
-				if(StringUtils.isBlank(req.get(i).getCity())) {
-					errors.add(new Error("06", "City", "City is Required"));
 				}
 				if(StringUtils.isBlank(req.get(i).getGstIdentificationNo())) {
 					errors.add(new Error("07", "GST Identification Number", "GST Identification Number is Required"));

@@ -32,12 +32,18 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.service.impl.EserviceCustomerDetailsServiceImpl;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.req.RegionMasterDropDownReq;
+import com.maan.eway.master.req.StateMasterDropDownReq;
+import com.maan.eway.master.service.impl.CountryMasterServiceImpl;
+import com.maan.eway.master.service.impl.RegionMasterServiceImpl;
+import com.maan.eway.master.service.impl.StateMasterServiceImpl;
 import com.maan.eway.repository.EserviceLeadDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.IplcmsListItemValueRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.QuoteInformationRepository;
 import com.maan.eway.repository.RegionMasterRepository;
 import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.DropDownRes;
@@ -108,7 +114,19 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	private PersonalInfoRepository personalInforepo;
 	
 	@Autowired
+	private CountryMasterServiceImpl countryMasterServiceImpl;
+	
+	@Autowired
+	private RegionMasterServiceImpl regionMasterServiceImpl;
+	
+	@Autowired
+	private StateMasterServiceImpl stateMasterServiceImpl;
+	
+	@Autowired
 	private LoginMasterRepository loginRepo;
+	
+	@Autowired
+    private QuoteInformationRepository quoteInformationRepo;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -143,7 +161,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 						updatedDate = new Date();
 					}else {
 						SequenceGenerateReq generateSeqReq = new SequenceGenerateReq();
-			 		 	generateSeqReq.setInsuranceId(req.getInsuranceId());  
+			 		 	generateSeqReq.setInsuranceId(req.getCompanyId());  
 			 		 	generateSeqReq.setProductId(req.getProductId());
 			 		 	generateSeqReq.setType("8");
 			 		 	generateSeqReq.setTypeDesc("LEAD_REFERENCE_NO");
@@ -151,38 +169,113 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 						createdBy = req.getLoginId();
 						entryDate = new Date();
 					}
+					Map<String,String> title = custService.getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"NAME_TITLE",req.getTitle());//listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
+					Map<String,String> gender = custService.getListItemLocal (req.getCompanyId() , req.getBranchCode() ,"GENDER",req.getGender());// listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
+					Map<String,String> policyHolderType = custService.getListItemLocal ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderTypeid());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
+					Map<String,String> occupation = custService.getByOccupationIdDesc(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
+					Map<String,String> policyHolderTypeId = custService.getListItemLocal (req.getCompanyId(), req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+					
+					
+					String genderDesc = Optional.ofNullable(gender).map(map -> map.get("itemDesc")).orElse("");
+					String titleDesc = Optional.ofNullable(title).map(map -> map.get("itemDesc")).orElse("");
+					String policyHolderTypeDesc = Optional.ofNullable(policyHolderType).map(map -> map.get("itemDesc")).orElse("");
+					String occupationDesc = Optional.ofNullable(occupation).map(map -> map.get("occupationName")).orElse("");
+					String policyHolderTypeIdDesc = Optional.ofNullable(policyHolderTypeId).map(map -> map.get("itemDesc")).orElse("");
+					LovDropDownReq req1 = new LovDropDownReq();
+					req1.setInsuranceId(req.getCompanyId());
+					String countryCodeDesc = countryMasterServiceImpl.getCountryMasterDropdown(req1).stream().filter(f -> f.getCode().equalsIgnoreCase(req.getCountryCode()))
+							.map(q -> q.getCodeDesc()).findFirst().orElse("");
+					RegionMasterDropDownReq req2 = new RegionMasterDropDownReq();
+					req2.setCountryId(req.getCountryCode());
+					String regionDesc = regionMasterServiceImpl.getRegionMasterDropdown(req2).stream().filter(f -> f.getCode().equalsIgnoreCase(req.getRegionCode()))
+							.map(q -> q.getCodeDesc()).findFirst().orElse("");
+					StateMasterDropDownReq req3 = new StateMasterDropDownReq();
+					req3.setCountryId(req.getCountryCode());
+					req3.setRegionCode(req.getRegionCode());
+					String regionStateDesc = stateMasterServiceImpl.getRegionStateMasterDropdown(req3).stream().filter(f -> f.getCode().equalsIgnoreCase(req.getStateCode()))
+							.map(q -> q.getCodeDesc()).findFirst().orElse("");
+					
+					String channelName="",sectionTypeName="",propobabilityOfSuccessName="",typeOfBussinessName="";;
+					if (StringUtils.isNotBlank(req.getChannelId())) {
+						List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("CUSTOMER_TYPE");
+						channelName = getList.stream()
+							    .filter(k -> req.getChannelId().equalsIgnoreCase(String.valueOf(k.getId())))
+							    .map(k -> String.valueOf(k.getItemValue()))
+							    .findFirst()
+							    .orElse(null);
+					}
+					
+					if (StringUtils.isNotBlank(req.getSectionTypeId())) {
+						List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("SECTION_TYPE");
+						sectionTypeName = getList.stream()
+							    .filter(k -> req.getSectionTypeId().equalsIgnoreCase(String.valueOf(k.getId())))
+							    .map(k -> String.valueOf(k.getItemValue()))
+							    .findFirst()
+							    .orElse(null);
+					}
+					
+					if (StringUtils.isNotBlank(req.getPropobabilityOfSuccessId())) {
+						List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("POS");
+						propobabilityOfSuccessName = getList.stream()
+							    .filter(k -> req.getPropobabilityOfSuccessId().equalsIgnoreCase(String.valueOf(k.getId())))
+							    .map(k -> String.valueOf(k.getItemValue()))
+							    .findFirst()
+							    .orElse(null);
+					}
+					
+					if (StringUtils.isNotBlank(req.getTypeOfBusinessId())) {
+						List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("POS");
+						typeOfBussinessName = getList.stream()
+							    .filter(k -> req.getTypeOfBusinessId().equalsIgnoreCase(String.valueOf(k.getId())))
+							    .map(k -> String.valueOf(k.getItemValue()))
+							    .findFirst()
+							    .orElse(null);
+					}
+					
+					
+					
 					try {
 						LeadInformation m = LeadInformation.builder()
 								.leadId(leadId)
+								.policyHolderType(req.getPolicyHolderTypeid())
+								.policyHolderTypeDesc(policyHolderTypeDesc)
+								.title(req.getTitle())
+								.title(titleDesc)
 								.clientName(req.getClientName())
-								.clientCode(req.getClientCode())
-								.address1(req.getAddress1())
-								.address2(req.getAddress2())
-								.state(req.getState())
-								.city(req.getCity())
-								.createdBy(createdBy)
-								.updatedBy(updatedBy)
-								.entryDate(entryDate)
-								.updatedDate(updatedDate)
-								.pincode(req.getPinCode())
-								.phone(req.getMobile())
+								.gender(req.getGender())
+								.genderDesc(genderDesc)
+								.occupation(req.getOccupation())
+								.occupationDesc(occupationDesc)
+								.email(req.getEmail())
+								.mobileCode(req.getMobileCode())
+								.mobileNumber(req.getMobileNumber())
+								.identityType(req.getIdType())
+								.identityTypeDesc(policyHolderTypeIdDesc)
+								.idNumber(req.getIdNumber())
 								.gstIdentificationNo(req.getGstIdentificationNo())
-								.branchCode(req.getBranchCode())
-								.entryDate(new Date())
+								.preferredNotification(req.getPreferredNotification())
+								.taxExcepted(req.getIsTaxExempted())
+								.status(req.getStatus())
+								.street(req.getStreet())
+								.country(req.getCountryCode())
+								.countryDesc(countryCodeDesc)
+								.region(req.getRegionCode())
+								.regionDesc(regionDesc)
+								.district(req.getStateCode())
+								.districtDesc(regionStateDesc)
+								.pobox(req.getPoBox())
+								.intermeCode(req.getIntermediateId())
+								.intermeName(req.getIntermediateName())
 								.leadCreatedDate(sdf.parse(req.getLeadCreatedOn()))
-								.intermediateId(req.getIntermediateId())
-								.intermediateName(req.getIntermediateName())
 								.channelId(req.getChannelId())
-								.channelDesc(req.getChannelDesc())
+								.channelDesc(channelName)
 								.sectionTypeId(req.getSectionTypeId())
-								.companyId(req.getInsuranceId())
-								.productId(req.getProductId())
-								.sectionTypeDesc(req.getSectionTypeDesc())
+								.sectionTypeDesc(sectionTypeName)
 								.propobabilityOfSuccessId(req.getPropobabilityOfSuccessId())
-								.propobabilityOfSuccessDesc(req.getPropobabilityOfSuccessDesc())
+								.propobabilityOfSuccessDesc(propobabilityOfSuccessName)
 								.typeOfBusinessId(req.getTypeOfBusinessId())
-								.typeOfBusinessDesc(req.getTypeOfBusinessDesc())
-								.currentInsurer(req.getCurrentInsurer())
+								.typeOfBusinessDesc(typeOfBussinessName)
+								.currentInsurer(req.getCurrentInsurer())					
 								.build();
 							leadInfoRepo.save(m);
 							
@@ -249,29 +342,41 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 				LeadInformation salesById = leadInfoRepo.findById(leadId).get();
 				salesList.add(salesById);
 			}
+			
 			if(!salesList.isEmpty()) {
 				salesList.forEach(k -> {
 					GetSalesLeadRes m = GetSalesLeadRes.builder()
 							.leadId(k.getLeadId()==null?"":k.getLeadId())
-							.insuranceId(k.getCompanyId()==null?"":k.getCompanyId())
-							.productId(k.getProductId()==null?"":k.getProductId())
+							.policyHolderTypeid(k.getPolicyHolderType()==null?"":k.getPolicyHolderType())
+							.policyHolderTypeDesc(k.getPolicyHolderTypeDesc()==null?"":k.getPolicyHolderTypeDesc())
+							.title(k.getTitle()==null?"":k.getTitle())
+							.title(k.getTitleDesc()==null?"":k.getTitleDesc())
 							.clientName(k.getClientName()==null?"":k.getClientName())
-							.clientCode(k.getClientCode()==null?"":k.getClientCode())
-							.address1(k.getAddress1()==null?"":k.getAddress1())
-							.address2(k.getAddress2()==null?"":k.getAddress2())
-							.state(k.getState()==null?"":k.getState())
-							.city(k.getCity()==null?"":k.getCity())
-							.createdBy(k.getCreatedBy()==null?"":k.getCreatedBy())
-							.updatedBy(k.getUpdatedBy()==null?"":k.getUpdatedBy())
-							.entryDate(k.getEntryDate()==null?"":sdf.format(k.getEntryDate()))
-							.updatedDate(k.getUpdatedDate()==null?"":sdf.format(k.getUpdatedDate()))
-							.pinCode(k.getPincode()==null?"":k.getPincode())
-							.mobile(k.getPhone()==null?"":k.getPhone())
+							.gender(k.getGender()==null?"":k.getGender())
+							.genderDesc(k.getGenderDesc()==null?"":k.getGenderDesc())
+							.occupation(k.getOccupation()==null?"":k.getOccupation())
+							.occupationDesc(k.getOccupationDesc()==null?"":k.getOccupationDesc())
+							.email(k.getEmail()==null?"":k.getEmail())
+							.mobileCode(k.getMobileCode()==null?"":k.getMobileCode())
+							.mobileNumber(k.getMobileNumber()==null?"":k.getMobileNumber())
+							.idType(k.getIdentityType()==null?"":k.getIdentityType())
+							.idTypeDesc(k.getIdentityTypeDesc()==null?"":k.getIdentityTypeDesc())
+							.idNumber(k.getIdNumber()==null?"":k.getIdNumber())
 							.gstIdentificationNo(k.getGstIdentificationNo()==null?"":k.getGstIdentificationNo())
-							.branchCode(k.getBranchCode()==null?"":k.getBranchCode())
+							.preferredNotification(k.getPreferredNotification()==null?"":k.getPreferredNotification())
+							.isTaxExempted(k.getTaxExcepted()==null?"":k.getTaxExcepted())
+							.status(k.getStatus()==null?"":k.getStatus())
+							.street(k.getStreet()==null?"":k.getStreet())
+							.countryCode(k.getCountry()==null?"":k.getCountry())
+							.countryCodeDesc(k.getCountryDesc()==null?"":k.getCountryDesc())
+							.regionCode(k.getRegion()==null?"":k.getRegion())
+							.regionCodeDesc(k.getRegionDesc()==null?"":k.getRegionDesc())
+							.stateCode(k.getDistrict()==null?"":k.getDistrict())
+							.stateCodeDesc(k.getDistrictDesc()==null?"":k.getDistrictDesc())
+							.poBox(k.getPobox()==null?"":k.getPobox())
+							.intermediateId(k.getIntermeCode()==null?"":k.getIntermeCode())
+							.intermediateName(k.getIntermeName()==null?"":k.getIntermeName())
 							.leadCreatedOn(k.getLeadCreatedDate()==null?"":sdf.format(k.getLeadCreatedDate()))
-							.intermediateId(k.getIntermediateId()==null?"":k.getIntermediateId())
-							.intermediateName(k.getIntermediateName()==null?"":k.getIntermediateName())
 							.channelId(k.getChannelId()==null?"":k.getChannelId())
 							.channelDesc(k.getChannelDesc()==null?"":k.getChannelDesc())
 							.sectionTypeId(k.getSectionTypeId()==null?"":k.getSectionTypeId())
@@ -282,7 +387,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 							.typeOfBusinessDesc(k.getTypeOfBusinessDesc()==null?"":k.getTypeOfBusinessDesc())
 							.currentInsurer(k.getCurrentInsurer()==null?"":k.getCurrentInsurer())
 							.leadContactPersonReq(GetLeadContactPerson(k.getLeadId()))
-							.enquiryCount(String.valueOf(enquiryDetailsRepo.findByLeadId(k.getLeadId()).size()))
+							.enquiryCount(String.valueOf(getEnquiryCountByLeadId(k.getLeadId())))
 							.build();
 					resList.add(m);
 				});
@@ -298,6 +403,39 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	private int getEnquiryCountByLeadId(String leadId) {
+		int result = 0;
+		try {
+			List<EnquiryDetails> enquiryList = new ArrayList<EnquiryDetails>();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EnquiryDetails> cq = cb.createQuery(EnquiryDetails.class);
+			Root<EnquiryDetails> edRoot = cq.from(EnquiryDetails.class);
+			List<Predicate> predicates = new ArrayList<Predicate>();
+			
+			cq.select(edRoot);
+
+			Subquery<Integer> amdMax = cq.subquery(Integer.class);
+			Root<EnquiryDetails> amdRoot = amdMax.from(EnquiryDetails.class);
+
+			amdMax.select(cb.max(amdRoot.get("amendId")))
+			.where(cb.equal(amdRoot.get("enquiryId"), edRoot.get("enquiryId")),
+					cb.equal(amdRoot.get("leadId"), edRoot.get("leadId")));
+			
+			predicates.add(cb.equal(edRoot.get("leadId"), leadId));
+			predicates.add(cb.equal(edRoot.get("amendId"), amdMax));
+			Predicate [] predicateArray = new Predicate[predicates.size()];
+			predicates.toArray(predicateArray);
+			cq.where(predicateArray);
+			enquiryList = em.createQuery(cq).getResultList();				
+			if(enquiryList!=null && enquiryList.size()>0) {
+				result = enquiryList.size();
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	private List<LeadContactPersonReq> GetLeadContactPerson(String leadId) {
@@ -463,7 +601,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 							cb.equal(amdRoot.get("leadId"), edRoot.get("leadId")));
 				
 				predicates.add(cb.equal(edRoot.get("status"), req.getStatus()));
-				predicates.add(cb.equal(edRoot.get("underWritters"), req.getLoginId()));
+				predicates.add(cb.equal(edRoot.get("underwritters"), req.getLoginId()));
 				predicates.add(cb.equal(edRoot.get("amendId"), amdMax));
 				Predicate [] predicateArray = new Predicate[predicates.size()];
 				predicates.toArray(predicateArray);
@@ -498,9 +636,8 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	                        				&& f.getStatus().equalsIgnoreCase("Y")).map(m -> m.getItemValue()).findFirst().get())
 	                        .clientName(leadDetails.stream().filter(f -> f.getLeadId().equalsIgnoreCase(k.getLeadId()))
 	                        		.map(m -> m.getClientName()).findFirst().get())
-	                        .ClientCodeDesc(custService.getListItemLocal ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",
-	                        		leadDetails.stream().filter(f -> f.getLeadId().equalsIgnoreCase(k.getLeadId()))
-	                        		.map(m -> m.getClientCode()).findFirst().get()).get("itemDesc").toString())
+	                        .ClientCodeDesc(leadDetails.stream().filter(f -> f.getLeadId().equalsIgnoreCase(k.getLeadId()))
+	                        		.map(m -> m.getClientName()).findFirst().get())
 	                        .productId(k.getProductId() == null ? "" : k.getProductId())
 	                        .sumInsured(k.getSumInsured())
 	                        .suggestPremium(k.getSuggestPremium())
@@ -515,6 +652,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	                        .receiptOfenquiry(k.getReceiptOfenquiry()==null?"":k.getReceiptOfenquiry())
 	                        .exceptedDateCommBussiness(k.getExceptedDateCommBussiness()==null?"":sdf.format(k.getExceptedDateCommBussiness()))
 	                        .underWritters(k.getUnderwritters()==null?"":k.getUnderwritters())
+	                        .quotesCount(String.valueOf(quoteInformationRepo.findByEnquiryIdAndQuoteStatus(k.getEnquiryId(),"Y").size()))
 							.build();
 					resList.add(e);
 				});

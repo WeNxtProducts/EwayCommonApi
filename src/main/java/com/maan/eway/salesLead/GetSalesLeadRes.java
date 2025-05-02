@@ -2,6 +2,7 @@ package com.maan.eway.salesLead;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -12,54 +13,106 @@ import lombok.Setter;
 @Setter
 @Builder
 public class GetSalesLeadRes {
-
-	@JsonProperty("InsuranceId")
-	private String insuranceId;
+	
+	@JsonProperty("CompanyId")
+	private String companyId;
 	
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	@JsonProperty("LeadId")
 	private String leadId;
+	
+	@JsonProperty("PolicyHolderTypeid")
+	private String policyHolderTypeid;
+	
+	@JsonProperty("PolicyHolderTypeDesc")
+	private String policyHolderTypeDesc;
+	
+	@JsonProperty("Title")
+	private String title;
 	
 	@JsonProperty("ClientName")
 	private String clientName;
 	
-	@JsonProperty("ClientCode")
-	private String clientCode;
+	@JsonProperty("Gender")
+	private String gender;
 	
-	@JsonProperty("Address1")
-	private String address1;
+	@JsonProperty("GenderDesc")
+	private String genderDesc;
 	
-	@JsonProperty("Address2")
-	private String address2;
+	@JsonProperty("Occupation")
+	private String occupation;
 	
-	@JsonProperty("State")
-	private String state;
+	@JsonProperty("OccupationDesc")
+	private String occupationDesc;
 	
-	@JsonProperty("City")
-	private String city;
+	@JsonProperty("Email")
+	private String email;
 	
-	@JsonProperty("PinCode")
-	private String pinCode;
+	@JsonProperty("MobileCode")
+	private String mobileCode;
 	
-	@JsonProperty("Mobile")
-	private String mobile;
+	@JsonProperty("MobileNumber")
+	private String mobileNumber;
+	
+	@JsonProperty("IdType")
+	private String idType;
+	
+	@JsonProperty("IdTypeDesc")
+	private String idTypeDesc;
+	
+	@JsonProperty("IdNumber")
+	private String idNumber;
 	
 	@JsonProperty("GstIdentificationNo")
 	private String gstIdentificationNo;
 	
-	@JsonProperty("BranchCode")
-	private String branchCode;
+	@JsonProperty("PreferredNotification")
+	private String preferredNotification;
 	
-	@JsonProperty("LeadCreatedOn")
-	private String leadCreatedOn;
+	@JsonProperty("IsTaxExempted")
+	private String isTaxExempted;
+	
+	@JsonProperty("Status")
+	private String status;
+	
+	@JsonProperty("Street")
+	private String street;
+	
+	@JsonProperty("CountryCode")
+	private String countryCode;
+	
+	@JsonProperty("CountryCodeDesc")
+	private String countryCodeDesc;
+	
+	@JsonProperty("RegionCode")
+	private String regionCode;
+	
+	@JsonProperty("RegionCodeDesc")
+	private String regionCodeDesc;
+	
+	@JsonProperty("StateCode")
+	private String stateCode;
+	
+	@JsonProperty("StateCodeDesc")
+	private String stateCodeDesc;
+	
+	@JsonProperty("PoBox")
+	private String poBox;
 	
 	@JsonProperty("IntermediateId")
 	private String intermediateId;
 	
 	@JsonProperty("IntermediateName")
 	private String intermediateName;
+	
+	@JsonProperty("LeadCreatedOn")
+	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+	private String leadCreatedOn;
 	
 	@JsonProperty("ChannelId")
 	private String channelId;
@@ -88,22 +141,12 @@ public class GetSalesLeadRes {
 	@JsonProperty("CurrentInsurer")
 	private String currentInsurer;
 	
-	@JsonProperty("CreatedBy")
-	private String createdBy;
-	
-	@JsonProperty("UpdatedBy")
-	private String updatedBy;
-	
-	@JsonProperty("EntryDate")
-	private String entryDate;
-	
-	@JsonProperty("UpdatedDate")
-	private String updatedDate;
+	@JsonProperty("LoginId")
+	private String loginId;
 	
 	@JsonProperty("EnquiryCount")
 	private String enquiryCount;
 	
 	@JsonProperty("LeadContactPerson")
 	private List<LeadContactPersonReq> leadContactPersonReq;
-	
 }

@@ -2,6 +2,7 @@ package com.maan.eway.salesLead;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -12,51 +13,75 @@ import lombok.Setter;
 @Setter
 @Builder
 public class InsertSalesReq {
-
-	@JsonProperty("InsuranceId")
-	private String insuranceId;
+	
+	@JsonProperty("CompanyId")
+	private String companyId;
 	
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	@JsonProperty("LeadId")
 	private String leadId;
+	
+	@JsonProperty("PolicyHolderTypeid")
+	private String policyHolderTypeid;
+	
+	@JsonProperty("Title")
+	private String title;
 	
 	@JsonProperty("ClientName")
 	private String clientName;
 	
-	@JsonProperty("ClientCode")
-	private String clientCode;
+	@JsonProperty("Gender")
+	private String gender;
 	
-	@JsonProperty("Address1")
-	private String address1;
+	@JsonProperty("Occupation")
+	private String occupation;
 	
-	@JsonProperty("Address2")
-	private String address2;
+	@JsonProperty("Email")
+	private String email;
 	
-	@JsonProperty("State")
-	private String state;
+	@JsonProperty("MobileCode")
+	private String mobileCode;
 	
-	@JsonProperty("City")
-	private String city;
+	@JsonProperty("MobileNumber")
+	private String mobileNumber;
 	
-	@JsonProperty("PinCode")
-	private String pinCode;
+	@JsonProperty("IdType")
+	private String idType;
 	
-	@JsonProperty("Mobile")
-	private String mobile;
+	@JsonProperty("IdNumber")
+	private String idNumber;
 	
 	@JsonProperty("GstIdentificationNo")
 	private String gstIdentificationNo;
 	
-	@JsonProperty("BranchCode")
-	private String branchCode;
+	@JsonProperty("PreferredNotification")
+	private String preferredNotification;
 	
-	@JsonProperty("LeadCreatedOn")
-	private String leadCreatedOn;
+	@JsonProperty("IsTaxExempted")
+	private String IsTaxExempted;
 	
-	@JsonProperty("LoginId")
-	private String loginId;
+	@JsonProperty("Status")
+	private String status;
+	
+	@JsonProperty("Street")
+	private String street;
+	
+	@JsonProperty("CountryCode")
+	private String countryCode;
+	
+	@JsonProperty("RegionCode")
+	private String regionCode;
+	
+	@JsonProperty("StateCode")
+	private String stateCode;
+	
+	@JsonProperty("PoBox")
+	private String poBox;
 	
 	@JsonProperty("IntermediateId")
 	private String intermediateId;
@@ -64,35 +89,28 @@ public class InsertSalesReq {
 	@JsonProperty("IntermediateName")
 	private String intermediateName;
 	
+	@JsonProperty("LeadCreatedOn")
+	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+	private String leadCreatedOn;
+	
 	@JsonProperty("ChannelId")
 	private String channelId;
-	
-	@JsonProperty("ChannelDesc")
-	private String channelDesc;
 	
 	@JsonProperty("SectionTypeId")
 	private String sectionTypeId;
 	
-	@JsonProperty("SectionTypeDesc")
-	private String sectionTypeDesc;
-	
 	@JsonProperty("PropobabilityOfSuccessId")
 	private String propobabilityOfSuccessId;
-	
-	@JsonProperty("PropobabilityOfSuccessDesc")
-	private String propobabilityOfSuccessDesc;
 	
 	@JsonProperty("TypeOfBusinessId")
 	private String typeOfBusinessId;
 	
-	@JsonProperty("TypeOfBusinessDesc")
-	private String typeOfBusinessDesc;
-	
 	@JsonProperty("CurrentInsurer")
 	private String currentInsurer;
 	
+	@JsonProperty("LoginId")
+	private String loginId;
+	
 	@JsonProperty("LeadContactPerson")
 	private List<LeadContactPersonReq> leadContactPersonReq;
-	
-	
 }
