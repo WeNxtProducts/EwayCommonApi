@@ -3819,7 +3819,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 //								.collect(Collectors.toList());
 //						if (filterCoverList.size() == 0 || filterCoverList.get(0).getCoverIdList() == null
 //								|| filterCoverList.get(0).getCoverIdList().size() == 0) {
-						if (filterCoverList.size() == 0 ) {
+						if (filterCoverList.size() == 0 && !product.getMotorYn().equalsIgnoreCase("M")) {
 							saveSec.setStatus("D");
 						}
 						secList.add(saveSec);
