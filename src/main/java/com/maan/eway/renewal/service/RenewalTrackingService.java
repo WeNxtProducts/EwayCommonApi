@@ -13,21 +13,14 @@ import com.maan.eway.renewal.res.ProductsBySourceRes;
 
 public interface RenewalTrackingService {
 
+	List<ProductByBranch> GetRenewalDetailsByDivsion2(RenewalTrackReq req);
 
+	BranchForRenewalTrack RenewalTrackGetBranch(RenewalTrackReq req);
 
-	List<ProductByBranch> GetRenewalDetailsByDivsion2(String divisionCode, String companyId);
+	List<RenewalTrackAgentResByProduct2> RenewalTrackAgentRes2(RenewalTrackReq req);
 
+	ProductsBySourceRes getProductsBySource(@RequestBody RenewalTrackReq req);
 
-	BranchForRenewalTrack RenewalTrackGetBranch(String companyId);
-
-	List<RenewalTrackAgentResByProduct2> RenewalTrackAgentRes2(String divisionCode, String companyId,
-			String productCode);
-
-	ProductsBySourceRes getProductsBySource(@RequestBody RenewalTrackReq req );
-	
-	List<PolicyDet> RenewalTrackPolicyDetailsBySource(String divisionCode, String companyId, String productCode,
-			String brokerCode);
-	
-	
+	List<PolicyDet> RenewalTrackPolicyDetailsBySource(RenewalTrackReq req);
 
 }

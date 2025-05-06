@@ -2,6 +2,10 @@ package com.maan.eway.renewal.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -85,7 +89,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 //  Get Divisions From companyId
 	@Override
-	public BranchForRenewalTrack RenewalTrackGetBranch(String companyId) {
+	public BranchForRenewalTrack RenewalTrackGetBranch(RenewalTrackReq req) {
 		BranchForRenewalTrack res = new BranchForRenewalTrack();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -119,13 +123,25 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					);
 
 			// WHERE company_id = '100020'
-			cq.where(cb.equal(root.get("companyId"), companyId));
+			cq.where(cb.equal(root.get("companyId"), req.getCompanyId()));
+			// Convert String to Timestamp
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
+			LocalDate end = LocalDate.parse(req.getEndDate(), formatter);
+
+			// Convert LocalDate to Timestamp (start of day and end of day)
+			Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
+
+			// Add condition to criteria
+			cq.where(cb.between(root.get("expiryDate"), startTimestamp, endTimestamp));
+
 
 			cq.groupBy(root.get("divisionCode"), root.get("divisionName"));
 
 			// Execute query
 			List<DivisionDetails> result = em.createQuery(cq).getResultList();
-			res.setCompanyId(companyId);
+			res.setCompanyId(req.getCompanyId());
 			if (!CollectionUtils.isEmpty(result)) {
 				result.parallelStream().forEach( division-> {
 					Long success=Long.parseLong(division.getSuccessCount());
@@ -143,12 +159,12 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 	}
 
 // get product details from division
-	public List<ProductByBranch> GetRenewalDetailsByDivsion2(String divisionCode, String companyId) {
-		List<ProductByBranch> list = getBranchByProduct(divisionCode, companyId);
+	public List<ProductByBranch> GetRenewalDetailsByDivsion2(RenewalTrackReq req) {
+		List<ProductByBranch> list = getBranchByProduct(req);
 		return list;
 	}
 
-	private List<ProductByBranch> getBranchByProduct(String divisionCode, String companyId) {
+	private List<ProductByBranch> getBranchByProduct(RenewalTrackReq req) {
 		List<ProductByBranch> res=new ArrayList<ProductByBranch>();
 		try {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -180,8 +196,18 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				lostCount.as(String.class).alias("lostCount")
 				));
 
-		cq.where(cb.equal(root.get("companyId"), companyId), cb.equal(root.get("divisionCode"), divisionCode));
+		cq.where(cb.equal(root.get("companyId"), req.getCompanyId()), cb.equal(root.get("divisionCode"), req.getDivisionCode()));
+		// Convert String to Timestamp
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
+		LocalDate end = LocalDate.parse(req.getEndDate(), formatter);
 
+		// Convert LocalDate to Timestamp (start of day and end of day)
+		Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+		Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
+
+		// Add condition to criteria
+		cq.where(cb.between(root.get("expiryDate"), startTimestamp, endTimestamp));
 		cq.groupBy(root.get("productCode"), root.get("productName"));
 		
 		res=em.createQuery(cq).getResultList();
@@ -203,8 +229,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 // get brokers from product
 	@Override
-	public List<RenewalTrackAgentResByProduct2> RenewalTrackAgentRes2(String divisionCode, String companyId,
-			String productCode) {
+	public List<RenewalTrackAgentResByProduct2> RenewalTrackAgentRes2(RenewalTrackReq req) {
 		List<RenewalTrackAgentResByProduct2> res = new ArrayList<RenewalTrackAgentResByProduct2>();
 		try {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -236,9 +261,19 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				lostCount.as(String.class).alias("lostCount")
 				));
 
-		cq.where(cb.equal(root.get("companyId"), companyId), cb.equal(root.get("divisionCode"), divisionCode),
-				cb.equal(root.get("productCode"), productCode));
+		cq.where(cb.equal(root.get("companyId"), req.getCompanyId()), cb.equal(root.get("divisionCode"), req.getDivisionCode()),
+				cb.equal(root.get("productCode"), req.getProductCode()));
+		// Convert String to Timestamp
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
+		LocalDate end = LocalDate.parse(req.getEndDate(), formatter);
 
+		// Convert LocalDate to Timestamp (start of day and end of day)
+		Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+		Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
+
+		// Add condition to criteria
+		cq.where(cb.between(root.get("expiryDate"), startTimestamp, endTimestamp));
 		cq.groupBy(root.get("polSrcCode"), root.get("polSrcName"));
 		
 		res=em.createQuery(cq).getResultList();
@@ -262,8 +297,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 	public ProductsBySourceRes getProductsBySource(RenewalTrackReq req) {
 		ProductsBySourceRes res = new ProductsBySourceRes();
 		try {
-			List<ProductDetails> productList = getProductsBySource(req.getCompanyId(), req.getDivisionCode(),
-					req.getSourceCode());
+			List<ProductDetails> productList = getProductsBySourceIn(req);
 			res.setSourceCode(req.getSourceCode());
 			res.setTotalPolicyCount(policyCountBySourceAndDiv(productList).toString());
 			if (!CollectionUtils.isEmpty(productList)) {
@@ -283,7 +317,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		return res;
 	}
 	
-	private List<ProductDetails> getProductsBySource(String companyId, String divisionCode, String sourceCode) {
+	private List<ProductDetails> getProductsBySourceIn(RenewalTrackReq req) {
 		List<ProductDetails> resList = new ArrayList<ProductDetails>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -306,8 +340,20 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					pendingCount.as(String.class).alias("pendingCount"),
 					lostCount.as(String.class).alias("lostCount")
 					));
-			cq.where(cb.equal(r.get("companyId"), companyId), cb.equal(r.get("divisionCode"), divisionCode),
-					cb.equal(r.get("polSrcCode"), sourceCode));
+			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()), cb.equal(r.get("divisionCode"), req.getDivisionCode()),
+					cb.equal(r.get("polSrcCode"), req.getSourceCode()));
+			// Convert String to Timestamp
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
+			LocalDate end = LocalDate.parse(req.getEndDate(), formatter);
+
+			// Convert LocalDate to Timestamp (start of day and end of day)
+			Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
+
+			// Add condition to criteria
+			cq.where(cb.between(r.get("expiryDate"), startTimestamp, endTimestamp));
+
 			cq.groupBy(r.get("productCode"), r.get("productName"));
 			resList = em.createQuery(cq).getResultList();
 
@@ -319,8 +365,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 
 	@Override
-	public List<PolicyDet> RenewalTrackPolicyDetailsBySource(String divisionCode, String companyId,
-			String productCode, String brokerCode) {
+	public List<PolicyDet> RenewalTrackPolicyDetailsBySource(RenewalTrackReq req) {
 		List<PolicyDet> policyDetails = new ArrayList<PolicyDet>();
 		
 		try {
@@ -329,23 +374,85 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Root<RenewPremiaPolicy> r = cq.from(RenewPremiaPolicy.class);
 
 			cq.select(cb.construct(
-	                PolicyDet.class,
-	                r.get("polSrcCode").alias("sourceCode"),    // sourceCode
-	                r.get("polSrcName").alias("sourceName"),    // sourceName
-	                r.get("productCode").alias("productCode"),   // productCode
-	                r.get("productName").alias("productName"),   // productName
-	                r.get("divisionCode").alias("branchCode"),  // branchCode
-	                r.get("divisionName").alias("branchName"),  // branchName
-	                r.get("customerCode").alias("customerCode"),  // customerCode
-	                r.get("customerName").alias("customerName"),  // customerName
-	                r.get("expiryDate").alias("policyEndDate"),    // expiryDate (Timestamp)
-	                r.get("currentStatus").alias("status"),       // status
-	                r.get("totalPremium").alias("totalPremium")  // totalPremium (Double)
-	        ));
+				    PolicyDet.class,
+				    r.get("transactionId").alias("transactionId"),
+				    r.get("policyNumber").alias("policyNumber"),
+				    r.get("expiryDate").as(String.class).alias("expiryDate"),
+
+				    r.get("companyId").alias("companyId"),
+				    r.get("companyCode").alias("companyCode"),
+				    r.get("companyName").alias("companyName"),
+
+				    r.get("classCode").alias("classCode"),
+				    r.get("className").alias("className"),
+
+				    r.get("productCode").alias("productCode"),
+				    r.get("productName").alias("productName"),
+
+				    r.get("divisionCode").alias("divisionCode"),
+				    r.get("divisionName").alias("divisionName"),
+
+				    r.get("departmentCode").alias("departmentCode"),
+				    r.get("departmentName").alias("departmentName"),
+
+				    r.get("businessType").alias("businessType"),
+				    r.get("businessName").alias("businessName"),
+
+				    r.get("endorsementNumber").alias("endorsementNumber"),
+				    r.get("fromDate").as(String.class).alias("fromDate"),
+				    r.get("renewalDate").as(String.class).alias("renewalDate"),
+
+				    r.get("customerCode").alias("customerCode"),
+				    r.get("customerName").alias("customerName"),
+				    r.get("insuredCivilId").alias("insuredCivilId"),
+				    r.get("insuredMobile").alias("insuredMobile"),
+				    r.get("insuredEmailId").alias("insuredEmailId"),
+
+				    r.get("polAssrCode").alias("polAssrCode"),
+				    r.get("polAssrName").alias("polAssrName"),
+
+				    r.get("polSrcType").alias("polSrcType"),
+				    r.get("polSrcCode").alias("polSrcCode"),
+				    r.get("polSrcName").alias("polSrcName"),
+
+				    r.get("policySi").alias("policySi"),
+				    r.get("grossPremium").alias("grossPremium"),
+				    r.get("coverPremium").alias("coverPremium"),
+				    r.get("discountPremium").alias("discountPremium"),
+				    r.get("loadingPremium").alias("loadingPremium"),
+
+				    r.get("pvtCoverYn").alias("pvtCoverYn"),
+				    r.get("pvtCoverSi").alias("pvtCoverSi"),
+				    r.get("pvtCoverPremium").alias("pvtCoverPremium"),
+
+				    r.get("chargeAmount").alias("chargeAmount"),
+				    r.get("totalPremium").alias("totalPremium"),
+				    r.get("agBrokCommission").alias("agBrokCommission"),
+
+				    r.get("currentStatus").alias("currentStatus"),
+				    r.get("newPolicyNumber").alias("newPolicyNumber"),
+				    r.get("lossReason").alias("lossReason"),
+				    r.get("lossRemarks").alias("lossRemarks"),
+				    r.get("competitor").alias("competitor"),
+
+				    r.get("entryDate").as(String.class).alias("entryDate")
+				));
+
 			
-			cq.where(cb.equal(r.get("companyId"), companyId), cb.equal(r.get("divisionCode"), divisionCode),
-					cb.equal(r.get("polSrcCode"), brokerCode));
-			
+			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()), cb.equal(r.get("divisionCode"), req.getDivisionCode()),
+					cb.equal(r.get("polSrcCode"), req.getSourceCode()));
+			// Convert String to Timestamp
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
+			LocalDate end = LocalDate.parse(req.getEndDate(), formatter);
+
+			// Convert LocalDate to Timestamp (start of day and end of day)
+			Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
+
+			// Add condition to criteria
+			cq.where(cb.between(r.get("expiryDate"), startTimestamp, endTimestamp));
+
 			policyDetails = em.createQuery(cq).getResultList();
 
 		}catch(Exception e) {
@@ -353,6 +460,77 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		}
 		
 		return policyDetails;
+	}
+	
+	// Get Approver's Division code
+	
+	public BranchForRenewalTrack RenewalTrackGetBranchByApprover(RenewalTrackReq req) {
+		BranchForRenewalTrack res = new BranchForRenewalTrack();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<DivisionDetails> cq = cb.createQuery(DivisionDetails.class);
+			Root<RenewPremiaPolicy> root = cq.from(RenewPremiaPolicy.class);
+			
+			Expression<Long> successCount = cb.sum(
+				    cb.<Long>selectCase()
+				        .when(cb.equal(root.get("currentStatus"), "RS"), 1L)
+				        .otherwise(0L)
+				);
+				Expression<Long> pendingCount = cb.sum(
+				    cb.<Long>selectCase()
+				        .when(cb.equal(root.get("currentStatus"), "RP"), 1L)
+				        .otherwise(0L)
+				);
+				Expression<Long> lostCount = cb.sum(
+				    cb.<Long>selectCase()
+				        .when(cb.equal(root.get("currentStatus"), "RF"), 1L)
+				        .otherwise(0L)
+				);
+
+			// Select DISTINCT division_code
+			cq.multiselect(root.get("divisionCode").alias("divisionCode"),
+					root.get("divisionName").alias("divisionName"),
+					cb.count(root).as(String.class).alias("totalPolicycount"),
+					cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium"),
+					successCount.as(String.class).alias("successCount"),
+					pendingCount.as(String.class).alias("pendingCount"),
+					lostCount.as(String.class).alias("lostCount")
+					);
+
+			// WHERE company_id = '100020'
+			cq.where(cb.equal(root.get("companyId"), req.getCompanyId()));
+			// Convert String to Timestamp
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
+			LocalDate end = LocalDate.parse(req.getEndDate(), formatter);
+
+			// Convert LocalDate to Timestamp (start of day and end of day)
+			Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
+
+			// Add condition to criteria
+			cq.where(cb.between(root.get("expiryDate"), startTimestamp, endTimestamp));
+
+
+			cq.groupBy(root.get("divisionCode"), root.get("divisionName"));
+
+			// Execute query
+			List<DivisionDetails> result = em.createQuery(cq).getResultList();
+			res.setCompanyId(req.getCompanyId());
+			if (!CollectionUtils.isEmpty(result)) {
+				result.parallelStream().forEach( division-> {
+					Long success=Long.parseLong(division.getSuccessCount());
+					Long totCount=Long.parseLong(division.getTotalPolicycount());
+					BigDecimal rate = rate(success,totCount);
+					division.setSuccessRate(rate.toPlainString());
+				});
+				res.setDivisionDetails(result);
+				res.setNoOfDivisions(String.valueOf(result.size()));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
 	}
 
 

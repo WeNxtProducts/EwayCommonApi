@@ -31,7 +31,7 @@ public class RenewalTrackingController {
 	    @PostMapping("/getdivisionbycompany")
 	    public ResponseEntity<?> getByCompany(@RequestBody RenewalTrackReq req) {
 	        if (req.getCompanyId() != null && !req.getCompanyId().trim().isEmpty()) {
-	            return ResponseEntity.ok(service.RenewalTrackGetBranch(req.getCompanyId()));
+	            return ResponseEntity.ok(service.RenewalTrackGetBranch(req));
 	        } else {
 	            return ResponseEntity.badRequest().body("CompanyId is required");
 	        }
@@ -41,7 +41,7 @@ public class RenewalTrackingController {
 	    public ResponseEntity<?> getByCompanyAndDivision(@RequestBody RenewalTrackReq req) {
 	        if (req.getCompanyId() != null && !req.getCompanyId().trim().isEmpty()
 	                && req.getDivisionCode() != null && !req.getDivisionCode().trim().isEmpty()) {
-	            return ResponseEntity.ok(service.GetRenewalDetailsByDivsion2(req.getDivisionCode(), req.getCompanyId()));
+	            return ResponseEntity.ok(service.GetRenewalDetailsByDivsion2(req));
 	        } else {
 	            return ResponseEntity.badRequest().body("CompanyId and DivisionCode are required");
 	        }
@@ -52,7 +52,7 @@ public class RenewalTrackingController {
 	        if (req.getCompanyId() != null && !req.getCompanyId().trim().isEmpty()
 	                && req.getDivisionCode() != null && !req.getDivisionCode().trim().isEmpty()
 	                && req.getProductCode() != null && !req.getProductCode().trim().isEmpty()) {
-	            return ResponseEntity.ok(service.RenewalTrackAgentRes2(req.getDivisionCode(), req.getCompanyId(), req.getProductCode()));
+	            return ResponseEntity.ok(service.RenewalTrackAgentRes2(req));
 	        } else {
 	            return ResponseEntity.badRequest().body("CompanyId, DivisionCode, and ProductCode are required");
 	        }
@@ -64,8 +64,7 @@ public class RenewalTrackingController {
 	                && req.getDivisionCode() != null && !req.getDivisionCode().trim().isEmpty()
 	                && req.getProductCode() != null && !req.getProductCode().trim().isEmpty()
 	                && req.getSourceCode() != null && !req.getSourceCode().trim().isEmpty()) {
-	            return ResponseEntity.ok(service.RenewalTrackPolicyDetailsBySource(
-	                    req.getDivisionCode(), req.getCompanyId(), req.getProductCode(), req.getSourceCode()));
+	            return ResponseEntity.ok(service.RenewalTrackPolicyDetailsBySource(req));
 	        } else {
 	            return ResponseEntity.badRequest().body("CompanyId, DivisionCode, ProductCode, and SourceCode are required");
 	        }
@@ -81,4 +80,5 @@ public class RenewalTrackingController {
 		            return ResponseEntity.badRequest().body("CompanyId, DivisionCode and SourceCode are required");
 		        }
 	    }
+	    
 }

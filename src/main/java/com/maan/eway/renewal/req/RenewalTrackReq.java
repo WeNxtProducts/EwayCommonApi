@@ -17,4 +17,13 @@ public class RenewalTrackReq {
 
 	@JsonProperty("SourceCode")
 	private String sourceCode;
+	
+	@JsonProperty("StartDate")
+	private String startDate;
+	
+	@JsonProperty("EndDate")
+	private String endDate;
+	
+	@JsonProperty("LoginId")
+	private String loginId;
 }
