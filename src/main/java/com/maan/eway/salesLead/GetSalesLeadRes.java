@@ -35,6 +35,9 @@ public class GetSalesLeadRes {
 	@JsonProperty("Title")
 	private String title;
 	
+	@JsonProperty("TitleDesc")
+	private String titleDesc;
+	
 	@JsonProperty("ClientName")
 	private String clientName;
 	
@@ -141,11 +144,23 @@ public class GetSalesLeadRes {
 	@JsonProperty("CurrentInsurer")
 	private String currentInsurer;
 	
-	@JsonProperty("LoginId")
-	private String loginId;
+	@JsonProperty("CurrentInsurerDesc")
+	private String currentInsurerDesc;
 	
 	@JsonProperty("EnquiryCount")
 	private String enquiryCount;
+	
+	@JsonProperty("EntryDate")
+	private String entryDate;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+	
+	@JsonProperty("UpdatedDate")
+	private String updatedDate;
 	
 	@JsonProperty("LeadContactPerson")
 	private List<LeadContactPersonReq> leadContactPersonReq;

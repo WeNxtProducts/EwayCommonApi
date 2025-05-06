@@ -167,6 +167,9 @@ public class LeadInformation  implements Serializable{
 	@Column(name = "CURRENT_INSURER")
 	private String currentInsurer;
 	
+	@Column(name = "CURRENT_INSURER_DESC")
+	private String currentInsurerDesc;
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "ENTRY_DATE")
 	private Date entryDate;

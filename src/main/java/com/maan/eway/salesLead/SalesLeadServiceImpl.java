@@ -195,7 +195,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 					String regionStateDesc = stateMasterServiceImpl.getRegionStateMasterDropdown(req3).stream().filter(f -> f.getCode().equalsIgnoreCase(req.getStateCode()))
 							.map(q -> q.getCodeDesc()).findFirst().orElse("");
 					
-					String channelName="",sectionTypeName="",propobabilityOfSuccessName="",typeOfBussinessName="";;
+					String channelName="",sectionTypeName="",propobabilityOfSuccessName="",typeOfBussinessName="",currentInsurerName="";
 					if (StringUtils.isNotBlank(req.getChannelId())) {
 						List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("CUSTOMER_TYPE");
 						channelName = getList.stream()
@@ -224,9 +224,18 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 					}
 					
 					if (StringUtils.isNotBlank(req.getTypeOfBusinessId())) {
-						List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("POS");
+						List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("TYPE_OF_BUSINESS");
 						typeOfBussinessName = getList.stream()
 							    .filter(k -> req.getTypeOfBusinessId().equalsIgnoreCase(String.valueOf(k.getId())))
+							    .map(k -> String.valueOf(k.getItemValue()))
+							    .findFirst()
+							    .orElse(null);
+					}
+					
+					if (StringUtils.isNotBlank(req.getCurrentInsurer())) {
+						List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("INS_COMP");
+						currentInsurerName = getList.stream()
+							    .filter(k -> req.getCurrentInsurer().equalsIgnoreCase(String.valueOf(k.getId())))
 							    .map(k -> String.valueOf(k.getItemValue()))
 							    .findFirst()
 							    .orElse(null);
@@ -240,7 +249,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 								.policyHolderType(req.getPolicyHolderTypeid())
 								.policyHolderTypeDesc(policyHolderTypeDesc)
 								.title(req.getTitle())
-								.title(titleDesc)
+								.titleDesc(titleDesc)
 								.clientName(req.getClientName())
 								.gender(req.getGender())
 								.genderDesc(genderDesc)
@@ -275,7 +284,15 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 								.propobabilityOfSuccessDesc(propobabilityOfSuccessName)
 								.typeOfBusinessId(req.getTypeOfBusinessId())
 								.typeOfBusinessDesc(typeOfBussinessName)
-								.currentInsurer(req.getCurrentInsurer())					
+								.currentInsurer(req.getCurrentInsurer())
+								.currentInsurerDesc(currentInsurerName)
+								.entryDate(entryDate)
+								.createdBy(createdBy)
+								.updatedBy(updatedBy)
+								.updatedDate(updatedDate)
+								.companyId(req.getCompanyId())
+								.productId(req.getProductId())
+								.branchCode(req.getBranchCode())
 								.build();
 							leadInfoRepo.save(m);
 							
@@ -350,7 +367,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 							.policyHolderTypeid(k.getPolicyHolderType()==null?"":k.getPolicyHolderType())
 							.policyHolderTypeDesc(k.getPolicyHolderTypeDesc()==null?"":k.getPolicyHolderTypeDesc())
 							.title(k.getTitle()==null?"":k.getTitle())
-							.title(k.getTitleDesc()==null?"":k.getTitleDesc())
+							.titleDesc(k.getTitleDesc()==null?"":k.getTitleDesc())
 							.clientName(k.getClientName()==null?"":k.getClientName())
 							.gender(k.getGender()==null?"":k.getGender())
 							.genderDesc(k.getGenderDesc()==null?"":k.getGenderDesc())
@@ -386,6 +403,14 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 							.typeOfBusinessId(k.getTypeOfBusinessId()==null?"":k.getTypeOfBusinessId())
 							.typeOfBusinessDesc(k.getTypeOfBusinessDesc()==null?"":k.getTypeOfBusinessDesc())
 							.currentInsurer(k.getCurrentInsurer()==null?"":k.getCurrentInsurer())
+							.currentInsurerDesc(k.getCurrentInsurerDesc()==null?"":k.getCurrentInsurerDesc())
+							.entryDate(k.getEntryDate()==null?"":sdf.format(k.getEntryDate()))
+							.createdBy(k.getCreatedBy()==null?"":k.getCreatedBy())
+							.updatedBy(k.getUpdatedBy()==null?"":k.getUpdatedBy())
+							.updatedDate(k.getUpdatedDate()==null?"":sdf.format(k.getUpdatedDate()))
+							.companyId(k.getCompanyId()==null?"":k.getCompanyId())
+							.productId(k.getProductId()==null?"":k.getProductId())
+							.branchCode(k.getBranchCode()==null?"":k.getBranchCode())
 							.leadContactPersonReq(GetLeadContactPerson(k.getLeadId()))
 							.enquiryCount(String.valueOf(getEnquiryCountByLeadId(k.getLeadId())))
 							.build();
