@@ -224,7 +224,7 @@ import jakarta.persistence.criteria.Subquery;
 				return res;
 			} */
 			try {
-				
+				Integer stampDuty = 40;
 				BigDecimal adv=new BigDecimal(0);
 				Integer noOfMonth=0, instalId=0;
 			if("N".equalsIgnoreCase(req.getStatus())) {
@@ -273,6 +273,9 @@ import jakarta.persistence.criteria.Subquery;
                 HomePositionMaster homeData=homerepo.findByQuoteNo(quoteNo);
 				
 				premiumWithTax = Double.valueOf(homeData.getOverallPremiumLc().toString());
+				if(req.getCompanyId().equalsIgnoreCase("100020")) {
+					premiumWithTax = premiumWithTax - stampDuty;
+				}
 		//		noOfMonth=Integer.valueOf(emiMasterData.get(0).getInstallmentPeriod());
 				
 	            if(req.getInstallmentTypeId()!=null) {
@@ -282,7 +285,7 @@ import jakarta.persistence.criteria.Subquery;
 						noOfMonth=Integer.parseInt(emiMasterData.get(0).getInstallmentPeriod());
 						instalId=1;
 	            	}
-	            	advanceAmount=insertEmiTransactionDetailsByInstalId2(req, interestPercent, advancePercent, premiumWithTax,instalId, noOfMonth,emiMasterData );
+	            	advanceAmount=insertEmiTransactionDetailsByInstalId2(req, interestPercent, advancePercent, premiumWithTax,instalId, noOfMonth,emiMasterData, stampDuty );
 	            	adv=new BigDecimal(advanceAmount);
 	            }
 				res.setSuccessId(quoteNo);
@@ -339,7 +342,7 @@ import jakarta.persistence.criteria.Subquery;
 			return res;
 		}
 		private Double insertEmiTransactionDetailsByInstalId2(EmiTransactionDetailsSaveReq req,Double interestPercent,Double advancePercent, 
-				Double premiumWithTax, Integer instalId, Integer installmentPeriod,List<EmiMaster> emiMasterData) {
+				Double premiumWithTax, Integer instalId, Integer installmentPeriod,List<EmiMaster> emiMasterData, Integer stampDuty) {
 			EmiTransactionDetails saveData = new EmiTransactionDetails();
 			Long adv=0l;
 			String quoteNo = req.getQuoteNo();
@@ -361,6 +364,9 @@ import jakarta.persistence.criteria.Subquery;
 						cal.add(Calendar.MONTH, 0);
 						dueDate = cal.getTime();
 						advanceAmount = Math.round(premiumWithTax * advancePercent / 100);
+						if (req.getCompanyId().equalsIgnoreCase("100020")) {
+							advanceAmount = advanceAmount + stampDuty;
+						}
 						adv=advanceAmount;
 						totalLoanAmount=Math.round(premiumWithTax-advanceAmount);
 						totalLoanAmount=Math.round(totalLoanAmount+totalLoanAmount*interestPercent/100);
@@ -1146,7 +1152,7 @@ import jakarta.persistence.criteria.Subquery;
 									instalId=1;
 								}
 								res = new EmiDisplayRes();
-								List<EmiDisplayRes> result=viewEmiInstallmentDetailsByInstalId5(req,interestPercent,advancePercent,premiumWithTax,instalId,res,data, noOfMonth);
+								List<EmiDisplayRes> result=viewEmiInstallmentDetailsByInstalId5(req,interestPercent,advancePercent,premiumWithTax,instalId,res,data, noOfMonth, stampDuty);
 								if(!result.isEmpty()){  
 								resList.add(result.get(0)); 
 								} 						
@@ -1183,7 +1189,7 @@ import jakarta.persistence.criteria.Subquery;
 		     *         If the installment period is not valid, an empty list is returned.
 		     */
 				public List<EmiDisplayRes> viewEmiInstallmentDetailsByInstalId5(EmiInstallmentDetailsReq req, Double interestPercent, Double advancePercent,Double premiumWithTax, 
-					Integer instalId,EmiDisplayRes res,EmiMaster data, Integer installmentPeriod) {
+					Integer instalId,EmiDisplayRes res,EmiMaster data, Integer installmentPeriod, Integer stampDuty) {
 				List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
 				Long balanceAmount=null, temp=0l; Long installment=0l,trackTotLnAmtWithInterest=0l, trackInsAmt=0l;
 				Integer i=0; String insDesc = ""; Integer in=0;
@@ -1198,6 +1204,9 @@ import jakarta.persistence.criteria.Subquery;
 					}
 					if(i==0 && advanceAmount>0 ) {
 						advanceAmount = Math.round(premiumWithTax * advancePercent / 100);
+						if (req.getCompanyId().equalsIgnoreCase("100020")) {
+							advanceAmount = advanceAmount + stampDuty;
+						}
 						totalLoanAmount=Math.round(premiumWithTax-advanceAmount);
 						totalLoanAmount=Math.round(totalLoanAmount+totalLoanAmount*interestPercent/100);
 						trackTotLnAmtWithInterest=totalLoanAmount;
@@ -1252,6 +1261,9 @@ import jakarta.persistence.criteria.Subquery;
 							cal.add(Calendar.MONTH, 0);
 							dueDate = cal.getTime();
 							insDesc="Advance Amount";
+//							if(req.getCompanyId().equalsIgnoreCase("100020")) {
+//							advanceAmount = advanceAmount + stampDuty;
+//							}
 							emiPremiumRes.setInstallment(Long.valueOf(Math.round(advanceAmount)).toString());
 						}else if (i == 0) {
 							cal.add(Calendar.MONTH, 0);
