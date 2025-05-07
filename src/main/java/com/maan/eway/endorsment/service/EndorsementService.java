@@ -295,19 +295,20 @@ public class EndorsementService {
 				for (String vehicle : findVehicleid) {
 					List<EservieMotorDetailsViewRes> vehicleFilter = locFilter.stream()
 							.filter(o -> o.getVehicleId().equals(vehicle)).collect(Collectors.toList());
-					VehicleIdsReq v = new VehicleIdsReq();
-
-					v.setVehicleId(Integer.parseInt(vehicle));
-					v.setLocationId(Integer.parseInt(LocationId));
-					List<CoverIdsReq> covers = new ArrayList<CoverIdsReq>();
+										
 					for (EservieMotorDetailsViewRes motors : vehicleFilter) {
-						
+						List<CoverIdsReq> covers = new ArrayList<CoverIdsReq>();
 						
 						List<Cover> coverList = motors.getCoverList();
 						List<Cover> distinctSections = coverList.stream().filter(distinctByKey(c -> c.getSectionId()))
 								.collect(Collectors.toList());
 
 						for (Cover ds : distinctSections) {
+							
+							VehicleIdsReq v = new VehicleIdsReq();
+
+							v.setVehicleId(Integer.parseInt(vehicle));
+							v.setLocationId(Integer.parseInt(LocationId));
 							v.setSectionId(ds.getSectionId());
 							
 							for (Cover cover : coverList) {
@@ -337,11 +338,12 @@ public class EndorsementService {
 								}
 							}
 							v.setCoverIdList(covers);
+							vehicles.add(v);
 						}
 					
-
+						
 					}
-					vehicles.add(v);
+					
 				}
 			}
 		}
