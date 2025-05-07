@@ -1394,6 +1394,7 @@ public class QuoteServiceImpl implements QuoteService {
 					
 					List<PolicyCoverData> endCoverData = covers.stream()
 							.filter(a -> a.getCoverId().equals(coverId)
+									&& a.getSectionId().equals(coverGroups.get(0).getSectionId())  
 									&& a.getVehicleId() == filterCover.get(0).getVehicleId()
 									&& a.getCoverageType().equalsIgnoreCase("E"))
 							.collect(Collectors.toList());
