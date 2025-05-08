@@ -1,4 +1,4 @@
-package com.maan.eway.bean;
+package com.maan.eway.salesLead.bean;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,6 +28,10 @@ public class QuoteInformationIpclms {
     @Id
     @Column(name="QUOTE_NO")
     private String quoteNo;
+    
+    @Id
+    @Column(name="AMEND_ID")
+    private Integer amendId;
 
     @Column(name="QUOTATION_DESCRIPTION")
     private String quotationDescription;
@@ -50,6 +54,24 @@ public class QuoteInformationIpclms {
     @Column(name="QUOTE_STATUS")
     private String quoteStatus;
     
+    @Column(name="QUOTE_STATUS_DESC")
+    private String quoteStatusDesc;
+    
     @Column(name="QUOTE_REMARKS")
     private String quoteRemarks;
+    
+    @Column(name="SALES_REMARKS")
+    private String salesRemarks;
+    
+    @Column(name="UW_REMARKS")
+    private String uwRemarks;
+    
+    @Column(name="LOGIN_ID")
+    private String loginId;
+    
+    @Column(name="LEAD_ID")
+    private String leadId;
+    
+    @Column(name = "ENQUIRY_CREATED_BY")
+    private String enquiryStringCreatedBy;
 }

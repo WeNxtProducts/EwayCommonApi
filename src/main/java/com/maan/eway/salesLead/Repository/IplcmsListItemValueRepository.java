@@ -1,4 +1,4 @@
-package com.maan.eway.repository;
+package com.maan.eway.salesLead.Repository;
 
 
 import java.util.List;

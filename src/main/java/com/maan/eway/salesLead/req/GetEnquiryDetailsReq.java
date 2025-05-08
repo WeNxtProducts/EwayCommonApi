@@ -1,4 +1,4 @@
-package com.maan.eway.salesLead;
+package com.maan.eway.salesLead.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,6 +18,9 @@ public class GetEnquiryDetailsReq {
 	
 	@JsonProperty("LoginId")
 	private String loginId;
+	
+	@JsonProperty("UWCode")
+	private String uwCode;
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;

@@ -1,4 +1,4 @@
-package com.maan.eway.salesLead;
+package com.maan.eway.salesLead.req;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -66,6 +66,9 @@ public class EnquiryDetailsDTO implements Serializable {
     
     @JsonProperty("Status")
     private String status;
+    
+    @JsonProperty("StatusDesc")
+    private String statusDesc;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @JsonProperty("ReceiptOfenquiry")

@@ -1,9 +1,10 @@
-package com.maan.eway.salesLead;
+package com.maan.eway.salesLead.custom.impl;
 
 import org.springframework.stereotype.Repository;
 
 import com.maan.eway.salesLead.bean.EnquiryDetails;
 import com.maan.eway.salesLead.bean.LeadInformation;
+import com.maan.eway.salesLead.custom.SalesLeadCustomRepositry;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

@@ -1,4 +1,4 @@
-package com.maan.eway.salesLead;
+package com.maan.eway.salesLead.validation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.error.Error;
+import com.maan.eway.salesLead.req.EserviceLeadSaveReq;
+import com.maan.eway.salesLead.req.InsertSalesReq;
+import com.maan.eway.salesLead.req.LeadContactPersonReq;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

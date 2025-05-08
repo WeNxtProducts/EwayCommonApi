@@ -91,6 +91,9 @@ public class EnquiryDetails implements Serializable{
 	@Column(name ="STATUS")
 	private String status;
 	
+	@Column(name ="STATUS_DESC")
+	private String statusDesc;
+	
 	@Column(name ="RECEIPT_OF_ENQUIRY")
 	private String receiptOfenquiry;
 	

@@ -1,10 +1,11 @@
-package com.maan.eway.salesLead;
+package com.maan.eway.salesLead.res;
 
 import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.salesLead.req.LeadContactPersonReq;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Temporal;

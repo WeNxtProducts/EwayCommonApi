@@ -1,4 +1,4 @@
-package com.maan.eway.salesLead;
+package com.maan.eway.salesLead.req;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class GetSalesLeadRes {
+public class InsertSalesReq {
 	
 	@JsonProperty("CompanyId")
 	private String companyId;
@@ -29,14 +29,8 @@ public class GetSalesLeadRes {
 	@JsonProperty("PolicyHolderTypeid")
 	private String policyHolderTypeid;
 	
-	@JsonProperty("PolicyHolderTypeDesc")
-	private String policyHolderTypeDesc;
-	
 	@JsonProperty("Title")
 	private String title;
-	
-	@JsonProperty("TitleDesc")
-	private String titleDesc;
 	
 	@JsonProperty("ClientName")
 	private String clientName;
@@ -44,14 +38,8 @@ public class GetSalesLeadRes {
 	@JsonProperty("Gender")
 	private String gender;
 	
-	@JsonProperty("GenderDesc")
-	private String genderDesc;
-	
 	@JsonProperty("Occupation")
 	private String occupation;
-	
-	@JsonProperty("OccupationDesc")
-	private String occupationDesc;
 	
 	@JsonProperty("Email")
 	private String email;
@@ -65,9 +53,6 @@ public class GetSalesLeadRes {
 	@JsonProperty("IdType")
 	private String idType;
 	
-	@JsonProperty("IdTypeDesc")
-	private String idTypeDesc;
-	
 	@JsonProperty("IdNumber")
 	private String idNumber;
 	
@@ -78,7 +63,7 @@ public class GetSalesLeadRes {
 	private String preferredNotification;
 	
 	@JsonProperty("IsTaxExempted")
-	private String isTaxExempted;
+	private String IsTaxExempted;
 	
 	@JsonProperty("Status")
 	private String status;
@@ -89,20 +74,11 @@ public class GetSalesLeadRes {
 	@JsonProperty("CountryCode")
 	private String countryCode;
 	
-	@JsonProperty("CountryCodeDesc")
-	private String countryCodeDesc;
-	
 	@JsonProperty("RegionCode")
 	private String regionCode;
 	
-	@JsonProperty("RegionCodeDesc")
-	private String regionCodeDesc;
-	
 	@JsonProperty("StateCode")
 	private String stateCode;
-	
-	@JsonProperty("StateCodeDesc")
-	private String stateCodeDesc;
 	
 	@JsonProperty("PoBox")
 	private String poBox;
@@ -120,47 +96,20 @@ public class GetSalesLeadRes {
 	@JsonProperty("ChannelId")
 	private String channelId;
 	
-	@JsonProperty("ChannelDesc")
-	private String channelDesc;
-	
 	@JsonProperty("SectionTypeId")
 	private String sectionTypeId;
-	
-	@JsonProperty("SectionTypeDesc")
-	private String sectionTypeDesc;
 	
 	@JsonProperty("PropobabilityOfSuccessId")
 	private String propobabilityOfSuccessId;
 	
-	@JsonProperty("PropobabilityOfSuccessDesc")
-	private String propobabilityOfSuccessDesc;
-	
 	@JsonProperty("TypeOfBusinessId")
 	private String typeOfBusinessId;
-	
-	@JsonProperty("TypeOfBusinessDesc")
-	private String typeOfBusinessDesc;
 	
 	@JsonProperty("CurrentInsurer")
 	private String currentInsurer;
 	
-	@JsonProperty("CurrentInsurerDesc")
-	private String currentInsurerDesc;
-	
-	@JsonProperty("EnquiryCount")
-	private String enquiryCount;
-	
-	@JsonProperty("EntryDate")
-	private String entryDate;
-	
-	@JsonProperty("CreatedBy")
-	private String createdBy;
-	
-	@JsonProperty("UpdatedBy")
-	private String updatedBy;
-	
-	@JsonProperty("UpdatedDate")
-	private String updatedDate;
+	@JsonProperty("LoginId")
+	private String loginId;
 	
 	@JsonProperty("LeadContactPerson")
 	private List<LeadContactPersonReq> leadContactPersonReq;

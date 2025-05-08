@@ -1,4 +1,4 @@
-package com.maan.eway.salesLead;
+package com.maan.eway.salesLead.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

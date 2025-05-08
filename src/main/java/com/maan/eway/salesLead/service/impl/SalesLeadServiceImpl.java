@@ -1,6 +1,9 @@
-package com.maan.eway.salesLead;
+package com.maan.eway.salesLead.service.impl;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,9 +22,9 @@ import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
-import com.maan.eway.auth.service.impl.LoginCriteriaQueryServiceImpl;
 import com.maan.eway.bean.EserviceLeadDetails;
 import com.maan.eway.bean.IplcmsListItemValue;
 import com.maan.eway.bean.RegionMaster;
@@ -31,6 +34,7 @@ import com.maan.eway.common.req.SequenceGenerateReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.service.impl.EserviceCustomerDetailsServiceImpl;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
+import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.RegionMasterDropDownReq;
 import com.maan.eway.master.req.StateMasterDropDownReq;
@@ -39,21 +43,36 @@ import com.maan.eway.master.service.impl.RegionMasterServiceImpl;
 import com.maan.eway.master.service.impl.StateMasterServiceImpl;
 import com.maan.eway.repository.EserviceLeadDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
-import com.maan.eway.repository.IplcmsListItemValueRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
-import com.maan.eway.repository.QuoteInformationRepository;
 import com.maan.eway.repository.RegionMasterRepository;
 import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.salesLead.Repository.EnquiryDetailsRepository;
+import com.maan.eway.salesLead.Repository.IpclmsFileUploadDetailsRepository;
+import com.maan.eway.salesLead.Repository.IplcmsListItemValueRepository;
 import com.maan.eway.salesLead.Repository.LeadContactPersonRepository;
 import com.maan.eway.salesLead.Repository.LeadInformationRepository;
+import com.maan.eway.salesLead.Repository.QuoteInformationRepository;
 import com.maan.eway.salesLead.bean.EnquiryDetails;
+import com.maan.eway.salesLead.bean.IpclmsFileUploadDetails;
 import com.maan.eway.salesLead.bean.LeadContactPerson;
 import com.maan.eway.salesLead.bean.LeadInformation;
+import com.maan.eway.salesLead.custom.SalesLeadCustomRepositry;
+import com.maan.eway.salesLead.req.EnquiryDetailsDTO;
+import com.maan.eway.salesLead.req.EserviceLeadSaveReq;
+import com.maan.eway.salesLead.req.GetEnquiryDetailsReq;
+import com.maan.eway.salesLead.req.GetUploadDocumentListReq;
+import com.maan.eway.salesLead.req.InsertSalesReq;
+import com.maan.eway.salesLead.req.LeadContactPersonReq;
+import com.maan.eway.salesLead.req.SaveUploadDocumentsReq;
+import com.maan.eway.salesLead.res.GetLeadDetailsRes;
+import com.maan.eway.salesLead.res.GetSalesLeadRes;
+import com.maan.eway.salesLead.res.GetUploadDocumentListRes;
+import com.maan.eway.salesLead.service.SalesLeadService;
+import com.maan.eway.thread.GetFileFromPath;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -66,11 +85,6 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class SalesLeadServiceImpl implements SalesLeadService {
-
-    private final SalesLeadController salesLeadController;
-
-    private final LoginCriteriaQueryServiceImpl loginCriteriaQueryServiceImpl;
-
 	
 	private Logger log = LogManager.getLogger(SalesLeadServiceImpl.class);
 	
@@ -128,6 +142,9 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	@Autowired
     private QuoteInformationRepository quoteInformationRepo;
 	
+	@Autowired
+	private IpclmsFileUploadDetailsRepository ipclmsFileUploadDetailsRepo;
+	
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -136,11 +153,6 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 	private final static Logger logger = LogManager.getLogger(SalesLeadServiceImpl.class);
-
-    SalesLeadServiceImpl(LoginCriteriaQueryServiceImpl loginCriteriaQueryServiceImpl, SalesLeadController salesLeadController) {
-        this.loginCriteriaQueryServiceImpl = loginCriteriaQueryServiceImpl;
-        this.salesLeadController = salesLeadController;
-    }
 	
 	@Override
 	public boolean insertLeadDetails(List<InsertSalesReq> reqList) {
@@ -265,6 +277,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 								.preferredNotification(req.getPreferredNotification())
 								.taxExcepted(req.getIsTaxExempted())
 								.status(req.getStatus())
+								.statusDesc(req.getStatus().equalsIgnoreCase("Y")?"Active":req.getStatus().equalsIgnoreCase("N")?"De-Active":"Pending")
 								.street(req.getStreet())
 								.country(req.getCountryCode())
 								.countryDesc(countryCodeDesc)
@@ -383,6 +396,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 							.preferredNotification(k.getPreferredNotification()==null?"":k.getPreferredNotification())
 							.isTaxExempted(k.getTaxExcepted()==null?"":k.getTaxExcepted())
 							.status(k.getStatus()==null?"":k.getStatus())
+							.statusDesc(k.getStatusDesc()==null?"":k.getStatusDesc())
 							.street(k.getStreet()==null?"":k.getStreet())
 							.countryCode(k.getCountry()==null?"":k.getCountry())
 							.countryCodeDesc(k.getCountryDesc()==null?"":k.getCountryDesc())
@@ -522,6 +536,16 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 			
 			String enquiryId = !enquiryData.isEmpty()?existingList.getEnquiryId():salesLeadCustomRepo.getMaxEnquiryId();
 			
+			String statusDesc = null;
+			if (StringUtils.isNotBlank(req.getStatus())) {
+				List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType("SU_STATUS");
+				statusDesc = getList.stream()
+					    .filter(k -> req.getStatus().equalsIgnoreCase(k.getItemCode()))
+					    .map(k -> String.valueOf(k.getItemValue()))
+					    .findFirst()
+					    .orElse(null);
+			}
+			
 			EnquiryDetails e = EnquiryDetails.builder()
 					.enquiryId(enquiryId)
 					.leadId(req.getLeadId())
@@ -539,6 +563,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	                .rejectedDate(req.getRejectedDate())
 	                .rejectedReason(req.getRejectedReason())
 	                .status(req.getStatus())
+	                .statusDesc(statusDesc)
 	                .receiptOfenquiry(req.getReceiptOfenquiry())
 	                .exceptedDateCommBussiness(req.getExceptedDateCommBussiness()==null?null:sdf.parse(req.getExceptedDateCommBussiness()))
 	                .underwritters(req.getUnderWritters())
@@ -617,7 +642,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 				predicates.toArray(predicateArray);
 				cq.where(predicateArray);
 				enquiryList = em.createQuery(cq).getResultList();				
-			}else if(StringUtils.isNotBlank(req.getStatus()) && StringUtils.isNotBlank(req.getLoginId())) {
+			}else if(StringUtils.isNotBlank(req.getStatus()) && (StringUtils.isNotBlank(req.getLoginId()) || StringUtils.isNotBlank(req.getUwCode()))) {
 				Subquery<Integer> amdMax = cq.subquery(Integer.class);
 				Root<EnquiryDetails> amdRoot = amdMax.from(EnquiryDetails.class);
 				
@@ -626,7 +651,10 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 							cb.equal(amdRoot.get("leadId"), edRoot.get("leadId")));
 				
 				predicates.add(cb.equal(edRoot.get("status"), req.getStatus()));
-				predicates.add(cb.equal(edRoot.get("underwritters"), req.getLoginId()));
+				if(StringUtils.isNotBlank(req.getUwCode()))
+					predicates.add(cb.equal(edRoot.get("underwritters"), req.getUwCode()));
+				else
+					predicates.add(cb.equal(edRoot.get("createdBy"), req.getLoginId()));
 				predicates.add(cb.equal(edRoot.get("amendId"), amdMax));
 				Predicate [] predicateArray = new Predicate[predicates.size()];
 				predicates.toArray(predicateArray);
@@ -674,6 +702,7 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 	                        .rejectedDate(k.getRejectedDate())
 	                        .rejectedReason(k.getRejectedReason() == null ? "" : k.getRejectedReason())
 	                        .status(k.getStatus() == null ? "" : k.getStatus())
+	                        .statusDesc(k.getStatusDesc()==null?"":k.getStatusDesc())
 	                        .receiptOfenquiry(k.getReceiptOfenquiry()==null?"":k.getReceiptOfenquiry())
 	                        .exceptedDateCommBussiness(k.getExceptedDateCommBussiness()==null?"":sdf.format(k.getExceptedDateCommBussiness()))
 	                        .underWritters(k.getUnderwritters()==null?"":k.getUnderwritters())
@@ -1200,6 +1229,134 @@ public class SalesLeadServiceImpl implements SalesLeadService {
 			return null;
 		}
 		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getStatusByUserType() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType= "SU_STATUS" ;
+
+			List<IplcmsListItemValue> getList  = iplcmsListItemValueRepo.findByItemType(itemType);
+			for (IplcmsListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public boolean saveUploadDocuments(SaveUploadDocumentsReq req, List<MultipartFile> fileReq) {
+		try {
+			if(fileReq!=null && fileReq.size()>0) {
+				Path path = Paths.get(this.getClass().getClassLoader().getResource("report/IPCLMS_Documents").toURI());
+				if(!Files.exists(path)) {
+					Files.createDirectories(path);
+				}
+				for(MultipartFile file :fileReq) {
+					String fileName = req.getLoginId()+"_"+System.currentTimeMillis()+"_"+file.getOriginalFilename();
+					if(file!=null) {
+						Files.copy(file.getInputStream(), path.resolve(fileName));
+						IpclmsFileUploadDetails m = IpclmsFileUploadDetails.builder()
+								.fileId(getMaxFileId())
+								.enquiryId(req.getEnquiryId()==null?null:req.getEnquiryId())
+								.quoteNo(req.getQuoteNo()==null?null:req.getQuoteNo())
+								.fileName(fileName)
+								.filePath(path.resolve(fileName).toString())
+								.loginId(req.getLoginId()==null?null:req.getLoginId())
+								.status(req.getStatus()==null?null:req.getStatus())
+								.build();
+						ipclmsFileUploadDetailsRepo.saveAndFlush(m);
+					}
+				}
+				return true;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private BigDecimal getMaxFileId() {
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BigDecimal> cq = cb.createQuery(BigDecimal.class);
+			Root<IpclmsFileUploadDetails> ifuRoot = cq.from(IpclmsFileUploadDetails.class);
+			
+			cq.select(cb.coalesce(cb.sum(cb.max(ifuRoot.get("fileId")),BigDecimal.ONE), new BigDecimal("5000")));
+			
+			return em.createQuery(cq).getSingleResult();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public JasperDocumentRes downloadUploadDocuments(String id) {
+		JasperDocumentRes res = new JasperDocumentRes();
+		try {
+			Optional<IpclmsFileUploadDetails> optdata =  ipclmsFileUploadDetailsRepo.findById(new BigDecimal(id));
+			if(optdata.isPresent()) {
+				IpclmsFileUploadDetails data = optdata.get();
+				GetFileFromPath filePath = new GetFileFromPath(data.getFilePath());
+				res.setPdfoutfile(filePath.call().getImgUrl());
+				res.setPdfoutfilepath(data.getFilePath());
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	@Override
+	public CommonRes getUploadDocumentList(GetUploadDocumentListReq req) {
+		CommonRes res = new CommonRes();
+		List<GetUploadDocumentListRes> reslist = new ArrayList<GetUploadDocumentListRes>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<IpclmsFileUploadDetails> cq = cb.createQuery(IpclmsFileUploadDetails.class);
+			Root<IpclmsFileUploadDetails> ifuRoot = cq.from(IpclmsFileUploadDetails.class);
+			
+			cq.multiselect(ifuRoot.get("fileId").alias("fileId"),ifuRoot.get("fileName").alias("fileName"),
+					ifuRoot.get("loginId").alias("loginId"),ifuRoot.get("status").alias("status"))
+			.where(cb.equal(ifuRoot.get("enquiryId"), req.getEnquiryId()),
+					cb.equal(ifuRoot.get("status"), req.getStatus()),
+					req.getStatus().equalsIgnoreCase("Q")?cb.equal(ifuRoot.get("quoteNo"), req.getQuoteNo()):cb.conjunction());
+			
+			List<IpclmsFileUploadDetails> list = em.createQuery(cq).getResultList();
+			if(list!=null && list.size()>0) {
+				list.forEach(k -> {
+					GetUploadDocumentListRes m = GetUploadDocumentListRes.builder()
+							.fileId(k.getFileId()==null?"":k.getFileId().toString())
+							.fileName(k.getFileName()==null?"":k.getFileName())
+							.loginId(k.getLoginId()==null?"":k.getLoginId())
+							.status(k.getStatus()==null?"":k.getStatus())
+							.build();
+					reslist.add(m);
+				});
+				if(reslist != null && reslist.size()>0) {
+					res.setCommonResponse(reslist);
+					res.setIsError(false);
+					res.setMessage("SUCCESS");
+				}else {
+					res.setCommonResponse(Collections.emptyList());
+					res.setIsError(true);
+					res.setMessage("FAILED");
+				}
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return res;
 	}
 
 

@@ -1,4 +1,4 @@
-package com.maan.eway.salesLead;
+package com.maan.eway.salesLead.custom;
 
 public interface SalesLeadCustomRepositry {
 
