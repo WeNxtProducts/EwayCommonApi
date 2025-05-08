@@ -34,6 +34,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 @Service
@@ -122,9 +123,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					lostCount.as(String.class).alias("lostCount")
 					);
 
-			// WHERE company_id = '100020'
-			cq.where(cb.equal(root.get("companyId"), req.getCompanyId()));
-			// Convert String to Timestamp
+						// Convert String to Timestamp
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
 			LocalDate end = LocalDate.parse(req.getEndDate(), formatter);
@@ -134,7 +133,10 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
 
 			// Add condition to criteria
-			cq.where(cb.between(root.get("expiryDate"), startTimestamp, endTimestamp));
+			Predicate between = cb.between(root.get("expiryDate"), startTimestamp, endTimestamp);
+			// WHERE company_id = '100020'
+			cq.where(cb.equal(root.get("companyId"), req.getCompanyId()),between);
+
 
 
 			cq.groupBy(root.get("divisionCode"), root.get("divisionName"));
@@ -196,7 +198,6 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				lostCount.as(String.class).alias("lostCount")
 				));
 
-		cq.where(cb.equal(root.get("companyId"), req.getCompanyId()), cb.equal(root.get("divisionCode"), req.getDivisionCode()));
 		// Convert String to Timestamp
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
@@ -207,7 +208,9 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
 
 		// Add condition to criteria
-		cq.where(cb.between(root.get("expiryDate"), startTimestamp, endTimestamp));
+		Predicate between = cb.between(root.get("expiryDate"), startTimestamp, endTimestamp);
+		cq.where(cb.equal(root.get("companyId"), req.getCompanyId()), cb.equal(root.get("divisionCode"), req.getDivisionCode()), between);
+		
 		cq.groupBy(root.get("productCode"), root.get("productName"));
 		
 		res=em.createQuery(cq).getResultList();
@@ -261,8 +264,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				lostCount.as(String.class).alias("lostCount")
 				));
 
-		cq.where(cb.equal(root.get("companyId"), req.getCompanyId()), cb.equal(root.get("divisionCode"), req.getDivisionCode()),
-				cb.equal(root.get("productCode"), req.getProductCode()));
+		
 		// Convert String to Timestamp
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
@@ -273,7 +275,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
 
 		// Add condition to criteria
-		cq.where(cb.between(root.get("expiryDate"), startTimestamp, endTimestamp));
+		Predicate between = cb.between(root.get("expiryDate"), startTimestamp, endTimestamp);
+		
+		cq.where(cb.equal(root.get("companyId"), req.getCompanyId()), cb.equal(root.get("divisionCode"), req.getDivisionCode()),
+				cb.equal(root.get("productCode"), req.getProductCode()), between);
+		
 		cq.groupBy(root.get("polSrcCode"), root.get("polSrcName"));
 		
 		res=em.createQuery(cq).getResultList();
@@ -352,7 +358,10 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
 
 			// Add condition to criteria
-			cq.where(cb.between(r.get("expiryDate"), startTimestamp, endTimestamp));
+			Predicate between = cb.between(r.get("expiryDate"), startTimestamp, endTimestamp);
+			
+			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()), cb.equal(r.get("divisionCode"), req.getDivisionCode()),
+					cb.equal(r.get("polSrcCode"), req.getSourceCode()),between);
 
 			cq.groupBy(r.get("productCode"), r.get("productName"));
 			resList = em.createQuery(cq).getResultList();
@@ -451,7 +460,10 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
 
 			// Add condition to criteria
-			cq.where(cb.between(r.get("expiryDate"), startTimestamp, endTimestamp));
+			Predicate between = cb.between(r.get("expiryDate"), startTimestamp, endTimestamp);
+			
+			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()), cb.equal(r.get("divisionCode"), req.getDivisionCode()),
+					cb.equal(r.get("polSrcCode"), req.getSourceCode()),between);
 
 			policyDetails = em.createQuery(cq).getResultList();
 
@@ -497,8 +509,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					lostCount.as(String.class).alias("lostCount")
 					);
 
-			// WHERE company_id = '100020'
-			cq.where(cb.equal(root.get("companyId"), req.getCompanyId()));
+			
 			// Convert String to Timestamp
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
@@ -509,7 +520,10 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
 
 			// Add condition to criteria
-			cq.where(cb.between(root.get("expiryDate"), startTimestamp, endTimestamp));
+			Predicate between = cb.between(root.get("expiryDate"), startTimestamp, endTimestamp);
+			
+			// WHERE company_id = '100020'
+						cq.where(cb.equal(root.get("companyId"), req.getCompanyId()));
 
 
 			cq.groupBy(root.get("divisionCode"), root.get("divisionName"));
