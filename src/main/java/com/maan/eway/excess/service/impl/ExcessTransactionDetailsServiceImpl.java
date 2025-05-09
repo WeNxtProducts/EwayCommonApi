@@ -200,7 +200,24 @@ public class ExcessTransactionDetailsServiceImpl implements ExcessTransactionDet
 					String productId = String.valueOf(factorDatas.get(0).getProductId());
 					List<ExcessMaster> master = excessRepo.findAllByCompanyIdAndProductIdOrderByExcessId(companyId,
 							productId);
-					mapper.map(master, res);
+					List<EnquiryDetails> enquiryDetailsList = factorDatas.stream().distinct().map(data -> {
+						EnquiryDetails enquiry = new EnquiryDetails();
+						enquiry.setLocationId(String.valueOf(data.getLocationId()));
+						enquiry.setSectionId(String.valueOf(data.getSectionId()));
+						enquiry.setCoverId(String.valueOf(data.getCoverId()));
+						enquiry.setRiskId(String.valueOf(data.getVehicleId()));
+						return enquiry;
+					}).distinct().collect(Collectors.toList());
+					
+					for(EnquiryDetails enquiry:enquiryDetailsList) {
+						List<ExcessMaster> matched = master.stream().filter(m-> m.getSectionId().equalsIgnoreCase(enquiry.getSectionId()) && m.getCoverId().equalsIgnoreCase(enquiry.getCoverId())).toList();
+						if(!matched.isEmpty()) {
+						ExcessMaster mas = matched.get(0);
+						ExcessTransactionRes singleRes = mapper.map(mas, ExcessTransactionRes.class);
+						res.add(singleRes);
+						}
+					}
+					
 				}
 				commonRes.setCommonResponse(res);
 			}

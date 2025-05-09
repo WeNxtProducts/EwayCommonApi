@@ -56,5 +56,11 @@ public class ExcessTransactionRes {
 
     @JsonProperty("CoverName")
     private String coverName;
+    
+    @JsonProperty("LocationId")
+    private String locadationId;
+    
+    @JsonProperty("VehicleId")
+    private String riskId;
 }
 
