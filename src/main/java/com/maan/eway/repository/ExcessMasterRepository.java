@@ -17,4 +17,9 @@ public interface ExcessMasterRepository extends JpaRepository<ExcessMaster, Exce
     
     List<ExcessMaster> findAllByCompanyIdAndProductIdAndSectionIdOrderByExcessId(
     		String companyId, String productId, String sectionId);
+    
+
+    List<ExcessMaster> findAllByCompanyIdAndProductIdOrderByExcessId(
+    		String companyId, String productId);
+    
 }
