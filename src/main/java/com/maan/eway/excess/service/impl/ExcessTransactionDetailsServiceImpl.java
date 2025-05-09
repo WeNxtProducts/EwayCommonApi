@@ -66,7 +66,7 @@ public class ExcessTransactionDetailsServiceImpl implements ExcessTransactionDet
 			List<FactorRateRequestDetails> factorDatas = factorRepo
 					.findByRequestReferenceNo(req.getRequestReferenceNo());
 			List<FactorRateRequestDetails> optedDatas = factorDatas.stream()
-					.filter(f -> f.getUserOpt().equalsIgnoreCase("Y")).toList();
+					.filter(f -> !StringUtils.isBlank(f.getUserOpt()) && f.getUserOpt().equalsIgnoreCase("Y")).toList();
 			// Create list of EnquiryDetails (with no duplicates)
 			List<EnquiryDetails> enquiryDetailsList = optedDatas.stream().distinct().map(data -> {
 				EnquiryDetails enquiry = new EnquiryDetails();
@@ -96,6 +96,7 @@ public class ExcessTransactionDetailsServiceImpl implements ExcessTransactionDet
 							ExcessTransactionDetails map = mapper.map(mas, ExcessTransactionDetails.class);
 							map.setRiskId(Integer.parseInt(enquiry.getRiskId()));
 							map.setLocationId(enquiry.getLocationId());
+							map.setRequestReferenceNo(req.getRequestReferenceNo());
 							excessTranDetailsList.add(map);
 						}
 					}
@@ -125,6 +126,7 @@ public class ExcessTransactionDetailsServiceImpl implements ExcessTransactionDet
 								ExcessTransactionDetails map = mapper.map(mas, ExcessTransactionDetails.class);
 								map.setRiskId(Integer.parseInt(enquiry.getRiskId()));
 								map.setLocationId(enquiry.getLocationId());
+								map.setRequestReferenceNo(req.getRequestReferenceNo());
 								excessTranDetailsList.add(map);
 							}
 						}
