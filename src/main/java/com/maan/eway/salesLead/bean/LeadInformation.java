@@ -105,6 +105,9 @@ public class LeadInformation  implements Serializable{
 	
 	@Column(name = "STATUS")
 	private String status;
+
+	@Column(name = "STATUS_DESC")
+	private String statusDesc;
 	
 	@Column(name = "STREET")
 	private String street;
