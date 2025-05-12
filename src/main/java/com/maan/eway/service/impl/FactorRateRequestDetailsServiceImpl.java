@@ -1473,7 +1473,6 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			// Find Covers
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
 			
-			
 			// Master Referals
 			List<MasterReferralDetails> findMasterRefrals = masReferralRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			// Uw Referals
@@ -1484,22 +1483,31 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 			
 				// Set Covers
 				List<FactorRateRequestDetails> filterVehicleCovers = null;
+				
+				
 				if(product.getMotorYn().equals("A") || product.getMotorYn().equals("H"))
 				{
+					if(product.getProductName().equals("Travel")) {
+						filterVehicleCovers=   findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
+								o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId())  && o.getLocationId().toString().equals(res.getLocationId()) 
+								&& (res.getCoverId() == null || Objects.equals(o.getCoverId(), res.getCoverId()))).collect(Collectors.toList());
+					}
+					else {
 					filterVehicleCovers=   findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
 							o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId())  && o.getLocationId().toString().equals(res.getLocationId()) 
 							&& Objects.equals(o.getCoverId(), res.getCoverId())).collect(Collectors.toList());
+					}
 					
-				}else {
+				}
+				
+				else {
 					filterVehicleCovers=   findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
 								o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId())  
 								&& o.getLocationId().toString().equals(res.getLocationId()) ).collect(Collectors.toList());
-						
+	
 				}
-				
+
 				Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
-				
-				
 
 				List<Cover> coverListRes = 	getCoversList(groupByCover);
 				coverListRes.forEach(cov -> {
@@ -2721,6 +2729,7 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					CalcEngine engine= new CalcEngine();
 					Integer sectionId =Integer.valueOf(sectiondetails.getSectionId());
 					Integer vehicleId =sectiondetails.getVehicleId();
+					log.info(vehicleId);
 					Integer LocationId=Integer.valueOf(loctondetails.getLocationId());
 					List<CoverIdReq2> coverList =sectiondetails.getCoverIdList().isEmpty() || sectiondetails.getCoverIdList().size()==0 ?Collections.emptyList():sectiondetails.getCoverIdList();
 					if(!coverList.isEmpty()) {
@@ -2748,8 +2757,8 @@ private PolicyCoverDataEndtRepository policyCoverEndtRepo;
 					 * ,LocationId ) ;
 					 */
 					findCovers= repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdInAndLocationIdOrderByCoverIdAsc(req.getRequestReferenceNo() , sectiondetails.getVehicleId() ,
-							req.getCompanyId() , Integer.valueOf(req.getProductId()) , sectionid ,LocationId ) ;	
-				
+							req.getCompanyId() , Integer.valueOf(req.getProductId()) , sectionid ,LocationId );
+	
 					List<ProductSectionMaster> sectionList = getProductSectionDropdown(req.getCompanyId(), req.getProductId(), sectiondetails.getSectionId() ) ;
 					String productType  =sectionList.size()> 0 ? sectionList.get(0).getMotorYn() :  "M" ; 
 					
