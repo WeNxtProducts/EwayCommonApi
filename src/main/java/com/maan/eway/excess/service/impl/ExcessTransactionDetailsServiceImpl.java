@@ -2,7 +2,6 @@ package com.maan.eway.excess.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -11,6 +10,8 @@ import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.bean.ExcessMaster;
 import com.maan.eway.bean.ExcessTransactionDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
@@ -25,10 +26,6 @@ import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 
 import groovy.transform.EqualsAndHashCode;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.Data;
 
 @Service
@@ -190,7 +187,10 @@ public class ExcessTransactionDetailsServiceImpl implements ExcessTransactionDet
 			List<ExcessTransactionDetails> excessTranDetails = excesstranRepo
 					.findByRequestReferenceNo(req.getRequestReferenceNo());
 			if (!CollectionUtils.isEmpty(excessTranDetails)) {
-				mapper.map(excessTranDetails, res);
+				for(ExcessTransactionDetails e:excessTranDetails) {
+					ExcessTransactionRes et = mapper.map(e, ExcessTransactionRes.class);
+					res.add(et);
+				}
 				commonRes.setCommonResponse(res);
 			} else {
 				List<FactorRateRequestDetails> factorDatas = factorRepo
@@ -233,7 +233,7 @@ public class ExcessTransactionDetailsServiceImpl implements ExcessTransactionDet
 			commonRes.setMessage("Failed");
 			commonRes.setIsError(true);
 		}
-		return commonRes;
+				return commonRes;
 	}
 
 }
