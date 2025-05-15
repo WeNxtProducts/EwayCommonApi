@@ -42,7 +42,17 @@ public class ValuationQuoteDetailsRes {
 		
 		@JsonProperty("SumInsured")
 	    private Double     sumInsured ;
+		
+		@JsonProperty("BrokerName")
+	    private String   brokerName;
+	    
+		@JsonProperty("BrokerMail")
+	    private String   brokerMail;
+		
+		@JsonProperty("BrokerMobileNo")
+	    private String   brokerMobileNo;
 
+		
 		
 
 }

@@ -66,7 +66,7 @@ public class RegentValuation  {
 	public PremiaResponse pushValuation(ValuationReq req) {
 		PremiaResponse resp=new PremiaResponse();
 		try {
-		List<ValuationQuoteDetailsRes>list=getQuoteDetails(req.getQuoteNo());
+		List<ValuationQuoteDetailsRes>list=valuationImpl.getQuoteDetails(req.getQuoteNo());
 		if(!CollectionUtils.isEmpty(list)) {
 			for (ValuationQuoteDetailsRes quote : list) {
 				ValuationIntegration data=new ValuationIntegration();
@@ -133,7 +133,7 @@ public class RegentValuation  {
 					vdata.setRecordId(recordId);
 					valuationIntegrationRepository.saveAndFlush(vdata);
 					resp.setResponse("Valuation Request Created Successfully");
-					valuationImpl.sendSMSMail(vdata);
+					valuationImpl.sendSMSMail(vdata,"VALUATION_NOTIFICATION");
 				}
 			}
 			
@@ -146,7 +146,7 @@ public class RegentValuation  {
 		return resp;
 	}
 
-	private List<ValuationQuoteDetailsRes> getQuoteDetails(String quoteNo) {
+	/*private List<ValuationQuoteDetailsRes> getQuoteDetails(String quoteNo) {
 		List<ValuationQuoteDetailsRes>list=null;
 		try {
 		// Criteria
@@ -183,7 +183,7 @@ public class RegentValuation  {
 			e.printStackTrace();
 		}
 		return list;
-	}
+	}*/
 
 	public String getAccessTokern(ValuationCompanyMaster list) {
 		String token="";
