@@ -631,7 +631,7 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		query.select(c);
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("paymentMasterId")));
+		orderList.add(cb.desc(c.get("paymentMasterId")));
 		
 		// Effective Date Start Max Filter
 		Subquery<Date> effectiveDate = query.subquery(Date.class);
