@@ -122,4 +122,7 @@ public class AdminTiraIntegrationGirdRes {
 	@JsonProperty("ResponseStatusDesc")
 	private String responseStatusDesc;
 		
+
+    @JsonProperty("CustomerReferenceNo")
+    private String   customerReferenceNo ;
 }

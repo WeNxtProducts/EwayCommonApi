@@ -462,6 +462,7 @@ public class AdminTiraInterationGridServiceImpl implements AdminTiraIntegrationS
 				res.setUserType(data.get("userType")==null?null:data.get("userType").toString());
 				res.setInceptionDate(data.get("inceptionDate")==null?null:sdf.format(data.get("inceptionDate")).toString());
 				res.setExpiryDate(data.get("expiryDate")==null?null:sdf.format(data.get("expiryDate")).toString());
+				res.setCustomerReferenceNo(data.get("customerReferenceNo")==null?null:data.get("customerReferenceNo").toString());
 				reslist.add(res);
 			}
 		} catch (Exception e) {
