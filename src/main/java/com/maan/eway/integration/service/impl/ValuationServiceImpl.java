@@ -14,8 +14,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ValuationIntegration;
 import com.maan.eway.integration.req.ValuationDetailsReq;
 import com.maan.eway.integration.req.ValuationListReq;
@@ -23,6 +26,7 @@ import com.maan.eway.integration.req.ValuationReq;
 import com.maan.eway.integration.req.ValuationStatusReq;
 import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.integration.res.ValuationListRes;
+import com.maan.eway.integration.res.ValuationQuoteDetailsRes;
 import com.maan.eway.integration.service.ValuationService;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
@@ -159,7 +163,45 @@ public class ValuationServiceImpl implements ValuationService {
 		}
 		return list;
 	}
+	public List<ValuationQuoteDetailsRes> getQuoteDetails(String quoteNo) {
+		List<ValuationQuoteDetailsRes>list=null;
+		try {
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ValuationQuoteDetailsRes> query = cb.createQuery(ValuationQuoteDetailsRes.class);
 
+		// Find All
+		Root<MotorDataDetails> a = query.from(MotorDataDetails.class);
+		Root<PersonalInfo> b = query.from(PersonalInfo.class);
+		Root<HomePositionMaster> c = query.from(HomePositionMaster.class);
+		Root<LoginUserInfo> d = query.from(LoginUserInfo.class);
+		// Select
+		query.multiselect(a.get("quoteNo").alias("quoteNo"),a.get("companyId").alias("companyId"),a.get("productId").alias("productId"),
+				a.get("vehicleId").alias("vehicleId"),a.get("registrationNumber").alias("vehicleRegNo"),b.get("clientName").alias("firstName"),
+				b.get("email1").alias("email"),b.get("mobileNo1").alias("customerMobile"),c.get("policyNo").alias("policyNo"),c.get("branchCode").alias("branchCode"),
+				a.get("sumInsured").alias("sumInsured"),d.get("userName").alias("brokerName"),d.get("userMail").alias("brokerMail"),d.get("userMobile").alias("brokerMobileNo"));
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(a.get("vehicleId")));
+
+		
+		// Where
+		Predicate n1 = cb.equal(a.get("quoteNo"), quoteNo);
+		Predicate n2 = cb.equal(a.get("policyType"), "1");
+		Predicate n3 = cb.equal(a.get("quoteNo"), c.get("quoteNo"));
+		Predicate n4 = cb.equal(b.get("customerId"), c.get("customerId"));
+		Predicate n5 = cb.equal(c.get("loginId"), d.get("loginId"));
+		query.where(n1, n2, n3, n4,n5).orderBy(orderList);
+
+		// Get Result
+		TypedQuery<ValuationQuoteDetailsRes> result = em.createQuery(query);
+		list = result.getResultList();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 	@Override
 	public List<ValuationStatusReq> getValuationStatusPendingList() {
 		List<ValuationStatusReq>list=new ArrayList<>();
@@ -177,9 +219,16 @@ public class ValuationServiceImpl implements ValuationService {
 		return list;
 	}
 
-	public void sendSMSMail(ValuationIntegration vdata) {
+	public void sendSMSMail(ValuationIntegration vdata,String type) {
 		boolean sms=true,mail=true;
+		String brokerMail="",brokerName="",brokerMobileNo="";
 		try {
+			List<ValuationQuoteDetailsRes>list=getQuoteDetails(vdata.getQuoteNo());
+			if(!CollectionUtils.isEmpty(list)) {
+				brokerMail=list.get(0).getBrokerMail();
+				brokerName=list.get(0).getBrokerName();
+				brokerMobileNo=list.get(0).getBrokerMobileNo();
+			}
 			 String mobileNo=vdata.getCustomerMobile();
 			 String email=vdata.getEmail();
 			 if(StringUtils.isBlank(email)) {
@@ -195,8 +244,10 @@ public class ValuationServiceImpl implements ValuationService {
 				calend.setTime(new Date()); 
 				calend.add(Calendar.DATE, 1); 
 				NotifTransactionDetails nt = NotifTransactionDetails.builder()
-						.brokerCompanyName(vdata.getFirstName())
-						.brokerMailId(vdata.getEmail())					
+						.brokerCompanyName(brokerName)
+						.brokerMailId(brokerMail)
+						.brokerPhoneCode(Integer.parseInt("254"))
+						.brokerPhoneNo(StringUtils.isBlank(brokerMobileNo)?null:new BigDecimal(brokerMobileNo))
 						.companyName("First Insurance")
 						.customerPhoneCode(Integer.parseInt("254"))
 						.customerPhoneNo(vdata.getCustomerMobile()==null?null:new BigDecimal(vdata.getCustomerMobile()))
@@ -219,6 +270,8 @@ public class ValuationServiceImpl implements ValuationService {
 						.companyLogo(cm.get(0).getCompanyLogo())
 						.companyAddress(cm.get(0).getCompanyAddress())											
 						.tinyUrlActive("N").pushedBy(vdata.getValCompanyName())
+						.insuranceClass(vdata.getSumInsured()==null?"":vdata.getSumInsured().toString())
+						.premiumAmount(vdata.getExceptionSumInsured()==null?"":vdata.getExceptionSumInsured().toString())
 						//.tinyGroupId(tinyGroupId)
 						.build();
 				NotifTransactionDetails sv = notifTrans.save(nt);

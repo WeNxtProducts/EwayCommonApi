@@ -579,6 +579,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 
 					JsonObject innerResponse=new JsonObject();
 					innerResponse.addProperty("payment_gateway_url", resp.get("redirect_url").getAsString());
+					innerResponse.addProperty("order_tracking_id", resp.get("order_tracking_id").getAsString());
 					payment.setResSignature(resp.get("order_tracking_id").getAsString());	
 					paymentDetailRepo.save(payment);
 					JsonArray asJsonArray =new JsonArray(1);
@@ -855,7 +856,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 							paymentInfo.setUpdatedDate(new Date());
 							paymentInfo.setMerchantReference(payment.getMerchantReference());
 							paymentinforepo.save(paymentInfo);
-
+							if(paymentInfo.getProductId()!=3 && paymentInfo.getProductId()!=11) {
 							if("ACCEPTED".equals(payment.getPaymentStatus())) {
 								try {
 									LoginRequest mslogin=new LoginRequest();
@@ -882,6 +883,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 								req.setPaymentType(payment.getPaymentType());
 
 								paymentService.generatePolicy(paymentInfo,req,payment,token);
+							}
 							}
 							isPaymentdone=true;
 						}

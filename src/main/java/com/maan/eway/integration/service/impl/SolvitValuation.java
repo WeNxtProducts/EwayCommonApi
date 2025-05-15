@@ -34,6 +34,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ValuationCompanyMaster;
@@ -71,7 +72,7 @@ public class SolvitValuation  {
 	public PremiaResponse pushValuation(ValuationReq req) {
 		PremiaResponse resp=new PremiaResponse();
 		try {
-		List<ValuationQuoteDetailsRes>list=getQuoteDetails(req.getQuoteNo());
+		List<ValuationQuoteDetailsRes>list=valuationImpl.getQuoteDetails(req.getQuoteNo());
 		if(!CollectionUtils.isEmpty(list)) {
 			for (ValuationQuoteDetailsRes quote : list) {
 				ValuationIntegration data=new ValuationIntegration();
@@ -146,7 +147,7 @@ public class SolvitValuation  {
 				vdata.setRecordId(recordId);
 				valuationIntegrationRepository.saveAndFlush(vdata);
 				resp.setResponse("Valuation Request Created Successfully");
-				valuationImpl.sendSMSMail(vdata);
+				valuationImpl.sendSMSMail(vdata,"VALUATION_NOTIFICATION");
 			}
 			
 		}
@@ -159,44 +160,7 @@ public class SolvitValuation  {
 	}
 
 
-	private List<ValuationQuoteDetailsRes> getQuoteDetails(String quoteNo) {
-		List<ValuationQuoteDetailsRes>list=null;
-		try {
-		// Criteria
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ValuationQuoteDetailsRes> query = cb.createQuery(ValuationQuoteDetailsRes.class);
-
-		// Find All
-		Root<MotorDataDetails> a = query.from(MotorDataDetails.class);
-		Root<PersonalInfo> b = query.from(PersonalInfo.class);
-		Root<HomePositionMaster> c = query.from(HomePositionMaster.class);
-
-		// Select
-		query.multiselect(a.get("quoteNo").alias("quoteNo"),a.get("companyId").alias("companyId"),a.get("productId").alias("productId"),
-				a.get("vehicleId").alias("vehicleId"),a.get("registrationNumber").alias("vehicleRegNo"),b.get("clientName").alias("firstName"),
-				b.get("email1").alias("email"),b.get("mobileNo1").alias("customerMobile"),c.get("policyNo").alias("policyNo"),c.get("branchCode").alias("branchCode"),a.get("sumInsured").alias("sumInsured"));
-
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(a.get("vehicleId")));
-
-		
-		// Where
-		Predicate n1 = cb.equal(a.get("quoteNo"), quoteNo);
-		Predicate n2 = cb.equal(a.get("policyType"), "1");
-		Predicate n3 = cb.equal(a.get("quoteNo"), c.get("quoteNo"));
-		Predicate n4 = cb.equal(b.get("customerId"), c.get("customerId"));
-
-		query.where(n1, n2, n3, n4).orderBy(orderList);
-
-		// Get Result
-		TypedQuery<ValuationQuoteDetailsRes> result = em.createQuery(query);
-		list = result.getResultList();
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
+	
 
 	public String getAccessTokern(ValuationCompanyMaster list) {
 		String token="";
@@ -337,6 +301,7 @@ public class SolvitValuation  {
 							if(Math.abs(diffsuminsured)>1000) {
 								vdata.setExceptionStatus("E");
 								vdata.setExceptionRemarks("SumInsured Difference is High");
+								valuationImpl.sendSMSMail(vdata,"VALUATION_STATUS");
 							}
 							}
 							valuationIntegrationRepository.saveAndFlush(vdata);
