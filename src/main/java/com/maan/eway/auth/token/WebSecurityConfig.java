@@ -82,7 +82,7 @@ public class WebSecurityConfig  {
     		"/basicauth/**","/embedded/create/**","/post/notification/ack/mail","/authentication/doauth","/selcom/v1/checkout/webhook"
     		,"/post/notification/pushnotification"
     		,"/claim/get/policydetails",
-    		"/claim/viewQuoteDetails","/api/ussd"};
+    		"/claim/viewQuoteDetails"};
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -159,6 +159,7 @@ public class WebSecurityConfig  {
     					.permitAll()
     					.requestMatchers("/api/generatesequence","/api/updatebycustrefno","/basicauth/**","/embedded/create/**","post/notification/ack/mail")
     					.hasRole("USER")
+    					.requestMatchers("/api/ussd").hasRole("USSD_USER")
     					).httpBasic(b-> b.authenticationEntryPoint(basicAuthenticationPoint))
     			 .formLogin(
              			formLogin-> formLogin.loginPage("/admin/region/list")
@@ -179,7 +180,13 @@ public class WebSecurityConfig  {
                 //  .password("ewayapi123#")
                   .roles("USER")
                   .build();
-          return new InMemoryUserDetailsManager(user);
+    	  
+    	  UserDetails user2 = User.builder()
+    	            .username("UssdBroker")
+    	            .password(bCryptPasswordEncoder().encode("Admin@01"))
+    	            .roles("USSD_USER") 
+    	            .build();
+          return new InMemoryUserDetailsManager(user,user2);
 	}
     
     @Autowired

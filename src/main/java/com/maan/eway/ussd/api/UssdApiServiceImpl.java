@@ -488,6 +488,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      sectionDataSave.setPrevCovernoteRefno(prevCoverNoteRefNo);
 	      sectionDataSave.setCommsissionPercentage(BigDecimal.valueOf(commissionPercentage));
 	      sectionDataSave.setCommissionAmount(BigDecimal.valueOf(commissionAmount));
+	      sectionDataSave.setCoverId(0);
 	      	      
 	      sectionRepo.saveAndFlush(sectionDataSave);
 	      
@@ -675,7 +676,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      String makePaymentReq = objectPrint.toJson(makePaymentMap);
 	      System.out.println("makePaymentReq" + makePaymentReq);
 	    String makePaymentApi = "http://localhost:8086/EwayCommonApi/payment/makepayment";
-	   //   String makePaymentApi = "http://192.168.1.42:8086/payment/makepayment";
+	 //     String makePaymentApi = "http://192.168.1.42:8086/payment/makepayment";
 	      response = this.callEwayApi(makePaymentApi, makePaymentReq);
 	      System.out.println("makePaymentRes" + response);
 	      Map<String, Object> makePaymentResult = null;
@@ -764,7 +765,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	         tokReq.put("Password", "Admin@10");
 	         tokReq.put("ReLoginKey", "Y");
 	       String tokenApi = "http://localhost:8086/EwayCommonApi/authentication/login";
-	      //   String tokenApi = "http://192.168.1.42:8086/authentication/login";
+	    //     String tokenApi = "http://192.168.1.42:8086/authentication/login";
 	        // System.out.println("Token Api URL ==> " + tokenApi);
 	         String jsonTokenRequest = (new Gson()).toJson(tokReq);
 	         CloseableHttpClient httpClient = createHttpClientWithTimeouts();
