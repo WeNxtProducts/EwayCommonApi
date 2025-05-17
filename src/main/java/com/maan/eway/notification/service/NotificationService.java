@@ -653,8 +653,8 @@ public class NotificationService {
 			if(loginInfo!=null) {
 			brokerReq.setBrokerCompanyName(loginInfo.getCompanyName()==null?loginInfo.getUserName(): loginInfo.getCompanyName());
 			brokerReq.setBrokerMailId(loginInfo.getUserMail()==null?"":loginInfo.getUserMail());
-			brokerReq.setBrokerMessengerCode(loginInfo.getWhatsappCodeDesc()==null?null:Integer.valueOf(loginInfo.getWhatsappCodeDesc()));
-			brokerReq.setBrokerMessengerPhone(loginInfo.getWhatsappNo()==null? BigDecimal.ZERO: new BigDecimal(loginInfo.getWhatsappNo().toString()));
+			brokerReq.setBrokerMessengerCode(StringUtils.isBlank(loginInfo.getWhatsappCodeDesc())?null:Integer.valueOf(loginInfo.getWhatsappCodeDesc()));
+			brokerReq.setBrokerMessengerPhone(StringUtils.isBlank(loginInfo.getWhatsappNo())? BigDecimal.ZERO: new BigDecimal(loginInfo.getWhatsappNo().toString()));
 			brokerReq.setBrokerPhoneCode(loginInfo.getMobileCodeDesc()==null?null:Integer.valueOf((loginInfo.getMobileCodeDesc())));
 			brokerReq.setBrokerPhoneNo(loginInfo.getUserMobile()==null?BigDecimal.ZERO:new BigDecimal(loginInfo.getUserMobile()));
 			brokerReq.setBrokerName(loginInfo.getUserName());
@@ -667,8 +667,8 @@ public class NotificationService {
 				cusReq.setCustomerName(customerData.getClientName());
 				cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
 				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
-				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
-				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				cusReq.setCustomerMessengerCode(StringUtils.isNotBlank(customerData.getWhatsappCodeDesc())?Integer.valueOf(customerData.getWhatsappCodeDesc()):0);
+				cusReq.setCustomerMessengerPhone(StringUtils.isNotBlank(customerData.getWhatsappNo())? new BigDecimal(customerData.getWhatsappNo()):BigDecimal.ZERO);
 			}
 
 			// UnderWriter Info

@@ -1329,14 +1329,17 @@ public class JasperCustomServiceImple {
 	}
 	
 	public String getStrickerNo(String quoteNo,String vehicleId) {
-		String result = "";
+		String result = null;
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			CriteriaQuery<SectionDataDetails> cq = cb.createQuery(SectionDataDetails.class);
 			Root<SectionDataDetails> stnoRoot = cq.from(SectionDataDetails.class);
-			cq.select(stnoRoot.get("stickerNumber")).where(cb.equal(stnoRoot.get("quoteNo"), quoteNo),
+			cq.select(stnoRoot).where(cb.equal(stnoRoot.get("quoteNo"), quoteNo), // stnoRoot.get("stickerNumber")
 					cb.equal(stnoRoot.get("riskId"),vehicleId));
-			result = em.createQuery(cq).getSingleResult();
+			List<SectionDataDetails> data = em.createQuery(cq).getResultList();
+			if(data!=null && data.size()>0) {
+				result = data.get(0).getStickerNumber();
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
