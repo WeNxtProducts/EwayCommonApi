@@ -886,6 +886,8 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 							}
 							}
 							isPaymentdone=true;
+						}else if("ACCEPTED".equals(paymentInfo.getPaymentStatus())) {
+							isPaymentdone=true;
 						}
 
 
