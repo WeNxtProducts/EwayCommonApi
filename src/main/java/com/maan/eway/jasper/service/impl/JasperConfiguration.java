@@ -73,7 +73,7 @@ public class JasperConfiguration {
 	// Enable This 4 Value For run in Application properties 
 	@Value("${spring.datasource.driver-class-name}")
 	private String driverclassname;
-	@Value("${spring.datasource.url}")
+	@Value("${spring.datasource.jdbc-url}")
 	private String datasourceurl;
 	@Value("${spring.datasource.username}")
 	private String datausername;

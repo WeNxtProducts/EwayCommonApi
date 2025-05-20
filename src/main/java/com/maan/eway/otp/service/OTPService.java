@@ -383,13 +383,21 @@ public class OTPService {
 			
 			Customer cusReq = new Customer();
 			
-			cusReq.setCustomerMailid(data.getEmailId());
+			cusReq.setCustomerMailid(data.getEmailId() != null && !data.getEmailId().isEmpty() ? data.getEmailId() : null);
 			cusReq.setCustomerName("Customer");
-			cusReq.setCustomerPhoneCode(Integer.valueOf(data.getMobileCode()));
-			cusReq.setCustomerPhoneNo(new BigDecimal(data.getMobileNo()));
-			cusReq.setCustomerMessengerCode(Integer.valueOf(data.getWhatsappCode()));
-			cusReq.setCustomerMessengerPhone(new BigDecimal(data.getWhatsappNo()));
-			cusReq.setCustomerRefno(data.getCustomerId());
+			cusReq.setCustomerPhoneCode(
+					data.getMobileNo() != null && !data.getMobileNo().isEmpty() ? Integer.valueOf(data.getMobileCode())
+							: null);
+			cusReq.setCustomerPhoneNo(
+					data.getMobileNo() != null && !data.getMobileNo().isEmpty() ? new BigDecimal(data.getMobileNo())
+							: null);
+			cusReq.setCustomerMessengerCode(data.getWhatsappCode() != null && !data.getWhatsappCode().isEmpty()
+					? Integer.valueOf(data.getWhatsappCode())
+					: null);
+			cusReq.setCustomerMessengerPhone(data.getWhatsappNo() != null && !data.getWhatsappNo().isEmpty()
+					? new BigDecimal(data.getWhatsappNo())
+					: null);
+			cusReq.setCustomerRefno(data.getCustomerId() != null && !data.getCustomerId().isEmpty() ? data.getCustomerId() : null);
 			 
 			List<InsuranceCompanyMaster> company = insuranceRepo.findByCompanyIdOrderByAmendIdDesc(data.getCompanyId());
 

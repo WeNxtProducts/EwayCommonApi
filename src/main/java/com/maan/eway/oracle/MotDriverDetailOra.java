@@ -10,7 +10,7 @@
  */
 
 
-package com.maan.eway.bean;
+package com.maan.eway.oracle;
 
 
 import java.io.Serializable;
@@ -51,11 +51,11 @@ import lombok.ToString;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(MotDriverDetailId.class)
+@IdClass(MotDriverDetailIdOra.class)
 @Table(name="mot_driver_detail")
 
 
-public class MotDriverDetail implements Serializable {
+public class MotDriverDetailOra implements Serializable {
  
 private static final long serialVersionUID = 1L;
  

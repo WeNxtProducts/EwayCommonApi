@@ -53,7 +53,7 @@ import com.maan.eway.common.res.CertificateTypeRes;
 import com.maan.eway.common.res.GetMachineryContentRes;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.integration.req.QueryKeyReq;
-import com.maan.eway.integration.service.impl.OracleQuery;
+import com.maan.eway.integration.service.impl.MySqlQuery;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
@@ -118,7 +118,7 @@ public class DropDownServiceImpl implements DropDownService {
 	private PolicyTypeMasterServiceImpl service;
 
 	@Autowired
-	private OracleQuery oracle;
+	private MySqlQuery oracle;
 
 	@Autowired
 	private CommonDataDetailsRepository commonRepo;

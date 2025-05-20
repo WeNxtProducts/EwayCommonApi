@@ -18,8 +18,7 @@
 		<java.version>17</java.version>
 		<cache2k-version>2.6.1.Final</cache2k-version>
 	</properties>
-	<dependencies
-	>
+	<dependencies>
 	<dependency>
 	    <groupId>org.codehaus.groovy</groupId>
 	    <artifactId>groovy-all</artifactId>
@@ -72,6 +71,11 @@
 			     <groupId>mysql</groupId>
 			    <artifactId>mysql-connector-java</artifactId>
 			    <version>8.0.33</version> 
+		</dependency>
+		<dependency>
+    		<groupId>com.oracle.database.jdbc</groupId>
+    		<artifactId>ojdbc8</artifactId>
+    		<version>19.3.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -318,10 +322,10 @@
     </dependency>
     
     <dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20240303</version>
-</dependency>
+	    <groupId>org.json</groupId>
+	    <artifactId>json</artifactId>
+	    <version>20240303</version>
+	</dependency>
 
 <!--	<dependency>
 		<groupId>com.3rdparty</groupId>
@@ -331,6 +335,23 @@
 		 <systemPath>${basedir}\src\main\resources\lib\Arial_IReport_Pdf_Arabic.jar</systemPath>   
 	</dependency>-->
 	</dependencies>
+	<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>libraries-bom</artifactId>
+      <version>26.59.0</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+    
+     	 <dependency>
+	    <groupId>com.google.cloud</groupId>
+	    <artifactId>google-cloud-vision</artifactId>
+	    </dependency>
+ 	 </dependencies>
+</dependencyManagement>
+
 	<build>
 		<plugins>
 			<plugin>

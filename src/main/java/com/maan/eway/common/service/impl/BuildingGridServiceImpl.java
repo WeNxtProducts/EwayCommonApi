@@ -64,7 +64,7 @@ import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.BuildingGridService;
-import com.maan.eway.integration.service.impl.OracleQuery;
+import com.maan.eway.integration.service.impl.MySqlQuery;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
@@ -174,7 +174,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 	@Autowired
 	private BuildingRiskDetailsRepository buildRiskRepo;
 	@Autowired
-	private OracleQuery oracle ;
+	private MySqlQuery oracle ;
 	
 	 @Autowired
      private GenerateSeqNoServiceImpl genSeqNoService ;

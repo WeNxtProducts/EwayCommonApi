@@ -7,32 +7,21 @@ import java.util.Properties;
 
 import org.hibernate.query.sql.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-
-import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Qualifier;
-import java.sql.Connection;
-import java.sql.Statement;
+import jakarta.transaction.Transactional;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON) // change to prototype
 @PropertySource("classpath:oracle.properties")
-public class OracleQuery {
-	
-	@Autowired
-	@Qualifier("oracleDataSource")
-	private DataSource oracleDataSource;
-	
-	@PersistenceContext(unitName = "oracle")
+public class MySqlQuery {
+	@PersistenceContext(unitName = "mysql")
 	private EntityManager em;
 	
 	private static Properties properties ;
@@ -76,25 +65,16 @@ public class OracleQuery {
 		return null;
 	}
 	
-	@Transactional("oracleTransactionManager")
+	@Transactional
 	public boolean insert(String query) {
-		try (Connection conn = oracleDataSource.getConnection();
-		         Statement stmt = conn.createStatement()) {
-
-		        stmt.executeUpdate(query);
-		        return true;
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		        return false;
-		    }
-//		try {
-//			em.createNativeQuery(query).executeUpdate(); 
-//			
-//			return true;
-//		}catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return false;
+		try {
+			em.createNativeQuery(query).executeUpdate(); 
+			
+			return true;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public List<Map<String, Object>> getListFromQueryWithoutKey(String query, List<String> params) {
