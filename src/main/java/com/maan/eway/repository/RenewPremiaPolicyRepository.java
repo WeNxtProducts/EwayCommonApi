@@ -12,7 +12,7 @@ import com.maan.eway.bean.RenewPremiaPolicyId;
  
 public interface RenewPremiaPolicyRepository  extends JpaRepository<RenewPremiaPolicy,RenewPremiaPolicyId > , JpaSpecificationExecutor<RenewPremiaPolicy> {
 
-	List<RenewPremiaPolicy> findByStatusAndTransactionId(String string, String tranId);
+	List<RenewPremiaPolicy> findByCurrentStatusAndTransactionId(String string, String tranId);
 
 	List<RenewPremiaPolicy> findAllByInsuredMobile(String insuredMobile);
 

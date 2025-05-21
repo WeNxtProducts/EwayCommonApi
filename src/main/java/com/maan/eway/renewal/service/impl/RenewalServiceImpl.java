@@ -1554,7 +1554,7 @@ public class RenewalServiceImpl implements RenewalService{
 		List<RenewDataRequest>res=new ArrayList<>();
 		try {
 			String tranId=saveRenewPremiaPolicy();
-			List<RenewPremiaPolicy> rqplist=rppRepo.findByStatusAndTransactionId("RP",tranId);
+			List<RenewPremiaPolicy> rqplist=rppRepo.findByCurrentStatusAndTransactionId("RP",tranId);
 			//InsertPremiaRenewal(rqplist,tranId); 
 			log.info("getPolicyRequestList--> transactionId: " + tranId);
 			for (RenewPremiaPolicy rdata : rqplist) {

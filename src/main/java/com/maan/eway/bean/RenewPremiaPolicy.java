@@ -199,8 +199,8 @@ private String competitor;
 @Column(name = "ENTRY_DATE")
 private Date entryDate;
 
-@Column(name = "STATUS", length = 50)
-private String status;
+//@Column(name = "STATUS", length = 50)
+//private String status;
 }
 
 
