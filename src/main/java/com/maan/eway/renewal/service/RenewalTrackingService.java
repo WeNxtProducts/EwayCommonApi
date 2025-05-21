@@ -34,7 +34,7 @@ public interface RenewalTrackingService {
 
 	CommonRes updateRenewalPremiaPolicy(UpdateRenewalPremiaPolicyReq req);
 
-	List<PolicyDet> getTopPremiumCustomerDetails(RenewalTrackReq req);
+	CommonRes getTopPremiumCustomerDetails(RenewalTrackReq req);
 
 
 }

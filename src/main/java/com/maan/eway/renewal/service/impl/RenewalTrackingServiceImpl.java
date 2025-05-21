@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -14,7 +15,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.RenewPremiaPolicy;
 import com.maan.eway.common.res.CommonRes;
@@ -868,22 +871,41 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		return res;
 	}
 	
-	
-	public List<PolicyDet> getTopPremiumCustomerDetails(RenewalTrackReq req){
+	@Override
+	public CommonRes getTopPremiumCustomerDetails(RenewalTrackReq req){
+		CommonRes res = new CommonRes();
 		List<PolicyDet> policyDetails = new ArrayList<PolicyDet>();
 		try{
-			if(StringUtils.isNotEmpty(req.getCompanyId()) &&  StringUtils.isEmpty(req.getDivisionCode()) &&  StringUtils.isEmpty(req.getProductCode()) &&  StringUtils.isEmpty(req.getSourceCode()) &&
-				    StringUtils.isEmpty(req.getStartDate()) && StringUtils.isEmpty(req.getEndDate()) && StringUtils.isEmpty(req.getLoginId())) {
+			if(!StringUtils.isEmpty(req.getCompanyId()) &&  StringUtils.isEmpty(req.getDivisionCode()) &&  StringUtils.isEmpty(req.getProductCode()) &&  StringUtils.isEmpty(req.getSourceCode()) &&
+				    !StringUtils.isEmpty(req.getStartDate()) && !StringUtils.isEmpty(req.getEndDate()) && StringUtils.isEmpty(req.getLoginId())) {
 				policyDetails=getTopPremiumCustomerDetailsByCompany( req);
+			}else if(!StringUtils.isEmpty(req.getCompanyId()) &&  !StringUtils.isEmpty(req.getDivisionCode()) &&  StringUtils.isEmpty(req.getProductCode()) &&  StringUtils.isEmpty(req.getSourceCode()) &&
+				    !StringUtils.isEmpty(req.getStartDate()) && !StringUtils.isEmpty(req.getEndDate()) && StringUtils.isEmpty(req.getLoginId())) {
+				policyDetails=getTopPremiumCustomerDetailsByDivision( req);
+			}else if(!StringUtils.isEmpty(req.getCompanyId()) &&  !StringUtils.isEmpty(req.getDivisionCode()) &&  !StringUtils.isEmpty(req.getProductCode()) &&  StringUtils.isEmpty(req.getSourceCode()) &&
+				    !StringUtils.isEmpty(req.getStartDate()) && !StringUtils.isEmpty(req.getEndDate()) && StringUtils.isEmpty(req.getLoginId())) {
+				policyDetails=getTopPremiumCustomerDetailsByProductwise( req);
 			}
+			if(policyDetails.isEmpty()) {
+				res.setCommonResponse(policyDetails);
+				res.setMessage("No Data");
+				res.setIsError(false);
+			}else {
+				res.setCommonResponse(policyDetails);
+				res.setMessage("Success");
+				res.setIsError(false);		
+				}
 		}catch(Exception e) {
-			e.printStackTrace();;
+			e.printStackTrace();
+			res.setMessage("Failed");
+			res.setIsError(true);
+			return res;
 		}
-		return policyDetails;
+		return res;
 	}
 
 	
-	// Get Top 10 Premium Customers
+	// Get Top 10 Premium Customers based on division in a company
 	public List<PolicyDet> getTopPremiumCustomerDetailsByDivision(RenewalTrackReq req) {
 
 		List<PolicyDet> policyDetails = new ArrayList<PolicyDet>();
@@ -1133,10 +1155,43 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					}
 
 					return policyDetails;
-				
-
 				}
 
+				@Scheduled(cron = "0 0 15 * * ?")  
+				@Transactional
+				public void expireOldPolicies() {
+					Timestamp oneMonthAgo = Timestamp.valueOf(LocalDateTime.now().minusMonths(1));
+				    int updatedCount = rppRepo.updateExpiredPolicies(oneMonthAgo);
+				    System.out.println("Updated " + updatedCount + " expired policies.");
+				}
+				
 
+/*				    @Scheduled(cron = "0 0 0 * * ?")
+				    public void updatePolicyStatus() {
+				        Timestamp oneMonthAgo = Timestamp.valueOf(LocalDateTime.now().minusMonths(1));
+				        List<RenewPremiaPolicy> expiredPolicies = rppRepo.findExpiredPolicies(oneMonthAgo);
 
+				        if (expiredPolicies == null || expiredPolicies.isEmpty()) {
+				            System.out.println("No expired policies to update.");
+				            return;
+				        }
+
+				        // Create a new list to store updated policies
+				        List<RenewPremiaPolicy> updatedPolicies = new ArrayList<>();
+
+				        for (RenewPremiaPolicy policy : expiredPolicies) {
+				            if (policy != null && !"RR".equals(policy.getCurrentStatus())) {
+				                policy.setCurrentStatus("RR");
+				                updatedPolicies.add(policy);
+				            }
+				        }
+
+				        if (!updatedPolicies.isEmpty()) {
+				        	rppRepo.saveAll(updatedPolicies);
+				            System.out.println("Updated " + updatedPolicies.size() + " policies to RR.");
+				        } else {
+				            System.out.println("No policy needed status update.");
+				        }
+				    }*/
+				
 }
