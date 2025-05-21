@@ -108,7 +108,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Expression<Long> pendingCount = cb
 					.sum(cb.<Long>selectCase().when(cb.equal(root.get("currentStatus"), "RP"), 1L).otherwise(0L));
 			Expression<Long> lostCount = cb
-					.sum(cb.<Long>selectCase().when(cb.equal(root.get("currentStatus"), "RF"), 1L).otherwise(0L));
+					.sum(cb.<Long>selectCase().when(cb.equal(root.get("currentStatus"), "RR"), 1L).otherwise(0L));
 
 			// Select DISTINCT division_code
 			cq.multiselect(root.get("divisionCode").alias("divisionCode"),
@@ -178,13 +178,13 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			);
 			Expression<Long> lostCount = cb.sum(
 			    cb.<Long>selectCase()
-			        .when(cb.equal(root.get("currentStatus"), "RF"), 1L)
+			        .when(cb.equal(root.get("currentStatus"), "RR"), 1L)
 			        .otherwise(0L)
 			);
 
 
-		cq.select(cb.construct(ProductByBranch.class, root.get("productCode").alias("productCode"),
-				root.get("productName").alias("productName"), cb.count(root).as(String.class).alias("productCount"),
+		cq.select(cb.construct(ProductByBranch.class, root.get("departmentCode").alias("productCode"),
+				root.get("departmentName").alias("productName"), cb.count(root).as(String.class).alias("productCount"),
 				cb.sum(root.get("totalPremium")).as(String.class).alias("totalPremium"),
 				successCount.as(String.class).alias("successCount"),
 				pendingCount.as(String.class).alias("pendingCount"),
@@ -216,7 +216,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		
 		
 		
-		cq.groupBy(root.get("productCode"), root.get("productName"));
+		cq.groupBy(root.get("departmentCode"), root.get("productName"));
 		
 		res=em.createQuery(cq).getResultList();
 		if(!CollectionUtils.isEmpty(res)) {
@@ -250,7 +250,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Expression<Long> pendingCount = cb
 					.sum(cb.<Long>selectCase().when(cb.equal(root.get("currentStatus"), "RP"), 1L).otherwise(0L));
 			Expression<Long> lostCount = cb
-					.sum(cb.<Long>selectCase().when(cb.equal(root.get("currentStatus"), "RF"), 1L).otherwise(0L));
+					.sum(cb.<Long>selectCase().when(cb.equal(root.get("currentStatus"), "RR"), 1L).otherwise(0L));
 
 			cq.select(cb.construct(RenewalTrackAgentResByProduct2.class, root.get("polSrcCode").alias("sourceCode"),
 					root.get("polSrcName").alias("sourceName"), cb.count(root).as(String.class).alias("sourceCount"),
@@ -273,7 +273,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 			cq.where(cb.equal(root.get("companyId"), req.getCompanyId()),
 					cb.equal(root.get("divisionCode"), req.getDivisionCode()),
-					cb.equal(root.get("productCode"), req.getProductCode()), between);
+					cb.equal(root.get("departmentCode"), req.getProductCode()), between);
 
 			cq.groupBy(root.get("polSrcCode"), root.get("polSrcName"));
 
@@ -330,9 +330,9 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Expression<Long> pendingCount = cb
 					.sum(cb.<Long>selectCase().when(cb.equal(r.get("currentStatus"), "RP"), 1L).otherwise(0L));
 			Expression<Long> lostCount = cb
-					.sum(cb.<Long>selectCase().when(cb.equal(r.get("currentStatus"), "RF"), 1L).otherwise(0L));
-			cq.select(cb.construct(ProductDetails.class, r.get("productCode").alias("productCode"),
-					r.get("productName").alias("productName"), cb.count(r).as(String.class).alias("productCount"),
+					.sum(cb.<Long>selectCase().when(cb.equal(r.get("currentStatus"), "RR"), 1L).otherwise(0L));
+			cq.select(cb.construct(ProductDetails.class, r.get("departmentCode").alias("productCode"),
+					r.get("departmentName").alias("productName"), cb.count(r).as(String.class).alias("productCount"),
 					cb.sum(r.get("totalPremium")).as(String.class).alias("totalPremium"),
 					successCount.as(String.class).alias("successCount"),
 					pendingCount.as(String.class).alias("pendingCount"),
@@ -356,7 +356,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					cb.equal(r.get("divisionCode"), req.getDivisionCode()),
 					cb.equal(r.get("polSrcCode"), req.getSourceCode()), between);
 
-			cq.groupBy(r.get("productCode"), r.get("productName"));
+			cq.groupBy(r.get("departmentCode"), r.get("departmentName"));
 			resList = em.createQuery(cq).getResultList();
 
 		} catch (Exception e) {
@@ -383,11 +383,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 					r.get("classCode").alias("classCode"), r.get("className").alias("className"),
 
-					r.get("productCode").alias("productCode"), r.get("productName").alias("productName"),
+			//		r.get("productCode").alias("productCode"), r.get("productName").alias("productName"),
 
 					r.get("divisionCode").alias("divisionCode"), r.get("divisionName").alias("divisionName"),
 
-					r.get("departmentCode").alias("departmentCode"), r.get("departmentName").alias("departmentName"),
+					r.get("departmentCode").alias("productCode"), r.get("departmentName").alias("productName"),
 
 					r.get("businessType").alias("businessType"), r.get("businessName").alias("businessName"),
 
@@ -395,11 +395,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					r.get("fromDate").as(String.class).alias("fromDate"),
 					r.get("renewalDate").as(String.class).alias("renewalDate"),
 
-					r.get("customerCode").alias("customerCode"), r.get("customerName").alias("customerName"),
+			//		r.get("customerCode").alias("customerCode"), r.get("customerName").alias("customerName"),
 					r.get("insuredCivilId").alias("insuredCivilId"), r.get("insuredMobile").alias("insuredMobile"),
 					r.get("insuredEmailId").alias("insuredEmailId"),
 
-					r.get("polAssrCode").alias("polAssrCode"), r.get("polAssrName").alias("polAssrName"),
+					r.get("polAssrCode").alias("customerCode"), r.get("polAssrName").alias("customerName"),
 
 					r.get("polSrcType").alias("polSrcType"), r.get("polSrcCode").alias("polSrcCode"),
 					r.get("polSrcName").alias("polSrcName"),
@@ -418,7 +418,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					r.get("lossReason").alias("lossReason"), r.get("lossRemarks").alias("lossRemarks"),
 					r.get("competitor").alias("competitor"),
 
-					r.get("entryDate").as(String.class).alias("entryDate")));
+					r.get("entryDate").as(String.class).alias("entryDate"), r.get("paymentType").alias("paymentType")));
 
 			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()),
 					cb.equal(r.get("divisionCode"), req.getDivisionCode()),
@@ -529,14 +529,14 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    r.get("classCode").alias("classCode"),
 				    r.get("className").alias("className"),
 
-				    r.get("productCode").alias("productCode"),
-				    r.get("productName").alias("productName"),
+//				    r.get("productCode").alias("productCode"),
+//				    r.get("productName").alias("productName"),
 
 				    r.get("divisionCode").alias("divisionCode"),
 				    r.get("divisionName").alias("divisionName"),
 
-				    r.get("departmentCode").alias("departmentCode"),
-				    r.get("departmentName").alias("departmentName"),
+				    r.get("departmentCode").alias("productCode"),
+				    r.get("departmentName").alias("productName"),
 
 				    r.get("businessType").alias("businessType"),
 				    r.get("businessName").alias("businessName"),
@@ -545,14 +545,14 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    r.get("fromDate").as(String.class).alias("fromDate"),
 				    r.get("renewalDate").as(String.class).alias("renewalDate"),
 
-				    r.get("customerCode").alias("customerCode"),
-				    r.get("customerName").alias("customerName"),
+//				    r.get("customerCode").alias("customerCode"),
+//				    r.get("customerName").alias("customerName"),
 				    r.get("insuredCivilId").alias("insuredCivilId"),
 				    r.get("insuredMobile").alias("insuredMobile"),
 				    r.get("insuredEmailId").alias("insuredEmailId"),
 
-				    r.get("polAssrCode").alias("polAssrCode"),
-				    r.get("polAssrName").alias("polAssrName"),
+				    r.get("polAssrCode").alias("customerCode"),
+				    r.get("polAssrName").alias("customerName"),
 
 				    r.get("polSrcType").alias("polSrcType"),
 				    r.get("polSrcCode").alias("polSrcCode"),
@@ -578,7 +578,8 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    r.get("lossRemarks").alias("lossRemarks"),
 				    r.get("competitor").alias("competitor"),
 
-				    r.get("entryDate").as(String.class).alias("entryDate")
+				    r.get("entryDate").as(String.class).alias("entryDate"),
+				    r.get("paymentType").alias("paymentType")
 				));
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
@@ -621,14 +622,14 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    r.get("classCode").alias("classCode"),
 				    r.get("className").alias("className"),
 
-				    r.get("productCode").alias("productCode"),
-				    r.get("productName").alias("productName"),
+//				    r.get("productCode").alias("productCode"),
+//				    r.get("productName").alias("productName"),
 
 				    r.get("divisionCode").alias("divisionCode"),
 				    r.get("divisionName").alias("divisionName"),
 
-				    r.get("departmentCode").alias("departmentCode"),
-				    r.get("departmentName").alias("departmentName"),
+				    r.get("departmentCode").alias("productCode"),
+				    r.get("departmentName").alias("productName"),
 
 				    r.get("businessType").alias("businessType"),
 				    r.get("businessName").alias("businessName"),
@@ -637,14 +638,14 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    r.get("fromDate").as(String.class).alias("fromDate"),
 				    r.get("renewalDate").as(String.class).alias("renewalDate"),
 
-				    r.get("customerCode").alias("customerCode"),
-				    r.get("customerName").alias("customerName"),
+//				    r.get("customerCode").alias("customerCode"),
+//				    r.get("customerName").alias("customerName"),
 				    r.get("insuredCivilId").alias("insuredCivilId"),
 				    r.get("insuredMobile").alias("insuredMobile"),
 				    r.get("insuredEmailId").alias("insuredEmailId"),
 
-				    r.get("polAssrCode").alias("polAssrCode"),
-				    r.get("polAssrName").alias("polAssrName"),
+				    r.get("polAssrCode").alias("customerCode"),
+				    r.get("polAssrName").alias("customerName"),
 
 				    r.get("polSrcType").alias("polSrcType"),
 				    r.get("polSrcCode").alias("polSrcCode"),
@@ -670,7 +671,8 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    r.get("lossRemarks").alias("lossRemarks"),
 				    r.get("competitor").alias("competitor"),
 
-				    r.get("entryDate").as(String.class).alias("entryDate")
+				    r.get("entryDate").as(String.class).alias("entryDate"),
+				    r.get("paymentType").alias("paymentType")
 				));
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -714,14 +716,14 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    r.get("classCode").alias("classCode"),
 				    r.get("className").alias("className"),
 
-				    r.get("productCode").alias("productCode"),
-				    r.get("productName").alias("productName"),
+//				    r.get("productCode").alias("productCode"),
+//				    r.get("productName").alias("productName"),
 
 				    r.get("divisionCode").alias("divisionCode"),
 				    r.get("divisionName").alias("divisionName"),
 
-				    r.get("departmentCode").alias("departmentCode"),
-				    r.get("departmentName").alias("departmentName"),
+				    r.get("departmentCode").alias("productCode"),
+				    r.get("departmentName").alias("productName"),
 
 				    r.get("businessType").alias("businessType"),
 				    r.get("businessName").alias("businessName"),
@@ -730,14 +732,14 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    r.get("fromDate").as(String.class).alias("fromDate"),
 				    r.get("renewalDate").as(String.class).alias("renewalDate"),
 
-				    r.get("customerCode").alias("customerCode"),
-				    r.get("customerName").alias("customerName"),
+//				    r.get("customerCode").alias("customerCode"),
+//				    r.get("customerName").alias("customerName"),
 				    r.get("insuredCivilId").alias("insuredCivilId"),
 				    r.get("insuredMobile").alias("insuredMobile"),
 				    r.get("insuredEmailId").alias("insuredEmailId"),
 
-				    r.get("polAssrCode").alias("polAssrCode"),
-				    r.get("polAssrName").alias("polAssrName"),
+				    r.get("polAssrCode").alias("customerCode"),
+				    r.get("polAssrName").alias("customerName"),
 
 				    r.get("polSrcType").alias("polSrcType"),
 				    r.get("polSrcCode").alias("polSrcCode"),
@@ -763,7 +765,8 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    r.get("lossRemarks").alias("lossRemarks"),
 				    r.get("competitor").alias("competitor"),
 
-				    r.get("entryDate").as(String.class).alias("entryDate")
+				    r.get("entryDate").as(String.class).alias("entryDate"),
+				    r.get("paymentType").alias("paymentType")
 				));
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
@@ -868,6 +871,8 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					renew.setCompetitor(req.getCompetitor());
 				if (!StringUtils.isBlank(req.getCurrentStatus()))
 					renew.setCurrentStatus(req.getCurrentStatus());
+				if (!StringUtils.isBlank(req.getPaymentType()))
+					renew.setPaymentType(req.getPaymentType());
 				rppRepo.saveAndFlush(renew);
 				res.setMessage("UpdatedSuccessfully");
 				res.setCommonResponse(renew);
@@ -936,11 +941,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 					r.get("classCode").alias("classCode"), r.get("className").alias("className"),
 
-					r.get("productCode").alias("productCode"), r.get("productName").alias("productName"),
+//					r.get("productCode").alias("productCode"), r.get("productName").alias("productName"),
 
 					r.get("divisionCode").alias("divisionCode"), r.get("divisionName").alias("divisionName"),
 
-					r.get("departmentCode").alias("departmentCode"), r.get("departmentName").alias("departmentName"),
+					r.get("departmentCode").alias("productCode"), r.get("departmentName").alias("productName"),
 
 					r.get("businessType").alias("businessType"), r.get("businessName").alias("businessName"),
 
@@ -948,11 +953,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					r.get("fromDate").as(String.class).alias("fromDate"),
 					r.get("renewalDate").as(String.class).alias("renewalDate"),
 
-					r.get("customerCode").alias("customerCode"), r.get("customerName").alias("customerName"),
+//					r.get("customerCode").alias("customerCode"), r.get("customerName").alias("customerName"),
 					r.get("insuredCivilId").alias("insuredCivilId"), r.get("insuredMobile").alias("insuredMobile"),
 					r.get("insuredEmailId").alias("insuredEmailId"),
 
-					r.get("polAssrCode").alias("polAssrCode"), r.get("polAssrName").alias("polAssrName"),
+					r.get("polAssrCode").alias("customerCode"), r.get("polAssrName").alias("customerName"),
 
 					r.get("polSrcType").alias("polSrcType"), r.get("polSrcCode").alias("polSrcCode"),
 					r.get("polSrcName").alias("polSrcName"),
@@ -971,7 +976,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					r.get("lossReason").alias("lossReason"), r.get("lossRemarks").alias("lossRemarks"),
 					r.get("competitor").alias("competitor"),
 
-					r.get("entryDate").as(String.class).alias("entryDate")));
+					r.get("entryDate").as(String.class).alias("entryDate"),r.get("paymentType").alias("paymentType")));
 
 			// Convert String to Timestamp
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -1022,11 +1027,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 						r.get("classCode").alias("classCode"), r.get("className").alias("className"),
 
-						r.get("productCode").alias("productCode"), r.get("productName").alias("productName"),
+//						r.get("productCode").alias("productCode"), r.get("productName").alias("productName"),
 
 						r.get("divisionCode").alias("divisionCode"), r.get("divisionName").alias("divisionName"),
 
-						r.get("departmentCode").alias("departmentCode"), r.get("departmentName").alias("departmentName"),
+						r.get("departmentCode").alias("productCode"), r.get("departmentName").alias("productName"),
 
 						r.get("businessType").alias("businessType"), r.get("businessName").alias("businessName"),
 
@@ -1034,11 +1039,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 						r.get("fromDate").as(String.class).alias("fromDate"),
 						r.get("renewalDate").as(String.class).alias("renewalDate"),
 
-						r.get("customerCode").alias("customerCode"), r.get("customerName").alias("customerName"),
+//						r.get("customerCode").alias("customerCode"), r.get("customerName").alias("customerName"),
 						r.get("insuredCivilId").alias("insuredCivilId"), r.get("insuredMobile").alias("insuredMobile"),
 						r.get("insuredEmailId").alias("insuredEmailId"),
 
-						r.get("polAssrCode").alias("polAssrCode"), r.get("polAssrName").alias("polAssrName"),
+						r.get("polAssrCode").alias("customerCode"), r.get("polAssrName").alias("customerName"),
 
 						r.get("polSrcType").alias("polSrcType"), r.get("polSrcCode").alias("polSrcCode"),
 						r.get("polSrcName").alias("polSrcName"),
@@ -1057,7 +1062,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 						r.get("lossReason").alias("lossReason"), r.get("lossRemarks").alias("lossRemarks"),
 						r.get("competitor").alias("competitor"),
 
-						r.get("entryDate").as(String.class).alias("entryDate")));
+						r.get("entryDate").as(String.class).alias("entryDate"),r.get("paymentType").alias("paymentType")));
 
 				// Convert String to Timestamp
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -1107,11 +1112,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 								r.get("classCode").alias("classCode"), r.get("className").alias("className"),
 
-								r.get("productCode").alias("productCode"), r.get("productName").alias("productName"),
+//								r.get("productCode").alias("productCode"), r.get("productName").alias("productName"),
 
 								r.get("divisionCode").alias("divisionCode"), r.get("divisionName").alias("divisionName"),
 
-								r.get("departmentCode").alias("departmentCode"), r.get("departmentName").alias("departmentName"),
+								r.get("departmentCode").alias("productCode"), r.get("departmentName").alias("productName"),
 
 								r.get("businessType").alias("businessType"), r.get("businessName").alias("businessName"),
 
@@ -1119,11 +1124,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 								r.get("fromDate").as(String.class).alias("fromDate"),
 								r.get("renewalDate").as(String.class).alias("renewalDate"),
 
-								r.get("customerCode").alias("customerCode"), r.get("customerName").alias("customerName"),
+//								r.get("customerCode").alias("customerCode"), r.get("customerName").alias("customerName"),
 								r.get("insuredCivilId").alias("insuredCivilId"), r.get("insuredMobile").alias("insuredMobile"),
 								r.get("insuredEmailId").alias("insuredEmailId"),
 
-								r.get("polAssrCode").alias("polAssrCode"), r.get("polAssrName").alias("polAssrName"),
+								r.get("polAssrCode").alias("customerCode"), r.get("polAssrName").alias("customerName"),
 
 								r.get("polSrcType").alias("polSrcType"), r.get("polSrcCode").alias("polSrcCode"),
 								r.get("polSrcName").alias("polSrcName"),
@@ -1142,7 +1147,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 								r.get("lossReason").alias("lossReason"), r.get("lossRemarks").alias("lossRemarks"),
 								r.get("competitor").alias("competitor"),
 
-								r.get("entryDate").as(String.class).alias("entryDate")));
+								r.get("entryDate").as(String.class).alias("entryDate"),r.get("paymentType").alias("paymentType")));
 
 						// Convert String to Timestamp
 						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -1169,7 +1174,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					return policyDetails;
 				}
 
-				@Scheduled(cron = "0 0 15 * * ?")  
+				@Scheduled(cron = "0 0 15 * * ?")  	
 				@Transactional
 				public void expireOldPolicies() {
 					Timestamp oneMonthAgo = Timestamp.valueOf(LocalDateTime.now().minusMonths(1));

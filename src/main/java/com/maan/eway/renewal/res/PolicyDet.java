@@ -48,11 +48,11 @@ public  class PolicyDet {
 	    @JsonProperty("DivisionName")
 	    private String divisionName;
 
-	    @JsonProperty("DepartmentCode")
-	    private String departmentCode;
-
-	    @JsonProperty("DepartmentName")
-	    private String departmentName;
+//	    @JsonProperty("DepartmentCode")
+//	    private String departmentCode;
+//
+//	    @JsonProperty("DepartmentName")
+//	    private String departmentName;
 
 	    @JsonProperty("BusinessType")
 	    private String businessType;
@@ -84,11 +84,11 @@ public  class PolicyDet {
 	    @JsonProperty("InsuredEmailId")
 	    private String insuredEmailId;
 
-	    @JsonProperty("PolAssrCode")
-	    private String polAssrCode;
-
-	    @JsonProperty("PolAssrName")
-	    private String polAssrName;
+//	    @JsonProperty("PolAssrCode")
+//	    private String polAssrCode;
+//
+//	    @JsonProperty("PolAssrName")
+//	    private String polAssrName;
 
 	    @JsonProperty("SourceType")
 	    private String polSrcType;
@@ -150,6 +150,9 @@ public  class PolicyDet {
 	    @JsonProperty("EntryDate")
 	    private String entryDate;
 	    
+	    @JsonProperty("PaymentType")
+	    private String paymentType;
+	    
 	    public PolicyDet() {
 	    	
 	    }
@@ -170,8 +173,8 @@ public  class PolicyDet {
 	        this.productName = entity.getProductName();
 	        this.divisionCode = entity.getDivisionCode();
 	        this.divisionName = entity.getDivisionName();
-	        this.departmentCode = entity.getDepartmentCode();
-	        this.departmentName = entity.getDepartmentName();
+//	        this.departmentCode = entity.getDepartmentCode();
+//	        this.departmentName = entity.getDepartmentName();
 	        this.businessType = entity.getBusinessType();
 	        this.businessName = entity.getBusinessName();
 	        this.endorsementNumber = entity.getEndorsementNumber();
@@ -182,8 +185,8 @@ public  class PolicyDet {
 	        this.insuredCivilId = entity.getInsuredCivilId();
 	        this.insuredMobile = entity.getInsuredMobile();
 	        this.insuredEmailId = entity.getInsuredEmailId();
-	        this.polAssrCode = entity.getPolAssrCode();
-	        this.polAssrName = entity.getPolAssrName();
+//	        this.polAssrCode = entity.getPolAssrCode();
+//	        this.polAssrName = entity.getPolAssrName();
 	        this.polSrcType = entity.getPolSrcType();
 	        this.polSrcCode = entity.getPolSrcCode();
 	        this.polSrcName = entity.getPolSrcName();
@@ -204,6 +207,7 @@ public  class PolicyDet {
 	        this.lossRemarks = entity.getLossRemarks();
 	        this.competitor = entity.getCompetitor();
 	        this.entryDate = formatDate(entity.getEntryDate());
+	        this.paymentType = entity.getPaymentType();
 	    }
 
 	    private String formatTimestamp(Timestamp timestamp) {

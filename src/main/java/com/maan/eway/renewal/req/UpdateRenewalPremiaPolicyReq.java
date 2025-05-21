@@ -1,5 +1,7 @@
 package com.maan.eway.renewal.req;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -105,4 +107,8 @@ public class UpdateRenewalPremiaPolicyReq {
 
 	@JsonProperty("CurrentStatus")
 	private String currentStatus;
+
+	@JsonProperty("PaymentType")
+	private String paymentType;
+
 }

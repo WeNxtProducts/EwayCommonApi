@@ -187,10 +187,10 @@ private String currentStatus;
 @Column(name = "NEW_POLICY_NUMBER", length = 50)
 private String newPolicyNumber;
 
-@Column(name = "LOSS_REASON", length = 50)
+@Column(name = "REASON", length = 50)
 private String lossReason;
 
-@Column(name = "LOSS_REMARKS", length = 500)
+@Column(name = "REMARKS", length = 500)
 private String lossRemarks;
 
 @Column(name = "COMPETITOR", length = 50)
@@ -198,6 +198,9 @@ private String competitor;
  
 @Column(name = "ENTRY_DATE")
 private Date entryDate;
+
+@Column(name = "PAYMENT_TYPE")
+private String paymentType;
 
 //@Column(name = "STATUS", length = 50)
 //private String status;
