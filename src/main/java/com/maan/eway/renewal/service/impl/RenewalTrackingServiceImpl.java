@@ -202,7 +202,19 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 		// Add condition to criteria
 		Predicate between = cb.between(root.get("expiryDate"), startTimestamp, endTimestamp);
-		cq.where(cb.equal(root.get("companyId"), req.getCompanyId()), cb.equal(root.get("divisionCode"), req.getDivisionCode()), between);
+		
+		List<Predicate> pre=new ArrayList<Predicate>();
+		pre.add(cb.equal(root.get("companyId"), req.getCompanyId()));
+		pre.add(between);
+		
+		pre.add(cb.equal(root.get("divisionCode"), req.getDivisionCode()));
+		if(StringUtils.isNotBlank(req.getSourceCode()))
+		{
+			pre.add(cb.equal(root.get("polSrcCode"), req.getSourceCode()));
+		}
+		cq.where(pre.toArray(new Predicate[0]));
+		
+		
 		
 		cq.groupBy(root.get("productCode"), root.get("productName"));
 		
