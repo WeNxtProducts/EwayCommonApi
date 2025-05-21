@@ -1,7 +1,5 @@
 package com.maan.eway.renewal.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.renewal.req.GetPolicyBySourceReq;
 import com.maan.eway.renewal.req.RenewalTrackReq;
-import com.maan.eway.renewal.res.BranchForRenewalTrack;
-import com.maan.eway.renewal.res.GetPolicyBySourceRes;
-import com.maan.eway.renewal.res.ProductByBranch;
 import com.maan.eway.renewal.service.RenewalTrackingService;
 
 import io.swagger.annotations.Api;
@@ -23,7 +17,8 @@ import io.swagger.annotations.Api;
 @RestController
 @RequestMapping("/renewaltrack")
 @Api(tags = "Track the renewal policy")
-public class RenewalTrackingController {
+public class RenewalTrackingController
+{
 
 	@Autowired
 	private RenewalTrackingService service;
@@ -79,6 +74,34 @@ public class RenewalTrackingController {
 		        } else {
 		            return ResponseEntity.badRequest().body("CompanyId, DivisionCode and SourceCode are required");
 		        }
+	    }
+	    @PostMapping("/getTopTenPolicydetails")
+	    public ResponseEntity<?> getCoustomerDetal(@RequestBody RenewalTrackReq req) {
+	        if (req.getDivisionCode()!= null && !req.getDivisionCode().trim().isEmpty() && req.getStartDate()!=null && req.getEndDate()!=null)
+	               {
+	            return ResponseEntity.ok(service.getTop10CustomerDetails(req));
+	        } else {
+	            return ResponseEntity.badRequest().body("DivisionCode  StartDate and EndDate Required");
+	        }
+	    }
+	    @GetMapping("/getExpiryPolicyDetails/{divisionCode}")
+	    public ResponseEntity<?> getExpiryPolicyDetails(@PathVariable("divisionCode") String divisionCode) {
+	    	if (divisionCode!= null && !divisionCode.trim().isEmpty())
+	    	{
+	        return ResponseEntity.ok(service.getExpiryPolicyDetails(divisionCode));
+	    	}else {
+	            return ResponseEntity.badRequest().body("DivisionCode");
+	        }
+	    }
+	    @PostMapping("/getStatusPolicyList")
+	    public ResponseEntity<?> getStatusPolicyList(@RequestBody RenewalTrackReq req) {
+	        if (req.getDivisionCode()!= null && !req.getDivisionCode().trim().isEmpty() && req.getStartDate()!=null 
+	        		&& req.getEndDate()!=null && req.getStatus()!=null)
+	               {
+	            return ResponseEntity.ok(service.getPolicyStatusList(req));
+	        } else {
+	            return ResponseEntity.badRequest().body("\"DivisionCode, Status , StartDate and EndDate Required\"");
+	        }
 	    }
 	    
 }

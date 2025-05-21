@@ -23,4 +23,10 @@ public interface RenewalTrackingService {
 
 	List<PolicyDet> RenewalTrackPolicyDetailsBySource(RenewalTrackReq req);
 
+	List<PolicyDet> getTop10CustomerDetails(RenewalTrackReq req);
+
+	List<PolicyDet> getExpiryPolicyDetails(String divisionCode);
+
+	List<PolicyDet> getPolicyStatusList(RenewalTrackReq req);
+
 }

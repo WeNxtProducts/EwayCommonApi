@@ -26,4 +26,7 @@ public class RenewalTrackReq {
 	
 	@JsonProperty("LoginId")
 	private String loginId;
+	
+	@JsonProperty("Status")
+	private String status;
 }
