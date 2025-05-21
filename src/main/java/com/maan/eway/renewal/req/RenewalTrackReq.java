@@ -29,7 +29,4 @@ public class RenewalTrackReq {
 	
 	@JsonProperty("Status")
 	private String status;
-	
-	@JsonProperty("SourceCode")
-	private String polSrcCode;
 }

@@ -216,7 +216,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 		
 		
 		
-		cq.groupBy(root.get("departmentCode"), root.get("productName"));
+		cq.groupBy(root.get("departmentCode"), root.get("departmentName"));
 		
 		res=em.createQuery(cq).getResultList();
 		if(!CollectionUtils.isEmpty(res)) {
