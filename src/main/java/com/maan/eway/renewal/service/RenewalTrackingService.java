@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.renewal.req.RenewalTrackAgentResByProduct2;
 import com.maan.eway.renewal.req.RenewalTrackReq;
+import com.maan.eway.renewal.req.UpdateRenewalPremiaPolicyReq;
 import com.maan.eway.renewal.res.BranchForRenewalTrack;
 import com.maan.eway.renewal.res.PolicyDet;
 import com.maan.eway.renewal.res.ProductByBranch;
@@ -23,10 +25,16 @@ public interface RenewalTrackingService {
 
 	List<PolicyDet> RenewalTrackPolicyDetailsBySource(RenewalTrackReq req);
 
+
 	List<PolicyDet> getTop10CustomerDetails(RenewalTrackReq req);
 
 	List<PolicyDet> getExpiryPolicyDetails(String divisionCode);
 
 	List<PolicyDet> getPolicyStatusList(RenewalTrackReq req);
+
+	CommonRes updateRenewalPremiaPolicy(UpdateRenewalPremiaPolicyReq req);
+
+	List<PolicyDet> getTopPremiumCustomerDetails(RenewalTrackReq req);
+
 
 }
