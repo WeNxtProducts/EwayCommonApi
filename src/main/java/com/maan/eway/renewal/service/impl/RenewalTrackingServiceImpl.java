@@ -853,8 +853,11 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 				if (!StringUtils.isBlank(req.getFromDate()))
 					renew.setFromDate(Timestamp.valueOf(req.getFromDate()));
-				if (!StringUtils.isBlank(req.getRenewalDate()))
-					renew.setRenewalDate(Timestamp.valueOf(req.getRenewalDate()));
+				if (!StringUtils.isBlank(req.getRenewalDate())) {
+				    LocalDate date = LocalDate.parse(req.getRenewalDate()); // parse "2025-05-22"
+				    Timestamp timestamp = Timestamp.valueOf(date.atStartOfDay()); // convert to "2025-05-22 00:00:00"
+				    renew.setRenewalDate(timestamp);
+				}
 
 				if (!StringUtils.isBlank(req.getCustomerCode()))
 					renew.setCustomerCode(req.getCustomerCode());

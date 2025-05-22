@@ -51,7 +51,7 @@ import lombok.ToString;
 @DynamicUpdate
 @Builder
 @IdClass(RenewPremiaPolicyId.class)
-@Table(name="RENEW_PREMIA_POLICY")
+@Table(name="renew_premia_policy")
 
 
 public class RenewPremiaPolicy implements Serializable {
