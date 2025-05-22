@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.renewal.req.RenewalTrackAgentResByProduct2;
 import com.maan.eway.renewal.req.RenewalTrackReq;
+import com.maan.eway.renewal.req.RenewalVehicleReq;
 import com.maan.eway.renewal.req.UpdateRenewalPremiaPolicyReq;
 import com.maan.eway.renewal.res.BranchForRenewalTrack;
 import com.maan.eway.renewal.res.PolicyDet;
@@ -35,6 +36,10 @@ public interface RenewalTrackingService {
 	CommonRes updateRenewalPremiaPolicy(UpdateRenewalPremiaPolicyReq req);
 
 	CommonRes getTopPremiumCustomerDetails(RenewalTrackReq req);
+
+	CommonRes insertVehicleInfo(RenewalVehicleReq req);
+
+	CommonRes getRenewVehicl(String policyNo, String riskId);
 
 
 }

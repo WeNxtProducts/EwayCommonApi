@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,9 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.RenewPremiaPolicy;
+import com.maan.eway.bean.RenewVehicleInfo;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.renewal.req.RenewalTrackAgentResByProduct2;
 import com.maan.eway.renewal.req.RenewalTrackReq;
+import com.maan.eway.renewal.req.RenewalVehicleReq;
 import com.maan.eway.renewal.req.UpdateRenewalPremiaPolicyReq;
 import com.maan.eway.renewal.res.BranchForRenewalTrack;
 import com.maan.eway.renewal.res.DivisionDetails;
@@ -37,6 +40,7 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.RenewPremiaPolicyRepository;
 import com.maan.eway.repository.RenewQuotePolicyRepository;
+import com.maan.eway.repository.RenewVehicleInfoRepo;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -67,6 +71,9 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 
 	@Autowired
 	private EntityManager em;
+	
+	@Autowired
+	RenewVehicleInfoRepo vehiclerepo;
 
 	public BigDecimal rate(Long count, Long totalCount) {
 		if (count == null || totalCount == null || totalCount == 0) {
@@ -418,11 +425,22 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					r.get("lossReason").alias("lossReason"), r.get("lossRemarks").alias("lossRemarks"),
 					r.get("competitor").alias("competitor"),
 
-					r.get("entryDate").as(String.class).alias("entryDate"), r.get("paymentType").alias("paymentType")));
 
-			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()),
-					cb.equal(r.get("divisionCode"), req.getDivisionCode()),
-					cb.equal(r.get("polSrcCode"), req.getSourceCode()));
+					r.get("entryDate").as(String.class).alias("entryDate"),
+					r.get("paymentType").alias("paymentType")));
+
+//			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()),
+//					cb.equal(r.get("divisionCode"), req.getDivisionCode()),
+//					cb.equal(r.get("polSrcCode"), req.getSourceCode()));
+//
+//					r.get("entryDate").as(String.class).alias("entryDate")));
+////
+//			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()),
+//					cb.equal(r.get("divisionCode"), req.getDivisionCode()),
+//					cb.equal(r.get("polSrcCode"), req.getSourceCode())
+//					cb.equal(r.get("productCode"), req.getProductCode()));
+			
+
 			// Convert String to Timestamp
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
@@ -433,11 +451,13 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
 
 			// Add condition to criteria
+			Predicate pro=cb.equal(r.get("productCode"),req.getProductCode());
 			Predicate between = cb.between(r.get("expiryDate"), startTimestamp, endTimestamp);
 
 			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()),
 					cb.equal(r.get("divisionCode"), req.getDivisionCode()),
-					cb.equal(r.get("polSrcCode"), req.getSourceCode()), between);
+					cb.equal(r.get("polSrcCode"), req.getSourceCode()),pro,
+					 between);
 
 			policyDetails = em.createQuery(cq).getResultList();
 
@@ -1091,8 +1111,6 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			return policyDetails;
 		}
 	
-		
-		
 		// Get Top 10 Premium Customers Based on the Company
 				public List<PolicyDet> getTopPremiumCustomerDetailsByCompany(RenewalTrackReq req) {
 
@@ -1181,6 +1199,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				    int updatedCount = rppRepo.updateExpiredPolicies(oneMonthAgo);
 				    System.out.println("Updated " + updatedCount + " expired policies.");
 				}
+
 				
 
 /*				    @Scheduled(cron = "0 0 0 * * ?")
@@ -1210,5 +1229,89 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 				            System.out.println("No policy needed status update.");
 				        }
 				    }*/
+				
+@Override
+public CommonRes insertVehicleInfo(RenewalVehicleReq req) {
+		CommonRes res = new CommonRes();
+		RenewVehicleInfo entity = null;
+		try{
+			if(StringUtils.isBlank(req.getRiskId()))
+			{
+			entity=vehiclerepo.findByPolicyNo(req.getPolicyNo());
+			if(entity!=null)
+			{
+				String riskIdStr = entity.getRiskId();
+				if (riskIdStr != null && !riskIdStr.trim().isEmpty()) {
+				    int result = Integer.parseInt(riskIdStr.trim()) + 1;
+				    entity.setRiskId(String.valueOf(result));
+				} else {
+				    entity.setRiskId("1"); 
+				}
+			}
+			}
+			else if(StringUtils.isNotBlank(req.getPolicyNo()) && StringUtils.isNotBlank(req.getRiskId()))
+			{
+			entity=vehiclerepo.findByPolicyNoAndRiskId(req.getPolicyNo(), req.getRiskId());	
+			 if (entity != null) {
+			        entity.setRiskId(req.getRiskId());
+			    }
+			}
+			if(entity==null)
+			{
+				entity=new RenewVehicleInfo();
+				entity.setRiskId(StringUtils.isBlank(req.getRiskId())?"1" : req.getRiskId());
+			}
+			entity.setPolicyNo((StringUtils.isBlank(req.getPolicyNo()))?"0": req.getPolicyNo());
+			entity.setMake(StringUtils.isBlank(req.getMake())?" " :req.getMake());
+			entity.setModel(StringUtils.isBlank(req.getModel())?" " :req.getModel());
+			entity.setBodyType(StringUtils.isBlank(req.getBodyType())?" " :req.getBodyType());
+			entity.setVehicleUsage(StringUtils.isBlank(req.getVehicleUsage())?" " :req.getVehicleUsage());
+			entity.setPolicyType(StringUtils.isBlank(req.getPolicyType())?" " :req.getPolicyType());
+			entity.setSumInsured(StringUtils.isBlank(req.getSumInsured())? 0.0 :Double.parseDouble(req.getSumInsured()));
+			entity.setStatus(StringUtils.isBlank(req.getStatus())?" " :req.getStatus());
+			entity.setCreatedBy(StringUtils.isBlank(req.getCreatedBy())?" " :req.getCreatedBy());
+			entity.setEntryDate(new Date());
+			vehiclerepo.saveAndFlush(entity);
+			res.setCommonResponse(entity);
+			res.setErroCode(0);
+			res.setMessage("Success");
+			res.setIsError(false);
+		}catch(Exception e){
+				e.printStackTrace();
+				res.setErroCode(1);
+				res.setMessage("failed");
+				res.setIsError(true);
+		}
+		return res;
+	}
+@Override
+public CommonRes getRenewVehicl(String policyNo, String riskId) {
+	CommonRes res = new CommonRes();
+	RenewVehicleInfo entity=null;
+	try
+	{ 	 entity = vehiclerepo.findByPolicyNoAndRiskId(policyNo, riskId);
+		 if (entity!=null)
+		 {
+			 res.setCommonResponse(entity);
+				res.setErroCode(0);
+				res.setMessage("Success");
+				res.setIsError(false);
+		 }
+		 else
+		 {
+			    res.setErroCode(1);
+				res.setMessage("enter correct policyNo and RiskId");
+				res.setIsError(true);
+		 }
+	}catch(Exception e){
+		e.printStackTrace();
+		res.setErroCode(1);
+		res.setMessage("failed");
+		res.setIsError(true);
+
+}
+	return res;
+}
+				
 				
 }

@@ -1,5 +1,8 @@
 package com.maan.eway.renewal.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.renewal.req.RenewalTrackReq;
+import com.maan.eway.renewal.req.RenewalVehicleReq;
 import com.maan.eway.renewal.req.UpdateRenewalPremiaPolicyReq;
 import com.maan.eway.renewal.service.RenewalTrackingService;
+import com.maan.eway.renewal.service.Validation;
+import com.maan.eway.error.Error;
 
 import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/renewaltrack")
@@ -23,6 +31,9 @@ public class RenewalTrackingController {
 
 	@Autowired
 	private RenewalTrackingService service;
+	
+	@Autowired
+	Validation vali;
 
 	@PostMapping("/getdivisionbycompany")
 	public ResponseEntity<?> getByCompany(@RequestBody RenewalTrackReq req) {
@@ -112,9 +123,37 @@ public class RenewalTrackingController {
 		CommonRes response = service.updateRenewalPremiaPolicy(req);
 		return ResponseEntity.ok(response);
 	}
-
 	@PostMapping("/top10premiumcustomers")
 	public ResponseEntity<?> getTop10PremiumCustomers(@RequestBody RenewalTrackReq req) {
 		return ResponseEntity.ok(service.getTopPremiumCustomerDetails(req));
 	}
+	@PostMapping("insertRenewVehicleInfo")
+	public CommonRes insertRenewVehicleInfo(@RequestBody RenewalVehicleReq req)
+	{
+		CommonRes res = new CommonRes();
+		List<Error>  list= new ArrayList<Error>();
+		list=vali.validateReq(req);
+		if (list != null && !list.isEmpty()) {
+			res.setIsError(true);
+			res.setMessage("failed");
+			res.setErrorMessage(list);
+		}
+		else {
+			res=service.insertVehicleInfo(req);
+		}
+		return res;
+	}
+	@GetMapping("/getRenewVehicleInfo")
+	public CommonRes getRenewVehicl(@RequestParam("policyNo") String policyNo, @RequestParam("riskId") String riskId ) 
+	{
+		CommonRes res = new CommonRes();
+		if(policyNo==null)
+		{	res.setIsError(true);
+			res.setMessage("Enter Policy number");
+		}
+		else {
+			res=service.getRenewVehicl(policyNo,riskId);
+		}
+		return res;
+		}
 }
