@@ -429,19 +429,12 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 					r.get("entryDate").as(String.class).alias("entryDate"),
 					r.get("paymentType").alias("paymentType")));
 
+					
 //			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()),
 //					cb.equal(r.get("divisionCode"), req.getDivisionCode()),
-//					cb.equal(r.get("polSrcCode"), req.getSourceCode()));
-//
-//					r.get("entryDate").as(String.class).alias("entryDate")));
-////
-//			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()),
-//					cb.equal(r.get("divisionCode"), req.getDivisionCode()),
-//					cb.equal(r.get("polSrcCode"), req.getSourceCode())
-//					cb.equal(r.get("productCode"), req.getProductCode()));
+//					cb.equal(r.get("polSrcCode"), req.getSourceCode()),
+//					cb.equal(r.get("departmentCode"), req.getProductCode()));
 			
-
-			// Convert String to Timestamp
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			LocalDate start = LocalDate.parse(req.getStartDate(), formatter);
 			LocalDate end = LocalDate.parse(req.getEndDate(), formatter);
@@ -451,7 +444,7 @@ public class RenewalTrackingServiceImpl implements RenewalTrackingService {
 			Timestamp endTimestamp = Timestamp.valueOf(end.atTime(LocalTime.MAX));
 
 			// Add condition to criteria
-			Predicate pro=cb.equal(r.get("productCode"),req.getProductCode());
+			Predicate pro=cb.equal(r.get("departmentCode"),req.getProductCode());
 			Predicate between = cb.between(r.get("expiryDate"), startTimestamp, endTimestamp);
 
 			cq.where(cb.equal(r.get("companyId"), req.getCompanyId()),
