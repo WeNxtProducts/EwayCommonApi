@@ -466,7 +466,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      sectionDataSave.setQuoteNo(quoteNo);
 	      sectionDataSave.setLocationId(locationId);
 	      sectionDataSave.setLocationName(branch);
-	      sectionDataSave.setRiskId(Integer.valueOf(riskCode));
+	      sectionDataSave.setRiskId(Integer.valueOf(1));
 	      sectionDataSave.setCustomerReferenceNo(custRefNo);
 	      sectionDataSave.setProductId(productId);
 	      sectionDataSave.setProductDesc("Motor");
@@ -648,9 +648,9 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      homePositionSave.setProductName(productName);
 	      homePositionSave.setUserType("Broker");
 	      homePositionSave.setSubUserType("USSD");
-	      homePositionSave.setCoverNoteNumber(BigDecimal.valueOf(Long.parseLong(coverNoteNumber)));
+	     // homePositionSave.setCoverNoteNumber(BigDecimal.valueOf(Long.parseLong(coverNoteNumber)));
 	      homePositionSave.setTiraRequestId(reqId);
-	      homePositionSave.setCoverNoteReferenceNo(coverNoteReferenceNumber);
+	      homePositionSave.setCoverNoteReferenceNo(coverNoteNumber);
 	      homePositionSave.setStickerNumber(stickerNumber);
 	      homePositionSave.setPrevCoverNoteRefNo(prevCoverNoteRefNo);
 	      homePositionSave.setCommissionModifyYn("N");
@@ -675,8 +675,8 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      makePaymentMap.put("UserType", "Broker");
 	      String makePaymentReq = objectPrint.toJson(makePaymentMap);
 	      System.out.println("makePaymentReq" + makePaymentReq);
-	    String makePaymentApi = "http://localhost:8086/EwayCommonApi/payment/makepayment";
-	 //     String makePaymentApi = "http://192.168.1.42:8086/payment/makepayment";
+	      String makePaymentApi = "http://localhost:8086/EwayCommonApi/payment/makepayment";
+	  //    String makePaymentApi = "http://192.168.1.42:8086/payment/makepayment";
 	      response = this.callEwayApi(makePaymentApi, makePaymentReq);
 	      System.out.println("makePaymentRes" + response);
 	      Map<String, Object> makePaymentResult = null;
@@ -717,7 +717,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      String insertPaymentReq = this.objectPrint.toJson(insertPayment);
 	      System.out.println("insertPaymentReq" + insertPaymentReq);
 	    String insertPaymentApi = "http://localhost:8086/EwayCommonApi/payment/insertpaymentdetails";
-	  //    String insertPaymentApi = "http://192.168.1.42:8086/payment/insertpaymentdetails";
+	  //   String insertPaymentApi = "http://192.168.1.42:8086/payment/insertpaymentdetails";
 	      response = this.callEwayApi(insertPaymentApi, insertPaymentReq);
 	      System.out.println("insertPaymentRes" + response);
 	      Map<String, Object> insertPaymentResult = null;
@@ -764,8 +764,8 @@ public class UssdApiServiceImpl implements UssdApiService {
 	         tokReq.put("LoginId", "UssdBroker");
 	         tokReq.put("Password", "Admin@10");
 	         tokReq.put("ReLoginKey", "Y");
-	       String tokenApi = "http://localhost:8086/EwayCommonApi/authentication/login";
-	    //     String tokenApi = "http://192.168.1.42:8086/authentication/login";
+	      String tokenApi = "http://localhost:8086/EwayCommonApi/authentication/login";
+	      //   String tokenApi = "http://192.168.1.42:8086/authentication/login";
 	        // System.out.println("Token Api URL ==> " + tokenApi);
 	         String jsonTokenRequest = (new Gson()).toJson(tokReq);
 	         CloseableHttpClient httpClient = createHttpClientWithTimeouts();
