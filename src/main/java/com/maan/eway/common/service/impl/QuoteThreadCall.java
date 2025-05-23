@@ -588,7 +588,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			EndtUpdatePremiumRes endtRes = new EndtUpdatePremiumRes();
 			if(eserCommonData.getEndorsementType()!=null) {
 				String prevQuoteNo=eserCommonData.getEndtPrevQuoteNo();
-				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
+				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdAndLocationIdAndSectionIdAndCoverIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0,eserCommonData.getLocationId(),Integer.valueOf(eserCommonData.getSectionId()),eserCommonData.getCoverId());
+
 				endtRes = updateAssetHumanEndtPremium2(request.getQuoteNo(),eserCommonData.getEndorsementEffdate(),prevQuoteNo, eserCommonData.getRiskId(),Endtcovers,Integer.valueOf(eserCommonData.getProductId()) , Integer.valueOf(eserCommonData.getSectionId()),Integer.valueOf(eserCommonData.getCoverId()),eserCommonData.getLocationId() );				
 				eserCommonData.setEndtPremium(endtRes.getEndtPremium()==null ? null : endtRes.getEndtPremium().doubleValue());
 				eserCommonData.setEndtVatPremium(endtRes.getEndtVatPremium()==null ? null : endtRes.getEndtVatPremium());
