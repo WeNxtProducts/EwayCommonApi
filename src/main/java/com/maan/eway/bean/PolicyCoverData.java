@@ -44,7 +44,7 @@ import jakarta.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(PolicyCoverDataId.class)
-@Table(name="Policy_cover_data")
+@Table(name="policy_cover_data")
 
 
 public class PolicyCoverData implements Serializable {

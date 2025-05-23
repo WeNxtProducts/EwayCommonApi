@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "LOGIN_PRODUCT_MASTER")
+@Table(name = "login_product_master")
 @IdClass(ApproverPK.class)
 @NoArgsConstructor
 @Setter

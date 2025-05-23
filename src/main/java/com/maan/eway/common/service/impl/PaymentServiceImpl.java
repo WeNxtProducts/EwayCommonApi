@@ -329,6 +329,9 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private JsonMapperFromDB jsonMapper;
+	
+	@Autowired
+    private DepositcbcMasterRepository depositcbcMasterRepo;
 
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -1709,7 +1712,23 @@ public class PaymentServiceImpl implements PaymentService {
 					
 				}
 				
-			}	
+			}
+			
+			if ("3".equals(req.getPaymentType())) {
+			    List<DepositcbcMaster> masters = depositcbcMasterRepo.findByBrokerId(String.valueOf(hp.getAgencyCode()));
+
+			    BigDecimal totalAvailable = masters.stream()
+			        .map(m -> {
+			            BigDecimal deposit = m.getDepositAmount() != null ? BigDecimal.valueOf(m.getDepositAmount()) : BigDecimal.ZERO;
+			            BigDecimal utilized = m.getDepositUtilized() != null ? BigDecimal.valueOf(m.getDepositUtilized()) : BigDecimal.ZERO;
+			            return deposit.subtract(utilized);
+			        })
+			        .reduce(BigDecimal.ZERO, BigDecimal::add); // sum up all available amounts
+
+			    if (req.getPremium() != null && req.getPremium().compareTo(totalAvailable) > 0) {
+			        error.add("2356"); 
+			    }
+			}
 			
 			if(StringUtils.isBlank(req.getQuoteNo())){
 				error.add("1120");

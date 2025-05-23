@@ -10,6 +10,8 @@ public interface DepositDetailRepository extends JpaRepository<DepositDetail, Lo
 
 	int countByProductIdAndQuoteNoAndPremiumAmountAndStatus(String productId, String quoteNo,
 			Double valueOf, String string);
+	
+	List<DepositDetail> findByQuoteNo(String quoteNo);
 
 	List<DepositDetail> findByStatus(String string);
 
@@ -24,5 +26,7 @@ public interface DepositDetailRepository extends JpaRepository<DepositDetail, Lo
 	List<DepositDetail> findByCbcNoAndStatusOrderByEntryDateAsc(String cbcNo, String string);
 
 	DepositDetail findByDepositNo(Long depositNo);
+	
+	
 
 }
