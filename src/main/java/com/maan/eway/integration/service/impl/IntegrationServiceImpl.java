@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +33,7 @@ import com.maan.eway.bean.MotCommDiscountDetail;
 import com.maan.eway.bean.MotDriverDetail;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PgithPolRiskAddlInfo;
+import com.maan.eway.bean.PositionMaster;
 import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.PremiaConfigMaster;
 import com.maan.eway.bean.PtIntgFlexTran;
@@ -58,6 +61,7 @@ import com.maan.eway.repository.MotDriverDetailRepository;
 import com.maan.eway.repository.MotcommDiscountDetailRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PgitPolRiskAddlInfoRepository;
+import com.maan.eway.repository.PositionMasterRepository;
 import com.maan.eway.repository.PremiaConfigDataMasterRepository;
 import com.maan.eway.repository.PremiaConfigMasterRepository;
 import com.maan.eway.repository.PtintgFlexTransRepository;
@@ -136,6 +140,9 @@ public class IntegrationServiceImpl implements IntegrationService {
 	private MySqlQuery oracle;
 	@Autowired
 	private ValuationServiceImpl valuationServiceImpl;
+	
+	@Autowired
+	private PositionMasterRepository pmRepo;
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -1562,6 +1569,214 @@ public class IntegrationServiceImpl implements IntegrationService {
 		System.out.println("Response from mySqlTable :" + mySqlTable);
 		mySqlService.pushMySql(configMasterList, param, quoteNo);
 		System.out.println("*********MySql Block Ended " + quoteNo + " " + formattedDateTime);
+	}
+
+	@Override
+	public PremiaResponse pushPremiaMarineIntegeration(PremiaRequest req) {
+		PremiaResponse response = new PremiaResponse();
+		LocalDateTime currentDateTime = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String formattedDateTime = currentDateTime.format(formatter);
+		System.out.println("*********Oracle Block started " + req.getQuoteNo() + " " + formattedDateTime);
+		try {
+		List<String> premaiId = new ArrayList<>();
+		premaiId.add("1");premaiId.add("2");premaiId.add("3");premaiId.add("4");premaiId.add("5");premaiId.add("6");premaiId.add("7");premaiId.add("8");premaiId.add("9");premaiId.add("10");
+		
+		List<PositionMaster>list=pmRepo.findByQuoteno(Long.parseLong(req.getQuoteNo()));
+		if(!CollectionUtils.isEmpty(list)) {
+			PositionMaster pm=list.get(0);
+			for (String id : premaiId) {
+				IntegrationSaveRes oraclpush = ewayMarinePremiaPush(pm.getPolicyno(),pm,id);
+				System.out.println("Response after oracle push " + oraclpush);
+				if ("Connection refused".equalsIgnoreCase(oraclpush.getResponse())) {
+
+					pm.setCoreintgstatus("Data Failed saved in  Oracle DB Connection refused");
+					pm.setIntegError(oraclpush.getErrorMessage());
+					pmRepo.save(pm);
+					System.out.println("-----Connection refused to save in oracle");
+					System.out.println("Data Failed saved in  Oracle DB Connection refused");
+					response.setResponse("Data Failed saved in  Oracle DB Connection refused");
+					break;
+				} else if ("Success".equalsIgnoreCase(oraclpush.getResponse())) {
+					response.setResponse("Success");
+					pm.setCoreintgstatus("Data saved in  Oracle DB");
+					pm.setIntegError("");
+					pmRepo.save(pm);
+					System.out.println("--------Saved in Oracle");
+
+				} else {
+					response.setResponse("Data Failed saved in  Oracle DB");
+					pm.setCoreintgstatus("Data Failed saved in  Oracle DB");
+					pm.setIntegError(oraclpush.getErrorMessage());
+					pmRepo.save(pm);
+
+					}
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();;
+		}
+		System.out.println("*********Oracle Block Ended " + req.getQuoteNo()+ " " + formattedDateTime);
+		return response;
+	}
+
+	private IntegrationSaveRes ewayMarinePremiaPush(String policyNo, PositionMaster pm, String premaiId) {
+
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
+		boolean check = false;
+		try {
+			System.out.println("*********EXTERNAL API CALL STARTS*********");
+			System.out.println("*********PolicyNo " + policyNo);
+
+			if ("1".equals(premaiId)) {
+				System.out.println("*********1.YiPolicyDetail: ");
+				Object list = frameReqService.pushYiPolicyDetail(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+
+			} else if ("2".equals(premaiId)) {
+				System.out.println("*********2.YiSectionDetail:");
+				Object list = frameReqService.pushYiSectionDetail(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+				res1.getResponse();
+				res1.getErrorMessage();
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+			} else if ("3".equals(premaiId)) {
+				System.out.println("*********3.PgitPolRiskAddlInfo:");
+				Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+				res1.getResponse();
+				res1.getErrorMessage();
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+			} else if ("4".equals(premaiId)) {
+				System.out.println("*********4.YiCoverDetail: ");
+				Object list = frameReqService.pushYiCoverDetail(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+				res1.getResponse();
+				res1.getErrorMessage();
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+			}  else if ("5".equals(premaiId)) {
+				System.out.println("*********5.YiChargeDetail: ");
+				Object list = frameReqService.pushYiChargeDetail(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+				res1.getResponse();
+				res1.getErrorMessage();
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+			} else if ("6".equals(premaiId)) {
+				System.out.println("*********6.YiVatDetail:");
+				Object list = frameReqService.pushYiVatDetail(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+				res1.getResponse();
+				res1.getErrorMessage();
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+			} else if ("7".equals(premaiId)) {
+				System.out.println("*********7.YiPremCal:");
+				Object list = frameReqService.pushYiPremCal(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+				res1.getResponse();
+				res1.getErrorMessage();
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+			}else if ("8".equals(premaiId)) {
+				System.out.println("*********8.YiConditions:");
+				Object list = frameReqService.pushYiConditionCal(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+				res1.getResponse();
+				res1.getErrorMessage();
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+			} else if ("9".equals(premaiId)) {
+				System.out.println("*********9.YiDeductable:");
+				Object list = frameReqService.pushYiDeductableCal(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+				res1.getResponse();
+				res1.getErrorMessage();
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+			} 
+			else if ("10".equals(premaiId)) {
+				System.out.println("*********10.YiPolicyApproval:");
+				Object list = frameReqService.pushYiPolicyApproval(policyNo);
+				System.out.println("List " + json.toJson(list));
+				System.out.println("_____________________________________________ ");
+				res1 = (IntegrationSaveRes) list;
+				res1.getResponse();
+				res1.getErrorMessage();
+				if ("Success".equalsIgnoreCase(res1.getResponse())) {
+					check = true;
+				} else {
+					check = false;
+				}
+			} 
+			if (check = true) {
+				pm.setCoreintgstatus("Data Inserted saved in  Oracle DB");
+				pm.setIntegError("");
+				pmRepo.save(pm);
+			} else {
+				pm.setCoreintgstatus("Data Failed saved in  Oracle DB");
+				pm.setIntegError(res1.getErrorMessage());
+				pmRepo.save(pm);
+			}
+			System.out.println("Response from oracle " + json.toJson(res1));
+
+			return res1;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return res1;
+		}
+	
 	}
 	
 }

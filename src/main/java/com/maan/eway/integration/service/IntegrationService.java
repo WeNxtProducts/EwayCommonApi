@@ -10,5 +10,7 @@ public interface IntegrationService {
 
 	PremiaResponse hitByQuoteNo(PremiaListRequest req);
 
+	PremiaResponse pushPremiaMarineIntegeration(PremiaRequest req);
+
 	
 }

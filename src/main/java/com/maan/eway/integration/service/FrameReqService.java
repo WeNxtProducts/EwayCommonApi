@@ -36,4 +36,8 @@ public interface FrameReqService {
 
 	IntegrationSaveRes updatePremiaExternalCallStatus(String policyNo, String companyId);
 
+	Object pushYiDeductableCal(String policyNo);
+
+	Object pushYiConditionCal(String policyNo);
+
 }

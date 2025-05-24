@@ -41,7 +41,9 @@ import com.maan.eway.bean.MotDriverDetail;
 import com.maan.eway.bean.PgithPolRiskAddlInfo;
 import com.maan.eway.bean.PtIntgFlexTran;
 import com.maan.eway.bean.YiChargeDetail;
+import com.maan.eway.bean.YiConditionDetail;
 import com.maan.eway.bean.YiCoverDetail;
+import com.maan.eway.bean.YiDeductibleDetail;
 import com.maan.eway.bean.YiPolicyApproval;
 import com.maan.eway.bean.YiPolicyDetail;
 import com.maan.eway.bean.YiPremCal;
@@ -60,7 +62,9 @@ import com.maan.eway.integration.req.PgitPolRiskAddlInfoReq;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.PtIntgFlexTranReq;
 import com.maan.eway.integration.req.YiChargeDetailReq;
+import com.maan.eway.integration.req.YiConditionDetailReq;
 import com.maan.eway.integration.req.YiCoverDetailReq;
+import com.maan.eway.integration.req.YiDeductableDetailReq;
 import com.maan.eway.integration.req.YiPolicyDetailReq;
 import com.maan.eway.integration.res.IntegrationSaveRes;
 import com.maan.eway.integration.service.FrameReqService;
@@ -70,7 +74,9 @@ import com.maan.eway.repository.MotcommDiscountDetailRepository;
 import com.maan.eway.repository.PgitPolRiskAddlInfoRepository;
 import com.maan.eway.repository.PtintgFlexTransRepository;
 import com.maan.eway.repository.YiChargeDetailRepository;
+import com.maan.eway.repository.YiConditionDetailRepository;
 import com.maan.eway.repository.YiCoverDetailRepository;
+import com.maan.eway.repository.YiDeductibleDetailRepository;
 import com.maan.eway.repository.YiPolicyApprovalRepository;
 import com.maan.eway.repository.YiPolicyDetailRepository;
 import com.maan.eway.repository.YiPremCalRepository;
@@ -109,7 +115,13 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	@Autowired
 	private PtintgFlexTransRepository ptintgFlexTransRepo;
+	
+	@Autowired
+	private YiDeductibleDetailRepository yideductRepo;
 
+	@Autowired
+	private YiConditionDetailRepository yicondRepo;
+	
 	@Value(value = "${BasicAuthPass}")
 	private String BasicAuthPass;
 
@@ -148,6 +160,13 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	@Value(value = "${YiVatDetail}")
 	private String YiVatDetailCall;
+	
+	@Value(value = "${YiDeductableDetail}")
+	private String YiDeductableDetailCall;
+	
+	@Value(value = "${YiConditionDetail}")
+	private String YiConditionDetailCall;
+	
 
 	@Value(value = "${PtIntgFlexTran}")
 	private String PtIntgFlexTranCall;
@@ -1093,6 +1112,148 @@ public class FrameReqServiceImpl implements FrameReqService {
 //			return null;
 //		}
 		return response;
+	}
+
+	@Override
+	public Object pushYiDeductableCal(String policyNo) {
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
+		String url = YiDeductableDetailCall;
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+
+		List<YiDeductibleDetail> list = yideductRepo.findByQuotationPolicyNo(policyNo);
+		YiDeductibleDetail saveData = new YiDeductibleDetail();
+		List<YiDeductableDetailReq> reqList = new ArrayList<YiDeductableDetailReq>();
+
+		if (list != null && list.size() > 0) {
+
+			for (YiDeductibleDetail data : list) {
+				YiDeductableDetailReq req1 = new YiDeductableDetailReq();
+				req1 = dozerMapper.map(data, YiDeductableDetailReq.class);
+				reqList.add(req1);
+			}
+		}
+		try {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization", authHeader);
+		HttpEntity<List<YiDeductableDetailReq>> entityReq = new HttpEntity<List<YiDeductableDetailReq>>(reqList,
+				headers);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
+		System.out.println(response.getBody());
+		
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (YiDeductibleDetail data1 : list) {
+					saveData = dozerMapper.map(data1, YiDeductibleDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
+				}
+				yideductRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (YiDeductibleDetail data1 : list) {
+						saveData = dozerMapper.map(data1, YiDeductibleDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
+					}
+					yideductRepo.saveAndFlush(saveData);
+				}
+			}
+
+		} catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			res1.setErrorMessage(e.getMessage());
+			return res1;
+		}
+		return res1;
+	}
+
+	@Override
+	public Object pushYiConditionCal(String policyNo) {
+		IntegrationSaveRes res1 = new IntegrationSaveRes();
+		String url = YiConditionDetailCall;
+		String auth = BasicAuthName + ":" + BasicAuthPass;
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
+		String authHeader = "Basic " + new String(encodedAuth);
+
+		List<YiConditionDetail> list = yicondRepo.findByQuotationPolicyNo(policyNo);
+		YiConditionDetail saveData = new YiConditionDetail();
+		List<YiConditionDetailReq> reqList = new ArrayList<YiConditionDetailReq>();
+
+		if (list != null && list.size() > 0) {
+
+			for (YiConditionDetail data : list) {
+				YiConditionDetailReq req1 = new YiConditionDetailReq();
+				req1 = dozerMapper.map(data, YiConditionDetailReq.class);
+				reqList.add(req1);
+			}
+		}
+		try {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization", authHeader);
+		HttpEntity<List<YiConditionDetailReq>> entityReq = new HttpEntity<List<YiConditionDetailReq>>(reqList,
+				headers);
+		ResponseEntity<PremiaCommonRes> response = restTemplate.postForEntity(url, entityReq, PremiaCommonRes.class);
+		System.out.println(response.getBody());
+		
+		res1.setResponse(response.getBody().getCommonResponse().getResponse());
+		res1.setErrorMessage(response.getBody().getCommonResponse().getErrorMessage());
+		
+			if ("success".equalsIgnoreCase(res1.getResponse())) {
+				for (YiConditionDetail data1 : list) {
+					saveData = dozerMapper.map(data1, YiConditionDetail.class);
+					saveData.setPWsResponseType(res1.getResponse());
+					saveData.setPWsError("");
+				}
+				yicondRepo.saveAndFlush(saveData);
+			} else {
+				if (list.size() > 0 && list != null) {
+					for (YiConditionDetail data1 : list) {
+						saveData = dozerMapper.map(data1, YiConditionDetail.class);
+						saveData.setPWsResponseType(res1.getResponse());
+						saveData.setPWsError(res1.getErrorMessage());
+					}
+					yicondRepo.saveAndFlush(saveData);
+				}
+			}
+
+		} catch (RestClientException e) {
+		    if (e.getCause() instanceof ConnectException) {
+		        System.out.println("Connection refused: Unable to connect to the server at " + url);
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    } else {
+		        System.out.println("An error occurred while making the REST call: " + e.getMessage());
+		        res1.setResponse("Connection refused");
+		        res1.setErrorMessage(e.getMessage());
+		    }
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			res1.setErrorMessage(e.getMessage());
+			return res1;
+		}
+		return res1;
 	}
 
 }

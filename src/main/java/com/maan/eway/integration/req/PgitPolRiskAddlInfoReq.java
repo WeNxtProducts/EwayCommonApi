@@ -610,7 +610,7 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 	private BigDecimal praiData22;
 
 	@JsonProperty("PRAI_DATA_23")
-	private BigDecimal praiData23;
+	private String praiData23;
 
 	@JsonProperty("PRAI_DATA_24")
 	private BigDecimal praiData24;
@@ -619,7 +619,7 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 	private BigDecimal praiData25;
 
 	@JsonProperty("PRAI_DATA_26")
-	private BigDecimal praiData26;
+	private String praiData26;
 
 	@JsonProperty("PRAI_DATA_27")
 	private BigDecimal praiData27;
@@ -628,22 +628,22 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 	private BigDecimal praiData28;
 
 	@JsonProperty("PRAI_DATA_29")
-	private BigDecimal praiData29;
+	private String praiData29;
 
 	@JsonProperty("PRAI_DATA_30")
 	private BigDecimal praiData30;
 
 	@JsonProperty("PRAI_DATA_31")
-	private BigDecimal praiData31;
+	private String praiData31;
 
 	@JsonProperty("PRAI_DATA_32")
-	private BigDecimal praiData32;
+	private String praiData32;
 
 	@JsonProperty("PRAI_DATA_33")
-	private BigDecimal praiData33;
+	private String praiData33;
 
 	@JsonProperty("PRAI_DATA_34")
-	private BigDecimal praiData34;
+	private String praiData34;
 
 	@JsonProperty("PRAI_DATA_35")
 	private BigDecimal praiData35;
@@ -670,7 +670,7 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 	private BigDecimal praiCode22;
 
 	@JsonProperty("PRAI_CODE_25")
-	private BigDecimal praiCode25;
+	private String praiCode25;
 
 	@JsonProperty("PRAI_DATE_11")
 	private Date praiDate11;
