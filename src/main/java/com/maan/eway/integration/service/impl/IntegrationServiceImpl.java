@@ -1586,12 +1586,12 @@ public class IntegrationServiceImpl implements IntegrationService {
 		if(!CollectionUtils.isEmpty(list)) {
 			PositionMaster pm=list.get(0);
 			for (String id : premaiId) {
-				IntegrationSaveRes oraclpush = ewayMarinePremiaPush(pm.getPolicyno(),pm,id);
+				IntegrationSaveRes oraclpush = ewayMarinePremiaPush(req.getPolicyNo(),pm,id);
 				System.out.println("Response after oracle push " + oraclpush);
 				if ("Connection refused".equalsIgnoreCase(oraclpush.getResponse())) {
 
 					pm.setCoreintgstatus("Data Failed saved in  Oracle DB Connection refused");
-					pm.setIntegError(oraclpush.getErrorMessage());
+					pm.setIntegrationError(oraclpush.getErrorMessage());
 					pmRepo.save(pm);
 					System.out.println("-----Connection refused to save in oracle");
 					System.out.println("Data Failed saved in  Oracle DB Connection refused");
@@ -1600,14 +1600,14 @@ public class IntegrationServiceImpl implements IntegrationService {
 				} else if ("Success".equalsIgnoreCase(oraclpush.getResponse())) {
 					response.setResponse("Success");
 					pm.setCoreintgstatus("Data saved in  Oracle DB");
-					pm.setIntegError("");
+					pm.setIntegrationError("");
 					pmRepo.save(pm);
 					System.out.println("--------Saved in Oracle");
 
 				} else {
 					response.setResponse("Data Failed saved in  Oracle DB");
 					pm.setCoreintgstatus("Data Failed saved in  Oracle DB");
-					pm.setIntegError(oraclpush.getErrorMessage());
+					pm.setIntegrationError(oraclpush.getErrorMessage());
 					pmRepo.save(pm);
 
 					}
@@ -1762,11 +1762,11 @@ public class IntegrationServiceImpl implements IntegrationService {
 			} 
 			if (check = true) {
 				pm.setCoreintgstatus("Data Inserted saved in  Oracle DB");
-				pm.setIntegError("");
+				pm.setIntegrationError("");
 				pmRepo.save(pm);
 			} else {
 				pm.setCoreintgstatus("Data Failed saved in  Oracle DB");
-				pm.setIntegError(res1.getErrorMessage());
+				pm.setIntegrationError(res1.getErrorMessage());
 				pmRepo.save(pm);
 			}
 			System.out.println("Response from oracle " + json.toJson(res1));

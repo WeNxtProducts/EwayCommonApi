@@ -52,7 +52,7 @@ public class PositionMaster {
     @Column(name="AMEND_ID")
     private Long amendid;
     @Column(name="INTEGRATION_ERROR")
-    private Long integrationError;  
+    private String integrationError;  
     @Column(name="INCEPTION_DATE")
     private Date inceptiondate;
     @Column(name="EXPIRY_DATE")
