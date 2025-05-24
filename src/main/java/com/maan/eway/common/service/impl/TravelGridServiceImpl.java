@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +64,7 @@ import com.maan.eway.common.res.TravelQuoteCriteriaRes;
 import com.maan.eway.common.res.TravelQuoteCriteriaResponse;
 import com.maan.eway.common.res.TravelRejectCriteriaRes;
 import com.maan.eway.common.service.TravelGridService;
+import com.maan.eway.jasper.service.impl.JasperConfiguration;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -162,7 +161,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	private RatingFactorsUtil ratingutil;
 	
 	 @Autowired
-	 private DataSource dataSource;
+	 private JasperConfiguration jasperConfiguration;
 	 
 	 private boolean isOracle;
 	 private boolean isMySQL;
@@ -3063,7 +3062,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			try {
 				
-				 DatabaseMetaData metaData = dataSource.getConnection().getMetaData();
+				 DatabaseMetaData metaData = jasperConfiguration.getMySQLDataSourceForJasper().getConnection().getMetaData();
 		         String databaseProductName = metaData.getDatabaseProductName();
 		         // Check if the database product name contains the word "Oracle"
 		            isOracle = databaseProductName.contains("Oracle");

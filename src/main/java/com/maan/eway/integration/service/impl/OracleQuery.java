@@ -78,23 +78,14 @@ public class OracleQuery {
 	
 	@Transactional("oracleTransactionManager")
 	public boolean insert(String query) {
-		try (Connection conn = oracleDataSource.getConnection();
-		         Statement stmt = conn.createStatement()) {
+		try (Connection conn = oracleDataSource.getConnection(); Statement stmt = conn.createStatement()) {
 
-		        stmt.executeUpdate(query);
-		        return true;
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		        return false;
-		    }
-//		try {
-//			em.createNativeQuery(query).executeUpdate(); 
-//			
-//			return true;
-//		}catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return false;
+			stmt.executeUpdate(query);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public List<Map<String, Object>> getListFromQueryWithoutKey(String query, List<String> params) {

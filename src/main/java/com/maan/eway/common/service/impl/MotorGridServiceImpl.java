@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,6 +74,7 @@ import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.MotorGridService;
+import com.maan.eway.jasper.service.impl.JasperConfiguration;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.CoverMasterRepository;
@@ -175,8 +177,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
 	
-	 @Autowired
-	 private DataSource dataSource;
+	@Autowired
+	private JasperConfiguration	 jasperConfiguration;
 	 
 	@Autowired
 	private ContentAndRiskRepository contentRiskRepo;
@@ -4053,7 +4055,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				
 				try {
 					
-					 DatabaseMetaData metaData = dataSource.getConnection().getMetaData();
+					 DatabaseMetaData metaData = jasperConfiguration.getMySQLDataSourceForJasper().getConnection().getMetaData();
 			         String databaseProductName = metaData.getDatabaseProductName();
 			         // Check if the database product name contains the word "Oracle"
 			            isOracle = databaseProductName.contains("Oracle");

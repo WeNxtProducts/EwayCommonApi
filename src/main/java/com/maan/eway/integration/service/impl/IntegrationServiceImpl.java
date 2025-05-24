@@ -1444,8 +1444,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 			String quoteNo = home.getQuoteNo();
 			String reqRefNo = home.getRequestReferenceNo();
 			String companyId = home.getCompanyId();
-			// String productId = home.getProductId().toString();
-			String productId = "99999";
+			String productId = home.getProductId().toString();
 			String status = home.getStatus();
 			// Status of My Sql Data
 			String mySqlTable = "F";
@@ -1453,8 +1452,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 			CompanyProductMaster product = getCompanyProductMasterDropdown(companyId, productId);
 			if ("P".equalsIgnoreCase(status)) {
 				List<PremiaConfigMaster> configMasterList = getPremiaConfigMaster(home.getCompanyId(),
-						// home.getProductId()
-						99999, request.getPremiaIds());
+						 home.getProductId(), request.getPremiaIds());
 
 				List<String> param = new ArrayList<String>();
 				param.add(quoteNo);

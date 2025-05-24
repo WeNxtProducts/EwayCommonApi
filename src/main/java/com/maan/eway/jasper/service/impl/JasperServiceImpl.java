@@ -378,7 +378,7 @@ public class JasperServiceImpl implements JasperService {
 		JasperDocumentRes res = new JasperDocumentRes();
 		Connection connection = null;
 		try {
-			connection = config.getDataSourceForJasper().getConnection();
+			connection = config.getMySQLDataSourceForJasper().getConnection();
 			InputStream inputStream = this.getClass().getResourceAsStream(jasperPath);
 			JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, input, connection);
@@ -703,7 +703,7 @@ public class JasperServiceImpl implements JasperService {
 				is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReportSql.jrxml");
 			}
 			log.info("PremiumReport jasperParameter ==> "+gson.toJson(jasperParameter));
-			connection=config.getDataSourceForJasper().getConnection();
+			connection=config.getMySQLDataSourceForJasper().getConnection();
 			if("Y".equalsIgnoreCase(req.getExcelYn())) {
 				fileName ="PremiumRegister";
 				prefix="data:application/vnd.ms-excel;base64,";
