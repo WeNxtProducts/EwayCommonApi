@@ -1239,7 +1239,7 @@ import jakarta.persistence.criteria.Subquery;
 					emiInfoListRes.setBalanceAmount(Long.valueOf(Math.round(balanceAmount)).toString());
 					emiInfoListRes.setTotalLoanAmount(Long.valueOf(Math.round(totalLoanAmount)).toString());
 					emiInfoListRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
-					emiInfoListRes.setInstallmentTypeId(data.getInstallmentTypeId());
+					emiInfoListRes.setInstallmentTypeId(data.getInstallmentTypeId().equals("0")?StringUtils.isNotBlank(data.getInstallmentPeriod())?"1"+data.getInstallmentPeriod():"0":data.getInstallmentTypeId());
 					emiInfoListRes.setInstallmentTypeDesc(data.getInstallmentTypeDesc());		
 					
 					res.setEmiInfoRes(emiInfoListRes);
