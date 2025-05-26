@@ -744,13 +744,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double endtChangePremium=totalcovers.stream().filter( o ->  o.getPremiumIncludedTaxFc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())  )
 			 .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
 			 
-			newCovers.removeIf(p -> {
+	/*		newCovers.removeIf(p -> {
 				return oldcoversf.stream()
 						.anyMatch(x -> (x.getVehicleId().equals(p.getVehicleId())
 								&& x.getSectionId().equals(p.getSectionId())
 								&& x.getProductId().equals(p.getProductId()) 
 								&& x.getCoverId().equals(p.getCoverId())));
-			});
+			});*/
 			 Double addedCoverPremium =newCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
 					 o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null 
 					 && !"D".equals(o.getStatus())
@@ -776,7 +776,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					 o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null 
 					 && !"D".equals(o.getStatus()) 
 					 && effDate.compareTo(o.getCoverPeriodFrom())>=0  ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
-				BigDecimal endtPremiumWithoutTax = new  BigDecimal(removedCoverPremiumWithoutTax+addedCoverPremiumWithoutTax+endtChangePremiumWithoutTax);
+				BigDecimal endtPremiumWithoutTax = new  BigDecimal(removedCoverPremiumWithoutTax+addedCoverPremiumWithoutTax);
 					
 			
 			
@@ -808,11 +808,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 //					o.getDiscLoadId().equals(Integer.valueOf(request.getEndtType())) ).collect(Collectors.toList());
 			 Double endtVatPremium = endtTaxCovers.stream().filter( o -> !o.getDiscLoadId().equals(0)  &&  
 					 !o.getTaxId().equals(0) && o.getTaxAmount()!=null && o.getCoverageType().equalsIgnoreCase("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()   ).sum();
+			Double trial = endtVatPremium;
 			 endtVatPremium = endtVatPremium + (newCoverTax.size() >0 ? newCoverTax.stream().mapToDouble( o ->   o.getTaxAmount().doubleValue()   ).sum() :0D  ) ;
 	
 			// Vat Condition
 			if(endtPremiumWithoutTax.doubleValue()>0 ) {
 				endtChargeOrRefund="CHARGE";
+				endtVatPremium-=trial;
+				endtPremiumWithoutTax=endtPremium;
 			} else if (endtPremiumWithoutTax.doubleValue()<0 && endtVatPremium >0 ) {
 				endtVatPremium = - endtVatPremium;
 			} else if (endtPremiumWithoutTax.doubleValue()==0  ) {
