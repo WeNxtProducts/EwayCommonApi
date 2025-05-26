@@ -2460,6 +2460,7 @@
 			</componentElement>
 		</band>
 		<band height="15">
+			<printWhenExpression><![CDATA[$F{coverId}!=76]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="10" y="0" width="490" height="15" uuid="fdf9023c-ec31-44b6-87c5-db2b9d9e29d1">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
