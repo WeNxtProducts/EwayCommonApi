@@ -2400,7 +2400,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Warranties and conditions."]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Additional Conditions,Exclusions & Warranties."]]></textFieldExpression>
 			</textField>
 			<componentElement>
 				<reportElement x="10" y="10" width="239" height="15" isRemoveLineWhenBlank="true" uuid="4ca97dc8-5289-48db-8679-63aef4174ada"/>
@@ -2484,7 +2484,8 @@
 								<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{excessPercent}==null || ($F{excessPercent}.compareTo( BigDecimal.ZERO))==0?"":"* Excess "+$F{excessPercent}+"% each and every loss subject to a minimum of "+new DecimalFormat("#,##0.00").format($F{excessAmount})+" "+$F{currency}+" or Equivalent to "+$F{currency}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{excessPercent}==null || ($F{excessPercent}.compareTo( BigDecimal.ZERO))==0?"":"* Excess "+$F{excessPercent}+"% each and every loss subject to a minimum of "+new DecimalFormat("#,##0.00").format($F{excessAmount})
+/*+" "+$F{currency}+" or Equivalent to "+$F{currency} */]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

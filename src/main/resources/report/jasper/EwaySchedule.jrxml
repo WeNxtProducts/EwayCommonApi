@@ -711,7 +711,7 @@
 		</band>
 		<band height="45">
 			<textField isBlankWhenNull="true">
-				<reportElement x="252" y="0" width="99" height="15" uuid="f533d67b-42ab-43b0-848d-d81393bae15c"/>
+				<reportElement x="281" y="0" width="99" height="15" uuid="f533d67b-42ab-43b0-848d-d81393bae15c"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.0"/>
 				</box>
@@ -721,7 +721,7 @@
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{NonMotorTotPremium})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="2" y="0" width="250" height="15" uuid="0681e049-17b1-4636-81ee-85f8c0571925">
+				<reportElement x="31" y="0" width="250" height="15" uuid="0681e049-17b1-4636-81ee-85f8c0571925">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -734,7 +734,7 @@
 				<textFieldExpression><![CDATA["Premium Total"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="252" y="15" width="99" height="15" uuid="82d1e023-8ab1-45b9-a1c3-7ee5a296b188"/>
+				<reportElement x="281" y="15" width="99" height="15" uuid="82d1e023-8ab1-45b9-a1c3-7ee5a296b188"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.0"/>
 					<bottomPen lineWidth="0.5" lineStyle="Double"/>
@@ -745,7 +745,7 @@
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{vatAmount})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="2" y="15" width="250" height="15" uuid="7daa8429-7e13-47a7-8431-b27ce2fd63b9">
+				<reportElement x="31" y="15" width="250" height="15" uuid="7daa8429-7e13-47a7-8431-b27ce2fd63b9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -758,7 +758,7 @@
 				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="252" y="30" width="99" height="15" uuid="cc2da6c0-cbd7-4571-bbdb-af2e98dbbc00">
+				<reportElement x="281" y="30" width="99" height="15" uuid="cc2da6c0-cbd7-4571-bbdb-af2e98dbbc00">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box rightPadding="2">
@@ -774,7 +774,7 @@
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{overAllPremium})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="2" y="30" width="250" height="15" uuid="ca27d34e-b3a0-40e8-8ad9-5c140d70ea39">
+				<reportElement x="31" y="30" width="250" height="15" uuid="ca27d34e-b3a0-40e8-8ad9-5c140d70ea39">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box leftPadding="0" rightPadding="2">
