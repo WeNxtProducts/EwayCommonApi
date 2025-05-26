@@ -144,7 +144,7 @@ public class RenewalTrackingController {
 		return res;
 	}
 	@GetMapping("/getRenewVehicleInfo")
-	public CommonRes getRenewVehicl(@RequestParam("policyNo") String policyNo, @RequestParam("riskId") String riskId ) 
+	public CommonRes getRenewVehicl(@RequestParam("policyNo") String policyNo) 
 	{
 		CommonRes res = new CommonRes();
 		if(policyNo==null)
@@ -152,7 +152,7 @@ public class RenewalTrackingController {
 			res.setMessage("Enter Policy number");
 		}
 		else {
-			res=service.getRenewVehicl(policyNo,riskId);
+			res=service.getRenewVehicl(policyNo);
 		}
 		return res;
 		}

@@ -47,10 +47,6 @@ public class Validation {
 			{
 				list.add(new Error("add sumInsured", "", ""));
 			}
-			if(StringUtils.isBlank(req.getStatus()))
-			{
-				list.add(new Error("add status", "", ""));
-			}
 			if(StringUtils.isBlank(req.getCreatedBy()))
 			{
 				list.add(new Error("add createdBy", "", ""));

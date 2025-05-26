@@ -39,7 +39,7 @@ public interface RenewalTrackingService {
 
 	CommonRes insertVehicleInfo(RenewalVehicleReq req);
 
-	CommonRes getRenewVehicl(String policyNo, String riskId);
+	CommonRes getRenewVehicl(String policyNo);
 
 
 }

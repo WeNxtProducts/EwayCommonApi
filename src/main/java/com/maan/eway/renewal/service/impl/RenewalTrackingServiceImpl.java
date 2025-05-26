@@ -1264,7 +1264,6 @@ public CommonRes insertVehicleInfo(RenewalVehicleReq req) {
 			entity.setVehicleUsage(StringUtils.isBlank(req.getVehicleUsage())?" " :req.getVehicleUsage());
 			entity.setPolicyType(StringUtils.isBlank(req.getPolicyType())?" " :req.getPolicyType());
 			entity.setSumInsured(StringUtils.isBlank(req.getSumInsured())? 0.0 :Double.parseDouble(req.getSumInsured()));
-			entity.setStatus(StringUtils.isBlank(req.getStatus())?" " :req.getStatus());
 			entity.setCreatedBy(StringUtils.isBlank(req.getCreatedBy())?" " :req.getCreatedBy());
 			entity.setEntryDate(new Date());
 			vehiclerepo.saveAndFlush(entity);
@@ -1281,11 +1280,11 @@ public CommonRes insertVehicleInfo(RenewalVehicleReq req) {
 		return res;
 	}
 @Override
-public CommonRes getRenewVehicl(String policyNo, String riskId) {
+public CommonRes getRenewVehicl(String policyNo) {
 	CommonRes res = new CommonRes();
 	RenewVehicleInfo entity=null;
 	try
-	{ 	 entity = vehiclerepo.findByPolicyNoAndRiskId(policyNo, riskId);
+	{ 	 entity = vehiclerepo.findByPolicyNo(policyNo);
 		 if (entity!=null)
 		 {
 			 res.setCommonResponse(entity);

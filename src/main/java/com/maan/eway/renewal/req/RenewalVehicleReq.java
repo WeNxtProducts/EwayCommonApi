@@ -30,9 +30,6 @@ public class RenewalVehicleReq {
 	@JsonProperty("SumInsured")	   
 	private String sumInsured;
 
-	@JsonProperty("Status")	    
-	private String status;
-
 	@JsonProperty("CreatedBy")	    
 	private String createdBy;
 
