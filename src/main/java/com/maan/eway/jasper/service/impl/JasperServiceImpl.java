@@ -301,6 +301,20 @@ public class JasperServiceImpl implements JasperService {
 								System.out.println("Jasper compileToReport path" +path);
 							}
 							res = getCommonJasperPdfFileByJson("/report/jasper/CorporatePlus.jrxml", jasperSaveLocation, jsonString, input2, "- CorporatePlus.json");
+						}else if(homeData.getProductId() == 59) {
+							Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
+							String jsonString = gson.toJson(EwaySchedule);
+							String obj[] =new String[1];
+							obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
+							//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/NonMotorContent.jrxml";	// for linux system
+							//obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";
+							//obj[2] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/DomesticConditions.jrxml";
+							for(String s :obj) {
+								String jrxml_path=s.replace(".jasper", ".jrxml");
+								String path = JasperCompileManager.compileReportToFile(jrxml_path);
+								System.out.println("Jasper compileToReport path" +path);
+							}
+							res = getCommonJasperPdfFileByJson("/report/jasper/EwaySchedule.jrxml", jasperSaveLocation, jsonString, input2, "- EwaySchedule.json");
 						}else {
 							Map<String,Object> EwaySchedule = jasperCustomeImple.getEwaySchedule(homeData.getQuoteNo());
 							String jsonString = gson.toJson(EwaySchedule);

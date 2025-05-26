@@ -1983,7 +1983,8 @@ public class JasperCustomServiceImple {
 				Root<EserviceCommonDetails> ecdRoot = occDesc.from(EserviceCommonDetails.class);
 				occDesc.select(ecdRoot.get("occupationDesc")).where(cb.equal(pcdRoot.get("quoteNo"), ecdRoot.get("quoteNo")),cb.equal(pcdRoot.get("sectionId").as(String.class), ecdRoot.get("sectionId")),
 						cb.equal(pcdRoot.get("vehicleId"), ecdRoot.get("riskId")),cb.equal(pcdRoot.get("productId").as(String.class), ecdRoot.get("productId")),
-						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")),cb.equal(pcdRoot.get("locationId"), ecdRoot.get("locationId")));
+						cb.equal(pcdRoot.get("companyId"), ecdRoot.get("companyId")),cb.equal(pcdRoot.get("locationId"), ecdRoot.get("locationId")),
+						cb.equal(pcdRoot.get("coverId"), ecdRoot.get("coverId")));
 				
 				cq1.multiselect(sddRoot.get("sectionId").alias("sectionId"),sddRoot.get("sectionDesc").alias("sectionDesc"),pcdRoot.get("coverDesc").alias("coverDesc"),
 						pcdRoot.get("coverId").alias("coverId"),pcdRoot.get("coverageType").alias("coverageType"),sddRoot.get("coverNoteReferenceNo").alias("coverNoteReferenceNo"),
@@ -2125,7 +2126,7 @@ public class JasperCustomServiceImple {
 						Smap.put("premiumExcludedTaxFc", k.get("premiumExcludedTaxFc"));
 						Smap.put("vehicleId",k.get("vehicleId"));
 						sectionList.add(Smap);
-						result.put("occupationDesc", sectList.stream().filter(f -> f.get("occupationDesc") != null).map(m -> m.get("occupationDesc"))
+						result.put("occupationDesc", sectList.stream().filter(f -> f.get("occupationDesc") != null && !f.get("occupationDesc").toString().equals("null")).map(m -> m.get("occupationDesc"))
 								.map(Object::toString).findAny().orElse(null));
 					});
 			}else {
@@ -2217,6 +2218,8 @@ public class JasperCustomServiceImple {
 								lmap.put("categoryDesc", k.getCategoryDesc());
 								lmap.put("contentDesc", k.getContentDesc());
 								lmap.put("firstLossPercent", k.getFirstLossPercent());
+								lmap.put("tiraCoverNo", Slist.stream().filter(f -> f.get("sectionId").equals(sectionId) && f.get("coverNoteReferenceNo")!=null)
+										.map(b -> b.get("coverNoteReferenceNo")).distinct().findAny().orElse(""));
 								return lmap;
 							}).collect(Collectors.toList());
 							String isBuildingYn = locationList.stream()
@@ -2341,18 +2344,32 @@ public class JasperCustomServiceImple {
 					//WARRANTY
 					List<Map<String,Object>> warrantyList = getWarrantyDescription(map.get("policyNo")==null?"":map.get("policyNo").toString(), map.get("quoteNo")==null?"":map.get("quoteNo").toString(),sectionId);
 					
-						List<Map<String,Object>> termsAndconditions = Stream.of(conditionList,exclusionList,warrantyList).flatMap(Collection::stream).distinct()
-								.map(u -> {
-									return u.entrySet().stream()
-											.collect(Collectors.toMap(Map.Entry::getKey, e -> capitalizeFirstLetter(e.getValue())));
-								})
-								.collect(Collectors.toList());
+					List<LinkedHashMap<String, Object>> termsAndconditions = Stream.of(warrantyList,conditionList,exclusionList).flatMap(Collection::stream)
+							.sorted(Comparator.comparing(p -> {
+							    if (p.get("Sno") == null || p.get("Sno").toString().isEmpty()) {
+							        return Integer.MAX_VALUE;
+							    }
+							    try {
+							        return Integer.parseInt(p.get("Sno").toString());
+							    } catch (NumberFormatException e) {
+							        return Integer.MAX_VALUE;
+							    }
+							}))
+							.map(u -> {
+									LinkedHashMap<String,Object> m = new LinkedHashMap<String, Object>();
+									m.put("conditionTerms", u.get("conditionTerms")==null?"":u.get("conditionTerms").toString());
+									return m;
+								}).distinct().collect(Collectors.toList());
+
 						int conditionsize = termsAndconditions.size();
-						int midIndex = conditionsize / 2;
-
-						List<Map<String, Object>> firstHalf = termsAndconditions.subList(0, midIndex);
-
-						List<Map<String, Object>> secondHalf = termsAndconditions.subList(midIndex, conditionsize);
+						List<LinkedHashMap<String, Object>> firstHalf,secondHalf = new ArrayList<LinkedHashMap<String, Object>>();
+						if(conditionsize>10) {
+							int midIndex = conditionsize / 2;
+							firstHalf = termsAndconditions.subList(0, midIndex);
+							secondHalf = termsAndconditions.subList(midIndex, conditionsize);
+						}else {
+							firstHalf = termsAndconditions.subList(0, conditionsize);
+						}
 						
 						List<PolicyCoverData> excessCon = coverData.stream().filter(f -> f.getTaxId()==0 && f.getDiscLoadId()==0 && f.getCoverageType().equalsIgnoreCase("B") && f.getSectionId()==Integer.parseInt(sectionId)).collect(Collectors.toList());
 						if(!excessCon.isEmpty()) {
