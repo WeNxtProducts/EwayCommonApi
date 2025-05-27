@@ -177,7 +177,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 //							Date periodEnd = t.getPolicyEndDate() ;
 							Date periodEnd = endorsement.getPolicyEndDate() ;
 							Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) +1;
 							// Check Leap Year
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 							boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
