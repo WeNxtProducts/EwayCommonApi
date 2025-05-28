@@ -1574,6 +1574,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 	@Override
 	public PremiaResponse pushPremiaMarineIntegeration(PremiaRequest req) {
 		PremiaResponse response = new PremiaResponse();
+		List<String> failureOracleList = new ArrayList<>();
 		LocalDateTime currentDateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String formattedDateTime = currentDateTime.format(formatter);
@@ -1609,8 +1610,32 @@ public class IntegrationServiceImpl implements IntegrationService {
 					pm.setCoreintgstatus("Data Failed saved in  Oracle DB");
 					pm.setIntegrationError(oraclpush.getErrorMessage());
 					pmRepo.save(pm);
-
-					}
+					failureOracleList.add("Data Failed saved in  Oracle DB");
+				}
+			}
+			if (failureOracleList.isEmpty()) {
+				System.out.println("*********Premia Integration Wecore Api Call:");
+				System.out.println("Policy No :" + req.getPolicyNo() + " Company Id :" + req.getCompanyId());
+				IntegrationSaveRes list1 = frameReqService.premiaExternalCall(req.getPolicyNo(), req.getCompanyId());
+				System.out.println("List " + json.toJson(list1));
+				if (list1.getResponse().equalsIgnoreCase("Failed")) {
+	
+					pm.setCoreintgstatus(
+							StringUtils.isBlank(list1.getPWsResponseType()) ? "Data not Integrated"
+									: list1.getPWsResponseType());
+					pm.setIntegrationError(StringUtils.isBlank(list1.getPWsError()) ? list1.getErrorMessage()
+							: list1.getPWsError());
+					response.setResponse("Failed");
+				} else {
+					pm.setCoreintgstatus(StringUtils.isBlank(list1.getPWsResponseType()) ? "Data Integrated"
+							: list1.getPWsResponseType());
+					pm.setIntegrationError(StringUtils.isBlank(list1.getPWsError()) ? "" : list1.getPWsError());
+					response.setResponse(StringUtils.isBlank(list1.getPWsResponseType()) ? "Data Integrated"
+							: list1.getPWsResponseType());
+				}
+	
+				System.out.println("List " + json.toJson(list));
+				System.out.println("________________________________________________ ");
 				}
 			}
 		}catch (Exception e) {
@@ -1620,6 +1645,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 		return response;
 	}
 
+	
 	private IntegrationSaveRes ewayMarinePremiaPush(String policyNo, PositionMaster pm, String premaiId) {
 
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
