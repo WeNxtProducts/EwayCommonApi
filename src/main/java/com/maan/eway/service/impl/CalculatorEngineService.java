@@ -4119,7 +4119,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									engine.setVdRefNo(bd.getVdRefno().toString());
 									engine.setCreatedBy(bd.getCreatedBy());
 									engine.setRequestReferenceNo(bd.getRequestReferenceNo());
-									engine.setEffectiveDate(request.getEffectiveDate()==null?bd.getPolicyStartDate():request.getEffectiveDate());
+									engine.setEffectiveDate(bd.getEndorsementEffdate()==null?bd.getPolicyStartDate():bd.getEndorsementEffdate());
 									engine.setPolicyEndDate(request.getPolicyEndDate()==null?bd.getPolicyEndDate():request.getPolicyEndDate());
 									engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 									engine.setVehicleId(bd.getRiskId().toString());	
@@ -4157,7 +4157,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							engine.setVdRefNo(cd.getVdRefNo().toString());
 							engine.setCreatedBy(cd.getCreatedBy());
 							engine.setRequestReferenceNo(cd.getRequestReferenceNo());
-							engine.setEffectiveDate(request.getEffectiveDate()==null?cd.getPolicyStartDate():request.getEffectiveDate());
+							engine.setEffectiveDate(cd.getEndorsementEffdate()==null?cd.getPolicyStartDate():cd.getEndorsementEffdate());
 							engine.setPolicyEndDate(request.getPolicyEndDate()==null?cd.getPolicyEndDate():request.getPolicyEndDate());
 							engine.setCoverModification(StringUtils.isBlank(request.getCoverModification())?"N":request.getCoverModification());
 							engine.setVehicleId(cd.getRiskId().toString());	
