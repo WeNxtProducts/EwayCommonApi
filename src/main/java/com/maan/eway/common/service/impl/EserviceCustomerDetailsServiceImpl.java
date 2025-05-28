@@ -3209,7 +3209,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setMiddleName(data.getMiddleName()==null?"":data.getMiddleName());
 				res.setLastName(data.getLastName()==null?"":data.getLastName());
 				res.setTitle(data.getTitle()==null?"":data.getTitle());	
-				res.setTitleDesc(data.getTitleDesc()==null?"":data.getTitleDesc());			
+				res.setTitleDesc(data.getTitleDesc()==null?"":data.getTitleDesc());		
+				res.setLeadSeqNo(data.getLeadSeqNo());		
 				resList.add(res);
 			}
 
@@ -4714,7 +4715,6 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 								saveData.setLicenseIssuedDate(new Date());
 								saveData.setLicenseDuration(20);
 							}
-							
 							repository.save(saveData);
 						}
 						res.setSuccessId(req.getCustomerReferenceNo());

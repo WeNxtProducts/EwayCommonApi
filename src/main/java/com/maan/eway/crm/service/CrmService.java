@@ -19,4 +19,5 @@ public interface CrmService {
 
 	List<EserviceCustomerDetails> getCustomerDetailByLeadseqNo(Long leadSeqNo, String companyId, String token);
 
+
 }

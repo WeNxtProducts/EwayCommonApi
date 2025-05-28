@@ -299,6 +299,6 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("MotherName")
 	private String mother_name;
 	
-
-	
+	@JsonProperty("LeadSeqNo")
+	private Long leadSeqNo;
 }

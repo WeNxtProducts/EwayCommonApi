@@ -668,7 +668,7 @@ public class PhoenixEserviceCustomerDetails {
 				saveData.setLicenseDuration(20);
 			}
 			
-
+			saveData.setLeadSeqNo(req.getLeadSeqNo());
 			repository.save(saveData);
 
 			//Personal Info Update

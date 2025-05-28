@@ -681,7 +681,7 @@ public class PhoenixMozambiqueEserviceCustomerDetails {
 				saveData.setMother_name(req.getMother_name());
 			}
 			
-			
+			saveData.setLeadSeqNo(req.getLeadSeqNo());
 
 			repository.save(saveData);
 

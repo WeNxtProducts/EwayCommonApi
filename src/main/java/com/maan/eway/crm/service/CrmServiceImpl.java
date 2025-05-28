@@ -313,11 +313,8 @@ public class CrmServiceImpl implements CrmService {
 
 		RestTemplate restTemplate = new RestTemplate();
 
-		// Clean up token
 		String actualToken = token.startsWith("Bearer ") ? token.substring(7) : token;
 		actualToken = actualToken.split(",")[0];
-
-		// Set headers
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		headers.set("X-AUTH-TOKEN", actualToken);

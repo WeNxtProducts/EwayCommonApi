@@ -290,5 +290,6 @@ public class CustomerDetailsGetRes {
 		@JsonProperty("MotherName")
 		private String mother_name;
 		
-
+		@JsonProperty("LEAD_SEQNO")
+		private Long leadSeqNo;
 }
