@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -104,9 +105,12 @@ public class LoginDetailsController {
 //*************************************** Login Creation Apis **********************************************************//
 
 	@PostMapping("/createbroker")
-	@ApiOperation(value="This method is to Create Broker Login")
-	public ResponseEntity<CommonRes> createBrokerLogin(@RequestParam(value = "brokerLogo",required = false) MultipartFile brokerLogo,@RequestParam ("Req") String jsonReq) throws IOException {
-	
+	@ApiOperation(value = "This method is to Create Broker Login")
+	public ResponseEntity<CommonRes> createBrokerLogin(
+			@RequestParam(value = "brokerLogo", required = false) MultipartFile brokerLogo,
+			@RequestParam("Req") String jsonReq, 
+			@RequestHeader("Authorization") String token) throws IOException {
+
 		BrokerCreationReq req = new ObjectMapper().readValue(jsonReq, BrokerCreationReq.class);
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
@@ -157,7 +161,7 @@ public class LoginDetailsController {
 
 		} else {
 			/////// save
-			LoginCreationRes res = entityService.createBroker(req,brokerLogo);
+			LoginCreationRes res = entityService.createBroker(req,brokerLogo,token);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -173,7 +177,8 @@ public class LoginDetailsController {
 
 	@PostMapping("/createissuer")
 	@ApiOperation(value="This method is to Create Issuer Login")
-	public ResponseEntity<CommonRes> createIssuerLogin(@RequestBody  IssuerCraeationReq req) {
+	public ResponseEntity<CommonRes> createIssuerLogin(@RequestBody  IssuerCraeationReq req,
+			@RequestHeader("Authorization") String token) {
 	
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
@@ -211,7 +216,7 @@ public class LoginDetailsController {
 
 		} else {
 			/////// save
-			LoginCreationRes res = entityService.createIssuerLogin(req);
+			LoginCreationRes res = entityService.createIssuerLogin(req,token);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

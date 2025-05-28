@@ -506,6 +506,8 @@ public class IntegrationServiceImpl implements IntegrationService {
 	public IntegrationSaveRes ewayMotorPremiaPush(String policyNo, String reqRefNo, PremiaConfigMaster configMas,
 			HomePositionMaster home) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
+		String companyId = configMas.getCompanyId();
+
 		boolean check = false;
 		try {
 			System.out.println("*********EXTERNAL API CALL STARTS*********");
@@ -513,7 +515,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 
 			if (configMas.getPremiaId() == 1) {
 				System.out.println("*********1.YiPolicyDetail: ");
-				Object list = frameReqService.pushYiPolicyDetail(policyNo);
+				Object list = frameReqService.pushYiPolicyDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -526,7 +528,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 
 			} else if (configMas.getPremiaId() == 2) {
 				System.out.println("*********2.YiSectionDetail:");
-				Object list = frameReqService.pushYiSectionDetail(policyNo);
+				Object list = frameReqService.pushYiSectionDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -539,7 +541,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if (configMas.getPremiaId() == 3) {
 				System.out.println("*********3.PgitPolRiskAddlInfo:");
-				Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
+				Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -552,7 +554,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if (configMas.getPremiaId() == 4) {
 				System.out.println("*********4.MotDriverDetail: ");
-				Object list = frameReqService.pushMotDriverDetail(policyNo);
+				Object list = frameReqService.pushMotDriverDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -565,7 +567,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if (configMas.getPremiaId() == 5) {
 				System.out.println("*********5.YiCoverDetail: ");
-				Object list = frameReqService.pushYiCoverDetail(policyNo);
+				Object list = frameReqService.pushYiCoverDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -578,7 +580,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if (configMas.getPremiaId() == 6) {
 				System.out.println("*********6.MotCommDiscountDetail:");
-				Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
+				Object list = frameReqService.pushMotCommDiscountDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -591,7 +593,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if (configMas.getPremiaId() == 7) {
 				System.out.println("*********7.YiChargeDetail: ");
-				Object list = frameReqService.pushYiChargeDetail(policyNo);
+				Object list = frameReqService.pushYiChargeDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -604,7 +606,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if (configMas.getPremiaId() == 8) {
 				System.out.println("*********8.YiVatDetail:");
-				Object list = frameReqService.pushYiVatDetail(policyNo);
+				Object list = frameReqService.pushYiVatDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -617,7 +619,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if (configMas.getPremiaId() == 9) {
 				System.out.println("*********9.YiPremCal:");
-				Object list = frameReqService.pushYiPremCal(policyNo);
+				Object list = frameReqService.pushYiPremCal(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -630,7 +632,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if (configMas.getPremiaId() == 10) {
 				System.out.println("*********10.YiPolicyApproval:");
-				Object list = frameReqService.pushYiPolicyApproval(policyNo);
+				Object list = frameReqService.pushYiPolicyApproval(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -643,7 +645,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if (configMas.getPremiaId() == 11) {
 				System.out.println("*********11.CreditLimitDetail:");
-				Object list = frameReqService.pushCreditLimitDetail(reqRefNo);
+				Object list = frameReqService.pushCreditLimitDetail(reqRefNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -1587,7 +1589,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 		if(!CollectionUtils.isEmpty(list)) {
 			PositionMaster pm=list.get(0);
 			for (String id : premaiId) {
-				IntegrationSaveRes oraclpush = ewayMarinePremiaPush(req.getPolicyNo(),pm,id);
+				IntegrationSaveRes oraclpush = ewayMarinePremiaPush(req.getPolicyNo(),pm,id,req.getCompanyId());
 				System.out.println("Response after oracle push " + oraclpush);
 				if ("Connection refused".equalsIgnoreCase(oraclpush.getResponse())) {
 
@@ -1646,7 +1648,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 	}
 
 	
-	private IntegrationSaveRes ewayMarinePremiaPush(String policyNo, PositionMaster pm, String premaiId) {
+	private IntegrationSaveRes ewayMarinePremiaPush(String policyNo, PositionMaster pm, String premaiId,String companyId) {
 
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
 		boolean check = false;
@@ -1656,7 +1658,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 
 			if ("1".equals(premaiId)) {
 				System.out.println("*********1.YiPolicyDetail: ");
-				Object list = frameReqService.pushYiPolicyDetail(policyNo);
+				Object list = frameReqService.pushYiPolicyDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -1669,7 +1671,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 
 			} else if ("2".equals(premaiId)) {
 				System.out.println("*********2.YiSectionDetail:");
-				Object list = frameReqService.pushYiSectionDetail(policyNo);
+				Object list = frameReqService.pushYiSectionDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -1682,7 +1684,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if ("3".equals(premaiId)) {
 				System.out.println("*********3.PgitPolRiskAddlInfo:");
-				Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
+				Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -1695,7 +1697,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if ("4".equals(premaiId)) {
 				System.out.println("*********4.YiCoverDetail: ");
-				Object list = frameReqService.pushYiCoverDetail(policyNo);
+				Object list = frameReqService.pushYiCoverDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -1708,7 +1710,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			}  else if ("5".equals(premaiId)) {
 				System.out.println("*********5.YiChargeDetail: ");
-				Object list = frameReqService.pushYiChargeDetail(policyNo);
+				Object list = frameReqService.pushYiChargeDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -1721,7 +1723,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if ("6".equals(premaiId)) {
 				System.out.println("*********6.YiVatDetail:");
-				Object list = frameReqService.pushYiVatDetail(policyNo);
+				Object list = frameReqService.pushYiVatDetail(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -1734,7 +1736,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 			} else if ("7".equals(premaiId)) {
 				System.out.println("*********7.YiPremCal:");
-				Object list = frameReqService.pushYiPremCal(policyNo);
+				Object list = frameReqService.pushYiPremCal(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;
@@ -1774,7 +1776,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 			} 
 			else if ("10".equals(premaiId)) {
 				System.out.println("*********10.YiPolicyApproval:");
-				Object list = frameReqService.pushYiPolicyApproval(policyNo);
+				Object list = frameReqService.pushYiPolicyApproval(policyNo,companyId);
 				System.out.println("List " + json.toJson(list));
 				System.out.println("_____________________________________________ ");
 				res1 = (IntegrationSaveRes) list;

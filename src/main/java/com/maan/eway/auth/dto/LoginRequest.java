@@ -29,4 +29,7 @@ public class LoginRequest {
 	private String encryptionkey;
 	
 
+	@JsonProperty("InsuranceId")
+	private String companyId;
+
 }

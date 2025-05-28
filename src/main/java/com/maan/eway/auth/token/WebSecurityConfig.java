@@ -82,7 +82,7 @@ public class WebSecurityConfig  {
     		"/basicauth/**","/embedded/create/**","/post/notification/ack/mail","/authentication/doauth","/selcom/v1/checkout/webhook"
     		,"/post/notification/pushnotification"
     		,"/claim/get/policydetails",
-    		"/claim/viewQuoteDetails"};
+    		"/claim/viewQuoteDetails","crm/authentication/validateToken"};
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();

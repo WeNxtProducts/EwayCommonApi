@@ -435,6 +435,9 @@ private static final long serialVersionUID = 1L;
     @Column (name="MOTHER_NAME")
     private String mother_name;
     
+
+    @Column(name = "LEAD_SEQNO")
+	private Long leadSeqNo;
     
 
 }

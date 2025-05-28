@@ -52,8 +52,6 @@ LoginMaster update(LoginMaster d);
  List<LoginMaster> getAll();
 long getTotal();
 //boolean delete(long id);
-LoginCreationRes createBroker(BrokerCreationReq req, MultipartFile brokerLogo);
-LoginCreationRes createIssuerLogin(IssuerCraeationReq req);
 LoginCreationRes createUserLogin(UserCreationReq req);
 
 List<LoginBrokerDetailsGridRes> getBrokerLoginDetailsByUserType(BrokerLoginGridReq req);
@@ -79,6 +77,8 @@ List<BrokerDropDownRes> getBrokerIds();
 List<BrokerDropDownRes> getBrokerIdsByCompany(BrokerDropdownReq req);
 JasperDocumentRes getBrokerLogo(String loginId);
 List<DropDownRes> getBrokerList(GetBrokerListDropDownReq req);
+LoginCreationRes createBroker(BrokerCreationReq req, MultipartFile brokerLogo, String token);
+LoginCreationRes createIssuerLogin(IssuerCraeationReq req, String token);
 
 
 

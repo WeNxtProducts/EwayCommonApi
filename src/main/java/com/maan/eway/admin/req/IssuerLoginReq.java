@@ -13,49 +13,50 @@ public class IssuerLoginReq {
 
 	// Login Details
 	@JsonProperty("LoginId")
-    private String     loginId      ;
+	private String loginId;
 	@JsonProperty("UserType")
-    private String     userType     ;
+	private String userType;
 	@JsonProperty("SubUserType")
-    private String     subUserType  ;
+	private String subUserType;
 	@JsonProperty("OaCode")
-    private String     oaCode       ;
+	private String oaCode;
 	@JsonProperty("AgencyCode")
-    private String     agencyCode       ;
-	
+	private String agencyCode;
+
 	@JsonProperty("AttachedBranches")
-    private List<String>     attachedBranches ;
-	
+	private List<String> attachedBranches;
+
 	@JsonProperty("AttachedCompanies")
-    private List<String>     attachedCompanies ;
-	
+	private List<String> attachedCompanies;
+
 	@JsonProperty("AttachedRegions")
-    private List<String>     attachedRegions ;
-	
+	private List<String> attachedRegions;
+
 	@JsonProperty("Password")
-    private String     password     ;
+	private String password;
 	@JsonProperty("Createdby")
-    private String     createdBy    ;
+	private String createdBy;
 	@JsonProperty("Status")
-    private String     status       ;
+	private String status;
 	@JsonProperty("BrokerCompanyYn")
-    private String    brokerCompanyYn ;
-	
-	 @JsonFormat(pattern = "dd/MM/yyyy")
-	 @JsonProperty("EffectiveDateStart")
-	 private Date    effectiveDateStart ;
-	 
-	 @JsonProperty("InsuranceId")
-	 private String    companyId ;
-	 
-	 @JsonProperty("ProductIds")
-	    private List<String>  productIds ;
-	 
-	 @JsonProperty("ReferralIds")
-     private List<String>  referralIds ;
-	 
-	 @JsonProperty("DmlYN")
-	 private String    dmlYN ;
+	private String brokerCompanyYn;
 
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 
-	}
+	@JsonProperty("InsuranceId")
+	private String companyId;
+
+	@JsonProperty("ProductIds")
+	private List<String> productIds;
+
+	@JsonProperty("ReferralIds")
+	private List<String> referralIds;
+
+	@JsonProperty("DmlYN")
+	private String dmlYN;
+
+	@JsonProperty("BranchCode")
+	private String branchCode;
+}

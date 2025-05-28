@@ -115,4 +115,7 @@ public class BrokerPersonalInfoReq {
     
     @JsonProperty("CustomerCode")
     private String     customerCode     ;
+    
+    @JsonProperty("ApprovalId")
+    private String     approvalId;
 }

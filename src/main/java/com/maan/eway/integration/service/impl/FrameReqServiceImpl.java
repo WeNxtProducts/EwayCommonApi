@@ -176,6 +176,199 @@ public class FrameReqServiceImpl implements FrameReqService {
 	
 	@Value(value = "${UpdateStatusPremiaIntegrationExtCall}")
 	private String UpdateStatusPremiaIntegrationExtCall;
+	@Value(value = "${YiVatDetailPHMoz}")
+	private String YiVatDetailPHMoz;
+	
+	@Value(value = "${YiSectionDetailPHMoz}")
+	private String YiSectionDetailPHMoz;
+	
+	@Value(value = "${YiPremCalPHMoz}")
+	private String YiPremCalPHMoz;
+	
+	
+	@Value(value = "${YiPolicyApprovalPHMoz}")
+	private String YiPolicyApprovalPHMoz;
+	
+	@Value(value = "${CreditLimitDetailPHMoz}")
+	private String CreditLimitDetailPHMoz;
+	
+	@Value(value = "${YiPolicyDetailPHMoz}")
+	private String YiPolicyDetailPHMoz;
+	
+	
+	@Value(value = "${YiChargeDetailPHMoz}")
+	private String YiChargeDetailPHMoz;
+	
+	@Value(value = "${YiCoverdetailPHMoz}")
+	private String YiCoverdetailPHMoz;
+
+	@Value(value = "${PgitPolRiskAddlInfoPHMoz}")
+	private String PgitPolRiskAddlInfoPHMoz;
+
+
+	@Value(value = "${MotDriverDetailPHMoz}")
+	private String MotDriverDetailPHMoz;
+	
+
+	@Value(value = "${MotCommDiscountDetailPHMoz}")
+	private String MotCommDiscountDetailPHMoz;
+
+	@Value(value = "${YiVatDetailPHZam}")
+	private String YiVatDetailPHZam;
+	
+	@Value(value = "${YiSectionDetailPHZam}")
+	private String YiSectionDetailPHZam;
+	
+	@Value(value = "${YiPremCalPHZam}")
+	private String YiPremCalPHZam;
+	
+	
+	@Value(value = "${YiPolicyApprovalPHZam}")
+	private String YiPolicyApprovalPHZam;
+	
+	@Value(value = "${CreditLimitDetailPHZam}")
+	private String CreditLimitDetailPHZam;
+	
+	@Value(value = "${YiPolicyDetailPHZam}")
+	private String YiPolicyDetailPHZam;
+	
+	
+	@Value(value = "${YiChargeDetailPHZam}")
+	private String YiChargeDetailPHZam;
+	
+	@Value(value = "${YiCoverdetailPHZam}")
+	private String YiCoverdetailPHZam;
+
+	@Value(value = "${PgitPolRiskAddlInfoPHZam}")
+	private String PgitPolRiskAddlInfoPHZam;
+
+
+	@Value(value = "${MotDriverDetailPHZam}")
+	private String MotDriverDetailPHZam;
+	
+
+	@Value(value = "${MotCommDiscountDetailPHZam}")
+	private String MotCommDiscountDetailPHZam;
+
+	@Value(value = "${YiVatDetailPHSAZ}")
+	private String YiVatDetailPHSAZ;
+	
+	@Value(value = "${YiSectionDetailPHSAZ}")
+	private String YiSectionDetailPHSAZ;
+	
+	@Value(value = "${YiPremCalPHSAZ}")
+	private String YiPremCalPHSAZ;
+	
+	
+	@Value(value = "${YiPolicyApprovalPHSAZ}")
+	private String YiPolicyApprovalPHSAZ;
+	
+	@Value(value = "${CreditLimitDetailPHSAZ}")
+	private String CreditLimitDetailPHSAZ;
+	
+	@Value(value = "${YiPolicyDetailPHSAZ}")
+	private String YiPolicyDetailPHSAZ;
+	
+	
+	@Value(value = "${YiChargeDetailPHSAZ}")
+	private String YiChargeDetailPHSAZ;
+	
+	@Value(value = "${YiCoverdetailPHSAZ}")
+	private String YiCoverdetailPHSAZ;
+
+	@Value(value = "${PgitPolRiskAddlInfoPHSAZ}")
+	private String PgitPolRiskAddlInfoPHSAZ;
+
+
+	@Value(value = "${MotDriverDetailPHSAZ}")
+	private String MotDriverDetailPHSAZ;
+	
+
+	@Value(value = "${MotCommDiscountDetailPHSAZ}")
+	private String MotCommDiscountDetailPHSAZ;
+	
+	@Value(value = "${YiVatDetailPHBOT}")
+	private String YiVatDetailPHBOT;
+	
+	@Value(value = "${YiSectionDetailPHBOT}")
+	private String YiSectionDetailPHBOT;
+	
+	@Value(value = "${YiPremCalPHBOT}")
+	private String YiPremCalPHBOT;
+	
+	@Value(value = "${YiPolicyApprovalPHBOT}")
+	private String YiPolicyApprovalPHBOT;
+	
+	@Value(value = "${CreditLimitDetailPHBOT}")
+	private String CreditLimitDetailPHBOT;
+	
+	@Value(value = "${YiPolicyDetailPHBOT}")
+	private String YiPolicyDetailPHBOT;
+	
+	@Value(value = "${YiChargeDetailPHBOT}")
+	private String YiChargeDetailPHBOT;
+	
+	@Value(value = "${YiCoverdetailPHBOT}")
+	private String YiCoverdetailPHBOT;
+
+	@Value(value = "${PgitPolRiskAddlInfoPHBOT}")
+	private String PgitPolRiskAddlInfoPHBOT;
+
+	@Value(value = "${MotDriverDetailPHBOT}")
+	private String MotDriverDetailPHBOT;
+	
+	@Value(value = "${MotCommDiscountDetailPHBOT}")
+	private String MotCommDiscountDetailPHBOT;
+	
+	@Value(value = "${YiVatDetailPHNAM}")
+	private String YiVatDetailPHNAM;
+	
+	@Value(value = "${YiSectionDetailPHNAM}")
+	private String YiSectionDetailPHNAM;
+	
+	@Value(value = "${YiPremCalPHNAM}")
+	private String YiPremCalPHNAM;
+	
+	@Value(value = "${YiPolicyApprovalPHNAM}")
+	private String YiPolicyApprovalPHNAM;
+	
+	@Value(value = "${CreditLimitDetailPHNAM}")
+	private String CreditLimitDetailPHNAM;
+	
+	@Value(value = "${YiPolicyDetailPHNAM}")
+	private String YiPolicyDetailPHNAM;
+	
+	@Value(value = "${YiChargeDetailPHNAM}")
+	private String YiChargeDetailPHNAM;
+	
+	@Value(value = "${YiCoverdetailPHNAM}")
+	private String YiCoverdetailPHNAM;
+
+	@Value(value = "${PgitPolRiskAddlInfoPHNAM}")
+	private String PgitPolRiskAddlInfoPHNAM;
+
+	@Value(value = "${MotDriverDetailPHNAM}")
+	private String MotDriverDetailPHNAM;
+	
+	@Value(value = "${MotCommDiscountDetailPHNAM}")
+	private String MotCommDiscountDetailPHNAM;
+	
+	@Value(value = "${PremiaIntegrationExtCallMoz}")
+	private String PremiaIntegrationExtCallMoz;
+	
+	
+	@Value(value = "${PremiaIntegrationExtCallZam}")
+	private String PremiaIntegrationExtCallZam;
+	
+	@Value(value = "${PremiaIntegrationExtCallSAZ}")
+	private String PremiaIntegrationExtCallSAZ;
+	
+	@Value(value = "${PremiaIntegrationExtCallNAM}")
+	private String PremiaIntegrationExtCallNAM;
+	
+	@Value(value = "${PremiaIntegrationExtCallBOT}")
+	private String PremiaIntegrationExtCallBOT;
+	
 
 	SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-dd-MM");
@@ -184,9 +377,26 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	// *****************************************Push**********************************************************************
 	@Override
-	public Object pushMotCommDiscountDetail(String policyNo) {
+	public Object pushMotCommDiscountDetail(String policyNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
+
 		String url = MotCommDiscountDetailCall;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = MotCommDiscountDetailPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = MotCommDiscountDetailPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = MotCommDiscountDetailPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = MotCommDiscountDetailPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = MotCommDiscountDetailPHSAZ;
+		} else {
+			url = MotCommDiscountDetailCall;
+		}
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -259,8 +469,24 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushMotDriverDetail(String policyNo) {
-		String url = MotDriverDetailCall;
+	public Object pushMotDriverDetail(String policyNo,String companyId) {
+		String url=null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = MotDriverDetailPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = MotDriverDetailPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = MotDriverDetailPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = MotDriverDetailPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = MotDriverDetailPHSAZ;
+		} else {
+			url = MotDriverDetailCall;
+		}
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -316,9 +542,25 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiCoverDetail(String policyNo) {
+	public Object pushYiCoverDetail(String policyNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url = YiCoverdetailCall;
+		String url=null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = YiCoverdetailPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = YiCoverdetailPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = YiCoverdetailPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = YiCoverdetailPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = YiCoverdetailPHSAZ;
+		} else {
+			url = YiCoverdetailCall;
+		}
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -386,10 +628,25 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiChargeDetail(String policyNo) {
+	public Object pushYiChargeDetail(String policyNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url = YiChargeDetailCall;
-		String auth = BasicAuthName + ":" + BasicAuthPass;
+		String url=null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = YiChargeDetailPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = YiChargeDetailPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = YiChargeDetailPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = YiChargeDetailPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = YiChargeDetailPHSAZ;
+		} else {
+			url = YiChargeDetailCall;
+		}		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
 		List<YiChargeDetailReq> reqlist = new ArrayList<YiChargeDetailReq>();
@@ -455,9 +712,25 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiPolicyDetail(String policyNo) {
+	public Object pushYiPolicyDetail(String policyNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url = YiPolicyDetailCall;
+		String url =null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = YiPolicyDetailPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = YiPolicyDetailPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = YiPolicyDetailPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = YiPolicyDetailPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = YiPolicyDetailPHSAZ;
+		} else {
+			url = YiPolicyDetailCall;
+		}
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -526,10 +799,25 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	////////////////////////////////////////////////////////////////
 	@Override
-	public Object pushCreditLimitDetail(String reqRefNo) {
+	public Object pushCreditLimitDetail(String reqRefNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url = CreditLimitDetailCall;
-		String auth = BasicAuthName + ":" + BasicAuthPass;
+		String url=null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = CreditLimitDetailPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = CreditLimitDetailPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = CreditLimitDetailPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = CreditLimitDetailPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = YiPolicyDetailPHSAZ;
+		} else {
+			url = CreditLimitDetailCall;
+		}		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
 		List<InsertCreditLimitDetailReq> reqList = new ArrayList<InsertCreditLimitDetailReq>();
@@ -599,10 +887,25 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiPolicyApproval(String policyNo) {
+	public Object pushYiPolicyApproval(String policyNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url = YiPolicyApprovalCall;
-		String auth = BasicAuthName + ":" + BasicAuthPass;
+		String url=null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = YiPolicyApprovalPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = YiPolicyApprovalPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = YiPolicyApprovalPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = YiPolicyApprovalPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = YiPolicyApprovalPHSAZ;
+		} else {
+			url = YiPolicyApprovalCall;
+		}		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
 
@@ -671,9 +974,25 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiPremCal(String policyNo) {
+	public Object pushYiPremCal(String policyNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url = YiPremCalCall;
+		String url=null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = YiPremCalPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = YiPremCalPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = YiPremCalPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = YiPremCalPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = YiPremCalPHSAZ;
+		} else {
+			url = YiPremCalCall;
+		}
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -740,9 +1059,26 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiVatDetail(String policyNo) {
+	public Object pushYiVatDetail(String policyNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url = YiVatDetailCall;
+
+		String url=null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = YiVatDetailPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = YiVatDetailPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = YiVatDetailPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = YiVatDetailPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = YiVatDetailPHSAZ;
+		} else {
+			url = YiVatDetailCall;
+		}
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -810,9 +1146,25 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushYiSectionDetail(String policyNo) {
+	public Object pushYiSectionDetail(String policyNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url = YiSectionDetailCall;
+		String url=null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = YiSectionDetailPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = YiSectionDetailPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = YiSectionDetailPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = YiSectionDetailPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = YiSectionDetailPHSAZ;
+		} else {
+			url = YiSectionDetailCall;
+		}
 		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
@@ -880,10 +1232,25 @@ public class FrameReqServiceImpl implements FrameReqService {
 	}
 
 	@Override
-	public Object pushPgitPolRiskAddlInfo(String policyNo) {
+	public Object pushPgitPolRiskAddlInfo(String policyNo,String companyId) {
 		IntegrationSaveRes res1 = new IntegrationSaveRes();
-		String url = PgitPolRiskAddlInfoCall;
-		String auth = BasicAuthName + ":" + BasicAuthPass;
+		String url=null;
+		if (companyId.equalsIgnoreCase("100048")) {
+			url = PgitPolRiskAddlInfoPHMoz;
+		} else if (companyId.equalsIgnoreCase("100046")) {
+			url = PgitPolRiskAddlInfoPHZam;
+		} else if (companyId.equalsIgnoreCase("100047")) {
+			/** BOTSWANA */
+			url = PgitPolRiskAddlInfoPHBOT;
+		} else if (companyId.equalsIgnoreCase("100050")) {
+			/** NAMIBIA */
+			url = PgitPolRiskAddlInfoPHNAM;
+		} else if (companyId.equalsIgnoreCase("100049")) {
+			/** SWAZILAND */
+			url = PgitPolRiskAddlInfoPHSAZ;
+		} else {
+			url = PgitPolRiskAddlInfoCall;
+		}		String auth = BasicAuthName + ":" + BasicAuthPass;
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
 		String authHeader = "Basic " + new String(encodedAuth);
 

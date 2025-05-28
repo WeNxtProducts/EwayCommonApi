@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -37,8 +38,15 @@ import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
@@ -90,6 +98,7 @@ import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.DepositcbcMaster;
+import com.maan.eway.bean.EwayUserMapping;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
@@ -108,6 +117,7 @@ import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.repository.DepositcbcMasterRepository;
+import com.maan.eway.repository.EwayUserMappingRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterArchRepository;
@@ -193,6 +203,22 @@ public class LoginDetailsServiceImpl implements LoginDetailsService {
 	
 	@Autowired
 	private MarineLoginApi marineapi;
+	
+	@Autowired
+	private EwayUserMappingRepository ewayUserMappingRepo;
+	
+	@Value(value = "${crm.createSales}")
+	private String createSales;
+
+	@Value(value = "${crm.createIssueAndBoth}")
+	private String createIssueAndBoth;
+	
+	@Value(value = "${crm.updateSales}")
+	private String updateSales;
+	
+	@Value(value = "${crm.updateIssueAndBoth}")
+	private String updateIssueAndBoth;
+	
 private Logger log=LogManager.getLogger(LoginDetailsServiceImpl.class);
 /*
 public LoginMasterServiceImpl(LoginMasterRepository repo) {
@@ -278,58 +304,122 @@ this.repository = repo;
   
     @Transactional
 	@Override
-	public LoginCreationRes createBroker(BrokerCreationReq req,MultipartFile brokerLogo) {
+	public LoginCreationRes createBroker(BrokerCreationReq req, MultipartFile brokerLogo, String token) {
 		LoginCreationRes res = new LoginCreationRes();
-		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-		try {	
-			
-			CommonLoginCreationReq commonReq = dozerMapper.map(req, CommonLoginCreationReq.class );
-			LoginMaster loginData  = loginRepo.findByLoginId(req.getLoginInformation().getLoginId());
-			
-			if(brokerLogo!= null) {
-				commonReq.setBrokerLogo(req.getLoginInformation().getLoginId()+"_logo."+FilenameUtils.getExtension(brokerLogo.getOriginalFilename()));
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+
+			CommonLoginCreationReq commonReq = dozerMapper.map(req, CommonLoginCreationReq.class);
+			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginInformation().getLoginId());
+
+			if (brokerLogo != null) {
+				commonReq.setBrokerLogo(req.getLoginInformation().getLoginId() + "_logo."
+						+ FilenameUtils.getExtension(brokerLogo.getOriginalFilename()));
 				Path path = Paths.get(this.getClass().getClassLoader().getResource("report/images/").toURI());
 				Files.copy(brokerLogo.getInputStream(), path.resolve(commonReq.getBrokerLogo()));
 			}
-			
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			String actualToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+			actualToken = actualToken.split(",")[0];
 			String saveRes = "";
-			if (loginData ==null) {
+			if (loginData == null) {
 				// Save
-				saveRes =   newLoginInsert(commonReq) ;
-				if( StringUtils.isNotBlank(saveRes)) {
+				saveRes = newLoginInsert(commonReq);
+				if (StringUtils.isNotBlank(saveRes)) {
 					res.setAgencyCode(saveRes);
 					res.setResponse("Saved Successfully");
-						
+					if (req.getLoginInformation().getSubUserType().equalsIgnoreCase("Sales")) {
+
+						EwayUserMapping ewayUserMapping = new EwayUserMapping();
+						ewayUserMapping.setActive(req.getLoginInformation().getStatus());
+						ewayUserMapping.setCompanyId(req.getLoginInformation().getCompanyId());
+						ewayUserMapping.setLoginId(req.getLoginInformation().getCreatedBy());
+						ewayUserMapping.setEffectiveDateStart(new Date());
+						ewayUserMapping.setApproverId(req.getPersonalInformation().getApprovalId());
+						ewayUserMapping.setRole(req.getLoginInformation().getSubUserType());
+						ewayUserMapping.setBranchCode(req.getLoginInformation().getBranchCode());
+						String end = "31/12/2050";
+						Date endDate = sdf.parse(end);
+						ewayUserMapping.setEffectiveDateEnd(endDate);
+						System.out.println(ewayUserMapping);
+						EwayUserMapping save = ewayUserMappingRepo.save(ewayUserMapping);
+						log.info("Saved mapping: " + save.getMappingUserId());
+
+						String rcmApi = createSales;
+
+						RestTemplate restTemplate = new RestTemplate();
+
+						HttpHeaders headers = new HttpHeaders();
+						headers.setContentType(MediaType.APPLICATION_JSON);
+						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+						headers.set("X-AUTH-TOKEN", actualToken);
+						headers.set("Authorization", "");
+						HttpEntity<BrokerCreationReq> requestEntity = new HttpEntity<>(req, headers);
+
+						ResponseEntity<String> response = restTemplate.exchange(rcmApi, HttpMethod.POST, requestEntity,
+								String.class);
+						System.out.println("Response: " + response.getBody());
+					} else {
+						res.setAgencyCode("");
+						res.setResponse("Error In Save");
+					}
+
 				} else {
 					res.setAgencyCode("");
 					res.setResponse("Error In Save");
 				}
-				
+
 			} else {
 				// Update
 				saveRes = updateLoginDetails(commonReq);
-				if( StringUtils.isNotBlank(saveRes)) {
+				if (StringUtils.isNotBlank(saveRes)) {
 					res.setAgencyCode(saveRes);
 					res.setResponse("Updated Successfully");
-						
+					if (req.getLoginInformation().getSubUserType().equalsIgnoreCase("Sales")) {
+
+						Optional<EwayUserMapping> mappingUser = ewayUserMappingRepo
+								.findByApproverId(req.getLoginInformation().getLoginId());
+						if (mappingUser.isPresent()) {
+							EwayUserMapping ewayUserMapping = mappingUser.get();
+							ewayUserMapping.setActive(req.getLoginInformation().getStatus());
+							ewayUserMapping.setLoginId(req.getLoginInformation().getCreatedBy());
+							ewayUserMapping.setApproverId(req.getPersonalInformation().getApprovalId());
+							ewayUserMapping.setRole(req.getLoginInformation().getSubUserType());
+							ewayUserMappingRepo.save(ewayUserMapping);
+						}
+						String rcmApi = updateSales;
+
+						RestTemplate restTemplate = new RestTemplate();
+
+						HttpHeaders headers = new HttpHeaders();
+						headers.setContentType(MediaType.APPLICATION_JSON);
+						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+						headers.set("X-AUTH-TOKEN", actualToken);
+						headers.set("Authorization", "");
+						HttpEntity<BrokerCreationReq> requestEntity = new HttpEntity<>(req, headers);
+
+						ResponseEntity<String> response = restTemplate.exchange(rcmApi, HttpMethod.PUT, requestEntity,
+								String.class);
+						System.out.println("Response: " + response.getBody());
+					}
 				} else {
 					res.setAgencyCode("");
 					res.setResponse("Error In Update");
 				}
-				
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			return null; 
+			return null;
 		}
-		return res ;
+		return res;
 	}
 
 	
 	@Transactional
 	@Override
-	public LoginCreationRes createIssuerLogin(IssuerCraeationReq req) {
+	public LoginCreationRes createIssuerLogin(IssuerCraeationReq req,String token) {
 		LoginCreationRes res = new LoginCreationRes();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		
@@ -337,7 +427,9 @@ this.repository = repo;
 			
 			CommonLoginCreationReq commonReq = dozerMapper.map(req, CommonLoginCreationReq.class );
 			LoginMaster loginData  = loginRepo.findByLoginId(req.getLoginInformation().getLoginId()  );
-			
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			String actualToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+			actualToken = actualToken.split(",")[0];
 			String saveRes = "";
 			if (loginData ==null) {
 				// Save
@@ -345,7 +437,43 @@ this.repository = repo;
 				if( StringUtils.isNotBlank(saveRes)) {
 					res.setAgencyCode(saveRes);
 					res.setResponse("Saved Successfully");
-						
+					if (req.getLoginInformation().getSubUserType().equalsIgnoreCase("both")||
+							req.getLoginInformation().getSubUserType().equalsIgnoreCase("high")) {
+					EwayUserMapping ewayUserMapping = new EwayUserMapping();
+					ewayUserMapping.setActive(req.getLoginInformation().getStatus());
+					ewayUserMapping.setCompanyId(req.getLoginInformation().getCompanyId());
+					ewayUserMapping.setLoginId(req.getLoginInformation().getCreatedBy());
+					ewayUserMapping.setEffectiveDateStart(new Date());	
+					ewayUserMapping.setBranchCode(req.getLoginInformation().getBranchCode());
+					String subUserType = req.getLoginInformation().getSubUserType();
+					String role = subUserType.equalsIgnoreCase("high") ? "Manager" :
+					              subUserType.equalsIgnoreCase("both") ? "Underwriter" : null;
+					ewayUserMapping.setRole(role);
+
+					String end = "31/12/2050";
+					Date endDate = sdf.parse(end);
+					ewayUserMapping.setEffectiveDateEnd(endDate);
+					System.out.println(req.getLoginInformation().getBranchCode());
+					 EwayUserMapping save = ewayUserMappingRepo.save(ewayUserMapping);
+					 log.info("Saved mapping: " + save.getMappingUserId());
+
+					System.out.println(save);
+					 String rcmApi = createIssueAndBoth;
+
+					RestTemplate restTemplate = new RestTemplate();
+
+					HttpHeaders headers = new HttpHeaders();
+					headers.setContentType(MediaType.APPLICATION_JSON);
+					headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+					headers.set("X-AUTH-TOKEN", actualToken);
+					headers.set("Authorization", "");
+					HttpEntity<IssuerCraeationReq> requestEntity = new HttpEntity<>(req, headers);
+
+					ResponseEntity<String> response = restTemplate.exchange(rcmApi, HttpMethod.POST, requestEntity,
+							String.class
+					);
+					System.out.println("Response: " + response.getBody());
+					}
 				} else {
 					res.setAgencyCode("");
 					res.setResponse("Error In Save");
@@ -354,15 +482,43 @@ this.repository = repo;
 			} else {
 				// Update
 				saveRes = updateLoginDetails(commonReq);
-				if( StringUtils.isNotBlank(saveRes)) {
+				if (StringUtils.isNotBlank(saveRes)) {
 					res.setAgencyCode(saveRes);
 					res.setResponse("Updated Successfully");
-						
+					if (req.getLoginInformation().getSubUserType().equalsIgnoreCase("both")
+							|| req.getLoginInformation().getSubUserType().equalsIgnoreCase("high")) {
+						Optional<EwayUserMapping> mappingUser = ewayUserMappingRepo
+								.findByApproverId(req.getLoginInformation().getLoginId());
+						if (mappingUser.isPresent()) {
+							EwayUserMapping ewayUserMapping = mappingUser.get();
+							ewayUserMapping.setActive(req.getLoginInformation().getStatus());
+							ewayUserMapping.setLoginId(req.getLoginInformation().getCreatedBy());
+							ewayUserMapping.setApproverId("Approver");
+							String subUserType = req.getLoginInformation().getSubUserType();
+							String role = subUserType.equalsIgnoreCase("high") ? "Manager"
+									: subUserType.equalsIgnoreCase("both") ? "Underwriter" : null;
+							ewayUserMapping.setRole(role);
+							ewayUserMappingRepo.save(ewayUserMapping);
+						}
+
+						String rcmApi = updateIssueAndBoth;
+						RestTemplate restTemplate = new RestTemplate();
+						HttpHeaders headers = new HttpHeaders();
+						headers.setContentType(MediaType.APPLICATION_JSON);
+						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+						headers.set("X-AUTH-TOKEN", actualToken);
+						headers.set("Authorization", "");
+						HttpEntity<IssuerCraeationReq> requestEntity = new HttpEntity<>(req, headers);
+
+						ResponseEntity<String> response = restTemplate.exchange(rcmApi, HttpMethod.PUT, requestEntity,
+								String.class);
+						System.out.println("Response: " + response.getBody());
+					}
 				} else {
 					res.setAgencyCode("");
 					res.setResponse("Error In Update");
 				}
-				
+
 			}
 			
 			// Product Insert 
@@ -501,7 +657,9 @@ this.repository = repo;
 			dozerMapper.map(loginReq, saveLogin);
 			saveLogin.setPassword(newpass);
 			saveLogin.setLoginId(loginReq.getLoginId());
-			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
+			if (req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")
+					|| req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer")
+					|| req.getLoginInformation().getUserType().equalsIgnoreCase("Sales")) {
 				saveLogin.setOaCode(Integer.valueOf(countId.toString()));
 				saveLogin.setAgencyCode(countId.toString());
 				
@@ -888,7 +1046,9 @@ this.repository = repo;
 			
 			
 			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
-			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
+			if (req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")
+					|| req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer")
+					|| req.getLoginInformation().getUserType().equalsIgnoreCase("Sales")) {
 				updateLogin.setOaCode(Integer.valueOf(loginReq.getOaCode()));
 				updateLogin.setAgencyCode(loginReq.getOaCode());
 				

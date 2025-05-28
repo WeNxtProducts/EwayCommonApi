@@ -1,7 +1,5 @@
 package com.maan.eway.auth.service.impl;
 
-import java.net.URLDecoder;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -25,7 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +33,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.maan.eway.auth.dto.AuthToken2;
@@ -64,6 +65,7 @@ import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.crm.service.CrmService;
 import com.maan.eway.error.Error;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.MailDataDetailsRepository;
@@ -151,6 +153,11 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	@Autowired
 	private BCryptPasswordEncoder cryptoService;
 
+	@Value(value = "${crm.changePassword}")
+	private String changePassword;
+	
+	@Autowired
+	private CrmService crmService;
 	
 	private Logger log = LogManager.getLogger(AuthendicationServiceImpl.class);
 	
@@ -784,6 +791,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			if(table!=null) {
 				res  = "Password Changed Successfully";
+				crmService.updatePassword(req, changePassword);
 			}
 			else {
 				res  = "FAILED" ;

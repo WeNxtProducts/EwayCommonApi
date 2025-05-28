@@ -56,5 +56,7 @@ public class BrokerLoginInfoReq {
 	private String     cbcNo    ;
 	 
 
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	   
 }
