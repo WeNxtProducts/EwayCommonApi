@@ -394,7 +394,7 @@ public class CopyBuildingRaw {
 					//List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
 					//res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
 					//res.setPolicyNo(ent.getPolicyNo()+"-"+count) ;
-					return res;
+					//return res;
 				}
 				if (pendingcount > 0) {
 					List<EserviceBuildingDetails> pendingData = BuildingList.stream()
