@@ -1507,7 +1507,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 				}
 				System.out.println("*********Procedure Block Started " + quoteNo + " " + formattedDateTime);
 				if (failureOracleList.isEmpty()) {
-					if ("100002".equalsIgnoreCase(companyId) || "100019".equalsIgnoreCase(companyId)) {
+					if (!"100002".equalsIgnoreCase(companyId) && !"100019".equalsIgnoreCase(companyId)) {
 						System.out.println("*********Premia Integration Wecore Api Call:");
 						System.out.println("Policy No :" + policyNo + " Company Id :" + companyId);
 						IntegrationSaveRes list = frameReqService.premiaExternalCall(policyNo, companyId);
@@ -1563,7 +1563,6 @@ public class IntegrationServiceImpl implements IntegrationService {
 		return response;
 	}
 
-	
 	private synchronized void insertMySql(PremiaResponse response, String formattedDateTime, HomePositionMaster home,
 			String quoteNo, String reqRefNo, String mySqlTable, List<PremiaConfigMaster> configMasterList,
 			List<String> param) {
