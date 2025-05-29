@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.admin.req.BrokerLoginGridReq;
 import com.maan.eway.common.req.CommonErrorModuleReq;
 import com.maan.eway.common.res.CityDropdown;
 import com.maan.eway.common.res.CityGroupMasterDropdown;
@@ -286,6 +287,13 @@ public class StateMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 
-	}	
+	}
+	
+	@PostMapping(value = "/dropdown/getApproverDropDownByClientId", produces = "application/json")
+	@ApiOperation(value = "This method retrieves approver login IDs by client ID")
+	public ResponseEntity<CommonRes> getApproverDropDownByClientId(@RequestBody BrokerLoginGridReq req) {
+	    return stateService.getApproverDropDownByClientId(req);
+
+	}
 
 }

@@ -1389,6 +1389,117 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		}
 		return null;
 	}
+	
+	@Override
+	public List<ProductDropDownRes> getProductDetailByLoginId(String loginId, String companyId) {
+	    List<LoginProductMaster> loginproduct = new ArrayList<>();
+
+	    Date today = new Date();
+	    Calendar cal = new GregorianCalendar();
+	    cal.setTime(today);
+	    cal.set(Calendar.HOUR_OF_DAY, 23);
+	    cal.set(Calendar.MINUTE, 1);
+	    today = cal.getTime();
+
+	    cal.set(Calendar.HOUR_OF_DAY, 1);
+	    cal.set(Calendar.MINUTE, 1);
+	    Date todayEnd = cal.getTime();
+
+	    CriteriaBuilder cb = em.getCriteriaBuilder();
+	    CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+	    Root<LoginProductMaster> c = query.from(LoginProductMaster.class);
+	    query.select(c);
+
+	    List<Order> orderList = new ArrayList<>();
+	    orderList.add(cb.asc(c.get("productName")));
+
+	    // Fix: Use Date instead of Long
+	    Subquery<Date> effectiveDate = query.subquery(Date.class);
+	    Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+	    effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+	    effectiveDate.where(
+	            cb.equal(c.get("productId"), ocpm1.get("productId")),
+	            cb.equal(c.get("companyId"), ocpm1.get("companyId")),
+	            cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today),
+	            cb.equal(c.get("loginId"), ocpm1.get("loginId"))
+	    );
+
+	    Subquery<Date> effectiveDate2 = query.subquery(Date.class);
+	    Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+	    effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+	    effectiveDate2.where(
+	            cb.equal(c.get("productId"), ocpm2.get("productId")),
+	            cb.equal(c.get("companyId"), ocpm2.get("companyId")),
+	            cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd),
+	            cb.equal(c.get("loginId"), ocpm2.get("loginId"))
+	    );
+
+	    // Product IDs
+	    Subquery<Long> productIds = query.subquery(Long.class);
+	    Root<CompanyProductMaster> cm = productIds.from(CompanyProductMaster.class);
+
+	    Subquery<Date> effectiveDate3 = query.subquery(Date.class);
+	    Root<CompanyProductMaster> ocpm4 = effectiveDate3.from(CompanyProductMaster.class);
+	    effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart")));
+	    effectiveDate3.where(
+	            cb.equal(cm.get("productId"), ocpm4.get("productId")),
+	            cb.equal(cm.get("companyId"), ocpm4.get("companyId")),
+	            cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today)
+	    );
+
+	    Subquery<Date> effectiveDate4 = query.subquery(Date.class);
+	    Root<CompanyProductMaster> ocpm5 = effectiveDate4.from(CompanyProductMaster.class);
+	    effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+	    effectiveDate4.where(
+	            cb.equal(cm.get("productId"), ocpm5.get("productId")),
+	            cb.equal(cm.get("companyId"), ocpm5.get("companyId")),
+	            cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd)
+	    );
+
+	    productIds.select(cm.get("productId"));
+	    productIds.where(
+	            cb.equal(cm.get("companyId"), companyId),
+	            cb.equal(cm.get("status"), "Y"),
+	            cb.equal(cm.get("effectiveDateStart"), effectiveDate3),
+	            cb.equal(cm.get("effectiveDateEnd"), effectiveDate4)
+	    );
+
+	    Predicate n1 = cb.equal(c.get("status"), "Y");
+	    Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+	    Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+	    Predicate n4 = cb.equal(c.get("companyId"), companyId);
+	    Predicate n5 = cb.equal(c.get("loginId"), loginId);
+	    Predicate n6 = c.get("productId").in(productIds);
+
+	    query.where(cb.and(n1, n2, n3, n4, n5, n6)).orderBy(orderList);
+
+	    TypedQuery<LoginProductMaster> result = em.createQuery(query);
+	    loginproduct = result.getResultList();
+
+	    // Final Result Mapping
+	    List<ProductDropDownRes> resList = new ArrayList<>();
+	    for (LoginProductMaster products : loginproduct) {
+	        Integer productId = products.getProductId();
+	        List<CompanyProductMaster> product = getCompanyProductMaster(products.getCompanyId(), productId);
+
+	        if (!product.isEmpty()) {
+	            CompanyProductMaster prod = product.get(0);
+	            ProductDropDownRes res = new ProductDropDownRes();
+	            res.setOldProductName(products.getProductName());
+	            res.setNewProductName(prod.getProductName());
+	            res.setProductIconId(prod.getProductIconId() != null ? prod.getProductIconId().toString() : null);
+	            res.setProductIconName(prod.getProductIconName());
+	            res.setProductId(productId.toString());
+	            res.setPackageYn(prod.getPackageYn());
+	            res.setDisplayOrder(prod.getDisplayOrder() == null ? 999 : prod.getDisplayOrder());
+	            resList.add(res);
+	        }
+	    }
+
+	    resList.sort(Comparator.comparing(ProductDropDownRes::getDisplayOrder));
+	    return resList;
+	}
+
 }
 
 

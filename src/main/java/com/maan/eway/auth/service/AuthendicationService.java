@@ -1,5 +1,7 @@
 package com.maan.eway.auth.service;
 
+import java.util.List;
+
 import com.maan.eway.auth.dto.AuthToken2;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
@@ -7,6 +9,7 @@ import com.maan.eway.auth.dto.ForgetPasswordReq;
 import com.maan.eway.auth.dto.GetEncryptionkeyReq;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.dto.LogoutRequest;
+import com.maan.eway.auth.dto.ProductDropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +27,8 @@ public interface AuthendicationService {
 	AuthToken2 loginTokenRegenerate(LoginRequest req, HttpServletRequest http);
 
 	String getEncryptionkey(GetEncryptionkeyReq req);
+
+	List<ProductDropDownRes> getProductDetailByLoginId(String loginId, String companyId);
 
 
 /*	CommonCrmRes LoginChangePassword(ChangePasswordReq req);

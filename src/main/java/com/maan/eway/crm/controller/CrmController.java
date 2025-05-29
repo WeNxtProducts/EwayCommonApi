@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.dto.ProductDropDownRes;
+import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.crm.bean.CustomerLeadReq;
@@ -34,7 +35,8 @@ import io.swagger.annotations.Api;
 public class CrmController {
 	@Autowired
 	private CrmService crmService;
-	
+	@Autowired
+	private AuthendicationService authendicationService;
 
 	
 	@PostMapping("/authentication/validateToken")
@@ -46,7 +48,7 @@ public class CrmController {
 	@PostMapping("/productListByUserId")
 	public List<ProductDropDownRes> productListByUserId(@RequestBody LoginRequest userData) {
 
-		return crmService.getProductDetailByLoginId(userData.getLoginId(), userData.getCompanyId());
+		return authendicationService.getProductDetailByLoginId(userData.getLoginId(), userData.getCompanyId());
 	}
 	
 	@GetMapping("/getEnqiryDetail/{enquiryId}")

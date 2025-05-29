@@ -7,7 +7,11 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+
+import com.maan.eway.admin.req.BrokerLoginGridReq;
 import com.maan.eway.common.res.CityDropdown;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.StateDropdown;
 import com.maan.eway.master.req.StateMasterChangeStatusReq;
 import com.maan.eway.master.req.StateMasterDropDownReq;
@@ -43,6 +47,8 @@ public interface StateMasterService  {
 	List<StateDropdown> getStateGroupMasterDropdown(StateMasterDropDownReq req);
 
 	List<CityDropdown> getCityGroupMasterDropdown(StateMasterDropDownReq req);
+
+	ResponseEntity<CommonRes> getApproverDropDownByClientId(BrokerLoginGridReq req);
 
 	
 	

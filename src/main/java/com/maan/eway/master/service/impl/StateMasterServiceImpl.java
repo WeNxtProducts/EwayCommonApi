@@ -5,15 +5,16 @@
 */
 package com.maan.eway.master.service.impl;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -22,14 +23,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.admin.req.BrokerLoginGridReq;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.common.res.CityDropdown;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.StateDropdown;
 import com.maan.eway.common.res.SubUrbDropDown;
+import com.maan.eway.crm.bean.ApproverDropDownResponse;
+import com.maan.eway.crm.bean.CustomerDetail;
 import com.maan.eway.master.req.StateMasterChangeStatusReq;
 import com.maan.eway.master.req.StateMasterDropDownReq;
 import com.maan.eway.master.req.StateMasterGetAllReq;
@@ -37,6 +45,7 @@ import com.maan.eway.master.req.StateMasterGetReq;
 import com.maan.eway.master.req.StateMasterSaveReq;
 import com.maan.eway.master.res.StateMasterRes;
 import com.maan.eway.master.service.StateMasterService;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.StateMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -68,6 +77,9 @@ public class StateMasterServiceImpl implements StateMasterService {
 	@Autowired
 	private BasicValidationService basicvalidateService;
 
+	@Autowired
+	private LoginMasterRepository loginMasterRepo;
+	
 	Gson json = new Gson();
 
 	private Logger log = LogManager.getLogger(StateMasterServiceImpl.class);
@@ -979,5 +991,35 @@ public class StateMasterServiceImpl implements StateMasterService {
 		}
 		return cityDetailsList;
 	}
+	@Override
+	public ResponseEntity<CommonRes> getApproverDropDownByClientId(BrokerLoginGridReq req) {
+		CommonRes response = new CommonRes();
 
+		try {
+			List<LoginMaster> userList = loginMasterRepo.findByCompanyIdAndUserType(req.getCompanyId(),
+					req.getUserType());
+
+			List<CustomerDetail> customerDetails = userList == null ? Collections.emptyList()
+					: userList.stream().map(LoginMaster::getLoginId).filter(Objects::nonNull).map(CustomerDetail::new)
+							.collect(Collectors.toList());
+
+			ApproverDropDownResponse approverData = new ApproverDropDownResponse();
+			approverData.setCustomerDetails(customerDetails);
+
+			response.setCommonResponse(approverData); 
+
+			response.setIsError(false);
+			response.setMessage("Success");
+			response.setErroCode(200);
+			response.setErrorMessage(null);
+
+			return new ResponseEntity<>(response, HttpStatus.OK);
+
+		} catch (Exception e) {
+			response.setIsError(true);
+			response.setMessage("Failed to fetch approvers");
+			response.setErroCode(500);
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
