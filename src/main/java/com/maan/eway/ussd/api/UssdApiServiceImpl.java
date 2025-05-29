@@ -433,9 +433,9 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      saveMotorData.setCommissionPercentage(BigDecimal.valueOf(commissionPercentage));
 	      saveMotorData.setCustomerName("UssdBroker");
 	      saveMotorData.setSourceType("USSD");
-	      saveMotorData.setBdmCode("5423156");
+	      saveMotorData.setBdmCode("1010217630");//UAT 5423156  Live 1010217630
 	      saveMotorData.setBranchName(branch);
-	      saveMotorData.setCustomerCode("5423156");
+	      saveMotorData.setCustomerCode("1010217630");//UAT 5423156  Live 1010217630
 	      saveMotorData.setMotorUsageDesc(motorUsageDesc);
 	      saveMotorData.setTiraBodyType(bodyType);
 	      saveMotorData.setTiraMotorUsage(motorUsageDesc);
@@ -642,7 +642,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      homePositionSave.setVehicleNo(1);
 	      homePositionSave.setHavepromoYn("N");
 	      homePositionSave.setSourceType("USSD");
-	      homePositionSave.setCustomerCode("5423156");
+	      homePositionSave.setCustomerCode("1010217630");//UAT 5423156  Live 1010217630
 	      homePositionSave.setBrokerBranchName(branch);
 	      homePositionSave.setCompanyName(companyName);
 	      homePositionSave.setProductName(productName);
@@ -675,8 +675,9 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      makePaymentMap.put("UserType", "Broker");
 	      String makePaymentReq = objectPrint.toJson(makePaymentMap);
 	      System.out.println("makePaymentReq" + makePaymentReq);
-	      String makePaymentApi = "http://localhost:8086/EwayCommonApi/payment/makepayment";
-	  //    String makePaymentApi = "http://192.168.1.42:8086/payment/makepayment";
+	   //   String makePaymentApi = "http://localhost:8086/EwayCommonApi/payment/makepayment";
+	   //   String makePaymentApi = "http://192.168.1.42:8086/payment/makepayment";
+	      String makePaymentApi = "https://apps.alliance.co.tz/EwayCommonApiLive/payment/makepayment";
 	      response = this.callEwayApi(makePaymentApi, makePaymentReq);
 	      System.out.println("makePaymentRes" + response);
 	      Map<String, Object> makePaymentResult = null;
@@ -687,6 +688,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      } catch (Exception e) {
 	         e.printStackTrace();
 	         exception=e.getMessage();
+	         log.info(exception);
 	      }
 	      
 	      if(StringUtils.isNotBlank(exception)) {
@@ -716,8 +718,9 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      insertPayment.put("MobileNo1", policyHolderPhoneNumber);
 	      String insertPaymentReq = this.objectPrint.toJson(insertPayment);
 	      System.out.println("insertPaymentReq" + insertPaymentReq);
-	    String insertPaymentApi = "http://localhost:8086/EwayCommonApi/payment/insertpaymentdetails";
-	  //   String insertPaymentApi = "http://192.168.1.42:8086/payment/insertpaymentdetails";
+	 //   String insertPaymentApi = "http://localhost:8086/EwayCommonApi/payment/insertpaymentdetails";
+	 //    String insertPaymentApi = "http://192.168.1.42:8086/payment/insertpaymentdetails";
+	     String insertPaymentApi = "https://apps.alliance.co.tz/EwayCommonApiLive/payment/insertpaymentdetails";
 	      response = this.callEwayApi(insertPaymentApi, insertPaymentReq);
 	      System.out.println("insertPaymentRes" + response);
 	      Map<String, Object> insertPaymentResult = null;
@@ -728,6 +731,7 @@ public class UssdApiServiceImpl implements UssdApiService {
 	      } catch (Exception e) {
 	         e.printStackTrace();
 	         exception=e.getMessage();
+	         log.info(exception);
 	      }
 	      if(StringUtils.isNotBlank(exception)) {
 				errorList.add(exception);
@@ -764,8 +768,9 @@ public class UssdApiServiceImpl implements UssdApiService {
 	         tokReq.put("LoginId", "UssdBroker");
 	         tokReq.put("Password", "Admin@10");
 	         tokReq.put("ReLoginKey", "Y");
-	      String tokenApi = "http://localhost:8086/EwayCommonApi/authentication/login";
-	      //   String tokenApi = "http://192.168.1.42:8086/authentication/login";
+	   //   String tokenApi = "http://localhost:8086/EwayCommonApi/authentication/login";
+	   //      String tokenApi = "http://192.168.1.42:8086/authentication/login";
+	         String tokenApi = "https://apps.alliance.co.tz/EwayCommonApiLive/authentication/login";
 	        // System.out.println("Token Api URL ==> " + tokenApi);
 	         String jsonTokenRequest = (new Gson()).toJson(tokReq);
 	         CloseableHttpClient httpClient = createHttpClientWithTimeouts();
