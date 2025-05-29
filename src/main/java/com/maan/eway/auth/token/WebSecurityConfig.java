@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -51,6 +52,12 @@ public class WebSecurityConfig  {
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
+    
+    @Value("${ussd.auth.username}")
+	private String ussdAuthUserName;
+	
+	@Value("${ussd.auth.password}")
+	private String ussdAuthPwd;
 
      @Bean
     public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
