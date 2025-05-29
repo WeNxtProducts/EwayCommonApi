@@ -131,7 +131,7 @@ public class CopyRawTable  {
 				
 				pendingcount = motors.stream().filter(m->(m.getEndtStatus().equals("P") )).count();
 				
-				if(motors.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()))).count()>0) {
+				if(motors.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType())) && m.getEndorsementEffdate().compareTo(ent.getEndtEffectiveDate())==0).count()>0) {
 					return motors;
 				}
 				if(pendingcount>0) {					  

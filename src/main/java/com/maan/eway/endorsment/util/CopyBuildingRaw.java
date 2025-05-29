@@ -387,16 +387,8 @@ public class CopyBuildingRaw {
 				}.reversed());
 				
 				pendingcount = BuildingList.stream().filter(m->m.getEndtStatus().equals("P")).count();
-				if(BuildingList.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()))).count()>0) {
+				if(BuildingList.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()) && (m.getEndorsementEffdate().compareTo(ent.getEndtEffectiveDate())==0))).count()>0) {
 					List<EserviceBuildingDetails> pendingList = BuildingList.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()))).collect(Collectors.toList());
-					List<EserviceBuildingDetails> update= new ArrayList<EserviceBuildingDetails>();
-					pendingList.stream().forEach(bd->
-					{
-						bd.setEndorsementDate(new Date());
-						bd.setEndorsementEffdate(ent.getEndtEffectiveDate());
-						update.add(bd);
-					});
-					eBuildingRepo.saveAllAndFlush(update);
 					BuildingCopyRes res = dozerMapper.map(pendingList.get(0) , BuildingCopyRes.class);
 					
 					//List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
@@ -677,15 +669,8 @@ public class CopyBuildingRaw {
 			if(endtData.size() > 0 ) {
 				EserviceCommonDetails data = endtData.get(0)   ;
 				Integer endtType  = data.getEndorsementType() == null ? 0 : data.getEndorsementType() ;
-				if( endtType.equals(Integer.valueOf(request.getEndtType())) ) {
+				if( endtType.equals(Integer.valueOf(request.getEndtType())) && request.getEndtEffectiveDate().compareTo(data.getEndorsementEffdate())==0 ) {
 					newInsert = false ;
-					List<EserviceCommonDetails> humanList = new ArrayList<EserviceCommonDetails>();
-					endtData.stream().forEach(h-> {
-						h.setEndorsementDate(new Date());
-						h.setEndorsementEffdate(request.getEndtEffectiveDate());
-						humanList.add(h);
-					});
-					eserCommonRepo.saveAll(humanList);
 				} else {
 					newInsert = true ;
 					eserCommonRepo.deleteAll(endtData)	;
