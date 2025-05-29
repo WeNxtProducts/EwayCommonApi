@@ -110,12 +110,13 @@ public class TiraIntegerationServiceImpl {
 				res.setResponse("Success");
 				
 			} else if(  data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()<50   ) {
-				List<SectionDataDetails> risks = sectionDataRepo.findByQuoteNo(tiraReq.getQuoteNo());
-				for(SectionDataDetails risk:risks) {
-					if(StringUtils.isBlank(risk.getCoverNoteReferenceNo())) {
+				List<SectionDataDetails> secDatas = sectionDataRepo.findByQuoteNo(tiraReq.getQuoteNo());
+				secDatas=secDatas.stream().filter(o-> StringUtils.isBlank(o.getCoverNoteReferenceNo())).toList();
+				List<Integer> risks = secDatas.stream().map(SectionDataDetails::getRiskId).distinct().collect(Collectors.toList());
+				for(Integer risk:risks) {
 						TiraFrameReqCall request=new TiraFrameReqCall();
-						request.setQuoteNo(risk.getQuoteNo());
-						request.setRiskId(risk.getRiskId()+"");
+						request.setQuoteNo(tiraReq.getQuoteNo());
+						request.setRiskId(risk+"");
 
 						Object tiraFramedReq = TiraReqFrame(request, token);
 						res.setResponse("Success");
@@ -127,7 +128,7 @@ public class TiraIntegerationServiceImpl {
 							res.setResponse("Failed");
 							log.info("Tira Framed Req --->"+tiraFramedReq);	
 						}
-					}
+					
 				}
 			}else if(  data.getCompanyId().equalsIgnoreCase("100002") && data.getNoOfVehicles()>49   ) {
 				Object tiraFramedReq = TiraReqFrameFleet(tiraReq, token);
